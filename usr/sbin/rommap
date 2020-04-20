@@ -1,0 +1,53 @@
+#!/usr/bin/perl
+
+# do equivalent of
+# nm -n a.out | grep SegmentRom > map
+# for segment in `cat map`; do extract segment rom; done
+
+
+die "Usage: rommap a.out rom\n" unless $#ARGV >= 1;
+
+$aout = $ARGV[0];
+$rom = $ARGV[1];
+
+@symbols = `nm -n $aout | egrep 'SegmentRom(Start|End)' | egrep -v 'U '`;
+
+%sym=();
+foreach $s (@symbols) {
+    chomp $s;
+    @z = split / +/, $s;
+    $sym{$z[2]} = $z[0] if (defined $z[2]);
+    $z[2] =~ s/^_(\S+)SegmentRom.*$/$1/;
+    push @l,$z[2];
+}
+
+$first = "_".$l[0]."SegmentRomStart";
+$sym{"_makeromSegmentRomStart"} = "0";
+$sym{"_makeromSegmentRomEnd"} = $sym{$first};
+@l = ("makerom", @l);
+
+open(ROM, $rom) || die "Can't open $rom for input: $!";
+
+%done=();
+foreach $name (@l) {
+    if (!defined($sym{"_" . "$name" . "SegmentRomStart"}) ||
+        !defined($sym{"_" . "$name" . "SegmentRomEnd"})) {
+	die "botch of $name\n";
+    }
+    next if (defined($done{$name}));
+    $start = hex($sym{"_" . "$name" . "SegmentRomStart"});
+    $end = hex($sym{"_" . "$name" . "SegmentRomEnd"});
+    #print "$name $start $end\n";
+    $end = $end - $start;
+    next if ($end == 0);
+    #print "dd if=$rom bs=1 skip=$start count=$end of=$name\.d\n";
+    $done{$name} = 1;
+    printf "$name.d %x %x\n", $end, $start;
+    #print "$start $end\n";
+    sysseek(ROM, $start, 0);
+    $n = sysread(ROM, $buf, $end);
+    open(SEG, "> $name.d") or die "Can't open $name.d for output: $!";
+    syswrite(SEG, $buf, $n);
+    close SEG;
+}
+close ROM;

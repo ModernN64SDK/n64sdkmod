@@ -1,0 +1,83 @@
+#!/usr/bin/ksh
+# This script prints some peoples names and if they have a file checked out
+
+if [[ $# < 1 ]]
+then 
+echo "This script tells you who may have a file in modify state."
+echo "If nothing is printed, no one *ON THIS LIST* has checked the file out"
+echo "WARNING: if someone's name is not listed, their account was not checked!"
+echo "  USEAGE:  whohas PR/FilePathName"
+echo "  The FilePathName should be the path to the file from the PR directory"
+exit
+fi
+
+thepath=${PWD##$ROOT}
+
+#PEOPLE MOST LOKELY TO HAVE FILES I WANT
+acorn=$ROOT
+kluster=/hosts/goth/usr/people/kluster/mdev2root
+hsa=/hosts/quincy/usr/people/hsa/mdev2root
+rmoore=/hosts/alligator/usr/people/rmoore/mdev2root
+ashoks=/hosts/dogmatix/usr/people/ashoks/mdev2root
+
+#PEOPLE WITH WIERD PATHS
+sjs=/hosts/time/usr/people/sjs/reality
+lipes=/hosts/beyond/work/mdev2root
+scott=/hosts/pris/d2/mdev2root
+byron=/hosts/vault/d2/reality/work
+rww=/hosts/riscy/a/rww/mdev2root
+hayes=/hosts/arakis/usr/people/hayes/mdevroot
+cai=/hosts/youharp/usr/people/cai/mdevroot
+jlsmith=/hosts/rayden/c/jlsmith/reality
+princen=/hosts/bokonon/disk06/usr/princen/mdevroot
+rohm=/hosts/rayden/a/Reality2/mdev2root
+gudrun=/usr/people/gudrun/mdevroot
+doherty=/usr/people/doherty/mdevroot
+cburwell=/hosts/nintendo8/extn/devroot
+hal=/hosts/mopar/b/hal/mdev2root
+tsai=/hosts/flute/usr/people/tsai/mdev
+eywang=/hosts/cruiser/usr/people/eywang/mdevroot
+tonyd=/hosts/hurricane/usr/people/tonyd/mdevroot
+kishor=/hosts/yogi/usr/people/kishor/mdevroot
+rws=/hosts/shibumi/usr/people/rws/mdevroot
+jeffd=/hosts/maryjane/usr/people/jeffd/mdev2
+
+#PEOPLE I COULD NOT FIND
+# maggieg=/hosts/elijia/usr/people/maggieg/mdev2root
+# tvh=/hosts/tvh/usr/people/tvh/mdev2root
+# kem=/hosts/nintendo21/usr/people/kem/mdev2root
+# edens=/hosts/nintendo1/usr/people/edens/mdev2root
+# mantri=/hosts/winner/usr/people/mantri/mdev2root
+# foran=/hosts/gozar/usr/people/foran/mdev2root
+
+
+#OTHER PEOPLE
+pg=/hosts/philco/usr/people/pg/mdev2root
+howardc=/hosts/madman/usr/people/howardc/mdev2root
+kfg=/hosts/nintendo2/usr/people/kfg/mdev2root
+chn=/hosts/draco/usr/people/chn/mdev2root
+ezer=/hosts/rain/work/mdev2root
+
+for person in $acorn $kluster $hsa $lipes $rmoore $ashoks $sjs $scott $rww $princen $byron $rohm $hayes $cai $gudrun $jlsmith $doherty $hal $cburwell $tsai $pg $eywang $tonyd $kishor $rws $howardc $jeffd $kfg $chn $ezer
+do
+
+
+typeset -i theposition=1
+for theparam in `ls -l $person$thepath/$1 2>/dev/null`
+do
+if [[ $theposition = 1 ]]
+then
+therightparam=$theparam
+fi
+let "theposition = $(( $theposition + 1 ))"
+done
+
+
+# if ( getword 1 `ls -l $person$thepath/$1 2>/dev/null` | grep 'w' > /dev/null )
+if ( echo $therightparam | grep 'w' > /dev/null )
+then 
+echo "YES $1 IS CHECKED OUT BY $person"
+fi
+
+done
+echo DONE

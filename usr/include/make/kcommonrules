@@ -1,0 +1,283 @@
+# Copyright 1986, Silicon Graphics Inc., Mountain View, CA.
+#
+# kcommonrules - common rules for kernel makefiles
+#
+#ident $Revision: 1.1 $
+
+#
+# We re-define all important targets so we throw away all the
+# commonrules ones by setting a bogus COMMONPREF
+# Note NO makefile should redefine COMMONPREF! Note that the clobber, etc
+# rules automatically do any SUBDIR chasing that needs to be done
+# For the few (top level) makefiles that need to have their own install/default
+# etc. rules - one can remove the ones defined here by defining KOPREF
+# immediatly after including kcommondefs
+#
+# Makefiles that need to override $(KCOMMONPREF)clean/clobber/rmtargets 
+# should re-define KCOMMONPREF - any such makefile will have to define:
+#	clean, clobber, lint, rmtargets
+#
+# Overall Rules:
+#	default - builds for a particular PRODUCT and installs the result
+#		in $(ROOT)/usr/sysgen/$(CPUBOARD)boot. This installation
+#		takes place regardless of RAWIDB
+#
+#	install - executes the default rule then installs into the
+#		correct final location - once for a 'real' production install
+#		(these go into /usr/sysgen/boot and are 'mach' tagged)
+#		and once for a developers install (these go into
+#		/usr/sysgen/$(CPUBOARD)boot and are NOT 'mach' tagged)
+#
+#	headers - installs headers from all required directories.
+#		Note that headers must be run twice - once with and
+#		once without RAWIDB
+#
+#	every - build 'default' for all PRODUCTS in EVERYPRODUCT
+#		regardless of the current setting of $PRODUCT
+#
+COMMONPREF=xxxx
+include ${COMMONRULES}
+
+#
+# We don't want to remove all .o's since some are valuable objects from
+# other directories
+#
+GDIRT=a.out core $(_FORCE)
+LDIRT=${KDIRT} *.ln local.map local.count
+
+# lint support
+LOBJECTS=${CFILES:.c=.ln}
+
+#always recompute the lint
+${LOBJECTS}: $(_FORCE)
+
+.PRECIOUS:$(TARGETS)
+#
+# Rules
+#
+${BOOTAREA} ${LINTBOOTAREA}: $(_FORCE)
+	@if test ! -d $@; then \
+		echo "\trm -rf $@; mkdir $@"; \
+		rm -rf $@; mkdir $@; \
+	fi
+
+MAKEALTERNATE:.USE .PRECIOUS
+	rm -f $(.TARGET)
+	ln $(.ALLSRC) $(.TARGET)
+
+#
+# Intermediate 'dirt' to remove - usually outputs of shell scripts
+#
+.INTERRUPT:
+	@rm -f ${INTDIRT}
+
+#
+# Make sure nothing bad happens if try to build at lower levels w/o PRODUCT
+#
+#if ( !defined(PRODUCT) || empty(PRODUCT) ) && !defined(IMTOP) && !make(headers) && !make(every)
+.BEGIN:
+	@echo "PRODUCT MUST be set!"
+	exit 1
+#endif
+
+#every!.RECURSIVE
+
+every: $(_FORCE)
+	@$(KSUBDIRS_MAKERULE)
+	@for p in $(EVERYPRODUCT); do \
+		echo "Making for PRODUCT $$p"; \
+		PRODUCT=$$p $(MAKE); \
+	done
+
+#$(KOPREF)clean $(KOPREF)clobber $(KOPREF)rmtargets $(KOPREF)install \
+$(KOPREF)default!.RECURSIVE
+
+$(KOPREF)clean $(KOPREF)clobber $(KOPREF)rmtargets $(KOPREF)install \
+$(KOPREF)default:$(BOOTAREA) $(SUBDIRS_DEP) $(_FORCE)
+	@$(KSUBDIRS_MAKERULE)
+	@$(TLINKDIR_MAKERULE)
+	cd $(BOOTAREA);\
+	exec $(MAKE) -f $(KPATH)/Makefile $(KCOMMONPREF)$@ DEPTH=..
+
+#
+# We can specially turn off the branch stuff by setting
+# KBPREF
+#
+BTOOL=btool
+BTOOLGOPTS=-test-quest-bug -test-control ../btool_ctrl \
+	-test-map ${LINTNAME}.map \
+	-realcc $(CC)
+#BTOOLGOPTS=-test-quest-bug -test-map ${LINTNAME}.map \
+	#-realcc $(CC)
+
+$(KBPREF)branch:$(BOOTAREA) $(SUBDIRS_DEP) $(_FORCE)
+	@$(KSUBDIRS_MAKERULE)
+	@$(TLINKDIR_MAKERULE)
+	cd $(BOOTAREA);\
+	exec $(MAKE) -f $(KPATH)/Makefile $(KCOMMONPREF)default DEPTH=.. \
+		CC="$(BTOOL) $(BTOOLGOPTS) $(BTOOLLOPTS)"
+
+#
+# a version of branch that doesn't descend
+#
+onebranch:$(BOOTAREA) $(SUBDIRS_DEP) $(_FORCE)
+	cd $(BOOTAREA);\
+	exec $(MAKE) -f $(KPATH)/Makefile $(KCOMMONPREF)default DEPTH=.. \
+		CC="$(BTOOL) $(BTOOLGOPTS) $(BTOOLLOPTS)"
+
+#lint!.RECURSIVE
+
+lint:$(LINTBOOTAREA) $(_FORCE)
+	@$(KSUBDIRS_MAKERULE)
+	cd $(LINTBOOTAREA);\
+	exec $(MAKE) -f $(KPATH)/Makefile $(KCOMMONPREF)$@ DEPTH=..
+
+# remove the Makedepend and others from the KPATH directory but
+# not the XXbootarea directory, since this is shared by multiple
+# directories. A global clobber removes those files
+kclobber: $(KCOMMONPREF)clean $(KCOMMONPREF)rmtargets $(_FORCE)
+
+kclean: $(_FORCE)
+	cd $(KPATH) ; rm -fr $(DIRT)
+	rm -fr $(MKDEPFILE)
+	rm -rf $(DIRT)
+
+# TARGETS aren't directories so don't remove any. This helps in the
+# case master.d where a directory name (system.kdebug) is the same as
+# a TARGET name
+krmtargets: $(_FORCE)
+	cd $(KPATH) ; rm -f $(TARGETS:.o=.[oa]) $(TARGETS:.a=.[oa])
+	rm -f $(TARGETS:.o=.[oa]) $(TARGETS:.a=.[oa])
+	if test -d $(ROOT)/$(CPUINSTDIR); then \
+		cd $(ROOT)/$(CPUINSTDIR); \
+		rm -f $(TARGETS:.o=.[oa]) $(TARGETS:.a=.[oa]); \
+	fi
+
+# work even in directories that do not have any source
+#   The obvious way to do this is with smake empty() conditionals, but they
+#   do not seem to work
+klint:${LOBJECTS} $(_FORCE)
+	@if test -n "${LOBJECTS}"; then					\
+	    echo "\t${LINT} ${LINTLDFLAGS} -o ${LINTNAME} ${LOBJECTS}";	\
+	    ${LINT} ${LINTLDFLAGS} -o ${LINTNAME} ${LOBJECTS};		\
+	fi
+
+tags: $(KCOMMONPREF)tags $(_FORCE)
+
+CTAGS=ctags
+ktags: $(_FORCE)
+	rm -f tags
+	find . \( -name '*.[cfhlpy]' -o -name '*.c++' \) \
+		! -name '.*' ! -name 'llib-*' ! -name '*,v' \
+		$(CTAGFINDARGS) -print | \
+	    sed 's:^\./::' | \
+	    xargs $(CTAGS) -a $(CTAGOPTS)
+	if test -f tags; then \
+		sort -u +0 -1 -o tags tags; \
+	fi
+
+
+# recognize 'make subdir'
+#${SUBDIRS}!.RECURSIVE
+
+${SUBDIRS}: $(_FORCE)
+	cd $@; exec ${MAKE}
+
+system.ship:$(SYSTEMGEN) Makefile
+	$(CC) -E $(SHIPOPTS) $(KPATH)/$(SYSTEMGEN) | \
+		sed -e '/^#/d' -e '/^$$/d' \
+		-e '/CCOPTS/s/-I[^ 	]*[ 	]//g' \
+		-e 's/^[ 	]*//' >$@
+	RAWIDB= $(INSTALL) -F $(CPUINSTDIR)/system -m 444 -src $@ $(DOTSMFILE)
+
+system.dl:$(SYSTEMGEN) Makefile
+	$(CC) -E $(DLOPTS) $(KPATH)/$(SYSTEMGEN) | \
+		sed -e '/^#/d' -e '/^$$/d' -e '/CCOPTS/s/-I[^ 	]*[ 	]//g' \
+		-e 's/^[ 	]*//' >$@
+	RAWIDB= $(INSTALL) -F $(CPUINSTDIR)/$@ -m 444 -src $@ $(DOTSMFILE)
+
+system.mr:$(SYSTEMGEN) Makefile
+	$(CC) -E $(MROPTS) $(KPATH)/$(SYSTEMGEN) | \
+		sed -e '/^#/d' -e '/^$$/d' >$@
+	RAWIDB= $(INSTALL) -F $(CPUINSTDIR)/$@ -m 444 -src $@ $(DOTSMFILE)
+
+system.kdebug:$(SYSTEMGEN) Makefile
+	$(CC) -E $(KDEBUGOPTS) $(KPATH)/$(SYSTEMGEN) | \
+		sed -e '/^#/d' -e '/^$$/d'>$@
+	RAWIDB= $(INSTALL) -F $(CPUINSTDIR)/$@ -m 444 -src $@ $(DOTSMFILE)
+
+tirix.ship:$(SYSTEMGEN) Makefile
+	$(CC) -E $(SHIPOPTS) $(TIRIXOPTS) $(KPATH)/$(SYSTEMGEN) | \
+		sed -e '/^#/d' -e '/^$$/d' \
+		-e '/CCOPTS/s/-I[^ 	]*[ 	]//g' \
+		-e 's/^[ 	]*//' >$@
+	RAWIDB= $(INSTALL) -F $(CPUINSTDIR)/$@ -m 444 -src $@ $(DOTSMFILE)
+
+tirix.dl:$(SYSTEMGEN) Makefile
+	$(CC) -E $(DLOPTS) $(TIRIXOPTS) $(KPATH)/$(SYSTEMGEN) | \
+		sed -e '/^#/d' -e '/^$$/d' -e '/CCOPTS/s/-I[^ 	]*[ 	]//g' \
+		-e 's/^[ 	]*//' >$@
+	RAWIDB= $(INSTALL) -F $(CPUINSTDIR)/$@ -m 444 -src $@ $(DOTSMFILE)
+
+tirix.mr:$(SYSTEMGEN) Makefile
+	$(CC) -E $(MROPTS) $(TIRIXOPTS) $(KPATH)/$(SYSTEMGEN) | \
+		sed -e '/^#/d' -e '/^$$/d' >$@
+	RAWIDB= $(INSTALL) -F $(CPUINSTDIR)/$@ -m 444 -src $@ $(DOTSMFILE)
+
+tirix.kdebug:$(SYSTEMGEN) Makefile
+	$(CC) -E $(KDEBUGOPTS) $(TIRIXOPTS) $(KPATH)/$(SYSTEMGEN) | \
+		sed -e '/^#/d' -e '/^$$/d'>$@
+	RAWIDB= $(INSTALL) -F $(CPUINSTDIR)/$@ -m 444 -src $@ $(DOTSMFILE)
+
+# When we start shipping the tirix files, we need to add the
+# $(INSTFILE) rules for tirix.kdebug (etc)
+ksysinstall:$(SYSTEMS) $(KCOMMONPREF)default
+	for i in $(SYSTEMS) ; \
+	do \
+		if [ "$$i" = system.ship ] ; \
+		then \
+			$(INSTFILE)  $(LBOOTPOSTOP) \
+				 -idb "mach(CPUBOARD=$(CPUBOARD))" \
+				 -F $(SHIP_SYSGENDIR)/system -src $$i $(DOTSMFILE) ; \
+			$(INSTFILE) -F $(CPUINSTDIR)/system -src $$i $(DOTSMFILE) ; \
+		elif [ "$$i" = system.dl ] ; \
+		then \
+			$(INSTFILE) $(LBOOTPOSTOP) \
+				-idb "nfs.sw.dskless mach(CPUBOARD=$(CPUBOARD))" \
+				-F $(SHIP_SYSGENDIR)/$$i -src $$i $(DOTSMFILE) ; \
+			$(INSTFILE) -F $(CPUINSTDIR)/$$i -src $$i $(DOTSMFILE) ; \
+		elif [ "$$i" = system.kdebug ] ; \
+		then \
+			$(INSTFILE) \
+				-idb "noship mach(CPUBOARD=$(CPUBOARD))" \
+				-F $(SHIP_SYSGENDIR)/$$i -src $$i $(DOTSMFILE) ; \
+			$(INSTFILE) -F $(CPUINSTDIR)/$$i -src $$i $(DOTSMFILE) ; \
+		elif [ "$$i" = system.mr ] ; \
+		then \
+			$(INSTFILE) \
+				-idb "noship mach(CPUBOARD=$(CPUBOARD))" \
+				-F $(SHIP_SYSGENDIR)/$$i -src $$i $(DOTSMFILE) ; \
+			$(INSTFILE) -F $(CPUINSTDIR)/$$i -src $$i $(DOTSMFILE) ; \
+		fi \
+	done
+
+
+
+#
+# Inference rules
+#
+.SUFFIXES:.c .s .ln .o .btool
+
+.c.s:
+	$(CCF) -S $<
+
+.c.ln:
+	$(LINT) $(LINTCFLAGS) -c $< 
+
+.c.o:
+	$(CCF) -c $(.IMPSRC) && \
+	$(LDF) -r $(.TARGET:T) -o $$$$.o && \
+	mv $$$$.o $(.TARGET:T)
+
+.c.btool:
+	exec $(MAKE) CC="$(BTOOL) $(BTOOLLOPTS) -test-quest-bug -test-map local.map -test-count local.count -realcc $(CC)" $*.o

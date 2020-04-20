@@ -1,0 +1,8 @@
+#!/bin/bash
+if [ "$#" -ne 1 ]; then
+    echo "Usage: $0 <game>"
+    exit -1
+fi
+pubrom -d -p $1.prop -i metadata/thumb.rgba -T metadata/title.inta -n metadata/title_z.txt -s metadata/isbn.txt -m "`rommd -p $1.rom`"  $1.rom 0x666
+rm 00000666.app 00000666.cmd
+mv 00000666.desc $1.desc

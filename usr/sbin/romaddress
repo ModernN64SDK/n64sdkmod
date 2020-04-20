@@ -1,0 +1,57 @@
+#!/usr/bin/perl
+
+die "Usage: romaddress map addr_table\n" unless $#ARGV >= 1;
+
+$map = $ARGV[0];
+$addr = $ARGV[1];
+
+open MAP, $map or die "Can't open $map for input: $!";
+%size = ();
+%start = ();
+while(<MAP>) {
+    @x = split;
+    push(@l, $x[0]);
+    $size{$x[0]} = hex($x[1]);
+    $start{$x[0]} = hex($x[2]);
+}
+
+open ADDR, "+< $addr" or die "Can't open $addr for output: $!";
+#sysseek(ADDR, 0, 0);
+
+$i = 1;
+$coff = 0;
+$uoff = 0;
+foreach $f (@l) {
+    # look for .szs, .szp, or .d in that order
+    $x = $f;
+    $x =~ s/.d$//;
+    if (-f "$x.szs") {
+	$x = "$x.szs";
+    } elsif (-f "$x.szp") {
+	$x = "$x.szp";
+    } elsif (-f "$x.d") {
+	$x = "$x.d";
+    } else {
+        die "Can't find one of $x.{szs,szp,d}\n";
+	exit 1;
+    }
+    @s = stat $x; $csize = $s[7];
+    @s = stat $f; $usize = $s[7];
+    #print "$f $csize $usize\n";
+    if ($x ne $f) {
+	printf "%3d:%08x %08x %08x %08x %8d %7d %6.2f%% %s\n",
+		$i, $start{$f}, $start{$f}+$size{$f},
+		$coff, $coff+$csize, $usize, $csize, $csize/$usize*100.0, $x;
+	$out = pack ("N4", $start{$f}, $start{$f}+$size{$f}, $coff, $coff+$csize);
+    } else {
+	printf "%3d:%08x %08x %08x %08x %8d ******* ******* %s\n",
+		$i, $start{$f}, $start{$f}+$size{$f},
+		$coff, 0, $usize, $x;
+	$out = pack ("N4", $start{$f}, $start{$f}+$size{$f}, $coff, 0);
+    }
+    syswrite(ADDR, $out, 16);
+    $coff += $csize;
+    $uoff += $usize;
+    $i++;
+}
+close ADDR;

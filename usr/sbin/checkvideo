@@ -1,0 +1,59 @@
+#!/bin/sh
+#
+# Script to extract images from vi.tab file and compare them to golden file
+#
+# This script does require customization for different video formats!!!
+# vparse/monitor arguments must be adjusted to decipher the correct video format
+#
+
+
+
+if [ $# != 2 ]
+then
+	echo "usage: checkvideo <vi tab file> <golden .rgb file>"
+	exit 1
+fi
+
+FILE=$1
+GOLDFILE=$2
+
+if [ ! -f $FILE ]
+then
+	echo "checkvideo: $1 does not exist"
+	exit  1
+fi
+
+if [ ! -f $GOLDFILE ]
+then
+	echo "checkvideo: $2 does not exist"
+	exit  1
+fi
+
+# usage: vparse -i foo.tab -o bar.tab [-s n]
+# 	 will read in foo.tab and spit out tab files named
+#	 bar.tab{s,s+1,s+2,...}
+outfiles=`$ROOT/usr/sbin/vparse -i $FILE -o vi_out.tab -f 2`
+echo "output file are: " $outfiles
+
+# usage: monitor -i foo.tab -o foo.rgb -h hblah -v vblah
+#	 where hblah is whatever value the VI_H_START register was set to in the
+#	 .tst file that generated the tab, it would be 0x00200040 for a 32 pixel
+#	 wide test.
+#	 vblah is whatever the value the VI_V_START register was set to, such
+#	 as 0x50045 for a 32 pixel height
+
+error=0
+
+for f in $outfiles
+do
+        rgbfile=$f.rgb
+	$ROOT/usr/sbin/monitor -i $f -o $rgbfile -h 0x200044 -v 0x50025
+	if $ROOT/usr/sbin/idf $rgbfile $GOLDFILE diff.rgb
+	then
+		donothing=1
+	else
+		error=1
+	fi
+done
+
+exit $error

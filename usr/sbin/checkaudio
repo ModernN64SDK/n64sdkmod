@@ -1,0 +1,27 @@
+#!/bin/sh
+#
+# shell script to extract and verify audio data from a verilog log file
+#
+
+if [ $# != 2 ]
+then
+	echo "usage: checkaudio <verilog log> <.hex file>"
+	exit 1
+fi
+
+if [ ! -f $1 ]
+then
+	echo "checkaudio: $1 does not exist"
+	exit  1
+fi
+
+if [ ! -f $2 ]
+then
+	echo "checkaudio: $2 does not exist"
+	exit  1
+fi
+
+grep audio $1 | awk '{print ($6 "\n" $8)}' > $1.hex
+
+$ROOT/usr/sbin/checkhex $1.hex $2
+exit

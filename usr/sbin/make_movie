@@ -1,0 +1,60 @@
+#!/bin/csh -f
+#
+#  Make movie
+#
+setenv LD_LIBRARY_PATH $ROOT/PR/lib/libimage
+
+#
+#  Parse args
+#
+if ( $#argv != 4 ) then
+  echo "Usage: make_movie <file_basename> <nprocs> <start_frame> <end_frame>"
+  exit
+endif
+
+set name = $argv[1]
+set nprocs = $argv[2]
+set st_frame = $argv[3]
+set end_frame = $argv[4]
+
+@ i = $st_frame
+
+date
+
+while ( $i <= $end_frame )
+
+  echo "RDP rendering frame $i..."
+
+  @ j = $i
+  while ( $j < ($i + $nprocs) )
+    uncompress InData/$name.$j.rdp.Z
+    uncompress InData/$name.$j.mem.Z
+    ~/mdevroot/PR/rdpsim/test/rdp/rdp_c -M 500 -S 911 -i $name.$j -m $name.$j -e &
+    @ j++
+  end
+
+  wait
+
+
+  @ j = $i
+  while ( $j < ($i + $nprocs) )
+    if ($j < 10) then
+      mv OutData/$name.$j"_0".rgb $name"0"$j.rgb
+    else
+      mv OutData/$name.$j"_0".rgb $name$j.rgb
+    endif
+    compress -f InData/$name.$j.rdp
+    compress -f InData/$name.$j.mem
+    rm  OutData/$name.$j"_0".cvg
+    @ j++
+  end
+   
+
+  @ i = $i + $nprocs
+
+end
+
+echo "building a movie..."
+makemovie -o $name.mv -l loop $name*.rgb
+
+date

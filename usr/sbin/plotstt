@@ -1,0 +1,76 @@
+#!/bin/perl
+
+# idotic program to get around csh braindamage
+
+require "getopts.pl";
+
+$ENV["HOME"] = "/hosts/goth.engr/usr/people/kluster";
+
+&Getopts('dgpf:');
+
+open(GNUPLOT, "| /hosts/goth.engr/usr/local/bin/gnuplot");
+
+sub Usage
+{
+    printf("usage: plotstt -f infile.stt [-g] [-d] [-p] \n");
+    printf("       -p sends to printer \n");
+    printf("       -g turns on grid \n");
+    printf("       -d turns off probable plot \n");
+    exit;
+}
+
+if (!defined($opt_f))
+{
+    &Usage();
+}
+
+if (!defined($opt_d))
+{
+    # Here we do a hack and get the number of faults. ick
+    
+    open(FAULTFILE, "$opt_f");
+    @FooArray = split(/\s/, <FAULTFILE>);
+    $NUMFAULTS = $FooArray[4];
+    close(FAULTFILE);
+    
+    print(GNUPLOT "p(x) = x/$NUMFAULTS * 100.0; \n");    
+}
+
+if (defined($opt_p))
+{
+    print(GNUPLOT "set term postscript; \n");
+    print(GNUPLOT "set output \"| lp \"; \n");
+}
+else
+{
+    print(GNUPLOT "set term iris4d 24; \n");
+}
+
+if (!defined($opt_g))
+{
+    print(GNUPLOT "set grid; \n");
+}
+
+print(GNUPLOT "set title \"Coverage Plot of $opt_f \" \n");
+print(GNUPLOT "set ylabel \"Percent Coverage\"; \n");
+print(GNUPLOT "set xlabel \"Num Vecs\"; \n");
+
+# print(GNUPLOT "set nokey \n");
+
+print(GNUPLOT "plot '< /bin/perl -p -e \"s/EOF//\" $opt_f ' using 2:1 \"%f%f%*f%f%f\" title \"Hard Detects\" with steps \n ");
+
+if (!defined($opt_d))
+{
+    print(GNUPLOT "replot '< /bin/perl -p -e \"s/EOF//\" $opt_f ' thru p(x) using 2:3 \"%f%f%*f%f%f\" title \"Probable Detects\" with steps \n ;");
+}
+
+if (!defined($opt_p))
+{
+    print(GNUPLOT "pause 999999999 \n");
+    print("Hit ^C to end \n");
+}
+
+close(GNUPLOT);
+
+
+

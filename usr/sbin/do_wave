@@ -1,0 +1,28 @@
+#!/bin/csh -f
+#
+#  Shell script for converting Wave tabular files to Qsim scripts
+#
+#  Usage: do_wave <testfile>
+#
+#
+#  7/21/94   RJM
+#
+
+if ( $#argv != 1 ) then
+  echo "Usage: $0 <testfile>"
+  exit
+endif
+
+vlsishell << EOF
+u wave
+form COMPASSQsim
+option clockInSim on
+option testOutputs on
+# option allOutputsTested on
+load [wvs]$1:r
+compile
+exec
+wr
+q
+q
+EOF

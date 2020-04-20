@@ -1,0 +1,180 @@
+#!/usr/bin/perl
+
+if (@ARGV != 5) {
+    print "usage: checkimage <verilog log> <.rdram file>\n";
+    print "                  <golden .spandata> <golden .rgb> <golden .cov>\n";
+    exit 1;
+}
+
+$verilogLog     = shift @ARGV;
+$rdramFile      = shift @ARGV;
+$goldenSpandata = shift @ARGV;
+$goldenRgb      = shift @ARGV;
+$goldenCov      = shift @ARGV;
+
+$ROOT		= $ENV{'ROOT'};
+
+if (!open(VERILOGLOG, "<" . $verilogLog)) {
+    print("checkimage: $verilogLog: cannot open\n");
+    exit 1;
+}
+if (!(-e $rdramFile)) {
+    print("checkimage: $rdramFile: does not exist\n");
+    exit 1;
+}
+if (!open(GOLDENSPANDATA, "<" . $goldenSpandata)) {
+    print("checkimage: $goldenSpandata: cannot open\n");
+    exit 1;
+}
+if (!(-e $goldenRgb)) {
+    print("checkimage: $goldenRgb: does not exist\n");
+    exit 1;
+}
+if (!(-e $goldenCov)) {
+    print("checkimage: $goldenCov: does not exist\n");
+    exit 1;
+}
+
+@flipBits = (0x0, 0x8, 0x4, 0xc, 0x2, 0xa, 0x6, 0xe,
+	     0x1, 0x9, 0x5, 0xd, 0x3, 0xb, 0x7, 0xf);
+
+@expandBits = (0x00000000, 0x000000ff, 0x0000ff00, 0x0000ffff,
+	       0x00ff0000, 0x00ff00ff, 0x00ffff00, 0x00ffffff,
+	       0xff000000, 0xff0000ff, 0xff00ff00, 0xff00ffff,
+	       0xffff0000, 0xffff00ff, 0xffffff00, 0xffffffff);
+
+$genSpandata = $verilogLog . ".spandata";
+
+if (!(open(GENSPANDATA, ">" . $genSpandata))) {
+    print "checkimage: $genSpandata: cannot create\n";
+    exit 1;
+}
+
+while (<VERILOGLOG>) {
+    ($Fld1,$Fld2,$Fld3,$Fld4,$Fld5,$Fld6,$Fld7,$Fld8,
+     $Fld9,$Fld10,$Fld11,$Fld12,$Fld13,$Fld14,$Fld15,$Fld16)
+      = split(' ', $_);
+
+    if (($Fld3 eq 'cbus') && ($Fld5 eq 'address') && ($Fld9 eq 'span')) {
+	$address = $Fld7;
+	$firstFlag = 1;
+    }
+    if (($Fld3 eq 'cbus') && ($Fld5 eq 'length') && ($Fld16 eq 'span')) {
+	$read = $Fld12;
+	if ($read eq '0,') {
+	    print(GENSPANDATA
+	          '@' . $address . ', ' . substr($Fld14, 0, 2), "\n");
+	}
+    }
+    if (($Fld3 eq 'dbus') && ($Fld8 eq 'span')) {
+	if ($read eq '0,') {
+	    if ($firstFlag == 1) {
+		$mask = substr($Fld6, 0, 16);
+		&MakeDbusMaskArray($mask);
+		&MakeEbusMaskArray($mask);
+		$maskArrayIndex = 0;
+	        print(GENSPANDATA $mask, ", ");
+	    } else {
+		$word0 = oct("0x" . substr($Fld6, 0, 8))
+			 & $dbusMaskArray[$maskArrayIndex * 2];
+		$word1 = oct("0x" . substr($Fld6, 8, 8))
+		 	 & $dbusMaskArray[($maskArrayIndex * 2) + 1];
+		printf(GENSPANDATA "%08x%08x, ", $word0, $word1);
+	    }
+	}
+    }
+    if (($Fld3 eq 'ebus') && ($Fld8 eq 'span')) {
+	if ($read eq '0,') {
+	    if ($firstFlag == 1) {
+		print(GENSPANDATA substr($Fld6, 0, 2), "\n");
+		$firstFlag = 0;
+	    } else {
+		$byte = oct("0x" . substr($Fld6, 0, 2))
+			& $ebusMaskArray[$maskArrayIndex];
+		printf(GENSPANDATA "%02x\n", $byte);
+		$maskArrayIndex += 1;
+	    }
+	}
+    }
+}
+close(VERILOGLOG);
+close(GENSPANDATA);
+
+$goldenLineCount = 0;
+while (<GOLDENSPANDATA>) {
+    $goldenLineCount += 1;
+}
+
+if (system("split -$goldenLineCount $genSpandata ${genSpandata}.")) {
+    print "checkimage: split -$goldenLineCount $genSpandata ${genSpandata}.: failed\n";
+    exit 1;
+}
+
+chop($logDir=`dirname $genSpandata`);
+
+if (!opendir(DIR, $logDir)) {
+	print ("checkimage: $logDir: cannot opendir\n");
+	exit(1);
+}
+
+#@allSpandataFiles = grep(/${genSpandata}\...$/, readdir(DIR));
+@allSpandataFiles = grep(/\.spandata\...$/, readdir(DIR));
+closedir(DIR);
+
+while ($spandataFile = shift @allSpandataFiles) {
+#    print("file = ", $spandataFile, "\n");
+    if (system("cmp -s ${logDir}/${spandataFile} $goldenSpandata")) {
+	print(STDERR
+	 "checkimage ${logDir}/${spandataFile} differs from $goldenSpandata\n");
+        exit(1);
+    }
+}
+
+chop($rdramDir=`dirname $rdramFile`);
+chop($rdramPrefix=`basename $rdramFile .rdram`);
+
+if (system("${ROOT}/usr/sbin/rdram2image ${rdramDir}/${rdramPrefix}")) {
+    print(STDERR "checkimage: rdram2image failed\n");
+    exit(1);
+}
+
+if (system("${ROOT}/usr/sbin/iclr OutData/${rdramPrefix}_0.rgb")) {
+    print(STDERR "checkimage: iclr failed\n");
+    exit(1);
+}
+
+if (system("${ROOT}/usr/sbin/idf -s $goldenRgb OutData/${rdramPrefix}_0.rgb diff.rgb")) {
+    print(STDERR
+	  "checkimage $goldenRgb differs from OutData/${rdramPrefix}_0.rgb\n");
+    exit(1);
+}
+
+if (system("${ROOT}/usr/sbin/filter -i OutData/${rdramPrefix}_0.cvg -c OutData/${rdramPrefix}_0.cov")) {
+    print(STDERR "checkimage: filter failed\n");
+    exit(1);
+}
+
+if (system("${ROOT}/usr/sbin/idf $goldenCov OutData/${rdramPrefix}_0.cov diff.cov")) {
+    print(STDERR
+	  "checkimage $goldenCov differs from OutData/${rdramPrefix}_0.cov\n");
+    exit(1);
+}
+
+exit 0;
+
+sub MakeDbusMaskArray {
+    for ($i = 0; $i < 8; $i++) {
+	$dbusMaskArray[(2*$i)] = 
+	    $expandBits[$flipBits[oct("0x" . substr($_[0], (2*$i+1), 1))]];
+	$dbusMaskArray[(2*$i)+1] = 
+	     $expandBits[$flipBits[oct("0x" . substr($_[0], (2*$i), 1))]];
+    }
+}
+
+sub MakeEbusMaskArray {
+    for ($i = 0; $i < 8; $i++) {
+	$ebusMaskArray[$i] =
+	    ($flipBits[oct("0x" . substr($_[0], (2*$i+1), 1))] << 4) |
+	     $flipBits[oct("0x" . substr($_[0], (2*$i), 1))];
+    }
+}

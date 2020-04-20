@@ -1,0 +1,55 @@
+#!/bin/csh -f
+#
+# copyToArchive: copies each file (from the list of .rdp files specified as incoming
+# arguments) to similarly named (mem,rdram,rdp) files with a .archive suffix tacked on.
+#
+
+    foreach f ( $* )
+        set base = $f:r
+        set base = $base:r
+
+	if ( -e $f.archive ) then
+	    set result =  `cmp $f $f.archive`
+	    if ( "$result" != "" ) then
+		echo "Error: Archived version ($f.archive) != new version ($f)"
+		echo -n "Archive anyway [y/n]?: "
+		if ( $< != "y" ) then
+		  exit 1
+		endif
+	    endif
+	endif
+	echo "Archiving $f"
+	p_modify $f.archive
+	cp $f $f.archive
+	p_finalize -SBM -m "archive checkin" $f.archive
+
+	if ( -e $base.mem.Z.archive ) then
+	    set result =  `cmp $base.mem.Z $base.mem.Z.archive`
+	    if ( "$result" != "" ) then
+		echo "Error: Archived version ($base.mem.Z.archive) != new version ($base.mem.Z)"
+		echo -n "Archive anyway [y/n]?: "
+		if ( $< != "y" ) then
+		  exit 1
+		endif
+	    endif
+	endif
+	echo "Archiving $base.mem.Z"
+	p_modify $base.mem.Z.archive
+	cp $base.mem.Z $base.mem.Z.archive
+	p_finalize -SBM -m "archive checkin" $base.mem.Z.archive
+
+	if ( -e $base.rdram.Z.archive ) then
+	    set result =  `cmp $base.rdram.Z $base.rdram.Z.archive`
+	    if ( "$result" != "" ) then
+		echo "Error: Archived version ($base.rdram.Z.archive) != new version ($base.rdram.Z)"
+		echo -n "Archive anyway [y/n]?: "
+		if ( $< != "y" ) then
+		  exit 1
+		endif
+	    endif
+	endif
+	echo "Archiving $base.rdram.Z"
+	p_modify $base.rdram.Z.archive
+	cp $base.rdram.Z $base.rdram.Z.archive
+	p_finalize -SBM -m "archive checkin" $base.rdram.Z.archive
+    end 

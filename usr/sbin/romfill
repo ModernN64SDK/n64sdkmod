@@ -1,0 +1,27 @@
+#!/usr/bin/perl
+
+die "Usage: romfill infile outfile size\n" unless $#ARGV >= 2;
+
+$in = $ARGV[0];
+$out = $ARGV[1];
+$size = $ARGV[2];
+
+die "Can't open $in: $!" unless -f $in;
+system ("cp", $in, $out);
+@s = stat($in);
+$insize = $s[7];
+
+open(OUT, ">> $out") or die "Can't open $out for output: $!";
+
+for($i = 0; $i < 256; $i++) {
+    push @x, $i;
+}
+$fill = pack "C256", @x;
+$frag = $insize % 256;
+$insize += syswrite(OUT, $fill, 256-$frag, $frag) if $frag;
+while($insize < $size) {
+    $remain = $size - $insize;
+    $remain = 256 if ($remain > 256);
+    $insize += syswrite(OUT, $fill, $remain);
+}
+close OUT;

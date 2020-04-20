@@ -1,0 +1,23 @@
+#!/bin/perl
+
+$FileName = $ARGV[0];
+
+printf("Opening $FileName \n");
+
+open(INPUT, "< $FileName");
+
+while (<INPUT>)
+{
+  if (/-- v/ ? ($c = 2) : (--$c > 0)) {s/.*--// ; 
+  if ($c == 2)
+    {
+      chop
+    } 
+  else
+    {
+      s/(\d+)(\s+)(\d+)/$1$2/
+    }
+  print}
+}
+
+

@@ -1,0 +1,23 @@
+#!/bin/sh
+#
+# This is to be run on Indy with N64 development system
+#
+
+#
+# This clears the fb
+#
+gload -a "-c -f 10000" rom &
+sleep 5
+kill `ps -e | grep gload | awk '{ print $1 }'`
+
+gload -a "${1}" rom &
+sleep 5
+dbgif &
+sleep 5
+readmem 0x80000000 0x200000 $2
+
+#
+# Kill gload and dbgif
+#
+kill `ps -e | grep gload | awk '{ print $1 }'`
+kill `ps -e | grep dbgif | awk '{ print $1 }'`

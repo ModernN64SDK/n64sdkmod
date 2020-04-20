@@ -1,0 +1,33 @@
+#!/bin/sh -f
+#
+# copySimResultsToArchive: copies a set of files (corresponding to each 
+# file prefix specified as incoming arguments) to a similarly named set of 
+# files with the .archive suffix tacked on.  
+#
+
+    for fname do	
+	#
+	#  C sim results
+	#
+	p_modify "$fname"_c_0.rgb.archive
+	p_modify "$fname"_c_0.cov.archive
+	p_modify "$fname"_c_0.z.archive
+	cp "$fname"_c_0.rgb "$fname"_c_0.rgb.archive
+	cp "$fname"_c_0.cov "$fname"_c_0.cov.archive
+	cp "$fname"_c_0.z "$fname"_c_0.z.archive
+	p_finalize -SMB -m "archive checkin" "$fname"_c_0.rgb.archive
+	p_finalize -SMB -m "archive checkin" "$fname"_c_0.cov.archive
+	p_finalize -SMB -m "archive checkin" "$fname"_c_0.z.archive
+	#
+	#  IOsim results
+	#
+	p_modify "$fname"_io_0.rgb.archive
+	p_modify "$fname"_io_0.cov.archive
+	p_modify "$fname"_io_0.z.archive
+	cp "$fname"_io_0.rgb "$fname"_io_0.rgb.archive
+	cp "$fname"_io_0.cov "$fname"_io_0.cov.archive
+	cp "$fname"_io_0.z "$fname"_io_0.z.archive
+	p_finalize -SMB -m "archive checkin" "$fname"_io_0.rgb.archive
+	p_finalize -SMB -m "archive checkin" "$fname"_io_0.cov.archive
+	p_finalize -SMB -m "archive checkin" "$fname"_io_0.z.archive
+    done 

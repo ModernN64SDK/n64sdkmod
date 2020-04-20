@@ -1,0 +1,466 @@
+# Copyright 1990-1992 Silicon Graphics, Inc.  All rights reserved.
+#
+#ident "$Revision: 1.6 $"
+#
+# Common makefile definitions.
+#
+# Notes:
+#   - Definitions with the same names only need to be passed on the
+#     command line of recursive makes if they would be redefined by
+#     the sub-makefile.  Definitions passed on the command line are
+#     not reset by the environment or the definitions in the makefile.
+#   - C++ style macros are depricated and will be removed when out of use.
+#     They must be interwoven in definitions to keep upward compatibility.
+#
+COMMONRULES= $(ROOT)/usr/include/make/commonrules
+COMMONTARGS= clobber clean rmtargets fluff tags
+PRODUCTDEFS= $(ROOT)/usr/include/make/$(PRODUCT)defs
+RELEASEDEFS= $(ROOT)/usr/include/make/releasedefs
+
+
+#
+# Make tools, i.e., programs which must exist on both native and cross
+# development systems to build the software.  $(ECHO) is a make tool because
+# echo usage in makefiles should be portable.
+#
+AR	= $(TOOLROOT)/usr/bin/ar
+AS	= $(TOOLROOT)/usr/bin/as $(ENDIAN)
+C++	= $(TOOLROOT)/usr/bin/g++
+C++C	= $(TOOLROOT)/usr/bin/g++
+CXX	= $(C++)
+CC	= $(TOOLROOT)/usr/bin/cc
+F77	= $(TOOLROOT)/usr/bin/f77
+FC	= $(TOOLROOT)/usr/bin/f77
+#LEX	= $(TOOLROOT)/usr/bin/lex -l $(ROOT)/usr/lib/lex/ncform
+LEX	= $(TOOLROOT)/usr/bin/lex
+LD	= $(TOOLROOT)/usr/bin/ld
+LIBSPEC	= $(TOOLROOT)/usr/sbin/libspec
+LINT	= $(TOOLROOT)/usr/bin/lint
+LORDER	= $(TOOLROOT)/usr/bin/lorder
+NM	= $(TOOLROOT)/usr/bin/nm
+PC	= $(TOOLROOT)/usr/bin/pc
+SETMAGIC= $(TOOLROOT)/usr/sbin/setmagic
+SHELL	= /bin/sh
+SIZE	= $(TOOLROOT)/usr/bin/size
+STRIP	= $(TOOLROOT)/usr/bin/strip
+TAG	= $(TOOLROOT)/usr/sbin/tag
+#YACC	= $(TOOLROOT)/usr/bin/yacc -p $(ROOT)/usr/lib/yaccpar
+YACC	= $(TOOLROOT)/usr/bin/yacc
+CORD = $(TOOLROOT)/usr/bin/cord
+
+# XXX remove this as soon as we port libgl's makefiles to DSO
+MKSHLIB	= $(TOOLROOT)/usr/bin/mkshlib
+
+#
+# Old TOOLROOT-prefixed macros.  References should be replaced with
+# native 'echo', 'lex', etc. since special versions shouldn't really be
+# needed
+#
+AWK	= awk
+#NAWK	= nawk
+NAWK	= awk
+ECHO	= echo
+M4	= m4
+MKF2C	= mkf2c
+
+#
+# The native C compiler, which must be used when building programs that are
+# run on the build host from a makefile.
+#
+HOST_CC  = TOOLROOT= /usr/bin/cc
+HOST_C++ = TOOLROOT= /usr/bin/g++
+HOST_CXX = $(HOST_C++)
+HOST_INC = /host_include
+HOST_LIB = /host_lib
+
+#
+# ENDIAN is defined only when cross-compiling
+# it normally comes from the $(PRODUCT)defs file.
+#
+# The -nostdinc flag is defined to defeat searches of /usr/include in
+# a cross development environment.  Where it is placed on the command line
+# does not matter. This replaces the nullary -I flag.
+# Turn off some silly ansi warnings:
+# The $(LWOFF) allows makefiles to set local warnings to ignore
+# (note that a leading ',' with no whitespace is required).
+#
+#WOFF=-woff 515,608,658,799$(LWOFF)
+WOFF=
+GCOPTS	= $(OPTIMIZER) $(ENDIAN) $(MKDEPOPT) $(WOFF)
+GCDEFS	=
+GCINCS	= -nostdinc -I$(INCLDIR)
+
+#
+# Default C version, optimizer, and make-depend options.
+#
+CVERSION   = -xansi
+OPTIMIZER  = -O
+#MKDEPOPT   = -MDupdate $(MKDEPFILE)
+MKDEPOPT   =
+
+#
+# Cc flags, composed of variable (set on the command line), local
+# (defined in the makefile), and global (defined in this file) parts, in
+# that order.  This ordering has been used so that the variable or
+# locally specified include directories are searched before the globally
+# specified ones.
+#
+CFLAGS	= $(CVERSION) $(VCFLAGS) $(LCFLAGS) $(GCFLAGS)
+
+#
+# Each of these three components is divided into defines (-D's and -U's),
+# includes (-I's), and other options.  By segregating the different
+# classes of flag to cc, the defines (CDEFS) and includes (CINCS) can be
+# easily given to other programs, e.g., lint.
+#
+# Notes:
+#   - The local assignments should be to LCOPTS, LCDEFS, and LCINCS, not to
+#     LCFLAGS, although CFLAGS will be correctly set if this is done.
+#   - If a program cannot be optimized, it should override the setting of
+#     OPTIMIZER with a line such as "OPTIMIZER=" in its make file.
+#   - If a program cannot be compiled with ANSI C, its makefile
+#     should set CVERSION=-cckr
+#
+VCFLAGS	= $(VCDEFS) $(VCINCS) $(VCOPTS)
+LCFLAGS	= $(LCDEFS) $(LCINCS) $(LCOPTS)
+GCFLAGS	= $(GCDEFS) $(GCINCS) $(GCOPTS)
+
+COPTS	= $(VCOPTS) $(LCOPTS) $(GCOPTS)
+CDEFS	= $(VCDEFS) $(LCDEFS) $(GCDEFS)
+CINCS	= $(VCINCS) $(LCINCS) $(GCINCS)
+
+#
+# CXX flags are decomposed using the same hierarchy as C flags.
+#
+C++FLAGS  = $(CVERSION) $(VCXXFLAGS) $(LCXXFLAGS) $(GCXXFLAGS)
+CXXFLAGS  = $(C++FLAGS)
+
+VCXXFLAGS = $(VCXXDEFS) $(VCXXINCS) $(VCXXOPTS) $(VC++FLAGS)
+LCXXFLAGS = $(LCXXDEFS) $(LCXXINCS) $(LCXXOPTS) $(LC++FLAGS)
+GCXXFLAGS = $(GC++FLAGS)
+
+CXXOPTS   = $(VCXXOPTS) $(LCXXOPTS) $(GCXXOPTS) $(C++OPTS)
+CXXDEFS   = $(VCXXDEFS) $(LCXXDEFS) $(GCXXDEFS) $(C++DEFS)
+CXXINCS   = $(VCXXINCS) $(LCXXINCS) $(GCXXINCS) $(C++INCS)
+
+VC++FLAGS = $(VC++DEFS) $(VC++INCS) $(VC++OPTS)
+LC++FLAGS = $(LC++DEFS) $(LC++INCS) $(LC++OPTS)
+GC++FLAGS = $(GC++DEFS) $(GC++INCS) $(GC++OPTS)
+
+C++OPTS   = $(VC++OPTS) $(LC++OPTS) $(GC++OPTS)
+C++DEFS   = $(VC++DEFS) $(LC++DEFS) $(GC++DEFS)
+C++INCS   = $(VC++INCS) $(LC++INCS) $(GC++INCS)
+
+GC++OPTS  = $(OPTIMIZER) $(ENDIAN) $(MKDEPOPT)
+GC++INCS  = -nostdinc -I$(INCLDIR)/CC -I$(INCLDIR)
+GC++DEFS  = 
+
+#
+# Loader flags, composed of library (-l's) and option parts, with
+# the libraries appearing last.  Both of these are divided into variable,
+# local, and global parts.  The composition of LDFLAGS is done in the
+# other "direction" from CFLAGS so that all the -L's, which are part of
+# LDOPTS, appear before any of the -l's, which are part of LDLIBS.
+# Another benefit of segregating the libraries from the remaining of the
+# loader options is that the libraries alone can easily be given to
+# another program, e.g., lint.
+#
+# Notes:
+#   - -s belongs in GCOPTS or in the IDB program that does the actual
+#     installation.
+#
+
+# Note: To turn off -quickstart_info for specific Makefile add:
+#		LD_QUICKSTART_INFO=
+#LD_QUICKSTART_INFO=-quickstart_info
+LD_QUICKSTART_INFO=
+
+
+LDFLAGS	= $(LDOPTS) $(LDLIBS) $(ENDIAN)
+
+LDOPTS	= $(VLDOPTS) $(LLDOPTS) $(GLDOPTS)
+LDLIBS	= $(VLDLIBS) $(LLDLIBS) $(GLDLIBS)
+LDOPTS_ABI = -abi $(VLDOPTS) $(LLDOPTS) -nostdlib -L$(ROOT)/usr/lib/abi
+
+GLDOPTS= $(LD_QUICKSTART_INFO)  -nostdlib -L$(ROOT)/lib -L$(ROOT)/usr/lib
+GLDLIBS= 
+
+#
+# Loader options for making shared objects. By default, shared objects
+# are quick started which means using one global share object location file.
+# Redefine $(DSOSTARTOPT) to not quick start.
+# By default the DT_SONAME section is set to the name of the target shared
+# object. Redefine $(DSONAMEOPT) to allow the DT_SONAME section to be
+# something other than the targeted shared object name.
+#
+DSOSTARTOPT = -update_registry $(DSOREGFILE)
+DSONAMEOPT  = -soname $@
+
+#
+# SGI specific versioning. Redefine $(DSOVERSION) to change version number.
+# Redefine $(DSOVERSIONOPT) to skip versioning.
+#
+DSOVERSION  = sgi1.0
+DSOVERSIONOPT  = -set_version $(DSOVERSION)
+
+LDDSOOPTS = -elf -shared -all $(VLDDSOOPTS) $(LLDDSOOPTS) $(GLDDSOOPTS)
+LDDSOOPTS_ABI = -elf -shared -all $(VLDDSOOPTS) $(LLDDSOOPTS) $(GLDDSOOPTS_ABI)
+
+# Note:  To turn off  -no_unresolved  for a specific library Makefile, add:
+#		LD_NO_UNRESOLVED=
+LD_NO_UNRESOLVED=-no_unresolved
+
+GLDDSOOPTS  = $(MKDEPOPT) $(LD_NO_UNRESOLVED) $(LD_QUICKSTART_INFO) $(DSOSTARTOPT) $(DSONAMEOPT) $(DSOVERSIONOPT)
+GLDDSOOPTS_ABI  = $(MKDEPOPT) $(DSONAMEOPT)
+
+#
+# F77 flags are just like cc flags.
+#
+FFLAGS= $(VFFLAGS) $(LFFLAGS) $(GFFLAGS)
+
+VFFLAGS	= $(VF77DEFS) $(VF77INCS) $(VF77OPTS)
+LFFLAGS	= $(LF77DEFS) $(LF77INCS) $(LF77OPTS)
+GFFLAGS	= $(GF77DEFS) $(GF77INCS) $(GF77OPTS)
+
+F77OPTS	= $(VF77OPTS) $(LF77OPTS) $(GF77OPTS)
+F77DEFS	= $(VF77DEFS) $(LF77DEFS) $(GF77DEFS)
+F77INCS	= $(VF77INCS) $(LF77INCS) $(GF77INCS)
+
+GF77OPTS= $(OPTIMIZER) $(ENDIAN) $(MKDEPOPT)
+GF77DEFS= $(GCDEFS)
+GF77INCS= $(GCINCS)
+
+#
+# Pc flags are just like cc flags.
+#
+PFLAGS	= $(VPFLAGS) $(LPFLAGS) $(GPFLAGS)
+
+VPFLAGS	= $(VPDEFS) $(VPINCS) $(VPOPTS)
+LPFLAGS	= $(LPDEFS) $(LPINCS) $(LPOPTS)
+GPFLAGS	= $(GPDEFS) $(GPINCS) $(GPOPTS)
+
+POPTS	= $(VPOPTS) $(LPOPTS) $(GPOPTS)
+PDEFS	= $(VPDEFS) $(LPDEFS) $(GPDEFS)
+PINCS	= $(VPINCS) $(LPINCS) $(GPINCS)
+
+GPOPTS	= $(OPTIMIZER) $(ENDIAN) $(MKDEPOPT)
+GPDEFS	= $(GCDEFS)
+GPINCS	= $(GCINCS)
+
+#
+# as flags are just like cc flags.
+#
+ASFLAGS	= $(VASFLAGS) $(LASFLAGS) $(GASFLAGS)
+
+VASFLAGS = $(VASDEFS) $(VASINCS) $(VASOPTS)
+LASFLAGS = $(LASDEFS) $(LASINCS) $(LASOPTS)
+GASFLAGS = $(GASDEFS) $(GASINCS) $(GASOPTS)
+
+ASOPTS	= $(VASOPTS) $(LASOPTS) $(GASOPTS)
+ASDEFS	= $(VASDEFS) $(LASDEFS) $(GASDEFS)
+ASINCS	= $(VASINCS) $(LASINCS) $(GASINCS)
+
+GASOPTS	= $(OPTIMIZER) $(ENDIAN) $(MKDEPOPT)
+GASDEFS	= $(GCDEFS)
+GASINCS	= $(GCINCS)
+
+#
+# The install command to use.
+#
+#INSTALL	= $(TOOLROOT)/etc/install
+INSTALL	= $(ROOT)/usr/sbin/irix-install
+
+#
+# A not-so-common definition for graphics makefiles that want to install
+# something on all machines.
+# XXX can't we define "all" as a wildcard mach tag?
+#
+ALLGFXMACH = mach(GFXBOARD=ECLIPSE SUBGR=ECLIPSE \
+		  GFXBOARD=LIGHT SUBGR=LIGHT \
+		  GFXBOARD=LIGHT SUBGR=IP17 \
+		  GFXBOARD=LIGHT   SUBGR=LG1MC \
+		  GFXBOARD=EXPRESS SUBGR=EXPRESS \
+		  GFXBOARD=EXPRESS SUBGR=IP17 \
+		  GFXBOARD=EXPRESS SUBGR=IP19 \
+		  GFXBOARD=EXPRESS SUBGR=IP21 \
+		  GFXBOARD=CLOVER1 SUBGR=IP4G \
+		  GFXBOARD=CLOVER2 SUBGR=IP4GT \
+		  GFXBOARD=CLOVER2 SUBGR=IP5GT \
+		  GFXBOARD=CLOVER2 SUBGR=IP7GT \
+		  GFXBOARD=CLOVER2 SUBGR=IP17 \
+		  GFXBOARD=STAPUFT SUBGR=IP7GT \
+		  GFXBOARD=STAPUFT SUBGR=SKYWR \
+		  GFXBOARD=STAPUFT SUBGR=IP17 \
+		  GFXBOARD=STAPUFT SUBGR=IP17SKY \
+		  GFXBOARD=VENICE  SUBGR=IP7 \
+		  GFXBOARD=VENICE  SUBGR=IP17 \
+		  GFXBOARD=VENICE  SUBGR=IP19 \
+		  GFXBOARD=VENICE  SUBGR=IP21 \
+		  GFXBOARD=NEWPORT  SUBGR=NG1 \
+		  GFXBOARD=NEWPRESS  SUBGR=NEWPRESS)
+
+#
+# MKDEPFILE is the name of the dependency database, included by commonrules.
+#
+MKDEPFILE = Makedepend
+
+#
+# Name of the runtime linker in /
+#
+# Note: this is used to set the PR_INTERP_NAME, but the DT_RPATH elf var must
+# be set to the root of the $ROOTRLDNAME as well.
+#
+ROOTRLDNAME=/lib/libc.so.1,-rpath,/lib
+
+#
+# SOREGFILE is the name of the shared object location file, included by
+# commonrules.
+#
+DSOREGFILE = $(ROOT)/usr/lib/so_locations
+
+#
+# Flags to handle yacc and lex automatic dependency generation
+#
+YACCMKDEPFLAGS=-MDtarget $*.o
+LEXMKDEPFLAGS=-MDtarget $*.o
+
+#
+# Include directory shorthands, used in CFLAGS and LDFLAGS components.
+#
+INCLDIR	= $(ROOT)/usr/include
+
+#
+# Convenient command macros that include the flags macros.
+#
+# You should always invoke make in makefiles via $(MAKE), as make passes
+# all command-line variables through the environment to sub-makes.
+#
+# Never use just $(CCF), etc. in rules that link executables; LDFLAGS
+# needs to be included after your objects in the command line.
+#
+ASF	= $(AS) $(ASFLAGS)
+C++F	= $(CXX) $(CXXFLAGS)
+CXXF	= $(C++F)
+CCF	= $(CC) $(CFLAGS)
+F77F	= $(F77) $(FFLAGS)
+LDF	= $(LD) $(LDFLAGS)
+LEXF	= $(LEX) $(LFLAGS)
+PCF	= $(PC) $(PFLAGS)
+YACCF	= $(YACC) $(YFLAGS)
+
+#
+# Rule macros for nonterminal makefiles that iterate over subdirectories,
+# making the current target.  Set *SUBDIRS to the relevant list of kids.
+#
+# Set NOSUBMESG to any value to supress a warning that subdirectories 
+# are not present. This is useful with mandefs/rules
+#
+SUBDIR_MAKERULE= \
+	if test ! -d $$d; then \
+		if test "$(NOSUBMESG)" = "" ; then \
+			echo "SKIPPING $$d: No such directory."; \
+		fi \
+	else \
+		echo "\t(cd $$d; $(MAKE) $${RULE:=$@})"; \
+		(cd $$d; ${MAKE} $${RULE:=$@}); \
+	fi
+
+SUBDIRS_MAKERULE= \
+	@for d in $(SUBDIRS); do $(SUBDIR_MAKERULE); done
+
+HEADERS_SUBDIRS_MAKERULE= \
+	@for d in $(HEADERS_SUBDIRS); do $(SUBDIR_MAKERULE); done
+
+EXPORTS_SUBDIRS_MAKERULE= \
+	@for d in $(EXPORTS_SUBDIRS); do $(SUBDIR_MAKERULE); done
+
+#
+# Library .c.o rule macros -- someday, cc -r will do the right thing and
+# the G-number will be happily forgotten.
+#
+LIBRARY_AS_MAKERULE= \
+	$(AS) $(ASFLAGS) -o $*.o $< && \
+	$(LD) $(LIBGNUM) -r $*.o -o $$$$.o && \
+	mv $$$$.o $*.o
+
+LIBRARY_CC_MAKERULE= \
+	$(CC) $(CFLAGS) -c $< && \
+	$(LD) $(LIBGNUM) -r $*.o -o $$$$.o && \
+	mv $$$$.o $*.o
+
+LIBRARY_CXX_MAKERULE= \
+	$(CXX) $(CXXFLAGS) -c $< && \
+	$(LD) $(LIBGNUM) -r $*.o -o $$$$.o && \
+	mv $$$$.o $*.o
+
+LIBRARY_C++_MAKERULE= \
+	$(C++) $(C++FLAGS) -c $< && \
+	$(LD) $(LIBGNUM) -r $*.o -o $$$$.o && \
+	mv $$$$.o $*.o
+
+
+#
+# The macro naming commonrules' always-unsatisfied target, which is useful
+# in directory dependencies to guarantee that even directories having future
+# mtimes due to timewarps will be "made".
+#
+_FORCE=$(COMMONPREF)_force
+
+#
+# Permit dependencies for Null-suffix targets
+#
+.MAKEOPTS: -N
+
+
+#
+# Convenience file list macros:
+#	- Commondefs defines the following lists: SOURCES, enumerating all
+#	  source files; OBJECTS, the .o files derived from compilable source;
+#	  and DIRT, which lists intermediates and temporary files to be
+#	  removed by clean.
+#	- The including (parent) makefile may define source file lists for
+#	  the standard suffixes: CFILES for .c, ASFILES for .s, YFILES for
+#	  .y, etc.  We combine all such lists into SOURCES.  The including
+#	  makefile need not define CFILES &c before including commondefs.
+#
+CXXFILES=$(C++FILES)
+SOURCES=$(HFILES) $(ASFILES) $(CXXFILES) $(CFILES) $(EFILES) $(FFILES) \
+	$(LFILES) $(PFILES) $(RFILES) $(SHFILES) $(YFILES)
+
+CXXO1=$(CXXFILES:.c++=.o)
+CXXO2=$(CXXO1:.cxx=.o)
+CXXOALL=$(CXXO2)
+YO1=$(YFILES:.y=.o)
+YO2=$(YO1:.yxx=.o)
+YOALL=$(YO2)
+LO1=$(LFILES:.l=.o)
+LO2=$(LO1:.lxx=.o)
+LOALL=$(LO2)
+OBJECTS=$(ASFILES:.s=.o) $(CXXOALL) $(CFILES:.c=.o) $(EFILES:.e=.o) \
+	$(FFILES:.f=.o) $(LOALL) $(PFILES:.p=.o) $(RFILES:.r=.o) \
+	$(YOALL) 
+
+#
+# Makefiles should set LDIRT only 
+#
+# Make include files that extend commondefs should set XDIRT for dirt
+# generated by the extension. It should also provide an XfooDIRT macro for
+# the benefit of any extensions to itself. The intent is that the user's
+# Makefile will just worry about its own dirt.
+#
+DIRT=$(GDIRT) $(VDIRT) $(LDIRT) $(XDIRT)
+GDIRT=*.[ou] a.out core lex.yy.[co] y.tab.[cho] $(_FORCE) ar.tmp.*
+
+#
+# Local definitions.  These are used for debugging purposes.  Make sure that
+# the product builds properly without the local definitions, unless you check
+# in the local definitions!
+#
+# To access a localdefs file outside the current directory, set LOCALDEFS on
+# the command line, and likewise for localrules.  Or you can have localdefs
+# just sinclude the appropriate other include file.
+#
+LOCALDEFS  = ./localdefs
+LOCALRULES = ./localrules
+
+sinclude $(LOCALDEFS)

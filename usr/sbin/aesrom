@@ -1,0 +1,5 @@
+#!/bin/sh
+dd if=$1 of=$$.pad bs=16k conv=sync
+$ROOT/usr/sbin/aes_encode -i 55284d8cad8f83a0a9736a29f5e39359 \
+-k a5ef78770e8813be481e06adbf97f0d1 $$.pad $2
+rm -f $$.pad
