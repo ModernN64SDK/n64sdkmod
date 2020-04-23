@@ -1,0 +1,20 @@
+
+#include "ginv.h"
+
+/*
+ * ROM spec file
+ */
+beginseg
+	name "code"
+	flags BOOT OBJECT
+	entry boot
+	stack bootStack + STACKSIZE
+	include "codesegment.o"
+	include "$(ROOT)/usr/lib/PR/rspboot.o"
+	include "$(ROOT)/usr/lib/PR/gspFast3D.o"
+endseg
+
+beginwave
+	name "ginv"
+	include "code"
+endwave

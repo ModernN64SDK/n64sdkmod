@@ -1,0 +1,1 @@
+#ifdef	__cplusplus# define _LANGUAGE_C_PLUS_PLUS#else# define _LANGUAGE_C#endif#define _MIPS_SZLONG 32#define _MIPS_SZINT 32#define F3DEX_GBI_2#define _FINALROM#define NDEBUG

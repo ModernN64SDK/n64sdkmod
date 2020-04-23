@@ -1,0 +1,51 @@
+#include "topgun.h"
+
+/*
+ * ROM spec file
+ */
+beginseg
+	name "code"
+	flags BOOT OBJECT
+	entry boot
+	stack bootStack + STACKSIZE
+	include "codesegment_em.o"
+	include "$(ROOT)/usr/lib/PR/rspboot.o"
+	include "$(ROOT)/usr/lib/PR/gspLine3D.o"
+	include "$(ROOT)/usr/lib/PR/gspLine3D.dram.o"
+	include "$(ROOT)/usr/lib/PR/gspFast3D.o"
+	include "$(ROOT)/usr/lib/PR/gspFast3D.dram.o"
+endseg
+
+/*
+ * Would like to put buffer at b5000, but is moved to 64K boundary
+ */
+beginseg
+	name "zbuffer"
+	flags OBJECT
+	address 0x200d0000
+	include "zbuffer.o"
+endseg
+
+beginseg
+	name "cfb"
+	flags OBJECT
+	address 0x20100000
+	include "cfb.o"
+endseg
+
+beginseg
+	name "static"
+	flags OBJECT
+	number STATIC_SEGMENT
+	include "static.o"
+	include "ground.o"
+	include "av8b.o"
+endseg
+
+beginwave
+	name "topgun_em"
+	include "code"
+	include "static"
+	include "cfb"
+	include "zbuffer"
+endwave

@@ -1,0 +1,49 @@
+nosLoadFont(3)                                                    nosLoadFont(3)
+
+NAME
+
+    nosLoadFont  -  load of character font data
+
+
+SYNOPSIS
+    #include <libnos.h>
+
+    void  nosLoadFont (u16 *font_buf);
+
+
+DESCRIPTION
+
+    nosLoadFont unfolds the compressed character font data in the order 
+    of N64 FONT CODE so that the application can use it.
+
+    nosLoadFont requires font_buf -- the top address of the address for 
+    uncompressed font data. nosLoadFont needs the size of the buffer 
+    as following:
+
+    	English             2112 Bytes(0x840)   defined as FONTSIZE_E
+    	English + Japanese  4768 Bytes(0x12a0)  defined as FONTSIZE_J
+
+    The size of one character is 16 x 16. The side line 16 dots correspond 
+    to 16 bits data, the high bit to the left side of the character and the 
+    low bit to the right.
+
+    The order of the character font -- N64 FONT CODE is the followings:
+
+         H  00  10  20  30  40
+        L
+        +0   \   0   G   W   ?
+        +1       1   H   X   @
+        +2       2   I   Y
+        +3       3   J   Z
+        +4       4   K   !
+        +5       5   L   "
+        +6       6   M   #
+        +7       7   N   '
+        +8       8   O   *
+        +9       9   P   +
+        +a       A   Q   ,
+        +b       B   R   -
+        +c       C   S   .
+        +d       D   T   /
+        +e       E   U   :
+        +f  sp   F   V   =

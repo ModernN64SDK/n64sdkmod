@@ -1,0 +1,17 @@
+#include "fault.h"
+
+/*
+ * ROM spec file
+ */
+beginseg
+	name "code"
+	flags BOOT OBJECT
+	entry boot
+	stack bootStack + STACKSIZE
+	include "code.o"
+endseg
+
+beginwave
+	name "fault"
+	include	"code"
+endwave

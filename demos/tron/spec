@@ -1,0 +1,55 @@
+#include "tron.h"
+
+/*
+ * ROM spec file
+ */
+beginseg
+	name "code"
+	flags BOOT OBJECT
+	entry boot
+	stack bootStack + STACKSIZE
+	include "codesegment.o"
+	include "$(ROOT)/usr/lib/PR/rspboot.o"
+	include "$(ROOT)/usr/lib/PR/gspF3DEX2.xbus.o"
+endseg
+
+beginseg
+	name "zbuffer"
+	flags OBJECT
+	address 0x80200000
+	include "zbuffer.o"
+endseg
+
+/*
+ * Would like to put buffer at b5000, but is moved to 64K boundary
+ */
+beginseg
+	name "cfb"
+	flags OBJECT
+	address 0x801b0000
+	include "cfb.o"
+endseg
+
+beginseg
+	name "static"
+	flags OBJECT
+	number STATIC_SEGMENT
+	include "init.o"
+	include "grid.o"
+endseg
+
+beginseg
+	name "dynamic"
+	flags OBJECT
+	number DYNAMIC_SEGMENT
+	include "dynamic.o"
+endseg
+
+beginwave
+	name "tron"
+	include "code"
+	include "static"
+	include "dynamic"
+	include "cfb"
+	include "zbuffer"
+endwave

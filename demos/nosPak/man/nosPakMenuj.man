@@ -1,0 +1,49 @@
+nosPakMenu(3)                                                    nosPakMenu(3)
+
+NAME
+    nosPakMenu  － コントローラパック・メニュー
+
+SYNOPSIS
+    #include <libnos.h>
+    int  nosPakMenu (OSMesgQueue *siMessageQ, OSMesgQueue *retraceMessageQ);
+
+DESCRIPTION
+
+    nosPakMenuは、コントローラパックのメニューアプリケーションです。ゲー
+    ムプレイヤーは、このメニューで、コントローラパックに記録されているファ
+    イルの一覧と使用ページ数の確認、残りページ数の確認、及び、不必要なファ
+    イルの削除を行うことができます。
+
+    このメニューを起動するためには、プレイヤーはコントローラ（１Ｐ）の
+    スタートボタンを押しておく必要があります。スタートボタンが押されていな
+    い場合やコントローラパックが差し込まれていない状態のときは、このメニュー
+    は起動されません。
+
+    siMessageQは SIのイベントに関連づけられたメッセージキューです。また、
+    retraceMessageQは VIのイベントに関連づけられたメッセージキューです。
+
+    戻り値として、次のような値を返します。
+
+                        状態                                        戻り値
+      コントローラパックが用意されていないとき                          ０
+      コントローラパックメニュー内でエラーが出たとき                    １
+      コントローラパックはＯＫだが、スタートボタンが押されていないとき  ２
+      コントローラパックメニューで「オワル」を選んだとき                ３
+
+    この関数の呼び出し時の注意点として、画面をハイレゾ・モードで初期化
+    しておく必要があります。
+
+EXAMPLE
+    main() {
+      ..................
+
+      osCreateMesgQueue(&retraceMessageQ, &retraceMessageBuf, 1);
+      osViSetEvent(&retraceMessageQ, NULL, 1);
+
+      osCreateMesgQueue(&siMessageQ, &siMessage, 1);
+      osSetEventMesg(OS_EVENT_SI, &siMessageQ, (OSMesg)1);
+    
+      osViSetMode(&osViModeNtscHpf1);
+      osViBlack(1);
+      nosPakMenu(&siMessageQ, &retraceMessageQ);
+    }

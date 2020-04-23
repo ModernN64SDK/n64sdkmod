@@ -1,0 +1,72 @@
+/*---------------------------------------------------------------------
+	Copyright (C) 1997, Nintendo.
+	
+	File		spec
+	Coded    by	Yoshitaka Yasumoto.	Feb  6, 1997.
+	Modified by	
+	Comments	
+	
+	$Id: spec,v 1.4 1997/08/07 03:24:19 yasu Exp $
+  ---------------------------------------------------------------------*/
+#include "system.h"
+
+beginseg
+	name "code"
+	flags BOOT OBJECT
+	entry boot
+	stack bootStack + STACKSIZE
+	include "codesegment.o"
+	include	"$(ROOT)/usr/lib/PR/rspboot.o"
+	include	"$(ROOT)/usr/lib/PR/gspS2DEX.fifo.o"
+	include	"$(ROOT)/usr/lib/PR/gspS2DEX.fifo_d.o"
+endseg
+
+beginseg
+        name "static"
+      	flags OBJECT
+	number	STATIC_SEGMENT
+        include "staticsegment.o"
+endseg
+
+beginseg
+        name "bg_rgba"
+      	flags RAW
+        include "L2_TV.rgba5551"
+endseg
+
+beginseg
+	name "bg_ci"
+	flags OBJECT
+	number	BG_SEGMENT
+	include	"L2_TV.o"
+endseg
+
+beginseg
+        name "system_cfb"
+        flags OBJECT
+	address CFB_ADDRESS
+        include "system_cfb.o"
+endseg
+
+beginseg
+        name "system_rspbuf"
+        flags OBJECT
+#ifdef	RSPBUF_ADDRESS
+	address	RSPBUF_ADDRESS
+#else
+	after system_cfb
+#endif
+        include "system_rspbuf.o"
+endseg
+
+beginwave
+	name    "sample"
+	include	"code"
+	include	"static"
+	include	"bg_rgba"
+	include	"bg_ci"
+	include	"system_cfb"
+	include	"system_rspbuf"
+endwave
+
+/*======== End of spec ========*/

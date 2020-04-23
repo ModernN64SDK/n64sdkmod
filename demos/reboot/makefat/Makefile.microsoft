@@ -1,0 +1,28 @@
+#
+#  For Microsoft Visual C
+#  
+#  Please use setup.bat to set the Borland C install path in the environment 
+#  variable BCC.
+
+BIN	= $(MSVC)\bin
+INC	= $(MSVC)\include
+PRINC = $(ROOT)\usr\include
+LIB	= $(MSVC)\lib
+PRLIB	= $(ROOT)\usr\lib\borland
+
+OBJS	= makefat.obj byte2lba.obj table.obj
+TARGET  = makefat.exe
+
+default: $(TARGET)
+
+%.obj:%.c
+    $(BIN)\cl /Zi /DWIN32 /D_LANGUAGE_C /c /I$(INC) /I$(PRINC) $*.c
+
+$(TARGET) : $(OBJS)
+    echo /DEBUG /LIBPATH:$(LIB) /LIBPATH:$(PRLIB) >lnk.cmd
+    echo $(OBJS) >>lnk.cmd
+    $(BIN)\link @lnk.cmd
+
+LDIRT	= *.obj *.exe *.map *.cmd fat *.pdb *.ilk
+
+include $(ROOT)/usr/include/make/commonrules

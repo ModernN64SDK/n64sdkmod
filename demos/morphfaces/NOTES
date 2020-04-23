@@ -1,0 +1,89 @@
+Basic Algorithm:
+---------------
+1. Corresponding points in the two images are selected (eg, tip of nose).
+   Call these points (x0, y0) and (x1, y1) a point pair.
+   The appropriate (usually different) texture coordinates for *each* image
+   are stored with the point pair.  ie, there are two sets of texture
+   coordinates for each point pair.
+
+2. Let the 'morphing parameter' be t, ranging from 0.0 to 1.0
+
+3. Then (x,y) = t*(x0,y0) + (1.0-t)*(x1,y1)
+
+4. The two images are drawn, with all points at the appropriate (x,y) as
+   calculated above, and using their original texture coordinates.
+
+5. The two images are blended with image #1 given weight 1-t, and image #2
+   given weight t.
+
+
+medit:
+------
+The program medit is used to choose corresponding points in the two images,
+and to manually triangulate the images using the corresponding points as
+verticies.  'medit' is fairly primitive, but it does the job.
+
+'medit -h' will tell how to invoke the command.
+To examine the points and verts being used now, use
+'medit -p ed.ppm -p tj.ppm -v ed_tj.v -t ed_tj.t -m 5'
+
+-m controls the magnification factor.  This factor is used only while editing
+to "blow up" the images.  You can set it to any positive integer.
+
+Once the program is started, type 'h' at the command line for a list of
+commands.
+
+Once a command is started, you can typically keep on repeating it until
+you hit the space bar while the mouse is over the *image* window.
+
+The 'q' command quits, rewriting the '-v' and '-t' files.
+
+The first time you use medit with new images, you will have to create
+empty .v and .t files before starting the program.
+
+Both images must be the same size -- you can use a program such as 'xv'
+to resize, crop, etc. the images beforehand if necessary.
+
+Files, medit2c
+--------------
+medit produces a vertex file and a triangle file.  The vertex file gives
+the coordinates in image #1 and in image #2 for each pair of verticies.
+The triangle file gives the 3 vertex #'s for each triangle.
+
+The program 'medit2c' will take triangle, vertex, and image files as input,
+and produce 'C' code as output.  Type 'medit2c -h' for info on invoking it.
+
+In the case of medit2c, the '-m' option is important.  It is a factor by
+which the vertex positions are multiplied.  Since the U64 uses integral
+vertex coordinates, it is a bad idea to do interpolation between values
+which are small, because quantization will occur.  Thus, a scale factor
+greater than one is often useful.
+
+'medit2c' produces two C output files.   One contains the actual texture
+data and is intended for inclusion in a static segment.  The other contains
+various coordinates, etc. and is intended for inclusion in a code segment.
+The code-segment file makes use of definitions in <ultra64.h>, and so must
+be #included in another file which #includes's <ultra64.h>.
+
+morphfaces
+----------
+The morphfaces program makes use of the arrays produced by 'medit2c' to
+do the actual morphing.  If you stare at the code long enough you can probably
+understand what's going on.
+
+The first face is rendered with an alpha of 255, then the 2nd face is
+rendered with an alpha value of 255*(1.0-t), using the translucent rendering
+mode.  So the rendering is really done in two passes over the frame buffer.
+
+There are a few interesting #defines in morphfaces.h.  In particular, you
+can control whether a 16-bit or 32-bit framebuffer is used.
+
+
+Misc stuff
+----------
+1. The files aux.h and libaux.a are needed to compile 'medit'.  They are
+   just the the 'auxlib' files described in the 'Red' Addison-Wesley OpenGL
+   book.  You can get the entire source to the library by FTP.
+
+
+

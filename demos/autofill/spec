@@ -1,0 +1,46 @@
+#include "fill.h"
+
+/*
+ * ROM spec file
+ */
+beginseg
+	name "code"
+	flags BOOT OBJECT
+	entry boot
+	address 0x80200000
+	stack bootStack + STACKSIZE
+	include "codesegment.o"
+	include "$(ROOT)/usr/lib/PR/rspboot.o"
+	include "$(ROOT)/usr/lib/PR/gspF3DEX2.xbus.o"
+	include "$(ROOT)/usr/lib/PR/gspF3DEX2.fifo.o"
+endseg
+
+beginseg
+	name "zbuffer"
+	flags OBJECT
+	address 0x80000400
+	include "zbuffer.o"
+endseg
+
+beginseg
+	name "cfb"
+	flags OBJECT
+	address 0x80100000
+	include "cfb.o"
+endseg
+
+beginseg
+	name "cfb_b"
+	flags OBJECT
+	address 0x80300000
+	include "cfb_b.o"
+endseg
+
+
+beginwave
+	name "fill"
+	include "code"
+	include "cfb"
+	include "cfb_b"
+	include "zbuffer"
+endwave

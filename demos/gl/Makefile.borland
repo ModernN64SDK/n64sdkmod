@@ -1,0 +1,23 @@
+# Makefile for Borland C
+
+BIN	= $(BCC)\bin
+INC	= $(BCC)\include
+PRINC	= $(ROOT)\usr\include
+LIB	= $(BCC)\lib
+PRLIB	= $(ROOT)\usr\lib\borland
+
+TARGETS = gl.exe pt.exe
+
+%.obj:%.c
+	$(BIN)\bcc32 -c -v -tWC -I$(INC);$(PRINC) -DWIN32 -D_LANGUAGE_C $*.c
+
+%.exe : %.obj
+	echo -v -Tpe -ap -L$(LIB);$(PRLIB) c0x32.obj + >lnk.cmd
+	echo $*.obj >>lnk.cmd
+	$(BIN)\tlink32 @lnk.cmd,$*.exe,,cw32.lib import32.lib hostiopc.lib
+
+LDIRT	= $(TARGETS) *.obj *.map *.cmd
+
+default: $(TARGETS)
+
+include $(ROOT)/usr/include/make/commonrules

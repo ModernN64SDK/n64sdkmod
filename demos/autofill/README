@@ -1,0 +1,29 @@
+README file for autofill demo
+Author: Rob Moore, rmoore@sgi.com
+
+This program prints data concerning the fill rate performance for triangles
+of different areas and aspect ratios.  This data can easily be plotted
+as a 3-D graph using gnuplot (see plot.gnu).
+
+The program works by increasing the number of triangles until a
+frame time is exceeded and then backing off slightly.  At this point
+the fill rate is recorded and the next type of triangle is drawn.
+The triangles are drawn at random locations, but within the 320x240
+screen so that clipped triangles are not a factor.
+
+To define the extents of the graph, define the constants (in fill.h):
+
+ASPECT_HI
+ASPECT_LO
+ASPECT_STEP
+
+AREA_HI
+AREA_LO
+AREA_STEP
+
+Note that only the RDP performance is measured.  There is a certain amount
+of DRAM bandwidth that is dedicated to loading the display list into the
+input FIFO of the RDP.  To get the most accurate answers, you should run
+with video blanked (-b option), and don't do frame buffer clears (-c option).
+
+
