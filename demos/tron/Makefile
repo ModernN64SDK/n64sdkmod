@@ -12,15 +12,15 @@
 
 include $(ROOT)/usr/include/make/PRdefs
 
-#FINAL = YES
+FINAL = YES
 ifeq ($(FINAL), YES)
-OPTIMIZER       = -O2
+OPTIMIZER       = -O2 -mno-shared -mhard-float -fno-stack-protector -fno-common -fno-PIC -mno-abicalls -fno-strict-aliasing -fno-inline-functions -ffreestanding -fwrapv
 LCDEFS          = -DNDEBUG -D_FINALROM -DF3DEX_GBI_2
-N64LIB          = -lgultra_rom
+N64LIB          = -lultra_rom
 else
-OPTIMIZER       = -g
+OPTIMIZER       = -g -mno-shared -mhard-float -fno-stack-protector -fno-common -fno-PIC -mno-abicalls -fno-strict-aliasing -fno-inline-functions -ffreestanding -fwrapv
 LCDEFS          = -DDEBUG -DF3DEX_GBI_2
-N64LIB          = -lgultra_d
+N64LIB          = -lultra_d
 endif
 
 APP =		tron.out

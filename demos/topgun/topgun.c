@@ -57,8 +57,8 @@ extern char _staticSegmentRomStart[], _staticSegmentRomEnd[];
  */
 u64	bootStack[STACKSIZE/8];
 
-static void	idle(void);
-static void	mainproc(void);
+static void	idle(void *ptr);
+static void	mainproc(void *ptr);
 
 static OSThread	idleThread;
 static u64	idleThreadStack[STACKSIZE/8];
@@ -137,7 +137,7 @@ boot(void)
 }
 
 static void
-idle(void)
+idle(void *ptr)
 {
     /* Initialize video */
     osCreateViManager(OS_PRIORITY_VIMGR);
@@ -165,7 +165,7 @@ idle(void)
 }
 
 static void
-mainproc(void)
+mainproc(void *ptr)
 {
     int		keep_going = 1, i, j;
     OSTask	*tlistp;
