@@ -43,8 +43,8 @@ LCINCS =	-I. -I$(ROOT)/usr/include/PR
 LCOPTS =	-G 0
 LDIRT  =	$(APP)
 
-LDFLAGS =	$(MKDEPOPT)  -L$(ROOT)/usr/lib -L$(ROOT)/usr/lib/PR \
-			$(N64LIB) -L$(GCCDIR)/mipse/lib -lkmc
+LDFLAGS =	$(MKDEPOPT)  -L$(ROOT)/usr/lib/n64 -L$(ROOT)/usr/lib/n64/PR \
+			$(N64LIB) -lkmc
 
 SOURCES =	Makefile spec $(HFILES) $(CODEFILES) \
 		dynamic.c zbuffer.c init.c cfb.c makegrid.c
