@@ -12,6 +12,9 @@ do
     esac
 done
 
+rm ./debs/*.deb
+mkdir -p debs
+
 sudo chown -R root:root ./packages
 
 sudo dpkg-deb --build packages/spicy
@@ -19,5 +22,10 @@ sudo dpkg-deb --build packages/iquesdk
 sudo dpkg-deb --build packages/iquesdk-bin
 sudo dpkg-deb --build packages/n64sdk
 sudo dpkg-deb --build packages/u64assets
+sudo dpkg-deb --build packages/root-compatibility-enviroment
+sudo dpkg-deb --build packages/rsp-tools
 
 sudo chown -R $USER:$USER ./packages
+
+mv packages/*.deb debs
+cp loose-debs/*.deb debs
