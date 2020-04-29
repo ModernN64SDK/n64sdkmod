@@ -1,0 +1,187 @@
+#
+# Commonrules to build idb's and images for an ism
+#
+#
+# For an ism that doesn't have a rawidb idb
+# set LIDBJOINFLAGS to -m
+# In this case a zero length RAWIDB is required
+#
+#
+# Targets:
+#	buildimages - make real images (an individual image an also be made)
+#	buildism - makes finalidb
+#	version - create a version file
+#	startversion - create a version number in $(WORKAREA)/.version_number
+#		(and alpha number in $(WORKAREA)/.alpha_number
+#
+# Before including this file the following should be set:
+#	ALLIMAGES - names of images to be made - must correspond to
+#		product name(s) in spec file
+#	SPEC - spec file name
+#	RAWIDB - rawidb file name
+#	SRCIDB - src/checked in idb file name
+#
+# Macros you may wish to set
+#	BUILDER - (to 1 if project build, to 2 if build group build) 
+#	TREE_ID - to an integer 1-9 to distinguish parallel OS efforts
+#		  targeted to new hardware.
+#		  It will default to the value of TREE_ID found in 
+#		  $(ROOT)/usr/include/make/releasedefs.
+#	PATCH_RELEASE - if creating a patch release (will default to first eight
+#		  digits of $(WORKAREA)/.version_number)
+#	PATCH_NUM - patch number (sequences patch releases)
+#
+# Note that macros ALLIMAGES, SPEC, RAWIDB, and SRCIDB need only be set
+#	in the build/Makefile. Typically, one just uses the settings as 
+#	provided via the ism template for the build/Makefile.
+#	
+
+#
+#ident "$Revision: 1.1 $"
+
+.NOTPARALLEL:
+
+include $(RELEASEDEFS)
+include $(COMMONRULES)
+ISMAREA=../idbs
+IMAGESAREA=../images
+SPECDFLT=$(TOOLROOT)/usr/sbin/specdflt
+SPECPRODS=$(TOOLROOT)/usr/sbin/specprods
+SPECEXTERN=awk -f $(TOOLROOT)/usr/lib/specextern.awk
+
+# get the definition of the startversion target
+include $(ROOT)/usr/include/make/startversion
+
+$(BUILDIMGPREF)buildimages: checkversion finalidb $(SPEC) 
+	@if [ ! -d $(IMAGESAREA) ]; then mkdir $(IMAGESAREA); fi; \
+	(cd $(IMAGESAREA); for i in $(ALLIMAGES); do \
+		rm -f $${i}.* $${i}; done)
+# next 14 lines replicated below
+	@if [ -r $(SPEC) ]; then \
+		USESPEC=$(SPEC); \
+		if [ "$(ALLIMAGES)" = "no_images_supplied" ]; then \
+			echo "\nderiving names of products to generate from file $(SPEC)\n"; \
+			USEALLIMAGES=`$(SPECPRODS) $$USESPEC`; \
+		else \
+			USEALLIMAGES='$(ALLIMAGES)'; \
+		fi; \
+	else \
+		echo "\nderiving file $(SPEC).dflt from file finalidb\n"; \
+		$(SPECDFLT) > $(SPEC).dflt;\
+		USESPEC=$(SPEC).dflt; \
+		USEALLIMAGES=`$(SPECPRODS) $$USESPEC`; \
+	fi; \
+	echo "$(GENDIST) $(GENDISTFLAGS) -all -root /"; \
+	echo "\t-source $(SRC) -idb finalidb"; \
+	echo "\t-spec $$USESPEC -dist $(IMAGESAREA) $$USEALLIMAGES"; \
+	VERSION=`cat $(VNUM)` \
+	$(GENDIST) $(GENDISTFLAGS) -all -root / -source $(SRC) -idb finalidb \
+		-spec $$USESPEC -dist $(IMAGESAREA) $$USEALLIMAGES
+	
+
+#
+# Perform a dryrun using gendist to help uncover errors
+# Don't turn on -verbose (-> ignore GGENDISTFLAGS)
+# XXX for now ignore error return
+#
+$(BUILDISMPREF)buildism:finalidb $(SPEC)
+	@if [ ! -d $(ISMAREA) ]; then mkdir $(ISMAREA); fi; \
+	(cd $(ISMAREA); for i in $(ALLIMAGES); do \
+		rm -f $${i}.* $${i}; done)
+# next 14 lines replicated above
+	@if [ -r $(SPEC) ]; then \
+		USESPEC=$(SPEC); \
+		if [ "$(ALLIMAGES)" = "no_images_supplied" ]; then \
+			echo "\nderiving names of products to generate from file $(SPEC)\n"; \
+			USEALLIMAGES=`$(SPECPRODS) $$USESPEC`; \
+		else \
+			USEALLIMAGES='$(ALLIMAGES)'; \
+		fi; \
+	else \
+		echo "\nderiving file $(SPEC).dflt from file $(RAWIDB)\n"; \
+		$(SPECDFLT) > $(SPEC).dflt;\
+		USESPEC=$(SPEC).dflt; \
+		USEALLIMAGES=`$(SPECPRODS) $$USESPEC`; \
+	fi;\
+	$(GENDIST) $(GENDISTFLAGS) -externidb -root / -source $(SRC) \
+		-idb finalidb -spec $$USESPEC -dist $(ISMAREA)  $$USEALLIMAGES \
+		>dryrun 2>&1;\
+	ISMROOT=`pwd`;\
+	ISMROOT=`echo "$$ISMROOT/.." | sed -e 's/\/[^/]*\/\.\.//'`; \
+	$(SPECEXTERN) < $$USESPEC > $(ISMAREA)/spec;\
+	cd $(ISMAREA); for i in $$USEALLIMAGES; do \
+		[ ! -r $$i.idb ] && continue; \
+		nawk '{$$6=head"/"$$6;print}' head=$$ISMROOT < $$i.idb > $$i.$$$$;\
+		mv $$i.$$$$ $$i.idb; done
+#	-$(GENDIST) $(VGENDISTFLAGS) $(LGENDISTFLAGS) -dryrun -all -root / \
+#		-source $(SRC) \
+#		-idb finalidb -spec $$USESPEC -dist $(ISMAREA) $$USEALLIMAGES >dryrun 2>&1
+
+$(ALLIMAGES): 
+	$(MAKE) ALLIMAGES=$@ buildimages
+
+$(FINALPREF)finalidb: $(SRCIDB)
+	-rm -f joinedidb extra missing
+	@#gendist still likes things sorted on dstpath
+	@# use -o so makefile is restartable
+	@if [ -r $(SRCIDB) ]; then \
+		SIDBS=`echo $(SRCIDB) | tr '	' ' ' | tr -s '' ' ' | \
+			sed -e 's/^/-s/' -e 's/ / -s/g'` ;\
+		$(IDBJOIN) $(IDBJOINFLAGS) $$SIDBS $(RAWIDB) joinedidb extra missing; \
+		sort +4 -5 joinedidb -o finalidb; \
+	else \
+		echo "\nderiving file finalidb from file $(RAWIDB)\n"; \
+		sort +4 -5 $(RAWIDB) -o finalidb; \
+	fi
+
+checkversion:$(_FORCE)
+	@if [ ! -r $(VNUM) ]; then \
+		echo "Use the startversion target to set your version number.";\
+		exit 1 ;\
+	else \
+		VERSION=`cat $(VNUM)` ;\
+	fi
+
+mkISMcensus :
+	@if [ ! -d build ];  then \
+		echo "Must be invoked from the top of the ISM"; \
+		exit 1; \
+	fi; \
+	p_test -C ISMcensus; \
+	echo 'g/ISMcensus%/d\nwq' | ex ISMcensus > /dev/null; \
+	echo "<<ISMcensus divider>>" >> ISMcensus; \
+	versions -r $(ROOT) -Id >> ISMcensus; \
+	ls ;\
+	if [ "`p_list -im | grep -v ISMcensus | wc -l`" != "         2" ];then \
+		rm ISMcensus; \
+		echo "\nMust p_finalize all changes"; \
+		p_list -im; \
+		exit 1; \
+	elif [ "$(MKISMCENSUSFLAGS)" != "" ]; then \
+		$(MAKE) clobber; \
+		if [ "`p_check -w | wc -l`" != "         0" ]; then \
+			rm ISMcensus; \
+			echo "\n p_finalize or add these files to LDIRT"; \
+			p_check -w; \
+			exit 1; \
+		fi; \
+	fi
+
+useISMcensus :
+	@p_tupdate $(USEISMCENSUSFLAGS) ISMcensus; \
+	echo '/^<<ISMcensus divider>>/,$$d\nw .ISMcensus\nq' | ex ISMcensus > /dev/null; \
+	p_tupdate -g .ISMcensus; \
+	rm .ISMcensus
+
+# old target provided so that build doesn't break
+checkalpha:$(_FORCE)
+	@echo "This target is no longer used."
+	@echo "Please modify your Makefile to remove it."
+
+version:checkversion $(_FORCE)
+	@VERSION=`cat $(VNUM)` \
+	$(TOOLROOT)/usr/sbin/makeversion $(ISM_NAME).version
+
+# ok if these not present, but do need their modification dates if they are
+fake_target_so_not_empty $(SRCIDB) $(SPEC):
+	:

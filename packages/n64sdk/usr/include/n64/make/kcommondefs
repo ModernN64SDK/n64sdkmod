@@ -1,0 +1,238 @@
+# Copyright 1986-1994, Silicon Graphics Inc., Mountain View, CA.
+#
+# kcommondefs - contains basic common flags/locations for kernel builds
+# ALL makefiles should include this - so that builds may be done in any
+# directory
+#
+# DEPTH - should be set in the top of each Makefile - it spells the ".."
+# path up to top level directory
+#
+#ident "$Revision: 1.1 $"
+
+include $(ROOT)/usr/include/make/commondefs
+#if defined(PRODUCT) && ! empty(PRODUCT)
+ifdef PRODUCT
+include $(PRODUCTDEFS)
+endif
+
+EVERYPRODUCT=4D80T 4D20 4D30 4D100 4D510 4D40 EVEREST 4DACE1 4DACENEX
+KCOMMONTARGS= $(COMMONTARGS) lint
+KCOMMONPREF=k
+
+#
+# We define a postop idb which should be used whenever we want to ensure 
+# that a reconfig will occur: it avoids any local system time problems
+# by changing the old kernel date back to the epoch.
+# XXX we should fix inst to sanity-check the mtime of /unix and other
+# XXX important files against current time
+#
+LBOOT=$(TOOLROOT)/usr/sbin/lboot
+LBOOTPOSTOP=-idb 'postop("touch -c 0101000000 $$rbase/unix || true")'
+# setsym information
+SETSYM=$(TOOLROOT)/usr/sbin/setsym
+
+#
+# Compile Time Options - use KCDEFS, KCINCS, and KCOPTS in makefiles which
+# include kcommondefs
+# The kernel can be compiled in 3 different mode:
+# _K32U32 - kernel in 32 bit mode running only 32 bit binaries
+# _K32U64 - kernel in 32 bit mode running 32/64 bit binaries
+# _K64U64 - kernel in 64 bit mode running 32/64 bit binaries
+#
+KMODEOPT?=-D_K32U32
+
+#
+# The default virtual page size is 4KB. The only other page size
+# currently supported is 16KB.
+#
+PGSZOPT?=-D_PAGESZ=4096
+
+#if defined(PRODUCT) && !empty(PRODUCT)
+
+#if $(CPUBOARD) == "IP5"
+PRODCDEFS=-D_MP_NETLOCKS
+#endif
+#if $(CPUBOARD) == "IP17Z"
+PRODCDEFS=-DIP17 -DJUMP_WAR -DPROBE_WAR -DBADVA_WAR
+PRODCOPTS=-mips2
+PRODASOPTS=-mips3 -32bit -Wb,-diag
+#endif
+#if $(CPUBOARD) == "IP17P"
+PRODCDEFS=-DIP17 -DJUMP_WAR -DPROBE_WAR -DBADVA_WAR
+PRODCOPTS=-mips2
+PRODASOPTS=-mips3 -32bit -Wb,-diag
+#endif
+#if $(CPUBOARD) == "IP17Q"
+PRODCDEFS=-DIP17 -DJUMP_WAR -DPROBE_WAR -DBADVA_WAR
+PRODCOPTS=-mips2
+PRODASOPTS=-mips3 -32bit -Wb,-diag
+#endif
+#if $(CPUBOARD) == "IP17"
+PRODCDEFS=-DJUMP_WAR -DPROBE_WAR -DBADVA_WAR
+PRODCOPTS=-mips2
+PRODASOPTS=-mips3 -32bit -Wb,-diag
+#endif
+#if $(CPUBOARD) == "IP19"
+PRODCDEFS=-DEVEREST -DBADVA_WAR -DMP_R4000_BADVA_WAR -D_MP_NETLOCKS \
+	-DECC_RECOVER -D_ATOMIC_OPS
+PRODCOPTS=-mips2
+PRODASOPTS=-mips3 -32bit -Wb,-diag
+#endif
+#if $(CPUBOARD) == "IP19P"
+PRODCDEFS=-DIP19 -DEVEREST -DBADVA_WAR -DMP_R4000_BADVA_WAR -DECC_RECOVER
+PRODCOPTS=-mips2
+PRODASOPTS=-mips3 -32bit -Wb,-diag
+#endif
+#if $(CPUBOARD) == "IP19Q"
+PRODCDEFS=-DIP19 -DEVEREST -DBADVA_WAR -DMP_R4000_BADVA_WAR -DECC_RECOVER
+PRODCOPTS=-mips2
+PRODASOPTS=-mips3 -32bit -Wb,-diag
+#endif
+#if $(CPUBOARD) == "IP19S"
+PRODCDEFS=-DIP19 -DSABLE -DEVEREST -DBADVA_WAR -DECC_RECOVER
+PRODCOPTS=-mips2
+PRODASOPTS=-mips3 -32bit -Wb,-diag
+LBOOTOPTS=-v -D
+#endif
+#if $(CPUBOARD) == "IP20"
+PRODCDEFS=-DJUMP_WAR -DPROBE_WAR -DBADVA_WAR -D_MEM_PARITY_WAR
+PRODCOPTS=-mips2
+PRODASOPTS=-mips3 -32bit -Wb,-diag
+#endif
+#if $(CPUBOARD) == "IP21"
+#if $(KMODEOPT) == _K32U32 || $(KMODEOPT) == _K32U64
+
+# STAT_TIME is required for 32-bit TFP kernels, since the locore code which
+# manages the timers can't afford to get a tlbmiss on the 32-bit sign
+# extended addresses.
+
+PRODCDEFS=-DEVEREST -DNO_WIRED_SEGMENTS -DTFP_TLBCACHE_WAR -DSABLE -DSTAT_TIME
+#else
+PRODCDEFS=-DEVEREST -DNO_WIRED_SEGMENTS -DTFP_TLBCACHE_WAR -DSABLE 
+#endif
+PRODASOPTS=-mips3 -32bit -Wb,-diag
+LBOOTOPTS=-v -D
+#endif
+#if $(CPUBOARD) == "IP21P"
+PRODCDEFS=-DIP21 -DEVEREST -DNO_WIRED_SEGMENTS -DTFP_TLBCACHE_WAR -DSABLE 
+PRODASOPTS=-mips3 -32bit -Wb,-diag
+#endif
+#if $(CPUBOARD) == "IP22"
+PRODCDEFS=-DJUMP_WAR -DPROBE_WAR -DBADVA_WAR -D_VCE_AVOIDANCE \
+	-D_R4600_CACHEOP_WAR -D_TLB_LOOP_LIMIT -D_MEM_PARITY_WAR \
+	-D_R4600_2_0_CACHEOP_WAR
+PRODCOPTS=-mips2
+PRODASOPTS=-mips3 -32bit -Wb,-diag
+#endif
+
+#endif
+
+LBOOTOPTS?=-v
+GNUMVAL= 8
+
+GKDEFS= $(KMODEOPT) $(PGSZOPT) -D_KERNEL -DSTATIC=static $(DBOPTS) $(PRODCDEFS) -D$(COMPLEX) -D$(CPUBOARD) -D$(CPUARCH) $(CPUARCH_PRODDEFS) -D_IRIX5_1
+GKOPTS= -non_shared -coff
+GKCOPTS=$(PRODCOPTS)
+GKASOPTS=$(PRODASOPTS) -Wb,-coff
+
+LCDEFS= $(KCDEFS) $(GKDEFS)
+LCINCS= $(KCINCS) -I$(DEPTH)
+LCOPTS= $(KCOPTS) -Wx,-G$(GNUMVAL) $(GKOPTS) $(GKCOPTS)
+
+LASDEFS=$(KASDEFS) $(GKDEFS)
+LASINCS=$(KASINCS) -I$(DEPTH)
+LASOPTS=$(KASOPTS) -Wx,-G$(GNUMVAL) $(GKOPTS) $(GKASOPTS)
+
+LDFLAGS= $(KLDFLAGS) -G $(GNUMVAL) -coff -non_shared
+
+MKDEPFILE=$(KPATH)/Makedepend.$(CPUBOARD)
+
+#
+# Lint options
+#
+LINTCFLAGS= $(CVERSION) $(ENDIAN) $(CDEFS) $(CINCS) -u -n -woff 91,102,302,307
+LINTLDFLAGS= -u -n -woff 91,102
+
+#
+# Pathnames for lboot/objects
+#
+SYSGENDIR=/usr/sysgen
+BOOTAREA=$(DEPTH)/$(CPUBOARD)bootarea
+CPUINSTDIR=$(SYSGENDIR)/$(CPUBOARD)boot
+BOOTDIR=$(SYSGENDIR)/boot
+MASTERDIR=$(SYSGENDIR)/master.d
+MTUNEDIR=$(SYSGENDIR)/mtune
+
+SHIP_SYSGENDIR=/var/sysgen
+SHIP_CPUINSTDIR=/usr/cpu/sysgen/$(CPUBOARD)boot
+SHIP_MASTERDIR=$(SHIP_SYSGENDIR)/master.d
+SHIP_MTUNEDIR=$(SHIP_SYSGENDIR)/mtune
+
+# full path here so can override in klocaldefs
+STUNEFILE=$(ROOT)/$(SYSGENDIR)/stune
+SHIP_STUNEFILE=$(ROOT)/$(SHIP_SYSGENDIR)/stune
+
+# lint object area
+LINTBOOTAREA=$(DEPTH)/lintbootarea
+
+#
+# relative level from BOOTAREA to top of source
+#
+TOP=..
+
+#
+# Kernel install rule for production (shipped) objects
+#
+KINSTALL=$(INSTALL) -F $(SHIP_CPUINSTDIR) -m 444 -idb "nostrip mach(CPUBOARD=$(CPUBOARD))"
+KNOMODEINSTALL=$(INSTALL) -F $(SHIP_CPUINSTDIR) -idb "nostrip mach(CPUBOARD=$(CPUBOARD))"
+
+#
+# Kernel install rule for developer objects
+#
+KDEVINSTALL=$(INSTALL) -F $(CPUINSTDIR) -m 444 -idb nostrip
+KNOMODEDEVINSTALL=$(INSTALL) -F $(CPUINSTDIR) -idb nostrip
+
+#
+# Kernel install rule for putting object into $(ROOT)/$(CPUINSTDIR)
+#	this needs to NEVER have RAWIDB set
+#
+KLINKINSTALL=RAWIDB= $(INSTALL) -F $(CPUINSTDIR) -m 444 -idb nostrip
+
+#
+# All low level makefiles will execute this rule for the default build case
+#
+TARGETRULE= \
+	cd $(BOOTAREA); \
+	exec $(MAKE) -f $(KPATH)/Makefile targets DEPTH=$(TOP)
+
+#
+# SUBDIRS_MAKERULE that can handle a unset SUBDIRS variable
+# and an arbitrary RULE
+#
+KSUBDIRS_MAKERULE= \
+	if [ -n "${SUBDIRS}" ]; then \
+		SUBD="${SUBDIRS}" ;\
+		for d in $${SUBD}; do $(SUBDIR_MAKERULE); done; \
+	fi
+
+#
+# Allows same sources to be compiled twice with different flags.
+# Original Makefile must define TLINKDIR and TL_MAKEFILE before including
+# kcommondefs.  The two Makefiles must specify different TARGET names.
+#
+TLINKDIR_MAKERULE= \
+	if [ -n "${TLINKDIR}" -a -n "${TL_MAKEFILE}" ]; then\
+		if [ -d  $(TLINKDIR) ]; then rm -rf $(TLINKDIR); fi; \
+	tlink -r -x '^$(TLINKDIR)' -x '^Make.*' . $(TLINKDIR); \
+	echo "\tcd $(TLINKDIR); $(MAKE) $${RULE:=$@}"; \
+	cd $(TLINKDIR); ln -s ../$(TL_MAKEFILE) ./Makefile; \
+	${MAKE} $${RULE:=$@}; \
+	fi
+
+#
+# default is ALWAYS the MAIN target - by specifying it here we need not
+# worry about ordering in the makefile
+#
+.MAIN:default
+
+sinclude $(DEPTH)/klocaldefs

@@ -15,11 +15,11 @@ include $(ROOT)/usr/include/make/PRdefs
 
 #FINAL = YES
 ifeq ($(FINAL), YES)
-OPTIMIZER       = -O2 -mno-shared -mhard-float -fno-stack-protector -fno-common -fno-PIC -mno-abicalls -fno-strict-aliasing -fno-inline-functions -ffreestanding -fwrapv
+OPTIMIZER       = -O2 -std=gnu90 -mno-shared -mhard-float -fno-stack-protector -fno-common -fno-PIC -mno-abicalls -fno-strict-aliasing -fno-inline-functions -ffreestanding -fwrapv
 LCDEFS          = -D_FINALROM -DNDEBUG -DF3DEX_GBI_2
 N64LIB          = -lultra_rom
 else
-OPTIMIZER       = -g -mno-shared -mhard-float -fno-stack-protector -fno-common -fno-PIC -mno-abicalls -fno-strict-aliasing -fno-inline-functions -ffreestanding -fwrapv
+OPTIMIZER       = -g -std=gnu90 -mno-shared -mhard-float -fno-stack-protector -fno-common -fno-PIC -mno-abicalls -fno-strict-aliasing -fno-inline-functions -ffreestanding -fwrapv
 LCDEFS          = -DDEBUG  -DF3DEX_GBI_2
 N64LIB          = -lultra_d
 endif
