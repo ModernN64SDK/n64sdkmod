@@ -1,0 +1,115 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits
+MAP- added links, updated format>
+<TITLE>osVoiceControlGain</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+<font style="font-size: 12pt"><b>osVoiceControlGain</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p><i>Adjusts the input gain of the Voice Recognition System</p></i>
+</P>
+<P>
+<h3>Syntax</h3>
+</P>
+<P>
+#include &lt;ultra64.h&gt;     /* <A HREF="../../header/ultra64.htm">ultra64.h</A> */
+</P>
+<P>
+s32 osVoiceControlGain(OSVoiceHandle *hd, s32 analog, s32 digital);<BR>
+
+</P>
+<P>
+<h3>Description</h3>
+</P>
+<P>
+The <tt>osVoiceControlGain</tt> function is for adjusting the gain of the input voice in the Voice Recognition System.  The strength of the input voice signal can be changed by adjusting the gain.  If the input voice is too strong, try decreasing the gain to decrease the voice level (normally, there is no particular need to change the gain).<BR>
+</P>
+<P>
+hd is the Voice Recognition System control structure.  The Voice Recognition System must be initialized with the <a href="osVoiceInit.htm">osVoiceInit</a> function before the <tt>osVoiceControlGain()</tt> function is called.
+</P>
+<P>
+analog is the analog gain of the transmission system.  The analog gain is for adjusting the strength of the voice signal which is input from the microphone.  The following values are available. 
+</P>
+<CENTER>
+<TABLE border="1">
+  <TR>
+    <TD><b>analog</b></TD>
+    <TD align="center"><b>Transmission system analog gain</b></TD></TR>
+  <TR>
+    <TD align="center">0</TD>
+    <TD align="right">0 dB</TD></TR>
+  <TR>
+    <TD align="center">1</TD>
+    <TD align="right">-3 dB</TD></TR>
+</TABLE>
+
+</CENTER>
+<P>
+<BR>
+</P>
+<P>
+digital is the digital gain of the transmission system.  The digital gain is for adjusting the strength of the digital signal converted from the analog voice signal.  The following values are available. 
+</P>
+<CENTER>
+<TABLE border="1">
+  <TR>
+    <TD><b>digital</b></TD>
+    <TD align="center"><b>Transmission system digital gain</b></TD></TR>
+  <TR>
+    <TD align="center">0</TD>
+    <TD align="right">0 dB</TD></TR>
+  <TR>
+    <TD align="center">1</TD>
+    <TD align="right">-0.4 dB</TD></TR>
+  <TR>
+    <TD align="center">2</TD>
+    <TD align="right">-0.8 dB</TD></TR>
+  <TR>
+    <TD align="center">3</TD>
+    <TD align="right">-1.2 dB</TD></TR>
+  <TR>
+    <TD align="center">4</TD>
+    <TD align="right">-1.6 dB</TD></TR>
+  <TR>
+    <TD align="center">5</TD>
+    <TD align="right">-2.0 dB</TD></TR>
+  <TR>
+    <TD align="center">6</TD>
+    <TD align="right">-2.4 dB</TD></TR>
+  <TR>
+    <TD align="center">7</TD>
+    <TD align="right">-2.8 dB</TD></TR>
+</TABLE>
+
+</CENTER>
+<P>
+<BR>
+</P>
+<P>
+The returned value is an error code.  A 0 (zero) is returned when processing ends normally.  If an error occurs, this function has the following error codes. <BR>
+</P>
+<P>
+<B>CONT_ERR_INVALID</B>
+</P>
+<BLOCKQUOTE>
+<p>There is an error in the function call method or in the argument.  This error will not occur if the function is being used correctly.</p>
+</BLOCKQUOTE>
+<P>
+<h3>See also</h3>
+<p><A href="osVoiceCheckWord.htm">osVoiceCheckWord</A>, <A href="osVoiceClearDictionary.htm">osVoiceClearDictionary</A>,
+<A href="osVoiceCountSyllables.htm">osVoiceCountSyllables</A>, <A href="osVoiceGetReadData.htm">osVoiceGetReadData</A>,
+<A href="osVoiceInit.htm">osVoiceInit</A>, <A href="osContInit.htm">osContInit</A>,
+<A href="osVoiceSetWord.htm">osVoiceSetWord</A>, <A href="osVoiceStartReadData.htm">osVoiceStartReadData</A>, and 
+<A href="osVoiceStopReadData.htm">osVoiceStopReadData</A>
+
+</P>
+<h3>Revision History</h3>
+<p>1999/04/30  Changed Format</p>
+<br><br>
+
+</BODY>
+</HTML>

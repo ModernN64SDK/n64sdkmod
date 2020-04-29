@@ -1,0 +1,398 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<title>STEP3  [N64 3D Graphics] - Chapter 1 Basic of 3D Graphics</title>
+<base target="keywords">
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park 7/12/1999 
+reviewed PWC 7/16/99 -->
+
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<p><font style="font-size:12pt"><b>1-6 Geometric Transformations and Matrix</b></font><br>
+<br>
+<br>
+ In "1-3 Coordinate System", you learned that you need to convert from one coordinate system to another in order to ultimately display a picture on the TV screen. This section shows you how to actually do the coordinate system transformations by using <a href="../../../keywords/index/data/graphics.htm#matrix"
+target="keywords">matrix</a> calculations. Usually,<br><p>
+ 
+<ul><b><Li>3x3 matrices are used for two-dimensional coordinate transformations</li></b>
+<b><li>4x4 matrices are used for three-dimensional coordinate transformations</li></b></ul>
+
+Here, we will explain about the basic two and three-dimensional coordinate transformations in that order. In addition, to display the coordinates of the vertexes, we will use the vectors below in descriptions to follow:<br>
+<br>
+Two-dimensional---<img src="img00156.gif" align="absmiddle" width="68" height="25"><br>
+Three-dimensional---<img src="img00157.gif" align="absmiddle" width="90" height="24"><br>
+<br>
+<br>
+<b>1-6-1 2D Transformation</b><br>
+<br>
+<br>
+In general, a matrix like the following is used for two-dimensional coordinate transformations:<br><br>
+<img src="img00158.gif"><br><br>
+However, here we will classify the conversion matrices into some types and provide a basic explanation. <br>
+<br>
+<br>
+<b>#Scaling matrix to specify enlargements or reductions</b><br>
+To apply scaling information, you multiply a scaling matrix by a vector <img
+src="img00160.gif" align="absmiddle" width="68" height="25">.  The scaling matrix has scaling information for the X-axis and Y-axis specified by the vector. The scaling matrix looks like this:<Br>
+<br>
+<img src="img00161.gif" width="120" height="73"><br>
+<br>
+To do the conversion, multiply the matrix by the vector:
+<br><br>
+<img src="img00162.gif" align="absmiddle" width="269" height="73"><br>
+The post-conversion coordinates <img src="img00163.gif" align="absmiddle" width="49" height="25"> are as follows:<br><br>
+<img src="img00164.gif" align="absmiddle" width="65" height="51"><br><br>
+
+In this way, the <em>x</em> and <em>y</em> coordinates are enlarged or reduced by the corresponding scaling factor (s). Note that if the scaling factor of a certain axis is negative, that axis will be reversed.
+<br>
+<br>
+<img src="img00169.gif" width="173" height="138"><br>
+<br>
+<b>Figure 1-6-1 The two-dimensional magnified coordinate</b><br>
+<br>
+<br>
+<b>#Translation matrix</b><br>
+The two-dimensional translation matrix looks like this:<br>
+<br><img src="img00170.gif" width="113" height="75"><br>
+<br>
+The reason that you need to specify a two-dimensional coordinate in the vector <img src="img00171.gif" align="absmiddle" width="68" height="25">is so you can apply the translation factors specified in the matrix to the coordinates. <br>
+When you do the multiplication, you get the following result:<br><br>
+<img src="img00172.gif" width="293" height="78"><br>
+<br>
+The 1 added as a third element of the vector specifies that the translation factors <img src="img00174.gif" align="absmiddle" width="37" height="22">are to be added to each component.<br>
+This type of vector coordinate system that adds a new constant component 1 is called a homogeneous coordinate system.<br>
+<br>
+<br>
+<b>#Rotation matrix to specify rotation around a point of origin</b><br>
+If you set the rotational angle to<img src="img00176.gif" align="absmiddle"
+width="14" height="19">, the rotational matrix looks like this:<br>
+<br><img src="img00177.gif" width="164" height="73"><br>
+<br>
+As a standard, positive angles rotate counter-clockwise and negative angles rotate clockwise with the origin at the center as shown here:<br>
+<br>
+<img src="img00178.gif" width="192" height="157"><br>
+<br>
+<b>Figure 1-6-2 The two-dimensional rotational coordinate</b><br>
+<br>
+<br>
+As you can see, the three conversion matrices hold the information needed to specify <b>scaling, translating and rotating</b>.<br>
+<br>
+<br>
+<br>
+<b>1-6-2 3D Transformation</b><br>
+<br>
+<br>
+In general, a matrix like the following is used for three-dimensional coordinate transformations:<br><br>
+<img src="img00179.gif" width="178" height="96"><br><br>
+However, as with the two-dimensional coordinate transformation, we will categorize it into three types of matrices for explanatory purposes. The coordinate vector that specifies the vertex to be transformed is given as:<br><br>
+<img src="img00180.gif" align="absmiddle" width="17" height="17">:
+<img src="img00181.gif" align="absmiddle" width="90" height="24">  (before the transformation)<br>
+<img src="img00182.gif" align="absmiddle" width="20" height="17">:
+<img src="img00183.gif" align="absmiddle" width="98" height="24">
+(after the transformation)<br>
+<br>
+<br>
+<br>
+<b>#Scaling matrix to specify enlargements or reductions</b><br>
+The matrix that holds the scaling information looks like this:<br>
+<br><img src="img00184.gif" width="148" height="97"><br>
+<br>
+The expanded matrix calculation looks like this:<br><br>
+<img src="img00185.gif" width="60" height="73"><br>
+<br>
+As you can see, each coordinate is given scaling information <img
+src="img00186.gif" align="absmiddle" width="61" height="25">. Note that if a scaling factor is negative, it reverses the direction of the axis as it did with the 2D scaling transformation.</p>
+
+<table border="1" cellspacing="0" cellpadding="4">
+    <tr>
+        <td><b>Examples of N64 functions (enlargements or reductions)</b></font><br>
+        <br>
+          <a href="../../../n64man/gu/guScale.htm"><b>guScale</b></a><br>
+          <a href="../../../n64man/gu/guScaleF.htm"><b>guScaleF</b></a><br>
+        </td>
+    </tr>
+</table>
+
+<p><br>
+Obviously when you multiply a matrix where <img src="img00187.gif" align="absmiddle" width="98" height="22"> by any vector, the vector does not change at all. This type of matrix is called an identity matrix.</p>
+
+<table border="1" cellspacing="0" cellpadding="4">
+    <tr>
+        <td><b>An example of N64 function(identity matrix)</b><br>
+        <br>
+          <a href="../../../n64man/gu/guMtxIdent.htm"><b>guMtxIdent</b></a><br>
+        </td>
+    </tr>
+</table>
+
+<p><br>
+<br>
+<b>#Translation matrix to specify movement</b><br>
+The three-dimensional translation matrix looks like this:<br><br>
+<img src="img00188.gif" width="146" height="99"><br>
+<br>
+The translation matrix is used to translate; it translates the coordinates of an object to move it to a new location. When you multiply this matrix by a vector and expand it, you get the following result:<br><br>
+<img src="img00189.gif" width="74" height="72"><br>
+<br>
+<br>
+<img src="img00190.gif" width="297" height="264"><br>
+<br>
+<b>Figure 1-6-3 Translation matrix</b><br>
+<br>
+</p>
+
+<table border="1" cellspacing="0" cellpadding="4">
+    <tr>
+        <td><b>N64 functions to translate an object's vertex to a new location</b><br>
+        <br>
+          <a href="../../../n64man/gu/guTranslate.htm"><b>guTranslate</b></a><br>
+          <a href="../../../n64man/gu/guTranslateF.htm"><b>guTranslateF</b></a><br>
+        </td>
+    </tr>
+</table>
+
+<p><br>
+<br>
+<b>#Rotation matrix to specify rotation around an axis of origin</b><br>
+Three-dimensional rotational conversion is more difficult than two-dimensional because there are an infinite number of possibilities for the axis of origin.<br>However, in most cases, you will specify the rotation of each coordinate axis by using the synthesis method instead of using arbitrary axis rotation (See section 1-6-4,<b> Coordinate System Transformation</b>).<br>
+N64 adapts the types of rotation direction described below.<br>
+<br>
+<img src="img00191.gif" width="408" height="148"><br>
+<br>
+<b>Figure 1-6-4 Rotation directions</b><br>
+<br>
+<br>
+<b>*X-axis rotation</b><br>
+<em>x</em>-axis rotation is specified by this matrix:<br>
+<br>
+<img src="img00193.gif" width="197" height="97"><br>
+<br>
+When you expand the multiplication of a vector with this matrix, each coordinate component becomes:<br>
+<img src="img00194.gif" width="346" height="22"><br>
+As you can see, the <img src="img00195.gif" align="absmiddle" width="14" height="14">component has not changed.<br>
+<br>
+<b>*Y-axis rotation</b><br>
+<em>y</em>-axis rotation is specified by this matrix:<br>
+<br>
+<img src="img00197.gif" width="198" height="96"><br>
+<br>
+When you expand the multiplication of a vector with this matrix, each coordinate component becomes:<br>
+<img src="img00198.gif" width="372" height="27"><br>
+As you can see, the <img src="img00199.gif" align="absmiddle" width="14" height="17">component has not changed.<br>
+<br>
+<b>*Z-axis rotation</b><br>
+<em>z</em>-axis rotation is specified by this matrix:<br>
+<br>
+<img src="img00201.gif" width="196" height="97"><br>
+<br>
+When you expand the multiplication of a vector with this matrix, each coordinate component becomes:<br>
+<img src="img00202.gif" align="absmiddle" width="348" height="22"><br>
+As you can see, the <img src="img00203.gif" align="absmiddle" width="13"
+height="14">component has not changed.<br>
+<br>
+</p>
+<table border="1" cellspacing="0" cellpadding="4">
+    <tr>
+        <td><b>Examples of N64 functions (rotation)</b><br>
+        <br>
+          <a href="../../../n64man/gu/guRotate.htm"><b>guRotate</b></a><br>
+          <a href="../../../n64man/gu/guRotateF.htm"><b>guRotateF</b></a><br>
+          <a href="../../../n64man/gu/guRotateRPY.htm"><b>guRotateRPY</b></a><br>
+          <a href="../../../n64man/gu/guRotateRPYF.htm"><b>guRotateRPYF</b></a><br>
+        </td>
+    </tr>
+</table>
+
+<p><br>
+<br>
+<b>(Remembering the rotational direction of each-axis rotation)</b><br>
+As explained previously, N64 uses the right-handed coordinate system (see section 1-3, <b>Coordinate System</b>).  
+The general method of deciding rotational direction in the right-hand coordinate system can be expressed as follows:<br>
+<br>
+  <b>1. Make the right screw advance to the position direction of the axis.</b><br>
+  <b>2. At that time, determine the direction that the right screw rotates as the positional direction.</b><br>
+<br>
+Following this rule, the positive direction of each coordinate axis rotation looks like this:<br><br>
+<br>
+<img src="img00204.gif" align="absmiddle" width="166" height="154"><br>
+<br>
+<b>Figure 1-6-5 Rotational Direction of Each Axis Rotation</b><br>
+<br>
+<br>
+<br>
+<b>1-6-3 Projection Transformation</b><br>
+<br>
+<br>
+Projection conversion calculations determine the level of perspective that will be provided when you display the object seen from the camera on the screen. There are two methods of projection:  One is Orthographic Projection.  Another is Perspective Projection.<br>
+<br>
+<br>
+<b>#Orthographic Projection</b><br>
+An orthographic projection shows the view volume (the portion of a 3D space that a camera can capture in a picture) as a rectangular parallel pipe without any perspective at all.  The world appears flat but accurate measurements are possible given that you know how close or how far away the objects are in the 3D virtual world. Here is an example:</p>
+
+<table border="1" cellspacing="0">
+    <tr>
+        <td><img src="img00205.gif" width="474" height="310"> </td>
+    </tr>
+</table>
+
+<p><br>
+<b>Figure 1-6-6 Orthographic Projection</b><br>
+<br>
+<br>
+"Near" is a value to display from where on the view front (the position where the camera is set) to start to draw, and "Far" is a setting value for until where on the view front to draw.  <br>
+<br>
+Given the following settings:<br>
+ t=top (top of the screen)<br>
+ b=bottom (bottom of the screen)<br>
+ r=right (right side of the screen)<br>
+ l=left (left side of the screen)<br>
+ n=near clip (position of the near clipping plane)<br>
+ f=far clip (position of the far clipping plane)<br>
+<br>
+the conversion matrix of an orthographic projection looks like this:<br><br>
+<img src="img00206.gif" width="280" height="157"><br>
+<br>
+Although this matrix seems to be rather complicated, N64 functions calculate it for you. All you need to do is pass the original settings listed above, so an in depth understanding of the matrix is not necessary.</p>
+
+<table border="1" cellspacing="0" cellpadding="4">
+    <tr>
+        <td><b>Examples of N64 functions (The calculation of the orthographic projection matrix)</b><br>
+        <br>
+          <a href="../../../n64man/gu/guOrtho.htm"><b>guOrtho</b></font></a><br>
+          <a href="../../../n64man/gu/guOrthoF.htm"><b>guOrthoF</b></font></a><br>
+        </td>
+    </tr>
+</table>
+<p><br>
+<br>
+<b>#Perspective Projection</b><br>
+A perspective projection shows the view volume (the portion of a 3D space that a camera can capture in a picture) as a quadrilateral pyramid to give the view volume perspective. Here is an example:</p>
+
+<table border="1" cellspacing="0">
+    <tr>
+        <td><img src="img00207.gif" width="354" height="216"> </td>
+    </tr>
+</table>
+
+<p><br>
+<b>Figure 1-6-7 Perspective Projection (frustum)</b><br>
+<br>
+<br>
+Given the following settings:<br>
+ t=top (top of the screen)<br>
+ b=bottom (bottom of the screen)<br>
+ r=right (right side of the screen)<br>
+ l=left (left side of the screen)<br>
+ n=near clip(position of the near clipping plane)<br>
+ f=far clip (position of the far clipping plane)<br>
+<br>
+the conversion matrix of a perspective projection looks like this:<br><br>
+<img src="img00208.gif" width="229" height="162"><br>
+</p>
+
+<table border="1" cellspacing="0" cellpadding="4">
+    <tr>
+        <td><b>Examples of N64 functions (The calculation of the perspective projection matrix)</b><br>
+        <br>
+          <a href="../../../n64man/gu/guFrustum.htm"><b>guFrustum</b></a><br>
+          <a href="../../../n64man/gu/guFrustumF.htm"><b>guFrustumF</b></a><br>
+        </td>
+    </tr>
+</table>
+
+<p><br>
+In this matrix the ratio of length to width is 1:1, sometimes making it a little hard to use for actual display on a screen. Therefore, you may need to add a different length to width ratio when preparing your projection matrix as shown here:</p>
+
+<table border="1" cellspacing="0">
+    <tr>
+        <td><img src="img00209.gif" width="334" height="172"> </td>
+    </tr>
+</table>
+
+<p><br>
+<b>Figure 1-6-8 Perspective Projection 2 (perspective)</b><br>
+<br>
+<br>
+Given the following settings:<br>
+ a=aspect ratio(ratio of length to breadth)<br>
+ Theta=fovy/2 (fovy)<br>
+ n=near clip(position of the nearest clipping plane)<br>
+ f=far clip (position of the furthest clipping plane)<br>
+<br>
+The conversion matrix of a perspective projection that includes a length to breadth ratio looks like this:<br><br>
+<br>
+<img src="img00210.gif" width="238" height="181"><br>
+<br>
+<br>
+Now, you can display the object placed in the three-dimensional space.</p>
+<table border="1" cellspacing="0" cellpadding="4">
+    <tr>
+        <td><b>Examples of N64 functions (Perspective Projection)</b><br>
+        <br>
+          <a href="../../../n64man/gu/guPerspective.htm"><b>guPerspective</b></a><br>
+          <a href="../../../n64man/gu/guPerspectiveF.htm"><b>guPerspectiveF</b></a><br>
+          <a href="../../../n64man/gsp/gSPPerspNormalize.htm"><b>gSPPerspNormalize</b></a><br>
+        </td>
+    </tr>
+</table>
+<p><br>
+<b><Note></b><br>
+For example, for parallel movement, the conversion expression in OpenGL is:<br><br>
+<img src="img00211.gif" align="absmiddle" width="138" height="96"> <br>
+<br>
+It would look like this for N64:<br><br>
+<img src="img00212.gif" align="absmiddle" width="209" height="98"><br>
+<br>
+The conversion matrix is transverse for OpenGL and N64.<br>
+<br>
+<br>
+<br>
+<b>1-6-4 Coordinate System Transformation</b><br>
+<br>
+<br>
+Coordinate transformation was explained earlier by being categorized into transformations (scaling, translation, and rotation). This section explains how to transform the coordinates of one coordinate system into those of another, one after another, while moving through the coordinate transformation flow.  The conversion matrix to convert from coordinate system 1 to coordinate system 2 will be depicted as <img src="img00213.gif" align="absmiddle" width="26" height="22">, from coordinate system 2 to coordinate system 3 as <img src="img00214.gif" align="absmiddle" width="28" height="22">, and from coordinate system 3 to that of 4 as <img src="img00215.gif" align="absmiddle" width="26" height="22">. Coordinates in each system for a point <i>P</i> will be depicted as <img src="img00216.gif" align="absmiddle" width="18" height="21">, <img src="img00217.gif" align="absmiddle" width="20" height="22">, <img src="img00218.gif" align="absmiddle" width="20" height="22">, <img src="img00219.gif" align="absmiddle" width="20" height="22">.  Therefore, when you convert from one coordinate system to another in order, the following formulas apply:<br>
+<br>
+<img src="img00220.gif" align="absmiddle" width="108" height="22">(equation 1: conversion equation from coordinate system 1 to coordinate system 2)<br>
+<img src="img00221.gif" align="absmiddle" width="109" height="22">(equation 2: conversion equation from coordinate system 2 to coordinate system 3)<br>
+<img src="img00222.gif" align="absmiddle" width="109" height="22">(equation 3: conversion equation from coordinate system 3 to coordinate system 4)<br>
+<br>
+Next, if you substitute equation 1 for equation 2 and substitute the result for equation 3, you can go from the equation for coordinate transformation from coordinate system 1 to that of 4 in a single equation:<br>
+<br>
+<img src="img00223.gif" align="absmiddle" width="152" height="22">(equation 4: conversion equation from coordinate system 1 to that of 4 in a single process)<br>
+<br>
+A process that provides several conversions in a row like this is called a <b>conversion synthesis</b>.  As you can see from the equations given above, a conversion synthesis involves the multiplication of conversion matrices. <br>
+<br>
+Next, we will apply this to a game situation. Obviously, a single model has several vertices, and you need to provide an identical coordinate transformation for each vertex. However, to provide the same matrix multiplication repeatedly is inefficient. Therefore, do the matrix multiplication first. Then, use the matrix to convert from the first coordinate system to the last coordinate system in one process for better calculation efficiency. <br>
+<br>
+For example, if:<br><br>
+<img src="img00224.gif" width="112" height="22"><br><br>
+then <img src="img00225.gif" align="absmiddle" width="28" height="22">becomes the conversion matrix from coordinate system 1 to that of 4. Thus, you can specify equation 4 using the following simple form:<br>
+<br>
+<img src="img00226.gif" align="absmiddle" width="109" height="22">(conversion equation from  coordinate system 1 to coordinate system 4)<br>
+<br>
+Therefore, when you actually draw an image, you can provide a single coordinate transformation calculation to convert directly from the model coordinate system to the normal screen coordinate system at once. Accordingly, it is not necessary to separately perform the world and view coordinate system conversions. <br>
+<br>
+Remember, however, that matrix multiplication is not commutative; that is, you can't switch the order and get the same result. Therefore, when you provide the conversion by using matrices, you need to be careful of the order in which you multiply them. If you multiply in the wrong order, a completely different result will be produced, as shown in the following illustration. Similarly, when you provide several rotational conversions, the result is very different depending on the order of rotating axes. In other words, XYZ will give a result very different from YXZ. This is very important, and you must be careful. </p>
+<table border="1" cellspacing="0">
+    <tr>
+        <td><img src="img00227.gif" width="510" height="340"> </td>
+    </tr>
+</table>
+<p><br>
+<b>Figure 1-6-9 Differences based on the order of matrix multiplication</b><br>
+<br>
+<br>
+Note that the 3D modelers sold by various third-party companies are not standardized in terms of the directions of axes, directions, names of axes, rotational orders, or rotational directions that are used.  Therefore, with the rotation of a <a href="../../../keywords/index/data/graphics.htm#polygon" target="keywords">polygon</a> model, you need to verify the rotational procedures used by modelers before utilizing their output data. <br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+</p>
+</body>
+</html>

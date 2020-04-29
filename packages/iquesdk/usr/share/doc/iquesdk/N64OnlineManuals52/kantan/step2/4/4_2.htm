@@ -1,0 +1,209 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!--
+Editors Notes:
+  PWC- updated formatting
+  MAP- added revisions
+-->
+<title>STEP2 [Introduction to N64 Programming] - Chapter 4 Tips and Techniques</title>
+<base target="keywords">
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<p><font style="font-size:12pt; font-weight:bold">4-2 Tuning Performance</font><br>
+<br>
+<br>
+<b>4-2-1 Double Buffering the Display List</b><br>
+<br>
+<br>
+Usually only one <a
+href="../../../keywords/index/data/system.htm#buffer" target="keywords">buffer</a> is used to hold the <a
+href="../../../keywords/index/data/graphics.htm#display list"
+target="keywords">display list</a> that is constructed by the CPU and executed by the RCP. However, if you use two display list buffers instead of one, the RCP can execute the drawing process for one frame at the same time as the CPU is constructing the next frame's display list. This technique is called "double buffering." Use this technique to speed up your game's graphics if the graphics are complex and you have plenty of memory. <br>
+<br>
+-A display list is a graphics command list that holds the commands necessary to render one frame of graphics. The CPU constructs the display list and then passes it to the RCP to execute it.
+<br>
+<br>
+The longer it takes the CPU to construct each display list, the more speed you can add by using the double-buffering technique. However, remember that although double-buffering makes it appear as though the display list construction time is zero, it really is not. The CPU still has to construct each display list and that means the CPU is not available for other processes that might require it. Therefore, you should devise an efficient algorithm to minimize the processing time needed to construct the display list. This can ultimately lead to faster overall game processing.  A weak point of this method is that double buffering requires twice as much memory to make the two buffers, so if you are short on memory, this technique may not work for you. </p>
+
+<table border="1" cellspacing="0">
+    <tr>
+        <td><img src="img00006.gif"> </td>
+    </tr>
+</table>
+
+<p><br>
+<b>Figure 4-2-1 Double Buffering the Display List</b><br>
+<br>
+<br>
+<br>
+<b>4-2-2 Triple Frame Buffering</b><br>
+<br>
+<br>
+Usually, you use two frame buffers (double buffering) as explained in Section <a href="../2/2_4.htm">2-4 Use of Frame Buffer</a>.  As the RCP is drawing the next frame into one buffer, the video DAC is displaying the previously drawn frame. However, switching between the two frame buffers occurs only at the vertical synchronization point. Therefore, if the RCP hasn't finished drawing a new frame when the next vertical synchronization occurs, you won't be able to use the buffers together for the next frame. In cases like this where it takes longer to draw each frame, you can make the RCP more efficient by using triple frame buffering. One buffer for "displaying," one for "drawing completed and waiting for switch", and one for "drawing".  <br>
+<br>
+The speed-up effect of this method can be huge when the drawing time of a frame is frequently out of sync with the vertical synchronization timing, because the waiting time without triple buffering is long. On the other hand, if the drawing time of a frame is usually in sync with the vertical synchronization, this method has little value because each drawn frame has little waiting time. You need to weigh the advantages against the disadvantages. Triple buffering uses a lot of memory because each of the three frame buffers are quite large even in low resolution. Also, there is another disadvantage in that the TV display is always two frames behind instead of just one. </p>
+<br>
+
+<table border="1" cellspacing="0">
+    <tr>
+        <td><img src="img00007.gif"> </td>
+    </tr>
+</table>
+
+<p><br>
+<b>Figure 4-2-2 Triple Frame Buffering</b><br>
+<br>
+<br>
+<br>
+<b>4-2-3 Using LOD (Level Of Detail)</b><br>
+<br>
+<br>
+<a href="../../../keywords/index/data/graphics.htm#LOD" target="keywords">LOD</a> means the level of detail. By providing different levels of detail, you can significantly improve performance. For example, objects that are viewed as fast moving or far away need much less detail than do stationary objects that are close. When you display a lot of objects on the screen, the RCP processing time increases. The RCP processing time is determined by the time it takes to do vertex coordinate transformations, lighting, and so on done by the RSP <a ref="../../../keywords/index/data/system.htm#microcode" target="keywords">microcode</a> and the <a ref="../../../keywords/index/data/graphics.htm#polygon" target="keywords">polygon</a> texturization process of the RDP.  When you increase the number of objects to be displayed, the processing time for the vertex coordinate transformation or lighting is sometimes going to be a problem. <br>
+<br>
+When displaying 3D objects that are close, you need to provide a lot of precise detail. On the other hand, when an object is small and far away, you can provide very little detail. Therefore you can prepare in advance, several versions of a model, each with a varying level of detail. Then switch the display model based on the distance of the model from the viewer. This very effectively reduces processing time. The disadvantages of this technique are that it takes a long time to prepare several LOD versions of each model in order to make the switching appear natural. Also, you need to use memory to store all those models. However, because models that have little detail use very little room, the impact on memory is not too bad.<br><br>
+<br>
+<table border="1" cellspacing="0">
+    <tr>
+        <td><img src="img00008.gif"> </td>
+    </tr>
+</table>
+
+<p><br>
+<b>Figure 4-2-3 Images of the three levels of LOD</b><br>
+<br>
+<br>
+When a model reaches a certain distance from the viewer, you can greatly improve performance without affecting quality by not showing the model in 3D. Just make it one piece of a picture pasted as pre-rendered image data. This makes it possible to produce good resolution at a fast pace. <br>
+<br>
+This method is most effective when the processing capability of the RSP microcode is saturated, but it has no effect when the RDP performance is saturated. <br>
+<br>
+<br>
+<br>
+<b>4-2-4 Volume Culling</b><br>
+<br>
+<br>
+If the RCP simply displayed all objects on file, it would waste a lot of time processing coordinate transformations for vertices and models that lie outside the current view. To speed up processing, do not process data that is not displayed on the screen. <a href="../../../keywords/index/data/graphics.htm#volume culling"
+target="keywords">Volume culling</a> simply means removing those commands from the display list that apply to vertices or models that lie outside the current view.  See the <a href="../../../n64man/gsp/gSPCullDisplayList.htm">gSPCullDisplayList</a> function for details.  Of course, it is most effective not to send unused drawing instructions for things outside  of the view in the CPU process.
+Volume culling is very effective when there are many models or vertices and the processing capability of the RSP microcode is saturated, but it has no effect when the RDP performance is saturated. <br><br>
+<br>
+<img src="img00009.gif"><br>
+<br><br>
+<b>Figure 4-2-4 Do not process data that is not displayed on the screen.</b><br>
+<br>
+<br>
+<br>
+<b>4-2-5 Anti-Aliasing</b><br>
+<br>
+<br>
+
+   Anti-aliasing is one of the strongest features of the N64. It smoothes out the jagged edges on lines. However, anti-aliasing takes time. It reduces the pixel fill-rate performance of the RDP because the anti-aliasing process needs to update the <a
+href="../../../keywords/index/data/graphics.htm#coverage value">coverage value</a> of each pixel, read the frame buffer, and write the update. Therefore, memory access amount of the frame buffer increases by a factor of two. When the RDP fill-rate performance is saturated, you should <b>turn off anti-aliasing</b>. You need to consider the trade off and determine which is most important; the image quality or the drawing speed. <br>
+<br>
+<br>
+<br>
+<b>4-2-6 Z-Buffering</b><br>
+<br>
+<br>
+When you use the <a href="../../../keywords/index/data/graphics.htm#Z buffer" target="keywords">Z-buffer</a>, <b>draw the closest object first</b> and then move into the background to get the best speed.  If you draw the farthest object first, you have to repeatedly write the entire Z-buffer. Drawing the closest object first is faster because for subsequent objects, you need only write that part of the Z-buffer that is not "covered up" by the foreground object. This is a very effective technique when the RDP fill-rate performance is saturated. See the Z-buffer of STEP 1 [<a href="../../step1/1/1_7.htm">1-7 Basic Terminology (Thread, Message, etc.)</a>]<br>
+<br><br>
+<table border="1" cellspacing="0">
+    <tr>
+        <td><img src="img00010.gif"> </td>
+    </tr>
+</table>
+<br><br>
+<b>Figure 4-2-5  Draw from the closest picture in the Z-buffer</b><br>
+<br>
+<br>
+<br>
+<b>4-2-7 Optimizing GBI Commands</b><br>
+<br>
+<br>
+
+-The <a href="../../../n64man/gsp/gSPVertex.htm">gSPVertex</a> function loads vertex information. It uses vectorization so it can provide coordinate transformations for two vertexes at a time. Therefore, it is better to load an even number of vertices rather than an odd number so that no display list processing time is wasted.
+<br>
+<br>
+-If you use the <a href="../../../n64man/gsp/gSPModifyVertex.htm">gSPModifyVertex</a> function, you can directly load values into a previously loaded <a
+href="../../../keywords/index/data/graphics.htm#vertex cache" target="keywords">vertex cache</a>.  When a vertex cannot be shared because it has the same xyz coordinates but a different texture coordinate, you can use this function and load only the new texture coordinate, thus optimizing the display list. Additionally, this command directly embeds the value into a 64-bit GBI command, so it operates at a very high-speed. However, you need to provide the multiplication value for the scaling value set up by the <a
+href="../../../n64man/gsp/gSPTexture.htm">gSPTexture</a> function; it is needed for the texture coordinate.
+<br>
+<br>
+-After you load a modeling matrix or projection matrix, the MP matrix is recalculated. For example, if you give matrices of scaling, rotation, and translation to the RSP separately and multiply them, you will cause an unnecessary recalculation of the MP matrix internally.  Try to <b>complete this with a single matrix multiplication</b> if possible.  For example, if you know you are going to reuse a <a
+href="../../../keywords/index/data/graphics.htm#matrix"
+target="keywords">matrix</a> multiplication, you can improve performance by doing it once in advance and then provide the result as a constant in all the places it is needed.
+<br>
+<br>
+-Lighting can have a significant effect on the performance of the vertex coordinate transformation process. Try to do as much as possible with <b>lighting off</b>.  For example, when using objects that are fixed in the field and that don't operate the light, turn the lighting off. Also, if you create a texture that appears lighted, the lighting process can be omitted.  However, if you have too many textures, the performance will be sacrificed.  In addition, do volume culling with lighting off.  Obviously, culled vertices don't need lighting.  Depending on the microcode process, use of the <a href="../../../n64man/gsp/gSPVertex.htm">gSPVertex</a> function can double the performance.<br><br>
+
+<table border="1" cellspacing="0">
+    <tr>
+        <td><img src="img00011.gif"> </td>
+    </tr>
+</table>
+
+<br><br><br>
+<b>Figure 4-2-6 Lighting</b><br>
+<br>
+<br>
+-In graphics microcode, the command that RSP processes most is not the <a
+href="../../../n64man/gsp/gSPVertex.htm">gSPVertex</a> function, but the <a href="../../../n64man/gsp/gSP1Triangle.htm">gSP1Triangle</a> function. This is because to require the RDP to draw triangles, it must set up the command with close to 180 bytes and send it. This causes a data sending delay to the RDP. In most microcode, the buffer memory allocates 1K byte from DMEM inside of the RSP, but this becomes full with a drawing command of six triangles. If these triangles are too small, it is not a problem because the RDP completes the drawing process at once and they are removed one after another. However, if the triangles are big, this command process is slow and the RSP has to wait for the output. If you use the <b>.fifo microcode </b> or <b>.dram microcode</b> for this, the process may speed up.<br><br>
+
+<table border="0">
+    <tr>
+        <td><img src="img00012.gif"> </td>
+    </tr>
+</table>
+
+<br><br>
+<b>Figure 4-2-7 Drawing Triangles</b><br>
+<br>
+<br>
+-If you do not use the texture, one of the triangle commands to the RDP becomes unnecessary and the length of the RDP command becomes 64 bytes short. Therefore, you should avoid giving color to a monochromatic object by using texture. Instead, turn the texture off, and <b>add color by applying the primitive color or the vertex color</b>.  The vertex color cannot directly add color so if you need lighting, use the primitive color or switch lights.  However, because the RSP processing time takes longer to switch lights, it is more effective to use the primitive color. The RDP drawing time does not change, therefore, this method is effective only when you have many vertices and a problem with the RSP processing time, not the drawing time.<br><br>
+<br>
+<table border="1" cellspacing="0">
+    <tr>
+        <td><img src="img00013.gif"> </td>
+    </tr>
+</table>
+
+<br><br><br>
+<b>Figure 4-2-8 Setting color with the texture</b><br>
+<br>
+<br>
+<br>
+<b>4-2-8 Optimizing the Display List</b><br>
+<br>
+<br>
+Commands to the RSP microcode are provided by the display list. The processing rate of the microcode varies depending on the way the display list is constructed. The key here is to reuse the vertex cache effectively, acquiring the vertex data as needed. It is particularly important to optimize the display list when the game application creates model data dynamically. <br>
+<br>
+<br>
+<br>
+<b>4-2-9 Speeding up the Audio Process</b><br>
+<br>
+<br>
+Audio processing time must never be ignored. The audio process needs both CPU and RSP processing time. <br>
+To decrease the audio processing time, pay attention to the following: <br>
+<br>
+-<b>Lower the sampling frequency of the audio playback as low as sound quality permits.
+</b><br>
+The lower the sampling frequency, the fewer the number of samples that must be processed per unit time. The direct effect is a faster audio process. Refer to the <a href="../../../n64man/os/osAiSetFrequency.htm">osAiSetFrequency</a> function.<br>
+<br>
+-<b>Decrease the number of physical voices (the number of simultaneous pronunciations) given to the synthesizer driver to as few as possible.</b><br>
+Because the time for the waveform synthesis process in the CPU and RSP is almost proportional to the number of <a href="../../../keywords/index/data/audio.htm#physical voice" target="keywords">physical voices</a>, decreasing the number of physical voices is effective in speeding up the process.  You can change the number of physical voices with each scene. Therefore, it may be most effective to use the most fantastic music that uses a lot of physical voices at the beginning or end of the game, thus decreasing the number of physical voices during the game when processing time is most crucial.<br>
+<br>
+-<b>Minimize the resampling (</b><a ref="../../../keywords/index/data/audio.htm#pitch" target="keywords"><b>pitch</b></a><b>  shift) process or the </b><a
+href="../../../keywords/index/data/audio.htm#ADPCM" target="keywords"><b>ADPCM</b></a><b> process as it takes a relatively long time.</b><br>
+Try to record the sound using a <a
+href="../../../keywords/index/data/audio.htm#sampling rate"
+target="keywords">sampling rate</a> as close to the playback rate as possible, so that you can avoid the resampling process. Or, when the N64 Game Pak ROM capacity can afford it, try to use raw voice source data that is not ADPCM compressed.  This improves RSP processing time. However, in actuality, a resampling process is likely to be necessary because, for example, the numerical value becomes 32006Hz even if you set AI to 32000Hz.<br>
+<br>
+-<b>Minimize sound <a href="../../../keywords/index/data/audio.htm#effect" target="keywords">effects</a>; these take a long time to process.</b><br>
+The more you use the effect primitive, the more it takes time to process. Try to keep the number of effect primitives to an absolute minimum. 
+<br><br>
+<br>
+</body>
+</html>

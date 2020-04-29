@@ -1,0 +1,79 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Graphics-CHAPTER 2  Adding Color to a Model</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/22/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<font style="font-size:12pt"><B>2.2  Primitive Color</B></FONT>
+<br>
+<P>
+Primitive color gives color to the entire "drawn primitive" (e.g., one triangle). You can set it using the gDPSetPrimColor command.  The gDPSetPrimColor pseudo-prototype is shown below (it is a macro, so no warning is given even if the types do not agree).
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=1><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>
+<FONT COLOR="#000080"><PRE><CODE>  gDPSetPrimColor(Gfx * gdl, unsigned int m, unsigned int l,
+     unsigned int r, unsigned int g, unsigned int b, unsigned int a);</CODE></PRE></FONT>
+	</TD>
+</TR></TABLE>
+<P>
+ As you can guess from the names, "r, g, b and a" are the red, green, blue and alpha values of the primitive color.  The existence of "m" and "l" parameters will not be of concern until LOD is explained in Chapter 9.
+     The primitive color settings are extremely simple, so for an abbreviated example of the use of gDPSetPrimColor, some source extracted from the gfx2.c sample program is provided below:
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=5><TR>
+	<TD NOWRAP COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE><B>List 2-1</B>
+</TR><TR>
+	<TD NOWRAP BGCOLOR="666666" WIDTH="4" ALIGN=LEFT VALIGN=TOP><HR NOSHADE SIZE=0></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>
+<FONT COLOR="#000080"><PRE><CODE>  /*
+   *  To attach color using primitive color, try assigning
+   *  a different primitive color to each surface.   */
+
+  /* Create surface 1 */
+  gDPSetPrimColor(glistp++, 0, 0, 255, 0, 0, 255);
+  gSP2Triangles(glistp++, 4, 6, 7, 0, 4, 5, 6, 0);
+  gDPPipeSync(glistp++);
+  /* Create surface 2 */
+  gDPSetPrimColor(glistp++, 0, 0, 0, 255, 0, 255);
+  gSP2Triangles(glistp++, 6, 5, 2, 1, 2, 5, 1, 1);
+  gDPPipeSync(glistp++);
+</CODE></PRE></FONT>
+	</TD>
+</TR></TABLE>
+<P>
+    In this example, surface 1 is colored red and surface 2 is colored green.  When you color a model this way, the colors are not affected by the direction in which the model is facing or by the presence or absence of lights.<br><br>
+    Next, the meaning of DPPipeSync, which is inserted between gSP2Triangles and gDPSetPrimColor will be explained.  To do this, observe what happens when DPPipeSync is deleted from the display list:
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=5><TR>
+	<TD NOWRAP COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE><B>List 2-2</B>
+</TR><TR>
+	<TD NOWRAP BGCOLOR="666666" WIDTH="4" ALIGN=LEFT VALIGN=TOP><HR NOSHADE SIZE=0></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>
+<FONT COLOR="#000080"><PRE><CODE>  /* Create surface 1 */
+  gDPSetPrimColor(glistp++, 0, 0, 255, 0, 0, 255);
+  gSP2Triangles(glistp++, 4, 6, 7, 0, 4, 5, 6, 0);
+  /* No gDPPipeSync */
+  /* Create surface 2 */
+  gDPSetPrimColor(glistp++, 0, 0, 0, 255, 0, 255);
+  gSP2Triangles(glistp++, 6, 5, 2, 1, 2, 5, 1, 1);
+</CODE></PRE></FONT>
+	</TD>
+</TR></TABLE>
+<P>
+  When the image is rendered according to this display list, the rendering of surface 1 begins after the primitive color has been set to red.  One might think that once the rendering of surface 1 is completed, the primitive color of surface 2 (red) is set and then the rendering of surface 2 begins.  However, pipeline processing occurs within the RDP, so sometimes the next command starts to execute before the previous command has been completed.  In other words, the primitive color for surface 2 might be set while surface 1 is still being rendered, in which case surface 1 would be colored both red and green.
+</P>
+<P>
+<IMG SRC="image04.gif">
+</P>
+<P>
+<B>Figure 2-2  Schematic of Pipeline Processing</B>
+</P>
+<P>
+   To counter this problem, you insert the gDPPipeSync command between the command that defines the primitive and the command that updates the primitive attributes.<br><br>
+     As its name implies, the gDPPipeSync command acts to synchronize pipeline processing and attribute updates, waiting when necessary in order to prevent the kind of inconsistent rendering mentioned above.
+</P>
+</BODY>
+</HTML>

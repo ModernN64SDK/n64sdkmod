@@ -1,0 +1,73 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 30 - Video Interface (VI)</title>
+<!-- Editor: Paula W
+      Notes: Converted from Word format, performed spell check.
+             MAP- 10/26/99 edited content, updated format -->
+</head>
+
+<H1>30.2 Programming Techniques for PAL Format</H1>
+<P>
+Techniques for programming for the PAL format will be described here.  See <A href="./30-01.htm#03-01">Section 30.1.3.1   "Supported Television System Formats"</A> for details on system formats. 
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H2><A name="01"></A>30.2.1 Initialization Procedure</H2>
+<P>
+During boot-up, the OS will identify the N64 Control Deck as being NTSC/PAL/MPAL, and will set this information in the variable osTvType.  The game should be programmed so that it will not work if the contents of <tt>osTvType</tt> do not match the system format of the country for which the software was designed.  Refer to <a href="../../caution/caution/index5.htm">Programming Cautions, Section 5 "Video Mode"</a> for details. 
+<P>
+<b>Example</b>
+<pre>
+if ( osTvType == 0 ){
+    osViSetMode( &osViModePalLpn1 );
+}
+else{
+    while(1);	/* Stop application */
+}
+</pre>
+<P>
+<b>Note:</b>  In this example, when the system format of the country for which the software was designed is not PAL, the program goes into an infinite loop and the game will not start.  Also, note that the argument for <tt>osViSetMode</tt> will differ depending on the mode being used. 
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H2><A name="02"></A>30.2.2 Special Video Mode Settings</H2>
+<P>
+Because the PAL format (50Hz) has more scan lines than the NTSC format (60Hz), when an application is migrated directly from NTSC to PAL, the screen will be long and narrow, with black bands at the top and bottom of the screen.  Therefore, a special video mode, FPAL, has been added as a method for expanding the display to fit the entire TV screen.  Use this FPAL mode when converting NTSC format games to the PAL format. 
+</P>
+<P>
+Before this FPAL mode is used, the mode must be set to FPAL with the <tt>osViSetMode</tt> function. 
+</P>
+<pre>
+<tt>osViSetMode</tt>(&osViModeFpalLpn1); 
+</pre>
+<P>
+The FPAL mode adds 40 more scan lines than are used in the conventional PAL format to compensate for the difference in resolutions between the PAL format and the NTSC format.  However, since a 320x240 frame buffer is not provided in the NTSC format, if the 320x288 of FPAL is displayed, an area will show up at the bottom of the screen that is not consistent with the NTSC format. 
+</P>
+<P>
+The following two methods can be used to prevent this.
+</P>
+<OL> 
+  <li>Enlarge the frame buffer<br>
+This method simply increases the resolution and is the default state in the FPAL mode.  At low-resolution, a frame buffer (320x288) with 48 lines added to the standard frame buffer, and at high-resolution, a frame buffer with 96 lines added (640x576), are available, allowing rendering over the entire screen area.  
+With changes to the frame size, the program and graphic data must also be changed, and processing is required to accompany this. 
+<P>
+  <li>Use <tt>osViSetYScale</tt><br>
+With osViSetYScale, simple display over the entire screen is possible by extending the 240 lines (valid in NTSC) from the (top, i.e., by expanding the 320x240 screen vertically). 
+In the FPAL mode, display will be extended to nearly the entire screen by calling: 
+<pre>
+osViSetYScale(0.833); 
+</pre>
+after executing <tt>osViSetMode</tt>.  Modification from the NTSC format is simple in this case since it is unnecessary to change the frame buffer size.  However, a drawback of this technique is that the screen tends to dim overall. 
+Additionally, when <tt>osViSetYScale</tt> is used, the y-scale must be returned to 1.0 whenever a PreNMI event occurs or when <tt>osViBlack</tt> is executed.  Caution is required as the RCP will sometimes hang up on reset. 
+</OL>
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+</BODY>
+</HTML>

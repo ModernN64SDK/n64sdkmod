@@ -1,0 +1,90 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Graphics-Chapter 9  Advanced Texture Mapping</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/22/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<font style="font-size:12pt"><B>9.5  Reflection Mapping</B></FONT>
+<br>
+<P>
+Reflection mapping effects are produced in the same way as highlights, so here we will only focus on an explanation of the way in which they differ.
+</P>
+<BR>
+<B>9.5.1  Preparing the Structure</B>
+<P>
+  For reflection mapping, you pass the LookAt type variable to the <tt>guLookAtReflect</tt> function and initialize.  For a detailed explanation of the <tt>guLookAtReflect</tt> function, please see the Function Reference.
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=5><TR>
+	<TD NOWRAP COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE><B>List 9-5</B>
+</TR><TR>
+	<TD NOWRAP BGCOLOR="666666" WIDTH="4" ALIGN=LEFT VALIGN=TOP><HR NOSHADE SIZE=0></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>
+<FONT COLOR="#000080"><PRE><CODE>  /*
+   *  Set the view structure
+   */
+  guLookAtReflectF(fmat2, &amp;lookat,
+               0.0, 0.0, 50.0,
+               0.0, 0.0, 0.0,
+               0.0, 1.0, 0.0);</CODE></PRE></FONT>
+	</TD>
+</TR></TABLE>
+<BR>
+<p>
+<B>9.5.2 Preparing the Light</B>
+<P>
+Unlike highlighting, in the case of reflection mapping there is not a single kind of light.  Therefore, if you impinge with a strong diffuse light, the color can be clamped as a result of the lighting calculation.  In the gfx9.c sample program, the color of the diffuse light is set to 0, and this colorless diffuse light is used for reflection mapping.
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=5><TR>
+	<TD NOWRAP COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE><B>List 9-6</B>
+</TR><TR>
+	<TD NOWRAP BGCOLOR="666666" WIDTH="4" ALIGN=LEFT VALIGN=TOP><HR NOSHADE SIZE=0></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>
+	<FONT COLOR="#000080"><PRE><CODE> /*
+  *  If the diffuse light is strong when reflection mapping,
+  *  the color of the illuminated area can be clamped.
+  */
+ Lights1  light = gdSPDefLights1( 0,   0, 50,  /* Blue ambient light  */
+                                  0,   0,  0,  /* Diffuse light has no color  */
+                                  0, 127,  0); /* Direction toward diffuse light */</CODE></PRE></FONT>
+	</TD>
+</TR></TABLE>
+<BR>
+<p>
+<B>9.5.3  Other Commands</B>
+<P>
+The other commands are basically the same as when highlighting, except that when reflection mapping you can also specify G_TEXTURE_LINEAR_GEN in the geometry mode.  When this is specified, cylindrical texture coordinate transformations are executed. 
+<br><br>
+     Also, the color used for reflection mapping is the color set as the ambient color.
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=5><TR>
+	<TD NOWRAP COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE><B>List 9-7</B>
+</TR><TR>
+	<TD NOWRAP BGCOLOR="666666" WIDTH="4" ALIGN=LEFT VALIGN=TOP><HR NOSHADE SIZE=0></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>
+<FONT COLOR="#000080"><PRE><CODE>  gSPLookAt(glistp++, &amp;lookat);
+  /* Please set G_TEXTURE_GEN (and G_TEXTURE_GEN_LINEAR) in the geometry mode  */
+  gSPSetGeometryMode(glistp++, G_TEXTURE_GEN | G_LIGHTING | G_ZBUFFER |
+                               G_SHADE | G_SHADING_SMOOTH | G_CULL_BACK);
+  /* G_CC_REFLECTRGB = ENVIRONMENT, 0, TEXEL0, SHADE, 0, 0, 0, SHADE */
+  gDPSetCombineMode(glistp++, G_CC_REFLECTRGB, G_CC_REFLECTRGB);
+  /* Light position  */
+  gSPSetLights1(glistp++, light);
+  /* The ambient color becomes the color of the reflected light  */
+  gDPSetEnvColor(glistp++, 250, 160, 50, 255);</CODE></PRE></FONT>
+	</TD>
+</TR></TABLE>
+<P>
+<IMG SRC="image30.gif" WIDTH="457" HEIGHT="119">
+</P>
+<P>
+<B>Figure 9-3  Screen shots of gfx9.c sample program with __REFLECTION__ defined.</B>
+</P>
+<P>
+ We've just got finished saying that the color for highlights is determined by the primitive color, and the color for reflection mapping is determined by the ambient color.  But this is only because that is how the combine modes G_CC_HILITERGB and G_CC_REFLECTRGB are defined.  If you alter the combine mode, you can use the color from other input sources.  We talked earlier about the ability to define custom combine modes.  So for those who are interested, go ahead and try making some of your own highlight and reflection mapping effects.
+</P>
+</BODY>
+</HTML>

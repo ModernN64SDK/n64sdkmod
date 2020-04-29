@@ -1,0 +1,43 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 5 - Game Production Process</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check.
+             MAP- 11/1/99 edited content, updated format-->
+</head>
+
+<h1>5.2 Model to Render Space Database Conversion </h1> 
+
+<p>This section outlines issues you may face when converting from a modeling database to a <a href="../../keywords/index/data/graphics.htm#rendering" target="keywords">rendering</a> database. </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="01"><h2>5.2.1 Existing Converters </h2></a>
+
+<p>Both NinGen and Alias software packages have database converters to convert to the Nintendo 64 format (<a href="../../keywords/index/data/graphics.htm#graphics binary interface" target="keywords">Graphics Binary Interface</a>). </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="02"><h2>5.2.2 Custom Converters </h2></a>
+
+<p>You may want to write your own database converters because you want to manage certain resources or <a href="../../keywords/index/data/graphics.htm#attribute" target="keywords">attributes</a> in a different way, tailored to your game.  The N64 Software release provides a sample converter, <a href="../../n64man/tool/flt2c.htm">flt2c()</a>, from the MultiGen flt file format to the N64 format.   In addition, Silicon Graphics provides a converter
+from the SGI IRIX image format to the N64 <a href="../../keywords/index/data/graphics.htm#texture memory" target="keywords">texture memory</a> format, <a href="../../n64man/tool/rgb2c.htm">rgb2c()</a>.  These sample converters are not complete, nor are they designed to be totally efficient; they are just meant to be a template to help you understand what a converter is and what it needs to do.  Use these samples as templates when creating your own converters.</p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="03"><h2>5.2.3 Conversion Considerations </h2></a>
+
+<p>There are many efficiency considerations to keep in mind when you are writing a database converter. Here are a few: </p>
+
+<ul>
+  <li>Redundant hierarchical transformations should be eliminated. Transformations should be used for articulated parts or <A target="keywords" HREF="../../keywords/index/data/system.htm#instance">instancing</A>, not for preserving modeling hierarchy.<p>
+
+  <li>Since the <a href="../../keywords/index/data/graphics.htm#geometry" target="keywords">geometry</a> transformation subsystem has a <a href="../../keywords/index/data/graphics.htm#vertex cache" target="keywords">vertex cache</a>, block loading 16 vertices to render as many triangles as possible has better performance.<p>
+
+  <li>On-chip texture memory is not large (4 KB). If you are stamping trees in your scene, you should render in texture order. Keep in mind that texture order may require a <a href="../../keywords/index/data/graphics.htm#Z buffer" target="keywords">Z buffer</a>, which requires additional dram <A target="keywords" HREF="../../keywords/index/data/system.htm#bandwidth">bandwidth</A>. You may need to experiment to find the best <A target="keywords" HREF="../../keywords/index/data/system.htm#trade off">trade-off</A> for your game. <p>
+      
+  <li>The display pipeline has many attribute states. You may want to determine which sets are global and local to an object. Learn how to manage these attributes to best fit the kind of game you are creating.<p>
+
+</ul>
+
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+</body> </html>

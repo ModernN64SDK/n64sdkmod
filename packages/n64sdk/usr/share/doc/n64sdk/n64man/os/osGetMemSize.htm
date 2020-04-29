@@ -1,0 +1,39 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.>
+<title>osGetMemSize</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>osGetMemSize</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p><i>Checks for a Memory Exansion Pak (for 64DD)</i></p>
+
+<h3>Syntax</h3>
+
+<p><pre>#include &lt;ultra64.h&gt;     /* <A HREF="../../header/ultra64.htm">ultra64.h</A> */
+<br>
+u32 osGetMemSize(void);</p></pre>
+
+<h3>Description</h3>
+
+<p>A 4MB (=36 Mbit) Memory Expansion Pack is included with 64DD.  With a disk-startup game, the IPL checks whether a Memory Expansion Pack is inserted in N64.  With a cassette-startup game, this check must be performed by the cassette program.  In this case, <tt>osGetMemSize</tt> should be used. </p>
+
+<p>The function's return value is a byte. If the Memory Pak is inserted in the N64, the value of the return byte is 0x00800000. With a cassette-startup game, after confirming that a Memory Expansion Pack is inserted, be sure to enable use of the expansion area. </p>
+
+<p>This function differs from the <a href="osMemSize.htm">osMemSize</a> (see osGlobals) global variable in that this function confirms the existence of the Memory Pak by actually writing data in part of the extended area. To confirm the presence of a Memory Expansion Pack, be sure to use 
+<tt>osGetMemSize</tt>.</p>
+
+<p>This function destroys the expansion area (0x8040_0000 - 0x807f_ffff) but does not destroy the original 4 MB N64 area (0x8000_0000 - 0x803f_ffff).  The expansion area should not be used until <tt>osGetMemSize</tt> is used to confirm that a Memory Expansion Pack is present. </p>
+
+<h3>See Also</h3>
+
+<p><a href="osMemSize.htm">osMemSize</a></p>
+<h3>Revision History</h3>
+<p>1999/04/30  Changed Format</p>
+<br><br>
+
+</body>
+</html>

@@ -1,0 +1,56 @@
+<HTML>
+<HEAD>
+<TITLE>memalign</TITLE>
+<link rel=stylesheet type="text/css" href="../../n64man/n64man.css">
+<!-- Editor's Notes: 9/9/1999 Ron Daring -->
+</HEAD>
+
+<BODY bgcolor="#FFFFFF">
+
+
+<P>
+<h1>Memory Allocation Routines</h1>
+
+<HR>
+<P>
+<h2>memalign<!--  -->, mt_memalign<!--  --></h2>
+<p>
+<HR>
+<P>
+<b>Syntax</b>
+<font face="courier" size="2">
+<pre>
+#include &lt;malloc.h&gt;
+void *memalign(int alignment, size_t size);
+<!--  -->void *mt_memalign(int alignment, size_t size)<!--  --></pre>
+</font>
+
+<p><b>Arguments</b>
+<font face="courier" size="2">
+<pre>
+<B>alignment</B>      alignment value 
+<B>size</B>           size to be reserved</pre>
+</font>
+
+<p><b>Return Value</b>
+<font face="courier" size="2">
+<pre>The pointer to the beginning of the reserved area or NULL if it fails to reserve an area </pre>
+</font>
+
+<p><b>Description</b>
+
+<p>Reserves a memory block of more than <TT>size</TT> in the area reserved using the <TT>InitHeap</TT> function from the area for which alignment was adjusted using <TT>alignment</TT>.
+
+<p>If the <TT>alignment</TT> value is less than 16, the process is performed assuming the <TT>alignment</TT> value is 16.
+
+<p><!--  --> <TT>mt_memalign</TT> is the multi-thread compatible version of <TT>memalign</TT>. Interruption is inhibited when processing is being performed to prevent malfunction if used by more than one thread.<!--  -->
+<p>
+<hr>
+<P><b><!--  -->Revision History</b>
+<P>
+<!--  -->6/1/99  Added explanation of the multi-thread version<!--  -->
+<p>
+
+<hr>
+</body>
+</html>

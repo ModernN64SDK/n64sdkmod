@@ -1,0 +1,64 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.
+  PWC- updated formatting
+  MAP- added links, updated format
+-->
+<title>osFlushLog</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>osFlushLog</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p>osCreateLog, osLogEvent, osFlushLog</p>
+
+<p><i>Functions as a logging utility</i></p>
+
+<h3>Syntax</h3>
+<p>
+<blockquote>
+    <pre>#include &lt;ultra64.h&gt;     /* <A HREF="../../header/ultra64.htm">ultra64.h</A> */
+void osCreateLog(OSLog *log, u32 *base, s32 len);
+void osLogEvent(OSLog *log, s16 code, s16 numArgs, ....);
+void osFlushLog(OSLog *log);</pre>
+</blockquote>
+</p>
+<h3>Description</h3>
+
+<p>Logging provides an alternate mechanism to the <A HREF="../tool/rmonPrintf.htm">rmonPrintf</A> for formatted character string output that has a lesser immediate performance impact. Logging works by buffering the output information in DRAM for later use. This delays the relatively expensive transfer to , and formatting by the host causes it to operate. 
+Conversely, rmonPrintf tool formats the given character string on the target and flushes the string back to the host immediately upon its invocation. Logging may be preferable for cases such as real-time debugging or for performance analysis.</p>
+
+<p>An OSLog data structure acts as a handle by which an individual log is referenced by the logging routines. The <A HREF="osCreateLog.htm">osCreateLog</A> function initializes this structure. The base argument is a pointer to a memory region of len 32-bit words that will hold the actual log data.</p>
+
+<p>The <A HREF="osLogEvent.htm">osLogEvent</A> routine adds an entry to the given log. The log entry begins with a 16-bit code, followed by an additional argument count (numArgs), and finally the additional arguments themselves. There may be no more than OS_LOG_MAX_ARGS, or 16, additional arguments. The arguments are limited to 32-bit quantities, and may not be address pointers, including character strings.</p>
+
+<p>The <tt>osFlushLog</tt> routine transfers the log data to the host, where the <a href="../tool/gload.htm">gload</a> program interprets and print the log. The gload program looks up the logging code in a format file and applies the format string to the remaining arguments. Suppose the format file has this line:</p>
+<p>
+<blockquote>
+    <pre>10 &quot;The hexadecimal equivalent of %d ix 0x%x&quot;</pre>
+</blockquote>
+</p>
+<p>Then this call:</p>
+<p>
+<blockquote>
+    <pre>osLogEvent(log, 10, 2, 16, 16);</pre>
+</blockquote>
+</p>
+<p>causes gload to output:</p>
+<p>
+<blockquote>
+    <pre>0xXXXXXXX (0010): The hexadecimal equivalent of 16 is 0x10</pre>
+</blockquote>
+</p>
+<h3>See Also</h3>
+
+<p><a href="../tool/gload.htm">gload</a></p>
+</body>
+<H3>Revision History</H3>
+<P>
+1999/04/30  Changed Format
+</P>
+
+</html>

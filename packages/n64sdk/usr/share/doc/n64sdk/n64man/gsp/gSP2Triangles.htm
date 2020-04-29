@@ -1,0 +1,123 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.>
+<TITLE>gSP2Triangles</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>gSP2Triangles [Macro]</H1>
+
+<h3>Function</h3>
+
+<p>gSP2Triangles</p>
+<P>
+<i>Draws 2 triangles</i>
+</P>
+<h3>Syntax</h3>
+<p>
+<PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gbi.htm">gbi.h</A> */
+gSP2Triangles(
+        gfx *gdl,
+        s32 v00,
+        s32 v01,
+        s32 v02,
+        s32 flag0,
+        s32 v10,
+        s32 v11,
+        s32 v12,
+        s32 flag1)
+gsSP2Triangles(
+        s32 v00,
+        s32 v01,
+        s32 v02,
+        s32 flag0,
+        s32 v10,
+        s32 v11,
+        s32 v12,
+        s32 flag1)</CODE></PRE></p>
+
+<h3>Arguments</h3>
+<p>
+<DL>
+  <DT><B>gdl</B>
+  <DD>Display list pointer
+  <DD> 
+  <DT><B>v00</B>, <B>v01</B>, <B>v02</B>
+  <DD>Vertex buffer index for first triangle <BR>
+	<TABLE BORDER="1" CELLSPACING="0" CELLPADDING="3">
+	<TR>
+	<TD NOWRAP ALIGN="left" VALIGN="middle">
+		F3DEX<BR>
+		F3DEX.NoN<BR>
+		F3DLX<BR>
+		F3DLX.NoN<BR>
+		L3DEX</TD>
+	<TD NOWRAP ALIGN="left" VALIGN="middle">0~31</TD>
+	</TR>
+	<TR>
+	<TD NOWRAP ALIGN="left" VALIGN="middle">F3DLX.Rej</TD>
+	<TD NOWRAP ALIGN="left" VALIGN="middle">0~63</TD>
+	</TR>
+	<TR>
+	<TD NOWRAP ALIGN="left" VALIGN="middle">F3DLP.Rej</TD>
+	<TD NOWRAP ALIGN="left" VALIGN="middle">0~79</TD>
+	</TR>
+	</TABLE>
+<BR>
+* For the F3DEX2 microcode group (F3DEX2/F3DLX2/F3DLP2/L3DEX2), the values are as follows:
+	<TABLE BORDER="1" CELLSPACING="0" CELLPADDING="3">
+	<TR>
+	<TD NOWRAP ALIGN="left" VALIGN="middle">
+		F3DEX2<BR>
+		F3DEX2.NoN<BR>
+		F3DLX2<BR>
+		F3DLX2.NoN<BR>
+		L3DEX2</TD>
+	<TD NOWRAP ALIGN="left" VALIGN="middle">0~31</TD>
+	</TR>
+	<TR>
+	<TD NOWRAP ALIGN="left" VALIGN="middle">
+		F3DEX2.Rej<BR>
+		F3DLX2.Rej</TD>
+	<TD NOWRAP ALIGN="left" VALIGN="middle">0~63</TD>
+	</TR>
+	</TABLE>
+  <BR>
+  <DT><B>flag0</B>
+  <DD>The triangle surface flag for the first triangle (0~2) 
+  <DD> 
+  <DT><B>v10</B>, <B>v11</B>, <B>v12</B>
+  <DD>Vertex buffer index for second triangle <BR>
+	* Values same as <B>v00</B>, <B>v01</B>, and <B>v02</B>.
+  <DD> 
+  <DT><B>flag1</B>
+  <DD>The triangle surface flag for the second triangle (0~2)
+</DL></p>
+<h3>Description</h3>
+<P>
+It generates the first triangle using the vertices <B>v00</B>, <B>v01</B>, and <B>v02</B>, loaded into the vertex buffer by the <A HREF="gSPVertex.htm">gSPVertex</A> macro, and generates the second triangle using the vertice<B>v10</B>, <B>v11</B>, <B>v12</B>. 
+</P>
+<P>
+gSP2Triangles process is illustrated below.<BR>
+  gSP1Triangle(gdl++, v00, v01, v02, flag0);<BR>
+  gSP1Triangle(gdl++, v10, v11, v12, flag1);
+</P>
+<P>
+Since two g*SP1Triangle macros are processed using one display list, the size of the display list in memory can be reduced. And because F3DLP.Rej and F3DLX.Rej are optimized for gSP2Triangles, using them results in faster processing. 
+</P>
+<P>
+To learn more about the features of each triangle, refer to g*SP1Triangle.
+</P>
+<h3>See Also</h3>
+<P>
+<A HREF="gSP1Triangle.htm">gSP1Triangle</A>, <A HREF="gSPVertex.htm">gSPVertex</A>
+</P>
+<h3>Revision History</h3>
+<P>
+02/01/98  Entirely revised.
+</P>
+</BODY>
+</HTML>

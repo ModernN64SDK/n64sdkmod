@@ -1,0 +1,91 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<!--
+Editors Notes:
+  PWC- updated formatting
+JLR-- Did reformating
+MAP- updated format
+-->
+<title>ic</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>ic</b></font><font style="font-size: 9pt"><b> (tool command)</b></font>
+
+<p><i>Functions as the instrument compiler for N64 audio</p></i>
+
+<h3>Syntax</h3>
+<p>
+ic [-v] [-p] [-c] [-s] [-n] -o &lt;output file prefix&gt; &lt;source file&gt;</p>
+
+<h3>Description</h3>
+
+<p>The Nintendo 64 Audio Library synthesizes audio from MIDI events by using information contained in the .ctl and .tbl data files. These files, along with the .sym file are known collectively as Bank files, and are created by the ic tool.
+</p>
+
+<p>The .tbl file contains the ADPCM compressed audio wavetable data.
+</p>
+
+<p>The .ctl file contains information about how the wavetables are to be synthesized. It includes information about the wavetable's envelope, pan position, pitch, mapping to MIDI note numbers, and velocity values. For more information about the format of the .ctl file, see the Audio Formats section of the Nintendo 64 Programming Manual.
+</p>
+
+<p>If the -c or -s option is used, ic determines what sounds are needed to play the sequences contained in the sequence bank files, and it removes any unused sounds or objects.
+</p>
+
+<p>The .sym file contains the bank file's symbol information, and is used mainly for development and debugging. It is used only by the audio bank tools, not by the Audio Library. 
+</p>
+
+<p>Command Line Options
+</p>
+
+<dl>
+    <dt><strong>-v</strong></dt>
+    <dd>Turns on verbose mode, which spews a lot of largely useless information. 
+        <br>
+        <br>
+        </dd>
+    <dt><strong>-o &lt;filename&gt;</strong></dt>
+    <dd>Specifies a file prefix for instrument compiler output. 
+        <br>
+        <br>
+        </dd>
+    <dt><strong>&lt;source file&gt;</strong></dt>
+    <dd>Gives you the source code for the instrument compiler. (.inst file)
+        <br>
+        <br>
+        </dd>
+    <dt><strong>-c &lt;compact sequence bank file&gt;</strong></dt>
+    <dd>Analyzes the compact sequence bank file, and determines what sounds and objects are used. Any object not needed is stripped from the output bank. The compact sequence file should be made using midicomp and sbc. 
+        <br>
+        <br>
+        </dd>
+    <dt><strong>-s &lt;midi sequence bank file&gt;</strong></dt>
+    <dd>Analyzes the sequence bank file, and determines what sounds and objects are used. Any object not needed is stripped from the output bank. The compact sequence file should be made using midicvt and sbc. 
+        <br>
+        <br>
+        </dd>
+    <dt><strong>-p</strong></dt>
+    <dd>Prints out a table for every program, showing whether or not the key is used. A value of zero indicates unused, and a one indicates used. (This option is valid only when used with the -c or -s option.) 
+        <br>
+        <br>
+        </dd>
+    <dt><strong>-n</strong></dt>
+    <dd>Blocks the sorting of sounds by their keymap. This is usually used when you're compiling a sound effects bank because the game needs to reference the sounds as they appear in the .inst file. However, MIDI banks need to have their sounds sorted by keymap so MIDI note numbers can be correctly mapped to the corresponding sound.
+        <br>
+        <br>
+        </dd>
+</dl>
+
+<h3>See Also</h3>
+
+<p><a href="tabledesign.htm">tabledesign</a> and <a
+href="vadpcm_enc.htm">vadpcm_enc</a>
+</p>
+<h3>Revision History</h3>
+<p>1999/04/30  Changed Format</p>
+<br><br>
+</body>
+</html>

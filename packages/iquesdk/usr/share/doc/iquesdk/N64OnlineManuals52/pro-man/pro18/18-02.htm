@@ -1,0 +1,137 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 18 - Audio Tools</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. -->
+</head>
+
+<H1>
+18.2 The ADPCM Tools: tabledesign, vadpcm_enc, vadpcm_dec</H1>
+
+<p>The <A HREF="../../n64man/tool/ic.htm">ic</A>  tool requires <a href="../../keywords/index/data/audio.htm#wave table" target="keywords">wavetables</a> to be compressed in ADPCM format before they are included
+in a sound bank. ADPCM compression is accomplished using the <A HREF="../../n64man/tool/tabledesign.htm">tabledesign</A>, <A HREF="../../n64man/tool/vadpcm_enc.htm">vadpcm_enc</A>, and <A HREF="../../n64man/tool/vadpcm_dec.htm">vadpcm_dec</A>. These tools are described below. </p>
+
+<P><strong>Note:</strong>  The format described is used only as an interchange format between the compression tools and the <a href="../../keywords/index/data/audio.htm#instrument compiler" target="keywords">instrument compiler</a>. It is not used to store compressed sound data on the ROM. </p>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="01"></A>
+<H2>
+18.2.1 tabledesign</H2>
+
+<p><A HREF="../../n64man/tool/tabledesign.htm">tabledesign</A> reads an <a href="../../keywords/index/data/audio.htm#AIFC" target="keywords">AIFC</a> or <a href="../../keywords/index/data/audio.htm#AIFF" target="keywords">AIFF</a> sound file and produces a <a href="../../keywords/index/data/audio.htm#code book" target="keywords">code book</a>, which is used by the ADPCM encoder. The codebook is a table of prediction coefficients which the coder selects from to optimize sound quality. The procedure used to design the codebooks is based on an adaptive clustering algorithm.</p>
+
+<P>Command line options are described in the following table to call <A HREF="../../n64man/tool/tabledesign.htm">tabledesign</A></p>
+<BLOCKQUOTE>
+<PRE><A HREF="../../n64man/tool/tabledesign.htm">tabledesign</A> [-s book_size] [-f frame_size][-I refine_iter] aifcfile</PRE>
+</BLOCKQUOTE>
+<p>Command-line options are described in <A HREF="#t18-02">Table 18-2</A></p>
+<TABLE BORDER >
+<CAPTION><A NAME="t18-02"></A><strong>Table 18-2 <A HREF="../../n64man/tool/tabledesign.htm">tabledesign</A> Command Line Options</strong></CAPTION>
+
+<TR>
+<TH nowrap>Command Line Option</TH>
+
+<TH>Function</TH>
+</TR>
+
+<TR>
+<TD align="center">-s&lt;value&gt;</TD>
+
+<TD>value is the base 2 log of the number of entries in the table. Currently up to 8 entries are supported, so the value can range from 0 to 3. The default value for this parameter is 2, giving 4 entries. This seems to be adequate for most sounds.</TD>
+</TR>
+
+<TR>
+<TD align="center">-f&lt;value&gt;</TD>
+
+<TD>value  is the size of the frames (in samples) used to estimate predictors. Since the ADPCM encoder operates on frames of 16 samples, this number should be a multiple of 16. The default value is 16. The main benefit of increasing the frame size is that design time is reduced.</TD>
+</TR>
+
+<TR>
+<TD align="center">-I&lt;value&gt;</TD>
+
+<TD>value  is the number of iterations used in the refinement step of the clustering algorithm. The default value is 2. Increasing this parameter increases design time, with some possible improvement in quality. The default is adequate for most sounds.</TD>
+</TR>
+</TABLE>
+
+<p>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="02"></A>
+<H2>18.2.2 vadpcm_enc</H2>
+
+<p><A HREF="../../n64man/tool/vadpcm_enc.htm">vadpcm_enc</A> encodes AIFC or AIFF sound files and produces a compressed binary file, which
+is used by <A HREF="../../n64man/tool/ic.htm">ic</A> to prepare <a href="../../keywords/index/data/audio.htm#bank" target="keywords">banks</a> of sounds. The encoding algorithm is based on a switchedADPCM algorithm which uses a codebook to define a table of prediction coefficients. Coefficients from the table are selected adaptively by <A HREF="../../n64man/tool/vadpcm_enc.htm">vadpcm_enc</A> during encoding to give the best sound quality. The Nintendo 64 compressed sound format currently supports a single loop point, which should be defined in the input file's Instrument Chunk. The codebook and loop-point definitions are embedded in the final output file. </p>
+
+<P>The <A HREF="../../n64man/tool/vadpcm_enc.htm">vadpcm_enc</A> tool is invoked as follows:</p>
+<BLOCKQUOTE>
+<PRE><A HREF="../../n64man/tool/vadpcm_enc.htm">vadpcm_enc</A> -c codebook [-t] [-l minLoopLength] aifcFile codedFile</PRE>
+</BLOCKQUOTE>
+
+<TABLE BORDER >
+<CAPTION><A NAME="t18-03"></A><strong>Table 18-3 <A HREF="../../n64man/tool/vadpcm_enc.htm">vadpcm_enc</A> Command Line Options</strong></CAPTION>
+
+<TR>
+<TH nowrap>Command Line Option</TH>
+
+<TH>Function</TH>
+</TR>
+
+<TR>
+<TD align="center">-c&lt;filename></TD>
+
+<TD>Define a file that contains the prediction coefficient codebook constructed by <A HREF="../../n64man/tool/tabledesign.htm">tabledesign()</A>, to specify a filename.</TD>
+</TR>
+
+<TR>
+<TD align="center">-t</TD>
+
+<TD>Truncate the encoded file after the loop end point. The portion of the sound after the loop end-point is never used in audio playback.</TD>
+</TR>
+
+<TR>
+<TD align="center">-l&lt;value></TD>
+
+<TD>Set the minimum loop length in the encoded file</TD>
+</TR>
+</TABLE>
+<p><strong>Note:</strong>  The efficiency of wavetable synthesis is dependent on the length of loops. Longer loop lengths can be synthesized more efficiently. A minimum loop length can be set in the ADPCM encoder. The currently defined default minimum loop length is 800 samples. This default length can be changed (see above), with the absolute minimum being 16 samples. Loops shorter than the minimum loop length are repeated until the total loop length is larger than the minimum length. If possible loops should be longer than a single audio frame which is equal to the (SampleRate)/(<A target="keywords" HREF="../../keywords/index/data/graphics.htm#frame rate" target="keywords">Frame Rate</a>). </p>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="03"></A>
+<H2>18.2.3 vadpcm_dec</H2>
+
+<p><A HREF="../../n64man/tool/vadpcm_dec.htm">vadpcm_dec</A> decodes a sound file that has been encoded in the Nintendo 64 ADPCM format
+using <A HREF="../../n64man/tool/vadpcm_enc.htm">vadpcm_enc</A>, and writes it to standard output as raw mono 16-bit samples. </p>
+
+<P>The <A HREF="../../n64man/tool/vadpcm_dec.htm">vadpcm_dec</A> tool is invoked as follows:</p>
+<BLOCKQUOTE>
+<PRE><A HREF="../../n64man/tool/vadpcm_dec.htm">vadpcm_dec</A> [-l] codedFile</PRE>
+</BLOCKQUOTE>
+
+<TABLE BORDER >
+<CAPTION><A NAME="t18-04"></A><strong>Table 18-4 <A HREF="../../n64man/tool/vadpcm_dec.htm">vadpcm_dec</A> Command Line Options</strong></CAPTION>
+
+<TR>
+<TH nowrap>Command Line Option</TH>
+
+<TH>Function</TH>
+</TR>
+
+<TR>
+<TD align="center">-l</TD>
+
+<TD>If the sound has a loop, play the loop repeatedly until a key is pressed on the standard input. </TD>
+</TR>
+</TABLE>
+
+<p>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR>
+</BODY>
+</HTML>

@@ -1,0 +1,41 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 11 - RSP Graphics Programming</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check.
+             MAP 11/18/99 edited content, updated format  -->
+</head>
+
+<h1>11.5 Texture State</h1>
+
+<p>The following command sets the RSP texture state: </p>
+
+<table border=1 align="center">
+  <caption><a name="t11-08"><strong>Table 11-8 <a href="../../n64man/gsp/gSPTexture.htm">gsSPTexture</a>(int s,int t,int levels,int tile,int on)</strong></a></caption>
+  <tr><th>Parameter</th><th>Values</th></tr>
+  <tr><td align="center">s</td><td>s-coordinate texture scale (16-bit unsigned fraction)</td></tr>
+  <tr><td align="center">t</td><td>t-coordinate texture scale (16-bit unsigned fraction)</td></tr>
+  <tr><td align="center">levels</td><td>(maximum number of mip-map levels) - 1</td></tr>
+  <tr><td align="center">tile</td><td>which tile in the <a href="../../keywords/index/data/graphics.htm#TMEM" target="keywords">TMEM</a></td></tr>
+  <tr><td align="center">on</td><td>G_ON or G_OFF</td></tr>
+</table>
+
+<p>As explained previously, a vertex's  s and t coordinates are texel-space coordinates in a S10.5 format.  The texture coordinate usually ranges from 0 to (texel_size - 1), possibly larger to implement "<a href="../../keywords/index/data/graphics.htm#wrap" target="keywords">wrapped</a>" textures.  The maximum number of times that a texture may be wrapped is limited by the number of integer bits in this coordinate. </p>
+
+<p>Since the s and t coordinate texture scale parameters are only fractional numbers, they cannot represent values &GT;= 1.0.  For non-scaled textures, applications typically use a vertex texture coordinate format of S9.6, and a scale value of 0.5 (0x8000 in 16-bit unsigned format). </p>
+
+<p>The levels parameter tells the pipeline the maximum number of mipmap levels to use, if <a href="../../keywords/index/data/graphics.htm#MIP map" target="keywords">mip-mapping</a> is enabled.</p>
+
+<p>The tile parameter tells the pipeline which of the 8 possible tiles in the RCP <a href="../../keywords/index/data/graphics.htm#texture memory" target="keywords">texture memory</a> to use when texturing the following <A target="keywords" HREF="../../keywords/index/data/graphics.htm#primitive" target="keywords">primitives</a>. </p>
+
+<p>The on parameter turns texturing on or off in the RSP. If texturing is turned off in the RSP, textured primitives will not be generated, regardless of the RDP state. </p>
+
+<p>Likewise, setting the RSP state is necessary, but not sufficient to generate textured primitives. The RDP state must also be set in the appropriate manner, please see <a href="../pro12/12-04.htm">Section 12.4 "TX:Texture Engine."</a></p>
+
+<p>Texturing is sensitive to large numbers and overflows.  Please refer to <a href="11-03.htm#04"> Section 11.3.4, "Note on Coordinate Systems and Big Numbers"</a> for notes on how to avoid texturing problems such as textures shifting across <a href="../../keywords/index/data/graphics.htm#surface" target="keywords">surfaces</a>, textures tearing, and edges between <a href="../../keywords/index/data/graphics.htm#polygon" target="keywords">polygons</a> becoming visible in the texture. 
+</p>
+
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+</body> </html>

@@ -1,0 +1,302 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN"
+Editor notes- MAP added revisions 9/29/99
+PWC 2/23/00>
+<HTML><link rel="stylesheet" type="text/css" href="../style.css">
+<TITLE>mus Library</TITLE>
+</HEAD>
+
+<BODY>
+<A name="index"></a>
+<IMG src="../../gif/n64_logo2.gif" height="21" width="136">
+<h3><FONT color="#FF8000">Q&A</FONT>- mus Library</h3>
+
+<P>
+<TABLE border="0">
+  <TR>
+  <TD valign="top" width="50"><A href="libmus.htm#01"><b>QA1</b></A></TD>
+  <TD>How do I use multiple sample banks?</TD>
+ </TR>
+ <TR>
+  <TD valign="top" width="50"><A href="libmus.htm#02"><b>QA2</b></A></TD>
+  <TD>How do I use multiple sound effect banks?</TD>
+ </TR>
+ <TR>
+  <TD valign="top" width="50"><A href="libmus.htm#03"><b>QA3</b></A></TD>
+  <TD>A floating point exception occurred inside an audio thread...</TD>
+ </TR>
+ <TR>
+  <TD valign="top" width="50"><A href="libmus.htm#04"><b>QA4</b></A></TD>
+  <TD>Nothing happens when I replace data with testmenu...</TD>
+ </TR>
+ <TR>
+  <TD valign="top" width="50"><A href="libmus.htm#05"><b>QA5</b></A></TD>
+  <TD>I get booted out when I initialize the library....</TD>
+ </TR>
+ <TR>
+  <TD valign="top" width="50"><A href="libmus.htm#06"><b>QA6</b></A></TD>
+  <TD>How do I make the MUS library compatible with an independent scheduler?</TD>
+ </TR>
+ <TR>
+  <TD valign="top" width="50"><A href="libmus.htm#07"><b>QA7</b></A></TD>
+  <TD>Problems occur when song data are memory sharing...</TD>
+ </TR>
+ <TR>
+  <TD valign="top" width="50"><A href="libmus.htm#08"><b>QA8</b></A></TD>
+  <TD>The maximum number of channels increases when I use MusHandlePause()...</TD>
+<TR>
+  <TD valign="top" width="50"><A href="libmus.htm#09"><b>QA9</b></A></TD>
+  <TD>Though there are enough channels, sometimes no sound can be heard. (199910)</TD></TR>
+ <TR>
+  <TD valign="top" width="50"><A href="libmus.htm#10"><b>QA10</b></A></TD>
+  <TD>Please tell me how to implement a monaural mode. (199908)</TD>
+ </TR>
+</TABLE>
+
+<HR>
+
+<P>
+<A name="01"><FONT color="#FF0000"><b>Q1</b></FONT></A>
+<b>I understand I can use multiple sample bans, but how do I actually do that?</b>
+
+
+<P>
+<FONT color="#008000"><b>A1</b></FONT>
+ Concretely speaking, simply set the default sample bank with the <a href="../../n64man/mus/MusPtrBankSetCurrent.html">MusPtrBankSetCurrent()</a> function. Don't forget to initialize the sample bank with the <a href="../../n64man/mus/MusPtrBankInitialize.html">MusPtrBankInitialize()</a> before specifying it. 
+
+<P>
+Otherwise, there is also the <a href="../../n64man/mus/MusPtrBankSetSingle.html">MusPtrBankSetSingle()</a> function. This is set in something called the override. It is characterized by having a higher priority than the default, but it is cleared after it is used one time. It can be used when you wish temporarily to switch to a sample bank for a specific song. 
+
+<p>
+If you wish to utilize different banks for songs and sound effects, you could use <a href="../../n64man/mus/MusFxBankSetPtrBank.html">MusFxBankSetPtrBank()</a> to set the default value for each sound effect bank. However, keep in mind that the override will always take priority. 
+
+<P>
+Please see the N64 Function Reference Manual for details about each function. 
+
+
+<P align="right">
+<A href="libmus.htm#index">top</A>
+
+
+<HR>
+
+<P>
+<A name="02"><FONT color="#FF0000"><b>Q2</b></FONT></A>
+<b> I've heard that you can use multiple files for sound effects, but how do you actually do that?</b>
+
+
+<P>
+<FONT  color="#008000"><b>A2</b></FONT>  Since Version 3, sound effect banks have been used instead of the C code as the sound effect source. As can be understood from the term "bank", these essentially are utilized in the same way as sample banks. 
+
+<P>
+Concretely, reset the default with the <a href="../../n64man/mus/MusFxBankSetCurrent.html">MusFxBankSetCurrent()</a> function. You can set a sound effect override with the <a href="../../n64man/mus/MusFxBankSetSingle.html">MusFxBankSetSingle()</a> function. An override takes priority over the default, but is cleared after it is used once, making it useful when you wish temporarily to switch sound effect banks. 
+
+<P>
+In cases where there will be frequent switching between multiple sound effects and multiple sound effect banks, you may also set the default value for each bank with <a href="../../n64man/mus/MusFxBankSetPtrBank.html">MusFxBankSetPtrBank()</a>. 
+
+<P>
+Please see the N64 Function Reference Manual for details about each function. 
+
+
+<P align="right">
+<A href="libmus.htm#index">top</A>
+
+
+<HR>
+
+<P>
+<A name="03"><FONT color="#FF0000"><b>Q3</b></FONT></A>
+<b>When I try to pay a sound effect created with the N64 Sequencer with a dedicated sample bank initialized with the <a href="../../n64man/mus/MusPtrBankInitialize.html">MusPtrBankIntialize()</a> function, a floating point exception occurs in the audio thread and the program terminates. </b>
+
+<P>
+<b>The sample pointer bank data are loaded from ROM and the sample wave bank directly specifies the ROM address, but are there any restrictions on this?</b>
+
+
+<P>
+<FONT color="#008000"><b>A3</b></FONT> This is probably caused by the sound effect bank and sample bank not being properly combined. Even when only the sound effect is created on the N64 Sequencer, save it as a sng file. 
+
+<P>
+When it is saved as an sfx file, there is a chance that it will not be able to synchronize since the sample bank information is not saved. sfx files are used when copying only the sound effect settings to other data. In addition, once you have saved the data as a sng file, run "Compile Bank" again. 
+
+
+<P align="right">
+<A href="libmus.htm#index">top</A>
+
+
+<HR>
+
+<P>
+<A name="04"><FONT color="#FF0000"><b>Q4</b></FONT></A>
+<b> I tried to play back trial data that I had created using testmenu, one of the sample programs included with N64 Sound Tools, but it didn't work very well. Does testmenu not work if you replace the data? Or is there some special setting that I should know about? </b>
+
+
+<P>
+<FONT color="#008000"><b>A4</b></FONT> With this testmenu, an area is statically set aside in RAM for bin files, ptr files and/or bfx files . Therefore, it becomes necessary to change the source when handling large bin files, ptr files, and/or bfx files. 
+
+<P>
+Specifically, the size of the ptr files is set in Line 463 of test_main.c, while the sizes of bin files and bfx files are set in Lines 411~415. As the default here, tune_buffer1 and tune_buffer3 correspond with tune1 in the spec file, while tune_buffer2 and tune_buffer4 correspond with tune2. In addition, in the menu display, 1 indicates tune_buffer1, 2 indicates tune_buffer2, 3 indicates tune_buffer3, and 4 indicates tune_buffer4. This allows for easy changes.  
+
+
+<pre>[Line 463]
+#define PBANK_SIZE	  5000
+
+[Lines 411~415]
+int tune_buffer1[6000/sizeof(int)];
+int tune_buffer2[6000/sizeof(int)];
+int tune_buffer3[6000/sizeof(int)];
+int tune_buffer4[6000/sizeof(int)];
+int sfx_buffer1[6000/sizeof(int)];</pre>
+<P>
+In addition, when changing the maximum number of channels or the playback frequency, please change the parameters in InitMusicPlayer() started from Line 470 of test_main.c. 
+
+
+<P align="right">
+<A href="libmus.htm#index">top</A>
+
+
+<HR>
+
+<P>
+<A name="05"><FONT color="#FF0000"><b>Q5</b></FONT></A>
+<b> I'm using the MUS library from NuSystem library. Previously I had no problem, but, when I initialized the sound after substituting the sound data, the sound dropped off.</b>
+
+<P>
+<b>Because the heap size defined in nualstl.h is larger than needed, I changed 0x80000 to 0x50000.</b>
+
+
+<P>
+<FONT color="#008000"><b>A5</b></FONT> The bin/ptr/bfx data areas are reserved in NuSystem from the audio heap. Therefore, since it seems that the audio heap is not large enough, try making the audio heap larger. 
+
+<P>
+The method for calculating the required heap size is explained here. 
+
+<P>
+First, the heap is reserved according to a parameter in the arguments when the library is initialized. You can check the size by the return value from the initialization function. Then, if the size reserved as the data area is enough, you can find the size of audio heap that is ultimately needed. 
+
+<P>
+The <a href="../../nusystem/nu_f/audio_stools/nuAuStlHeapGetUsed.htm">nuAuStlHeapGetUsed()</a> function, which tells the amount of audio heap being used, and the <a href="../../nusystem/nu_f/audio_stools/nuAuStlHeapGetFree.htm">nuAuStlHeapGetFree()</a> function, which gives the remaining free space, are also helpful. 
+
+
+<P align="right">
+<A href="libmus.htm#index">top</A>
+
+
+<HR>
+
+<P>
+<A name="06"><FONT color="#FF0000"><b>Q6</b></FONT></A>
+<b> How do I make the MUS library compatible with an independent scheduler. </b>
+
+
+<P>
+<FONT color="#008000"><b>A6</b></FONT> Use the <a href="../../n64man/mus/MusSetScheduler.html"> MusSetScheduler()</a> function to utilize an optional scheduler. 
+
+<P>
+Specifically, consider nnsched, a sample program included with the N64 Sound Tools. This sample program makes it compatible with nnsched. Also consider that the library can be made compatible with the NuSystem scheduler with nuaustlmgrinit.c, which is one of the source files of NuSystem's nualstl.a file. 
+
+
+<P align="right">
+<A href="libmus.htm#index">top</A>
+
+
+<HR>
+
+<P>
+<A name="07"><FONT color="#FF0000"><b>Q7</b></FONT></A>
+<b> When I need to, I load sequence data (*.bin) into the same memory, but small problems come up when I switch songs. </b>
+
+<P>
+Specifically, when I
+
+<ul>
+ <li>stop the preceding song with <a href="../../n64man/mus/MusStop.html">MusStop</a>(MUSFLAG_SONGS,0);
+ <li>overwrite sequence data with the data of another song (Using DMA)
+ <li>execute <a href="../../n64man/mus/MusStartSong.html">MusStartSong</a>(bgm);
+</ul>
+
+<P>
+<b>depending on the song, either absolutely nothing will subsequently be played and/or graphics-related operations go funny. </b>
+
+<P>
+<b>When I tried inserting a suitable timer between stopping the song and loading the next data, everything went normally. </b>
+
+<P>
+<b>Is this standard? </b>
+
+
+<P>
+<FONT color="#008000"><b>A7</b></FONT>
+ Yes. 
+
+<P>
+When you stop a song with <a href="../../n64man/mus/MusStop.html">MusStop()</a>, the song doesn't stop the instant that the function is called, but doesn't actually stop until the next frame (specifically, when the next audio frame is processed). Therefore, it is necessary to wait 1 frame before overwriting with DMA. 
+
+<p>
+However, if <A href="../../n64man/mus/MusStop.html">MusStop()</A> (or <A href="../../n64man/mus/MusHandleStop.html">MusHandleStop()</A>) has already been executed before the current <A href="../../n64man/mus/MusStop.html">MusStop()</A> and a long fade-out is being performed, the second <A href="../../n64man/mus/MusStop.html">MusStop()</A> will be ignored. In other words, the fade does not end until the number of frames specified by the first one have lapsed. 
+
+<P>
+Therefore, use <A href="../../n64man/mus/MusAsk.html">MusAsk()</A> (or <A href="../../n64man/mus/MusHandleAsk.html">MusHandleAsk()</A>) to check whether the previous one has ended. 
+
+
+<P align="right">
+<A href="libmus.htm#index">top</A>
+
+
+<HR>
+
+<P>
+<A name="08"><FONT  color="#FF0000"><b>Q8</b></FONT></A>
+<b> A large number of channels are required when playing back another BGM while one BGM is temporarily stopped with the <a href="../../n64man/mus/MusHandlePause.html">MusHandlePause()</a>function. Is there a more efficient way of doing this?</b>
+
+
+<P>
+<FONT  color="#008000"><b>A8</b></FONT>  If the places where the BGM is being stopped are somewhat limited, there is a better way.
+
+<P>
+That is to set a synchronization marker in advance in the place where the BGM will be restarted, then use <a href="../../n64man/mus/MusHandleStop.html">MusHandleStop()</a> to stop BGM, and then restart it from <a href="../../n64man/mus/MusStartSongFromMarker.html">MusStartSongFromMarker()</a>. 
+
+<P>
+If there is somewhat of a shift at the stop location, this probably can be accommodated to some extent using fade-ins and fade-outs. 
+
+
+<P align="right">
+<A href="libmus.htm#index">top</A>
+
+
+<HR>
+<P>
+<A name="09"><FONT color="#FF0000"><b>Q9</b></FONT></A>
+<b>I played many SEs while playing the song; however, sometimes a part of the song could not be heard. Maybe there are not enough channels, but it seems that there are. What should I check? </b>
+
+<P>
+<FONT color="#008000"><b>A9</b></FONT> Probably one of the initialization parameters, "updates," is not sufficient. Try increasing the value of this parameter. 
+<P align="right">
+<A href="libmus.htm#index">top</A>
+
+<HR>
+<P>
+<A name="10"><FONT color="#FF0000"><b>Q10</b></FONT></A>
+<b>The API of MUS library does not have a function to switch to the monaural mode. Where should I modify to switch to a monaural?  </b>
+
+<P>
+<b>I am using n_audio. </b>
+
+<P>
+<FONT color="#008000"><b>A10</b></FONT> In order to switch to a monaural, you need to modify the synthesizer. The portions in which pans are set in the library are shown below: 
+
+<P>
+For the song (BGM), the 163rd line of n_env.c in the n_audio library. 
+
+<PRE>  e->em_pan = param->pan; </PRE>
+<P>
+For SE, the 221st line of n_env.c in the n_audio library. 
+
+<PRE>  e->em_pan = (s16) e->em_ctrlList->data.i; </PRE>
+<P>
+Please modify these portions so that the fixed value (64) is set when the monaural mode. 
+
+<P align="right">
+<A href="libmus.htm#index">top</A>
+
+<HR>
+</BODY>
+</HTML>

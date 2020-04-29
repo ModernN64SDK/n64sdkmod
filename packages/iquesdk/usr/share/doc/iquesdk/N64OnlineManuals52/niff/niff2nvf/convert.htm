@@ -1,0 +1,221 @@
+<html>
+<head>
+<title>Compatibility of NIFF Data and NVF Data</title>
+</head>
+
+<body bgcolor="#ffffff" text="#000000" link="#0000ff" vlink="#800080" alink="#ff0000">
+<font face="arial" size="-1">
+<b><font size="3">Compatibility of NIFF Data and NVF Data</b></font>
+
+<P>
+This document explains the process for converting NIFF data to NVF data.
+
+<P>
+<b>1. Basic Conversion of Nodes</b>
+<P>
+This section compares the relationship between NIFF and NVF.
+<p>
+When NIFF data has the following node structure, 
+
+<pre><font face="courier" size="2">
+NIFF
+
+  [scene]---[obj]---[shape]-+-[tri]  (tri : no    ShapeAnimation
+                            | 
+                            +-[mat]
+</pre></font>
+
+<P>
+the chunk structure of NVF is as follows: 
+
+<pre><font face="courier" size="2">
+NVF
+
+   [root]---[SHAP]-+-[GEOM]
+                   |   
+                   +-[MTRL]
+
+     root : The root node that is linked to the NHDR chunk. It corresponds to the scene node in NIFF.
+            
+     SHAP : Shape chunk. Roughly corresponds to obj + shape in NIFF. 
+     GEOM : Geometry chunk. Corresponds to the tri node that does not perform ShapeAnimation in NIFF.
+     MTRL : Material chunk. Slightly different from the material node 
+            in NIFF.</pre></font>
+<P>
+With this example, if the tri node performs Shape Animation, the result will be as follows: 
+
+<pre><font face="courier" size="2">
+(NVF)
+
+   [root]---[SHAP]-+-[AGEO]---[VTXI]
+                   |   
+                   +-[MTRL]
+
+     AGEO : Animated Geometry chunk. 
+            Defines a form which performs
+            ShapeAnimation. Entity of vertex data 
+            is not included. 
+     VTXI : Vertex data for Shape Animation
+</pre></font>
+
+<P>
+To run ShapeAnimation, you'll need to manipulate the time of the AGEO chunk in the same manner as other animation nodes using the FLOT chunk (described below in section 2.4, "Using the FLOT Chunk.")
+
+<P>
+<b>
+2. Conversion of Animation Nodes</b>
+
+<P>
+<u>2-1 Conversion of Static Animation</u>
+<P>
+This section describes the conversion of the NIFF anim_group node.
+<p>
+With regard to NIFF static animation, when NIFF animation data is converted to NVF data, the result is as follows: 
+<pre><font face="courier" size="2">
+(NIFF)
+                        +-[mat]
+                        |
+   ---[obj]-+-[shape]---+-[tri]
+            |                
+            +-[anim_group]
+ 
+(NVF)
+
+    ---[XLAT]--[RXYZ]--[CSCL]---[SHAP]-+-[GEOM]
+                                       |
+                                       +-[MTRL]
+
+     XLAT : Translation chunk. Translates to the lower chunk. 
+     RXYZ : RotationXYZ chunk. Rotates toward the lower chunk in the 
+            order of X, Y,and Z axes.
+     CSCL : ClassicalScale chunk. Scales to the lower chunk. 
+</pre></font>
+
+<P>
+The anim_group node that is linked to obj in NIFF will be allocated to the upper position of the other nodes that are linked to obj, in the order of the coordinate transformation in NVF. The chunk, [RXYZ] is just one example. It is necessary to select the NVF chunk according to the contents of the NIFF animation data.
+
+<P>
+<u>2-2 Using the REFR Chunk</u>
+<P>
+This section describes the conversion of frame-by-frame animation.
+<p>
+The REFR chunk in NVF animation is the Reference chunk, and is used by copying the value of one chunk to the value of another chunk.
+<p>
+To make it easier to understand the operation of the
+REFR chunk, the conversion of Constraint is explained in the following example:
+
+<pre><font face="courier" size="2">
+(NIFF)
+        ---+--[obj_0]--+--[tri_0]
+                      |
+                      +--[anim_group_0]                     
+           
+        ---+--[obj_1]--+--[tri_1]
+                      |
+                      +--[anim_group_1]  
+</pre></font>
+<P>
+Taking the above node structure, assume that the instance of DirectionConstraint to obj_1 is anim_group_0 and that DirectionConstraint is set such that the x axis is rotated toward the direction of the object. In this case, the x axis of obj_0 is always rotated toward the direction of obj_1. In this case, NVF data is converted as follows: 
+
+<pre><font face="courier" size="2">
+(NVF)
+
+                      ---[DIRC_0]---[SHAP_0]-+-[GEOM_0]
+                            *
+                            *
+            ( REFR : XFMI_1 field 2 --> DIRC_0 field 0 ) 
+                            *
+                            *
+                       +---[XFMI_1]
+                       |
+  --[chunk of coordinate transformation]--+---[SHAP_1]--+-[GEOM_1]
+
+  DIRC         : DirectionConstraint chunk
+                 Rotates the x axis toward the direction of global Position. 
+  DIRC field 0 : field that specifies a global position that rotates toward 
+                 the direction of the x axis.
+  XFMI         : Transform Information chunk
+                 Stores linked coordinate transformation data.
+  XFMI field 2 : field in which global_position is stored. 
+ 
+</pre></font>
+<P>
+In this case, via the operation of the REFR chunk, the value of field 2 of XFMI_1 is copied to the field 0 of DIRC_0, so that the direction of the x axis can be rotated toward the direction of obj_1 at all times.
+<p>
+As described above, the REFR chunk can be regarded as the chunk for copying values.
+
+<P>
+<u>
+2-3 Frame-By-Frame Animation
+</u>
+<P>
+With reference to the anim_group node, in the case of frame-by-frame animation, the animation is implemented when the REFR chunk copies the value created by the ANMF chunk to the coordinate transformation data chunk. The chunk structure below is required to translate to NVF as in the above case:
+
+<pre><font face="courier" size="2">
+  (root)--[ANMF]--[ FNCC or FNCL or FNCH ]
+             *
+             *
+          ( REFR : ANMF field 2 --> XLAT field 0 ) 
+             *
+             *
+       ---[XLAT]--[RXYZ]--[CSCL]---[SHAP]-+-[GEOM]
+                                       |
+                                       +-[MTRL]
+
+          ANMF : Defines floating point Animation
+                 Entity of data is not included.
+          FNCC : Defines a constant interpolation animation function 
+          FNCL : Defines a linear interpolation animation function
+          FNCH : Defines a tri-linear interpolation animation function 
+</pre></font>
+
+<P>
+In order to run the animation, the time of the ANMF chunk must be manipulated. ANMF is defined below: 
+
+<pre><font face="courier" size="2">
+  Animation 'ANMF' {
+    long    name_entry
+    long    num_of_elements
+    long    num_of_functions
+    long    function_index               :0
+    float   time                         :1
+    float   value[num_of_elements]       :2
+    float   differential[num_of_elements]  :3
+    node    function[num_of_functions]
+  }
+</pre></font>
+
+<P>
+More than one FNCC, FNCL, or FNCH can be linked to the portion of this function. The value of function_index specifies which function is used (animation can be switched by this). The value of the time for the specified function will be entered in this value. The REFR chunk copies this to the coordinate transformation data chunk, therefore this time needs to be changed in order to run the animation. In the case of a full-frame animation of 60 frames, the time must be changed from 0 to 59.
+
+<p>
+The time or function_index needs to be controlled in the program according to the situation. Currently, they are controlled by niff2nvf Converter and nvfview using the FLOT chunk.
+
+<P>
+<u>
+2-4 Using the FLOT Chunk
+</u>
+<P>
+FLOT with an assigned name of "time" (space+time) is output in order to control time. Since NIFF does not recognize spaces, a space is used in the name in order to avoid naming conflicts. FLOT is simply a chunk used to store a value. It is defined as follows:
+
+<pre><font face="courier" size="2">
+  Float 'FLOT' {
+    long    name_entry
+    long    num_of_elements
+    float   value[ num_of_elements ]  :0
+  }
+</pre></font>
+
+<P>
+All animations are controlled at once by referencing (performing REFR) this value[0] to the time of all ANMF, and by changing this value[0] using Previewer.<p>
+Similarly, FLOT with an assigned name of "index" (space+index) is output in order to control function_index. FLOT can be used to control more than one animation. However, because only one function is linked to the data created by niff2nvf Converter, it can only be used when the animation is put together using a tool.
+
+<p>
+<p align="right"><a href="index.htm">
+<img src="../../gif/index.gif"
+border="0" width="65" height="17"></a></p>
+
+<hr>
+</body>
+</html>
+

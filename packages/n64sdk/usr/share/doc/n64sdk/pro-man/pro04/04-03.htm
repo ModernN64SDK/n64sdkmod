@@ -1,0 +1,34 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 4 - Runtime Software Architecture</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check.-->
+</head>
+
+<h1>4.3 Memory Management</h1>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="01"><h2>4.3.1 No Default Dynamic Memory Allocation </h2></a>
+
+<p>N64 software does not impose a memory map on the game.  The N64 system leaves the memory allocation problem up to the game application.  It assumes that the application knows the memory partitioning scheme most suitable for the particular game.  However, the library does have a large amount of functions available which the game application can use. </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="02"><h2>4.3.2 Region Library </h2></a>
+
+<p>The N64 system provides a region allocation library that can partition a memory region specified by the application into a number of fixed-sized blocks.  This gives the application the capability of using a dynamic memory allocation scheme. However, the game application must be able to handle situations where memory in the region has run
+out. </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="03"><h2>4.3.3 Memory Buffer Placement </h2></a>
+
+<p>There are some optimizations with the placement of memory buffers.  For example, it is best to keep the color buffer and <a href="../../keywords/index/data/graphics.htm#Z buffer" target="keywords">Z buffer</a> on separate 1 MB memory banks. The RDRAM has an <A target="keywords" HREF="../../keywords/index/data/system.htm#active page register">active page register</A> for each megabyte. Splitting the color and Z buffers into separate megabytes prevents the memory system from constantly having to change the page register. This technique minimizes page misses.   </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="04"><h2>4.3.4 Memory Alignment </h2></a>
+
+<p>The DMA engines responsible for shuffling data around in the hardware all require the 64-bit aligned source address, the destination address, and lengths.  Addresses in ROM do not have this 64-bit alignment restriction.  ROM addresses only need to be 16-bit aligned.  A compiler and its loader, which input data from the related program (see the man page for ld (1)), verifies that all C language long types are 64-bit aligned. </u></p>
+
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+</body> </html>

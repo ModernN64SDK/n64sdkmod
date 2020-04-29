@@ -1,0 +1,40 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!--
+Editors Notes:
+  PWC- updated formatting
+-->
+<title>STEP2 [A Guide to the N64 Programming] - Chapter 2 Drawing Structure and Samples</title>
+<base target="keywords">
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<p><font style="font-size:12pt; font-weight:bold">2-9 Use of Model View Matrix Stack</font><br>
+<br>
+<br>
+When you place an object in the 3D world coordinate system, you may find it convenient to keep the relative object-to-object placement information. Using the following diagram, we will cover the placement method of objects.</p>
+
+<table border="1" cellspacing="0">
+    <tr>
+        <td><img src="img00014.gif"> </td>
+    </tr>
+</table>
+
+<p><br>
+<b>Figure 2-9-1 Example of object placement</b><br>
+<br>
+<ol>
+<li>Place the car in the world coordinate system and store the information about the car's direction of movement in the model view matrix.</li>
+<li>Register the car body in the <a href="../../../keywords/index/data/graphics.htm#display list" target="keywords">display list</a>.</li>
+<li><a href="../../../keywords/index/data/system.htm#push" target="keywords">Push</a> the current model view matrix to the <a href="../../../keywords/index/data/system.htm#stack" target="keywords">stack</a>.</li>
+<li>Register the new wheel position in the display list.</li>
+<li>Return the model view matrix.</li>
+</ol>
+<br>
+After that, repeat operations of 3 through 5, and the other three wheels will be placed and the car will be registered in the display list. Also, if you often display the same objects, leave the calculation to the RCP, so that you can allocate the CPU processing time to other processes. This makes for a more efficient and faster construction of the display list.</p>
+</body>
+</html>

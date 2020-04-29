@@ -1,0 +1,95 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Audio-Chapter 1 AUDIO PLAYBACK</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: MAP created file 9/15/1999
+-->
+</HEAD>
+<BODY BGCOLOR=#ffffff>
+<BASE TARGET="keywords">	
+<br>
+<FONT style="font-size:12pt"><B>1.4  syn_dma_buf_size  &  syn_num_dma_bufs</B></FONT>
+<br>
+<P>
+In general, a sample workbook (wbk file) is placed in ROM and only the necessary parts are DMA transferred to RAM as needed for a given frame.  For this reason, a buffer area must be secured in RAM ahead of time.  The area secured in RAM is specified at initialization time by syn_dma_buf_size (the size of each buffer) and syn_num_dma_bufs (the number of buffers).<br>
+     The optimal values for these two parameters will differ depending on the contents of the songs and sound effects so there is no way to clearly define them, but you can use the following general measures to make approximations:</P>
+<P>
+<B>Buffer size</B> (syn_dma_buf_size)<BR>
+ First of all, we will begin by considering the buffer size needed to DMA transfer one channel's worth of data.  Since the sample data is treated as 16bit monaural sampling, each sample point  has a size of  2bytes (i.e., 1 (monaural) x 2 (16bit =2byte) ).  Therefore, to playback audio with a 32000Hz sampling rate at the same pitch as the original audio, you need 64000 bytes per second, or 1066.66.... bytes per frame.  However, this sample data is compressed to around 1/4 its size by ADPCM conversion, so you actually end up with 267 bytes (rounded up).
+</P>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0><TR>
+<TD NOWRAP ALIGN=CENTER VALIGN=TOP>(*)</TD>
+<TD ALIGN=LEFT VALIGN=TOP>The PAL broadcast format has 50 frames per second, so in this case you need 320 bytes after ADPCM conversion.  Please be careful when transferring applications between NTSC (MPAL) and PAL.</TD>
+</TR></TABLE>
+<P>
+ In the above example, the conditions were set to playback audio at the same pitch as the original.  This is because you would use more bytes of data to playback at a higher pitch, and less data to playback at a lower pitch.  Sound Tools can playback audio at pitches as high as 1 octave above the original audio, so the maximum amount of data needed would be double the size.
+</P>
+<p>
+<B>Number of buffers </B> (syn_num_dma_bufs)<BR>
+Basically, you need one buffer for every channel.  However, not all data is DMA transferred every time; rather, data is cached temporarily in buffers in order to cut down on the total number of DMA transfers.  As a result, you need more buffers than there are channels.  With the MUS library, in order to store 1 frame's worth of data you need at the very least double the maximum number of channels (in this minimal configuration there are no channel cache hits). <br>
+
+
+Based on the above considerations, the following formulae can be used to approximate buffer size and buffer number:
+</P>
+<TABLE BORDER=0><TR><TD>&nbsp;</TD><TD>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>(Buffer size)</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>&nbsp;&#61;&nbsp;<img src="alpha.gif"></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>&nbsp;(maximum sampling rate)</TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>&nbsp;</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>&nbsp;&#247;&nbsp;<img src="beta.gif"></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>&nbsp;(number of frames/second NTSC(MPAL)=60, PAL=50)</TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>&nbsp;</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>&nbsp;&#215;&nbsp;<img src="uplison.gif"></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>&nbsp;(maximum ratio to original pitch (approx. 2))</TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>&nbsp;</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>&nbsp;&#215;1&nbsp;</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>&nbsp;(monaural (fixed))</TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>&nbsp;</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>&nbsp;&#215;2&nbsp;</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>&nbsp;(16bit sampling (fixed))</TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>&nbsp;</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>&nbsp;&#247;4&nbsp;</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>&nbsp;(average compression rate due to ADPCM conversion (fixed))</TD>
+</TR></TABLE>
+</TD></TR></TABLE>
+<BR>
+<TABLE BORDER=0><TR><TD>&nbsp;</TD><TD>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>(No. of buffers)</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>&nbsp;&#61;&nbsp;<img src="delta.gif"></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>&nbsp;(maximum number of channels)</TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>&nbsp;&#215;&nbsp;<img src="epsilon.gif"></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>&nbsp;(maximum value of(2 - cache hit ratio))</TD>
+</TR></TABLE>
+</TD></TR></TABLE>
+<P>
+Although <img src="alpha.gif">, <img src="beta.gif"> and <img src="delta.gif"> can be quickly determined for these calculations, deciding which values to set for <img src="uplison.gif"> and <img src="epsilon.gif"> is more problematic.   We recommend setting a maximum value of 2 for <img src="uplison.gif"> unless you are being careful during the creation of sounds and sound effects to make sure the audio does not playback at a higher pitch than the original.  Once <img src="uplison.gif"> is set you can determine the size of the buffer.  As far as the number of buffers is concerned, you need to search for the optimal value by initially setting <img src="epsilon.gif">&#61;2 and then gradually lowering the value to find the minimum value for which noise is not generated.  Note that you will need to have some extra buffers, since the necessary number of buffers can change during playback as songs and sound effects are combined.
+</P>
+<P>
+Making the buffer size larger than the calculated value has the effect of decreasing the number of DMA transfers.  However, if the buffer size is too large, the time needed for DMA   becomes longer, and concerns about being on time for the start of waveform synthesis arise.  Consider a size of around 2 kilobytes to be the limit.  If you set the number of buffers greater than the needed number (e &#62; 2), the only thing that will happen is that you will waste memory.
+
+</P>
+<P>
+ Note that the values obtained here are strictly a yardstick, and things are actually a bit more complicated because of the characteristics of ADPCM.  More specifically, the buffer size can in fact be reduced by around half, but if you shrink the size to the lower limit, you are going to witness a huge increase in the number of DMA transfers.  We thus recommend using the standard when deciding on your values.
+</P>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0><TR>
+	<TD NOWRAP ALIGN=CENTER VALIGN=TOP>(*)</TD>
+	<TD ALIGN=LEFT VALIGN=TOP> All of this DMA transfer routine is brought about with the software (within the library), so it will likely undergo major changes in the future.</TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=CENTER VALIGN=TOP>(*)</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>For the explanation in this section we simply talked about calculating a value for the buffer size, but in actuality this value must be a multiple of 16bytes.
+</TD>
+</TR></TABLE>
+<BR>
+<BR>
+<BR>
+</BODY>
+</HTML>

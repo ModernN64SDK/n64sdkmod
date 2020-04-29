@@ -1,0 +1,68 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Audio-Chapter 2 AUDIO MANIPULATIONS BY THE PROGRAMMER</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/16/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<font style="font-size:12pt"><B>2.3  Playing Sound Effects with Attached Parameters</B></FONT>
+<br>
+<P>
+ In the previous section we explained how to change the audio playback parameters using sound handles.  However, with sound effects, often the parameters are frequently changed.  In these cases, the parameters can be set simultaneously at the time of playback.<br><br>
+     By using the MusStartEffect2 function, the volume and pan can be set ahead of time.  Moreover, if a sound effect with the same number is currently being played back, a flag can be set to cancel (overwrite and playback) that sound effect, and the priority can be changed.
+<BR>
+<HR>
+<p><B>Start sound effect with parameters attached</B><br>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Function name:</TD>
+	<TD COLSPAN=2 ALIGN=LEFT VALIGN=TOP NOWRAP><tt>MusStartEffect2</tt></TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Syntax: </TD>
+	<TD COLSPAN=2 ALIGN=LEFT VALIGN=TOP NOWRAP>
+	musHandle MusStartEffect2(s32 number, s32 volume, s32 pan,<BR>
+	s32 restartflag,s32 priority)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Arguments:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP><b>number</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Start sound effect number</TD>
+</TR><TR>
+	<TD>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP><b>volume</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Volume ((0 to 0x100)</TD>
+</TR><TR>
+	<TD>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP><b>pan</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Pan  (0 to 0x100)</TD>
+</TR><TR>
+	<TD>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP><b>restartflag</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Overwrite flag</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP COLSPAN=2 NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>0&nbsp;&nbsp;Do not overwrite</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP COLSPAN=2 NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>non-zero&nbsp;&nbsp;Overwrite
+</TD>
+</TR><TR>
+	<TD>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP><b>priority</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>The priority (-1 implies no change in priority)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Return value:</TD>
+	<TD COLSPAN=2 ALIGN=LEFT VALIGN=TOP NOWRAP>Sound handle value</TD>
+</TR></TABLE>
+<HR>
+<p>
+Setting the volume and pan like this provides an easy way of simulating 3D sound effects.
+</P>
+<P>
+The <b>priority</b> argument specifies the priority of a sound effect.  When there are not enough channels, this value is used to decide whether or not to end another sound effect and begin playback of this one.  The higher the value the higher the priority.  The priority is set with the tools.  If nothing needs to be changed, set this argument to -1.
+
+MusStartEffect(number) is the same as MusStartEffect2(number, 0x80, 0x80, 0, -1).
+</P>
+</BODY>
+</HTML>

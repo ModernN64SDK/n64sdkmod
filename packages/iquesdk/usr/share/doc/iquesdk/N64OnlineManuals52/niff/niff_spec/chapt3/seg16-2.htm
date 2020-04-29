@@ -1,0 +1,334 @@
+<HTML>
+<HEAD>
+<TITLE>Chapter 3 Binary Format</TITLE>
+</HEAD>
+<BODY LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff">
+
+<font face="arial" size="-1">
+<b><font size="3">Chapter 3 Binary Format</b></font>
+<HR>
+<P>
+<b>3-16. AnimList</b>
+
+<P>
+<u>2. AnimGroup Area</u>
+
+<p>
+<table border="1" cellpadding="3" cellspacing="3">
+<tr>
+<th rowspan="12"><font face="arial" size="-1">
+AnimGroupHeader
+</th>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+anim_group_tag
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+this_anim_group_index
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+anim_group_header_size
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+anim_group_size
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+anim_name_index
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+anim_type
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+frame_rate
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+anim_num
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+anim_loop
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+anim_rot_mtx_order
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+nintendo_extension_block_size
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+user_extension_block_size
+</td>
+</tr>
+<tr>
+<th rowspan="5"><font face="arial" size="-1">
+</th>
+<td colspan="2"><font face="arial" size="-1">
+<center>
+Anim(0)
+</center>
+</td>
+</tr>
+
+
+<tr>
+<td colspan="2"><font face="arial" size="-1">
+<center>
+...
+</center>
+</td>
+</tr>
+<tr>
+<td colspan="2"><font face="arial" size="-1">
+<center>
+Anim(anim_num - 1)
+</center>
+</td>
+</tr>
+<tr>
+<td colspan="2"><font face="arial" size="-1">
+<center>
+NintendoExtensionBlock
+</center>
+</td>
+</tr>
+<tr>
+<td colspan="2"><font face="arial" size="-1">
+<center>
+UserExtensionBlock
+</td></tr>
+</table>
+
+<p>
+Figure: AnimGroup Area Memory Map
+
+<p>
+<table border="1" cellpadding="3" cellspacing="3">
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 anim_group_tag
+</td>
+<td>
+<font face="arial" size="-1">
+Tag indicating AnimGroup. Set the following flag. 
+<pre><font face="courier" size="2">
+<b>TAG_ANIM_GROUP&#9;0x000c0100</b></pre></font>
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 this_anim_group_index
+</td>
+<td>
+<font face="arial" size="-1">
+Index number of this AnimGroup.
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 anim_group_header_size
+</td>
+<td>
+<font face="arial" size="-1">
+Size of this AnimGroupHeader.
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 anim_group_size
+</td>
+<td>
+<font face="arial" size="-1">
+Size of this AnimGroup.
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 anim_name_index
+</td>
+<td>
+<font face="arial" size="-1">
+Index number of AnimGroup name contained in NameList.
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+<a href="../chapt5/seg1.htm#ANIM_TYPE">u32 anim_type</a>
+</td>
+<td>
+<font face="arial" size="-1">
+Specifies the animation type. The following are currently defined. 
+<pre><font face="courier" size="2">
+<b>
+ANIM_TYPE_STATIC&#9;0x00000000
+ANIM_TYPE_FULL&#9;&#9;0x00000002
+ANIM_TYPE_KEY&#9;&#9;0x00000003
+ANIM_TYPE_BILLBOARD_OBJ&#9;0x00000004</b></pre>
+</font>
+<P>
+ANIM_TYPE_STATIC converts non-animated data into matrix data like an object. Apply to data for a house or mountain, or a fixed camera view.<p>
+ANIM_TYPE_FULL performs full frame animation. Specify to include every frame of the animation data<p>
+ANIM_TYPE_KEY performs key frame animation. Specify to include every key frame of the animation data.<p>
+ANIM_TYPE_BILLBOARD_OBJ specifies animation that always faces toward a specified object.
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 frame_rate
+</td>
+<td>
+<font face="arial" size="-1">
+Specifies the animation frame rate.
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 anim_num
+</td>
+<td>
+<font face="arial" size="-1">
+Specifies the number of Anim area.
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+<a href="../chapt5/seg1.htm#ANIM_LOOP">u32 anim_loop</a>
+</td>
+<td>
+<font face="arial" size="-1">
+Sets the number of loops the animation will execute. To set an inifinite number of loops, specify the following: 
+<pre><font face="courier" size="2">
+<b>ANIM_LOOP_ENDLESS&#9;0x00000000</b></pre></font>
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+<a href="../chapt5/seg1.htm#ANIM_ROT_MTX_ORDER">u32 anim_rot_mtx_order</a>
+</td>
+<td>
+<font face="arial" size="-1">
+Specifies the calculation order of X axial, Y axial and Z axial rotation. Use the following flag. The calculation is done backwards. (For example, if ANIM_ROT_ORDER_XYZ is specified, rotation matrix R would be R=Z*Y*X.)
+<pre><font face="courier" size="2">
+<b>
+ANIM_ROT_ORDER_XYZ&#9;0x00010203
+ANIM_ROT_ORDER_XZY&#9;0x00010302
+ANIM_ROT_ORDER_YXZ&#9;0x00020103
+ANIM_ROT_ORDER_YZX&#9;0x00030102
+ANIM_ROT_ORDER_ZXY&#9;0x00020301
+ANIM_ROT_ORDER_ZYX&#9;0x00030201</b></pre></font>
+
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 nintendo_extension_block_size
+</td>
+<td>
+<font face="arial" size="-1">
+Nintendo extension block size
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 user_extension_block_size
+</td>
+<td>
+<font face="arial" size="-1">
+User extension block size
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+<a href="./seg16-3.htm">Anim</a>
+</td>
+<td>
+<font face="arial" size="-1">
+Actual animation data.
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+NintendoExtensionBlock
+</td>
+<td>
+<font face="arial" size="-1">
+Nintendo extension block
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+UserExtensionBlock
+</td>
+<td>
+<font face="arial" size="-1">
+User extension block
+</td></tr></table>
+<p>
+
+<hr>
+
+<p align="right"><a href="../index.htm">
+<img src="../../../gif/index.gif"
+border="0" width="65" height="17"></a>
+&nbsp; <a href="./seg16-3.htm">
+<img src="../../../gif/next.gif"
+border="0" width="65" height="17"></a></p>
+
+</body>
+</html>
+
+

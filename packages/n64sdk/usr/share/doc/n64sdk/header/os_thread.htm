@@ -1,0 +1,149 @@
+<HTML><HEAD>
+<TITLE></TITLE>
+</HEAD></BODY>
+<PRE>
+<FONT COLOR="red">/*====================================================================
+ * os_thread.h
+ *
+ * Copyright 1995, Silicon Graphics, Inc.
+ * All Rights Reserved.
+ *
+ * This is UNPUBLISHED PROPRIETARY SOURCE CODE of Silicon Graphics,
+ * Inc.; the contents of this file may not be disclosed to third
+ * parties, copied or duplicated in any form, in whole or in part,
+ * without the prior written permission of Silicon Graphics, Inc.
+ *
+ * RESTRICTED RIGHTS LEGEND:
+ * Use, duplication or disclosure by the Government is subject to
+ * restrictions as set forth in subdivision (c)(1)(ii) of the Rights
+ * in Technical Data and Computer Software clause at DFARS
+ * 252.227-7013, and/or in similar or successor clauses in the FAR,
+ * DOD or NASA FAR Supplement. Unpublished - rights reserved under the
+ * Copyright Laws of the United States.
+ *====================================================================*/</FONT>
+
+<FONT COLOR="red">/*---------------------------------------------------------------------*
+        Copyright (C) 1998 Nintendo. (Originated by SGI)
+        
+        $RCSfile: os_thread.h,v $
+        $Revision: 1.1 $
+        $Date: 1998/10/09 08:01:19 $
+ *---------------------------------------------------------------------*/</FONT>
+
+#ifndef _OS_THREAD_H_
+#define	_OS_THREAD_H_
+
+#ifdef _LANGUAGE_C_PLUS_PLUS
+extern &quot;C&quot; {
+#endif
+
+#include &lt;PR/ultratypes.h&gt;
+
+#if defined(_LANGUAGE_C) || defined(_LANGUAGE_C_PLUS_PLUS)
+
+<FONT COLOR="red">/**************************************************************************
+ *
+ * Type definitions
+ *
+ */</FONT>
+
+typedef s32	OSPri;
+typedef s32	OSId;
+typedef union	{ struct { f32 f_odd; f32 f_even; } f; f64 d; }	__OSfp;
+
+typedef struct {
+	u64	at, v0, v1, a0, a1, a2, a3;
+	u64	t0, t1, t2, t3, t4, t5, t6, t7;
+	u64	s0, s1, s2, s3, s4, s5, s6, s7;
+	u64	t8, t9,         gp, sp, s8, ra;
+	u64	lo, hi;
+	u32	sr, pc, cause, badvaddr, rcp;
+	u32	fpcsr;
+	__OSfp	 fp0,  fp2,  fp4,  fp6,  fp8, fp10, fp12, fp14;
+	__OSfp	fp16, fp18, fp20, fp22, fp24, fp26, fp28, fp30;
+} __OSThreadContext;
+
+typedef struct OSThread_s {
+	struct OSThread_s	*next;		<FONT COLOR="red">/* run/mesg queue link */</FONT>
+	OSPri			priority;	<FONT COLOR="red">/* run/mesg queue priority */</FONT>
+	struct OSThread_s	**queue;	<FONT COLOR="red">/* queue thread is on */</FONT>
+	struct OSThread_s	*tlnext;	<FONT COLOR="red">/* all threads queue link */</FONT>
+	u16			state;		<FONT COLOR="red">/* OS_STATE_* */</FONT>
+	u16			flags;		<FONT COLOR="red">/* flags for rmon */</FONT>
+	OSId			id;		<FONT COLOR="red">/* id for debugging */</FONT>
+	int			fp;		<FONT COLOR="red">/* thread has used fp unit */</FONT>
+	__OSThreadContext	context;	<FONT COLOR="red">/* register/interrupt mask */</FONT>
+} OSThread;
+
+
+#endif <FONT COLOR="red">/* defined(_LANGUAGE_C) || defined(_LANGUAGE_C_PLUS_PLUS) */</FONT>
+
+<FONT COLOR="red">/**************************************************************************
+ *
+ * Global definitions
+ *
+ */</FONT>
+
+<FONT COLOR="red">/* Thread states */</FONT>
+
+#define OS_STATE_STOPPED	1
+#define OS_STATE_RUNNABLE	2
+#define OS_STATE_RUNNING	4
+#define OS_STATE_WAITING	8
+
+<FONT COLOR="red">/* Recommended thread priorities for the system threads */</FONT>
+
+#define OS_PRIORITY_MAX		255
+#define OS_PRIORITY_VIMGR	254
+#define OS_PRIORITY_RMON	250
+#define OS_PRIORITY_RMONSPIN	200
+#define OS_PRIORITY_PIMGR	150
+#define OS_PRIORITY_SIMGR	140
+#define	OS_PRIORITY_APPMAX	127
+#define OS_PRIORITY_IDLE	  0	<FONT COLOR="red">/* Must be 0 */</FONT>
+
+
+#if defined(_LANGUAGE_C) || defined(_LANGUAGE_C_PLUS_PLUS)
+
+<FONT COLOR="red">/**************************************************************************
+ *
+ * Macro definitions
+ *
+ */</FONT>
+
+
+<FONT COLOR="red">/**************************************************************************
+ *
+ * Extern variables
+ *
+ */</FONT>
+
+
+<FONT COLOR="red">/**************************************************************************
+ *
+ * Function prototypes
+ *
+ */</FONT>
+
+<FONT COLOR="red">/* Thread operations */</FONT>
+
+extern void		osCreateThread(OSThread *, OSId, void (*)(void *),
+				       void *, void *, OSPri);
+extern void		osDestroyThread(OSThread *);
+extern void		osYieldThread(void);
+extern void		osStartThread(OSThread *);
+extern void		osStopThread(OSThread *);
+extern OSId		osGetThreadId(OSThread *);
+extern void		osSetThreadPri(OSThread *, OSPri);
+extern OSPri		osGetThreadPri(OSThread *);
+
+
+#endif  <FONT COLOR="red">/* defined(_LANGUAGE_C) || defined(_LANGUAGE_C_PLUS_PLUS) */</FONT>
+
+#ifdef _LANGUAGE_C_PLUS_PLUS
+}
+#endif
+
+#endif <FONT COLOR="red">/* !_OS_THREAD_H_ */</FONT>
+</PRE>
+</BODY>

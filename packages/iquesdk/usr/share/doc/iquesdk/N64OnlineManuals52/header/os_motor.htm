@@ -1,0 +1,88 @@
+<HTML><HEAD>
+<TITLE></TITLE>
+</HEAD></BODY>
+<PRE>
+<FONT COLOR="red">/*---------------------------------------------------------------------*
+        Copyright (C) 1998 Nintendo.
+        
+        $RCSfile: os_motor.h,v $
+        $Revision: 1.1 $
+        $Date: 1998/10/09 08:01:15 $
+ *---------------------------------------------------------------------*/</FONT>
+
+#ifndef _OS_MOTOR_H_
+#define	_OS_MOTOR_H_
+
+#ifdef _LANGUAGE_C_PLUS_PLUS
+extern &quot;C&quot; {
+#endif
+
+#include &lt;PR/ultratypes.h&gt;
+#include &quot;os_message.h&quot;
+#include &quot;os_pfs.h&quot;
+
+
+#if defined(_LANGUAGE_C) || defined(_LANGUAGE_C_PLUS_PLUS)
+
+<FONT COLOR="red">/**************************************************************************
+ *
+ * Type definitions
+ *
+ */</FONT>
+
+
+#endif <FONT COLOR="red">/* defined(_LANGUAGE_C) || defined(_LANGUAGE_C_PLUS_PLUS) */</FONT>
+
+<FONT COLOR="red">/**************************************************************************
+ *
+ * Global definitions
+ *
+ */</FONT>
+
+
+#if defined(_LANGUAGE_C) || defined(_LANGUAGE_C_PLUS_PLUS)
+
+<FONT COLOR="red">/**************************************************************************
+ *
+ * Macro definitions
+ *
+ */</FONT>
+
+
+<FONT COLOR="red">/**************************************************************************
+ *
+ * Extern variables
+ *
+ */</FONT>
+
+
+<FONT COLOR="red">/**************************************************************************
+ *
+ * Function prototypes
+ *
+ */</FONT>
+
+<FONT COLOR="red">/* Rumble PAK interface */</FONT>
+
+extern s32 osMotorInit(OSMesgQueue *, OSPfs *, int);
+#if	1
+#define MOTOR_START		1
+#define MOTOR_STOP		0
+#define	osMotorStart(x)		__osMotorAccess((x), MOTOR_START)
+#define	osMotorStop(x)		__osMotorAccess((x), MOTOR_STOP)
+extern s32 __osMotorAccess(OSPfs *, s32);
+#else
+extern s32 osMotorStop(OSPfs *);
+extern s32 osMotorStart(OSPfs *);
+#endif
+
+
+#endif  <FONT COLOR="red">/* defined(_LANGUAGE_C) || defined(_LANGUAGE_C_PLUS_PLUS) */</FONT>
+
+#ifdef _LANGUAGE_C_PLUS_PLUS
+}
+#endif
+
+#endif <FONT COLOR="red">/* !_OS_MOTOR_H_ */</FONT>
+</PRE>
+</BODY>

@@ -1,0 +1,46 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.
+  PWC- updated formatting
+  MAP- added revisions
+-->
+<title>USEC_TO_CYCLES</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>OS_USEC_TO_CYCLES</b></font><font style="font-size: 9pt"><b> (Macro)</b></font>
+
+<p>OS_NSEC_TO_CYCLES, OS_USEC_TO_CYCLES</p>
+
+<i><p>Converts from nanoseconds or microseconds to CPU count register cycles</i></p>
+
+<H3>Syntax</H3>
+<PRE>
+#include &lt;ultra64.h&gt;     /* <A HREF="../../header/ultra64.htm">ultra64.h</A> */
+OSTime OS_NSEC_TO_CYCLES(u64 nsecs);
+OSTime OS_USEC_TO_CYCLES(u64 usecs);
+</PRE>
+<H3>Description</H3><P>
+The OS_NSEC_TO_CYCLES and OS_USEC_TO_CYCLES macros convert time (nanoseconds or microseconds) into the number of CPU count register cycles.
+</P>
+<P>
+The count in the CPU's count register is the unit used by the functions <A href="osGetTime.htm">osGetTime</A> and <A href="osSetTimer.htm">osSetTimer</A>.  Irregardless of whether the system is NTSC or PAL, this counter increments at 46.875 MHz, with 1 cycle equal to approximately 21.33 nanoseconds.
+</P>
+<!--  -->
+
+<P>
+Note that the return value type OSTime is defined as u64 (unsigned long long), so you should specify "%llu" for the conversion format if the returned value is to be output by a printf function.
+</P><!--  -->
+
+<h3>See Also</h3>
+
+<p> <A HREF="../os/OS_CYCLES_TO_USEC.htm">OS_CYCLES_TO_USEC</A>,
+,<a href="osGetCount.htm">osGetCount</a></p>
+<H3>Revision history</H3>
+<P>
+1999/06/15  Completely revised
+
+</body>
+</html>

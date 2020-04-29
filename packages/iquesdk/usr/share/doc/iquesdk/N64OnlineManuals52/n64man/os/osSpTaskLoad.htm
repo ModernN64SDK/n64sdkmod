@@ -1,0 +1,127 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.
+  PWC- updated formatting
+  MAP- added links, updated format
+-->
+<title>osSpTaskLoad</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>osSpTaskLoad</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p>osSpTaskLoad, osSpTaskStartGo, osSpTaskStart,
+osSpTaskYield, osSpTaskYielded</p>
+
+<p><i>Starts/yields SP tasks</i></p>
+
+<h3>Syntax</h3>
+<p>
+<blockquote>
+    <pre>#include &lt;ultra64.h&gt;     /* <A HREF="../../header/ultra64.htm">ultra64.h</A> */
+void osSpTaskLoad(OSTask *task);
+s32 osSpTaskStartGo(OSTask *task);
+s32 osSpTaskStart(OSTask *task);s32 osSpTaskYield(void);
+OSYieldResult osSpTaskYieled(OSTask *task);</pre></blockquote></p>
+
+<h3>Description</h3>
+
+<p>These functions manage the signal processor (SP) "tasks" that can be invoked from the CPU host. Tasks are embodied by an OSTask structure. Please follow the instruction described below for task fields. Following the completion of a task, the SP interrupts the CPU and generates an OS_EVENT_SP event. The application can associate a message queue with this event with the <a href="osSetEventMesg.htm">osSetEventMesg</a> call. Furthermore, graphics task display lists should complete with a call to <a href="../gdp/gDPFullSync.htm">gDPFullSync</a> to additionally cause the display processor (DP) to interrupt the CPU. The associated event for <tt>osSetEventMesg</tt> is OS_EVENT_DP.</p>
+
+<p>The <tt>osSpTaskLoad</tt> function loads the given task into the SP. Before calling it, you must ensure that the SP is not currently executing. If this is a brand new task, the OSTask structure members need to be initialized by the application. </p>
+
+<p>The <A HREF="osSpTaskStartGo.htm">osSpTaskStartGo</A> function causes the SP to begin executing. </p>
+
+<p>The <A HREF="osSpTaskStart.htm">osSpTaskStart</A> macro calls the <tt>osSpTaskStartGo</tt>, and then calls the <tt>osSpTaskLoad</tt> function. </p>
+
+<p>The <A HREF="osSpTaskYield.htm">osSpTaskYield</A> function requests that the SP &quot;yield&quot;. A yield is a premature stopping of a Graphics task at a point where it can be restarted. During a yield, the SP saves its state so that it can be restarted by calling <tt>osSpTaskStart</tt>. Currently, only graphics tasks can yield. Yielding is primarily used for pausing the graphics task so that an audio task can run when it needs to. </p>
+
+<p>The <a href="osSpTaskYielded.htm">osSpTaskYielded</a> function must be called after requesting a yield to ensure the proper state of the task structure. It returns OS_TASK_YIELDED if the task successfully yielded. Otherwise, it returns 0, which indicates that the task finished normally before it could yield (and therefore should not be restarted later). </p>
+
+<p>Following are the members of the OSTask Structure: </p>
+<p>
+<dl>
+    <dt><strong>t.type</strong></dt>
+    <dd>Task type. It should be initialized to M_AUDTASK for audio tasks or M_GFXTASK for graphics tasks. <br>
+        <br>
+        </dd>
+    <dt><strong>t.flags</strong></dt>
+    <dd>Various task state bits. OS_TASK_DP_WAIT is the most important flag. When this flag is set, the boot microcode waits for the RDP to drain its current command stream before continuing.</dd>
+    <dd>This is necessary if you are going to use the XBUS or switch the RDP input stream. However, do not set this flag for audio tasks or &quot;_fifo&quot; versions of graphics tasks. <br>
+        <br>
+        </dd>
+    <dt><strong>t.ucode_boot</strong></dt>
+    <dd>Pointer to boot microcode. It should be initialized to rspbootTextStart. <br>
+        <br>
+        </dd>
+    <dt><strong>t.ucode_boot_size</strong></dt>
+    <dd> Pointer to boot microcode size in bytes. It should be initialized to ((u32)rspbootTextEnd - (u32)rspbootTextStart). <br>
+        <br>
+        </dd>
+    <dt><strong>t.ucode</strong></dt>
+    <dd>Pointer to task microcode. For graphic tasks, use of of the following: gspFast3DTextStart, gspFast3D_dramTextStart, gspFast3D_fifoTextStart, gspLine3DTextStart, gspLine3D_dramTextStart, and gspLine3D_fifoTextStart. It should be set to aspMainTextStart for audio tasks.<br>
+        <br>
+        </dd>
+    <dt><strong>t.ucode_size</strong></dt>
+    <dd>Size of microcode. It should be initialized to SP_UCODE_SIZE. <br>
+        <br>
+        </dd>
+    <dt><strong>t.ucode_data</strong></dt>
+    <dd>Pointer to task microcode. For graphics tasks, the followings should be set: gspFast3DDataStart, gspFast3D_dramDataStart, gspFast3D_fifoDataStart, gspLine3DDataStart, gspLine3D_dramDataStart, gspLine3D_fifoDataStart. It should be set to aspMainDataStart for audio tasks<br>
+        <br>
+        </dd>
+    <dt><strong>t.ucode_data_size</strong></dt>
+    <dd>Size of microcode data. It should be initialized to SP_UCODE_DATA_SIZE. <br>
+        <br>
+        </dd>
+    <dt><strong>t.dram_stack</strong></dt>
+    <dd>Pointer to DRAM matrix stack. It should be initialized to 0 for audio tasks and to a memory region of size SP_DRAM_STACK_SIZE8 bytes for graphics tasks. <br>
+        <br>
+        </dd>
+    <dt><strong>t.dram_stack_size</strong></dt>
+    <dd>DRAM matrix stack size in bytes. It should be initialized to 0 for audio tasks or SP_DRAM_STACK_SIZE8 for graphics tasks. <br>
+        <br>
+        </dd>
+    <dt><strong>t.output_buff</strong></dt>
+    <dd>Pointer to output buffer. The &quot;_dram&quot; and &quot;_fifo&quot; versions of the graphics microcode will route the SP output to DRAM rather than to the DP. When this microcode is used, this should point to a memory region to which the SP will write the DP command list.</dd>
+    <dd>For &quot;_dram&quot; versions of the microcode the buffer must be as long or longer than the DP data stream that will be generated by the RSP. The &quot;_fifo&quot; versions of the microcode require a buffer of at least 0x100 bytes, although larger buffers may provide greater performance. <br>
+        <br>
+        </dd>
+    <dt><strong>t.output_buff_size</strong></dt>
+    <dd>For the &quot;_dram&quot; version of the microcode this is a *POINTER* to a N64 where the output buffer length will go. The SP will write the size of the DP command list in bytes to this location. For the &quot;_fifo&quot; version of the microcode this is a *POINTER* to the byte following the last byte in the output buffer. The other microcodes ignore the t.output_buff_size field. <br>
+        <br>
+        </dd>
+    <dt><strong>t.data_ptr</strong></dt>
+    <dd>SP command list pointer. For graphics tasks, this is the application constructed display list. For audio tasks, this command list is created by <A HREF="../al/alAudioFrame.htm">alAudioFrame</A>. <br>
+        <br>
+        </dd>
+    <dt><strong>t.data_size</strong></dt>
+    <dd>Length of SP command list in bytes. <br>
+        <br>
+        </dd>
+    <dt><strong>t.yield_data_ptr</strong></dt>
+    <dd>Pointer to buffer to store saved state of yielding task. If the application is going to support preemption of graphics tasks, the graphics tasks should have this structure member set. This should point to a memory region of size OS_YIELD_DATA_SIZE bytes. If task preemption is not supported by the application, this field should be initialized to 0. Audio tasks should always set this field to 0. <br>
+        <br>
+        </dd>
+    <dt><strong>t.yield_data_size</strong></dt>
+    <dd>Size of yield buffer in bytes. When task yielding is to be supported by the application, this should be initialized to OS_YIELD_DATA_SIZE for the graphics task. Audio tasks should set this field to 0.<br>
+        <br>
+        </dd>
+</dl></p>
+
+<p>The dram_stack, output_buff, output_buff_size, and yield_data_ptr pointers should point to memory regions that reside entirely in an integral number of data cache lines. That is, they should be aligned and padded to 16 byte boundaries. If the affected memory region is not cache aligned, there exists the possibility that a CPU program variable may also share the data cache line. During normal operation of the CPU cache, the data cache line may be written back and overwrite the data previously written by SP. The macros described in <a href="OS_DCACHE_ROUNDUP_ADDR.htm">OS_DCACHE_ROUNDUP_ADDR</a> can be used, but the easiest way to align these memory regions is to place each of them in its own relocatable &quot;.o.&quot; object file. </p>
+
+
+<h3>See Also</h3>
+<p><A HREF="../os/osSpTaskStartGo.htm">osSpTaskStartGo</A>, 
+<A HREF="../os/osSpTaskStart.htm">osSpTaskStart</A>, 
+<A HREF="../os/osSpTaskYield.htm">osSpTaskYield</A>, and 
+<A HREF="../os/osSpTaskYielded.htm">osSpTaskYielded</A></p>
+<h3>Revision History</h3>
+<p>1999/04/30  Changed Format</p>
+<br><br>
+
+</body>
+</html>

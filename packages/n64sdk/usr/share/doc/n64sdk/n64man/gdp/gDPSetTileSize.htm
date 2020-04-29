@@ -1,0 +1,62 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.>
+<TITLE>gDPSetTileSize</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>gDPSetTileSize [Macro]</H1>
+
+<p><b>Function</p></b>
+
+<p>gDPSetTileSize</p>
+<P>
+<i>Sets the tile descriptor parameters</i>
+</P>
+<p><b>Syntax</p></b>
+<p>
+<PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gbi.htm">gbi.h</A> */
+gDPSetTileSize(Gfx *gdl, u32 tile, u32 uls, u32 ult, u32 lrs, u32 lrt )
+gsDPSetTileSize(         u32 tile, u32 uls, u32 ult, u32 lrs, u32 lrt )</CODE></PRE>
+</p>
+<p><b>Arguments</p></b>
+<p><DL>
+  <DT><B>gdl</B>
+  <DD>Display list pointer.
+  <DT><B>tile</B>
+  <DD>Tile descriptor index (3-bit precision, 0~7).
+  <DT><B>uls</B>
+  <DD>Texture tile's upper-left s coordinate (10.2, 0.0~1023.75).
+  <DT><B>ult</B>
+  <DD>Texture tile's upper-left t coordinate (10.2, 0.0~1023.75).
+  <DT><B>lrs</B>
+  <DD>Texture tile's lower-right s coordinate (10.2, 0.0~1023.75).
+  <DT><B>lrt</B>
+  <DD>Texture tile's lower-right t coordinate (10.2, 0.0~1023.75).
+</p></dl>
+<p><b>Description</b></p>
+<P>
+Sets the parameters of a tile descriptor defining the origin and range of a texture tile.</p>
+<p><DL>
+  <DT><B>uls</B>, <B>ult</B>
+  <DD>Defines the s,t texture coordinates at the tile origin.  This is used when shifting a texture to straddle the face of a polygon.  It also defines the lower-limit boundary when clamping.
+  <DT><B>lrs</B>, <B>lrt</B>
+  <DD>Used when clamping to define the upper-limit boundary.
+</DL>
+</P>
+<P>
+For details, see Section 13.4.9 "SL, TL"  Section 13.4.10 "SH, TH" and Section 13.5 "Tile Descriptor Loading" in the N64 Programming Manual.
+</P>
+<p><b>See Also</b></p>
+<P>
+<A HREF="gDPSetTextureDetail.htm">gDPSetTextureDetail</A>, <A HREF="gDPSetTextureFilter.htm">gDPSetTextureFilter</A>, <A HREF="gDPSetTextureLOD.htm">gDPSetTextureLOD</A>, <A HREF="gDPSetTextureLUT.htm">gDPSetTextureLUT</A>, <A HREF="gDPSetTexturePersp.htm">gDPSetTexturePersp</A>, and <A HREF="../gsp/gSPTexture.htm">gSPTexture</A>
+</P>
+<p><b>Revision History</b></p>
+<P>
+02/01/99  Completely rewritten.
+</P>
+</BODY>
+</HTML>

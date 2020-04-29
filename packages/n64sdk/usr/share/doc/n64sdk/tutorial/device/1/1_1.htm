@@ -1,0 +1,38 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Device-Chapter 1  How to Use Devices Connected to the SI</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/21/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<FONT style="font-size:16pt"><B>CHAPTER 1  HOW TO USE DEVICES CONNECTED TO THE SI</B></FONT>
+<br><br>
+<HR SIZE=3 NOSHADE>
+<P>
+ The Game Pak EEPROM, the Standard Controllers, and those devices that insert into the joyport connector of the Controller (i.e., the Controller Pak, the Rumble Pak, the 64GB Pak and the voice recognition system, etc.) are all devices that connect with the SI (Serial Interface).<br><br>
+     This chapter utilizes sample source to explain how to use the Standard Controller, the Controller Pak and the Rumble Pak, which are the representative SI devices.</p>
+<br><br>
+<FONT style="font-size:12pt"><B>1.1  Exclusive Control of the SI</B></FONT>
+
+<P>
+ The SI serves as the "processing window" for devices like the Standard Controller, and usually a number of SI devices are connected at the same time. <br><br>
+     As a result, if two devices access the SI at nearly the same time, overlapping, it is possible for the access of the first device to fail.  For example, if the SI is getting the status of Controller 1 and a read request comes from the Controller Pak of Controller 2, it may fail to get the status of Controller 1.<br><br>
+     Since at the level of the N64 OS there are no processes that take into consideration this kind of competitive access to the SI, some type of exclusive control is needed on the user side.<br><br>
+     Fortunately, the programmer does not need to worry about this if they are using NuSystem, since NuSystem has a module called the SI Manager whose job it is to manage access to the SI device(exclusive control).<br><br>  
+    Therefore, game applications built on the NuSystem can access SI devices without worrying about competitive access to the SI.  
+</P>
+<P>
+<br><br>
+<IMG SRC="image01.gif">
+</P>
+<P>
+<B>Figure 1-1  Management by the SI Manager on NuSystem</B></FONT>
+</P>
+<BR>
+<BR>
+<BR>
+</BODY>
+</HTML>

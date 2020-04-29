@@ -1,0 +1,66 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<!--
+Editors Notes:
+  JLR made reformating and copy edits.
+  PWC- updated formatting
+-->
+<TITLE>gDPFullSync</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>gDPFullSync<FONT size="+0"> [Macro]</FONT></H1>
+
+<h2>Function</h2>
+
+<p>gDPFullSync<br><br>
+<i>Signals that the RDP has completed its last process</i></P>
+
+<h2>Syntax</h2>
+
+<p><PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gbi.htm">gbi.h</A> */
+gDPFullSync(Gfx *gdl)
+gsDPFullSync(void)</CODE></PRE></p>
+
+<h2>Arguments</h2>
+<p><DL>
+  <DT><B>gdl</B>
+  <DD>Display list pointer
+</DL></p>
+<h2>Description</h2>
+<P>
+Generates an OS_EVENT_DP event to indicate that processing of the final command in the RDP pipeline has been completed. For details, see Section 12.2.2 "Synchronization" in the N64 Programming Manual.
+</P>
+<p><b>Note</b></p>
+<P>
+The gDPFullSync macro must be the final command sent to the RDP during a frame.
+</P>
+<h2>Example</h2>
+
+<p><PRE><CODE>/* RSP initial settings */
+    gSPSegment(gp++, 0, 0x0);
+/* Rendering process  */
+    gDPPipeSync(gp++);    // Get synchronized
+    gDPSetCycleType(gp++, G_CYC_FILL);    // Set the cycle type
+    gDPSetRenderMode(gp++, G_RM_OPA_SURF, G_RM_OPA_SURF2);    // Set the rendering mode
+    gDPSetFillColor(gp++, (GPACK_RGBA5551(255,255,255,1)&lt;&lt;16
+            | GPACK_RGBA5551(255,255,255,1)));    // Set fill color
+    gDPFillRectangle(gp++, 30, 200, 30, 207);    // Draw solid-color rectangle
+/* Signal that RDP has completed final process */
+    <B>gDPFullSync</B>(gp++);
+/* Signal the end of the display list */
+    gSPEndDisplayList(gp++);</CODE></PRE></p>
+
+<h2>See Also</h2>
+<P>
+<A HREF="../gsp/gSPEndDisplayList.htm">gSPEndDisplayList</A>
+</P>
+
+<p><b>Revision History</p></b>
+<p>02/01/99&nbsp;&nbsp;&nbsp;Completely rewritten</p>
+
+</BODY>
+</HTML>

@@ -1,0 +1,80 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>mfsHGetAttr</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font face="arial" size="-1">
+<b><font size="3">mfsHGetAttr</b></font>
+
+<hr>
+
+<p><strong>Syntax</strong> 
+<font face="courier" size="2">
+<pre>s32 mfsHGetAttr(const u8* path)</pre></font>
+
+<p><strong>Arguments</strong></p>
+<dl>
+<dd>*path &nbsp; Pathname</dl></dd>
+
+<p><strong>Return value</strong>
+<dl>
+<dd>Attribute (a negative value is an error)</dl></dd>
+
+<p><strong>Function</strong>
+<dl>
+<dd>Obtains attribute of file or directory</dl></dd>
+
+<p><strong>Description</strong> 
+<P>This function obtains and returns the attribute of the file or directory specified by path.  The attribute, which is represented by u16-type bits, can have the following contents.</p>
+
+<P>
+<table border="0" cellpadding="3" cellspacing="3">
+<tr><td><font face="arial" size="-1">MFS_FILE_ATTR_DIRECTORY</td>
+<td><font face="arial" size="-1">0x8000</td>
+<td><font face="arial" size="-1">Directory</td></tr>
+
+<tr><td><font face="arial" size="-1">MFS_FILE_ATTR_FILE</td>
+<td><font face="arial" size="-1">0x4000</td>
+<td><font face="arial" size="-1">File</td></tr>
+
+<tr><td><font face="arial" size="-1">MFS_FILE_ATTR_FORBID_W</td>
+<td><font face="arial" size="-1">0x2000</td>
+<td><font face="arial" size="-1">Write protected</td></tr>
+ 	 
+<tr><td><font face="arial" size="-1">MFS_FILE_ATTR_FORBID_R</td>
+<td><font face="arial" size="-1">0x1000</td>
+<td><font face="arial" size="-1">Read protected</td></tr>	 
+	 
+<tr><td><font face="arial" size="-1">MFS_FILE_ATTR_HIDDEN</td>
+<td><font face="arial" size="-1">0x0800</td>
+<td><font face="arial" size="-1">Hidden file</td></tr>	 
+	 
+<tr><td><font face="arial" size="-1">MFS_FILE_ATTR_ENCODE</td>
+<td><font face="arial" size="-1">0x0400</td>
+<td><font face="arial" size="-1">Encoded file</td></tr>	 	 
+	 
+<tr><td><font face="arial" size="-1">MFS_FILE_ATTR_COPYLIMIT</td>
+<td><font face="arial" size="-1">0x0200</td>
+<td><font face="arial" size="-1">Copy limited</td></tr></table>
+  
+
+
+<p><strong>Main errors</strong></p>
+<P>
+<table border="0" cellpadding="3" cellspacing="3">
+<tr><td valign="top"><font face="arial" size="-1">
+MFS_ERR_NO	<td><font face="arial" size="-1">Normal termination</td></tr>
+<tr><td valign="top"><font face="arial" size="-1">
+MFS_ERR_DEVICE<td><font face="arial" size="-1">Device error
+<br>An error occurred in an internally called Leo function.
+<br>Since a Leo function error is stored in the variable mfsError, check this variable to perform processing.</td></tr>
+<tr><td valign="top"><font face="arial" size="-1">
+MFS_ERR_NOTFOUND<td><font face="arial" size="-1">File not found
+<br>The file was not found, or the directory was not found.</td></tr></table>
+
+
+<hr>
+</body>
+</html>

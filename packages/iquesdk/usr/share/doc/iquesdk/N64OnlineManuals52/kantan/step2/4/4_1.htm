@@ -1,0 +1,54 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!--
+Editors Notes:
+  PWC- updated formatting
+-->
+<title>STEP2 [A Guide to the N64 Programming] - Chapter 4 Tips and Techniques</title>
+<base target="keywords">
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<p><font style="font-size:12pt; font-weight:bold">4-1 Coordinating Audio and Graphics</font><br>
+<br>
+<br>
+The CPU, RSP, and RDP processors each have a leading role in the N64 when it comes to executing audio and graphics. The CPU starts the task, and the RSP and RDP actually execute it. These hardware processors take partial control of the work and can enhance processing efficiency dramatically by making processes operate in parallel. For efficient parallel processing, it is best to create a scheduler <a
+href="../../../keywords/index/data/system.htm#thread"
+target="keywords">thread</a> to manage and coordinate the execution of the audio and graphics threads. <br>
+<br>
+<br>
+<b>4-1-1 Thread Management with a Scheduler Thread</b><br>
+<img src="img00003.gif"><br>
+The audio command list and graphics display list are usually created just before the frame, but a problem occurs if the process does not end within one frame (1/60 second). In the case of audio, the sound may pause inappropriately or popping noises may occur. In the case of graphics, because the frame buffer is not updated, it continues to show the last image. <br>
+<br>
+If the audio process does not end within one frame, you can avoid inappropriate pauses and noises by giving priority to the audio process even if you have to interrupt the graphics process.  Therefore, give audio threads a higher priority than graphics threads, and manage the thread by using a scheduler. A scheduler is simply a thread that has a higher priority than both the audio and the graphics threads. <br>
+<br>
+A program about the coexistence of audio and graphics is provided: see [<a
+href="../furoku/c.htm">Appendix C Sample Description</a>] about the sample program.</p>
+
+<table border="1" cellspacing="0">
+    <tr>
+        <td><img src="img00004.gif"> </td>
+    </tr>
+</table>
+
+<p><br>
+<b>Figure 4-1-1 Scheduler Process Flow</b><br>
+<br>
+<br>
+</p>
+
+<table border="1" cellspacing="0">
+    <tr>
+        <td><img src="img00005.gif"> </td>
+    </tr>
+</table>
+
+<p><br>
+<b>Figure 4-1-2 Thread Priority</b></p>
+</body>
+</html>

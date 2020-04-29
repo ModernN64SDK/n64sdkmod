@@ -1,0 +1,114 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Audio-Chapter 2 AUDIO MANIPULATIONS BY THE PROGRAMMER</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/16/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<font style="font-size:12pt"><B>2.2  Changing Parameters During Playback</B></FONT>
+<br>
+<P>
+ In this section we introduce functions that can be used to change some song and sound effect parameters.  The functions explained here can be used with sound handle units.
+</P>
+<P>
+Use MusHandleSetVolume to change the volume.  The default volume is 0x80 so you can double the volume by specifying 0x100 and halve the volume by specifying 0x40. Note that if the volume was fairly loud from the beginning, the sound may not end up being any louder than the original.
+<BR>
+<HR>
+<p><b>Set volume using sound handle</B><br>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Function name:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP><tt>MusHandleSetVolume</tt></TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Syntax:</TD>
+	<TD COLSPAN=2 ALIGN=LEFT VALIGN=TOP NOWRAP>s32 MusHandleSetVolume(musHandle handle, s32 volume)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Arguments: </TD>
+	<TD COLSPAN=2 ALIGN=LEFT VALIGN=TOP NOWRAP><b>handle</b>Sound handle</TD>
+</TR><TR>
+	<TD>&nbsp;</TD>
+	<TD COLSPAN=2 ALIGN=LEFT VALIGN=TOP NOWRAP><b>volume</b>Volume scale (0 to 0x100)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Return value:</TD>
+	<TD COLSPAN=2 ALIGN=LEFT VALIGN=TOP NOWRAP>The number of channels that have been changed</TD>
+</TR></TABLE>
+<HR>
+</P>
+<P>
+ Use MusHandleSetTempo to change the tempo.  The default tempo is 0x80.  Like with the volume, you can double the speed of playback by specifying 0x100, and halve it by specifying 0x40.
+<BR>
+<HR>
+<p><b>Set the tempo value using sound handle</B><br>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Function name:</TD>
+	<TD COLSPAN=2 ALIGN=LEFT VALIGN=TOP NOWRAP><tt>MusHandleSetTempo<tt></TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Syntax:</TD>
+	<TD COLSPAN=2 ALIGN=LEFT VALIGN=TOP NOWRAP>s32 MusHandleSetTempo(musHandle handle, s32 tempo)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Arguments: </TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP><b>handle</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Sound handle</TD>
+</TR><TR>
+	<TD>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP><b>tempo</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Tempo offset value (0 to 0x100)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Return value: </TD>
+	<TD COLSPAN=2 ALIGN=LEFT VALIGN=TOP NOWRAP>The number of channels that have been changed.</TD>
+</TR></TABLE>
+<HR>
+</P>
+<P>
+Use MusHandleSetPan to change the pan. A central pan is 0x80, while the left end is 0 and the right end is 0x100.  By using this function you can move the audio completely to the left or the right.  <BR>
+<HR>
+<p><b>Set the pan value using sound handle</B><br>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Function name:</TD>
+	<TD COLSPAN=2 ALIGN=LEFT VALIGN=TOP NOWRAP><tt>MusHandleSetPan</tt></TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Syntax:</TD>
+	<TD COLSPAN=2 ALIGN=LEFT VALIGN=TOP NOWRAP>s32 MusHandleSetPan(musHandle handle, s32 pan)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Arguments: </TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP><b>handle</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Sound handle</TD>
+</TR><TR>
+	<TD>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP><b>pan</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Stereo pan scale (0 to 0x100)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Return value: </TD>
+	<TD COLSPAN=2 ALIGN=LEFT VALIGN=TOP NOWRAP>The number of channels that have been changed.</TD>
+</TR></TABLE>
+<HR>
+</P>
+<P>
+In addition to these functions, you can use MusHandleSetFreqOffset to vary the pitch (frequency).  The breadth of variation is specified in an argument in units of semitones.  The limit is determined by the pitch of the original sample.  This function is mainly used with sound effects when repeating the same sample to avoid redundancy. 
+<BR>
+<HR>
+<p><b>Set offset value of frequency using sound handle</B><br>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Function name:</TD>
+	<TD COLSPAN=2 ALIGN=LEFT VALIGN=TOP NOWRAP><tt>MusHandleSetFreqOffset</tt></TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Syntax:</TD>
+	<TD COLSPAN=2 ALIGN=LEFT VALIGN=TOP NOWRAP>s32 MusHandleSetFreqOffset(musHandle handle, f32 offset)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Arguments: </TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP><b>handle</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Sound handle</TD>
+</TR><TR>
+	<TD>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP><b>offset</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Frequency offset value</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Return value:</TD>
+	<TD COLSPAN=2 ALIGN=LEFT VALIGN=TOP NOWRAP>The number of channels that have been changed.</TD>
+</TR></TABLE>
+<HR>
+</P>
+</BODY>
+</HTML>

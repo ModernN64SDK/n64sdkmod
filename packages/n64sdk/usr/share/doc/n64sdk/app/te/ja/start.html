@@ -1,0 +1,195 @@
+<html>
+<head>
+<title>[N64 CITextureEditor] 1.Getting Start</title>
+</head>
+<body>
+<p align="right"><a href="../us/start.html">English</a></p>
+<h2>１．<font color=#008000>はじめに</font></h2>
+<ol>
+ <a name="WHATS">
+ <li><b>N64 CITextureEditorとは</b>
+ <ul>
+  <p>
+  N64 CITextureEditorとは、NINTENDO<sup>64</sup>上で扱われるCIテクスチャを扱うエディタです。<br>
+  （現在のバージョンでは、4bit/8bit CIテクスチャ専用となっています。よって、パレットは16bit RGBA/IAのみとなっております。）<br>
+  PreviewプラグインによってIS-Viewer64と接続する事により、実機上で編集中のテクスチャをプレビューする事ができます。<br>
+  </p>
+  <ul>
+   <a href="images/snapshot.gif"><img src="images/snapshot.gif" width=25% border=0></a>
+  </ul>
+ </ul>
+ <br>
+ <a name="ABOUT">
+ <li><b>概要</b>
+ <ul>
+  <p>
+  <li><font color=#008000><b>ピクチャー</b> （TMF + TLF）</font><br>
+  TextureEditorは、<a href="spec.html#FILE_TMF">TMFというテクスチャ・イメージ・ファイル</a>と
+  <a href="spec.html#FILE_TLF">TLFというテクスチャ・ルックアップテーブル・ファイル</a>（パレット・ファイルとも呼ぶ）を
+  一対に扱って編集します。この画像とパレットの一対の構成情報をN64 CITextureEditorでは
+  「<a href="spec.html#OBJECT_PICTURE">ピクチャー</a>」と呼んでいます。<br>
+  </p>
+  <ul>
+   <img src="images/picture.gif">
+  </ul>
+  <p>
+  このピクチャーは複数登録する事可能です。
+  もちろん他のピクチャーが使っているテクスチャ・イメージやパレットを何度でも自由に参照して
+  構成する事が出来ます。<br>
+  </p>
+  <ul>
+   <img src="images/pictures.gif">
+  </ul>
+  <p>
+  <li><font color=#008000><b>プロジェクト</b></font><br>
+  複数のピクチャを一括して管理するのがテクスチャ・プロジェクト・ファイルです。<br>
+  N64 CITextureEditorでは、１つのテクスチャ・プロジェクト・ファイルのみ編集可能です。<br>
+  </p>
+  <ul>
+   <img src="images/project.gif">
+  </ul>
+  プロジェクトは、以下の様にブラウズできます。
+  <ul>
+   <img src="images/window_tpf.gif" alt="Project Window">
+  </ul>
+  <p>
+  <li><font color=#008000><b>プラグインについて・・・</b></font><br>
+  プラグインは、PlugInsフォルダ
+  (<font color=#008000>c:\nintendo\n64kit\texedit\bin\PlugIns\</font>)
+  に格納しておく事で、N64 CITextureEditorが起動時にPlugInsに格納されてあるDLLを認識します。
+  プラグインにはインポート／エクスポート／プレビューの機能を持ち、メニューに追加されます。<br>
+  インストールされているプラグインの情報を確認するには、<a href="gui.html#UI_DLG_ABOUT">アバウトダイアログ</a>で
+  確認する事が出来ます。
+  </p>
+  <p>
+   詳しくは、<a href="spec.html#METHOD_PLUGINS">プラグイン機能</a>を参照してください。
+  </p>
+  <li><font color=#008000><b>アニメーション・プレビュアについて・・・</b></font><br>
+  <p>
+  簡易的にテクスチャのパラパラ・アニメーションを閲覧するためのプレビュープログラムもソース付きで添付されております。<br>
+  (<font color=#008000>c:\nintendo\n64kit\texedit\AnimeView\</font>)
+  TAFファイルを編集し、付属のANM.BATを実行する事で、IS-VIEWER64上でアニメーションさせる事が可能です。<br>
+  </p>
+ </ul>
+ <br>
+ <a name="ENVIRONMENT">
+ <li><b>動作環境</b>
+ <ul>
+  <p>
+  Windows95/98/NT4.0以降 RAM32MB以上 空きHD5MB以上必要<br>
+  </p>
+  <p>
+  <font color=#ff0000>※PlugInの開発には、Microsoft社のVisualC/C++5.0 (service pack 2以上)が必要です。</font><br>
+  </p>
+ </ul>
+ <br>
+ <a name="INSTALL_AND_UNINSTALL">
+ <li><b>インストール／アンインストール</b>
+ <ul>
+  <p>
+  インストールは、Setup.exeを実行して下さい。<br>
+  </p>
+  <ul>
+   <table>
+    <tr>
+     <th>
+      <img src="../images/setup.gif">
+     </th>
+    </tr>
+    <tr>
+     <td align=center bgcolor=#c0c0c0>Setup</td>
+    </tr>
+   </table>
+  </ul>
+  <p>
+  アンインストールは「コントロールパネル」の「アプリケーションの追加と削除」を開き、
+  「インストールと削除」のプロパティページの「N64 CITextureEditor」を選択して「追加と削除」ボタンを
+  押してアンインストールプログラムを実行して下さい。<br>
+  </p>
+  <ul>
+   <table>
+    <tr>
+     <th>
+      <img src="../images/appwiz.gif">
+     </th>
+     <th valign=center>→</th>
+     <th>
+      <img src="../images/dustbox.gif">
+     </th>
+    </tr>
+    <tr>
+     <td align=center bgcolor=#c0c0c0>ｱﾌﾟﾘｹｰｼｮﾝの<br>追加と削除</td>
+     <td></td>
+     <td align=center>削除</td>
+    </tr>
+   </table>
+  </ul>
+ </ul>
+ <br>
+ <a name="STARTUP_AND_EXIT">
+ <li><b>起動と終了</b>
+ <ul>
+  <p>
+  起動は「スタート」メニューの「プログラム」の「n64kit」から「N64 CITextureEditor」を選択して
+  実行して下さい。
+  </p>
+<!--
+  <ul>
+   <img src="images/start.gif">
+  </ul>
+-->
+  <p>
+  終了は、N64 CITextureEditorの「ファイル」メニューの「アプリケーションの終了（<u>Ｘ</u>）」を選択して
+  終了させて下さい。<br>
+  なお、終了時に未保存の編集中のファイルが残っている場合は、１つ１つ保存するか尋ねてきますので、
+  応答して下さい。<br>
+  </p>
+ </ul>
+ <br>
+ <a name="VERSION">
+ <li><b>バージョン情報</b>
+ <ul>
+  <p>
+  N64 CITextureEditorの変更履歴はこちらのページをご覧下さい。
+  </p>
+  <p>
+  <ul>
+   <a href="version.html">バージョン情報</a>
+  </ul>
+  </p>
+ </ul>
+ <!--
+ <br>
+ <a name="REPORTS">
+ <li><b>バグ・要望など</b>
+ <ul>
+  <p>
+  バグ報告やご要望などは、こちらのフォームを利用して下さい。
+  </p>
+  <p>
+  <ul>
+   <a href="reports.html">バグ・要望の送付フォーム</a>
+  </ul>
+  </p>
+ </ul>
+ -->
+</ol>
+<p align="right"><a href="../us/start.html">English</a></p>
+<hr>
+<table width=100%>
+ <tr>
+  <td valign=top>
+   <a href="index.html">戻る</a>
+  </td>
+  <td valign=top align=right nowrap>
+   <font size=-1>
+   Copyright (C) 1998-1999 <a href="https://ntsc.nintendo.co.jp/">NINTENDO Co.,Ltd.</a><br>
+   Copyright (C) 1998-1999 MONEGI CORPORATION.<br>
+   Copyright (C) 1998-1999 <a href="http://www.intsys.co.jp/">INTELLIGENT SYSTEMS Co.,Ltd.</a><br>
+   All rights reserved.<br>
+   </font>
+   <a href="https://ntsc.nintendo.co.jp/"><img src="../images/ntsc.gif" alt="NTSC-ONLINE" border=0></a>
+  </td>
+ </tr>
+</table></body>
+</html>

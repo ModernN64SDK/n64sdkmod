@@ -1,0 +1,59 @@
+<!doctype html "public">
+<html>
+<head>
+<title>niSetName</title>
+</head>
+<body text="#000000" bgcolor="#FFFFFF" link="#0000EE" vlink="#551A8B" alink="#FF0000">
+
+<font face="arial" size="-1">
+<B><font size="3"><strong>
+niSetName</strong></font></b>
+
+<P>
+Sets a name
+
+<P>
+<b>Syntax</b>
+<font face="courier" size="2">
+<pre>#include&nbsp; "niffapi.h"
+<p>void niSetName(Nis *nis, u32 index, char *name);</pre></font>
+
+<P>
+<b>Arguments</b>
+<dl>
+<dd>nis &nbsp; &nbsp; &nbsp;Pointer to the Nis structure 
+<dd>index &nbsp; Index of the Name area for the name you want to set
+<dd>name &nbsp; Pointer to the character string for the name being set
+</dl></dd>
+
+<P>
+<b>Return value</b>
+<P>
+None
+
+
+<P>
+<b>Description</b>
+<P>
+For NIFF data, names are not C character strings. This function secures a NIFF data region matching the specified character string, and converts that string into the appropriate data to set the name.
+<P>
+For "index" please specify a pre-existing index. If an incorrect index is specified, the operation cannot be guaranteed. If you want to set the name in a newly added Name area, use niAddName() to add the Name area and then use niSetName() to set the name. 
+
+<P>
+<b>Notes</b>
+<P>
+To avoid problems, the present version replaces blank characters with an underscore<strong>'_'</strong>.
+<p>
+Because NIFF does not allow blank characters in names, this function will be deleted in a future version. When creating NIFF data, please do not use blank spaces in names. 
+
+<P>
+<b>
+See Also</b>
+<P>
+<a href="niaddname.htm">niAddName</a>
+<br>For the Nis structure, see n64kit/niff/niffapi/nis.h.
+<p>
+<div align=right><a href="index.htm"><img SRC="../../gif/index.gif" BORDER=0></a></div>
+
+</body>
+</html>

@@ -1,0 +1,316 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<!--
+Editors Notes:
+  PWC- updated formatting
+  MAP- updated format
+-->
+<title>u64</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>u64</b></font>
+
+<p><i>About /dev/u64(device driver for the NINTENDO64 development board)
+</i></p>
+
+<h3>Description</h3>
+
+<p>The Nintendo 64 development board is a double wide gio-bus peripheral card designed for the Indy class of Silicon Graphics computers. A 16MB ram is provided in the cartridge memory address space of the R4300 processor, and may be accessed by the Indy host. Only a single megabyte of this RAM can be mapped at a time by the Indy host, and this megabyte is chosen from the 16MB available via a 4 bit page control register. Simultaneous R4300/Indy host memory accesses are not supported, as the memory arbiter for the development board's 16MB of &quot;ramrom&quot; does not support dual porting.
+</p>
+
+<p>Communication between the Indy host and the development board can occur using either a gio-interrupt register, or a separate RDB interrupt register. Early releases of the software used the gio-interrupt, but starting with release 2.0F all communication was moved to the RDB interrupt. The RDB interrupt hardware is not available on hardware 1 boards. Only hardware 2 and later boards include the RDB port. For this reason, hardware 1 boards are now considered obsolete, and only hardware 2 boards are supported.
+</p>
+
+<p>The gio-interrupt is mapped to the cartridge interrupt on the development system. Because the cartridge interrupt has been designated to be used by peripherals, such as N64 Disk Drive, it is critical that this interrupt not be used any longer for communication between host and board.
+</p>
+
+<p>The RDB port provides a dual ported interrupt register. The RDB port can be thought of as two ports, each 32 bits wide, one for Indy to development system communication, and the other for development system to Indy communication. When the Indy wishes to send a message to the development system it can write to the RDB port, and this will generate an interrupt on the development system. When the development system reads the data on the RDB port, this generates an interrupt on the Indy. This dual interrupt system provides a useful handshaking system, that can ensure data is read before more data is written to the RDB port. The system is the same when the development system writes data to the RDB port. This generates an interrupt on the Indy, and when the Indy reads the data from the RDB port, this generates an interrupt on the development system. As mentioned above, the RDB port acts as two independent ports. Thus both Indy to development system communication and development system to Indy communication can occur simultaneously.
+</p>
+
+<p>The u64 device driver provides support for read, write, and ioctl commands. These commands are used to reset the system, read and write to the ramrom, and perform various Indy and game system communications.
+</p>
+
+<p>A description of the board's registers and their intended purpose follows: 
+</p>
+
+<h3>Product ID Register</h3>
+
+<blockquote>
+    <pre>GIO address 0x1f400000 (R), no development system address</pre>
+</blockquote>
+
+<p>This 32 bit register is used by the Indy kernel as it boots to uniquely identify the Nintendo 64 development board; bits <31...30> are reserved for gio interrupt identification (as described below); bits <30...8> are zero; bit <7> is one, and bits <6...0> are set to 0x15. Only the bottom 7 bits are significant for the boot probe, as the Indy kernel masks off all other bits when doing the probe for GIO hardware at this standard address (all GIO peripheral cards have a unique bit pattern for their recognition at the base address 0x1f400000).</p>
+
+<p>Higher two bits have been reserved for use by the RDB port to allow the device driver to distinguish between the different RDB interrupt sources.
+</p>
+
+<p>Bit 30 (0x40000000), when set, indicates to the Indy interrupt that the development system has read from the RDB  Register.
+</p>
+
+<p>Bit 31 (0x80000000), when set, indicates to the Indy interrupt that the development system has written to the RDB Register.
+</p>
+
+<p>If a gio interrupt occurs and either of these bits are set, it must have been due to a write by the development system to the standard GIO Interrupt Register, described below.</p>
+
+<h3>Reset Control Register</h3>
+
+<blockquote>
+    <pre>GIO address 0x1f400400 (W), no development system address</pre>
+</blockquote>
+
+<p>Writes to this register can trigger a reset or an NMI (non-maskable interrupt) on the development system. 
+Bit 2 is assigned to NMI, and bit 1 is assigned for Processor reset. The reset is active when the pertinent bit is set, and released when the same bit is cleared. NMI is armed when its bit is set, and triggered when its bit is cleared. </p>
+
+<h3>DRAM Page Control Register</h3>
+
+<blockquote>
+    <pre>GIO address 0x1f400600 (R/W), no development system address</pre>
+</blockquote>
+
+<p>Four bits at 23...20 select a single megabyte from the 16 MB available, and map it into the GIO address range of 0x1f500000...0x1f5ffffe. The Indy can only map two megabytes of GIO bus space at a time, and the first megabyte is used to map in these registers; thus there is only a megabyte available for mapping at a time in the 16 megabytes of ramrom memory.
+</p>
+
+<h3>Cartridge Interrupt Register</h3>
+
+<blockquote>
+    <pre>GIO address 0x1f400800 (R/W), development system R4300 address 0x18000800 (R)</pre>
+</blockquote>
+
+<p>The cartridge interrupt register will generate an INT1 interrupt on the R4300 processor. The host may write 6 bits of data to this register, in bits 5...0; the R4300 may read these bits to determine what to do with the interrupt. The interrupt is cleared when the R4300 reads from this register. </p>
+
+<p><em>Note:</em> This interrupt should no longer be used. </p>
+
+<h3>GIO Interrupt Register</h3>
+
+<blockquote>
+    <pre>GIO address 0x1f400c00 (R), development system R4300 address 0x18000000 (R/W)</pre>
+</blockquote>
+
+<p>The R4300 may write a 6 bit value to bits 5...0; the act of writing this register will cause a GIO interrupt to occur on the Indy host side. Upon receiving this interrupt, the Indy host reads the gio interrupt register to clear the interrupt.
+</p>
+
+<h3>GIO Sync Register</h3>
+
+<blockquote>
+    <pre>GIO address 0x1f400e00 (R), development system R4300 address 0x18000400 (R/W)</pre>
+</blockquote>
+
+<p>The R4300 may write a 6 bit value to bits <5...0>; the host may read this value. No interrupt to the Indy host is generated by the write cycle, so a polling scheme may need to be implemented between the two processors. If a value is written in either the GIO Interrupt or GIO Sync registers, the same value will be written in the other register.
+</p>
+
+<h3>RDB Registers</h3>
+
+<blockquote>
+    <pre>GIO address 0x1f480000 (W), development system R4300 address 0xc0000000 (R)
+GIO address 0x1f480000 (R), development system R4300 address 0xc0000000 (W)</pre>
+</blockquote>
+
+<p>There are two 32 bit registers; one is provided for Indy to R4300 communication, and the other for R4300 to Indy communication. Thus, both processors may start write cycles at the same time and no data will be lost. Upon initiating a read or write cycle on one processor, an interrupt which denotes the cycle type (read or write) is sent to the other processor.
+</p>
+
+<p>The Indy's interrupt service routine must read the Product ID Register to determine whether the R4300 performed a read or write cycle from a RDB Register; Bit 30 of the Product ID Register will be set when the R4300 has read from its RDB Register, and Bit 31 will be set when the R4300 has written to its RDB Register.
+</p>
+
+<p>The R4300 receives separate interrupts whenever the Indy has read or written from/to a RDB Register. INT3 (CAUSE_IP6) is set when the Indy has read from its RDB Register; INT4 (CAUSE_IP7) is set when the Indy has written to its RDB Register.
+</p>
+
+<p>The interrupt service routine for either the Indy or R4300 (in the event of a "write interrupt") reads the maximum amount of data to be read from its RDB Register and terminates its process (once the data has been read, write cycle may be initialized by an Indy application or Nintendo64 thread).
+</p>
+
+<p>These registers (and the interrupt registers described below) are mapped into the upper portion of the first megabyte of the gio address space on the Indy side, and are mapped into the extended SysAD (System Address and Data) device address space on the R4300 side. 
+</p>
+
+<h3>RDB Write Interrupt</h3>
+
+<blockquote>
+    <pre>GIO address 0x1f480008 (W), R4300 address 0xc0000008 (W)</pre>
+</blockquote>
+
+<p>Whenever either one of the processors has completed a write to its RDB Register, a "write interrupt" is generated to the other processor. The interrupt service routine for this processor clears the interrupt by writing a 0x0 to its write interrupt register. Note that it is the act of reading the data that generates the interrupt on the opposing processor, and that writing to the RDB Write Interrupt Register only clears the interrupt condition on the processor running the interrupt routine. 
+</p>
+
+<h3>RDB Read Interrupt</h3>
+
+<blockquote>
+    <pre>GIO address 0x1f48000c (W), R4300 address 0xc000000c (W)</pre>
+</blockquote>
+
+<p>Whenever either one of the processors has completed a read from its RDB Register, a "read interrupt" is generated to the other processor. The interrupt service routine for this processor clears the interrupt by writing a 0x0 to its read interrupt register. 
+</p>
+
+<h3>Device Driver Entry Points</h3>
+
+<p>A set of driver entry points define what the /dev/u64 device driver must do when a user-level program executes a system call (such as open) that accesses the device. Because the user treats the device as a file, we have provided driver entry points for the standard file operations such as open, read, write, and close.</p>
+
+<p>In addition to these standard entry points, Nintendo has implemented the <tt>chpoll</tt> function, so you can use select or poll to test for pending input or output from the opened file descriptors.
+</p>
+
+<p>There are several functions internal to the device driver which the user never sees, but are standard entry points for kernel functionality. <tt>edtinit</tt> provides a boot time probe of the board, and will initialize the board and allocate memory resources for the device driver if a board is found. The address for the driver's GIO interrupt service routine <tt>u64_giointr</tt> is entered into the kernel's table of interrupt service routines by <tt>edtinit</tt>. Each of the standard system calls below has man pages available on the system.
+</p>
+
+<p>In order to multiplex different types of data over the RDB efficiently, the device driver makes extensive use of device minors. In addition to the major device, /dev/u64, the following device minors are currently available:
+</p>
+
+<blockquote>
+    <pre>/dev/u64_print, /dev/u64_logging, /dev/u64_data, /dev/u64_debug,
+/dev/u64_fault, /dev/u64_kdebug, /dev/u64_profile</pre>
+</blockquote>
+
+<blockquote>
+    <pre>int open(int open (const char *path, int oflag, ... /* mode_t mode */))</pre>
+</blockquote>
+
+<p>The user calls <tt>open</tt> with one of the u64 device files found in the /dev directory. /dev/u64 is used for resetting the development system and accessing the ramrom. /dev/u64_print is used by the print server in <A HREF="../tool/gload.htm">gload</A>. /dev/u64_logging is used by gload to handle the flushing of log data. /dev/u64_data is used by the hostio library routines, such as <A HREF="../uh/uhReadGame.htm">uhReadGame</A> and <A HREF="../uh/uhWriteGame.htm">uhWriteGame</A>. /dev/u64_debug is used by the debugger GVD. /dev/u64_fault is used by gload to monitor for fault data. /dev/u64_kdebug is used by the internal SGI tool kdebug and is not supported as an external development tool. /dev/u64_profile is used by gperf to monitor for profiling data.
+</p>
+
+<p>open returns a unique file descriptor which must be passed in as a parameter for all subsequent system calls to the device driver. Note that /dev/u64 can be opened multiple times, but that the minor devices can only be opened by one client at a time.
+</p>
+
+<blockquote>
+    <pre>int close(int fildes)</pre>
+</blockquote>
+
+<p>The user process invokes the close system call when it is finished with its usage of the device; driver resources are freed up for this client, and any pending semaphores held on behalf of this client are released.
+</p>
+
+<blockquote>
+    <pre>u64_giointr():</pre>
+</blockquote>
+
+<p>This internal routine queues event data transmitted from the development board to the host Indy. Whenever a GIO or RDB interrupt is detected, u64_giointr gets invoked. It first checks the Product ID Register to determine what type of interrupt was generated.
+</p>
+
+<p>If the interrupt was due to a write to the Indy's RDB Register by the R4300, a 0x0 is written to the Indy's RDB Write Interrupt Register to clear the interrupt, and the driver reads a word from the RDB Register and queues it for later retrieval by a user-level process via the read system call.
+</p>
+
+<p>If the interrupt source was due to a read from the R4300's RDB Register by the R4300, the Indy clears the read interrupt by writing 0x0 to its RDB Read Interrupt Register. The driver then adjusts its internal state such that another word can be written to the Indy's RDB Register (if necessary).
+</p>
+
+<p>Otherwise, the interrupt source must be the GIO Interrupt Register. Since the GIO Interrupt Register is no longer used this is considered an error and the device driver prints an error message to the console.
+</p>
+
+<p>If an event is queued for a client, the interrupt service routine calls pollwakeup on behalf of a client (this will cause a user-level application to return from a blocked select or poll system call). We also free up any blocked semaphores which may have been set by a user- level program's attempt to read when no pending data was yet available.
+</p>
+
+<blockquote>
+    <pre>int read(int fildes, void *buf, unsigned nbyte)</pre>
+</blockquote>
+
+<p>The read system call first qualifies the incoming file <b>descriptor</b> argument; if the minor device indicates that we are reading from a valid minor, we retrieve data from the appropriate queue maintained by u64_giointr. If there is no data available, the read call will wait for blocking data. If there is data available, but not as much as requested by the read, the read call will copy the data to the user's buffer and return the number of valid bytes. In order to receive more data, the user's application will have to make another call to read.
+</p>
+
+<blockquote>
+    <pre>int write(int fildes, const void *buf, unsigned nbyte)</pre>
+</blockquote>
+
+<p>The write system call is intended to support writes from the Indy to the R4300 RDB Register from the user level applications. The device driver queues up values from the user-level application and writes these words one at a time to the RDB port. The kernel will continue to send each 32 bit word of data through the RDB port as each "read" interrupt is received from the development board, until the queue of data initially created by the write system call is depleted.
+</p>
+
+<blockquote>
+    <pre>int ioctl(int filedes, int request, ...)</pre>
+</blockquote>
+
+<p>The ioctl system call allows a driver to provide custom functions not available from the standard entry points. The /dev/u64 driver's ioctl commands allow the user to reset the development system, and to access the RAMROM. The <b>filedes</b> argument should always be a file descriptor for the device, &quot;/dev/u64&quot;. Note that minors do not support ioctl calls. The second argument to the ioctl specifies what type of function is to be invoked, and the type of the optional third argument varies depending upon the request made. A list of the available commands and their intended purpose follows:
+</p>
+
+<dl>
+    <dt><strong>U64_RESET:</strong></dt>
+    <dd>If the third argument is 1, the Processor reset bit of the Reset Control Register is set. If it is zero, the Processor reset bit is cleared, and the R4300 attempts to boot itself from the contents of ramrom.
+        <br>
+        <br>
+        </dd>
+    <dt><strong>U64_WRITE: </strong></dt>
+    <dd>The third parameter is a pointer to the following structure (defined in <A HREF="../../header/u64gio.htm">u64gio.h</A>):</dd>
+</dl>
+
+<blockquote>
+    <blockquote>
+        <pre>typedef struct u64_write_arg {
+        void *buffer;                /* pointer to user's buffer of data */
+        long ramrom_addr;        /* address in ramrom to be written */
+        int nbytes;                /* number of bytes to write */
+} u64_write_arg_t;</pre>
+    </blockquote>
+</blockquote>
+
+<dl>
+    <dd>The kernel copies the data from the user's buffer into a kernel data structure, then copies the data from there into ramrom. This ioctl should only be made when the development system will not attempt to access the ramrom. In practice, this means, this U64_WRITE command should not be called when the game is executing. This ioctl is primarily intended for gload and other tools to use to load rom images during the reset process.<br>
+        <br>
+        </dd>
+    <dt><strong>U64_READ:</strong></dt>
+    <dd>The third parameter is a pointer to the following structure (defined in u64gio.h): 
+    </dd>
+</dl>
+
+<blockquote>
+    <blockquote>
+        <pre>typedef struct u64_read_arg {
+        void *buffer;                /* pointer to user's buffer of data */
+        long ramrom_addr;        /* address in ramrom to be read */
+        int nbytes;                /* number of bytes to read */
+} u64_read_arg_t;</pre>
+    </blockquote>
+</blockquote>
+
+<dl>
+    <dd>The kernel copies the data from the specified ramrom location into a dedicated kernel data structure, then copies the data from there into the user's buffer. This ioctl should only be made when the development system will not attempt to access the ramrom. In practice, this means, this U64_READ should not be called when the game is executing. This ioctl is primarily intended for gload and other tools to use to verify the rom during the reset process.<br>
+        <br>
+        </dd>
+    <dt><strong>U64_SAFE_WRITE:</strong></dt>
+    <dd>The third parameter is a pointer to the following structure (defined in u64gio.h): 
+    </dd>
+</dl>
+
+<blockquote>
+    <blockquote>
+        <pre>typedef struct u64_write_arg {        /* (same as used for U64_WRITE) */
+        void *buffer;                /* pointer to user's buffer of data */
+        long ramrom_addr;        /* address in ramrom to be written */
+        int nbytes;                /* number of bytes to write */
+} u64_write_arg_t;</pre>
+    </blockquote>
+</blockquote>
+
+<dl>
+    <dd>When this U64_SAFE_WRITE is called, the device driver negotiates with the game's system threads for control of the ramrom. Once access to the ramrom has been granted, the kernel copies the data to the ramrom address specified in the write structure. After writing is complete, the kernel signals the game's system threads to release control of the ramrom. This ioctl should only be used when the development system is executing a game application.<br><br>
+        </dd>
+    <dd>The U64_SAFE_WRITE ioctl is used by the library function <a href="../uh/uhWriteRamrom.htm">uhWriteRamrom</a> on the host side.
+        <br>
+        <br>
+        </dd>
+    <dt><strong>U64_SAFE_READ:</strong> </dt>
+    <dd>The third parameter is a pointer to the following structure (defined in u64gio.h): 
+    </dd>
+</dl>
+
+<blockquote>
+    <blockquote>
+        <pre>typedef struct u64_read_arg {        /* Same as used for U64_READ */
+        void *buffer;                /* pointer to user's buffer of data */
+        long ramrom_addr;        /* address in ramrom to be read */
+        int nbytes;                /* number of bytes to read */
+} u64_read_arg_t;
+</pre>
+    </blockquote>
+</blockquote>
+
+<dl>
+    <dd>This U64_SAFE_READ is the logical equivalent of U64_SAFE_WRITE, with the data direction reversed (we are reading from ramrom memory, rather than writing to it). Like U64_SAFE_WRITE, the kernel negotiates with the game's system threads for access to the ramrom before attempting to read any data. This ioctl should only be used when the development system is executing a game application.<br><br>
+        </dd>
+    <dd>The U64_SAFE_READ ioctl is used by the library function <a href="../uh/uhReadRamrom.htm">uhReadRamrom</a> on the host side. 
+    </dd>
+</dl>
+
+<h3>See Also</h3>
+
+<p><a href="../uh/uhOpenGame.htm">uhOpenGame</a>, <a href="../uh/uhReadGame.htm">uhReadGame</a>, <a href="../uh/uhWriteGame.htm">uhWriteGame</a>, <a href="../tool/gload.htm">gload</a>, <a href="../uh/uhReadRamrom.htm">uhReadRamrom</a>, <a href="../uh/uhWriteRamrom.htm">uhWriteRamrom</a>, <a href="../os/osReadHost.htm">osReadHost</a>, <a href="../os/osWriteHost.htm">osWriteHost</a>, <a href="../os/osSetEventMesg.htm">osSetEventMesg</a>, <a href="../os/osStartThread.htm">osStartThread</a>, and <a href="../os/osStopThread.htm">osStopThread</a>, open(2), close(2), read(2), write(2), ioctl(2), select(2), poll(2)</p>
+<p><h3>Revision History</h3>
+
+<p>1999/04/30  Changed Format</p>
+
+</body>
+</html>

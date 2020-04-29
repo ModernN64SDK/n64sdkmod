@@ -1,0 +1,114 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Graphics-Chapter 10  Texture Rectangles</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/23/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<font style="font-size:12pt"><B>10.3  Large Texture Rectangles</B></FONT>
+<br>
+<P>
+Besides displaying the small texture rectangle, the gfx10.c sample program is also designed by default to display an animation of a wide picture scrolling from left to right in the background.  At a size of 720x240, this background image is way too large to fit into the 4KB of TMEM.  The image must be divided up for repeated loading and texture rectangle rendering.  
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=5><TR>
+	<TD NOWRAP COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE><B>List 10-4</B>
+</TR><TR>
+	<TD NOWRAP BGCOLOR="666666" WIDTH="4" ALIGN=LEFT VALIGN=TOP><HR NOSHADE SIZE=0></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>
+<FONT COLOR="#000080"><PRE><CODE>  for(i = 0; i &lt; (BACK_HT / ROWS); i++)
+  {
+    gDPLoadTextureTile(glistp++,
+                      panorama,
+                      G_IM_FMT_RGBA,
+                      G_IM_SIZ_16b,
+                      BACK_WD,
+                      BACK_HT,
+                      posx,
+                      i * ROWS,
+                      posx + (SCREEN_WD - 1),
+                      i * ROWS + (ROWS - 1),
+                      0,
+                      G_TX_WRAP, G_TX_WRAP,
+                      0, 0,
+                      G_TX_NOLOD, G_TX_NOLOD);
+    gSPTextureRectangle(glistp++,
+                      0 &lt;&lt; 2,
+                      (i * ROWS) &lt;&lt; 2,
+                      (SCREEN_WD - 1) &lt;&lt; 2,
+                      (i * ROWS + (ROWS - 1)) &lt;&lt; 2,
+                      G_TX_RENDERTILE,
+                      posx &lt;&lt; 5, (i * ROWS) &lt;&lt; 5,
+                      4 &lt;&lt; 10, 1 &lt;&lt; 10);
+  }
+</CODE></PRE></FONT>
+	</TD>
+</TR></TABLE>
+<P>
+In this example, ROWS number of rows (the default is 2) are loaded at a time for texture rectangle rendering within the "for" loop.
+     The cycle type is the high-speed Copy mode.  In Copy mode, 4 pixels are transferred in every 1 cycle, so we recommend this mode when all you are going to do is render without changing the image.
+     However, you need to be aware that in order to copy 4 pixels in 1 cycle, the change in S value in every cycle is four times larger.  That is why the second to the last argument in the gSPTextureRectangle command gets [4 &lt;&lt; 10] and not [1 &lt;&lt;< 10].
+<br><br>
+     When you repeatedly load and render as shown here, the number of commands becomes extremely large and sometimes the display list is not big enough to accommodate them all.  In fact, the display list becomes much larger than you might think, because the load commands gDPLoadTextureBlock and gDPLoadTextureTile are actually combinations of a number of lower-level commands.  If you get in a situation where the last half of the texture rectangle is not rendered, we suggest you try increasing the size of the display list.
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=5><TR>
+	<TD NOWRAP COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE><B>List 10-5</B>
+</TR><TR>
+	<TD NOWRAP BGCOLOR="666666" WIDTH="4" ALIGN=LEFT VALIGN=TOP><HR NOSHADE SIZE=0></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>
+<FONT COLOR="#000080"><PRE><CODE>#define gDPLoadTextureBlock(pkt, timg, fmt, siz, width, height,         \
+                   pal, cms, cmt, masks, maskt, shifts, shiftt)         \
+{                                                                       \
+        gDPSetTextureImage(pkt, fmt, siz##_LOAD_BLOCK, 1, timg);        \
+        gDPSetTile(pkt, fmt, siz##_LOAD_BLOCK, 0, 0, G_TX_LOADTILE,     \
+                0 , cmt, maskt, shiftt, cms, masks, shifts);            \
+        gDPLoadSync(pkt);                                               \
+        gDPLoadBlock(pkt, G_TX_LOADTILE, 0, 0,                          \
+                (((width)*(height) + siz##_INCR) &gt;&gt; siz##_SHIFT) -1,    \
+                CALC_DXT(width, siz##_BYTES));                          \
+        gDPPipeSync(pkt);                                               \
+        gDPSetTile(pkt, fmt, siz,                                       \
+                (((width) * siz##_LINE_BYTES)+7)&gt;&gt;3, 0,                 \
+                G_TX_RENDERTILE, pal, cmt, maskt, shiftt, cms, masks,   \
+                shifts);                                                \
+        gDPSetTileSize(pkt, G_TX_RENDERTILE, 0, 0,                      \
+                ((width)-1) &lt;&lt; G_TEXTURE_IMAGE_FRAC,                    \
+                ((height)-1) &lt;&lt; G_TEXTURE_IMAGE_FRAC)                   \
+}
+#define gDPLoadTextureTile(pkt, timg, fmt, siz, width, height,          \
+                uls, ult, lrs, lrt, pal,                                \
+                cms, cmt, masks, maskt, shifts, shiftt)                 \
+{                                                                       \
+        gDPSetTextureImage(pkt, fmt, siz, width, timg);                 \
+        gDPSetTile(pkt, fmt, siz,                                       \
+                (((((lrs)-(uls)+1) * siz##_TILE_BYTES)+7)&gt;&gt;3), 0,       \
+                G_TX_LOADTILE, 0 , cmt, maskt, shiftt, cms, masks,      \
+                shifts);                                                \
+        gDPLoadSync(pkt);                                               \
+        gDPLoadTile(pkt, G_TX_LOADTILE,                                 \
+                        (uls)&lt;&lt;G_TEXTURE_IMAGE_FRAC,                    \
+                        (ult)&lt;&lt;G_TEXTURE_IMAGE_FRAC,                    \
+                        (lrs)&lt;&lt;G_TEXTURE_IMAGE_FRAC,                    \
+                        (lrt)&lt;&lt;G_TEXTURE_IMAGE_FRAC);                   \
+        gDPPipeSync(pkt);                                               \
+        gDPSetTile(pkt, fmt, siz,                                       \
+              (((((lrs)-(uls)+1) * siz##_LINE_BYTES)+7)&gt;&gt;3), 0,         \
+              G_TX_RENDERTILE, pal, cmt, maskt, shiftt, cms, masks,     \
+              shifts);                                                  \
+        gDPSetTileSize(pkt, G_TX_RENDERTILE,                            \
+                        (uls)&lt;&lt;G_TEXTURE_IMAGE_FRAC,                    \
+                        (ult)&lt;&lt;G_TEXTURE_IMAGE_FRAC,                    \
+                        (lrs)&lt;&lt;G_TEXTURE_IMAGE_FRAC,                    \
+                        (lrt)&lt;&lt;G_TEXTURE_IMAGE_FRAC)                    \
+}
+</CODE></PRE></FONT>
+	</TD>
+</TR></TABLE>
+<BR>
+<BR>
+<BR>
+<BR>
+</BODY>
+</HTML>

@@ -1,0 +1,370 @@
+<HTML><HEAD>
+<TITLE></TITLE>
+</HEAD></BODY>
+<PRE>
+<FONT COLOR="red">/*
+ * Copyright 1995, Silicon Graphics, Inc.
+ * ALL RIGHTS RESERVED
+ *
+ * UNPUBLISHED -- Rights reserved under the copyright laws of the United
+ * States.   Use of a copyright notice is precautionary only and does not
+ * imply publication or disclosure.
+ *
+ * U.S. GOVERNMENT RESTRICTED RIGHTS LEGEND:
+ * Use, duplication or disclosure by the Government is subject to restrictions
+ * as set forth in FAR 52.227.19(c)(2) or subparagraph (c)(1)(ii) of the Rights
+ * in Technical Data and Computer Software clause at DFARS 252.227-7013 and/or
+ * in similar or successor clauses in the FAR, or the DOD or NASA FAR
+ * Supplement.  Contractor/manufacturer is Silicon Graphics, Inc.,
+ * 2011 N. Shoreline Blvd. Mountain View, CA 94039-7311.
+ *
+ * THE CONTENT OF THIS WORK CONTAINS CONFIDENTIAL AND PROPRIETARY
+ * INFORMATION OF SILICON GRAPHICS, INC. ANY DUPLICATION, MODIFICATION,
+ * DISTRIBUTION, OR DISCLOSURE IN ANY FORM, IN WHOLE, OR IN PART, IS STRICTLY
+ * PROHIBITED WITHOUT THE PRIOR EXPRESS WRITTEN PERMISSION OF SILICON
+ * GRAPHICS, INC.
+ *
+ */</FONT>
+
+<FONT COLOR="red">/*
+ * File:	gt.h
+ * Creator:	hsa@sgi.com
+ * Create Date:	Thu Oct 12 15:48:14 PDT 1995
+ *
+ * This file defines the GBI for the TURBO 3D graphics microcode.
+ * The turbo microcode is a special FEATURE-LIMITED microcode designed
+ * for specific applications. It is not for general use.
+ *
+ * (see XXX for more information)
+ *
+ */</FONT>
+
+<FONT COLOR="red">/**************************************************************************
+ *
+ *  $Revision: 1.16 $
+ *  $Date: 1998/05/28 00:14:50 $
+ *  $Source: /hosts/gate3/exdisk2/cvs/N64OS/Master/cvsmdev2/PR/include/gt.h,v $
+ *
+ **************************************************************************/</FONT>
+
+#ifndef _GT_H_
+#define	_GT_H_
+
+<FONT COLOR="red">/* this file should be #included AFTER gbi.h */</FONT>
+
+#include &quot;sptask.h&quot;
+
+#ifdef	_LANGUAGE_C_PLUS_PLUS
+extern &quot;C&quot; {
+#endif	<FONT COLOR="red">/* _LANGUAGE_C_PLUS_PLUS */</FONT>
+
+#include &lt;PR/ultratypes.h&gt;
+
+<FONT COLOR="red">/* the following #defines seem out of order, but we need them
+ * for the microcode.
+ */</FONT>
+
+<FONT COLOR="red">/* 
+ * object state field: rendState
+ *
+ * This flag word is built up out of the bits from a
+ * subset of the G_SETGEOMETRYMODE flags from gbi.h.
+ * 
+ * When each of these bits is '1', the comments below explain
+ * the effect on the triangles.
+ */</FONT>
+#define GT_ZBUFFER		G_ZBUFFER
+#define GT_TEXTURE		G_TEXTURE_ENABLE	<FONT COLOR="red">/* texture ON */</FONT>
+#define GT_CULL_BACK		G_CULL_BACK		<FONT COLOR="red">/* reject backfaces */</FONT>
+#define GT_SHADING_SMOOTH	G_SHADING_SMOOTH	<FONT COLOR="red">/* smooth shade ON */</FONT>
+
+<FONT COLOR="red">/*
+ * object state field: textureState
+ *
+ * The lower 3 bits of this flag word contain the texture tile number
+ * to be used. All triangles of an object are rendered with the same
+ * texture tile.
+ */</FONT>
+
+<FONT COLOR="red">/* 
+ * object state field: flag
+ *
+ * This is a group of what would be pad bits. We use them for some
+ * flag bits.
+ */</FONT>
+#define GT_FLAG_NOMTX		0x01	<FONT COLOR="red">/* don't load the matrix */</FONT>
+#define GT_FLAG_NO_XFM		0x02	<FONT COLOR="red">/* load vtx, use verbatim */</FONT>
+#define GT_FLAG_XFM_ONLY	0x04	<FONT COLOR="red">/* xform vtx, write to *TriN */</FONT>
+
+
+#if defined(_LANGUAGE_C) || defined(_LANGUAGE_C_PLUS_PLUS)
+
+<FONT COLOR="red">/* turbo 3D ucode: */</FONT>
+extern long long int	gspTurbo3DTextStart[], gspTurbo3DTextEnd[];
+extern long long int	gspTurbo3DDataStart[], gspTurbo3DDataEnd[];
+extern long long int	gspTurbo3D_dramTextStart[], gspTurbo3D_dramTextEnd[];
+extern long long int	gspTurbo3D_dramDataStart[], gspTurbo3D_dramDataEnd[];
+extern long long int	gspTurbo3D_fifoTextStart[], gspTurbo3D_fifoTextEnd[];
+extern long long int	gspTurbo3D_fifoDataStart[], gspTurbo3D_fifoDataEnd[];
+
+<FONT COLOR="red">/*
+ * This is the global state structure. It's definition carefully 
+ * matches the ucode, so if this structure changes, you must also change
+ * the ucode.
+ */</FONT>
+typedef struct {
+    u16		perspNorm;	<FONT COLOR="red">/* persp normalization */</FONT>
+    u16		pad0;
+    u32		flag;
+    Gfx		rdpOthermode;
+    u32		segBases[16];	<FONT COLOR="red">/* table of segment base addrs (SEE NOTE!) */</FONT>
+    Vp		viewport;	<FONT COLOR="red">/* the viewport to use */</FONT>
+    Gfx		*rdpCmds;	<FONT COLOR="red">/* block of RDP data, process if !NULL
+				 * block terminated by gDPEndDisplayList()
+				 * (This is a segment address)
+				 */</FONT>
+} gtGlobState_t;
+
+<FONT COLOR="red">/* NOTE:
+ * Although there are 16 segment table entries, the first one (segment 0)
+ * is reserved for physical memory mapping. You should not segment 0
+ * to anything other than 0x0.
+ */</FONT>
+
+typedef union {
+    gtGlobState_t	sp;
+    long long int	force_structure_alignment;
+} gtGlobState;
+
+
+<FONT COLOR="red">/*
+ * This is the 'state' structure associated with each object
+ * to be rendered. It's definition carefully matches the
+ * ucode, so if this structure changes, you must also change
+ * the gtoff.c tool and the ucode.
+ */</FONT>
+typedef struct {
+    u32		renderState;	<FONT COLOR="red">/* render state */</FONT>
+    u32		textureState;	<FONT COLOR="red">/* texture state */</FONT>
+    u8		vtxCount;	<FONT COLOR="red">/* how many verts? */</FONT>
+    u8		vtxV0;		<FONT COLOR="red">/* where to load verts? */</FONT>
+    u8		triCount;	<FONT COLOR="red">/* how many tris? */</FONT>
+    u8		flag;
+    Gfx		*rdpCmds;	<FONT COLOR="red">/* ptr (segment address) to RDP DL */</FONT>
+    Gfx		rdpOthermode;
+    Mtx		transform;	<FONT COLOR="red">/* the transform matrix to use */</FONT>
+} gtState_t;
+
+typedef union {
+    gtState_t		sp;
+    long long int	force_structure_alignment;
+} gtState;
+
+<FONT COLOR="red">/* gtStateLite : same as gtState, but no matrix (see flags below) */</FONT>
+<FONT COLOR="red">/* this structure must be identical to gtState! (bad) */</FONT>
+typedef struct {
+    u32		renderState;	<FONT COLOR="red">/* render state */</FONT>
+    u32		textureState;	<FONT COLOR="red">/* texture state */</FONT>
+    u8		vtxCount;	<FONT COLOR="red">/* how many verts? */</FONT>
+    u8		vtxV0;		<FONT COLOR="red">/* where to load verts? */</FONT>
+    u8		triCount;	<FONT COLOR="red">/* how many tris? */</FONT>
+    u8		flag;
+    Gfx		*rdpCmds;	<FONT COLOR="red">/* ptr (segment address) to RDP DL */</FONT>
+    Gfx		rdpOthermode;
+} gtStateL_t;
+
+typedef union {
+    gtStateL_t		sp;
+    long long int	force_structure_alignment;
+} gtStateL;
+
+<FONT COLOR="red">/*
+ * The vertex list for the turbo display list uses the
+ * Vtx struct in gbi.h
+ *
+ */</FONT>
+
+
+<FONT COLOR="red">/*
+ * This structure represents a single triangle, part of the
+ * triangle list of the object to be rendered.
+ *
+ * NOTE: The triangle list MUST be aligned to an 8-byte boundary.
+ * Since this structure is only 4 bytes, we are REQUIRING that
+ * this structure only be used as an array of triangles, and we 
+ * depend on the MIPS C compiler (which always aligns arrays to 
+ * 8-byte boundaries). THIS IS DANGEROUS!!!!
+ *
+ */</FONT>
+typedef struct {
+    u8		v0, v1, v2, flag;	<FONT COLOR="red">/* flag is which one for flat shade */</FONT>
+} gtTriN;
+
+
+<FONT COLOR="red">/*
+ * This structure represents the transformed points. It is the format
+ * of the points written out when GT_FLAG_XFM_ONLY is set, as well as
+ * the format expected when GT_FLAG_NO_XFM is used.
+ *
+ * NOTE: The size and layout of these points is very similar to Vtx,
+ * except the screen coordinates overwrite the x,y,z,pad fields.
+ * (we could consider adding to the Vtx union, but we want to keep
+ * turbo stuff out of gbi.h)
+ *
+ * NOTE: The z is a special format. It can be used to compare vertices
+ * for sorting, but it should not be used for other purposes. If modified,
+ * the z-buffer hardware might not understand the data.
+ *
+ */</FONT>
+typedef struct {
+    short int	xscrn;	<FONT COLOR="red">/* x,y screen coordinates are SSSS10.2	*/</FONT>
+    short int	yscrn;
+    int		zscrn;	<FONT COLOR="red">/* z screen is S15.16			*/</FONT>
+
+    short int	s;	<FONT COLOR="red">/* transformed texture coord, S10.5	*/</FONT>
+    short int	t;
+
+    u8		r;	<FONT COLOR="red">/* color (or normal)			*/</FONT>
+    u8		g;
+    u8		b;
+    u8		a;
+} gtVtxOut_t;
+
+<FONT COLOR="red">/* see &quot;Data Structure&quot; comment in gbi.h for information about why
+ * we use this union.
+ */</FONT>
+typedef union {
+    gtVtxOut_t		v;
+    long long int	force_structure_alignment;
+} gtVtxOut;
+
+
+
+<FONT COLOR="red">/*
+ * state field: rdpOthermode
+ *
+ * This is one of the trickier state fields. The turbo interface
+ * requires the RDP othermode command to be cached by the host,
+ * therefore we provide a different interface in libultra to help cache
+ * this in the gt state (this word is just bits, you could pack them
+ * on your own). 
+ *
+ * gtStateSetOthermode() accomplishs this, taking as arguments 
+ * the state, one of the following mode enums, and a piece of data 
+ * (othermode parameters from gbi.h).
+ *
+ * By definition, the othermode word from the gt state structure is sent
+ * to the RDP *before* any RDP commands from the rdpCmds[] field. The
+ * othermode is *always* sent.
+ *
+ * Stated another way, NONE of the gbi RDP othermode commands equivalent
+ * to those listed here are allowed in the rdpCmd[] field of the 
+ * gt state structure.
+ *
+ * Notice also that many of these commands do not make sense for
+ * the turbo ucode (they control features not supported, like mip-mapping). 
+ * They are only included here for completeness.
+ *
+ */</FONT>
+typedef enum {
+    GT_CLEAR,		<FONT COLOR="red">/* special gt mode, clears othermode state */</FONT>
+    GT_ALPHACOMPARE,
+    GT_ZSRCSEL,
+    GT_RENDERMODE,
+    GT_ALPHADITHER,
+    GT_RGBDITHER,
+    GT_COMBKEY,
+    GT_TEXTCONV,
+    GT_TEXTFILT,
+    GT_TEXTLUT,
+    GT_TEXTLOD,
+    GT_TEXTDETAIL,
+    GT_TEXTPERSP,
+    GT_CYCLETYPE,
+    GT_PIPELINE
+} gtStateOthermode_t;
+
+<FONT COLOR="red">/*
+ * This call builds up an othermode command word. The 'mode' is one of
+ * the above modes, the 'data' field comes from gbi.h, it is the data
+ * field for the equivalent gbi setothermode macro.
+ */</FONT>
+extern void gtStateSetOthermode(Gfx *om, gtStateOthermode_t mode, int data);
+
+<FONT COLOR="red">/* 
+ * This call dumps a turbo display list for use with gbi2mem and RSPSIM
+ */</FONT>
+#define GT_DUMPTURBO_HANGAFTER           64
+#define GT_DUMPTURBO_NOTEXTURES          128
+extern void gtDumpTurbo(OSTask *tp,u8 flags);
+
+<FONT COLOR="red">/*
+ * Special macros to init othermode words to all 0's, a good default
+ * value.
+ */</FONT>
+#define gDPClearOtherMode(pkt)						\
+{									\
+	Gfx *_g = (Gfx *)(pkt);						\
+									\
+	_g-&gt;words.w0 = _SHIFTL(G_RDPSETOTHERMODE, 24, 8);		\
+	_g-&gt;words.w1 = 0x0;						\
+}
+
+#define gsDPClearOtherMode()						\
+{									\
+	_SHIFTL(G_RDPSETOTHERMODE, 24, 8), 0x0				\
+}
+
+<FONT COLOR="red">/*
+ * Special macros to end DP blocks (see above). These commands
+ * generate all 0's, which the turbo ucode looks for. They *aren't*
+ * real DP commands!
+ */</FONT>
+#define gDPEndDisplayList(pkt)	gSPNoOp(pkt)
+#define gsDPEndDisplayList()	gsSPNoOp()
+
+<FONT COLOR="red">/*
+ * This structure is a turbo 'object', the turbo display list is
+ * simply a list of these.
+ *
+ * NOTE: All pointers are segment addresses
+ *
+ * NOTE: If (statep-&gt;flag &amp; GT_FLAG_XFM_ONLY), the trip field is
+ * interpreted as a pointer to gtVtxOut[] that can be used to store
+ * the transformed points. (statep-&gt;triCount should be 0, else bad
+ * things could happen...)
+ *
+ * NOTE: If (statep-&gt;flag &amp; GT_FLAG_NO_XFM), the vtxp field is
+ * interpreted as a pointer to gtVtxOut[] that can be used to load
+ * pre-transformed points.
+ *
+ */</FONT>
+typedef struct {
+    gtGlobState	*gstatep;	<FONT COLOR="red">/* global state, usually NULL */</FONT>
+    gtState	*statep;	<FONT COLOR="red">/* if this is NULL, end object processing */</FONT>
+    Vtx		*vtxp;		<FONT COLOR="red">/* if this is NULL, use points in buffer */</FONT>
+    gtTriN	*trip;		<FONT COLOR="red">/* if this is NULL, use tris in buffer */</FONT>
+} gtGfx_t;
+
+typedef union {
+    gtGfx_t		obj;
+    long long int	force_structure_alignment;
+} gtGfx;
+
+
+#endif	<FONT COLOR="red">/* _LANGUAGE_C */</FONT>
+
+#ifdef	_LANGUAGE_ASSEMBLY
+#include &lt;PR/gtoff.h&gt;
+#endif	<FONT COLOR="red">/* _LANGUAGE_ASSEMBLY */</FONT>
+
+#ifdef	_LANGUAGE_C_PLUS_PLUS
+}
+#endif	<FONT COLOR="red">/* _LANGUAGE_C_PLUS_PLUS */</FONT>
+
+#ifdef	_LANGUAGE_MAKEROM
+#endif	<FONT COLOR="red">/* _LANGUAGE_MAKEROM */</FONT>
+
+#endif	<FONT COLOR="red">/* _GT_H_ */</FONT>
+</PRE>
+</BODY>

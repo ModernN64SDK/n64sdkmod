@@ -1,0 +1,88 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<link rel=stylesheet type="text/css" HREF="../N64man.css">
+<!--
+Editors Notes:
+  JLR made reformating and copy edits.
+  PWC- updated formatting
+-->
+
+<TITLE>gDPSetScissor</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>gDPSetScissor [Macro]</H1>
+<h2>Function</h2>
+<p>gDPSetScissor<br><br><i>
+Specifies the drawing region (scissoring) in screen coordinates</i></P>
+
+<p><b>Syntax</p></b>
+
+<p><PRE>#include &lt;ultra64.h&gt;        /* <A href="../../header/gbi.htm">gbi.h</A> */
+gDPSetScissor(Gfx *gdl, u32 mode, f32 ulx, f32 uly, f32 lrx, f32 lry )
+gsDPSetScissor(         u32 mode, f32 ulx, f32 uly, f32 lrx, f32 lry )</PRE></p>
+
+<p><b>Arguments</p></b>
+<p><DL>
+  <DT><B>gdl</B>
+  <DD>Display list pointer
+  <DT><B>mode</B>
+  <DD>Video mode:<p>
+      <TABLE border="1" cellspacing="0" cellpadding="3">
+        <TR>
+          <TD nowrap colspan="2" align="left" valign="middle">Interlace mode</TD></TR>
+        <TR>
+          <TD nowrap align="left" valign="middle"><B>G_SC_NON_INTERLACE</B></TD>
+          <TD nowrap align="left" valign="middle">Draw all scan lines</TD></TR>
+        <TR>
+          <TD nowrap align="left" valign="middle"><B>G_SC_ODD_INTERLACE</B></TD>
+          <TD nowrap align="left" valign="middle">Draw only odd-numbered scan lines</TD></TR>
+        <TR>
+          <TD nowrap align="left" valign="middle"><B>G_SC_EVEN_INTERLACE</B></TD>
+          <TD nowrap align="left" valign="middle">Draw only even-numbered scan lines</TD></TR>
+      </TABLE>
+<p>
+  <DT><B>ulx</B>
+  <DD>Screen's left edge coordinates (0.0~1023.75)
+  <DT><B>uly</B>
+  <DD>Screen's top edge coordinates (0.0~1023.75)
+  <DT><B>lrx</B>
+  <DD>Screen's right edge coordinates (0.0~1023.75)
+  <DT><B>lry</B>
+  <DD>Screen's bottom edge coordinates (0.0~1023.75)
+</DL></p>
+<p><b>Description</b></p>
+<P>
+Specifies the drawing area (the scissoring box). All pixels drawn outside the specified region are deleted. 
+</P>
+<P>
+Scissoring can be used to eliminate the majority of clipping computations. When instructions are sent to the RDP to clip in a region larger than the visible screen, the process is speeded up (in most cases) by using scissoring to delete pixels that are off the screen. 
+</P>
+<p><b>Note</b></p>
+<P>
+The scissoring of rectangles has some limitations. In 1-cycle mode and 2-cycle mode, rectangles are scissored just like triangles. In FILL mode and COPY mode, rectangles are scissored to the nearest 4-pixel alignment, so scissoring might also be required on the game software screen. 
+</P>
+<p><b>Comment</p></b>
+<P>
+The RSP graphics microcode executes low-error fixed-point clipping on primitives a little bit inside the viewport region. For this reason, the viewport region is typically set a little bigger than the scissoring box in the application. 
+</P>
+<P>
+You can set the interlace mode in the <B>mode</B> argument to omit scan lines during rendering. When you specify G_SC_NON_INTERLACE for the mode, all scan lines are drawn. But if you set the mode to either G_SC_ODD_INTERLACE or G_SC_EVEN_INTERLACE the application will omit either even-number scan lines or odd-numbered scan lines. By doing this, only one frame buffer is needed to store an image, even when two fields are being displayed in interlace mode. 
+</P>
+<P>
+For details, see Section 12.3.1 "Scissoring" in the N64 Programming Manual. 
+</P>
+<p><b>See Also</b></p>
+<P>
+<A href="gDPFillRectangle.htm">gDPFillRectangle</A>, <A href="gDPScisFillRectangle.htm">gDPScisFillRectangle</A>, 
+<A href="../gsp/gSPClipRatio.htm">gSPClipRatio</A>, <A href="../gsp/gSPTextureRectangle.htm">gSPTextureRectangle</A>,  
+<A href="../gsp/gSPViewport.htm">gSPViewport</A>
+</P>
+<p><b>Revision History</b></p>
+<P>
+02/01/99 Completely rewritten.
+</p>
+</BODY>
+</HTML>

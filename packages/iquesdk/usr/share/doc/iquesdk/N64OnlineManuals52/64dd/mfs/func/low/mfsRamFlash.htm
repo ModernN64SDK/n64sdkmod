@@ -1,0 +1,54 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>mfsRamFlash</title>
+</head>
+
+<body>
+<font face="arial" size="-1">
+<b><font size="3">mfsRamFlash</b></font>
+
+<hr>
+
+<strong>Syntax</strong>
+<font face="courier" size="2">
+<pre>s32 mfsRamFlash(void)</pre></font>
+
+<P>
+<b>Arguments</b>
+<dl><dd>None</dl></dd>
+
+<P>
+<b>Return value</b>
+<dl><dd>Error</dl></dd>
+
+<P>
+<b>Function</b>
+<dl><dd>Writes header area</dl></dd>
+
+<P>
+<b>Description</b>
+<P>
+This function writes the header area to disk when the header area had been rewritten.
+When an MFS library low-level function renames a file or directory or changes its size or attribute, a buffer held in memory is rewritten, and the data on disk is not rewritten.  This function writes multiple changes to disk at one time.
+If no change has been made to the header area, nothing is written to disk.
+This function should always be called after a series of disk manipulation functions.
+
+<P>
+<b>Main errors</b>
+<P>
+<table border="0" cellpadding="3" cellspacing="3">
+<tr><td valign="top"><font face="arial" size="-1">MFS_ERR_NO	</td>
+<td><font face="arial" size="-1">Normal termination</td></tr>
+<tr><td valign="top"><font face="arial" size="-1">MFS_ERR_DEVICE</td>
+<td><font face="arial" size="-1">Device error
+<br>An error occurred in an internally called Leo function.
+<br>Since a Leo function error is stored in the variable mfsError, check this variable to perform processing.</td></tr>
+<tr><td valign="top"><font face="arial" size="-1">MFS_ERR_NOTMFSDISK</td>
+<td><font face="arial" size="-1">Not an MFS-format disk
+<br>The disk ID's disk use is not 1, or the header is different.</td></tr>
+<tr><td valign="top"><font face="arial" size="-1">	MFS_ERR_VERSION</td>
+<td><font face="arial" size="-1">Different version disk.</td></tr></table>
+<hr>
+</body>
+</html>

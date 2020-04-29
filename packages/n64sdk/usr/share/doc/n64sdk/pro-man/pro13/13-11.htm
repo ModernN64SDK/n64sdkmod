@@ -1,0 +1,61 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 13 - Texture Mapping</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. -->
+</head>
+
+<h1>13.11 Restrictions </h1>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="01"><h2>13.11.1 Texture Types and Modes </h2></a>
+
+<p>The following is a list of restrictions concerning the use of certain textures types in certain modes: </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="01-01"><h3>13.11.1.1 Point Sample </h3></a>
+
+<p>clamp &amp; /|(wrap|mirror) works for all <a href="../../keywords/index/data/graphics.htm#texel" target="keywords">texel</a> types.</p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="01-02"><h3>13.11.1.2 Filter </h3></a>
+
+<p>Clamp works for all texel types.</p>
+<p>wrap t|mirror t|(clamp t &amp; wrap t)|(clamp t &amp; mirror t) works for all texel types. </p>
+<p>wrap s|mirror s|(clamp s &amp; wrap s)|(clamp s &amp; mirror s) works for all texel types except <a href="../../keywords/index/data/graphics.htm#YUV" target="keywords">YUV</a>.</p>
+</p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="01-03"><h3>13.11.1.3 Copy</h3></a>
+
+<p>Clamping is implicitly disabled for copy mode. 32-bit RGBA and YUV texel types are not supported. To copy these types, they should be loaded and <a href="../../keywords/index/data/graphics.htm#rendering" target="keywords">rendered</a> as 16-bit RGBA type texels. When using a 16-bit RGBA type to copy a 32-bit RGBA or YUV texture, mirroring in s is not supported. </p>
+
+<p>Wrap or mirror works for 4, 8, and 16-bit types. </p>
+
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="01-04"><h3>13.11.1.4 LOD</h3></a>
+
+<p>You must put the RDP in two-cycle mode to use texture <a href="../../keywords/index/data/graphics.htm#LOD" target="keywords">LOD</a>.</p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="02"><h2>13.11.2 Alignment </h2></a>
+
+<p>The texture image pointer, as defined using the <a href="../../n64man/gdp/gDPSetTextureImage.htm">g*DPSetTextureImage</a> command, must be 8-byte aligned. Additionally, each tile must be aligned according to its size. For example, 8-bit texture tiles must be aligned to 8-bit boundaries, 16-bit textures to 16-bit boundaries, etc. One exception is 4-bit tiles, which must be accessed on byte (8-bit boundaries). </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="03"><h2>13.11.3 Tiles </h2></a>
+
+<p>The maximum size of a tile is 256 rows (t coordinate) and 1024 texels (s coordinate) within the limits of TMEM size. It is better to always make the s coordinate the longer coordinate in terms of load performance. </p>
+
+<p>You should avoid shifting coordinates left using the shift parameter of a tile unless necessary. Please see the example in <a href="13-12.htm#01">Section 13.12, "Applications - Multiple Tile Effects "</a>.</p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="04"><h2>13.11.4 Coordinate Range</h2></a>
+
+<p>The valid texture coordinate range is currently from -1024.0 to +1023.99. A total range of 2K texels across a primitive.  The texture hardware can handle this full range without any noticeable loss of accuracy.  For small coordinate ranges however, if given a choice of coordinates close to zero or coordinates close to 1024, slightly higher quality may result from the lower coordinates. </p>
+
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+</body> </html>

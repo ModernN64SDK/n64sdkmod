@@ -1,0 +1,516 @@
+<HTML>
+<HEAD>
+<TITLE>Chapter 2 Nodes</TITLE>
+</HEAD>
+<BODY LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff">
+
+<font face="arial" size="-1">
+<b><font size="3">Chapter 3 Binary Format</b></font>
+<HR>
+
+<P>
+<b>3-3 File Header</b>
+<P>
+<table border="1" cellpadding="3" cellspacing="3">
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+version
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+file_size
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+header_tag
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+file_header_num_byte
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+scene_list_num_byte
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+env_list_num_byte
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+cam_list_num_byte
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+light_list_num_byte
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+obj_list_num_byte
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+shape_list_num_byte
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+vtx_list_num_byte
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+color_list_num_byte
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+vector_list_num_byte
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+st_list_num_byte
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+tri_list_num_byte
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+part_list_num_byte
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+mat_list_num_byte
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+tex_list_num_byte
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+tex_img_list_num_byte
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td>
+anim_list_num_byte
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+coll_list_num_byte
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+switch_list_num_byte
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+name_list_num_byte
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+nintendo_extension_block_size
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+user_extension_block_size
+</td>
+</tr>
+
+<tr>
+<td colspan="2"> <font face="arial" size="-1">
+<center>
+NintendoExtensionBlock
+</center>
+</td>
+</tr>
+<tr>
+<td colspan="2"> <font face="arial" size="-1">
+<center>
+UserExtensionBlock
+</center>
+</td></tr></table>
+
+<p>
+Figure: File Header
+
+<P>
+<table border="1" cellpadding="3" cellspacing="3">
+
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 version
+</td>
+<td>
+<font face="arial" size="-1">
+Enter the version number. <br>
+Refer to Chapter 4 "Version Numbering" for details.
+</td>
+</tr>
+
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 file_size
+</td>
+<td>
+<font face="arial" size="-1">
+Size (number of bytes) of file
+</td>
+</tr>
+
+<tr>
+<td nowrap><font face="arial" size="-1">
+<a href="../chapt5/seg2.htm#HEADER_TAG">u32 header_tag</a>
+</td>
+<td>
+<font face="arial" size="-1">
+File Header Tag 
+<pre><font face="courier" szie="2">
+<b>TAG_HEADER&#9;0x00000000</b></pre></font>
+</td>
+</tr>
+
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 file_header_num_byte
+</td>
+<td><font face="arial" size="-1">
+Size of file header
+</td>
+</tr>
+
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 scene_list_num_byte
+</td>
+<td nowrap><font face="arial" size="-1">
+Size of SceneList
+</td>
+</tr>
+
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 env_list_num_byte
+</td>
+<td>
+<font face="arial" size="-1">
+Size of EnvList
+</td>
+</tr>
+
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 cam_list_num_byte
+</td>
+<td>
+<font face="arial" size="-1">
+Size of CamList
+</td>
+</tr>
+
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 light_list_num_byte
+</td>
+<td>
+<font face="arial" size="-1">
+Size of LightList
+</td>
+</tr>
+
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 obj_list_num_byte
+</td>
+<td>
+<font face="arial" size="-1">
+Size of ObjList
+</td>
+</tr>
+
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 shape_list_num_byte
+</td>
+<td>
+<font face="arial" size="-1">
+Size of ShapeList
+</td>
+</tr>
+
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 vtx_list_num_byte
+</td>
+<td>
+<font face="arial" size="-1">
+Size of VtxList
+</td>
+</tr>
+
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 color_list_num_byte
+</td>
+<td>
+<font face="arial" size="-1">
+Size of ColorList
+</td>
+</tr>
+
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 st_list_num_byte
+</td>
+<td>
+<font face="arial" size="-1">
+Size of StList
+</td>
+</tr>
+
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 tri_list_num_byte
+</td>
+<td>
+<font face="arial" size="-1">
+Size of TriList
+</td>
+</tr>
+
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 part_list_num_byte
+</td>
+<td>
+<font face="arial" size="-1">
+Size of PartList
+</td>
+</tr>
+
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 mat_list_num_byte
+</td>
+<td>
+<font face="arial" size="-1">
+Size of MatList
+</td>
+</tr>
+
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 tex_list_num_byte
+</td>
+<td>
+<font face="arial" size="-1">
+Size of TexList
+</td>
+</tr>
+
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 tex_img_list_num_byte
+</td>
+<td>
+<font face="arial" size="-1">
+Size of TexImgList
+</td>
+</tr>
+
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 anim_list_num_byte
+</td>
+<td>
+<font face="arial" size="-1">
+Size of AnimList
+</td>
+</tr>
+
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 coll_list_num_byte
+</td>
+<td>
+<font face="arial" size="-1">
+Size of CollList
+</td>
+</tr>
+
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 switch_list_num_byte
+</td>
+<td>
+<font face="arial" size="-1">
+Size of SwitchList
+</td>
+</tr>
+
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 name_list_num_byte
+</td>
+<td>
+<font face="arial" size="-1">
+Size of NameList
+</td>
+</tr>
+
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 nintendo_extension_block_size
+</td>
+<td>
+<font face="arial" size="-1">
+If extension data is created on the Nintendo 64 side, the data is stored in NintendoExtensionBlock. <br>
+When extension data is not used, set the default flag as follows: 
+<pre><font face="courier" size="2">
+<b>NINTENDO_EXT_BLOCK_NONE&#9;0x00000000</b></pre>
+</font></td>
+</tr>
+
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 user_extension_block_size
+</td>
+<td>
+<font face="arial" size="-1">
+If extension data is created on the user side, the data is stored in UserExtensionBlock.<br>
+When extension data is not used, set the default flag as follows: 
+<pre><font face="courier" size="2">
+<b>USER_EXT_BLOCK_NONE&#9;0x00000000</b></pre>
+</font></td>
+</tr>
+
+<tr>
+<td nowrap><font face="arial" size="-1">
+NintendoExtensionBlock
+</td>
+<td>
+<font face="arial" size="-1">
+If extension data is created on the Nintendo 64 side, the data is stored in this NintendoExtensionBlock.
+</td>
+</tr>
+
+<tr>
+<td nowrap><font face="arial" size="-1">
+UserExtensionBlock
+</td>
+<td>
+<font face="arial" size="-1">
+If extension data is created on the user side, the data is stored in this UserExtensionBlock.
+</td></tr></table>
+<p>
+
+<hr>
+
+<p align="right"><a href="../index.htm">
+<img src="../../../gif/index.gif"
+border="0" width="65" height="17"></a>
+&nbsp; <a href="./seg4.htm">
+<img src="../../../gif/next.gif"
+border="0" width="65" height="17"></a></p>
+
+
+</body>
+</html>
+
+

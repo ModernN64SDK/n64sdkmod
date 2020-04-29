@@ -1,0 +1,322 @@
+<HTML>
+<HEAD>
+<TITLE>Chapter 3 Binary Format</TITLE>
+</HEAD>
+<BODY LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff">
+
+<font face="arial" size="-1">
+<b><font size="3">Chapter 3 Binary Format</b></font>
+<HR>
+
+<b>3-11. TriList</b>
+
+<P>
+<u>2. TriGroup Area</u>
+
+<p>
+<table border="1" cellpadding="3" cellspacing="3">
+<tr>
+<th rowspan="8"><font face="arial" size="-1">
+TriGroupHeader
+</th>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+tri_group_tag
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+this_tri_group_index
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+tri_group_header_size
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+tri_group_size
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+tri_group_name_index
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+tri_anim_type
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+tri_anim_frame_num
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+<center>
+tri_num
+</center>
+</td>
+</tr>
+<tr>
+<th rowspan="9"><font face="arial" size="-1">
+
+</th>
+<td colspan="2"><font face="arial" size="-1">
+<center>
+ReferenceVtxData
+</center>
+</td>
+</tr>
+<tr>
+<td colspan="2"><font face="arial" size="-1">
+<center>
+ReferenceTriColorData
+</center>
+</td>
+</tr>
+<tr>
+<td colspan="2"><font face="arial" size="-1">
+<center>
+ReferenceVtxColorData
+</center>
+</td>
+</tr>
+<tr>
+<td colspan="2"><font face="arial" size="-1">
+<center>
+ReferenceTriNvData
+</center>
+</td>
+</tr>
+<tr>
+<td colspan="2"><font face="arial" size="-1">
+<center>
+ReferenceVtxNvData
+</center>
+</td>
+</tr>
+<tr>
+<td colspan="2"><font face="arial" size="-1">
+<center>
+ReferenceStData
+</center>
+</td>
+</tr>
+<tr>
+<td colspan="2"><font face="arial" size="-1">
+<center>
+Tri(0)
+</center>
+</td>
+</tr>
+<tr>
+<td colspan="2"><font face="arial" size="-1">
+<center>
+...
+</center>
+</td>
+</tr>
+<tr>
+<td colspan="2"><font face="arial" size="-1">
+<center>
+Tri(tri_num - 1)
+</td></tr></table>
+
+<p>
+Figure: TriGroup Area Memory Map
+
+<p>
+<table border="1" cellpadding="3" cellspacing="3">
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 tri_group_tag
+</td>
+<td>
+<font face="arial" size="-1">
+Tag indicating TriGroup. Set the following flag.
+<pre><font face="courier" size="2"><b>TAG_TRI_GROUP&#9;0x00080100</b></pre>
+</font>
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 this_tri_group_index
+</td>
+<td>
+<font face="arial" size="-1">
+Index number of TriGroup.
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 tri_group_header_size
+</td>
+<td>
+<font face="arial" size="-1">
+Number of bytes of TriGroupHeader.
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 tri_group_size
+</td>
+<td>
+<font face="arial" size="-1">
+Size of TriGroup.
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 tri_group_name_index
+</td>
+<td>
+<font face="arial" size="-1">
+Index of this TriGroup name in the NameList.
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+<a href="../chapt5/seg1.htm#TRI_ANIM_TYPE">u32 tri_anim_type</a>
+</td>
+<td>
+<font face="arial" size="-1">
+Indicates the shape animation type being used. The following flags are currently available.
+<pre><font face="courier" size="2"><b>
+TRI_ANIM_NONE&#9;&#9;0x00000000
+TRI_ANIM_VTX_FULL&#9;0x00000001
+TRI_ANIM_VTX_KEY&#9;0x00000002
+TRI_ANIM_TRI_COLOR_FULL&#9;0x00000010
+TRI_ANIM_TRI_COLOR_KEY&#9;0x00000020
+TRI_ANIM_VTX_COLOR_FULL&#9;0x00000100
+TRI_ANIM_VTX_COLOR_KEY&#9;0x00000200
+TRI_ANIM_TRI_NV_FULL&#9;0x00001000
+TRI_ANIM_TRI_NV_KEY&#9;0x00002000
+TRI_ANIM_VTX_NV_FULL&#9;0x00010000
+TRI_ANIM_VTX_NV_KEY&#9;0x00020000
+TRI_ANIM_ST_FULL&#9;0x00100000
+TRI_ANIM_ST_KEY&#9;&#9;0x00200000
+</b></pre></font>
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 tri_anim_frame_num
+</td>
+<td>
+<font face="arial" size="-1">
+Total number of shape animation frames.
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 tri_num
+</td>
+<td>
+<font face="arial" size="-1">
+Number of bytes of this TriGroup.
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+<a href="./seg11-3.htm">ReferenceVtxData</a>
+</td>
+<td>
+<font face="arial" size="-1">
+Reference VtxGroup area.
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+<a href="./seg11-4.htm">ReferenceTriColorData</a>
+</td>
+<td>
+<font face="arial" size="-1">
+Reference TriColorGroup area.
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+<a href="./seg11-5.htm">ReferenceVtxColorData</a>
+</td>
+<td>
+<font face="arial" size="-1">
+Reference VtxColorGroup area.
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+<a href="./seg11-6.htm">ReferenceTriNvData</a>
+</td>
+<td>
+<font face="arial" size="-1">
+Reference TriNvGroup area.
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+<a href="./seg11-7.htm">ReferenceVtxNvData</a>
+</td>
+<td>
+<font face="arial" size="-1">
+Reference VtxNvGroup area.
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+<a href="./seg11-8.htm">ReferenceStData</a>
+</td>
+<td>
+<font face="arial" size="-1">
+Reference StGroup area.
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+<a href="./seg11-9.htm">Tri</a>
+</td>
+<td>
+<font face="arial" size="-1">
+Tri area.
+</td></tr></table>
+<p>
+
+<hr>
+
+<p align="right"><a href="../index.htm">
+<img src="../../../gif/index.gif"
+border="0" width="65" height="17"></a>
+&nbsp; <a href="./seg11-3.htm">
+<img src="../../../gif/next.gif"
+border="0" width="65" height="17"></a></p>
+
+</body>
+</html>
+
+

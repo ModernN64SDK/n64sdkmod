@@ -1,0 +1,206 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<title>Audio Library NCL RD3 Revised version (n_audio)</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<FONT FACE="Arial" SIZE="-1">
+
+<h2>3. Influence</h2>
+
+<p>The sequence and sound data developed for the previous version of the audio library can also be used with the n_audio library. However, because of the improvements outlined in <2>, you will need to prepare the data following the guidelines below.</p>
+
+<p align="right"><a href="index.htm"><img src="../../gif/index.gif"
+alt="[UP]" border="0" width="65" height="17"></a></p>
+
+<hr>
+
+<h3><a name="01"></a>3.1 Effect of the Envelope</h3>
+
+<p>The effect of the change from an exponential to a linear envelope is greatest at the time of release. The effect is such that it sounds like the release time has been extended because the attentuation rate is smaller at the beginning of the release.</p>
+
+<p>To compensate for this effect you can:</p>
+
+<ul>
+    <li> shorten the "release" time of the envelope.</li>
+    <li> generate sound taking the envelope shape (linear function) into account.</li>
+</ul>
+
+<p align="right"><a href="index.htm"><img src="../../gif/index.gif"
+alt="[UP]" border="0" width="65" height="17"></a></p>
+
+<hr>
+
+<h3><a name="02"></a>3.2 Effect of Processing Every 184 Samples</h3>
+
+<p>Please note for the following points due to the change in (2.3) and (2.4).</p>
+
+<ul>
+    <li>set the number of samples per frame to a multiple of 184. </li>
+    <li>create samples that do not require audio processing in the middle of a sub-frame. </li>
+</ul>
+
+<p>These are explained below.</p>
+
+<ul>
+    <li>Set the number of samples per frame to a multiple of 184</li>
+</ul>
+
+<p>
+In n-audio the minimum audio processing unit is set to a fixed value of 184 samples per unit. The number of samples that can be processed by the RSP is also fixed at 184 fixed.
+</p>
+<p>Therefore, the number of samples that the application generates for each frame must be set to a multiple of 184.
+</p>
+
+<p>For example, when the playback frequency is 32 kHz, the number of required data for 1 frame is </p>
+
+<blockquote>
+    <pre><FONT SIZE="3"> 32000
+------- = 533.33...= 533
+   60</FONT></pre>
+</blockquote>
+
+<p>The closest multiple to 533 is
+</p>
+
+<blockquote>
+    <pre><FONT SIZE="3">184 x 3 = 552</FONT></pre>
+</blockquote>
+
+<p>Thus, Frames A can be set up as follows.</p>
+
+<blockquote>
+    <p><img src="gif/03-02-00.gif" ></p>
+</blockquote>
+
+<p>
+It is possible to set up a value larger than 552 as the size of frame A. However, if it is set up much larger than 533, the required time for processing the frame may become longer than the time for creating 533 data in the former library, even though n_audio is used.
+
+</p>
+
+<p>In Frame A,</p>
+
+<blockquote>
+    <pre><FONT SIZE="3">552 - 533 = 19</FONT></pre>
+</blockquote>
+
+<p>samples become surplus samples and are carried over to next frame. 
+</p>
+
+<p>To adjust for the the surplus samples, prepare Frame B as follows. 
+</p>
+
+<blockquote>
+    <p><img src="gif/03-02-01.gif" ></p>
+</blockquote>
+
+<p>Combine Frame A and Frame B as follows.
+</p>
+
+<blockquote>
+    <p><img src="gif/03-02-02.gif" ></p>
+</blockquote>
+
+<p>The total of output sample data numbers of these 10 frames is
+</p>
+
+<blockquote>
+    <pre><FONT SIZE="3">184 x 3 x 9 + 184 x 2 = 5336</FONT></pre>
+</blockquote>
+
+<p>and the actual number of the required sample data among 10 frames is 
+</p>
+
+<blockquote>
+    <pre><FONT SIZE="3">533 x 10 = 5330</FONT></pre>
+</blockquote>
+
+<p>Thus, it becomes possible to adjust the surplus data of the whole application by using these 10 frames repeatedly.
+</p>
+
+<p>In this manner, you must provide the adjustment of surplus data in the application, and set the number of sampling data created for 1 frame to a multiple of 184.
+</p>
+
+<p>The above example results from calculation, and doesn't consider unexpected errors. Please see the sample program that comes with the product for more specific examples of how to determine the frame size within an application.</p>
+
+<ul>
+    <li>Create Data that Do Not Require Audio Processing in the Middle of a Sub-Frame</li>
+</ul>
+
+<p>Because we fixed the minimum unit of the audio process to 184 sampling data, gaps are produced depending upon the timing of the ON/OFF for sound, and the envelope transition points. (Example 3)</p>
+
+<p><strong>Example 3) A Timing Gap Between Envelop Changes</strong></p>
+
+<blockquote>
+    <p><img src="gif/03-02-03.gif" ></p>
+</blockquote>
+
+<p>When the change in envelope (Attack -> Decay) occurs in one sub-frame, the point where the change occurs is forced to move forward or backwards by rounding up the values.
+<br>
+For example, if the playback frequency is 32kHz, the previous timing is a maximum of </p>
+
+<blockquote>
+    <pre><FONT SIZE="3">   1      184
+------- x ---- = 0.002875 sec
+ 32000     2</FONT></pre>
+</blockquote>
+
+<p>off due to rounding errors.</p>
+
+<p>To prevent the timing gap, each event needs to occur on the multiple integer of the minimum audio processing unit. When the playback frequency is 32kHz, 
+</p>
+
+<blockquote>
+    <pre><FONT SIZE="3">   1
+------- x 184 = 0.00575 sec
+ 32000</FONT></pre>
+</blockquote>
+
+<p>
+becomes the minimum processing unit. Therefore, at this moment, we adjust the timing of envelope change by setting the envelope (within the ".inst" file) to 
+
+</p>
+
+<blockquote>
+    <pre><FONT SIZE="3">envelope
+{
+        attackTime       = 17250;        /* <-- 5750 usec x 3 */
+        attackVolume     = 127;
+        decayTime        = 2501250;      /* <-- 5750 usec x 435 */
+        decayVolume      = 0;
+        releaseTime      = 201250;       /* <-- 5750 usec x 35 */
+}</FONT></pre>
+</blockquote>
+
+<p>We adjust timing for each process using tempo value for the MIDI sequence data. </p>
+
+<p>Specifically, it becomes as follows.</p>
+
+<p>If you process a quarter note with 48 steps, the time "Qn" per quarter note becomes 
+</p>
+
+<blockquote>
+    <pre><FONT SIZE="3">Qn = 0.00575 x 48 = 0.276 sec</FONT></pre>
+</blockquote>
+
+<p>"Tempo" becomes</p>
+
+<blockquote>
+    <pre><FONT SIZE="3">          60
+Tempo =  ---- = 217.39 ... bpm
+          Qn</FONT></pre>
+</blockquote>
+
+<p>We adjust the timing of sequence data using "one to this integer" as the actual tempo
+</p>
+
+<p>Although, there is sequencer software that will not allow the decimal value of tempo to be input. In these cases, we try to rewrite the tempo value of MIDI data directly.</p>
+
+<p align="right"><a href="index.htm"><img src="../../gif/index.gif"
+alt="[UP]" border="0" width="65" height="17"></a></p>
+
+<hr>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../n64man.css">
+<title>MusFxBankGetPtrBank()</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check-->
+</head>
+
+<h1>MusFxBankGetPtrBank()</h1>
+
+<h2>Syntax</h2>
+
+<pre>void *MusFxBankGetPtrBank(void *ifxbank);
+</pre>
+
+<h2>Arguments</h2>
+
+<dl>
+  <dt><b>ifxbank</b>
+  <dd>the address of an initialized sound effect bank 
+</dl>
+
+<h2>Description</h2>
+
+<p>It gets the sample bank override associated with the specified initialized sound effect bank. If no sample bank override has been set for the specified sound effect bank, this function will return NULL.</p>
+
+<p>The default sample bank is used when the <a href="MusStartEffect.html">MusStartEffect()</a> or the <a href="MusStartEffect2.html">MusStartEffect2()</a> function is used to start sound effects, if no sample bank override has been defined. If a sample bank override has been specified with the <a href="MusFxBankSetPtrBank.html">MusFxBankSetPtrBank()</a> function for the effect bank to which the triggering sound effect belongs, then the MusFxBankSetPtrBank() will be used, unless a higher priority override has been defined using the <a href="MusPtrBankSetSingle.html">MusPtrBankSetSingle()</a> function. </p>
+
+<p>The ifxbank must contain the address of a sound effect bank initialized with the <a href="MusFxBankInitialize.html">MusFxBankInitialize()</a> function.</p>
+
+<h2>Return Value</h2>
+
+<p>Sample bank address or NULL.</p>
+
+<h2>Example</h2>
+
+<pre>void GameFxBankSetDefault(void *fx_bank)
+{
+  void *ptr_bank;
+
+  ptr_bank = MusFxBankGetPtrBank(fx_bank);
+  <a href="MusPtrBankSetCurrent.html">MusPtrBankSetCurrent</a>(ptr_bank);
+}
+</pre>
+
+<h2>See Also</h2>
+<p>
+<a href="MusFxBankInitialize.html">MusFxBankInitialize()</a>,
+<a href="MusFxBankNumberOfEffects.html">MusFxBankNumberOfEffects()</a>,
+<a href="MusFxBankGetCurrent.html">MusFxBankGetCurrent()</a>,
+<a href="MusFxBankSetCurrent.html">MusFxBankSetCurrent()</a>,
+<a href="MusFxBankSetPtrBank.html">MusFxBankSetPtrBank()</a>,
+<a href="MusFxBankSetSingle.html">MusFxBankSetSingle()</a>
+</p>
+
+</body>
+</html>

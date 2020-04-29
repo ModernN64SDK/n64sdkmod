@@ -1,0 +1,33 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 6 - N64 Operating System Overview</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check.-->
+</head>
+
+<h1>6.10 Boot Procedure</h1>
+
+<p>When using the Nintendo 64 development system, the developer needs to run the game loader <a href="../../n64man/tool/gload.htm">gload()</a> program to download his prepared ROM image into the cartridge memory on the development board.   After the memory image is loaded, <a href="../../n64man/tool/gload.htm">gload</a> can optionally read back the memory and verify the contents.  It then generates a reset signal to the development board, causing the R4300 to jump to the reset vector where it begins executing the <A target="keywords" HREF="../../keywords/index/data/system.htm#boot">boot</A> code from the PIF ROM. </p>
+
+<p>Some of the important tasks performed by the boot code include: </p>
+
+<ol>
+  <li>Initialize N64 CPU CP0 registers<br><br>
+  <li>Initialize the RCP (such as halt RSP, reset PI, blank video, stop audio)<br><br>
+  <li>Initialize RDRAM and CPU caches<br><br>
+  <li>Load 1 MB of game from ROM to RDRAM at physical address 0x00000400<br><br>
+  <li>Clear RCP status<br><br>
+  <li>Jump to game code<br><br>
+  <li>Execute <A target="keywords" HREF="../../keywords/index/data/system.htm#game preamble code">game preamble code</A> (which is similar to crt0.o and is linked to game during <a href="../../n64man/tool/makerom.htm">makerom</a> process) 
+      <ul>
+        <li>clear <A target="keywords" HREF="../../keywords/index/data/system.htm#Bss">BSS</A> for boot segment (as defined in the spec file)
+        <li>set up boot segment <A target="keywords" HREF="../../keywords/index/data/system.htm#stack">stack</A> pointer 
+        <li>jump to boot entry routine      </ul>
+      <br><br>
+  <li>Boot entry routine should call <a href="../../n64man/os/osInitialize.htm">osInitialize()</a> <br><br>
+</ol>
+
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+</body> </html>

@@ -1,0 +1,30 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 9 - Basic Memory Management</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. 
+             MAP- 11/16/99 edited content, updated format -->
+</head>
+
+<h1>9.3 CPU Addressing </h1>
+
+<p>CPU virtual address translation takes place in one of two ways: via direct mapping or through the translation lookaside buffer (TLB).  <A target="keywords" HREF="../../keywords/index/data/system.htm#virtual address">Virtual address</A> translation is explained in the table below.  When running in <A target="keywords" HREF="../../keywords/index/data/system.htm#kernel">kernel</A> mode (as applications do on the Nintendo 64 platform) the address ranges have the behavior described in Table 9-1.
+
+</p>
+
+<table border=1 align="center">
+  <caption><a name="t09-01"><strong>Table 9-1 32 Bit Kernel Mode Addressing </strong></a></caption>
+  <tr><th>Beginning</th><th>Ending</th><th>Name</th><th>Behavior</th></tr>
+<tr><td>0x00000000</td><td>0x7fffffff</td><td>KUSEG</td><td>TLB mapped</td></tr>
+<tr><td>0x80000000</td><td>0x9fffffff</td><td>KSEG0</td><td>Direct mapped, cached</td></tr>
+<tr><td>0xa0000000</td><td>0xbfffffff</td><td>KSEG1</td><td>Direct mapped, uncached</td></tr>
+<tr><td>0xc0000000</td><td>0xdfffffff</td><td>KSSEG</td><td>TLB mapped</td></tr>
+<tr><td>0xe0000000</td><td>0xffffffff</td><td>KSEG3</td><td>TLB mapped</td></tr>
+</table>
+
+<p>The KSEG0 address space is expected to be the most widely used, if not only, address space used.  In this address space, the physical memory locations corresponding to be KSEG0 address can be determined by stripping off the upper three bits of the virtual address.  For example, virtual address 0x80000000 corresponds to physical address 0x0000000, and so on.</p>
+
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+</body> </html>

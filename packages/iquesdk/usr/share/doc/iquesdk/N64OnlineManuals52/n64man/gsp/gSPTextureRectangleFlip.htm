@@ -1,0 +1,85 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.>
+<TITLE>gSPTextureRectangleFlip</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>gSPTextureRectangleFlip [Macro]</FONT></H1>
+
+<p><b>Function</b></font></p>
+
+<p>gSPTextureRectangleFlip</p>
+<P>
+<i>Renders a textured rectangle by flipping the s/t coordinates</i>
+</P>
+<p><b>Syntax</b></font></p>
+<p>
+<PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gbi.htm">gbi.h</A> */
+gSPTextureRectangleFlip(
+        Gfx *gdl, 
+        u32 ulx,
+        u32 uly, 
+        u32 lrx,
+        u32 lry, 
+        s32 tile,
+        s32 s,
+        s32 t, 
+        s32 dsdx,
+        s32 dtdy)
+gsSPTextureRectangleFlip(
+        u32 ulx,
+        u32 uly, 
+        u32 lrx,
+        u32 lry, 
+        s32 tile,
+        s32 s,
+        s32 t, 
+        s32 dsdx,
+        s32 dtdy)</CODE></PRE></p>
+
+<p><b>Arguments</b></font></p>
+<p>
+<DL>
+  <DT><B>gdl</B>
+  <DD>the display list pointer. 
+  <DT><B>ulx</B>
+  <DD>the x-coordinate of upper-left corner of rectangle (10.2, 0.0~1023.75) 
+  <DT><B>uly</B>
+  <DD>the y-coordinate of upper-left corner of rectangle (10.2, 0.0~1023.75) 
+  <DT><B>lrx</B>
+  <DD>the x-coordinate of lower-right corner of rectangle (10.2, 0.0~1023.75) 
+  <DT><B>lry</B>
+  <DD>the y-coordinate of lower-right corner of rectangle (10.2, 0.0~1023.75) 
+  <DT><B>tile</B>
+  <DD>the tile descriptor index (3-bit precision, 0~7) 
+  <DT><B>s</B>
+  <DD>the texture coordinate s of upper-left corner of rectangle (s10.5) 
+  <DT><B>t</B>
+  <DD>the texture coordinate t of upper-left corner of rectangle (s10.5) 
+  <DT><B>dsdx</B>
+  <DD>the change in s for each change in x (s5.10) 
+  <DT><B>dtdy</B>
+  <DD>the change in t for each change in y (s5.10) 
+</DL></p>
+<p><b>Description</b></font></p>
+<P>
+Draws a textured 2D rectangle with inverted s,t coordinates. This macro works just like <A HREF="gSPTextureRectangle.htm">gSPTextureRectangle</A>, except that the s,t coordinates swap x,y axes in order to flip the texture. You need to be careful when using <B>dtdx</B> and <B>dsdy</B>. The s coordinate is changed so that it describes the y direction, and not the x direction as usual. In the same way, the t coordinate is changed to describe the x direction, and not the y direction as usual. For details about the other features of this macro, see <A HREF="gSPTextureRectangle.htm">gSPTextureRectangle</A>. Also, to learn more about flipping, please see Section 14.2.1, "Flip" in the N64 Online Programming Manual. 
+</P>
+<p><b>Example</b></font></p>
+<P>
+Please refer to Section 14.2.1, Example 14-13, "TextureRectangleFlip Command" in the N64 Programming Manual. 
+</P>
+<p><b>See Also</b></font></p>
+<P>
+<A HREF="../gdp/gDPFillRectangle.htm">gDPFillRectangle</A>, <A HREF="../gdp/gDPSetScissor.htm">gDPSetScissor</A>, <A HREF="../gdp/gDPSetTexturePersp.htm">gDPSetTexturePersp</A>, <A HREF="gSPScisTextureRectangle.htm">gSPScisTextureRectangle</A>, and <A HREF="gSPTextureRectangle.htm">gSPTextureRectangle</A>
+</P>
+<p><b>Revision History</b></font></p>
+<P>
+02/01/99  Entirely revised.
+</P>
+</BODY>
+</HTML>

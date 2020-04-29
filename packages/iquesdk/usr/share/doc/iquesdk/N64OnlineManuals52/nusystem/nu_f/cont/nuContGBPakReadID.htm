@@ -1,0 +1,69 @@
+<HTML>
+<HEAD>
+<TITLE>nuContGBPakReadID</TITLE>
+</HEAD>
+
+<BODY bgcolor="#FFFFFF">
+<font face="arial" size="-1">
+
+<P>
+<FONT size="5"><b><IMG src="../nusystem2.gif" height="30" width="176">Function</b></FONT>
+
+<HR>
+<P>
+<FONT size="3"><b>nuContGBPakReadID</b></FONT>
+<p>
+<HR>
+<P>
+<b>Syntax</b>
+<font face="courier" size="2">
+<pre>s32 nuContGBPakReadID(NUContPakFile *handle, osGbpakId *id, u8 *status)</pre>
+</font>
+
+<p><b>Arguments</b>
+<font face="courier" size="2">
+<pre>
+handle      GB Pak control structure (shared with Controller Pak structure)
+id          pointer to stored registration area data in Game Boy Game Pak ROM 
+status      detected status</pre>
+</font>
+
+<p><b>Return Value</b>
+<font face="courier" size="2">
+<pre>Error</pre>
+</font>
+
+<p><b>Description</b>
+
+<p><i>Checks the registration area in the Game Boy Game Pak ROM</i>
+
+<p>Reads the registration area in the Game Boy Game Pak ROM and then checks the data. Internally calls the osGbpakGetStatus function and the osGbpakPower function, puts the obtained status information in "status," and turns power ON. The return value is the value returned by the osGbpakReadId function.
+
+<p><b>Errors</b>
+<p>
+<table border="1" cellspacing="1">
+    <tr>
+        <td><font face="arial" size="-1">PFS_ERR_NOPACK</font></td>
+        <td><font face="arial" size="-1">Nothing is inserted in the specified Controller.</font></td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">PFS_ERR_DEVICE</font></td>
+        <td><font face="arial" size="-1">Some device other than a GB Pak is inserted in the Controller.</font></td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">PFS_ERR_CONTRFAIL</font></td>
+        <td><font face="arial" size="-1">Data transfer with Controller has failed. Either the Controller is not connected properly, or there may be some problem with the GB Pak or the Controller connector.</font></td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">PFS_ERR_NO_GBCART</font></td>
+        <td><font face="arial" size="-1">Game Boy Game Pak is not inserted in the GB Pak.</font></td>
+    </tr>
+</table>
+
+<p>
+<hr>
+
+<p align="right"><a href="index.htm"><img src="../index.gif" border="0"
+width="65" height="17"></a>
+</body>
+</html>

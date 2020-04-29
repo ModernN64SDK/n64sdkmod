@@ -1,0 +1,29 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 13 - Texture Mapping</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. -->
+</head>
+
+<h1>13.2 Example Display List </h1>
+
+<p>The following display list fragment uses <a href="../../keywords/index/data/graphics.htm#GBI" target="keywords">GBI</a> <a href="../../keywords/index/data/graphics.htm#display list" target="keywords">display list</a> commands to render an object using a 16-bit RGBA <a href="../../keywords/index/data/graphics.htm#texture map" target="keywords">texture map</a>.  The texture is loaded into TMEM using the LoadBlock command.  The texture coordinates are <a href="../../keywords/index/data/graphics.htm#perspective correction" target="keywords">perspective corrected</a>.   Note that the texture is allowed to wrap on 32-<a href="../../keywords/index/data/graphics.htm#texel" target="keywords">texel</a> boundaries in the s and t directions.  The texture filter <a href="../../keywords/index/data/graphics.htm#bilinear interpolation" target="keywords">bi-linearly interpolates</a> the 2x2 texels output by the texture unit.   Finally, the resulting texture color is multiplied by the object's shade color in the Color Combiner for each pixel of the object.</p>
+
+<blockquote><pre>
+/* Enable textured poly generation in RSP */
+<a href="../../n64man/gsp/gSPTexture.htm">gSPTexture</a>(glistp++, 0x8000, 0x8000, G_TX_RENDERTILE, G_ON);
+<a href="../../n64man/gdp/gDPSetTextureFilter.htm">gDPSetTextureFilter</a>(glistp++, G_TF_BILERP);
+<a href="../../n64man/gdp/gDPSetTexturePersp.htm">gDPSetTexturePersp</a>(glistp++, G_TP_PERSP);
+<a href="../../n64man/gdp/gDPSetCombineMode.htm">gDPSetCombineMode</a>(glistp++, G_CC_MODULATERGB, G_CC_MODULATERGB);
+/* Load Texture Block */
+<a href="../../n64man/gdp/gDPLoadTextureBlock.htm">gDPLoadTextureBlock</a>(glistp++, RGBA16dana, G_IM_FMT_RGBA,
+                    G_IM_SIZ_16b, 32, 32, 0, G_TX_WRAP, G_TX_WRAP, 
+                    5, 5, G_TX_NOLOD, G_TX_NOLOD);
+/* render model display list */
+<a href="../../n64man/gsp/gSPDisplayList.htm">gSPDisplayList</a>(glistp++, mode1);
+</pre></blockquote>
+
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+</body> </html>

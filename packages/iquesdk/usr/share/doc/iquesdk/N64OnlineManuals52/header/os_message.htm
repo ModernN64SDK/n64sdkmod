@@ -1,0 +1,168 @@
+<HTML><HEAD>
+<TITLE></TITLE>
+</HEAD></BODY>
+<PRE>
+<FONT COLOR="red">/*====================================================================
+ * os_message.h
+ *
+ * Copyright 1995, Silicon Graphics, Inc.
+ * All Rights Reserved.
+ *
+ * This is UNPUBLISHED PROPRIETARY SOURCE CODE of Silicon Graphics,
+ * Inc.; the contents of this file may not be disclosed to third
+ * parties, copied or duplicated in any form, in whole or in part,
+ * without the prior written permission of Silicon Graphics, Inc.
+ *
+ * RESTRICTED RIGHTS LEGEND:
+ * Use, duplication or disclosure by the Government is subject to
+ * restrictions as set forth in subdivision (c)(1)(ii) of the Rights
+ * in Technical Data and Computer Software clause at DFARS
+ * 252.227-7013, and/or in similar or successor clauses in the FAR,
+ * DOD or NASA FAR Supplement. Unpublished - rights reserved under the
+ * Copyright Laws of the United States.
+ *====================================================================*/</FONT>
+
+<FONT COLOR="red">/*---------------------------------------------------------------------*
+        Copyright (C) 1998 Nintendo. (Originated by SGI)
+        
+        $RCSfile: os_message.h,v $
+        $Revision: 1.1 $
+        $Date: 1998/10/09 08:01:15 $
+ *---------------------------------------------------------------------*/</FONT>
+
+#ifndef _OS_MESSAGE_H_
+#define	_OS_MESSAGE_H_
+
+#ifdef _LANGUAGE_C_PLUS_PLUS
+extern &quot;C&quot; {
+#endif
+
+#include &lt;PR/ultratypes.h&gt;
+
+#if defined(_LANGUAGE_C) || defined(_LANGUAGE_C_PLUS_PLUS)
+
+<FONT COLOR="red">/**************************************************************************
+ *
+ * Type definitions
+ *
+ */</FONT>
+
+typedef u32 OSEvent;
+
+<FONT COLOR="red">/*
+ * Structure for message
+ */</FONT>
+typedef void *	OSMesg;
+
+<FONT COLOR="red">/*
+ * Structure for message queue
+ */</FONT>
+typedef struct OSMesgQueue_s {
+	OSThread	*mtqueue;	<FONT COLOR="red">/* Queue to store threads blocked
+					   on empty mailboxes (receive) */</FONT>
+	OSThread	*fullqueue;	<FONT COLOR="red">/* Queue to store threads blocked
+					   on full mailboxes (send) */</FONT>
+	s32		validCount;	<FONT COLOR="red">/* Contains number of valid message */</FONT>
+	s32		first;		<FONT COLOR="red">/* Points to first valid message */</FONT>
+	s32		msgCount;	<FONT COLOR="red">/* Contains total # of messages */</FONT>
+	OSMesg		*msg;		<FONT COLOR="red">/* Points to message buffer array */</FONT>
+} OSMesgQueue;
+
+
+#endif <FONT COLOR="red">/* defined(_LANGUAGE_C) || defined(_LANGUAGE_C_PLUS_PLUS) */</FONT>
+
+<FONT COLOR="red">/**************************************************************************
+ *
+ * Global definitions
+ *
+ */</FONT>
+
+<FONT COLOR="red">/* Events */</FONT>
+#ifdef _FINALROM
+#define OS_NUM_EVENTS           15
+#else
+#define OS_NUM_EVENTS           23
+#endif
+
+#define OS_EVENT_SW1              0     <FONT COLOR="red">/* CPU SW1 interrupt */</FONT>
+#define OS_EVENT_SW2              1     <FONT COLOR="red">/* CPU SW2 interrupt */</FONT>
+#define OS_EVENT_CART             2     <FONT COLOR="red">/* Cartridge interrupt: used by rmon */</FONT>
+#define OS_EVENT_COUNTER          3     <FONT COLOR="red">/* Counter int: used by VI/Timer Mgr */</FONT>
+#define OS_EVENT_SP               4     <FONT COLOR="red">/* SP task done interrupt */</FONT>
+#define OS_EVENT_SI               5     <FONT COLOR="red">/* SI (controller) interrupt */</FONT>
+#define OS_EVENT_AI               6     <FONT COLOR="red">/* AI interrupt */</FONT>
+#define OS_EVENT_VI               7     <FONT COLOR="red">/* VI interrupt: used by VI/Timer Mgr */</FONT>
+#define OS_EVENT_PI               8     <FONT COLOR="red">/* PI interrupt: used by PI Manager */</FONT>
+#define OS_EVENT_DP               9     <FONT COLOR="red">/* DP full sync interrupt */</FONT>
+#define OS_EVENT_CPU_BREAK        10    <FONT COLOR="red">/* CPU breakpoint: used by rmon */</FONT>
+#define OS_EVENT_SP_BREAK         11    <FONT COLOR="red">/* SP breakpoint:  used by rmon */</FONT>
+#define OS_EVENT_FAULT            12    <FONT COLOR="red">/* CPU fault event: used by rmon */</FONT>
+#define OS_EVENT_THREADSTATUS     13    <FONT COLOR="red">/* CPU thread status: used by rmon */</FONT>
+#define OS_EVENT_PRENMI           14    <FONT COLOR="red">/* Pre NMI interrupt */</FONT>
+#ifndef _FINALROM
+#define OS_EVENT_RDB_READ_DONE    15    <FONT COLOR="red">/* RDB read ok event: used by rmon */</FONT>
+#define OS_EVENT_RDB_LOG_DONE     16    <FONT COLOR="red">/* read of log data complete */</FONT>
+#define OS_EVENT_RDB_DATA_DONE    17    <FONT COLOR="red">/* read of hostio data complete */</FONT>
+#define OS_EVENT_RDB_REQ_RAMROM   18    <FONT COLOR="red">/* host needs ramrom access */</FONT>
+#define OS_EVENT_RDB_FREE_RAMROM  19    <FONT COLOR="red">/* host is done with ramrom access */</FONT>
+#define OS_EVENT_RDB_DBG_DONE     20
+#define OS_EVENT_RDB_FLUSH_PROF   21
+#define OS_EVENT_RDB_ACK_PROF     22
+#endif
+
+<FONT COLOR="red">/* Flags to turn blocking on/off when sending/receiving message */</FONT>
+
+#define	OS_MESG_NOBLOCK		0
+#define	OS_MESG_BLOCK		1
+
+
+#if defined(_LANGUAGE_C) || defined(_LANGUAGE_C_PLUS_PLUS)
+
+<FONT COLOR="red">/**************************************************************************
+ *
+ * Macro definitions
+ *
+ */</FONT>
+
+<FONT COLOR="red">/* Get count of valid messages in queue */</FONT>
+#define MQ_GET_COUNT(mq)        ((mq)-&gt;validCount)
+
+<FONT COLOR="red">/* Figure out if message queue is empty or full */</FONT>
+#define MQ_IS_EMPTY(mq)		(MQ_GET_COUNT(mq) == 0)
+#define MQ_IS_FULL(mq)		(MQ_GET_COUNT(mq) &gt;= (mq)-&gt;msgCount)
+
+
+<FONT COLOR="red">/**************************************************************************
+ *
+ * Extern variables
+ *
+ */</FONT>
+
+
+<FONT COLOR="red">/**************************************************************************
+ *
+ * Function prototypes
+ *
+ */</FONT>
+
+<FONT COLOR="red">/* Message operations */</FONT>
+
+extern void		osCreateMesgQueue(OSMesgQueue *, OSMesg *, s32);
+extern s32		osSendMesg(OSMesgQueue *, OSMesg, s32);
+extern s32		osJamMesg(OSMesgQueue *, OSMesg, s32);
+extern s32		osRecvMesg(OSMesgQueue *, OSMesg *, s32);
+
+<FONT COLOR="red">/* Event operations */</FONT>
+
+extern void		osSetEventMesg(OSEvent, OSMesgQueue *, OSMesg);
+
+
+#endif  <FONT COLOR="red">/* defined(_LANGUAGE_C) || defined(_LANGUAGE_C_PLUS_PLUS) */</FONT>
+
+#ifdef _LANGUAGE_C_PLUS_PLUS
+}
+#endif
+
+#endif <FONT COLOR="red">/* !_OS_MESSAGE_H_ */</FONT>
+</PRE>
+</BODY>

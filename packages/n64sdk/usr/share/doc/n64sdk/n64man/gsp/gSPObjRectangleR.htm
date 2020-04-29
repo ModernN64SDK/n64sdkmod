@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.>
+<TITLE>gSPObjRectangleR</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>gSPObjRectangleR<FONT size="+0"> [Macro]</FONT></H1>
+
+<p><b>Function</b></font></p>
+
+<p>gSPObjRectangleR</p>
+<P>
+<i>Draws a sprite referencing a 2D matrix</i>
+</P>
+<p><b>Syntax</b></font></p>
+<p>
+<PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gs2dex.htm">gs2dex.h</A> */
+gSPObjRectangleR(Gfx *gdl, uObjSprite *sp)
+gsSPObjRectangleR(         uObjSprite *sp)</CODE></PRE></p>
+
+<p><b>Arguments</b></font></p>
+<p>
+<DL>
+  <DT><B>gdl</B>
+  <DD>the pointer to the display list. 
+  <DT><B>sp</B>
+  <DD>the pointer to the sprite drawing data structure. 
+</DL></p>
+<p><b>Description</b></font></p>
+<P>
+References the 2D matrix elements <B>X</B>, <B>Y</B>, <B>BaseScaleX</B>, and <B>BaseScaleY</B>, changes the screen coordinate values for drawing, and draws a non-rotating sprite. The 2D matrix is set using g*SPObjSubMatrix. </P>
+<H3>Note</H3>
+<P>
+
+To use a number of sprites consider this example, where the sprites A, B and C are lined up horizontally as shown: 
+</P>
+<P>
+<CENTER><IMG SRC="gSPObjRectangleR00.gif"></CENTER>
+<DL>
+<DT>The following data is set for each <B>objX</B>, <B>objY</B>.
+<DD>A: (objX, objY) = ( 0&lt;&lt;2, 0&lt;&lt;2)
+<DD>B: (objX, objY) = (32&lt;&lt;2, 0&lt;&lt;2)
+<DD>C: (objX, objY) = (64&lt;&lt;2, 0&lt;&lt;2)
+</DL></p>
+<p>By changing <B>X</B> and <B>Y</B> in these settings, the three sprites can move together as one large sprite. However, gaps may appear between A & B and B & C, as shown below, due to an error in multiplication or other calculations.</p>
+<p>
+<CENTER><IMG SRC="gSPObjRectangleR01.gif"></CENTER>
+<DL>
+<DT>In this case, you must take some appropriate action like slightly overlapping the adjacent sprites, as follows: 
+<DD>B: (objX, objY) = ((32&lt;&lt;2)-2, 0&lt;&lt;2)
+<DD>C: (objX, objY) = ((64&lt;&lt;2)-4, 0&lt;&lt;2)
+</DL>
+</P>
+<p><b>Comment</b></font></p>
+<P>
+The uObjSubMtx_t structure is shown below.<BR>
+* For information about the uObjSprite structure, see g*SPObjRectangle and also refer to the "4.2.1 uObjSprite structure" in the Readme file of the latest version of the S2DEX microcode. 
+</P>
+<P>
+<PRE><CODE>typedef struct {
+  s16 X, Y;        /* s10.2  */
+  u16 BaseScaleX;  /* u5.10  */
+  u16 BaseScaleY;  /* u5.10  */
+} uObjSubMtx_t;    /* 8 bytes */
+</CODE></PRE>
+</P>
+<P>
+This macro references the values of the 2D matrix <B>X</B>, <B>Y</B>, <B>BaseScaleX</B>, and <B>BaseScaleY</B>, and determines the vertex coordinates of the sprite using the following formulas: 
+</P>
+<P>
+<PRE><CODE>Upper-left coordinates: (X+objX/BaseScaleX, Y+objY/BaseScaleY)
+ower-right coordinates: (X+(objX+imageW/scaleW)/BaseScaleX-1,
+            Y+(objY+imageH/scaleH)/BaseScaleY-1)
+</CODE></PRE>
+</P>
+<P>
+Use g*SPObjSubMatrix to change <B>X</B>, <B>Y</B>, <B>BaseScaleX</B>, and <B>BaseScaleY</B>. When X = Y = 0 and BaseScaleX = BaseScaleY = 1.0, the result will be the same as with g*SPObjRectangle. Changing the settings of the 2D matrix elements {<B>X</B>, <B>Y</B>, <B>BaseScaleX</B>, and <B>BaseScaleY</B>} enables several sprites to be moved or scaled as a unit. 
+</P>
+<P>
+For other functions, see g*SPObjRectangle. 
+</P>
+<p><b>See Also</b></font></p>
+<P>
+<A HREF="gSPObjMatrix.htm">gSPObjMatrix</A>, <A HREF="gSPObjRectangle.htm">gSPObjRectangle</A>, <A HREF="gSPObjSprite.htm">gSPObjSprite</A>, and <A HREF="gSPObjSubMatrix.htm">gSPObjSubMatrix</A>
+</P>
+<p><b>Revision History</b></font></p>
+<P>
+02/01/99  Entirely revised.
+</P>
+</BODY>
+</HTML>

@@ -1,0 +1,458 @@
+<HTML><HEAD>
+<TITLE></TITLE>
+</HEAD></BODY>
+<PRE><FONT COLOR="red">/**************************************************************************
+ *									  *
+ *		 Copyright (C) 1995, Silicon Graphics, Inc.		  *
+ *									  *
+ *  These coded instructions, statements, and computer programs  contain  *
+ *  unpublished  proprietary  information of Silicon Graphics, Inc., and  *
+ *  are protected by Federal copyright law.  They  may  not be disclosed  *
+ *  to  third  parties  or copied or duplicated in any form, in whole or  *
+ *  in part, without the prior written consent of Silicon Graphics, Inc.  *
+ *									  *
+ **************************************************************************/</FONT>
+
+<FONT COLOR="red">/**************************************************************************
+ *
+ *  $Revision: 1.13 $
+ *  $Date: 1997/02/11 08:15:34 $
+ *  $Source: /hosts/gate3/exdisk2/cvs/N64OS/Master/cvsmdev2/PR/include/R4300.h,v $
+ *
+ **************************************************************************/</FONT>
+
+#ifndef __R4300_H__
+#define __R4300_H__
+
+#include &lt;PR/ultratypes.h&gt;
+
+<FONT COLOR="red">/*
+ * Segment base addresses and sizes
+ */</FONT>
+#define	KUBASE		0
+#define	KUSIZE		0x80000000
+#define	K0BASE		0x80000000
+#define	K0SIZE		0x20000000
+#define	K1BASE		0xA0000000
+#define	K1SIZE		0x20000000
+#define	K2BASE		0xC0000000
+#define	K2SIZE		0x20000000
+
+<FONT COLOR="red">/*
+ * Exception vectors
+ */</FONT>
+#define SIZE_EXCVEC	0x80			<FONT COLOR="red">/* Size of an exc. vec */</FONT>
+#define	UT_VEC		K0BASE			<FONT COLOR="red">/* utlbmiss vector */</FONT>
+#define	R_VEC		(K1BASE+0x1fc00000)	<FONT COLOR="red">/* reset vector */</FONT>
+#define	XUT_VEC		(K0BASE+0x80)		<FONT COLOR="red">/* extended address tlbmiss */</FONT>
+#define	ECC_VEC		(K0BASE+0x100)		<FONT COLOR="red">/* Ecc exception vector */</FONT>
+#define	E_VEC		(K0BASE+0x180)		<FONT COLOR="red">/* Gen. exception vector */</FONT>
+
+<FONT COLOR="red">/*
+ * Address conversion macros
+ */</FONT>
+#ifdef _LANGUAGE_ASSEMBLY
+
+#define	K0_TO_K1(x)	((x)|0xA0000000)	<FONT COLOR="red">/* kseg0 to kseg1 */</FONT>
+#define	K1_TO_K0(x)	((x)&amp;0x9FFFFFFF)	<FONT COLOR="red">/* kseg1 to kseg0 */</FONT>
+#define	K0_TO_PHYS(x)	((x)&amp;0x1FFFFFFF)	<FONT COLOR="red">/* kseg0 to physical */</FONT>
+#define	K1_TO_PHYS(x)	((x)&amp;0x1FFFFFFF)	<FONT COLOR="red">/* kseg1 to physical */</FONT>
+#define	KDM_TO_PHYS(x)	((x)&amp;0x1FFFFFFF)	<FONT COLOR="red">/* direct mapped to physical */</FONT>
+#define	PHYS_TO_K0(x)	((x)|0x80000000)	<FONT COLOR="red">/* physical to kseg0 */</FONT>
+#define	PHYS_TO_K1(x)	((x)|0xA0000000)	<FONT COLOR="red">/* physical to kseg1 */</FONT>
+
+#else <FONT COLOR="red">/* _LANGUAGE_C */</FONT>
+
+#define	K0_TO_K1(x)	((u32)(x)|0xA0000000)	<FONT COLOR="red">/* kseg0 to kseg1 */</FONT>
+#define	K1_TO_K0(x)	((u32)(x)&amp;0x9FFFFFFF)	<FONT COLOR="red">/* kseg1 to kseg0 */</FONT>
+#define	K0_TO_PHYS(x)	((u32)(x)&amp;0x1FFFFFFF)	<FONT COLOR="red">/* kseg0 to physical */</FONT>
+#define	K1_TO_PHYS(x)	((u32)(x)&amp;0x1FFFFFFF)	<FONT COLOR="red">/* kseg1 to physical */</FONT>
+#define	KDM_TO_PHYS(x)	((u32)(x)&amp;0x1FFFFFFF)	<FONT COLOR="red">/* direct mapped to physical */</FONT>
+#define	PHYS_TO_K0(x)	((u32)(x)|0x80000000)	<FONT COLOR="red">/* physical to kseg0 */</FONT>
+#define	PHYS_TO_K1(x)	((u32)(x)|0xA0000000)	<FONT COLOR="red">/* physical to kseg1 */</FONT>
+
+#endif	<FONT COLOR="red">/* _LANGUAGE_ASSEMBLY */</FONT>
+
+<FONT COLOR="red">/*
+ * Address predicates
+ */</FONT>
+#define	IS_KSEG0(x)	((u32)(x) &gt;= K0BASE &amp;&amp; (u32)(x) &lt; K1BASE)
+#define	IS_KSEG1(x)	((u32)(x) &gt;= K1BASE &amp;&amp; (u32)(x) &lt; K2BASE)
+#define	IS_KSEGDM(x)	((u32)(x) &gt;= K0BASE &amp;&amp; (u32)(x) &lt; K2BASE)
+#define	IS_KSEG2(x)	((u32)(x) &gt;= K2BASE &amp;&amp; (u32)(x) &lt; KPTE_SHDUBASE)
+#define	IS_KPTESEG(x)	((u32)(x) &gt;= KPTE_SHDUBASE)
+#define	IS_KUSEG(x)	((u32)(x) &lt; K0BASE)
+
+<FONT COLOR="red">/*
+ * TLB size constants
+ */</FONT>
+
+#define	NTLBENTRIES	31	<FONT COLOR="red">/* entry 31 is reserved by rdb */</FONT>
+
+#define	TLBHI_VPN2MASK		0xffffe000
+#define	TLBHI_VPN2SHIFT		13
+#define	TLBHI_PIDMASK		0xff
+#define	TLBHI_PIDSHIFT		0
+#define	TLBHI_NPID		255		<FONT COLOR="red">/* 255 to fit in 8 bits */</FONT>
+
+#define	TLBLO_PFNMASK		0x3fffffc0
+#define	TLBLO_PFNSHIFT		6
+#define	TLBLO_CACHMASK		0x38		<FONT COLOR="red">/* cache coherency algorithm */</FONT>
+#define TLBLO_CACHSHIFT		3
+#define TLBLO_UNCACHED		0x10		<FONT COLOR="red">/* not cached */</FONT>
+#define TLBLO_NONCOHRNT		0x18		<FONT COLOR="red">/* Cacheable non-coherent */</FONT>
+#define TLBLO_EXLWR		0x28		<FONT COLOR="red">/* Exclusive write */</FONT>
+#define	TLBLO_D			0x4		<FONT COLOR="red">/* writeable */</FONT>
+#define	TLBLO_V			0x2		<FONT COLOR="red">/* valid bit */</FONT>
+#define	TLBLO_G			0x1		<FONT COLOR="red">/* global access bit */</FONT>
+
+#define	TLBINX_PROBE		0x80000000
+#define	TLBINX_INXMASK		0x3f
+#define	TLBINX_INXSHIFT		0
+
+#define	TLBRAND_RANDMASK	0x3f
+#define	TLBRAND_RANDSHIFT	0
+
+#define	TLBWIRED_WIREDMASK	0x3f
+
+#define	TLBCTXT_BASEMASK	0xff800000
+#define	TLBCTXT_BASESHIFT	23
+#define TLBCTXT_BASEBITS	9
+
+#define	TLBCTXT_VPNMASK		0x7ffff0
+#define	TLBCTXT_VPNSHIFT	4
+
+#define TLBPGMASK_4K		0x0
+#define TLBPGMASK_16K		0x6000
+#define TLBPGMASK_64K		0x1e000
+
+<FONT COLOR="red">/*
+ * Status register
+ */</FONT>
+#define	SR_CUMASK	0xf0000000	<FONT COLOR="red">/* coproc usable bits */</FONT>
+
+#define	SR_CU3		0x80000000	<FONT COLOR="red">/* Coprocessor 3 usable */</FONT>
+#define	SR_CU2		0x40000000	<FONT COLOR="red">/* Coprocessor 2 usable */</FONT>
+#define	SR_CU1		0x20000000	<FONT COLOR="red">/* Coprocessor 1 usable */</FONT>
+#define	SR_CU0		0x10000000	<FONT COLOR="red">/* Coprocessor 0 usable */</FONT>
+#define	SR_RP		0x08000000	<FONT COLOR="red">/* Reduced power (quarter speed) */</FONT>
+#define	SR_FR		0x04000000	<FONT COLOR="red">/* MIPS III FP register mode */</FONT>
+#define	SR_RE		0x02000000	<FONT COLOR="red">/* Reverse endian */</FONT>
+#define	SR_ITS		0x01000000	<FONT COLOR="red">/* Instruction trace support */</FONT>
+#define	SR_BEV		0x00400000	<FONT COLOR="red">/* Use boot exception vectors */</FONT>
+#define	SR_TS		0x00200000	<FONT COLOR="red">/* TLB shutdown */</FONT>
+#define	SR_SR		0x00100000	<FONT COLOR="red">/* Soft reset occured */</FONT>
+#define	SR_CH		0x00040000	<FONT COLOR="red">/* Cache hit for last 'cache' op */</FONT>
+#define	SR_CE		0x00020000	<FONT COLOR="red">/* Create ECC */</FONT>
+#define	SR_DE		0x00010000	<FONT COLOR="red">/* ECC of parity does not cause error */</FONT>
+
+<FONT COLOR="red">/*
+ * Interrupt enable bits
+ * (NOTE: bits set to 1 enable the corresponding level interrupt)
+ */</FONT>
+#define	SR_IMASK	0x0000ff00	<FONT COLOR="red">/* Interrupt mask */</FONT>
+#define	SR_IMASK8	0x00000000	<FONT COLOR="red">/* mask level 8 */</FONT>
+#define	SR_IMASK7	0x00008000	<FONT COLOR="red">/* mask level 7 */</FONT>
+#define	SR_IMASK6	0x0000c000	<FONT COLOR="red">/* mask level 6 */</FONT>
+#define	SR_IMASK5	0x0000e000	<FONT COLOR="red">/* mask level 5 */</FONT>
+#define	SR_IMASK4	0x0000f000	<FONT COLOR="red">/* mask level 4 */</FONT>
+#define	SR_IMASK3	0x0000f800	<FONT COLOR="red">/* mask level 3 */</FONT>
+#define	SR_IMASK2	0x0000fc00	<FONT COLOR="red">/* mask level 2 */</FONT>
+#define	SR_IMASK1	0x0000fe00	<FONT COLOR="red">/* mask level 1 */</FONT>
+#define	SR_IMASK0	0x0000ff00	<FONT COLOR="red">/* mask level 0 */</FONT>
+
+#define	SR_IBIT8	0x00008000	<FONT COLOR="red">/* bit level 8 */</FONT>
+#define	SR_IBIT7	0x00004000	<FONT COLOR="red">/* bit level 7 */</FONT>
+#define	SR_IBIT6	0x00002000	<FONT COLOR="red">/* bit level 6 */</FONT>
+#define	SR_IBIT5	0x00001000	<FONT COLOR="red">/* bit level 5 */</FONT>
+#define	SR_IBIT4	0x00000800	<FONT COLOR="red">/* bit level 4 */</FONT>
+#define	SR_IBIT3	0x00000400	<FONT COLOR="red">/* bit level 3 */</FONT>
+#define	SR_IBIT2	0x00000200	<FONT COLOR="red">/* bit level 2 */</FONT>
+#define	SR_IBIT1	0x00000100	<FONT COLOR="red">/* bit level 1 */</FONT>
+
+#define	SR_IMASKSHIFT	8
+
+#define	SR_KX		0x00000080	<FONT COLOR="red">/* extended-addr TLB vec in kernel */</FONT>
+#define	SR_SX		0x00000040	<FONT COLOR="red">/* xtended-addr TLB vec supervisor */</FONT>
+#define	SR_UX		0x00000020	<FONT COLOR="red">/* xtended-addr TLB vec in user mode */</FONT>
+#define	SR_KSU_MASK	0x00000018	<FONT COLOR="red">/* mode mask */</FONT>
+#define	SR_KSU_USR	0x00000010	<FONT COLOR="red">/* user mode */</FONT>
+#define	SR_KSU_SUP	0x00000008	<FONT COLOR="red">/* supervisor mode */</FONT>
+#define	SR_KSU_KER	0x00000000	<FONT COLOR="red">/* kernel mode */</FONT>
+#define	SR_ERL		0x00000004	<FONT COLOR="red">/* Error level, 1=&gt;cache error */</FONT>
+#define	SR_EXL		0x00000002	<FONT COLOR="red">/* Exception level, 1=&gt;exception */</FONT>
+#define	SR_IE		0x00000001	<FONT COLOR="red">/* interrupt enable, 1=&gt;enable */</FONT>
+
+<FONT COLOR="red">/*
+ * Cause Register
+ */</FONT>
+#define	CAUSE_BD	0x80000000	<FONT COLOR="red">/* Branch delay slot */</FONT>
+#define	CAUSE_CEMASK	0x30000000	<FONT COLOR="red">/* coprocessor error */</FONT>
+#define	CAUSE_CESHIFT	28
+
+<FONT COLOR="red">/* Interrupt pending bits */</FONT>
+#define	CAUSE_IP8	0x00008000	<FONT COLOR="red">/* External level 8 pending - COMPARE */</FONT>
+#define	CAUSE_IP7	0x00004000	<FONT COLOR="red">/* External level 7 pending - INT4 */</FONT>
+#define	CAUSE_IP6	0x00002000	<FONT COLOR="red">/* External level 6 pending - INT3 */</FONT>
+#define	CAUSE_IP5	0x00001000	<FONT COLOR="red">/* External level 5 pending - INT2 */</FONT>
+#define	CAUSE_IP4	0x00000800	<FONT COLOR="red">/* External level 4 pending - INT1 */</FONT>
+#define	CAUSE_IP3	0x00000400	<FONT COLOR="red">/* External level 3 pending - INT0 */</FONT>
+#define	CAUSE_SW2	0x00000200	<FONT COLOR="red">/* Software level 2 pending */</FONT>
+#define	CAUSE_SW1	0x00000100	<FONT COLOR="red">/* Software level 1 pending */</FONT>
+
+#define	CAUSE_IPMASK	0x0000FF00	<FONT COLOR="red">/* Pending interrupt mask */</FONT>
+#define	CAUSE_IPSHIFT	8
+
+#define	CAUSE_EXCMASK	0x0000007C	<FONT COLOR="red">/* Cause code bits */</FONT>
+
+#define	CAUSE_EXCSHIFT	2
+
+<FONT COLOR="red">/* Cause register exception codes */</FONT>
+
+#define	EXC_CODE(x)	((x)&lt;&lt;2)
+
+<FONT COLOR="red">/* Hardware exception codes */</FONT>
+#define	EXC_INT		EXC_CODE(0)	<FONT COLOR="red">/* interrupt */</FONT>
+#define	EXC_MOD		EXC_CODE(1)	<FONT COLOR="red">/* TLB mod */</FONT>
+#define	EXC_RMISS	EXC_CODE(2)	<FONT COLOR="red">/* Read TLB Miss */</FONT>
+#define	EXC_WMISS	EXC_CODE(3)	<FONT COLOR="red">/* Write TLB Miss */</FONT>
+#define	EXC_RADE	EXC_CODE(4)	<FONT COLOR="red">/* Read Address Error */</FONT>
+#define	EXC_WADE	EXC_CODE(5)	<FONT COLOR="red">/* Write Address Error */</FONT>
+#define	EXC_IBE		EXC_CODE(6)	<FONT COLOR="red">/* Instruction Bus Error */</FONT>
+#define	EXC_DBE		EXC_CODE(7)	<FONT COLOR="red">/* Data Bus Error */</FONT>
+#define	EXC_SYSCALL	EXC_CODE(8)	<FONT COLOR="red">/* SYSCALL */</FONT>
+#define	EXC_BREAK	EXC_CODE(9)	<FONT COLOR="red">/* BREAKpoint */</FONT>
+#define	EXC_II		EXC_CODE(10)	<FONT COLOR="red">/* Illegal Instruction */</FONT>
+#define	EXC_CPU		EXC_CODE(11)	<FONT COLOR="red">/* CoProcessor Unusable */</FONT>
+#define	EXC_OV		EXC_CODE(12)	<FONT COLOR="red">/* OVerflow */</FONT>
+#define	EXC_TRAP	EXC_CODE(13)	<FONT COLOR="red">/* Trap exception */</FONT>
+#define	EXC_VCEI	EXC_CODE(14)	<FONT COLOR="red">/* Virt. Coherency on Inst. fetch */</FONT>
+#define	EXC_FPE		EXC_CODE(15)	<FONT COLOR="red">/* Floating Point Exception */</FONT>
+#define	EXC_WATCH	EXC_CODE(23)	<FONT COLOR="red">/* Watchpoint reference */</FONT>
+#define	EXC_VCED	EXC_CODE(31)	<FONT COLOR="red">/* Virt. Coherency on data read */</FONT>
+
+<FONT COLOR="red">/* C0_PRID Defines */</FONT>
+#define	C0_IMPMASK	0xff00
+#define	C0_IMPSHIFT	8
+#define C0_REVMASK	0xff
+#define C0_MAJREVMASK	0xf0
+#define	C0_MAJREVSHIFT	4
+#define C0_MINREVMASK	0xf
+
+<FONT COLOR="red">/*
+ * Coprocessor 0 operations
+ */</FONT>
+#define	C0_READI  0x1		<FONT COLOR="red">/* read ITLB entry addressed by C0_INDEX */</FONT>
+#define	C0_WRITEI 0x2		<FONT COLOR="red">/* write ITLB entry addressed by C0_INDEX */</FONT>
+#define	C0_WRITER 0x6		<FONT COLOR="red">/* write ITLB entry addressed by C0_RAND */</FONT>
+#define	C0_PROBE  0x8		<FONT COLOR="red">/* probe for ITLB entry addressed by TLBHI */</FONT>
+#define	C0_RFE	  0x10		<FONT COLOR="red">/* restore for exception */</FONT>
+
+<FONT COLOR="red">/*
+ * 'cache' instruction definitions
+ */</FONT>
+
+<FONT COLOR="red">/* Target cache */</FONT>
+#define	CACH_PI		0x0	<FONT COLOR="red">/* specifies primary inst. cache */</FONT>
+#define	CACH_PD		0x1	<FONT COLOR="red">/* primary data cache */</FONT>
+#define	CACH_SI		0x2	<FONT COLOR="red">/* secondary instruction cache */</FONT>
+#define	CACH_SD		0x3	<FONT COLOR="red">/* secondary data cache */</FONT>
+
+<FONT COLOR="red">/* Cache operations */</FONT>
+#define	C_IINV		0x0	<FONT COLOR="red">/* index invalidate (inst, 2nd inst) */</FONT>
+#define	C_IWBINV	0x0	<FONT COLOR="red">/* index writeback inval (d, sd) */</FONT>
+#define	C_ILT		0x4	<FONT COLOR="red">/* index load tag (all) */</FONT>
+#define	C_IST		0x8	<FONT COLOR="red">/* index store tag (all) */</FONT>
+#define	C_CDX		0xc	<FONT COLOR="red">/* create dirty exclusive (d, sd) */</FONT>
+#define	C_HINV		0x10	<FONT COLOR="red">/* hit invalidate (all) */</FONT>
+#define	C_HWBINV	0x14	<FONT COLOR="red">/* hit writeback inv. (d, sd) */</FONT>
+#define	C_FILL		0x14	<FONT COLOR="red">/* fill (i) */</FONT>
+#define	C_HWB		0x18	<FONT COLOR="red">/* hit writeback (i, d, sd) */</FONT>
+#define	C_HSV		0x1c	<FONT COLOR="red">/* hit set virt. (si, sd) */</FONT>
+
+<FONT COLOR="red">/*
+ * Cache size definitions
+ */</FONT>
+#define	ICACHE_SIZE		0x4000			<FONT COLOR="red">/* 16K */</FONT>
+#define	ICACHE_LINESIZE		32			<FONT COLOR="red">/* 8 words */</FONT>
+#define	ICACHE_LINEMASK		(ICACHE_LINESIZE-1)
+
+#define	DCACHE_SIZE		0x2000			<FONT COLOR="red">/* 8K */</FONT>
+#define	DCACHE_LINESIZE		16			<FONT COLOR="red">/* 4 words */</FONT>
+#define	DCACHE_LINEMASK		(DCACHE_LINESIZE-1)
+
+<FONT COLOR="red">/*
+ * C0_CONFIG register definitions
+ */</FONT>
+#define	CONFIG_CM	0x80000000	<FONT COLOR="red">/* 1 == Master-Checker enabled */</FONT>
+#define	CONFIG_EC	0x70000000	<FONT COLOR="red">/* System Clock ratio */</FONT>
+#define	CONFIG_EC_1_1	0x6		<FONT COLOR="red">/* System Clock ratio 1 :1 */</FONT>
+#define	CONFIG_EC_3_2	0x7		<FONT COLOR="red">/* System Clock ratio 1.5 :1 */</FONT>
+#define	CONFIG_EC_2_1	0x0		<FONT COLOR="red">/* System Clock ratio 2 :1 */</FONT>
+#define	CONFIG_EC_3_1	0x1		<FONT COLOR="red">/* System Clock ratio 3 :1 */</FONT>
+#define	CONFIG_EP	0x0f000000	<FONT COLOR="red">/* Transmit Data Pattern */</FONT>
+#define	CONFIG_SB	0x00c00000	<FONT COLOR="red">/* Secondary cache block size */</FONT>
+
+#define	CONFIG_SS	0x00200000	<FONT COLOR="red">/* Split scache: 0 == I&amp;D combined */</FONT>
+#define	CONFIG_SW	0x00100000	<FONT COLOR="red">/* scache port: 0==128, 1==64 */</FONT>
+#define	CONFIG_EW	0x000c0000	<FONT COLOR="red">/* System Port width: 0==64, 1==32 */</FONT>
+#define	CONFIG_SC	0x00020000	<FONT COLOR="red">/* 0 -&gt; 2nd cache present */</FONT>
+#define	CONFIG_SM	0x00010000	<FONT COLOR="red">/* 0 -&gt; Dirty Shared Coherency enabled*/</FONT>
+#define	CONFIG_BE	0x00008000	<FONT COLOR="red">/* Endian-ness: 1 --&gt; BE */</FONT>
+#define	CONFIG_EM	0x00004000	<FONT COLOR="red">/* 1 -&gt; ECC mode, 0 -&gt; parity */</FONT>
+#define	CONFIG_EB	0x00002000	<FONT COLOR="red">/* Block order:1-&gt;sequent,0-&gt;subblock */</FONT>
+
+#define	CONFIG_IC	0x00000e00	<FONT COLOR="red">/* Primary Icache size */</FONT>
+#define	CONFIG_DC	0x000001c0	<FONT COLOR="red">/* Primary Dcache size */</FONT>
+#define	CONFIG_IB	0x00000020	<FONT COLOR="red">/* Icache block size */</FONT>
+#define	CONFIG_DB	0x00000010	<FONT COLOR="red">/* Dcache block size */</FONT>
+#define	CONFIG_CU	0x00000008	<FONT COLOR="red">/* Update on Store-conditional */</FONT>
+#define	CONFIG_K0	0x00000007	<FONT COLOR="red">/* K0SEG Coherency algorithm */</FONT>
+
+#define	CONFIG_UNCACHED		0x00000002	<FONT COLOR="red">/* K0 is uncached */</FONT>
+#define	CONFIG_NONCOHRNT	0x00000003
+#define	CONFIG_COHRNT_EXLWR	0x00000005
+#define	CONFIG_SB_SHFT	22		<FONT COLOR="red">/* shift SB to bit position 0 */</FONT>
+#define	CONFIG_IC_SHFT	9		<FONT COLOR="red">/* shift IC to bit position 0 */</FONT>
+#define	CONFIG_DC_SHFT	6		<FONT COLOR="red">/* shift DC to bit position 0 */</FONT>
+#define	CONFIG_BE_SHFT	15		<FONT COLOR="red">/* shift BE to bit position 0 */</FONT>
+
+<FONT COLOR="red">/*
+ * C0_TAGLO definitions for setting/getting cache states and physaddr bits
+ */</FONT>
+#define SADDRMASK  	0xFFFFE000	<FONT COLOR="red">/* 31..13 -&gt; scache paddr bits 35..17 */</FONT>
+#define SVINDEXMASK	0x00000380	<FONT COLOR="red">/* 9..7: prim virt index bits 14..12 */</FONT>
+#define SSTATEMASK	0x00001c00	<FONT COLOR="red">/* bits 12..10 hold scache line state */</FONT>
+#define SINVALID	0x00000000	<FONT COLOR="red">/* invalid --&gt; 000 == state 0 */</FONT>
+#define SCLEANEXCL	0x00001000	<FONT COLOR="red">/* clean exclusive --&gt; 100 == state 4 */</FONT>
+#define SDIRTYEXCL	0x00001400	<FONT COLOR="red">/* dirty exclusive --&gt; 101 == state 5 */</FONT>
+#define SECC_MASK	0x0000007f	<FONT COLOR="red">/* low 7 bits are ecc for the tag */</FONT>
+#define SADDR_SHIFT	4		<FONT COLOR="red">/* shift STagLo (31..13) to 35..17 */</FONT>
+
+#define PADDRMASK	0xFFFFFF00	<FONT COLOR="red">/* PTagLo31..8-&gt;prim paddr bits35..12 */</FONT>
+#define PADDR_SHIFT	4		<FONT COLOR="red">/* roll bits 35..12 down to 31..8 */</FONT>
+#define PSTATEMASK	0x00C0		<FONT COLOR="red">/* bits 7..6 hold primary line state */</FONT>
+#define PINVALID	0x0000		<FONT COLOR="red">/* invalid --&gt; 000 == state 0 */</FONT>
+#define PCLEANEXCL	0x0080		<FONT COLOR="red">/* clean exclusive --&gt; 10 == state 2 */</FONT>
+#define PDIRTYEXCL	0x00C0		<FONT COLOR="red">/* dirty exclusive --&gt; 11 == state 3 */</FONT>
+#define PPARITY_MASK	0x0001		<FONT COLOR="red">/* low bit is parity bit (even). */</FONT>
+
+<FONT COLOR="red">/*
+ * C0_CACHE_ERR definitions.
+ */</FONT>
+#define	CACHERR_ER		0x80000000	<FONT COLOR="red">/* 0: inst ref, 1: data ref */</FONT>
+#define	CACHERR_EC		0x40000000	<FONT COLOR="red">/* 0: primary, 1: secondary */</FONT>
+#define	CACHERR_ED		0x20000000	<FONT COLOR="red">/* 1: data error */</FONT>
+#define	CACHERR_ET		0x10000000	<FONT COLOR="red">/* 1: tag error */</FONT>
+#define	CACHERR_ES		0x08000000	<FONT COLOR="red">/* 1: external ref, e.g. snoop*/</FONT>
+#define	CACHERR_EE		0x04000000	<FONT COLOR="red">/* error on SysAD bus */</FONT>
+#define	CACHERR_EB		0x02000000	<FONT COLOR="red">/* complicated, see spec. */</FONT>
+#define	CACHERR_EI		0x01000000	<FONT COLOR="red">/* complicated, see spec. */</FONT>
+#define	CACHERR_SIDX_MASK	0x003ffff8	<FONT COLOR="red">/* secondary cache index */</FONT>
+#define	CACHERR_PIDX_MASK	0x00000007	<FONT COLOR="red">/* primary cache index */</FONT>
+#define CACHERR_PIDX_SHIFT	12		<FONT COLOR="red">/* bits 2..0 are paddr14..12 */</FONT>
+
+<FONT COLOR="red">/* R4000 family supports hardware watchpoints:
+ *   C0_WATCHLO:
+ *     bits 31..3 are bits 31..3 of physaddr to watch
+ *     bit 2:  reserved; must be written as 0.
+ *     bit 1:  when set causes a watchpoint trap on load accesses to paddr.
+ *     bit 0:  when set traps on stores to paddr;
+ *   C0_WATCHHI
+ *     bits 31..4 are reserved and must be written as zeros.
+ *     bits 3..0 are bits 35..32 of the physaddr to watch
+ */</FONT>
+#define WATCHLO_WTRAP           0x00000001
+#define WATCHLO_RTRAP           0x00000002
+#define WATCHLO_ADDRMASK        0xfffffff8
+#define WATCHLO_VALIDMASK       0xfffffffb
+#define WATCHHI_VALIDMASK       0x0000000f
+
+<FONT COLOR="red">/*
+ * Coprocessor 0 registers
+ */</FONT>
+#ifdef _LANGUAGE_ASSEMBLY
+#define	C0_INX		$0
+#define	C0_RAND		$1
+#define	C0_ENTRYLO0	$2
+#define	C0_ENTRYLO1	$3
+#define	C0_CONTEXT	$4
+#define	C0_PAGEMASK	$5		<FONT COLOR="red">/* page mask */</FONT>
+#define	C0_WIRED	$6		<FONT COLOR="red">/* # wired entries in tlb */</FONT>
+#define	C0_BADVADDR	$8
+#define	C0_COUNT	$9		<FONT COLOR="red">/* free-running counter */</FONT>
+#define	C0_ENTRYHI	$10
+#define	C0_SR		$12
+#define	C0_CAUSE	$13
+#define	C0_EPC		$14
+#define	C0_PRID		$15		<FONT COLOR="red">/* revision identifier */</FONT>
+#define	C0_COMPARE	$11		<FONT COLOR="red">/* counter comparison reg. */</FONT>
+#define	C0_CONFIG	$16		<FONT COLOR="red">/* hardware configuration */</FONT>
+#define	C0_LLADDR	$17		<FONT COLOR="red">/* load linked address */</FONT>
+#define	C0_WATCHLO	$18		<FONT COLOR="red">/* watchpoint */</FONT>
+#define	C0_WATCHHI	$19		<FONT COLOR="red">/* watchpoint */</FONT>
+#define	C0_ECC		$26		<FONT COLOR="red">/* S-cache ECC and primary parity */</FONT>
+#define	C0_CACHE_ERR	$27		<FONT COLOR="red">/* cache error status */</FONT>
+#define	C0_TAGLO	$28		<FONT COLOR="red">/* cache operations */</FONT>
+#define	C0_TAGHI	$29		<FONT COLOR="red">/* cache operations */</FONT>
+#define	C0_ERROR_EPC	$30		<FONT COLOR="red">/* ECC error prg. counter */</FONT>
+
+# else	<FONT COLOR="red">/* ! _LANGUAGE_ASSEMBLY */</FONT>
+
+#define	C0_INX		0
+#define	C0_RAND		1
+#define	C0_ENTRYLO0	2
+#define	C0_ENTRYLO1	3
+#define	C0_CONTEXT	4
+#define	C0_PAGEMASK	5		<FONT COLOR="red">/* page mask */</FONT>
+#define	C0_WIRED	6		<FONT COLOR="red">/* # wired entries in tlb */</FONT>
+#define	C0_BADVADDR	8
+#define	C0_COUNT	9		<FONT COLOR="red">/* free-running counter */</FONT>
+#define	C0_ENTRYHI	10
+#define	C0_SR		12
+#define	C0_CAUSE	13
+#define	C0_EPC		14
+#define	C0_PRID		15		<FONT COLOR="red">/* revision identifier */</FONT>
+#define	C0_COMPARE	11		<FONT COLOR="red">/* counter comparison reg. */</FONT>
+#define	C0_CONFIG	16		<FONT COLOR="red">/* hardware configuration */</FONT>
+#define	C0_LLADDR	17		<FONT COLOR="red">/* load linked address */</FONT>
+#define	C0_WATCHLO	18		<FONT COLOR="red">/* watchpoint */</FONT>
+#define	C0_WATCHHI	19		<FONT COLOR="red">/* watchpoint */</FONT>
+#define	C0_ECC		26		<FONT COLOR="red">/* S-cache ECC and primary parity */</FONT>
+#define	C0_CACHE_ERR	27		<FONT COLOR="red">/* cache error status */</FONT>
+#define	C0_TAGLO	28		<FONT COLOR="red">/* cache operations */</FONT>
+#define	C0_TAGHI	29		<FONT COLOR="red">/* cache operations */</FONT>
+#define	C0_ERROR_EPC	30		<FONT COLOR="red">/* ECC error prg. counter */</FONT>
+
+#endif	<FONT COLOR="red">/* _LANGUAGE_ASSEMBLY */</FONT>
+
+<FONT COLOR="red">/*
+ * floating-point status register 
+ */</FONT>
+#define FPCSR_FS	0x01000000	<FONT COLOR="red">/* flush denorm to zero */</FONT>
+#define	FPCSR_C		0x00800000	<FONT COLOR="red">/* condition bit */</FONT>	
+#define	FPCSR_CE	0x00020000	<FONT COLOR="red">/* cause: unimplemented operation */</FONT>
+#define	FPCSR_CV	0x00010000	<FONT COLOR="red">/* cause: invalid operation */</FONT>
+#define	FPCSR_CZ	0x00008000	<FONT COLOR="red">/* cause: division by zero */</FONT>
+#define	FPCSR_CO	0x00004000	<FONT COLOR="red">/* cause: overflow */</FONT>
+#define	FPCSR_CU	0x00002000	<FONT COLOR="red">/* cause: underflow */</FONT>
+#define	FPCSR_CI	0x00001000	<FONT COLOR="red">/* cause: inexact operation */</FONT>
+#define	FPCSR_EV	0x00000800	<FONT COLOR="red">/* enable: invalid operation */</FONT>
+#define	FPCSR_EZ	0x00000400	<FONT COLOR="red">/* enable: division by zero */</FONT>
+#define	FPCSR_EO	0x00000200	<FONT COLOR="red">/* enable: overflow */</FONT>
+#define	FPCSR_EU	0x00000100	<FONT COLOR="red">/* enable: underflow */</FONT>
+#define	FPCSR_EI	0x00000080	<FONT COLOR="red">/* enable: inexact operation */</FONT>
+#define	FPCSR_FV	0x00000040	<FONT COLOR="red">/* flag: invalid operation */</FONT>
+#define	FPCSR_FZ	0x00000020	<FONT COLOR="red">/* flag: division by zero */</FONT>
+#define	FPCSR_FO	0x00000010	<FONT COLOR="red">/* flag: overflow */</FONT>
+#define	FPCSR_FU	0x00000008	<FONT COLOR="red">/* flag: underflow */</FONT>
+#define	FPCSR_FI	0x00000004	<FONT COLOR="red">/* flag: inexact operation */</FONT>
+#define	FPCSR_RM_MASK	0x00000003	<FONT COLOR="red">/* rounding mode mask */</FONT>
+#define	FPCSR_RM_RN	0x00000000	<FONT COLOR="red">/* round to nearest */</FONT>
+#define	FPCSR_RM_RZ	0x00000001	<FONT COLOR="red">/* round to zero */</FONT>
+#define	FPCSR_RM_RP	0x00000002	<FONT COLOR="red">/* round to positive infinity */</FONT>
+#define	FPCSR_RM_RM	0x00000003	<FONT COLOR="red">/* round to negative infinity */</FONT>
+
+#endif <FONT COLOR="red">/* __R4300_H */</FONT>
+</PRE>
+</BODY>

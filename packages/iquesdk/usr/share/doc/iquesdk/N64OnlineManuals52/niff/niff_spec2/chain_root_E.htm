@@ -1,0 +1,233 @@
+<html>
+<HEAD>
+<TITLE>ChainRootNode</TITLE>
+</HEAD>
+<BODY LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff">
+
+<font face="arial" size="-1">
+<b><font size="3">18. ChainRootList</font></b>
+<HR>
+
+<P>
+<b>(1) ChainList</b>
+<p>
+<blockquote>
+
+<table border width="600">
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 chain_root_list_tag</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the tags of ChainRootList.  Please specify the tags shown below.
+<font face="courier" size="2">
+<pre>
+<b>
+TAG_CHAIN_ROOT_LIST     0x00240000
+</b>
+</pre>
+</font>
+</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 chain_root_list_header_size</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the ChainRootListHeader byte size.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 chain_root_list_size</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the ChainRootList byte size.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 chain_root_list_num</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the ChainRoot number.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 chain_root_num_byte</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the byte size of each ChainRoot.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">ChainRoot</font>
+</td>
+<td>
+<font face="arial" size="-1">This is the ChainRoot area.</font>
+</td>
+</tr>
+
+</table>
+
+<p><a href="./appendix/IK_system_E.htm">Appendix ... about IK System
+</a>
+<p>
+<a href="./chain_root_C.htm">Go to the data chunk</a>
+<p>
+</blockquote>
+
+<b>(2) ChainRoot</b>
+<blockquote>
+
+<table border width="600">
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 chain_root_tag</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the tags of ChainRoot.  Please specify the tags shown below.
+<font face="courier" size="2">
+<pre>
+<b>
+TAG_CHAIN_ROOT          0x00240100
+</b>
+</pre>
+</font>
+</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 this_chain_root_index</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes this ChainRoot index number.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 chain_root_size</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the ChainRoot byte size.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 chain_root_name_index</font>
+</td>
+<td>
+<font face="arial" size="-1">Uses a NameList index number to describe the ChainRoot name.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 chain_root_type</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the ChainRoot type.  Please specify 0x0 as the default.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 obj_num</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the Obj number linked from the ChainRoot.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 external_obj_num</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the Obj number linked from an external file reference ChainRoot.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 anim_index</font>
+</td>
+<td>
+<font face="arial" size="-1">Uses an AnimGroup index number to describe the ChainRoot animation.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 joint_index</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the Joint index number that is linked from the ChainRoot.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 obj_index</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the Obj index number that is linked from the ChainRoot.<p>
+If obj_num = 0, this field is not described.</font>
+</td>
+</tr>
+
+
+
+
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 external_obj_file_name_index</font>
+</td>
+<td>
+<font face="arial" size="-1">If the Obj that is linked from the ChainRoot references an external file, that file name is described with an ExternalNameList index number.<p>
+Please do not include the directory name etc. when describing this file name.<p>
+If external_obj_num = 0, this field is not described.</font>
+</td>
+</tr>
+
+
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 external_obj_name_index</font>
+</td>
+<td>
+<font face="arial" size="-1">If the Obj that is linked from the ChainRoot references an external file, that Obj name is described with an ExternalNameList index number.<p>
+If external_obj_num = 0, this field is not described.</font>
+</td>
+</tr>
+</table>
+
+<p>
+<a href="./appendix/IK_system_E.htm">Appendix ... about IK System</a>
+
+<p>
+<a href="./chain_root_C.htm">Go to the data chunk</a>
+<p>
+
+</blockquote>
+
+<hr>
+
+</body>
+</html>

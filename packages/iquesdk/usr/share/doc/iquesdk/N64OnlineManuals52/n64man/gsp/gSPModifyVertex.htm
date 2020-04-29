@@ -1,0 +1,136 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.>
+<TITLE>gSPModifyVertex</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>gSPModifyVertex [Macro]</H1>
+
+<p><b>Function</b></font></p>
+
+<p>gSPModifyVertex</p>
+<P>
+<i>Modifies part of the vertex data after the data has been sent to the RSP</i>
+</P>
+<p><b>Syntax</b></font></p>
+<p>
+<PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gbi.htm">gbi.h</A> */
+gSPModifyVertex(Gfx *gdl, u32 vtx, u32 where, u32 val)
+gsSPModifyVertex(         u32 vtx, u32 where, u32 val)</CODE></PRE></p>
+
+<p><b>Arguments</b></font></p>
+<p>
+<DL>
+  <DT><B>gdl</B>
+  <DD>the pointer to the display list 
+  <DD> 
+  <DT><B>vtx</B>
+  <DD>specifies which RSP vertex to modify 
+  <dd>&nbsp;
+  <DD><TABLE BORDER="1" CELLSPACING="0" CELLPADDING="3">
+	<TR>
+	<TD NOWRAP ALIGN="left" VALIGN="middle">
+		F3DEX<BR>
+		F3DEX.NoN<BR>
+		F3DLX<BR>
+		F3DLX.NoN<BR>
+		L3DEX</TD>
+	<TD NOWRAP ALIGN="left" VALIGN="middle">0~31</TD>
+	</TR>
+	<TR>
+	<TD NOWRAP ALIGN="left" VALIGN="middle">F3DLX.Rej</TD>
+	<TD NOWRAP ALIGN="left" VALIGN="middle">0~63</TD>
+	</TR>
+	<TR>
+	<TD NOWRAP ALIGN="left" VALIGN="middle">F3DLP.Rej</TD>
+	<TD NOWRAP ALIGN="left" VALIGN="middle">0~79</TD>
+	</TABLE>
+<BR>
+* For the F3DEX2 microcode group (F3DEX2/F3DLX2/F3DLP2/L3DEX2), the values are as follow:<br>
+<br>
+	<TABLE BORDER="1" CELLSPACING="0" CELLPADDING="3">
+	<TR>
+	<TD NOWRAP ALIGN="left" VALIGN="middle">
+	F3DEX2<BR>F3DEX2.NoN<BR>F3DLX2<BR>F3DLX2.NoN<BR>L3DEX2</TD>
+	<TD NOWRAP ALIGN="left" VALIGN="middle">0~31</TD>
+	</TR>
+	<TR>
+	<TD NOWRAP ALIGN="left" VALIGN="middle">F3DEX2.Rej<BR>F3DLX2.Rej</TD>
+	<TD NOWRAP ALIGN="left" VALIGN="middle">0~63</TD>
+	</TR>
+	</TABLE>
+  <DD> &nbsp;
+  <DT><B>where</B>
+  <DD>specifies which part of vertex data to modify 
+  <DD><B>G_MWO_POINT_RGBA</B> (Color) 
+  <DD><B>G_MWO_POINT_ST</B>(Texture coordinate s, t values) 
+  <DD><B>G_MWO_POINT_XYSCREEN</B> (Screen coordinate x, y values) 
+  <DD><B>G_MWO_POINT_ZSCREEN</B> (Screen coordinate z value) 
+  <DD> 
+  <DT><B>val</B>
+  <DD>The new value (32-bit integer) for the data part specified by <B>where</B>
+</DL></p>
+<p><b>Description</b></font></p>
+<P>
+Modifies part of the vertex data after the data has been sent to the RSP by <A HREF="gSPVertex.htm">gSPVertex</A>. The new value that is to be assigned to the part described by <B>where</B> is specified as follows in <B>val</B>: 
+<DL><DL>
+	<DT>Color (G_MWO_POINT_RGBA): 
+	<DD>R, G, B and alpha (4 bytes each) from high-order byte to low-order byte.<p>
+	<DD> 
+	<DT>Texture coordinate s, t values (G_MWO_POINT_ST): 
+	<DD>High-order 16 bits are the s coordinate value. Low-order 16 bits are the t coordinate value (s10.5)<p>
+	<DD> 
+	<DT>Screen coordinate x, y values (G_MWO_POINT_XYSCREEN): 
+	<DD>High-order 16 bits are the x coordinate value. Low-order 16 bits are the y coordinate value (s13.2)
+	<DD>* The upper-left corner of the screen is (0,0). Positive x values increase to the right, and positive y values increase downward.<p> 
+	<DD> 
+	<DT>Screen coordinate z value (G_MWO_POINT_ZSCREEN): 
+	<DD>All 32 bits are the z-coordinate value (16.6, 0x00000000~0x03ff0000)
+</DL></DL>
+</P>
+<P>
+This macro is effective for use on a vertex that is shared by two or more triangles but has different properties depending on the triangle. For example, consider a vertex that is shared by two adjacent triangles, one of which is smooth-shaded from red to yellow, and the other which is smooth-shaded from green to cyan. In this case, you would first use <A HREF="gSPVertex.htm">gSPVertex</A> to draw a triangle in which the vertex that is shared by both triangles is red and the other two vertices are yellow. Next, you could use this macro to change the color of the shared vertex to green for drawing the second triangle. The main use of this macro is to modify the texture coordinate of the shared vertex used by the first texture so it can be used by the second texture. 
+</P>
+<p><b>Note</b></font></p>
+<P>
+This is an advanced command. Be sure that you understand how vertices work in the RSP microcode before using this macro (see <A HREF="gSPVertex.htm">gSPVertex</A>)
+</P>
+<P>
+Since lighting is not performed after this macro is run, modifying the vertex color with G_MWO_POINT_RGBA actually modifies the output color, and not the normal line value. 
+</P>
+<P>The s, t coordinates specified by this macro are not scaled by the texture scale value set by <A HREF="gSPTexture.htm">gSPTexture</A>. These coordinates must be pre-scaled before they are transferred. For example, to use 1/2 (0x8000) as the texture scale, use a value that is one half of the value used by <A HREF="gSPVertex.htm">gSPVertex</A>. 
+</P>
+<p><b>Comment</b></p>
+<P>
+This macro is faster than reloading a new vertex because no transformation or lighting is performed when it is used. 
+</P>
+<p><b>Example</b></font></p>
+<P>
+When two triangles having different textures and texture coordinates share a vertex, specify the following code: </P>
+<PRE><CODE>/* Load vertices with gSPVertex */
+gSPVertex(...);
+/* Load texture of triangle 1 */
+gDPLoadTextureBlock(...);
+/* Draw triangle 1 using vertex #3 */
+gSP1Triangle(glistp++, 1, 2, 3, 0);
+/* Change the value of vertex #3 to S=3.0 and T=2.5*/
+<B>gSPModifyVertex</B>(glistp++, 3, G_MWO_POINT_ST, 0x00600050);
+/* Load the texture of triangle 2 */
+gDPLoadTextureBlock(...);
+/* Draw triangle 2 using vertex #3 */
+gSP1Triangle(glistp++, 1, 2, 3, 0);
+</CODE></PRE>
+<p><b>See Also</b></font></p>
+<P>
+<A HREF="gSP1Triangle.htm">gSP1Triangle</A>, <A HREF="gSPTexture.htm">gSPTexture</A>, and <A HREF="gSPVertex.htm">gSPVertex</A>
+</P>
+<p><b>Revision History</b></font></p>
+<P>
+02/01/99  Entirely revised.
+</P>
+</BODY>
+</HTML>

@@ -1,0 +1,66 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../n64man.css">
+<title>MusHandleUnPause()</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check
+MAP- added revision-->
+</head>
+
+<h1>MusHandleUnPause()</h1>
+
+<h2>Syntax</h2>
+
+<pre>
+int MusHandleUnPause(musHandle handle);
+</pre>
+
+<h2>Arguments</h2>
+
+<dl>
+  <dt><b>handle</b>
+  <dd>the sound handle
+</dl>
+
+<h2>Description</h2>
+
+<p>It resumes the processing of the channels associated with the specified sound handle, if it has been paused. The channels will resume processing on the next player update and have their current volume level set to the value they were at before processing was paused (when switched to the thread for music player).</p>
+
+<p>The pausing/resuming process may result in songs not quite sounding exactly as they should. This is because processing is suspended but the samples currently being used will play through to the end or loop. When processing is resumed, some samples may be offset because the sample playing continues during the pause period.</p>
+
+<p>This function passes the pause command to the player via the FIFO buffer. If there is no space free in the FIFO buffer, this command will be ignored. The FIFO buffer is emptied every time the player processes sound data.
+</p>
+
+<p>The handle must be a sound handle returned by <a href="MusStartSong.html">MusStartSong()</a>, <a href="MusStartSongFromMarker.html">MusStartSongFromMarker()</a>, <a href="MusStartEffect.html">MusStartEffect()</a>, or <a href="MusStartEffect2.html">MusStartEffect2()</a>.  If a handle of zero is supplied, this function will always return zero.</p>
+
+<h2>Return Value</h2>
+
+<p>Zero (0) if the FIFO command has been ignored, otherwise a non-zero value.
+</p>
+
+<h2>Example</h2>
+
+<pre>void ResumeSong(musHandle handle)
+{
+  int i;
+
+  while (MusHandleUnPause(handle)==0)
+    WaitForVsync();
+  for (i=0; i!=0x80; i+=0x20)
+  {
+    WaitForVsync();
+    <a href="MusHandleSetVolume.html">MusHandleSetVolume</a>(handle, i);
+  }
+}
+</pre>
+
+<h2>See Also</h2>
+<p>
+<a href="MusHandlePause.html">MusHandlePause()</a>,
+<a href="MusStartSong.html">MusStartSong()</a>,
+<a href="MusStartEffect.html">MusStartEffect()</a>,
+<a href="MusStartEffect2.html">MusStartEffect2()</a>
+</p>
+
+</body>
+</html>

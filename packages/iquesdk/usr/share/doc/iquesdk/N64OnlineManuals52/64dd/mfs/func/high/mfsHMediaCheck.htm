@@ -1,0 +1,63 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>mfsHMediaCheck</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font face="arial" size="-1">
+<b><font size="3">mfsHMediaCheck</b></font>
+
+<hr>
+<b>Syntax</b>
+<font face="courier" size="2">
+<pre>s32 mfsHMediaCheck(s32 flag)</pre></font>
+
+<p><strong>Arguments</strong> 
+<dl>
+<dd>None</dl></dd>
+
+<p><strong>Return value</strong>
+<dl>
+<dd>Error</dl></dd>
+
+<p><strong>Function</strong> 
+<dl>
+<dd>Checks medium</dl></dd>
+
+<p><strong>Description</strong>
+<P>
+This function checks the status of the drive's medium.  
+   It reads the DISK-ID and compares it to determine whether or not the medium has been exchanged.  
+   If the medium has been exchanged, this function makes all file handles unavailable, sets the current directory to root, and returns MFS_ERR_DISKCHANGE.</p>
+
+<p><strong>Main errors</strong></p>
+<P>
+<P>
+<table border="0" cellpadding="3" cellspacing="3">
+<tr><td valign="top"><font face="arial" size="-1">MFS_ERR_NO</td>
+<td><font face="arial" size="-1">Normal termination</td></tr>
+<tr><td valign="top"><font face="arial" size="-1">MFS_ERR_DEVICE</td>
+<td><font face="arial" size="-1">Device error
+<br>An error occurred in an internally called Leo function.
+<br>Since a Leo function error is stored in the variable mfsError, check this variable to perform processing.</td></tr>
+<tr><td valign="top"><font face="arial" size="-1">MFS_ERR_DISKCHANGE</td>
+<td><font face="arial" size="-1">	Media exchanged
+<br>The media has been replaced by another media.
+If a file is opened, close it and begin the process for opening the file again.</td></tr>
+<tr><td valign="top"><font face="arial" size="-1">MFS_ERR_NOTMFSDISK</td>
+<td><font face="arial" size="-1">Not an MFS-format disk
+<br>The disk ID's disk use is not 1.</td></tr>		
+<tr><td valign="top"><font face="arial" size="-1">MFS_ERR_VERSION</td>
+<td><font face="arial" size="-1">Different version disk</td></tr>					
+<tr><td valign="top"><font face="arial" size="-1">MFS_ERR_HEADER</td>
+<td><font face="arial" size="-1">Header error
+<br>The header area is corrupted.  If it is the RAM area, try to repair it.</td></tr></table>
+ 
+			
+	
+			
+		
+<hr>
+</body>
+</html>

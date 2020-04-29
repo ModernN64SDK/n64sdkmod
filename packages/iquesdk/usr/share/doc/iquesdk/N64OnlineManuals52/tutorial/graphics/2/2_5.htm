@@ -1,0 +1,73 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Graphics-CHAPTER 2  Adding Color to a Model</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/22/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<font style="font-size:12pt"><B>2.5  Defining Lights</B></FONT>
+<br>
+<P>
+The way to position lights in the 3D world is to define light structures and then pass these to the RSP using commands.<br><br>
+     Eight kinds of light structures are available, corresponding to the number of diffuse lights.  In the following (pseudo) type definition, M takes a value of 0 to 7 indicating the number of diffuse lights.  Note that when M = 0, Light  l[M] becomes l[1].
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=1><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><FONT COLOR="#000080">
+	<PRE><CODE>  typedef struct {
+    Ambient a;
+    Light   l[M];  /* When M = 0 the value becomes l[1] */
+  } LightsM;</CODE></PRE>
+	</FONT></TD>
+</TR></TABLE>
+<P>
+Generally speaking, the gdSPDefLightsM macro is used when defining the light structure, rather than specifying the structure members directly.  See the definitions in &lt;gbi.h&gt; if you want to know details about Ambient and Light.
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=5><TR>
+	<TD NOWRAP COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE><B>List 2-4</B>
+</TR><TR>
+	<TD NOWRAP BGCOLOR="666666" WIDTH="4" ALIGN=LEFT VALIGN=TOP><HR NOSHADE SIZE=0></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><FONT COLOR="#000080">
+	<PRE><CODE>/* Structure defining the lights (diffuse light + ambient light) */
+Lights1 light = gdSPDefLights1(  0,   0, 100,  /* Blue ambient light  */
+                       255,   0,   0,  /* Red diffuse light */
+                       0, 127,   0); /* Direction toward diffuse light  */ 
+</CODE></PRE>
+	</FONT></TD>
+</TR></TABLE>
+<P>
+  This example and its comments should give you the general impression.  Below we show the order in which the gdSPDefLightsM macro passes arguments and initializes LightsM:
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=1><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP> R, G, B components of the ambient light</TD>
+	</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP> R, G, B components of the first diffuse light</TD>
+	</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP> x,y,z components of the direction vector for the first diffuse light</TD>
+	</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP> R, G, B components of the second diffuse light</TD>
+	</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP> x,y,z components of the direction vector for the second diffuse light</TD>
+	</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP> ...</TD>
+</TR></TABLE>
+<P>
+The RGB components can take any value from 0 to 255 while the xyz components can take any value from -128 to 127.
+     The thing you need to be careful about here is that the direction vector of the light does not refer to the direction in which the light is shining, but rather the direction toward the light source.  In other words, the light direction specified in this structure is opposite the direction in which the light is actually shining.  Also note here that, unlike the normal vector of the vertex, the direction vector of the light does not need to be normalized.
+
+     Once the light has been defined and the information has been communicated to the RSP using the gSPSetLightsM macro, the light settings are finished.
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=5><TR>
+	<TD NOWRAP COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE><B>List 2-5</B>
+</TR><TR>
+	<TD NOWRAP BGCOLOR="666666" WIDTH="4" ALIGN=LEFT VALIGN=TOP><HR NOSHADE SIZE=0></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><FONT COLOR="#000080">
+	<PRE><CODE>  /* Positioning the light */
+  gSPSetLights1(glistp++, light);
+</CODE></PRE>
+	</FONT></TD>
+</TR></TABLE>
+</BODY>
+</HTML>

@@ -1,0 +1,155 @@
+<html>
+
+<head>
+<title>GAME MAIN DETAILS</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<FONT FACE="arial" SIZE="-1">
+
+<p align="center"><big><strong>GAME MAIN DETAILS</strong></big></p>
+
+<p align="left"><strong>1. Description of Processing in Game Main</strong></p>
+
+<p align="left">Game Main has been created as a call-back function (om_game_main() function). Call-back functions can be registered with Nusystem's nuGfxFuncSet function, and registered functions will be executed on each vertical trace. At present, primarily the following kinds of processing have been incorporated into Game Main.</p>
+
+<p align="left">&nbsp;&nbsp;&nbsp; (1) Camera action control (om_camera.c)<br>
+&nbsp;&nbsp;&nbsp; (2) Player character operation control (om_mychar.c)<br>
+&nbsp;&nbsp;&nbsp; (3) Player character animation control (om_mychar.c)<br>
+&nbsp;&nbsp;&nbsp; (4) Corn flake control (om_cornfrake.c)<br>
+&nbsp;&nbsp;&nbsp; (5) Goal plate control (om_goal.c)<br>
+&nbsp;&nbsp;&nbsp; (6) Collision check with map (maze) (om_bg_entry.c)<br>
+&nbsp;&nbsp;&nbsp; (7) Collision check between player character and corn flake (om_mychar.c)<br>
+&nbsp;&nbsp;&nbsp; (8) Control at stage clear and game over (om_game_over.c)<br>
+&nbsp;&nbsp;&nbsp; (9) Map (maze) and corn flake culling (om_bg_entry.c)<br>
+&nbsp;&nbsp;&nbsp; (10) Scene buidling (om_camera.c)<br>
+&nbsp;&nbsp;&nbsp; (11) Character drawing (om_eval_draw.c)<br>
+&nbsp;&nbsp;&nbsp; (12) Map (maze) drawing (om_bg_entry.c)<br>
+</p>
+
+<p align="left"><strong>2. Map (Maze) Structure </strong></p>
+
+<p align="left">This section explains how the map (maze) is created in numirror. </p>
+
+<p align="left">There are probably a variety of ways to create a map, depending on the programmer. Please note that there really is no right way to create this numirror map.  The way the map was created in this sample is just one of the many available ways to do map creation. </p>
+
+<DL>
+<DD><font color="#FF0000">(1) Creating the map</font><p>
+
+<DD>The numirror map comprises 5 areas, 25 zones, and 100 grids. Please refer to Figure 1.
+</DL><p>
+
+<p align="center"><img src="gif/map.gif" alt="wpe1.gif (32897 bytes)"></p>
+
+<p align="center">(Fig. 1)</p>
+
+<DL>
+<DD><font color="#0000FF">Map Size</font><p>
+
+<DD>The size of the map is 3000 from the origin (0,0) to each positive and negative domain. In other words, it is a 6000 x 6000 map.<p>
+
+<DD><font color="#0000FF">Grid Size</font><p>
+
+<DD>Each grid is a 600 x 600 square.<p>
+
+<DD><font color="#0000FF">Zone Size</font><p>
+
+<DD>Since each zone is made up of 2 x 2 grids, each zone is a 1200 x 1200 square.<p>
+
+<DD><font color="#0000FF">Area Size</font><p>
+
+<DD>Since each area is made up of 10 x grids, each area is a 6000 x 1200 rectangle.<p>
+
+<DD><font color="#FF0000">(2) Collision check between map and player character</font><p>
+
+<DD>Collision checks between the map and the player character are performed in the following sequence, utilizing the map formation described in (1).<p>
+
+<DD><font color="#0000FF">Calculate Map Coordinates of Player Character</font><p>
+
+<DD>First, the coordinates of the player character on the map are calculated.<br><br>
+In (Fig. 1), the vertical axis is the Z coordinates and the horizontal axis is the X coordinates. <br><br>
+The zone coordinates at which the player character is currently situated are calculated based on the player character's current world coordinates.<p>
+
+<DD> (Calculation Formulae)<p>
+<DD> X Zone Coordinate = ((Size of map X coordinate/2) + X coordinate of player character)/1200<br>
+ Z Zone Coordinate = ((Size of map Z coordinate/2) + Z coordinate of player character)/1200<p>
+
+<DD><font color="#0000FF">Collision Check with All Walls in Zone</font></p>
+
+<DD>A collision check for all the walls in a zone is performed by searching said zone data from the resulting XZ zone coordinate values.<p>
+
+<DD>The zone data are defined in the following header files.<p>
+
+<DD>&nbsp; om_bg_zoneA.h &nbsp;(Defines all data for all zones affiliated with area A)<br>
+&nbsp; om_bg_zoneB.h&nbsp; (Defines all data for all zones affiliated with area B)<br>
+&nbsp; om_bg_zoneC.h&nbsp; (Defines all data for all zones affiliated with area C)<br>
+&nbsp; om_bg_zoneD.h&nbsp; (Defines all data for all zones affiliated with area D)<br>
+&nbsp; om_bg_zoneE.h&nbsp; (Defines all data for all zones affiliated with area E)
+</DL><p>
+
+<p align="left"><strong>3. Collision Check with Corn Flake</strong> 
+</p>
+
+<p align="left">The method of performing a collision check between the player character and corn flakes placed in the maze will be explained in this section. Please refer to Figure 2. </p>
+
+<p>A collision check is performed viewing the collision areas for the player character and the corn flake as shown in Figure 2.</p>
+
+<DL>
+<DT>(1) Calculate the differences between the player character, the corn flake and a center point. <p>
+
+<DD>First, calculate the differences between the player character and a center point, and the corn flake and a center point (dx and dz in Figure 2). <p>
+
+<DT>(2) Calculate the distance between two points<p>
+
+<DD>Calculate the distance between the two points using the Pythagorean theorum, based on the values from (1).<p>
+
+<DD>Length of red diagonal line = (dx * dx) + (dz * dz)<p>
+
+<DT>(3) Collision Check<p>
+
+<DD>Perform the collision check using the following formula.<p>
+
+<DD>Length of red diagonal line < (r1 + r2) * (r1 + r2) 
+</DL><p>
+
+<img src="gif/coll1.gif" alt="wpe2.gif (5343 bytes)"><p>
+
+<p align="center">(Fig. 2)<p>
+
+
+
+<p align="left"><strong>4. Map Culling</strong></p>
+
+<p align="left">"numirror" performs software culling of the map. As with collisions, only one of the several methods for installing this culling may be used. Please note that there is no right method. </p>
+
+Hardware culling is also possible with N64. Persons interested in hardware culling may refer to Chapter 11 "Programming RSP Graphics" in the N64 Programming Manual.<p>
+
+The methods of software culling installed by numirror are explained below. <p>
+
+<DL>
+<DT>(1) Area Culling<p>
+
+<DD>This culls the areas except for the area in which the player character is currently located (the "star" in Figure 3) and the areas above and below that. In this case, since the player character is currently in area B, area A, area B, and area C are drawn, while area D and area E are not drawn. <p>
+
+<DT>(2) Zone Culling<p>
+
+<DD>After area culling, next zone culling is performed. Even they are in the drawn area, the zones farthest from the player are culled. <p>
+
+<DD>The zones, except for the zone in which the player character is currently located (the "star" in Figure 3), - Zone B3 - and the zones above and below it - Zones A3, C3 - and the zones to the left and right of it are culled. <p>
+
+<DD>In other words, the zones which are drawn are the zones surrounded by the red frame in Figure 3, and the zones which are culled - Zones A1, A5, B1, B5, C1, C5 - are not drawn.<p>
+
+<DD>"star" shows the player character current position<p>
+
+<DD><CENTER><img src="gif/gamema2.gif" alt="wpe2.gif (28047 bytes)"></CENTER><p>
+
+<DD><CENTER>(Fig. 3)</CENTER><p>
+
+<DD>When the player character's current position is as shown below, only the zones surrounded by the red frame will be drawn.<p>
+
+<DD><CENTER><img src="gif/gamema3.gif" alt="wpe3.gif (27921 bytes)"></CENTER><p>
+
+<DD><CENTER>(Fig. 4)</CENTER></DL>
+
+</body>
+</html>

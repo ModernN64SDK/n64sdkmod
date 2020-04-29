@@ -1,0 +1,89 @@
+<HTML>
+<HEAD>
+<TITLE>nuContGBPakGetStatus</TITLE>
+</HEAD>
+
+<BODY bgcolor="#FFFFFF">
+<font face="arial" size="-1">
+
+<P>
+<FONT size="5"><b><IMG src="../nusystem2.gif" height="30" width="176">Function</b></FONT>
+
+<HR>
+<P>
+<FONT size="3"><b>nuContGBPakGetStatus</b></FONT>
+<p>
+<HR>
+<P>
+<b>Syntax</b>
+<font face="courier" size="2">
+<pre>s32 nuContGBPakGetStatus(NUContPakFile *handle, u8 *status)</pre>
+</font>
+
+<p><b>Arguments</b>
+<font face="courier" size="2">
+<pre>
+handle      GB Pak control structure (shared with Controller Pak structure)
+status      detected status</pre>
+</font>
+
+<p><b>Return Value</b>
+<font face="courier" size="2">
+<pre>Error</pre>
+</font>
+
+<p><b>Description</b>
+
+<p><i>Gets the status of the GB Pak</i>
+
+<p>Gets the status of the GB Pak and stores it in "status".  "status" contains the following data:
+<p>
+<table border="1" cellspacing="1">
+    <tr>
+        <td><font face="arial" size="-1">OS_GBPAK_GBCART_ON</font></td>
+        <td><font face="arial" size="-1">This bit indicates insertion of Game Boy Game Pak. The bit = 1 if Game Pak is inserted in GB Pak.</font></td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">OS_GBPAK_GBCART_PULL</font></td>
+        <td><font face="arial" size="-1">This bit indicates detection of removal of Game Boy Game Pak. The bit = 1 if Pak was once removed. It becomes 0 when a Pak is inserted and osGbpakGetStatus()or osGbpakReadId() is called.</font></td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">OS_GBPAK_POWER</font></td>
+        <td><font face="arial" size="-1">Indicates power supply to the GB Pak.  1 when power is ON; 0 when power if OFF</font></td>
+    </tr>
+</table>
+
+<p>The return value is the value returned by the osGbpakGetStatus function.
+
+<p><b>Errors</b>
+<p>
+<table border="1" cellspacing="1">
+    <tr>
+        <td><font face="arial" size="-1">PFS_ERR_NOPACK</font></td>
+        <td><font face="arial" size="-1">Nothing is inserted in the specified Controller.</font></td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">PFS_ERR_DEVICE</font></td>
+        <td><font face="arial" size="-1">Some device other than a GB Pak is inserted in the Controller.</font></td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">PFS_ERR_CONTRFAIL</font></td>
+        <td><font face="arial" size="-1">Data transfer with Controller has failed. Either the Controller is not connected properly, or there may be some problem with the GB Pak or the Controller connector.</font></td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">PFS_ERR_NO_GBCART</font></td>
+        <td><font face="arial" size="-1">Game Boy Game Pak is not inserted in the GB Pak.</font></td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">PFS_ERR_NEW_GBCART</font></td>
+        <td><font face="arial" size="-1">Game Boy Game Pak has been removed and reinserted.</font></td>
+    </tr>
+</table>
+
+<p>
+<hr>
+
+<p align="right"><a href="index.htm"><img src="../index.gif" border="0"
+width="65" height="17"></a>
+</body>
+</html>

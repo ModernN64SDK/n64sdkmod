@@ -1,0 +1,250 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 13 - Texture Mapping</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. -->
+</head>
+
+<h1>13.7 Tile Selection </h1>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="01"><h2>13.7.1 Functionality</h2></a>
+
+<p>Tile descriptors are used both when loading a texture and when <a href="../../keywords/index/data/graphics.htm#rendering" target="keywords">rendering</a> a texture.   This section discusses the selection of tiles when rendering. The use of tiles descriptors when loading textures in discussed in <a href="../pro13/13-09.htm">Section 13.9, "Texture Loading."</a></p>
+
+<p>There are basically two ways to index into tile memory: explicitly via a user-defined tile number, or indirectly using a combination of the user-defined tile number and the level of detail (<a href="../../keywords/index/data/graphics.htm#LOD" target="keywords">LOD</a>) of the pixel. </p>
+
+<p>In two-cycle mode, it is possible to access different tile descriptors in each cycle. The computation of tile indices for each cycle depends on several mode bits and is described in the following sections.</p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="02"><h2>13.7.2 LOD Disabled </h2></a>
+
+<p>With LOD disabled, the user specifies the texture tile for a primitive directly using the <a href="../../n64man/gsp/gSPTexture.htm">gSPTexture</a> command.  This tile number is inserted by <A target="keywords" HREF="../../keywords/index/data/system.htm#microcode">microcode</a> into the header for each subsequent primitive and is referred to as the primitive tile number.   2-cycle non-LOD mode can be useful for combining two arbitrary textures (<a href="../../keywords/index/data/graphics.htm#morphing" target="keywords">morphing</a>, etc.) The calculation of the tile descriptor index is straight forward when LOD is disabled: </p>
+
+<table border=1 align="center">
+  <caption><a name="t13-04"><strong>Table 13-4 Tile Descriptor Index Generation with LOD Disabled </strong></a></caption>
+  <tr><th>Cycle</th><th>Tile Index</th></tr>
+  <tr><td align="center">0</td><td>prim_tile</td></tr>
+  <tr><td align="center">1</td><td>prim_tile + 1</td></tr>
+</table>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="03"><h2>13.7.3 LOD Enabled</h2></a>
+
+<p>The lod_en mode bit in SetOtherModes determines if tile indices are determined using Level of Detail (LOD) or from the primitive command directly.</p>
+
+<p>With LOD enabled, the tile index is a function of the Level of Detail (LOD) of the primitive.   LOD is computed as a function of the difference between perspective corrected texture coordinates of adjacent pixels to indicate the magnification/demagnification of the texture in screen space (<a href="../../keywords/index/data/graphics.htm#texel" target="keywords">texel</a>/pixel ratio).  The LOD module also calculates an LOD fraction for third axis interpolation between <a href="../../keywords/index/data/graphics.htm#MIP map" target="keywords">MIP maps</a>.  The combination of LOD-derived tile coordinates and fraction, a particular tile descriptor arrangement, and tri-linear filtering allows the implementation of MIP maps.   Notice that MIP mapping is a specialized use of the general texture hardware. Other types of mappings are possible. The LOD calculation makes the following features (and maybe more) possible: </p>
+
+<ul>
+  <li>tri-linear MIP mapping<br><br>
+  <li><a href="../../keywords/index/data/graphics.htm#Sharp texture" target="keywords">sharpened texture</a><br><br>
+  <li><a href="../../keywords/index/data/graphics.htm#detail texture" target="keywords">detail texture</a><br><br>
+</ul>
+
+<p>The LOD calculation depends on the following inputs: </p>
+
+<dl>
+  <dt><strong>LOD</strong>
+  <dd>level of detail at pixel (texels/pixel), derived per pixel 
+</dl>
+<dl>
+  <dt><strong>min_level(0.5)</strong>
+  <dd>minimum LOD fraction <a href="../../keywords/index/data/graphics.htm#clamp" target="keywords">clamp</a> for sharpen or detail modes;<br>
+   	from the SetPrimColor RDP command<br>
+</dl>
+<dl>
+  <dt><strong>max_level(0-7)</strong>
+  <dd>number of MIP maps minus one;<br>
+        from the primitive via the <a href="../../n64man/gsp/gSPTexture.htm">g*SPTexture</a> command<br>
+</dl>
+<dl>
+  <dt><strong>detail_en</strong>
+  <dd>enable for detailed texture;<br>
+         from SetOtherModes RDP command<br>
+</dl>
+<dl>
+  <dt><strong>sharp_en</strong>
+  <dd>enable sharpen mode;<br>
+         from SetOtherModes RDP command <br>
+</dl>
+<dl>
+  <dt><strong>prim_tile(0-7)</strong>
+  <dd>primitive tile number;<br>
+         from the primitive via the <a href="../../n64man/gsp/gSPTexture.htm">g*SPTexture</a> command<br>
+</dl>
+<dl>
+  <dt><strong>lod_en</strong>
+  <dd>enable for LOD calculation;<br>
+        from SetOtherModes RDP command <br>
+</dl>
+
+<p>The LOD calculation produces the following outputs: </p>
+
+<dl>
+  <dt><strong>l_frac(s,0.8)</strong>
+  <dd>LOD fraction for 3rd axis interpolation </dl>
+<dl>
+  <dt><strong>l_tile(0-7)</strong>
+  <dd>tile descriptor index into tile memory 
+</dl>
+
+<p>The LOD per pixel is clamped to min_level. The LOD tile index is then calculated using the equation: </p>
+
+<blockquote><pre>
+l_tile=log2((int)lod_clamp)
+</pre></blockquote>
+
+<p>So, for example, an LOD of 7.5 would be converted to an l_tile of 2. This index is clamped to max_level and then added to the prim_tile. For example, the tile arrangement for a MIP map with a prim_tile = 2 and max_level = 3 would be arranged as shown in the following table. </p>
+
+<table border=1 align="center">
+  <caption><a name="t13-05"><strong>Table 13-5 Example of Tile Address and LOD Index Relationship </strong></a></caption>
+  <tr><th>Tile Address</th><th>LOD Index</th></tr>
+  <tr><td align="center">0</td><td align="center">-</td></tr>
+  <tr><td align="center">1</td><td align="center">-</td></tr>
+  <tr><td align="center">2</td><td align="center">0</td></tr>
+  <tr><td align="center">3</td><td align="center">1</td></tr>
+  <tr><td align="center">4</td><td align="center">2</td></tr>
+  <tr><td align="center">5</td><td align="center">3</td></tr>
+  <tr><td align="center">6</td><td align="center">-</td></tr>
+  <tr><td align="center">7</td><td align="center">-</td></tr>
+</table>
+
+<p>The l_frac is derived by dividing the clamped LOD by 2 l_tile . For example, an LOD of 7.5 would yield an l_frac of 0.875. The l_frac is modified depending on the mode bits detail_en and sharp_en.  Note that the detail and sharpen modes discussed below are exclusive. If enabled simultaneously, special effects may result. If neither detail_en or sharp_en is true, then the l_frac is passed to the color combiner unmolested. </p>
+
+<p>Sharpen and detail mode change the behavior of the tile index calculation when magnifying. The texture is magnified when you get so close to the primitive that one texel is being applied to many pixels, even using the highest resolution texture in the MIP map. </p>
+
+<table border=1 align="center">
+  <caption><a name="t13-06"><strong>Table 13-6 Generation of Tile Descriptor Index with LOD Enabled and Magnifying</strong></a></caption>
+  <tr><th>Cycle</th><th>Detail</th><th>Sharpen</th><th>Detail & Sharpen</th></tr>
+  <tr><td align="center">0</td><td>prim_tile + l_tile</td><td>prim_tile + l_tile</td><td>prim_tile + l_tile</td></tr>
+  <tr><td align="center">1</td><td>prim_tile + l_tile + 1</td><td>prim_tile + l_tile + 1</td><td>prim_tile + l_tile</td></tr>
+</table>
+
+<table border=1 align="center">
+  <caption><a name="t13-07"><strong>Table 13-7 Generation of Tile Descriptor Index With LOD Enabled and Not Magnifying </strong></a></caption>
+  <tr><th>Cycle</th><th>Detail</th><th>Sharpen</th><th>Detail & Sharpen</th></tr>
+  <tr><td align="center">0</td><td>prim_tile + l_tile + 1</td><td>prim_tile + l_tile</td><td>prim_tile + l_tile</td></tr>
+  <tr><td align="center">1</td><td>prim_tile + l_tile + 2</td><td>prim_tile + l_tile + 1</td><td>prim_tile + l_tile + 1</td></tr>
+</table>
+
+<p>Also note that l_tile is clamped to max_level when at the coarsest level of detail. </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="04"><h2>13.7.4 MIP Mapping </h2></a>
+
+<p>An example of the tile arrangement for a MIP map is shown in <a href="#f13-05">Figure 13-5</a></p>
+
+<dl>
+  <dt><a name="f13-05"><strong>Figure 13-5  MIP Map Tile Descriptors</strong></a>
+  <dd><img alt="[Figure 13-5]" src="gif/f13-05.gif">
+</dl>
+
+<p>To implement tri-linear MIP mapping, the RDP must be in two-cycle mode. A tile is referenced in each of the cycles and linearly interpolated using the l_frac in the color combiner. </p>
+
+<p>For more control of interpolation between two texture tiles a register prim_frac (0.8) is provided that can be used as an input to the color combiner. prim_frac is set by the SetPrimColor command. </p>
+
+<p>Care should be taken in the off-line generation of the MIP maps. Depending on the filter used for generating the levels, the different levels can end up unaligned if not careful.  For example, if using a simple <a href="../../keywords/index/data/graphics.htm#box filter" target="keywords">box filter</a> for generating the coarser levels, an offset of 0.5 should be added to the SL and TL of each level to insure that they align
+when laid on top of one another.  Whether these or other offsets are necessary depends on the filter used. Typically higher order filters will result in higher quality MIP maps. </p>
+
+<p>Another word of caution. In computer graphics, extremely high frequency textures are a bad thing.  Going from black to white in one texel being the highest frequency. High frequency maps are more likely to <a href="../../keywords/index/data/graphics.htm#aliasing" target="keywords">alias</a> (flicker) when edge on or far away.  So when generating map data use common sense and possibly lower frequency texture data to avoid these problems. </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="05"><h2>13.7.5 Magnification </h2></a>
+
+<dl>
+  <dt><a name="f13-06"><strong>Figure 13-6 Magnification Interval Relative to LOD </strong></a>
+  <dd><img alt="[Figure 13-6]" src="gif/f13-06.gif">
+</dl>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="05-01"><h3>13.7.5.1 Detail Texture</h3></a>
+
+<p>Even with tri-linear MIP mapping, textures can look blurry under magnification (that is, when 0.0 &LT; LOD&LT;1.0). One way of avoiding this is to use very large textures that contain high-frequency detail. But this would be expensive in <a href="../../keywords/index/data/graphics.htm#TMEM" target="keywords">TMEM</a>. </p>
+
+<p>Detail mode comes into play in magnification. The finest level of the base texture is combined with a (usually small) detail texture in such a way as to repeat the detail-texture over the base texture several times.  A base-texel would, upon magnification, appear to contain four or more detail texels blended with the base-texel color, thus providing high-frequency information without having to sacrifice large amounts of TMEM.  This can be used very effectively; for example, to provide motion cues when close to the terrain. </p>
+
+<p>Detail texture mode is most effective in situations where the high-frequency information and overall hue are relatively consistent throughout the texture.  To convert a high-resolution image into a low-resolution image (for the base texture) and a detail texture, follow this procedure: </p>
+
+<ol>
+  <li>Make the low-res image by filtering the high-res image to the desired size. This will become the base level.<br><br>
+  <li>Any nxn sub-tile of the high-res image can be used as a detail-texture. This sub-tile should preferably be modified to match across s and t borders so that when it is repeated on the base-texture, the seams are not visible. Detail textures can have a different texel type than the base-texture (subject to TMEM restrictions). Often, it is sufficient to use a 4-bit or 8-bit intensity detail-texture.<br><br>
+</ol>
+
+<p>A very effective and efficient implementation of detail texture involves use of the base texture itself as the detail texture but at a different resolution. This works well for objects and terrains with a "fractal character" where different resolutions of the object look similar. In such cases it might be appropriate to set the min_level parameter to 0 to allow the detail texture to completely replace the base texture at high magnifications.</p>
+
+<p>Since the detail texture is combined with the base texture, a color shift may result. This can be avoided by choosing the detail texture <a href="../../keywords/index/data/graphics.htm#color scheme" target="keywords">color scheme</a> to match the base texture colors so that this effect is minimized.  The min_level parameter can also be used to keep the detail texture from completely replacing the base texture by setting it to a value greater than 0.  This will cause a certain minimum amount of the base texture to always be blended in with the detail texture thus minimizing the color shift.</p>
+
+<p>The shift field of the tile pointing to the detail texture is used to shift the incoming s and t coordinates before indexing into the map. This shift then determines the base-texel to detail-texel ratio. </p>
+
+<p>For example, if the detail tile's shift was set to shift left by 1 (the shift of the finest level of the base texture being 0, of course), each base-texel, upon magnification would display 4 detail-texels blended with the base-texel color.  A shift left of 2 would result in 16 detail-texels per base- texel and so on. Larger shifts result in more aliasing in the
+detail-texture since the interpolation occurs between widely different magnifications. </p>
+
+<p>Keep in mind that the shift values compromise between the base-texel to detail-texel ratio and the effectiveness of the <a href="../../keywords/index/data/graphics.htm#bilerp" target="keywords">BILERP</a> operation on the detail texture.  This is because the number of fractional bits in the s and t coordinates (s10.5) is limited to 5 bits.  Hence, a shift left of 3 bits will leave only 2 bits of fraction within each texel to do the BILERP.</p>
+
+<p>Detail textures must always be pointed to using PRIM_TILE. </p>
+
+<dl>
+  <dt><a name="f13-07"><strong>Figure 13-7 MIP Map With Detail <a href="../../keywords/index/data/graphics.htm#texture tile descriptor" target="keywords">Texture Tile Descriptors</a></strong></a>
+  <dd><img alt="[Figure 13-7]" src="gif/f13-07.gif">
+</dl>
+
+<p>If detail_en is true and the LOD is less than 1.0, indicating that the LOD is below the finest MIP map level, the fraction is a table lookup of the lod_frac. Currently, the table lookup is simply identity, so the fraction is not modified in detail mode.  This point will be improved in RCP version in future.  In order to always to have a portion of the base-texture visible, lod_frac is clamped to be greater than min_level.  This fraction can then be used to interpolate between the detail-texture (pointed to by prim_tile) and the base-texture (pointed to by prim_tile+1). Filtering within the detail-texture can be controlled as usual by using the setOtherModes bits to be POINT or BILERP.</p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="05-02"><h3>13.7.5.2 Sharpen Mode</h3></a>
+
+<p>Sharpen mode is used in a situation similar to that of detail texture. The advantage of sharpen over detail is that sharpen is essentially free. It doesn't require an additional detail map. Instead it extrapolates using the two finest MIP map levels.  An image with high contrast edges has been magnified to the point where the edge details are becoming blurry. Sharpen mode increases the apparent sharpness of the texture edge by inverting the l_frac (extrapolating) as shown in <a href="#f13-08">Figure 13-8 "Sharpen Extrapolation"</a>.</p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="05-03"><h3>13.7.5.3 Bilinear Filtering and Point Sampling </h3></a>
+
+<p>The DP hardware treats texture coordinates differently based on whether the DP is in point sample mode or BILERP mode.  In point sample mode texels can be thought of as 1 x 1 squares with the sample point at the top left hand corner of the texel (where the "s" and "t" coordinate axes run left to right and top to bottom respectively.  This means that to <A target="keywords" HREF="../../keywords/index/data/system.htm#map">map</a> a modeler's floating point texture coordinate output (u,v) into the DP fixed point texture coordinates (s,t) for say a 32x32 sized texture (s ranges from 0 - 31 and t ranges from 0 - 31), the mapping </p>
+
+<blockquote><pre>
+s=u*32;
+t=v*32;
+</pre></blockquote>
+
+<p>would work consistently and would map the full 32x32 texture onto a <a href="../../keywords/index/data/graphics.htm#polygon" target="keywords">polygon</a> with (u,v) coordinates in the range [0.0 - 1.0].  This is because the above mapping would result in u range of [0.0-1.0] to be mapped to an s range of [0-32] which would cover the region from the left edge of the texel 0 to the right edge of texel 31. </p>
+
+<p>On the other hand, in BILERP mode the DP treats a texel as a 1 x 1 square with the sample point at the center and the above mapping would cover the region from the middle of texel 0 to the middle of texel 32 which goes beyond the extent of the texture.</p>
+
+<p>The mapping</p>
+
+<blockquote><pre>
+s=u*32-1;
+t=v*32-1;
+</pre></blockquote>
+
+<p>doesn't work either since it maps a (u,v) range of 0.0 - 1.0 to an (s,t) range of 0.0 - 31.0 which would cover a region from the middle of texel 0 to the middle of texel 31 which cause both texel 0 and texel 31 to be half displayed.</p>
+
+<p>The mapping that would make the textured primitive match exactly to the artist's rendition of the texture in BILERP mode would be: </p>
+
+<blockquote><pre>
+s=u*m-0.5;
+t=v*m-0.5;
+</pre></blockquote>
+
+<p>since this would map a (u,v) range of [0.0-1.0] to an (s,t) range of [-0.5 - 31.5] which would cover the region starting on the left edge of texel 0 to the right edge of texel 31.  However the BILERP filter requires two texels to BILERP between and in the s,t ranges [-0.5 - 0.0] and [31.0 - 31.5] there is only one texel available.  This can be solved by turning on clamping in the DP and setting SL,TL to 0,0 and SH,TH to 31,31.  This will cause the BILERP filter to select texel 0 for both texels to BILERP between in the range [-0.5 - 0.0] and texel 31 for range [31.0 - 31.5].  This paradigm can be extended for <a href="../../keywords/index/data/graphics.htm#wrap" target="keywords">wrapping</a> textures by clamping only at the border coordinates of the primitive.  For example a primitive with u,v in the range [0.0-4.0] in wrap
+mode would repeat the texture 4 times.   For the border texels to be displayed in full the s,t range would have to be [-0.5 - 127.5] (according to the above mapping) and the clamp parameters SL,TL and SH,TH would be set to 0,0 and 127,127 respectively.  (Note that SL and TL is subtracted from the incoming texture coordinates and is also used as the lower clamp value in clamp mode). </p>
+
+<p>If the (power of 2) texture matches along the 4 edges, clamp can be turned off and the BILERP filter will use the texel from the other edge of the wrapping texture to filter to. </p>
+
+<p><strong>Note:</strong>  Since point sampled and BILERP modes cause a shift of 0.5 texels in the displayed primitive, to switch between point sampled and BILERP modes without shifting the texture one of the following methods may be used.</p>
+
+<ol>
+  <li>Use a different primitive with a 0.5 shift in the texture coordinates<br><br>
+  <li>Set the 0.5 texel shift in SL and TL in the texture tile (SL and TL are subtracted from the incoming texture coordinates)<br><br>
+</ol>
+
+<p><strong>Note:</strong>  If the mxn texture is too large to fit in TMEM, the polygon and the texture can be broken up along u,v and s,t in appropriately sized tiles. For the BILERP to work along the tile boundaries, an extra row (or column) of texels around each tile border needs to be loaded i.e the resulting polygons will be disjoint but each tile (that is not a border tile) will have an overlap of 2 texels with any adjacent tile. </p>
+
+<dl>
+  <dt><a name="f13-08"><strong>Figure 13-8 Sharpen Extrapolation </strong></a>
+  <dd><img alt="[Figure 13-8]" src="gif/f13-08.gif">
+</dl>
+
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+</body> </html>

@@ -1,0 +1,64 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.>
+<title>osEPiRawWriteIo</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<h1>osEPiRawWriteIo</h1>
+
+<h3>Function</h3>
+
+<p>osEPiRawStartDma, osEPiRawWriteIo, osEPiRawReadIo, osEPiGetDeviceType</p>
+
+<p><i> Gain access to EPI without PI manager</i></p>
+
+<h3>Syntax</h3>
+<p>
+<blockquote>
+    <pre>#include &lt;ultra64.h&gt;
+s32 osEPiRawStartDma(OSPiHandle *pihandle, s32 direction,
+u32 devAddr, void *vAddr, u32 nbytes);
+s32 osEPiRawWriteIo(OSPiHandle *pihandle, u32 devAddr, u32 data);
+s32 osEPiRawReadIo(OSPiHandle *pihandle, u32 devAddr, u32 *data);
+s32 osEPiGetDeviceType(OSPiHandle *pihandle, OSPiInfo *info);</pre></blockquote></p>
+
+<h3>Description</h3>
+
+<p>The expanded peripheral interface (EPI) transfers data between RDRAM and a bulk storage device (BSD) such as ROM, Drive ROM, and the N64 Disk Drive.  EPI supports many devices sharing the PI domain, and it can switch among these devices dynamically.</p>
+
+<p>The <FONT FACE="COURIER NEW,COURIER">osEPiRawStartDma</FONT>, <FONT FACE="COURIER NEW,COURIER">osEPiRawWriteIo</FONT>, <FONT FACE="COURIER NEW,COURIER">osEPiRawReadIo</FONT>, and <FONT FACE="COURIER NEW,COURIER">osEPiGetDeviceType</FONT> functions gain access to the expanded peripheral interface (EPI) without using the PI manager.However, these functions should be used only when other services including debug, print, logging, and profiling are not using the PI bus.  Nintendo strongly recommends that the PI manager be used when using the EPI.  Please see osEPiStartDma for more information.</p>
+
+<p>The <FONT FACE="COURIER NEW,COURIER">OSPiHandle</FONT> data structure acts as a handler for the EPI routine when referencing each PI device without using the PI manager.  The <FONT FACE="COURIER NEW,COURIER">OSPiHandle</FONT> structure is allocated and initialized by each device's initialization routine. It is also used for saving each PI device attributes.</p>
+
+<p>The <FONT FACE="COURIER NEW,COURIER">osEPiRawStartDma</FONT> function sets up the DMA transfer condition between RDRAM (using the virtual address pointed to by the <FONT FACE="COURIER NEW,COURIER">vAddr</FONT> argument) and the EPI device (using the address specified by the <FONT FACE="COURIER NEW,COURIER">devAddr</FONT> argument) based on the value of the <FONT FACE="COURIER NEW,COURIER">direction</FONT> argument (<FONT FACE="COURIER NEW,COURIER">OS_READ</FONT> or <FONT FACE="COURIER NEW,COURIER">OS_WRITE</FONT>). The counter specified by the <FONT FACE="COURIER NEW,COURIER">nbytes</FONT> argument is the transfer size of DMA (16 megabytes is the maximum); it must be a multiple of two.  Two-byte alignment must be done for the PI's device address (<FONT FACE="COURIER NEW,COURIER">devAddr</FONT>).  Although eight-byte alignment is required for the RDRAM's virtual address (<FONT FACE="COURIER NEW,COURIER">vAddr</FONT>), 16-byte alignment is recommended if you are performing an RDRAM operation with <FONT FACE="COURIER NEW,COURIER">OS_READ</FONT>.  Please refer to <FONT FACE="COURIER NEW,COURIER"><A HREF="../os/OS_DCACHE_ROUNDUP_ADDR.htm">OS_DCACHE_ROUNDUP_ADDR</A></FONT> concerning problems that may occur when address and transfer volume is not a multiple of the cache line (16 bytes).The <FONT FACE="COURIER NEW,COURIER">osEPiRawStartDma</FONT> routine performs a polling operation to determine whether or not the interface is available before setting the DMA register.</p>
+
+<p>The <FONT FACE="COURIER NEW,COURIER">osEPiRawWriteIo</FONT> routine performs a 32-bit IO Write operation from <FONT FACE="COURIER NEW,COURIER">devAddr</FONT>.  This routine performs a polling operation to determine whether or not the interface is available before the operation. Similarly, the <FONT FACE="COURIER NEW,COURIER">osEPiRawReadIo</FONT> routine performs a 32-bit IO Read operation from <FONT FACE="COURIER NEW,COURIER">devAddr</FONT> and stores the value to data. This routine also performs a polling operation to determine whether or not the interface is available before the operation. Note that four-byte alignment is necessary for <FONT FACE="COURIER NEW,COURIER">devAddr</FONT>.</p>
+
+<p>The <FONT FACE="COURIER NEW,COURIER">osEPiGetDeviceType</FONT> routine gets the PI information recognized by the PI handler. The device information is represented by the <FONT FACE="COURIER NEW,COURIER">OSPiInfo</FONT> structure as shown here:</p>
+<p>
+<blockquote>
+    <pre>typedef struct {
+        u8 type;
+        member; 
+        u32 address;
+} OSPiInfo;</pre>
+</blockquote>
+</p>
+<p>The device <FONT FACE="COURIER NEW,COURIER">type</FONT> is either <FONT FACE="COURIER NEW,COURIER">DEVICE_TYPE_CART</FONT> (usual game Pak), <FONT FACE="COURIER NEW,COURIER">DEVICE_TYPE_BULK</FONT>
+(bulk storage device), or <FONT FACE="COURIER NEW,COURIER">DEVICE_TYPE_64DD</FONT> (disk drive).  The specified device's base IO address is returned to the <FONT FACE="COURIER NEW,COURIER">address</FONT> field.</p>
+
+<h3>Note</h3>
+
+<p><FONT FACE="COURIER NEW,COURIER">osEPiRawStartDma</FONT>, <FONT FACE="COURIER NEW,COURIER">osEPiRawWriteIo</FONT>, and <FONT FACE="COURIER NEW,COURIER">osEPiRawReadIo</FONT> reset the PI bus if there is a discrepancy between the given PI bus setting specified by <FONT FACE="COURIER NEW,COURIER">pihandle</FONT> and the actual PI bus setting when the function is called.  It is not necessary to call osCartRomInit each time.</p>
+
+<h3>See Also</h3>
+
+<p><a href="osPiRawStartDma.htm">osPiRawStartDma </a>, <a
+href="osPiStartDma.htm">osPiStartDma </a>,<a
+href="osEPiStartDma.htm">osEPiStartDma </a>, and <a href="osCartRomInit.htm">osCartRomInit </a></p>
+</body>
+</html>

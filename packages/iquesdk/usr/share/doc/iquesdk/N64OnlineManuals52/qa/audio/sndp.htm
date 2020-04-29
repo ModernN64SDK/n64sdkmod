@@ -1,0 +1,132 @@
+<HTML>
+<!Edited PWC 2/23/00>
+<link rel="stylesheet" type="text/css" href="../style.css">
+<title>Sound Player</title>
+</HEAD>
+<BODY bgcolor="#FFFFFF" text="#000000" link="#CC0000" vlink="#0000CC" alink="#00CCCC">
+
+
+<A name="index">
+<IMG src="../../gif/n64_logo2.gif" height="21" width="136">
+<h3><FONT color="#FF8000">Q&A</font>-  Sound Player</h3>
+
+<P>
+
+<TABLE border="0">
+  <TR>
+    <TD valign="top" width="50"><A href="sndp.htm#01"><b>QA1</b></A></TD>
+    <TD>How do you handle a &quot;_handleMIDIMsg: no free voice&quot; error?</TD>
+  </TR>
+  <TR>
+    <TD valign="top" width="50"><A href="sndp.htm#02"><b>QA2</b></A></TD>
+    <TD>Playing two sounds at the same time</TD>
+  </TR>
+  <TR>
+    <TD valign="top" width="50"><A href="sndp.htm#03"><b>QA3</b></A></TD>
+    <TD>What is the timing for changing AL_STOPPED etc.?</TD>
+  </TR>
+  <TR>
+    <TD valign="top" width="50"><A href="sndp.htm#04"><b>QA4</b></A></TD>
+    <TD>I want to send sound FX separately to L and R</TD>
+  </TR>
+</TABLE>
+
+<HR>
+
+<P>
+<A name="01"><FONT  color="#FF0000"><b>Q1</b></FONT></A>
+<b> Referring to the sample source "simple," I tried to build some sounds, but the following error messages were displayed.  What caused them and how do I handle them? </b>
+
+
+<blockquote><pre>ERROR 
+0X...(0101): _handleMIDIMsg: nofree voice 
+        .
+        .
+ 
+0X...(0103): _handleMIDIMsg: noteoff-couldn't find voice</pre></blockquote>
+
+
+<P>
+<FONT  color="#008000"><b>A1</b></FONT>
+ As it says in the top message, this is a warning that appears when there aren't enough voices (voice channels).  Increase the value for Max_PVOICE. 
+
+
+<p>
+If it still doesn't work well even if you increase the number of channels, check to see that there is a note-OFF for each and every note-ON in the sequence. 
+
+
+<p>
+The bottom error occurs paired with the top error, and happens because a note for which reserving a physical voice failed has attempted to release the invalid physical voice when it encountered a note-OFF. 
+
+
+<P align="right">
+<A href="sndp.htm#index">top</A>
+
+
+<HR>
+
+<P>
+<A name="02"><FONT   color="#FF0000"><b>Q2</b></FONT></A>
+<b> I am currently studying about sound playback (SE playback) using soundmonkey, but how do I get two sounds to be played at the same time?</b>
+
+<p>
+<b>What kind of resources are allocated to a sound by <a href="../../n64man/al/alSndpAllocate.htm">alSndpAllocate()</a>?</b>
+
+
+<P>
+<FONT   color="#008000"><b>A2</b></FONT>
+ Execute <a href="../../n64man/al/alSndpAllocate.htm">alSndpAllocate</a> twice for one sound.  For  details, please refer to <a href="../../pro-man/pro17/17-02.htm">Section 17.2,  "Playing Back Sampled Sounds,"</a> in the N64 Online Programming Manual. 
+
+<P>
+This may be redundant, but you probably shouldn't use soundmonkey to study sound-related programming.  
+Since soundmonkey is equipped with no more than the minimum functions for making sounds, it would be difficult to use it to create an actual game.  It is bly recommended that you use NuSystem as your development environment.  If you can't use NuSystem because you have old resources, etc., nnsample is recommended because the relationship between general sampling and non-sound related programming is easier to understand.  
+
+
+<P align="right">
+<A href="sndp.htm#index">top</A>
+
+
+<HR>
+
+<P>
+<A name="03"><FONT   color="#FF0000"><b>Q3</b></FONT></A>
+<b> What is the timing for changing the flags which indicate the status of a sound (AL_STOPPED, AL_STOPPING, AL_PLAYING)?</b>
+
+
+<P>
+<FONT  color="#008000"><b>A3</b></FONT>
+ The timing for changing these 3 flags (AL_STOPPED, AL_STOPPING, AL_PLAYING) is after the <a href="../../n64man/al/alAudioFrame.htm">alAudioFrame()</a> command has been called and executed.
+
+
+<p>
+Since <a href="../../n64man/al/alAudioFrame.htm">alAudioFrame()</a> generally is called at the end of a frame cycle, even if, e.g., the SE(Voice) called &quot;banban&quot; is registered with alSndpSetSound() and then alSndpPaly() is called, the flag will not change at that time.  Typically, AL_STOPPED will be active during that frame.  Similarly, even if alSndpStop() is issued, AL_PLAYING will remain active during that frame. 
+
+
+<p>
+In other words, since the flag is changed after <a href="../../n64man/al/alAudioFrame.htm">alAudioFrame()</a> has been called, the change is effective in the next frame. 
+
+
+<P align="right">
+<A href="sndp.htm#index">top</A>
+
+
+<HR>
+
+<P>
+<A name="04"><FONT  color="#FF0000"><b>Q4</b></FONT></A>
+<b> I want to send sound FX separately to L and R</b>
+
+
+<P>
+<FONT   color="#008000"><b>A4</b></FONT>
+ Sound effects cannot be sent in stereo.  Display the source code and create them independently.
+
+
+<P align="right">
+<A href="sndp.htm#index">top</A>
+
+
+<HR>
+
+</BODY>
+</HTML>

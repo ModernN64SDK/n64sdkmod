@@ -1,0 +1,111 @@
+<!..
+-- ADD START --
+1998//
+..>
+
+<html>
+<title>
+Unique Scale
+</title>
+<body bgcolor="ffffff">
+
+<h1>
+<font color="ff0000">
+<i>
+Nintendo Confidential
+</i>
+</font>
+</h1>
+<hr size="3">
+
+
+<h3>
+Unique Scaleについて
+</h3>
+<blockquote>
+
+Unique Scaleは特定のCGツール上で実現できるスケールです。NIFF2.0内では通常のスケール方法をClassical ScaleとしてUnique Scaleと区別しています。Unique Scaleには下記のような特徴があります。
+<p>
+下図のようにIKチェーンにオブジェクトをアタッチしてアニメーションを作成する場合を考えてみます。
+<p>
+<center>
+<img src="./img/default_scale.jpg">
+<p>
+<b>
+図　IKにアタッチされたオブジェクト
+</b>
+<p>
+</center>
+通常、このようなIKチェーンにオブジェクトをアタッチした場合、このChain Rootをスケールすると下図のようにそのオブジェクトの階層化にあるオブジェクトが同様にスケールされ、ジオメトリが変形してしまいます。
+
+<p>
+<center>
+<img src="./img/classical_scale.jpg">
+<p>
+<b>
+図　Classical Scaleを使用してChain Rootをスケール
+</b>
+<p>
+</center>
+しかしUnique Scaleでは下図のようにChain Rootに与えたスケールをそのまま子オブジェクトに引き継いだ形でスケールされます。この場合、ジオメトリの変形は発生しません。
+<p>
+<center>
+<img src="./img/unique_scale.jpg">
+<p>
+<b>
+図　Unique Scaleを使用してChain Rootをスケール
+</b>
+<p>
+</center>
+FKのシステムでも同じように処理することができます。下記のような階層化された３つのオブジェクトを両方のスケール方法で比較してみます。
+<p>
+
+<center>
+<img src="./img/default_scale_hrc.jpg">
+<p>
+<b>
+図　階層化されたオブジェクト
+</b>
+</center>
+
+<p>
+上記のように階層化されたオブジェクトにそれぞれの階層でローテーションをおこない、ルートのオブジェクトに対してX軸に対してスケールをかけます。Classical Scaleの場合、下図のようにそれぞれのオブジェクトがグローバルなX軸方向にスケールされますので、ジオメトリの変形が発生します。
+<p>
+
+<center>
+<img src="./img/classical_scale_hrc.jpg">
+<p>
+<b>
+図　Classical Scaleを使用してRootオブジェクトをスケール
+</b>
+</center>
+
+<p>
+しかし、Unique Scaleを使用すると、子オブジェクトはそれぞれのローカルなX軸に対して一様にスケールされるのでジオメトリの変形は発生しません。
+<p>
+
+<center>
+<img src="./img/unique_scale_hrc.jpg">
+<p>
+<b>
+図　Unique Scaleを使用してRootオブジェクトをスケール
+</b>
+</center>
+
+<p>
+NIFF2.0内ではそれぞれUniqueScaleと、ClassicalScaleのデータ領域があり、そのどちらかを使用することでスケールの種類を指定します。実際にこれらのデータの使い分けはN64側のランタイムソフトウェア上でおこなわれますので、CGツール上で使用しているスケールにあわせて出力するデータ領域を分けてください。
+</blockquote>
+
+<hr>
+<i>
+Copyright 1998,1999 NINTENDO Co.,Ltd. All rights reserved.<br>
+Copyright 1998,1999 MONEGI CORPORATION All rights reserved.
+</i>
+
+
+</body>
+</html>
+
+<!..
+-- ADD END --
+..>

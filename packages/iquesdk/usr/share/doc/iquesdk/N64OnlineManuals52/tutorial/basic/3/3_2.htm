@@ -1,0 +1,76 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-N64 Programming Basics-Chapter 3  The Display List and Tasks</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/20/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<FONT Style="font-size:12pt"><B>3.2  What is the Display List?</B></FONT>
+<br>
+<P>
+If you go through the N64 Kantan Manual or the Programming Manual, you will see the abbreviations RSP and RDP come up all the time.  These are processors.  Leaving out the architectural details, think of them in the following way:<BR><BR>
+   RSP --- Graphics construction and audio<BR>
+   RDP --- Graphics rendering<BR><BR>
+The important thing to realize is that the N64 has processors for graphics and audio that exist separately from the main CPU performing general computations.<BR><BR>
+     A variety of functions have been prepared for the N64 that are designed to make efficient use of these processors. The programmer combines these various function calls to compose an N64 program.<BR><BR>
+      However, in N64 programming, you cannot make practical use of the functionality of the hardware by simply calling the library functions.  This is where the display list becomes important.<BR><BR>
+     Think of the display list as an instruction booklet for the RSP and the RDP.  Instead of "calling the function directly," you "specify what function to call" and the processor executes the work you want done. 
+</P>
+<P>
+<br><br>
+<IMG SRC="image04.gif">
+</P>
+<P>
+<B>Figure 3-1  Conceptualized Display List</B>
+</P>
+<br>
+<P>
+ In N64 programming language, functions are often called commands, not "functions."  Therefore, the display list, with list of commands, is sometimes called the command list. <br><br> 
+     The command list is processed by a program called the microcode, which is loaded into the RSP for execution.  There are various kinds of microcode, such as microcode to playback audio and microcode to display sprites, and a variety of ways to use them.  This all may seem confusing to some readers at this point.  Microcode will be explained later, but at this point keep these terms in mind.<br><br>
+     In C language terminology, the commands in the display list are implemented as macros.  In other words, commands are fundamentally different from functions and function pointers.  They are ultimately expanded to simple 64-bit constants (type Gfx), so they can be stored as the elements of an array.<br><br>
+     Since commands are macros, all command definitions are located in the header file.  If you want to know more about this, take at look at the header file <gbi.h>.   You will see various definitions and methods of implementation relating to the display list.<br><br>
+     There are two broad kinds of display lists: static and dynamic.  This subject will be brought up again in a later section.<br><br>  
+
+     Next, we will move to an explanation of what specifically a display list is, using the sample program basic3 for our comparisons.
+     First, take a look at graphic.c.  The two arrays rspinit_dl and rdpinit_dl have been defined there.  
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=5><TR>
+	<TD NOWRAP COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE><B>List 3-1</B>  <B>See basic3 "graphic.c"</TD>
+</TR><TR>
+	<TD NOWRAP BGCOLOR="666666" WIDTH="4" ALIGN=LEFT VALIGN=TOP><HR NOSHADE SIZE=0></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>
+<FONT COLOR="#000080"><PRE><CODE>/* Display list for initializing the RSP */
+Gfx rspinit_dl[] = {
+  gsSPViewport(&amp;viewport),
+  gsSPClearGeometryMode(G_SHADE | G_SHADING_SMOOTH |
+    G_CULL_BOTH | G_FOG | G_LIGHTING | G_TEXTURE_GEN |
+    G_TEXTURE_GEN_LINEAR | G_LOD),
+  gsSPTexture(0, 0, 0, 0, G_OFF),
+  gsSPEndDisplayList(),
+};
+
+/* Display list for initializing the RDP */
+Gfx rdpinit_dl[] = {
+  gsDPSetCycleType(G_CYC_1CYCLE),
+  gsDPSetScissor(G_SC_NON_INTERLACE, 0, 0,
+    SCREEN_WD, SCREEN_HT),
+  gsDPSetCombineKey(G_CK_NONE),
+  gsDPSetAlphaCompare(G_AC_NONE),
+  gsDPSetRenderMode(G_RM_NOOP, G_RM_NOOP2),
+  gsDPSetColorDither(G_CD_DISABLE),
+  gsDPPipeSync(),
+  gsSPEndDisplayList(),
+};
+</CODE></PRE></FONT>
+	</TD>
+</TR></TABLE>
+<P>
+ You can deduce what these arrays are based on their names.  The first is the display list for initializing the RSP, and the second is the display list for initializing the RDP.  The elements like "gsSPViewport(&viewport)" in the display lists are the commands.<br><br>
+
+     We previously compared the display list to a function call.  In a function call, the desired computation is performed at the time the function is called.  The situation is different for the display list.  If all you do is create the display list (i.e., write the instruction booklet), no computations will be executed.  You must also pass the display list for execution.  In the N64 vocabulary, the display list is passed to a "task."   Tasks will be explained later.  First we will go over the basic knowledge needed to construct the display list.
+</P>
+</BODY>
+</HTML>

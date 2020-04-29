@@ -1,0 +1,55 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<link rel=stylesheet type="text/css" HREF="../N64man.css">
+<!--
+Editors Notes:
+  JLR made reformating and copy edits.
+  PWC- updated formatting
+-->
+<title>gDPSetTextureConvert</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<h1>gDPSetTextureConvert [Macro]</h1>
+<h2>Function</h2>
+<p>gDPSetTextureConvert, gsDPSetTextureConvert<br><br><i>
+Controls the texture filter unit and converts the color</i></p>
+
+<p><b>Syntax</p></b>
+<p>
+<blockquote>
+    <pre>#include &quot;gbi.h&quot;
+gDPSetTextureConvert(Gfx *gdl, unsigned int type)
+gsDPSetTextureConvert(         unsigned int type)</pre>
+</blockquote>
+</p>
+<p><b>Arguments</p></b>
+<p>
+<dl>
+    <dt><strong>*gdl</strong></dt>
+    <dd>Pointer to graphics display list<br>
+        <br>
+        </dd>
+    <dt><strong>type</strong></dt>
+    <dd>G_TC_CONV, G_TC_FILTCONV, G_TC_FILT<br>
+        <br>
+        </dd>
+</dl>
+</p>
+<p><b>Description</b></p>
+
+<p>This macro controls the texture filter unit, selecting whether the output should be filtered (G_TC_FILT), color-converted from YUV to RGB (G_TC_CONV), or both color-converted and filtered (G_TC_FILTCONV). </p>
+
+<p><b>Note</b></p>
+
+<p>The default hardware state (mode bits all 0s) represents G_TC_CONV, which is not a very good default state because it is rarely used. </p>
+
+<p>A common bug is to have your filtered, textured, display list completed, yet the texture still looks incorrect due to a missing G_TC_FILT, which inadvertently color-converts the texture. </p>
+
+<p><b>See Also</b></p>
+
+<p><a href="gDPSetConvert.htm">gDPSetConvert</a></p>
+</body>
+</html>

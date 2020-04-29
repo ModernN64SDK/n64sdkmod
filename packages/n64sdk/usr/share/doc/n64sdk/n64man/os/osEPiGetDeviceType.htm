@@ -1,0 +1,71 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.
+MAP- added links, updated format>
+<title>osEPiGetDeviceType</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>osEPiGetDeviceType</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p>osEPiRawStartDma, osEPiRawWriteIo, osEPiRawReadIo,
+osEPiGetDeviceType</p>
+
+<p><i> Gain access to EPI without PI manager</i></p>
+
+<h3>Syntax</h3>
+<p>
+<blockquote>
+    <pre>#include &lt;ultra64.h&gt;     /* <A HREF="../../header/ultra64.htm">ultra64.h</A> */
+s32 osEPiRawStartDma(OSPiHandle *pihandle, s32 direction,
+u32 devAddr, void *vAddr, u32 nbytes);
+s32 osEPiRawWriteIo(OSPiHandle *pihandle, u32 devAddr, u32 data);
+s32 osEPiRawReadIo(OSPiHandle *pihandle, u32 devAddr, u32 *data);
+s32 osEPiGetDeviceType(OSPiHandle *pihandle, OSPiInfo *info);</pre>
+</blockquote>
+</p>
+<h3>Description</h3>
+
+<p>The expanded peripheral interface (EPI) transfers data between RDRAM and a bulk storage device (BSD) such as ROM, Drive ROM, and the N64 Disk Drive.  EPI supports many devices sharing the PI domain, and it can switch among these devices dynamically.</p>
+
+<p>The <tt>osEPiRawStartDma</tt>, <tt>osEPiRawWriteIo</tt>, <tt>osEPiRawReadIo</tt>, and <tt>osEPiGetDeviceType</tt> functions gain access to the expanded peripheral interface (EPI) without using the PI manager. However, these functions should be used only when other services including debug, print, logging, and profiling are not using the PI bus.  Nintendo strongly recommends that the PI manager be used when using the EPI.  Please see <a href="osEPiStartDma.htm">osEPiStartDma</a> for more information.</p>
+
+<p>The OSPiHandle data structure acts as a handler for the EPI routine when referencing each PI device without using the PI manager.  The OSPiHandle structure is allocated and initialized by each device's initialization routine. It is also used for saving each PI device attributes.</p>
+
+<p>The <a href="osEPiRawStartDma.htm">osEPiRawStartDma</a> function sets up the DMA transfer condition between RDRAM (using the virtual address pointed to by the <b>vAddr</b> argument) and the EPI device (using the address specified by the <b>devAddr</b> argument) based on the value of the <b>direction</b> argument (OS_READ or OS_WRITE). The counter specified by the <b>nbytes</b> argument is the transfer size of DMA (16 megabytes is the maximum); it must be a multiple of two.  Two-byte alignment must be done for the PI's device address (<b>devAddr</b>).  Although eight-byte alignment is required for the RDRAM's virtual address (<b>vAddr</b>), 16-byte alignment is recommended if you are performing an DMA operation with OS_READ.  Please refer to <A HREF="../os/OS_DCACHE_ROUNDUP_ADDR.htm">OS_DCACHE_ROUNDUP_ADDR</A> concerning problems that may occur when address and transfer volume is not a multiple of the cache line (16 bytes). The <tt>osEPiRawStartDma</tt> routine performs a polling operation to determine whether or not the interface is available before setting the DMA register.</p>
+
+<p>The <a href="osEPiRawWriteIo.htm">osEPiRawWriteIo</a> routine performs a 32-bit IO Write operation from <b>devAddr</b>.  This routine performs a polling operation to determine whether or not the interface is available before the operation. Similarly, the <a href="osEPiRawReadIo.htm">osEPiRawReadIo</a> routine performs a 32-bit IO Read operation from <b>devAddr</b> and stores the value to data. This routine also performs a polling operation to determine whether or not the interface is available before the operation. Note that four-byte alignment is necessary for <b>devAddr</b>.</p>
+
+<p>The <tt>osEPiGetDeviceType</tt> routine gets the PI information recognized by the PI handler. The device information is represented by the OSPiInfo structure as shown here:</p>
+<p>
+<blockquote>
+    <pre>typedef struct {
+        u8 type;
+        member; 
+        u32 address;
+} OSPiInfo;</pre>
+</blockquote>
+</p>
+<p>The device type is either DEVICE_TYPE_CART(usual game Pak), DEVICE_TYPE_BULK(bulk storage device), or DEVICE_TYPE_64DD(disk drive).  The specified device's base IO address is returned to the address field.</p>
+
+<h3>Note</h3>
+
+<p><tt>osEPiRawStartDma</tt>, <tt>osEPiRawWriteIo</tt>, and <tt>osEPiRawReadIo</tt> reset the PI bus if there is a discrepancy between the given PI bus setting specified by pihandle and the actual PI bus setting when the function is called.  It is not necessary to call <a href="osCartRomInit.htm">osCartRomInit</a> each time.</p>
+
+<h3>See Also</h3>
+
+<p><a href="osPiRawStartDma.htm">osPiRawStartDma </a>, <a
+href="osPiStartDma.htm">osPiStartDma </a>,<a
+href="osEPiStartDma.htm">osEPiStartDma </a>, <a
+href="osCartRomInit.htm">osCartRomInit </a>, <A HREF="../os/osEPiRawWriteIo.htm">osEPiRawWriteIo</A>, and 
+<A HREF="../os/osEPiRawReadIo.htm">osEPiRawReadIo</A>
+</p>
+<H3>Revision History</H3>
+<P>
+1999/04/30  Changed Format
+</P>
+
+</body>
+</html>

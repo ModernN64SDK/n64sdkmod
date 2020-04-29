@@ -1,0 +1,60 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!--
+Editors Notes:
+  PWC- updated formatting
+-->
+<title>STEP2 [A Guide to the N64 Programming] - Chapter 3 N64 Audio Architecture and Samples</title>
+<base target="keywords">
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<p><font style="font-size:12pt; font-weight:bold">3-4 Method of the Audio Data Development Process</font><br>
+<br>
+<br>
+<b>3-4-1 Audio Data Development Process</b><br>
+<br>
+<br>
+
+   To develop audio for your games, use the following processes in combination with sound development tools like N64 Sound Tools for the PC. <br>
+<br>
+<br>
+<img src="img00006.gif"><br>
+<li><b>How to Make Wave Table Audio Data (SGI)</li></b>
+<ol>
+<li><a href="../../../keywords/index/data/audio.htm#sampling" target="keywords">Sample</a> the voice source data by using any of the many available third-party tools to make the <a href="../../../keywords/index/data/audio.htm#AIFF" target="keywords">AIFF</a> format file.</li>
+<li>Make a <a href="../../../keywords/index/data/audio.htm#code book" target="keywords">code book</a> (a <a href="../../../keywords/index/data/audio.htm#predictive coefficient" target="keywords">predictive coefficient</a> table) used for the <a href="../../../keywords/index/data/audio.htm#ADPCM" target="keywords">ADPCM</a> encode by using the N64 <a href="../../../n64man/tool/tabledesign.htm">tabledesign</a> audio development tool.</li>
+<li>Compress the AIFF format file to the <a href="../../../keywords/index/data/audio.htm#AIFC" target="keywords">AIFC</a> (ADPCM) format by using the N64 <a href="../../../n64man/tool/vadpcm_enc.htm">vadpcm_enc</a> audio development tool.</li>
+<li>Make the source file (.inst file) used by the N64 <a href="../../../n64man/tool/ic.htm">ic</a> audio development tool. The ic source file has defined objects that compose the <a href="../../../keywords/index/data/audio.htm#bank">bank</a> by using a language similar to the C language.</li>
+<li>Make the <a href="../../../keywords/index/data/audio.htm#bank file" target="keywords">bank files</a> (.tbl, .ctl, and .sym files) by using the N64 ic audio development tool. The bank files are the informational data files used for audio synthesis by the audio library.</li>
+</ol>
+<br>
+<br>
+<img src="img00007.gif"><br>
+<b><li>How to Make MIDI Sequence Audio Data (SGI)</li></b>
+<ol>
+<li>Make the <a href="../../../keywords/index/data/audio.htm#MIDI" target="keywords">MIDI</a>  file by using any of the many available third-party tools.</li>
+<li>If the MIDI file is <a href="../../../keywords/index/data/audio.htm#Type0, Type1 MIDI" target="keywords">Type1</a>, convert it to <a href="../../../keywords/index/data/audio.htm#Type0, Type1 MIDI" target="keywords">Type0</a> by using the N64 <a href="../../../n64man/tool/midicvt.htm">midicvt</a> audio development tool.</li>
+<li>When you generate the <a href="../../../keywords/index/data/audio.htm#compressed MIDI" target="keywords">compressed MIDI</a> data generally used for a game program, convert the Type 0 MIDI file to the compact MIDI file by using the N64 <a href="../../../n64man/tool/midicomp.htm">midicomp</a> audio development tool.</li>
+<li>Make the sequence bank file (.sbk file) by using the N64 audio development tools, <a href="../../../n64man/tool/sbc.htm">sbc</a>.</li>
+<li>Pass the bank files (.tbl, .ctl, and .sym files) to the programmer.</li>
+</ol><br>
+See each respective tool manual for details on the N64 audio development tools.<br>
+<br>
+<br>
+<br>
+<b>3-4-2 Setting the Sampling Rate</b><br>
+<img src="img00008.gif"><br>
+<li>Establish the standard output rate for your game between 22.05kHz and 44.1kHz.</li>
+With the N64, if the rate is too high, the processing time in the RSP takes longer. If you establish a low rate, the processing time in the RSP is shortened, and you can increase the number of voices. <br>
+<br>
+<li>With an output rate greater than 32kHz, the human ear notices little difference.</li> A rate less than 22.05kHz produces sampling noise that significantly reduces sound quality. <br>
+<br>
+<li>Develop the audio data using a sampling rate that is as close as possible to the N64 reproduction output rate to ensure good sound quality.</li>
+If you cannot decide on the exact output rate in advance, develop the audio using a higher sampling rate first, and then convert it to a lower rate if necessary. This will minimize any decline in sound quality.</p>
+</body>
+</html>

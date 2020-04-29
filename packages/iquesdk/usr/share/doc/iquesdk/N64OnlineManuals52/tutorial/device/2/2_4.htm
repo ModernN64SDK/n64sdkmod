@@ -1,0 +1,269 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Device-Chapter 2 How to USE Devices Connected to the PI </TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/21/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<font style="font-size:12pt"><B>2.4  How to Use the MFS Library</B></FONT>
+<br>
+<P>
+     A special library has been prepared for the management of MFS disks.  The library makes it easier to write code for disk control in your programs, helping you realize more efficient and understandable disk management. <br><br>
+     The MFS manages files using files and directories in the same way as UNIX and DOS.  You can name the files and directories, and manage them using names and numbers.  </P>
+<BR>
+<B>2.4.1  The MFS File System</B>
+<P>
+The MFS library locically treats the ROM area and the RAM area on the disk as different drives.  The drive allocation for the ROM area and RAM area is shown below:
+</P>
+    ROM area   A drive<BR>
+    RAM area   B drive<BR>
+<P>
+  File names and directories can be specified with their full path, which means the drive name, path name, file name and extension.  The drive name and path name are separated by a colon (" :" ), while the directory names are demarcated by a forward slash (&quot; / &quot;)  and the file name and its extension are separated by a period (&quot;. &quot;) <br><br>Example: A:/dir1/picture/mario1.rgb<br><br>
+
+     Most of the time you will be accessing files that are all stored under the same directory, and it would be inconvenient to have to specify the drive name and path name every time.  That is why the MFS library allows you to set the current drive and the current directory.  When a drive name and path name are not specified, the current drive and current directory are assumed.  Relative path names are supported, but you cannot trace backwards using two periods (&quot; .. &quot;).  
+</P>
+<BR>
+<B>2.4.2  Initializing the Library</B>
+<P>
+ The first thing you need to do is initialize the whole library.  There are two initialization functions: <tt>mfsHInitDiskBoot</tt> to boot from the disk and <tt>mfsHInitCasBoot</tt> to boot from the Game Pak.  
+<BR>
+<HR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Function name:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP COLSPAN=2><tt>mfsHInitDiskBoot</tt></TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Syntax:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP COLSPAN=2>s32 mfsHInitDiskBoot(MfsFile handle,u8 handleNum,<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;u8 *company,u8* game,u8 dest)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Arguments:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP><b>handle</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Pointer for the file handle structure array</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP><b>handleNum</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP>The number of file handle structures</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP><b>company</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Company code</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP><b>game</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Game code</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP><b>dest</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Game code</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Return Value:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP COLSPAN=2>Error</TD>
+</TR></TABLE>
+<HR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Function name:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP COLSPAN=2><tt>mfsHInitCasBoot</tt></TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Syntax:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP COLSPAN=2>s32 mfsHInitCasBoot(MfsFile handle,u8 handleNum,<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;u8 *company,u8* game,u8 dest)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Arguments: </TD>
+	<TD ALIGN=LEFT VALIGN=TOP><b>handle</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Pointer for the file handle structure array</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP><b>handleNum</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP>The number of file handle structures</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP><b>company</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Company code</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP><b>game</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Game code</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP><b>dest</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Destination code</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Return value:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP COLSPAN=2>Error</TD>
+</TR></TABLE>
+<HR>
+<p>
+The <b>handle</b> argument specifies the pointer to the file handle buffer where the application will prepare the MfsFileHandle structure array when handling files.  The MfsFileHandle structure pointer is declared as type MfsFile.  
+    The <b>handleNum</b> argument specifies the size of the array.  The number of files that the application can open at the same time is determined by the number of file handles specified here.
+     The <b>company</b> and <b>game</b> arguments specify the company code and game code (initial code) issued by Nintendo.  
+     The <b>dest</b> argument is the destination code, which is used as disk information when the RAM area is formatted.  The following values can be specified for the argument: 
+
+</P>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD ALIGN=LEFT VALIGN=TOP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>MFS_DESTINATION_JAPAN</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>&nbsp;0&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Japan</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>MFS_DESITNATION_US</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>&nbsp;1&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>America</TD>
+</TR></TABLE>
+<P>
+   Both of these functions initialize the low-level Leo library first.  If the Leo library processes terminate normally, MFS_ERR_NO is returned.  If a MFS_ERR_DEVICE error is returned, jump to the appropriate error handling sequence by referencing the global variable <tt>mfsError</tt>, where the value returned by the <tt>Leo*CreateLeoManager</tt> function is stored.</P>
+<p>
+<B>2.4.3  Opening Files</B>
+<P>
+To access a file, first you need to open the file and get its file handle with the <tt>mfsHFopen</tt> function. <BR>
+<HR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Function name: </TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP COLSPAN=2><tt>mfsHFopen</tt></TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Syntax:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP COLSPAN=2>s32 mfsHFopen(MfsFile* handle, u8* path, u16 mode)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Arguments:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP><b>handle</b>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Pointer storing the file handle pointer</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP><b>path</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>File path name</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP><b>mode</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Open mode</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Return value:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP COLSPAN=2>Error</TD>
+</TR></TABLE>
+<HR>
+<p>
+The file handle is the pointer to the structure that contains the information needed for file read/writes. The file specified by "path" is opened and the file handle is set in "handle".  
+
+The <b>mode</b> argument specifies the method of file access. Specify either or bitwise OR them to specify both:
+</P>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD ALIGN=LEFT VALIGN=TOP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>MFS_OPEN_READ</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;0x0001&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Open for reading</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>MFS_OPEN_WRITE</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;0x0002&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Open for writing</TD>
+</TR></TABLE>
+<P>
+For MFS_OPEN_WRITE you can specify any of the following flags.  To specify more than one flag, bitwise OR them into the <b>mode</b> argument.
+</P>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD ALIGN=LEFT VALIGN=TOP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>MFS_OPEN_UPDATE</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;0x0000&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Open in overwrite mode</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>MFS_OPEN_APPEND</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;0x0010&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Open in append mode</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>MFS_OPEN_CREATE</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;0x0020&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Create a file if there is no file</TD>
+</TR></TABLE>
+<P>
+</P>
+<p>
+<B>2.4.4  File Read/Writes</B>
+<P>
+Once a file is opened, you can use the obtained file handle to read/write that file.  You read from the file using the <tt>mfsHFread</tt> function, and you write to the file using the <tt>mfsHFwrite</tt> function.<BR>
+<HR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Function name:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP COLSPAN=2><tt>mfsHFread</tt></TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Syntax:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP COLSPAN=2>s32 mfsHFread(MfsFile handle, void* buf, s32 len)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Arguments: </TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP><b>handle</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP>File handle</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP><b>buf</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Pointer to buffer where data is stored</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP><b>len</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Size to read</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Return value:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP COLSPAN=2>The read size (Error if it is a negative value)</TD>
+</TR></TABLE>
+<HR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Function name:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP COLSPAN=2><tt>mfsHFwrite</tt></TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Syntax:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP COLSPAN=2>s32 mfsHFwrite(MfsFile handle, void* buf, s32 len)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Arguments:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP><b>handle</b>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>File handle</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP><b>buf</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Pointer to buffer where the data to be written is stored</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP><b>len</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Size to write</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Return value: </TD>
+	<TD ALIGN=LEFT VALIGN=TOP COLSPAN=2>The written size (Error if it is a negative value)
+</TD>
+</TR></TABLE>
+<HR>
+</P>
+<p>
+<B>2.4.5  Closing Files</B>
+<P>
+After access to the file is finished and there is no need for the file handle anymore, you use the <tt>mfsHFclose</tt> function to release the file handle.
+<BR>
+<HR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Function name:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP COLSPAN=2><tt>mfsHFclose</tt></TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Syntax:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP COLSPAN=2>s32 mfsHFclose(MfsFile handle)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Argument: </TD>
+	<TD ALIGN=LEFT VALIGN=TOP><b>handle</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP>File handle</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Return value:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP COLSPAN=2>Error</TD>
+</TR></TABLE>
+<HR>
+<p>
+The MFS library also has functions for such things as browsing and finding files, deleting files and changing file names.
+     All of the functions explained above are high-level library functions (mfsH*), but with MFS you can also perform lower-level operations, and a group of MFS functions that are not part of the high-level library have been prepared for that purpose. 
+</P>
+<p>
+<B>2.4.6  Errors</B>
+<P>
+A negative number returned as the return value by an MFS library function always indicates an error. Therefore, whenever a negative value is returned from an MFS function, please check the type of error and perform the appropriate error processing. 
+<P>
+<BR>
+<BR>
+<BR>
+<BR>
+</BODY>
+</HTML>

@@ -1,0 +1,662 @@
+<HTML>
+<HEAD>
+<TITLE>Chapter 3 Binary Format</TITLE>
+</HEAD>
+<BODY LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff">
+
+<font face="arial" size="-1">
+<b><font size="3">Chapter 3 Binary Format</b></font>
+<HR>
+<P>
+<b>3-16. AnimList</b>
+
+<P>
+<u>3. Anim Area</u>
+<P>
+The Anim area stores actual animation data. The format varies according to the animation type specified in the AnimGroup area. The memory maps for each type follow. 
+
+<P>
+When ANIM_TYPE_STATIC_AANIM_TYPE_FULL is specified
+
+<p>
+<table border="1" cellpadding="3" cellspacing="3">
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+anim_tag
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+this_anim_index
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+anim_size
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+float
+</td>
+<td><font face="arial" size="-1">
+translate_x
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+float
+</td>
+<td><font face="arial" size="-1">
+translate_y
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+float
+</td>
+<td><font face="arial" size="-1">
+translate_z
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+float
+</td>
+<td><font face="arial" size="-1">
+rotate_axis_x
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+float
+</td>
+<td><font face="arial" size="-1">
+rotate_axis_y
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+float
+</td>
+<td><font face="arial" size="-1">
+rotate_axis_z
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+float
+</td>
+<td><font face="arial" size="-1">
+rotate_expand_flag
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+float
+</td>
+<td><font face="arial" size="-1">
+scale_x
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+float
+</td>
+<td><font face="arial" size="-1">
+scale_y
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+float
+</td>
+<td><font face="arial" size="-1">
+scale_z
+</td></tr></table>
+
+<p>
+Figure: Anim Area Memory Map
+<br>When STATIC_AFULL is specified
+
+<p>
+<table border="1" cellpadding="3" cellspacing="3">
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 anim_tag
+</td>
+<td>
+<font face="arial" size="-1">
+Tag indicating Anim. Depending on the animation type specified, choose one of the followings. 
+<pre><font face="courier" size="2"><b>TAG_ANIM_STATIC&#9;0x000c0101
+TAG_ANIM_FULL&#9;0x000c0103</b></pre></font>
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 this_anim_index
+</td>
+<td>
+<font face="arial" size="-1">
+Index number of this Anim
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 anim_size
+</td>
+<td>
+<font face="arial" size="-1">
+Size of this Anim
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+float translate_x
+</td>
+<td>
+<font face="arial" size="-1">
+Parallel translation on X axial direction
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+float translate_y
+</td>
+<td>
+<font face="arial" size="-1">
+Parallel translation on Y axial direction
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+float translate_z
+</td>
+<td>
+<font face="arial" size="-1">
+Parallel translation on Z axial direction
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+float rotate_axis_x
+</td>
+<td>
+<font face="arial" size="-1">
+Rotation angle (radius) for local X axis</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+float rotate_axis_y
+</td>
+<td>
+<font face="arial" size="-1">
+Rotation angle (radius) for local Y axis
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+float rotate_axis_z
+</td>
+<td>
+<font face="arial" size="-1">
+Rotation angle (radius) for local Z axis
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+float rotate_expand_flag
+</td>
+<td>
+<font face="arial" size="-1">
+Expansion flag. Set default as 0x00000000
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+float scale_x
+</td>
+<td>
+<font face="arial" size="-1">
+Scale value on X axial direction
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+float scale_y
+</td>
+<td>
+<font face="arial" size="-1">
+Scale value on Y axial direction
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+float scale_z
+</td>
+<td>
+<font face="arial" size="-1">
+Scale value on Z axial direction
+</td></tr></table>
+
+<P>
+<hr size=1>
+<P>
+When ANIM_TYPE_KEY is specified
+
+<p>
+<table border="1" cellpadding="3" cellspacing="3">
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+anim_tag
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+this_anim_index
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+anim_size
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+key
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+next_key
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+interpolation_type
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+float
+</td>
+<td><font face="arial" size="-1">
+translate_x
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+float
+</td>
+<td><font face="arial" size="-1">
+translate_y
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+float
+</td>
+<td><font face="arial" size="-1">
+translate_z
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+float
+</td>
+<td><font face="arial" size="-1">
+rotate_axis_x
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+float
+</td>
+<td><font face="arial" size="-1">
+rotate_axis_y
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+float
+</td>
+<td><font face="arial" size="-1">
+rotate_axis_z
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+float
+</td>
+<td><font face="arial" size="-1">
+rotate_expand_flag
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+float
+</td>
+<td><font face="arial" size="-1">
+scale_x
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+float
+</td>
+<td><font face="arial" size="-1">
+scale_y
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+float
+</td>
+<td><font face="arial" size="-1">
+scale_z
+</td><font face="arial" size="-1">
+</tr></table>
+
+<p>
+Figure: Anim Area Memory Map
+<br>When ANIM_TYPE_KEY is specified
+
+<p>
+<table border="1" cellpadding="3" cellspacing="3">
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 anim_tag
+</td>
+<td>
+<font face="arial" size="-1">
+Indicates Anim. Set the following Tag. 
+<pre><font face="courier" size="2">
+<b>TAG_ANIM_KEY&#9;0x000c0104</b></pre></font>
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 this_anim_index
+</td>
+<td>
+<font face="arial" size="-1">
+Index number of this Anim
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 anim_size
+</td>
+<td>
+<font face="arial" size="-1">
+Size of this Anim
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 key
+</td>
+<td>
+<font face="arial" size="-1">
+Current key frame value
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 next_key
+</td>
+<td>
+<font face="arial" size="-1">
+Next key frame value
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+<a href="../chapt5/seg1.htm#INTERPOLATION_TYPE">u32 interpolation_type</a>
+</td>
+<td>
+<font face="arial" size="-1">
+Specifies the interpolation type from this key to the next. The following are current interpolation types.
+<pre><font face="courier" size="2"><b>INTERPOLATION_STATIC&#9;0x00000000
+INTERPOLATION_LINEAR&#9;0x00000001
+INTERPOLATION_SLOWIN&#9;0x00000002
+INTERPOLATION_SLOWOUT&#9;0x00000004
+INTERPOLATION_SLOW&#9;0x00000006</b></pre></font>
+<P>
+INTERPOLATION_STATIC fixes the animation data from this key frame to the next. <p>
+INTERPOLATION_LINEAR performs a linear transition on the animation data from this key to the next. <p>
+INTERPOLATION_SLOWIN smooths the transition of animation data to the next key frame. <p>
+INTERPOLATION_SLOWOUT smooths the transition of animation data from this key frame. <p>
+INTERPOLATION_SLO performs both SLOWIN and SLOWOUT. 
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+float translate_x
+</td>
+<td>
+<font face="arial" size="-1">
+Parallel translation on X axial direction
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+float translate_y
+</td>
+<td>
+<font face="arial" size="-1">
+Parallel translation on Y axial direction
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+float translate_z
+</td>
+<td>
+<font face="arial" size="-1">
+Parallel translation on Z axial direction</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+float rotate_axis_x
+</td>
+<td>
+<font face="arial" size="-1">
+Rotation angle (radius) for local X axis
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+float rotate_axis_y
+</td>
+<td>
+<font face="arial" size="-1">
+Rotation angle (radius) for local Y axis
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+float rotate_axis_z
+</td>
+<td>
+<font face="arial" size="-1">
+Rotation angle (radius) for local Z axis
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+float rotate_expand_flag
+</td>
+<td>
+<font face="arial" size="-1">
+Expansion flag. Set default as 0x00000000
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+float scale_x
+</td>
+<td>
+<font face="arial" size="-1">
+Scale value on X axial direction
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+float scale_y
+</td>
+<td>
+<font face="arial" size="-1">
+Scale value on Y axial direction
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+float scale_z
+</td>
+<td>
+<font face="arial" size="-1">
+Scale value on Z axial direction
+</td></tr></table>
+
+<P>
+<hr size=1>
+When ANIM_TYPE_BILLBOARD_OBJ is specified
+<p>
+<table border="1" cellpadding="3" cellspacing="3">
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+anim_tag
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+this_anim_index
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+anim_size
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+lookat_obj_index
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+upper_obj_index
+</td></tr></table>
+
+<p>
+Figure: Anim Area Memory Map
+<br>
+When ANIM_TYPE_BILLBOARD_OBJ is specified
+
+<p>
+<table border="1" cellpadding="3" cellspacing="3">
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 anim_tag
+</td>
+<td>
+<font face="arial" size="-1">
+Tag indicating Anim. Specify the following tag. 
+<pre><font face="courier" size="2"><b>TAG_ANIM_BILLBOARD_OBJ&#9;0x000c0105</b></pre>
+</font></td>
+</tr>
+
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 this_anim_index
+</td>
+<td>
+<font face="arial" size="-1">
+Index number of this Anim
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 anim_size
+</td>
+<td>
+<font face="arial" size="-1">
+Size of this Anim.
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 lookat_obj_index
+</td>
+<td>
+<font face="arial" size="-1">
+Index number in ObjList. Determines the direction of the local Z axis.
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 upper_obj_index
+</td>
+<td>
+<font face="arial" size="-1">
+Index number in ObjList. Determines the direction of the local Y axis.
+</td></tr></table>
+<p>
+
+
+<hr>
+
+<p align="right"><a href="../index.htm">
+<img src="../../../gif/index.gif"
+border="0" width="65" height="17"></a>
+&nbsp; <a href="./seg17.htm">
+<img src="../../../gif/next.gif"
+border="0" width="65" height="17"></a></p>
+
+</body>
+</html>
+
+

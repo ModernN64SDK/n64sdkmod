@@ -1,0 +1,76 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 11 - RSP Graphics Programming</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. 
+             MAP 11/18/99 edited content, updated format-->
+</head>
+
+<h1>11.2 Display List Processing </h1>
+
+<p>Understanding the basics of the RSP <a href="../../keywords/index/data/graphics.htm#display list" target="keywords">display list</a> processing is necessary to construct efficient, compact display lists for an application.</p>
+
+<p>The display list (or command list) can be thought of as a hierarchical structure, up to 10 levels deep.   A display list may contain a pointer to another display list, and so on.  The RSP processes the display list using a <A target="keywords" HREF="../../keywords/index/data/system.htm#stack">stack</A>, <A target="keywords" HREF="../../keywords/index/data/system.htm#push">pushing</A> and <A target="keywords" HREF="../../keywords/index/data/system.htm#pop">popping</a> the current display list pointer.</p>
+
+<p>For animation, you should "<a href="../../keywords/index/data/graphics.htm#double buffer" target="keywords">double buffer</a>" parts of the display list; <a href="../../keywords/index/data/graphics.htm#rendering" target="keywords">rendering</a> one frame while the data for the next frame is updated.  In this case, only the minimum
+amount of data need be duplicated; only the data which will change for each frame.  Swapping between doubled buffers is efficiently done by changing the segment base addresses (and organizing your display list appropriately).</p>
+
+<p>During computation by the RSP, all display lists and their data must remain in the same location until the RSP is finished.  This sounds obvious, but is a very common bug, usually the result of incorrect usage of double-buffering techniques.  In addition, if the RSP task is interrupted (please see <a href="../pro08/08-08.htm#01">Section 8.8.1, "Signal Processor (SP) Functions"</a>,
+all of the data must remain in the same location when/if the task is restarted.</p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="01"><h2>11.2.1 Connecting Display Lists </h2></a>
+
+<p>Hierarchical display list connection can be made with the <a href="../../n64man/gsp/gSPDisplayList.htm">gsSPDisplayList()</a> macro.  The current display list location is pushed on the display list stack and processing begins
+with the new display list.  </p>
+
+<table border=1 align="center">
+  <caption><a name="t11-01"><strong>Table 11-1 <a href="../../n64man/gsp/gSPDisplayList.htm">gsSPDisplayList</a>(Gfx *dl)</strong></a></caption>
+  <tr><th>Parameter</th><th>Values</th></tr>
+  <tr><td align="center">dl</td><td>pointer to the display list to attach</td></tr>
+</table>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="02"><h2>11.2.2 Branching Display Lists</h2></a>
+
+<p>A display list branch without a push using the <a href="../../n64man/gsp/gSPBranchList.htm">gsSPBranchList()</a> macro  allows you to "chain" together fragments of display lists for more efficient memory utilization.</p>
+
+<table border=1 align="center">
+  <caption><a name="t11-02"><strong>Table 11-2 <a href="../../n64man/gsp/gSPBranchList.htm">gsSPBranchList</a>(Gfx *dl)</strong></a></caption>
+  <tr><th>Parameter</th><th>Values</th></tr>
+  <tr><td align="center">dl</td><td>pointer to the display list to attach</td></tr>
+</table>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="03"><h2>11.2.3 Ending Display Lists </h2></a>
+
+<p>All display lists must terminate with the <a href="../../n64man/gsp/gSPEndDisplayList.htm">gsSPEndDisplayList</a> command. </p>
+
+<table border=1 align="center">
+  <caption><a name="t11-03"><strong>Table 11-3 <a href="../../n64man/gsp/gSPEndDisplayList.htm">gsSPEndDisplayList</a>(void)</strong></a></caption>
+  <tr><th>Parameter</th><th>Values</th></tr>
+  <tr><td align="center">none</td><td>none</td></tr>
+</table>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="04"><h2>11.2.4 A Few Words About Optimal Display Lists </h2></a>
+
+<p>The display list processor running on the RSP caches display list commands in groups of about 32.  This means the optimal display list size is a multiple of 32.  A display list of 33 commands (or 65, etc.) would require the display list cache to be refilled during processing, possibly causing a wait state (depending on the DMA engine activity).  Obviously
+not all display lists can keep the list processor running 100% optimally, but it is something to keep in mind when tuning your application. </p>
+
+<p>Another form of display lists which cause less than optimal processing are display lists that look like the following: 
+</p>
+
+<dl>
+  <dt><a name="f11-01-00"></a>
+  <dd><img alt="[Figure]" src="gif/f11-01-00.gif">
+</dl>
+
+<p>Since the display list engine is stack-based, a display list that has lots of unnecessary indirect pointers will cause lots of unnecessary pushes and pops, which will bring about an increase of cost. </p>
+
+<p>Constructs like this are unavoidable at times, for example, when sharing <a href="../../keywords/index/data/graphics.htm#geometry" target="keywords">geometries</a> among objects. Therefore, when you have a choice try not to group indirect display list pointers together. </p>
+
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+</body> </html>

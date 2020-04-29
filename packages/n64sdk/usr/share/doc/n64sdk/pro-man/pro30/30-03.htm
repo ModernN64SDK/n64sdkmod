@@ -1,0 +1,42 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 30 - Video Interface (VI)</title>
+<!-- Editor: Paula W
+      Notes: Converted from Word format, performed spell check.
+             MAP- 10/26/99 edited content, updated format -->
+</head>
+
+<H1>30.3 Programming Techniques for MPAL Format</H1>
+<P>
+Techniques for programming for the MPAL format will be described here.  MPAL is the television system format for Brazil.  If the country the software was designed for is America, make the software compatible with not only NTSC, but MPAL as well.  See <A href="./30-01.htm#03-01">Section 30.1.3.1  "Supported Television System Formats"</A> for details on system formats. 
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H2><A name="01"></A>30.3.1 Initialization Procedure</H2>
+<P>
+MPAL and NTSC will automatically be identified by <tt>osTvType</tt>, and the video interface will be set to MPAL or NTSC.  There are no particular requirements as to the timing for this in the program. See <a href="../../caution/caution/index5.htm">Programming Cautions, Section 5 "Video Mode"</a> for details. 
+</P>
+<P>
+<b>Example</b>
+<pre>
+if ( osTvType == 1 ){
+    osViSetMode( &osViModeNtscLpn1 );
+}
+else if ( osTvType ==2 ){
+    osViSetMode( &osViModeMpalLpn1 );
+}
+else{
+    while(1);	/* Stop application */
+}
+</pre>
+<P>
+<b>Note:</b>  In this example, when the system format of the country for which the software was designed for is not MPAL or NTSC, the program goes into an infinite loop and the game will not start.  Also, please note that the argument for <tt>osViSetMode</tt> will differ depending on the mode being used. 
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+</BODY>
+</HTML>

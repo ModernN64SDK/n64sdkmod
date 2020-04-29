@@ -1,0 +1,341 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN"
+PWC 2/23/00>
+<HTML>
+<HEAD><link rel="stylesheet" type="text/css" href="../style.css">
+<TITLE>N64 Sound Tools</TITLE>
+</HEAD>
+
+<BODY>
+
+
+<A name="index"></a>
+<IMG src="../../gif/n64_logo2.gif" height="21" width="136">
+
+<h3><FONT color="#FF8000">Q&A</FONT>-  N64 Sound Tools</h3>
+
+<P>
+
+<TABLE border="0">
+  <TR>
+    <TD valign="top" width="50"><A href="soundtools.htm#01"><b>QA1</b></A></TD>
+    <TD>What has changed in Ver. 3.14?</TD>
+  </TR>
+  <TR>
+    <TD valign="top" width="50"><A href="soundtools.htm#02"><b>QA2</b></A></TD>
+    <TD>When a song (sequence) is performed, the immediately previous sound is overwritten and a new sound is played...</TD>
+  </TR>
+  <TR>
+    <TD valign="top" width="50"><A href="soundtools.htm#03"><b>QA3</b></A></TD>
+    <TD>Sometimes, even in Full Release mode, the sound is cut off midway...</TD>
+  </TR>
+  <TR>
+    <TD valign="top" width="50"><A href="soundtools.htm#04"><b>QA4</b></A></TD>
+    <TD>Can I convert back from sng to mid?</TD>
+  </TR>
+  <TR>
+    <TD valign="top" width="50"><A href="soundtools.htm#05"><b>QA5</b></A></TD>
+    <TD>Is it OK if there is more than one sampling frequency for a sample waveform?</TD>
+  </TR>
+  <TR>
+    <TD valign="top" width="50"><A href="soundtools.htm#06"><b>QA6</b></A></TD>
+    <TD>I've tuned a sample, but it isn't reflected in the playback...</TD>
+  </TR>
+  <TR>
+    <TD valign="top" width="50"><A href="soundtools.htm#07"><b>QA7</b></A></TD>
+    <TD>Cannot completely delete data in Sound Effect Editor...</TD>
+  </TR>
+  <TR>
+    <TD valign="top" width="50"><A href="soundtools.htm#08"><b>QA8</b></A></TD>
+    <TD>What is the time unit (resolution) in the tools?</TD>
+  </TR>
+  <TR>
+    <TD valign="top" width="50"><A href="soundtools.htm#09"><b>QA9</b></A></TD>
+    <TD>I'd like more details about the various types of files saved...</TD>
+  </TR>
+  <TR>
+    <TD valign="top" width="50"><A href="soundtools.htm#10"><b>QA10</b></A></TD>
+    <TD>What is the priority order of the PAN settings?</TD>
+  </TR>
+</TABLE>
+
+<HR>
+
+<P>
+<A name="01"><FONT  color="#FF0000"><b>Q1</b></FONT></A>
+<b> I'm currently using Version 2.0, but what is different in Version 3.14?</b>
+
+
+<P>
+<FONT   color="#008000"><b>A1</b></FONT>
+The newest N64 Sound Tools are included in the Developers Toolkit version 4.2.  Please refer to the release notes in the Developers Toolkit version 4.2.
+
+
+<P align="right">
+<A href="soundtools.htm#index">top</A>
+
+
+<HR>
+
+<P>
+<A name="02"><FONT   color="#FF0000"><b>Q2</b></FONT></A>
+<b> When a song (sequence) is performed, the immediately previous sound is overwritten and a new sound is played... </b>
+
+
+<P>
+<FONT  color="#008000"><b>A2</b></FONT>
+ This happens when the maximum number of channels (number of physical voices) isn't high enough. 
+
+<P>
+In other words, when the next sound starts to play immediately after a certain sound is finished, two sounds are actually being used even though only one sound can be played at a time.  This is because the release of the first sound is still being played.  In this kind of situation, the first sound is suppressed by cutting off its release. 
+
+<P>
+If you notice a noise when the release is partially truncated, this can be accommodated by changing that part to an envelope with short release. 
+
+<p>
+When set to the "Full Release" mode, this release-shortening process will not occur since the maximum number of channels is increased instead. Similar accommodations, such as changing the release to a short envelope, etc., become necessary when the number of channels is increased. 
+
+<p>
+Since the decision whether or not to use the Full Release mode will differ depending on the circumstances, just use the method you like best. 
+
+
+<P align="right">
+<A href="soundtools.htm#index">top</A>
+
+
+<HR>
+
+<P>
+<A name="03"><FONT  color="#FF0000"><b>Q3</b></FONT></A>
+<b> I am currently using the Full Release mode, but the sound is still sometimes cut off.  What do you think is causing this?</b>
+
+
+<P>
+<FONT   color="#008000"><b>A3</b></FONT>
+ 24 sounds can be played simultaneously when playing back using the Tools.  When the number of sounds is more than 24, some sounds will not be played.
+
+<P>
+If the number of channels is increased in only one portion, reduce the number of sounds being played at one time either by shortening the release times somewhat for the sounds being played, or by changing the envelope to short release for that sound (restore the envelope with the subsequent sound). 
+
+
+<P align="right">
+<A href="soundtools.htm#index">top</A>
+
+
+<HR>
+
+<P>
+<A name="04"><FONT  color="#FF0000"><b>Q4</b></FONT></A>
+<b> Can I convert a sng file that was saved with the N64 Sequencer back into a .mid file of MIDI?</b>
+
+
+<P>
+<FONT   color="#008000"><b>A4</b></FONT>
+There is no such function. 
+
+<P>
+Since .sng files are specialized to function on the N64, in one aspect they are made up of more detailed expressions than for MIDI, and a great deal of those data would have to be deleted to convert to MIDI data.  In addition, if you want to conform to the GM standard, the process would be laborious as you would have to specify to which tone number each sample data would be assigned one by one.  Because of the above points, converting these files back is probably not very practical. 
+
+
+<P align="right">
+<A href="soundtools.htm#index">top</A>
+
+
+<HR>
+
+<P>
+<A name="05"><FONT  color="#FF0000"><b>Q5</b></FONT></A>
+<b> Is it OK if there are various sampling frequencies in the sample waveforms combined in a sample bank.  Or am I going to have to match them to the playback frequency?</b>
+
+
+<P>
+<FONT   color="#008000"><b>A5</b></FONT>
+ Any sampling frequencies can be mixed together.  They can be higher than or lower than the playback frequency.  You can adjust them in the "Sample Tuning" dialog box. 
+
+<P>
+However, please note that a sample cannot be played one octave higher than the note before tuning.
+
+<p>
+This tuning operation can be done by ear, but it can also be calculated using the following formula. 
+
+
+<font face="courier" size="2">
+<blockquote><pre>Amount of shift = -12 * log2(Playback frequency / Sampling frequency)
+         = +12 * log10(Sampling frequency / Playback frequency ) / log10(2)</pre></blockquote></font>
+
+<p>
+You could think of this as "subtracting" the value calculated by the equation in "<a href="../../pro-man/pro20/20-04.htm#06">Section 20.4.6</a>", in the N64  Online Programming Manual. 
+
+<p>
+For instance, if the playback frequency is 32000Hz and the sampling frequency is 22050Hz, the shift value is -6.4475...  In other words, you can set coarse=-6 and fine=-45.  Just be sure to check the tone and make fine adjustments by ear. 
+
+<P align="right">
+<A href="soundtools.htm#index">top</A>
+
+
+<HR>
+
+<P>
+<A name="06"><FONT   color="#FF0000"><b>Q6</b></FONT></A>
+<b> I adjusted the pitch of a tone with "Sample Tuning", but it stays at its original pitch even when I take it into the MUS library... </b>
+
+
+<P>
+<FONT  color="#008000"><b>A6</b></FONT>
+ When the parameters pertaining to a sample bank (displayed in the Sample Bank Editor) have been changed, it is necessary to  re-compile it.  Open the Sample Bank Editor and execute "Compile Bank". 
+
+
+<P align="right">
+<A href="soundtools.htm#index">top</A>
+
+
+<HR>
+
+<P>
+<A name="07"><FONT   color="#FF0000"><b>Q7</b></FONT></A>
+<b> After adding a new Sound Effect Name in the Sound Effect Editor, when trying to remove unnecessary data, it cannot be completely deleted...</b>
+
+
+<P>
+<FONT  color="#008000"><b>A7</b></FONT>
+ This problem occurs when re-editing data which were created with an older version of Tools.
+
+<P>
+This should be fixed by outputting the data once as an .sfx file and then re-reading it as the new data.  If this still doesn't work, recreate new data. 
+
+
+<P align="right">
+<A href="soundtools.htm#index">top</A>
+
+
+<HR>
+
+<P>
+<A name="08"><FONT  color="#FF0000"><b>Q8</b></FONT></A>
+<b> What is the time unit for the song resolution or sound effect length, etc.? </b>
+
+
+<P>
+<FONT  color="#008000"><b>A8</b></FONT>
+ When the song tempo is 120, 1 second = 96.  In other words, the resolution is quarter note = 48.
+
+<P>
+It is fixed for sound effects at 1 second = 96. 
+
+
+<P align="right">
+<A href="soundtools.htm#index">top</A>
+
+
+<HR>
+
+<P>
+<A name="09"><FONT  color="#FF0000"><b>Q9</b></FONT></A>
+<b> Data can be saved (exported) in a variety of file formats, but how are the various saved files related?</b>
+
+
+<P>
+<FONT  color="#008000"><b>A9</b></FONT>
+ The <b>extensions</b> of the various files are given below with descriptions of the corresponding files. 
+
+
+<P>
+<b>Project Files</b>
+
+<dl>
+  <dt>Extension: <b>.sng</b>
+  <dd>All data in Tools which contain song (sequence) data.  Even if the data only include sound effects, save them in this format.
+      <br><br>
+</dl></dd>
+<P>
+<br>
+<b>N64 Files</b>
+
+<dl>
+  <dt>Extension: <b>.bin</b>
+  <dd>Song data for N64.
+      <br><br>
+  <dt>Extension: <b>.ptr</b>
+  <dd>Sample (pointer) bank data for N64. 
+      <br><br>
+  <dt>Extension: <b>.wbk</b>
+  <dd>Sample (wave) bank data for N64. 
+      <br><br>
+  <dt>Extension: <b>.bfx</b>
+  <dd>Sound effect bank data for N64. 
+      <br><br>
+</dl>
+<P>
+<br>
+<b>Export/Import Files</b>
+
+<dl>
+  <dt>Extension: <b>.mid (import only)</b>
+  <dd>Format 0 or 1 standard MIDI file. 
+      <br><br>
+  <dt>Extension: <b>.sts</b>
+  <dd>System information data.  Use only when copying envelope, keyboard map, and drum map information to other data. 
+      <br><br>
+  <dt>Extension: <b>.bnk</b>
+  <dd>Sample bank data.  Use only when copying sample bank information to other data. 
+      <br><br>
+  <dt>Extension: <b>.env</b>
+  <dd>Envelope data.  Use only when copying envelope information to other data. 
+      <br><br>
+  <dt>Extension: <b>.dru</b>
+  <dd>Drum map data.  Use only when copying drum map information to other data. 
+      <br><br>
+  <dt>Extension: <b>.key</b>
+  <dd>Keyboard map data.  Use only when copying keyboard map information to other data. 
+      <br><br>
+  <dt>Extension: <b>.sfx</b>
+  <dd>Sound effect data.  Use only when copying sound effect information to other data. 
+      <br><br>
+</dl>
+<P>
+<br>
+<b>Internal Files</b>
+
+<dl>
+  <dt>Extension: <b>.sbc</b>
+  <dd>Internally used sample bank data.  Use when performing in Tools. 
+      <br><br>
+</dl>
+
+<P align="right">
+<A href="soundtools.htm#index">top</A>
+
+
+<HR>
+
+<P>
+<A name="10"><FONT  color="#FF0000"><b>Q10</b></FONT></A>
+<b> There are several places where Pan is set, but which are effective? </b>
+
+
+<P>
+<FONT  color="#008000"><b>A10</b></FONT>
+ Please refer to the following: 
+
+
+<ul>
+  <li>Set the pan in the Current Module at the head of the module. 
+<P>
+  <li>Set the Note Effects (Musical Effects) pan at the corresponding note. 
+<P>
+  <li>Set the Key Map pan for all subject notes. 
+<P>
+  <li>The previous status will be applied to all notes for which a pan is not specifically set. 
+</ul>
+
+<P>
+In other words, considering a situation in which you wish to set the pan only for a certain range, if the pan is turned off in the Key Map, that pan automatically will be applied to all subsequent notes, and the pan can be set for the first note in the range and the note after the last note of the range.  In contrast, if you wish to set the pan with the Key Map, the pan must be set for all notes within that range. 
+
+
+<P align="right">
+<A href="soundtools.htm#index">top</A>
+
+
+<HR>
+
+</BODY>
+</HTML>

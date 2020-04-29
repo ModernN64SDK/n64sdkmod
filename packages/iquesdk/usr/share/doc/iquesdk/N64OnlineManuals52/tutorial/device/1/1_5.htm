@@ -1,0 +1,202 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Device-Chapter 1  How to Use Devices Connected to the SI</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/21/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<FONT style="font-size:12pt"><B>1.5  The Rumble Pak</B></FONT>
+<br>
+<P>
+The Rumble Pak, like the Controller Pak, is a peripheral device that connects to the joyport of the Standard Controller.  It vibrates the game player's Controller, producing tactile sensations of impacts as feedback during game play.<br><br>
+     The N64 OS has only three Rumble Pak functions: to initialize, start vibration, and end vibration.  Thus, in order to express the strength of the vibrations you need to repeatedly turn the Rumble Pak on and off over a short period of time.<br><br>  
+     This requires quite a bit of work on the part of the programmer, so in order to decrease this the NuSystem provides extra functions to specify the strength and duration of continued vibration for controlling the Rumble Pak:
+</P>
+<b>nuContRmbMgrInit</b><br>
+Initializes the Rumble Pak Manager
+<br><br>
+<b>nuContRmbCheck</b><br>
+Checks the Rumble Pak
+<br><br>
+<b>nuContRmbStart</b><br>
+Starts vibrating the Rumble Pak
+<bR><bR>
+<b>nuContRmbModeSet</b><br>
+Sets the operation mode of the Rumble Pak
+<bR><bR>
+<b>nuContRmbForceStop</b><br>
+Forces the Rumble Pak to stop
+<bR><bR>
+<b>nuContRmbForceStopEnd</b><br>
+Releases the forced stop of the Rumble Pak
+<bR><bR>
+<b>nuContRmbSearchTimeSet</b><br>
+Sets Rumble Pak check time
+<P>
+</P>
+<p>
+<B>1.5.1  Initializing the Rumble Pak</B>
+<P>
+ Make sure to check the Rumble Pak with the <tt>nuContRmbCheck</tt> function before operating the device.  The return value for this function is the return value of the N64 OS <tt>osMotorInit</tt> function.  If some device other than the Rumble Pak is inserted, PFS_ERR_DEVICE is returned.  
+<BR>
+<HR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Function name: </TD>
+	<TD ALIGN=LEFT VALIGN=TOP COLSPAN=2><tt>nuContRmbCheck</tt></TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Syntax:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP COLSPAN=2>s32 nuContRmbCheck(u32 contNo)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Arguments:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP><b>contNo</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Controller number</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Return Value:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP COLSPAN=2>The value returned by <tt>osMotorInit</tt></TD>
+</TR></TABLE>
+<HR>
+<P>
+  In the NuSystem there is the operation mode for the Rumble Pak.  To set this, use the <tt>nuContRmbModeSet</tt> function.  <BR>
+<HR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Function name: </TD>
+	<TD ALIGN=LEFT VALIGN=TOP COLSPAN=2><tt>nuContRmbModeSet</tt></TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Syntax:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP COLSPAN=2>void nuContRmbModeSet(u32 contNo, u8 mode)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Arguments:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP><b>contNo</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Controller number</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP><b>mode</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Rumble Pak operation mode
+	<TABLE BORDER=0><TR>
+		<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;<b>NU_CONT_RMB_MODE_DISABLE</b></TD>
+		<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;Disabled</TD>
+	</TR><TR>
+		<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;<b>NU_CONT_RMB_MODE_ENABLE</b></TD>
+		<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;Enabled</TD>
+	</TR><TR>
+		<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;<b>NU_CONT_RMB_MODE_AUTORUN</b></TD>
+		<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;Auto detect</TD>
+	</TR></TABLE>
+</TD><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Return Value:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP COLSPAN=2>None</TD>
+</TR></TABLE>
+<HR>
+<p>
+  When NU_CONT_RMB_MODE_DISABLE is specified, use of the Rumble Pak is prohibited.  By default, the Rumble Pak is disabled for every Controller.  <br><br>
+     When NU_CONT_RMB_MODE_AUTORUN is specified, periodic checks are made to see whether or not a Rumble Pak is inserted.  If it is, it is enabled. By using this mode, you can deal with situations where the user inserts a Rumble Pak during game play, or the device stops working temporarily because of a poor connection.  
+</P>
+<P>
+The period between checks of the Rumble Pak is set with the <tt>nuContRmbSearchTimeSet</tt> function.  
+<BR>
+<HR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Function name: </TD>
+	<TD ALIGN=LEFT VALIGN=TOP COLSPAN=2><tt>nuContRmbSearchTimeSet</tt></TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Syntax:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP COLSPAN=2>void nuContRmbSearchTimeSet(u32 frame)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Arguments:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP><b>frame</b>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>The time between checks (in frames)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Return Value:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP COLSPAN=2>None</TD>
+</TR></TABLE>
+<HR>
+<p>
+  The default value for this time period is set at 300 frames (5 seconds).  The Rumble Pak Manager does not check all four Controllers during the same frame, so the burden of performing this check does not happen all at once. 
+</P>
+<p>
+<B>1.5.2  Controlling the Rumble Pak</B>
+<P>
+ To vibrate the Rumble Pak, you use the <tt>nuContRmbStart</tt> function. <BR>
+<HR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Function name: </TD>
+	<TD ALIGN=LEFT VALIGN=TOP COLSPAN=2><tt>nuContRmbStart</tt></TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Syntax:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP COLSPAN=2>void nuContRmbStart(u32 contNo, u16 freq, u16 frame)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Arguments:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP><b>contNo</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Controller number</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP><b>freq</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Frequency (1-256)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>1 = 1 pulse per 256 frames.  256 = Continuous operation.</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP><b>frame</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Duration of vibration (the number of frames)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Return Value:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP COLSPAN=2>None</TD>
+</TR></TABLE>
+<HR>
+<p>
+    The <b>freq</b> argument specifies the frequency of time the vibration motor is ON.  For example, if <b>freq</b> is set to 1 the motor is ON once every 256 frames.  If it is set to 128 the motor is ON once every 2 frames.  If it is set to 256 the motor is in continuous motion.  The larger the value set in <b>freq</b> the stronger the vibration felt by the player.  
+     The <b>frame</b> argument specifies the amount of the time that the Rumble Pak vibrates, in units of frames.  
+     When the mode is not set to auto detect in <tt>nuContRmbModeSet</tt> you must execute the <tt>nuContRmbCheck</tt> function before calling this function.  
+</P>
+<p>
+<B>1.5.3  Forcing the Rumble Pak to Stop</B>
+<P>
+ Since the <tt>nuContRmbStart</tt> function, which starts the Rumble Pak, also specifies how long to vibrate the device, it is normally unnecessary to stop the vibration while a game is progressing forward.  However, when a pause process, reset process or a screen switch is performed you must stop the vibrations immediately as per the rules in the "Programming Cautions."<br><br>
+
+     To force the Rumble Pak to stop, use the <tt>nuContRmbForceStop</tt> function.  
+</P>
+<P>
+<HR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Function name: </TD>
+	<TD ALIGN=LEFT VALIGN=TOP><tt>nuContRmbForceStop</tt></TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Syntax:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>void nuContRmbForceStop(void)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Arguments:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>None</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Return Value:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>None</TD>
+</TR></TABLE>
+<HR>
+</P>
+<P>
+  Once this function is executed, the Rumble Pak start function <tt>nuContRmbStart</tt> remains invalid until the <tt>nuContRmbForceStopEnd</tt> function is called to release the forced stop.  <BR>
+<HR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Function name: </TD>
+	<TD ALIGN=LEFT VALIGN=TOP><tt>nuContRmbForceStopEnd</tt></TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Syntax:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>void nuContRmbForceStopEnd(void)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Arguments:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>None</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Return Value:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>None</TD>
+</TR></TABLE>
+<HR>
+</P>
+<BR>
+<BR>
+<BR>
+</BODY>
+</HTML>

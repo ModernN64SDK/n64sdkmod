@@ -1,0 +1,134 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN"
+PWC 2/21/00>
+<HTML>
+<HEAD><link rel=stylesheet type="text/css" href="gif/style.css">
+<TITLE>NTSC/PAL/MPAL</TITLE>
+</HEAD>
+
+<BODY>
+
+<P>
+<A name="index"></A>
+
+<IMG src="../../gif/n64_logo2.gif" height="21" width="136"> 
+
+<h3><FONT color="#FF8000">Q&A</b></font>- NTSC / PAL / MPAL</h3>
+
+<P>
+<TABLE border="0">
+  <TR>
+    <TD valign="top" width="50"><A href="pal.htm#01"><b>QA1</b></A></TD>
+    <TD>How do I  develop games for PAL?</TD></TR>
+  <TR>
+    <TD valign="top" width="50"><A href="pal.htm#02"><b>QA2</b></A></TD>
+    <TD>The PAL version of nosPakMenu doesn't run well...</TD></TR>
+  <TR>
+    <TD valign="top" width="50"><A href="pal.htm#03"><b>QA3</b></A></TD>
+    <TD>What's the difference between MPAL and PAL?</TD></TR>
+  <TR>
+    <TD valign="top" width="50"><A href="pal.htm#04"><b>QA4</b></A></TD>
+    <TD>How do I develop MPAL applications?</TD></TR>
+  <TR>
+    <TD valign="top" width="50"><A href="pal.htm#05"><b>QA5</b></A></TD>
+    <TD>How do I determine on the software side whether the Control Deck is the Japan version or the North America version?</TD></TR>
+  <TR>
+    <TD valign="top" width="50"></TD>
+    <TD></TD></TR>
+<TR>
+    <TD valign="top" width="50"><a href="pal.htm#06"><b>QA6</b></a></TD>
+    <TD>Reconfiguration of Emulator Board for PAL. (199909)</TD></TR>
+  <TR>
+    <TD valign="top" width="50"><a href="pal.htm#07"><b>QA7</b></a></TD>
+    <TD>How to obtain the library for changing domestic specifications to overseas specifications. (199912)</TD></TR>
+</TABLE>
+
+<HR>
+<P>
+<A name="01"><FONT  color="#FF0000"><b>Q1</b></FONT></A>
+<b> How do I develop games for PAL?</b>
+
+<P>
+<FONT  color="#008000"><b>A1</b></FONT> Refer to <A href="../../info/pal/palindex.htm">PAL Development Methods</A>.
+
+<P align="right">
+<A href="pal.htm#index">top</A>
+ 
+<HR>
+<P>
+<A name="02"><FONT  color="#FF0000"><b>Q2</b></FONT></A>
+<b> The PAL version of noPakMenu doesn't run well...</b>
+
+<P>
+<FONT  color="#008000"><b>A2</b></FONT> There is a place in this sample where the video mode is switched to NTSC mode by <A href="../../n64man/os/osViSetMode.htm">osViSetMode</A>.  Try it again after correcting this. 
+
+<P align="right">
+<A href="pal.htm#index">top</A>
+
+<HR>
+<P>
+<A name="03"><FONT color="#FF0000"><b>Q3</b></FONT></A>
+<b> What is the difference between the PAL version and M_PAL version? </b>
+
+<P>
+<FONT color="#008000"><b>A3</b></FONT>  PAL is the television reception format for Europe, Australia, and some of Southeast Asia, and has 625 scan lines and a 50Hz scanning frequency.  NTSC scans 525 lines at 60Hz.  M-PAL  is the television reception format for Brazil, and is the PAL format with 525 scan lines scanned at 60Hz.  The differences between PAL and NTSC are differences in the way color data are placed in the signal, making them incompatible. 
+ 
+<P align="right">
+<A href="pal.htm#index">top</A>
+
+<HR>
+<P>
+<A name="04"><FONT  color="#FF0000"><b>Q4</b></FONT></A>
+<b> How do I develop MPAL applications?</b>
+
+<P>
+<FONT   color="#008000"><b>A4</b></FONT> See <A href="../../info/mpal/mpal.htm">MPAL Development Methods</A>.
+
+<P align="right">
+<A href="pal.htm#index">top</A>
+ 
+<HR>
+<P>
+<A name="05"><FONT  color="#FF0000"><b>Q5</b></FONT></A>
+<b> Is there a method for identifying from the software whether the N64 Control Deck which is currently operating is a Japan version or a North American version?</b>
+
+<P>
+<FONT   color="#008000"><b>A5</b></FONT>  There is no way of telling from the software whether the Control Deck is a Japanese or North American version. The only difference between the two is the shape of the Game Pak housing. 
+ 
+<P align="right">
+<A href="pal.htm#index">top</A>
+
+<HR>
+<P>
+<A name="06"><FONT color="#FF0000"><b>Q6</b></FONT></A>
+<b>I switched the crystal resonator and resistor on the emulator board as shown in the "N64 All Manuals", but the program that (I thought) I had made PAL compatible displayed in black and white on the screen when I ran it. 
+What do you suppose could be the cause?
+Naturally, the <a href="../../n64man/os/osTvType.htm">osTvType</a> was set to OS_TV_PAL and the VI was set to FPAL using the <a href="../../n64man/os/osViSetMode.htm">osViSetMode</a> function.</b>
+
+<P>
+<FONT color="#008000"><b>A6</b></FONT> 
+It sounds as if you are using a multi-format television. 
+There are individual differences in the output of the emulator boards and it is possible that the PAL color signals are not getting output properly. 
+<P>If you have INDY, then set the video settings panel to "PAL" and check it using the INDY video input.  
+If it operates properly this way, then there will be no problems with a PAL unit.
+<P>Apparently, this board was originally configured for NTSC, and when reconfigured for PAL there can be compatibility problems with multi-format televisions.  If you are having problems with your board or you have any questions, please contact us at, "support@noa.com".
+<P align="right">
+<A href="pal.htm#index">top</A>
+
+<HR>
+<P>
+<A name="07"><FONT color="#FF0000"><b>Q7</b></FONT></A>
+<b>I am localizing software for use abroad that was developed in Japan.  Where can I get the libraries for that?
+I had an e-mail from a US manufacturer that said I could get the libraries from Kyoto.  </b>
+
+<P>
+<FONT color="#008000"><b>A7</b></FONT> 
+The N64OS libraries (libultra.a, libgultra.a, libultra_rom.a) are the same all over the world, so there are no localized libraries. 
+(However, when using the libraries in the Controller Pak menu in demos/nospak, you will need to change the nospak_jpn.a to nospak.a.) 
+<P>The overseas edition of the development kit (the CD set containing the libraries and manuals, the overseas edition ROM submission procedure, etc.), as mentioned in other questions, can be obtained through licensees who have contracts with the local Nintendo subsidiary.
+<P align="right">
+<A href="pal.htm#index">top</A>
+
+<HR>
+<P>
+</BODY>
+</HTML>

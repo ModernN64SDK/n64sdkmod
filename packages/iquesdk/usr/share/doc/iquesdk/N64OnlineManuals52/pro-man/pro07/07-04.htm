@@ -1,0 +1,33 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 7 - Operating System Functionality</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check.-->
+</head>
+
+<h1>7.4 Thread State </h1>
+
+<p>A <A target="keywords" HREF="../../keywords/index/data/system.htm#thread">thread</A> is always in one of four states. The state of the thread is maintained in its thread data structure for use by the operating system. A good understanding of thread state is helpful in designing your application, since it leads to a better understanding of how the operating system will behave. </p>
+
+<dl>
+  <dt><strong>Running</strong>
+  <dd>Although the OS has many threads, only one thread in the system is in running state at a time. This is the thread that is currently executing on the CPU. 
+</dl>
+<dl>
+  <dt><strong>Runnable</strong>
+  <dd>A thread in runnable state is ready to run, but it is not running because some other thread has higher priority. It will gain control of the CPU once it becomes the highest-priority runnable thread. 
+</dl>
+<dl>
+  <dt><strong>Stopped</strong>
+  <dd>A stopped thread will not be scheduled for execution. Newly created threads are in this state. Threads are frequently stopped by the debugger, and an application may stop a thread at any time. Stopped threads become runnable via an <a href="../../n64man/os/osStartThread.htm">osStartThread</a> <a target="keywords" HREF="../../keywords/index/data/system.htm#system call">system call</a>.
+</dl>
+
+<dl>
+  <dt><strong>Waiting</strong>
+  <dd>Waiting threads are not runnable because they are waiting for some event to occur. A thread that is blocked on a <A target="keywords" HREF="../../keywords/index/data/system.htm#message">message</a> queue is in waiting state. Arrival of a message returns a waiting thread to runnable or running state.
+</dl>
+
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+</body> </html>

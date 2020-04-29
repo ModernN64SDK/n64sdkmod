@@ -1,0 +1,997 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 26 - SI Devices</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. 
+             Matt P.  10/21/99 edited content, updated format 
+ 	    Matt P.- 2/23/2000, changed GB Pak to N64 Transfer Pak-->
+</head>
+
+<H1>26.1 Overview</H1>
+<P>
+An SI device is a peripheral device, which is connected to the N64 SI (serial interface). SI devices include the Standard Controller, Controller Pak, etc.  This section provides an introduction to SI devices.
+</P>
+<UL>
+  <LI>1.1 an introduction to SI devices.
+</UL>
+<UL>
+  <LI>1.2 provides a brief explanation of each SI device.
+</UL>
+<UL>
+  <LI>1.3 explains the various types of commands used with SI devices.
+</UL>
+<UL>
+  <LI>1.4 briefly describes the library functions used to control each SI device.
+</UL>
+<UL>
+  <LI>1.5 explains the error codes that can arise when using the library functions. 
+</UL>
+<UL>
+  <LI>1.6 provides detailed explanations about the library functions common to all SI devices. 
+</UL>
+<UL>
+  <LI>1.7 includes precautions when using SI devices.
+</UL>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H2><A name="01"></A>26.1.1 What is an SI Device?</H2>
+<P>
+SI devices for N64 are discussed here. An SI device is the name for any type of peripheral device that is connected to the joybus, external joybus or joyport, and accessed by the PIF <SUP><A href="#kome1">*1</A></SUP> via the serial interface (SI). 
+</P>
+<P>
+The joybus is a signal line that directly connects the SI device to the *PIF. Examples of SI devices that connect via the joybus are the Standard Controller and the Voice Recognition System. These devices are used by inserting them into the Controller Socket on the front face
+of the N64 Control Deck. The ports are designated starting from the left as **Port 0, Port 1, Port 2 and Port 3 <SUP><A href="#kome2">*2</A></SUP>. 
+</P>
+<P>
+The external joybus is the name for the joybus signal line exiting from the Game Pak. An example of an SI device connected via this line is the EEPROM inside the Game Pak. 
+</P>
+<P>
+The joyport is the signal line located inside the Controller at the insertion site for other SI devices, such as the Controller Pak and the Rumble Pak. These SI devices are attached using the joyport connector which is located on the back of the Controller. 
+</P>
+<P>
+<IMG src="gif/f26-01-00.gif" border="0">
+</P>
+<P>
+<A name="kome1"></A>*1 PIF is the name of the IC chip which plays an intermediary role when the CPU accesses an SI device. 
+</P>
+<P>
+<A name="kome2"></A>*2 Controllers inserted into ports 0,1,2,3 are designated as Controllers 1,2,3,4.
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H2><A name="02"></A>26.1.2 SI Device List</H2>
+<P>
+There are two types of SI devices. A direct-type SI device connects to the joybus or the external joybus and communicates directly with the PIF. A Pak-type SI device is used via a connection to the Controller's joyport. Below is a list of the SI devices currently available and that are scheduled to become available from Nintendo. 
+</P>
+<P>
+<B>(1) Direct-Type SI Devices</B>
+</P>
+<P>
+Standard Controller
+</P>
+<blockquote>
+<P>
+The Standard Controller is the Controller normally used with N64. This device is used by connecting it to the Controller Socket on the front side of the N64 Control Deck. 
+</P>
+</blockquote> 
+<P>
+EEPROM
+</P>
+<blockquote>
+<P>
+EEPROM is attached to the board inside the Game Pak and is used to save data during game play. 
+</P>
+</blockquote> 
+<P>
+Voice Recognition System
+</P>
+<blockquote>
+<P>
+The Voice Recognition System is a peripheral device which can recognize words spoken by the game player during an N64 game. To use this device, connect the plug of the voice recognition unit into a Controller Socket, then connect the dedicated microphone into the unit. 
+</P>
+</blockquote> 
+<P>
+Mouse
+</P>
+<blockquote>
+<P>
+An N64 mouse connected to the Controller Socket is scheduled to be put on the market in the near future. 
+</P>
+</blockquote> 
+<P>
+<B>(2) Pak-Type SI Devices</B>
+</P>
+<P>
+Controller Pak
+</P>
+<blockquote>
+<P>
+The Controller Pak is a supplemental memory device that is connected to the Controller's joyport connector. By connecting a Controller Pak to the Controller, the player can save their progress in a game and record their high scores. 
+</P>
+</blockquote> 
+<P>
+Rumble Pak
+</P>
+<blockquote>
+<P>
+The Rumble Pak is a peripheral device which when connected to the Controller's joyport connector, will vibrate and create tactile sensations for the player during a game.
+</P>
+</blockquote> 
+<P>
+N64 Transfer Pak<sub>&#153</sub>
+</P>
+<blockquote>
+<P>
+The N64 Transfer Pak is a peripheral device that enables data from a Game Boy Game Pak to be loaded into the N64. To use the N64 Transfer Pak, connect the device to the Controller's joyport connector, then insert a Game Boy Game Pak into the device.
+</P>
+</blockquote> 
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H2><A name="03"></A>26.1.3 SI Device Commands</H2>
+<P>
+A variety of commands can be executed for SI devices by calling library functions. Some library functions are common to all SI devices, while others are unique to a specific SI device. SI device commands can be broadly classified into the following three types of activities that include device initialization, executing various actions, and obtaining device status.
+</P>
+<P>
+Each of these activities is explained in detail below.
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H3><A name="03-01"></A>26.1.3.1 SI Device Initialization</H3>
+<P>
+SI device initialization entails both making the initial settings in order to use the serial interface, and initializing the SI device itself.
+</P>
+<P>
+The first thing which must be done in order to use an SI device, is to make the initial settings. This process is performed with the <tt>osContInit()</tt> function (see <A href="#06-01">Section 26.1.6.1 "Initial Setting for SI Device Use"</A>). When this function is called, the system checks the connection status of the SI device. If the PIF is busy, the timer waits until it is available for use by the SI device. This is done because, immediately after starting the N64 the PIF is used to communicate with the Game Pak, and therefore, cannot be used by the SI device until that process ends. 
+</P>
+<P>
+Be sure to execute the <tt>osContInit()</tt> function to access the SI device.  It is impossible to access to the SI devices without calling this function.  This function need only be called once after starting, or resetting the program. Calling this function a second time will have no effect. 
+</P>
+<P>
+After the initial settings are made to use an SI device, you must perform the steps necessary to initialize the device. This process does the following things: 
+</P>
+
+<ul>
+  <li>Initializes the SI device handler and various parameters
+  <li>Initializes the SI device hardware
+  <li>Checks to see whether the SI device is in a usable state
+</ul>
+
+<P>
+These steps are performed by calling and executing the initialization function for each SI device. Please check the value returned by the function on the application side and confirm that initialization was successful. 
+</P>
+<P>
+Some SI devices do not have their own initialization process. When this is the case, the initial settings common to all SI devices are sufficient. Currently, the only SI devices which do not need their own initialization process are the Standard Controller and the mouse. 
+
+</P>
+<P>
+The following flow chart shows the initialization procedure for each SI device.
+</P>
+<P>
+<IMG src="gif/f26-01-01.gif">
+</P>
+<P>
+Please note the following precautions. When initializing SI devices, if more than one kind of Pak-type SI device is going to be switched and used, make sure to initialize each device each time. This is because the SI device hardware must be initialized whenever it is newly inserted <SUP><A href="#kome3">*3</A></SUP>.
+</P>
+<P>
+If you initialize and use a Pak-type SI device such as the Rumble Pak, and then substitute it for another kind of device, such as a Controller Pak, then you need to initialize this second SI device before it is used. Also, if you remove the second device (the Controller Pak) then insert the first device (the Rumble Pak), you need to initialize the Rumble Pak again using its own initialization process. You also need to do this when SI devices are switched among the four Controllers. 
+</P>
+<P>
+Pak-type SI devices use the OSPfs structure as a common file handle. This structure is initialized in the most appropriate form for a given SI device when the initialization function is executed for that particular SI device. Thus, in order to handle a different type of SI device, the OSPfs structure must be initialized again so it will take on the most appropriate form for that new SI device. You might think that you could prepare an OSPfs structure for each SI device and initialize them all at once. However, even if you prepared several OSPfs structures, you would still need to execute the initialization function every time in order to initialize the SI device hardware. So to keep the program from getting too complicated, please use an OSPfs structure that is shared by all Pak-type SI devices. 
+</P>
+<P>
+<A name="kome3"></A>*3 Both Direct-type SI (Standard Controller and mouse not included) devices and Pak-type SI devices need to be initialized with their own particular initialization process when newly inserted, because the device hardware needs to be initialized.
+</P>
+<P>
+Below is an example of the flow when switching between Pak-type SI devices. 
+</P>
+<P>
+<IMG src="gif/f26-01-02.gif" border="0">
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H3><A name="03-02"></A>26.1.3.2 Executing Various Actions</H3>
+<P>
+Various actions can be executed with SI devices. For example, you can obtain data with the Control Stick and buttons on the Standard Controller, transfer data with the Controller Pak and the N64 Transfer Pak, and start voice recognition processes and get results with the
+Voice Recognition System. 
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H3><A name="03-03"></A>26.1.3.3 Obtaining the Status</H3>
+<P>
+Check to see what types of SI devices are connected to the Controller Sockets and joyports, and get the current status of an SI device.
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H2><A name="04"></A>26.1.4 SI Device Library Functions</H2>
+<P>
+Below are the library functions for each SI device. The functions have been grouped into four
+categories such as &LT;initialization functions&GT;, &LT;action functions&GT;, &LT;obtain status functions&GT;, and &LT;old-version functions&GT;.
+</P>
+<P>
+&LT;Initialization functions&GT;, &LT;action functions&GT;,and &LT;obtain status functions&GT; pertain to the explanation of commands described above. &LT;old-version functions&GT; refer to functions that are no longer in use. 
+</P>
+<P>
+The <tt>osContInit()</tt> function should be called before you call the initialization function for a particular SI device. You should execute both the <tt>osContInit()</tt> function and the SI device's own initialization function before executing any of the other functions. 
+</P>
+<P>
+<b>1. SI Device Functions</b>
+</P>
+<P>
+&LT;Initialization Function&GT;
+</P>
+<UL>
+  <LI><tt>osContInit</tt> - Initializes the SI device
+</UL>
+<P>
+&LT;Various Action Functions&GT;
+</P>
+<UL>
+  <LI><tt>osContReset</tt> - Resets all the SI devices currently connected
+  <LI><tt>osContSetCh</tt> - Sets the number of direct-type SI devices to access
+</UL>
+<P>
+&LT;Get Status Functions&GT;
+</P>
+<UL>
+  <LI><tt>osContStartQuery</tt> - Obtains the status and type of SI devices
+  <LI><tt>osContGetQuery</tt> - Returns the status and type of SI devices
+</UL>
+<P>
+<b>2. Standard Controller Functions</b>
+</P>
+<P>
+&LT;Various Action Functions&GT;
+</P>
+<UL>
+  <LI><tt>osContStartReadData</tt> - Issues a read data command to obtain game Controller input settings
+  <LI><tt>osContGetReadData</tt> - Returns the data of the Controller
+</UL>
+<P>
+<b>3. Controller Pak Functions</b>
+</P>
+<P>
+&LT;Initialization Function&GT;
+</P>
+<UL>
+  <LI><tt>osPfsInitPak</tt> - Initializes the Controller Pak's file handle
+</UL>
+<P>
+&LT;Various Action Functions&GT;
+</P>
+<UL>
+  <LI><tt>osPfsAllocateFile</tt> - Creates a new game note
+  <LI><tt>osPfsDeleteFile</tt> - Deletes a game note
+  <LI><tt>osPfsReadWriteFile</tt> - Reads and writes game note game data
+  <LI><tt>osPfsRepairId</tt> - Repairs the Controller Pak file system
+  <LI><tt>osPfsChecker</tt> - Inspects and repairs the Controller Pak's file system
+  <LI><tt>osPfsGetLabel</tt> - Reads the label of a Controller Pak
+  <LI><tt>osPfsSetLabel</tt> - Writes the label of a Controller Pak
+  <LI><tt>osPfsFileState</tt> - Obtains game note information
+  <LI><tt>osPfsFindFile</tt> - Searches the specified game note
+  <LI><tt>osPfsFreeBlocks</tt> - Obtains the available number of bytes in a Controller Pak
+  <LI><tt>osPfsNumFiles</tt> - Acquires the maximum note number and the number of notes used
+</UL>
+<P>
+&LT;Get Status Function&GT;
+</P>
+<UL>
+  <LI><tt>osPfslsPlug</tt> - Detects which Controller contains a Controller Pak
+</UL>
+<P>
+&LT;Old Version Functions&GT;
+</P>
+<UL>
+  <LI><tt>osPfsInit</tt> - Initializes the Controller Pak's file handle
+  <LI><tt>osPfsReSizeFile</tt> - Changes the capacity reserved for game notes
+</UL>
+<P>
+<b>4. Rumble Pak Functions</b>
+</P>
+<P>
+&LT;Initialization Function&GT;
+</P>
+<UL>
+  <LI><tt>osMotorInit</tt> - Initializes the Rumble Pak
+</UL>
+<P>
+&LT;Various Action Functions&GT;
+</P>
+<UL>
+  <LI><tt>osMotorStart</tt> - Starts the Rumble Pak motor
+  <LI><tt>osMotorStop</tt> - Stops the Rumble Pak motor
+</UL>
+<P>
+<b>5. EEPROM</b>
+</P>
+<P>
+&LT;Initialization Function&GT;
+</P>
+<UL>
+  <LI><tt>osEepromProbe</tt> - Checks Controller to see if EEPROM is present or not
+</UL>
+<P>
+&LT;Various Action Functions&GT;
+</P>
+<UL>
+  <LI><tt>osEepromWrite</tt> - Writes data to EEPROM
+  <LI><tt>osEepromRead</tt> - Reads data from EEPROM
+  <LI><tt>osEepromLongWrite</tt> - Writes consecutive bytes of data to EEPROM
+  <LI><tt>osEepromLongRead</tt> - Reads consecutive bytes of data from EEPROM
+</UL>
+<P>
+<b>6. N64 Transfer Pak Functions</b>
+</P>
+<P>
+&LT;Initialization Functions&GT;
+</P>
+<UL>
+  <LI><tt>osGbpakInit</tt> - Initializes the hardware and the structures for controlling the N64 N64 Transfer Pak
+  <LI><tt>osGbpakReadId</tt> - Checks the registration area in the Game Boy Game Pak ROM
+  <LI><tt>osGbpakCheckConnector</tt> - Detects poor contact by the Game Boy Game Pak connector
+</UL>
+<P>
+&LT;Various Action Functions&GT;
+</P>
+<UL>
+  <LI><tt>osGbpakPower</tt> - Turns power ON/OFF to the Game Boy Game Pak
+  <LI><tt>osGbpakReadWrite</tt> - Reads and writes to the Game Boy Game Pak memory
+</UL>
+<P>
+&LT;Get Status Function&GT;
+</P>
+<UL>
+  <LI><tt>osGbpakGetStatus</tt> - Gets status of the N64 Transfer Pak
+</UL>
+<P>
+<b>7. Voice Recognition System Functions</b>
+</P>
+<P>
+&LT;Initialization Functions&GT;
+</P>
+<UL>
+  <LI><tt>osVoiceInit</tt> - Initializes the Voice Recognition System
+  <LI><tt>osVoiceClearDictionary</tt> - Initializes the Voice Recognition System word registration dictionary
+</UL>
+<P>
+&LT;Various Action Functions&GT;
+</P>
+<UL>
+  <LI><tt>osVoiceSetWord</tt> - Registers words into the Voice Recognition System dictionary
+  <LI><tt>osVoiceMaskDictionary</tt> - Masks registered words
+  <LI><tt>osVoiceStartReadData</tt> - Starts voice recognition
+  <LI><tt>osVoiceGetReadData</tt> - Gets voice recognition results
+  <LI><tt>osVoiceStopReadData</tt> - Forcibly stops voice recognition processing
+  <LI><tt>osVoiceControlGain</tt> - Adjusts the input gain
+  <LI><tt>osVoiceCheckWord</tt> - Checks whether or not a word can be registered in the dictionary
+  <LI><tt>osVoiceCountSyllables</tt> - Counts the number of semi-syllables in a word
+</UL>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H2><A name="05"></A>26.1.5 Errors Related to the Use of SI Devices</H2>
+<P>
+When using SI device functions described in 1.4, errors can arise if the SI device is handled improperly or the program is put together poorly. The error values are always returned as the return value of the function, with the exception of when a function acts on a number of direct-type SI devices. In that case, errors are returned as member variables of the structures that return values read from the various SI devices.  For example, for the <tt>osContInit()</tt>, <tt>osContGetQuery()</tt> and <tt>osContReset()</tt> functions, errors are returned in the errno member variable of the OSContStatus structure, while for the <tt>osContGetReadData()</tt> function, errors are returned in the errno member variable of the OSContPad structure. 
+</P>
+<P>
+There are five major types of errors including &LT;errors resulting from the fact that no SI device is inserted&GT;, &LT;errors resulting from the fact that a different SI device is inserted&GT;, &LT;errors due to a data transfer failure&GT;, &LT;errors specific to an SI device&GT;, and &LT;fatal errors&GT;. 
+</P>
+<P>
+A &LT;no SI device is inserted&GT; error occurs when nothing is inserted in the specified Controller Socket or joyport connector. </P>
+<P>
+A &LT;different SI device is inserted&GT; error occurs when some device other than the expected SI device is inserted in the specified Controller Socket or joyport connector. 
+</P>
+<P>
+A &LT;data transfer failure&GT; error occurs when data is not transferred successfully between the SI device and the N64. The problem can happen in the connection or in the hardware itself. 
+</P>
+<P>
+An &LT;error specific to an SI device&GT; is an error that only occurs in that particular SI device.
+</P>
+<P>
+A &LT;fatal error&GT; can occur due to errors in the program, problems with the use of the hardware, or a problem with the hardware itself. 
+</P>
+<P>
+Below is a list of errors that can arise for each SI device.
+</P>
+<P>
+<b>1. Standard Controller Errors</b>
+</P>
+<P>
+&LT;No SI Device inserted&GT;
+</P>
+<UL>
+  <LI>CONT_NO_RESPONSE_ERROR - The Controller is not inserted.
+</UL>
+<P>
+&LT;Data transfer failure&GT;
+</P>
+<UL>
+  <LI>CONT_OVERRUN_ERROR - A communication error has occurred between N64 Control Deck and the Controller.
+</UL>
+<P>
+<b>2. Controller Pak Errors</b>
+</P>
+<P>
+&LT;No SI device inserted&GT;
+</P>
+<UL>
+  <LI>PFS_ERR_NOPACK - Nothing is inserted in the specified Controller. 
+</UL>
+<P>
+&LT;Different SI device inserted&GT;
+</P>
+<UL>
+  <LI>PFS_ERR_DEVICE - Something other than a Controller Pak is inserted into the Controller.
+</UL>
+<P>
+&LT;Data transfer failure&GT;
+</P>
+<UL>
+  <LI>PFS_ERR_CONTRFAIL - Data transfer between the N64 Controller Deck and Controller Pak has failed.
+</UL>
+<P>
+&LT;Errors specific to this particular SI device&GT;
+</P>
+<UL>
+  <LI>PFS_ERR_NEW_PACK - A different Controller Pak has been inserted. 
+  <LI>PFS_ERR_INCONSISTENT - There is a problem in the file system's management area.
+  <LI>PFS_DATA_FULL - Although the creation of a new game note was attempted, one could not be created because there was not enough space in the Controller Pak. 
+  <LI>PFS_DIR_FULL - Although the creation of a new game note was attempted, it could not be done because the maximum (16) number of game notes have been stored in the Controller Pak. 
+  <LI>PFS_ERR_EXIST - Although the creation of a new game note was attempted, it could not be done because the same game note already exists in the Controller Pak. 
+  <LI>PFS_ERR_BAD_DATA - This is returned when a function attempts to read data even though the data has not yet been written.
+  <LI>PFS_ERR_ID_FATAL - The ID area was destroyed
+</UL>
+<P>
+&LT;Fatal error&GT;
+</P>
+<UL>
+  <LI>PFS_ERR_INVALID - An incorrect argument was specified when this function was called, or the Controller Pak has been improperly handled.
+</UL>
+<P>
+<b>3. Rumble Pak Errors</b>
+</P>
+<P>
+&LT;No SI device inserted&GT;
+</P>
+<UL>
+  <LI>PFS_ERR_NOPACK - Nothing is inserted in the specified Controller.
+</UL>
+<P>
+&LT;Different SI Device is inserted&GT;
+</P>
+<UL>
+  <LI>PFS_ERR_DEVICE - Some device other than the Rumble Pak is inserted in the Controller.
+</UL>
+<P>
+&LT;Data transfer failure&GT;
+</P>
+<UL>
+  <LI>PFS_ERR_CONTRFAIL - Data transfer between N64 Controller Deck and Rumble Pak has failed. 
+</UL>
+<P>
+<b>4. EEPROM</b>
+</P>
+<P>
+&LT;No SI device is inserted&GT;
+</P>
+<UL>
+  <LI>CONT_NO_RESPONSE_ERROR - There is no EEPROM, or the interface circuit does not respond. 
+</UL>
+<P>
+&LT;Fatal error&GT;
+</P>
+<UL>
+  <LI>-1 - The address has not been specified in the proper range when accessing EEPROM to write/read.<SUP><A href="#kome4">*4</A></SUP>
+</UL>
+<P>
+<A name="kome4"></A>*4 This error is not defined by #define.
+</P>
+<P>
+<b>5. N64 Transfer Pak</b>
+</P>
+<P>
+&LT;No SI device inserted&GT;
+</P>
+<UL>
+  <LI>PFS_ERR_NOPACK - Nothing is inserted in the specified Controller.
+</UL>
+<P>
+&LT;Different SI Device is inserted&GT;
+</P>
+<UL>
+  <LI>PFS_ERR_DEVICE - Some device other than the N64 Transfer Pak is inserted in the Controller. 
+</UL>
+<P>
+&LT;Data transfer failure&GT;
+</P>
+<UL>
+  <LI>PFS_ERR_CONTRFAIL - Data transfers with the Controller have failed.
+</UL>
+<P>
+&LT;Errors specific to this particular SI device&GT;
+</P>
+<UL>
+  <LI>PFS_ERR_NO_GBCART - No Game Boy Game Pak is inserted in the N64 Transfer Pak.
+  <LI>PFS_ERR_NEW_GBCART - A Game Boy Game Pak has been inserted and removed.
+</UL>
+<P>
+&LT;Fatal error&GT;
+</P>
+<UL>
+  <LI>PFS_ERR_INVALID - The function was improperly used.
+</UL>
+<P>
+<b>6. Voice Recognition System Errors</b>
+</P>
+<P>
+&LT;No SI device inserted&GT;
+</P>
+<UL>
+  <LI>CONT_ERR_NO_CONTROLLER - Nothing is connected to the Controller Socket.
+</UL>
+<P>
+&LT;Different SI Device is inserted&GT;
+</P>
+<UL>
+  <LI>CONT_ERR_DEVICE - Something other than the Voice Recognition System is connected to the Controller Socket.
+</UL>
+<P>
+&LT;Data transfer failure&GT;
+</P>
+<UL>
+  <LI>CONT_ERR_CONTRFAIL - There was a data transmission failure between N64 Controller Deck and the Voice Recognition System.
+</UL>
+<P>
+&LT;Errors specific to this particular SI device&GT;
+</P>
+<UL>
+  <LI>CONT_ERR_VOICE_WORD - A word containing improper characters has been attempted for registration.
+  <LI>CONT_ERR_VOICE_MEMORY - Dictionary memory overflow.
+  <LI>CONT_ERR_NOT_READY - No voice has been input yet.
+</UL>
+<P>
+&LT;Fatal error&GT;
+</P>
+<UL>
+  <LI>CONT_ERR_INVALID - There is an error in the function call method or in the argument. 
+  <LI>CONT_ERR_VOICE_NO_RESPONSE - There was no response from the Voice Recognition System.
+</UL>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H2><A name="06"></A>26.1.6 SI Device Function Specifications</H2>
+<P>
+The following library functions are commonly used for all SI devices.  Each function is explained in detail below.
+</P>
+<UL>
+  <LI>Initialize the settings to use the SI device (<tt>osContInit()</tt>)
+</UL>
+<UL>
+  <LI>Start reading the status and type of SI device (<tt>osContStartQuery()</tt>)
+</UL>
+<UL>
+  <LI>Get status and type of SI device (<tt>osContGetQuery()</tt>)
+</UL>
+<UL>
+  <LI>Reset the SI device (<tt>osContReset()</tt>)
+</UL>
+<UL>
+  <LI>Set the number of direct-type SI devices to be accessed (<tt>osContSetCh()</tt>)
+</UL>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H3><A name="06-01"></A>26.1.6.1 Initial Setting for SI Device Use</H3>
+<P>
+<B>Function</B>
+</P>
+<P>
+<tt>osContInit</tt>
+</P>
+<p><i>Initial Setting for SI Device Use</i></p>
+<P>
+<B>Syntax</B>
+</P>
+<pre>
+#include &lt;ultra64.h&gt;
+s32 osContInit(OSMesgQueue *mq, u8 *bitpattern, OSContStatus *status);
+</pre>
+<P>
+<B>Description</B>
+</P>
+<P>
+The <tt>osContInit</tt> function initializes the SI settings and checks the status and type of the SI device.
+</P>
+<P>
+This function must be called before you call any functions to be used for initialization that are unique to each SI device. By doing this, the system checks the connection status of the SI device. If the PIF is busy, the timer waits until it is available for use by the SI device. This is because PIF is used to establish a connection between the Game Pak right after N64 starts up. While it is in use, PIF cannot be used. 
+</P>
+<P>
+The <tt>osContInit</tt> must be called before all the SI device functions are called. After the program starts up or a reset is performed, it should be called only once . It is not necessary to call this function more than once. This function does nothing from the second call on. Therefore, if the status and type of SI device needs to be checked after the first <tt>osContInit</tt> call, please use the <tt>osContStartQuery()</tt> function and <tt>osContGetQuery()</tt>. 
+</P>
+<P>
+If the <tt>osContInit</tt> function is executed it returns, the Controller Socket to which the direct SI device is connected, to bitpattern. Bit 0, 1, 2, 3 of a bitpattern correspond to Controller Socket 0, 1, 2, 3, respectively. Direct SI device is inserted to the Controller Socket 0 if the bit 0 of a bitpattern is set to 1. Also, the <tt>osContInit</tt> function examines the status of joyport and returns the result to status when the Controller is connected. The area specified by status must be large enough to hold the number of OSContStatus structures specified by MAXCONTROLLERS which store the status for each device inserted to the Controller Socket. OSContStatus structure is shown below.
+</P>
+<PRE>
+typedef struct {
+        u16     type;   /* SI device type inserted to the Controller Socket */
+        u8      status; /* Joy port status */
+        u8      errno;  /* Error from SI device */
+}OSContStatus;
+</PRE>
+<P>
+The message queue, mq, is the initialized message queue linked to OS_EVENT_SI. See the <A href="../../n64man/os/osSetEventMesg.htm">osSetEventMesg()</A> function to learn how to create this link. Since mq is used inside the function to wait for messages, the application does not need to use mq to wait for an end-of-function message. 
+</P>
+<P>
+0 is returned if initialization is successful, and -1 is returned if it fails to transfer data while SI is in use. It is rarely seen that -1 is returned. 
+</P>
+<P>
+One of the following bits is set to 1 to the value for status-&gt;type, depending on which kind of direct- SI device is inserted to the
+Controller Socket. 0 is returned when no device is inserted to the Controller Socket. 
+</P>
+<P>
+<B>CONT_ABSOLUTE</B>
+</P>
+<P>
+This bit is set to 1 when a Standard Controller is connected to the N64 Control Deck. The connected device is judged to be a Controller if the device has a built-in absolute value counter for counting the amount of movement of the Control Stick as an absolute value from the origin. Currently, this bit is only set when the Controller is attached. 
+</P>
+<P>
+<B>CONT_RELATIVE</B>
+</P>
+<P>
+This bit is set to 1 when the mouse is attached. The connected device is judged to be a mouse if the device has a built-in relative counter for counting the amount of movement of the mouse from the current coordinates. As of December 1998, this bit is only set when the mouse is attached. 
+</P>
+<P>
+<B>CONT_JOYPORT</B>
+</P>
+<P>
+This bit is set to 1 when a joyport is attached to the direct-type SI device that is connected to the Controller Socket. As of December 1998, the only SI device with a joyport is the Standard Controller. 
+</P>
+<P>
+Confirm which kind of direct-type SI device is connected to the Controller Socket in the following way; If the status <img src="gif/right.gif" align=absmiddle> type value masked with CONT_TYPE_MASK is equal to CONT_TYPE_NORMAL, then a Standard Controller is connected. (When a Standard Controller is connected, the bits are set to 1 for both CONT_ABSOLUTE and CONT_JOYPORT in status <img src="gif/right.gif" align=absmiddle> type. CONT_TYPE_NORMAL includes the bits for both CONT_ABSOLUTE and CONT_JOYPORT.)  If the masked value is equal to CONT_TYPE_MOUSE, that means a mouse is connected.  And if it is equal to CONT_TYPE_VOICE it means the Voice Recognition System is connected. 
+</P>
+<P>
+If the direct-type SI device connected to the Controller Socket is a Standard Controller, then the status of that joyport can be checked with status <img src="gif/right.gif" align=absmiddle> status. The lower bit in status <img src="gif/right.gif" align=absmiddle> status is set to 1. If nothing is inserted in either the Controller Socket or the joyport connector, or if a direct-type SI device that is not a Controller is inserted, then 0 is returned. 
+</P>
+<P>
+<B>CONT_CARD_ON</B>
+</P>
+<P>
+This bit is set when a device has been inserted.
+</P>
+<P>
+<B>CONT_CARD_PULL</B>
+</P>
+<P>
+This bit is set when the device has been removed after reset.
+</P>
+<P>
+An Error value is set to status <img src="gif/right.gif" align=absmiddle> errno when the function fails to read the status value of SI device. 0 is returned if the function
+was successful. One of the following values is returned should an error occur. 
+</P>
+<P>
+<B>CONT_NO_RESPONSE_ERROR</B>
+</P>
+<P>
+There is no response from the Controller. The Controller is not inserted.
+</P>
+<P>
+<B>CONT_OVERRUN_ERROR</B>
+</P>
+<P>
+A communication error has occurred between the N64 Controller Deck and the SI devices. Ignore the data when this error is detected.
+</P>
+<P>
+When it is recognized that the Controller socket was not connected, or communication error occurs in a Controller Socket (bitpattern's
+bit is zero, or status <img src="gif/right.gif" align=absmiddle> errno is not zero), the Controller's status type and status value become invalid. You need to make sure the
+Controller is connected properly by looking at the bit pattern and status <img src="gif/right.gif" align=absmiddle> errno first before examining the Controller type and status.
+</P>
+<P>
+Although it used to be performed in this function with OS 2.0e or previous versions, resetting a Controller cannot be accomplished in
+this function with OS 2.0f or later. Normally it is not necessary to reset a Controller, however it can be accomplished by using <tt>osContReset()</tt> 
+</P>
+<P>
+The following sample shows how to use the <tt>osContInit</tt> function within a program. The function checks each Controller Socket to report which type of direct SI device is inserted. 
+</P>
+<P>
+<B><Sample></B>
+</P>
+<PRE>
+void
+mainproc(void)
+{
+        OSMesgQueue     intMesgQueue;
+        OSMesg          intMesgBuf[1];
+        OSContStatus    sdata[MAXCONTROLLERS];
+        u8              pattern;
+        int             I;
+
+        osCreateMesgQueue(&amp;intMesgQueue, intMesgBuf, 1);
+        osSetEventMesg(OS_EVENT_SI, &amp;intMesgQueue, NULL);
+        osContInit(&amp;intMesgQueue, &amp;pattern, &amp;sdata[0]);
+
+        for(I = 0; I &lt; MAXCONTROLLERS; I++){
+                if(((pattern &gt;&gt; I) &amp; 1) &amp;&amp; (sdata[I].errno == 0)){
+                        if((sdata[I].type &amp; CONT_TYPE_MASK) == CONT_TYPE_NORMAL){
+				osSyncPrintf(&QUOT;Standard Controller\n&QUOT;);
+                        }
+                        else if((sdata[I].type &amp; CONT_TYPE_MASK) == CONT_TYPE_MOUSE){
+                                osSyncPrintf(&QUOT;Mouse\n&QUOT;);
+                        }
+                        else if((sdata[I].type &amp; CONT_TYPE_MASK) == CONT_TYPE_VOICE){
+                                osSyncPrintf(&QUOT;Voiced Recognition System\n&QUOT;);
+                        }
+                        else{
+                                osSyncPrintf(&QUOT;Other Devices\n&QUOT;);
+                        }
+                }else{
+                        osSyncPrintf(&QUOT;Nothing is inserted in this port\n&QUOT;);
+                }
+        }
+}
+</PRE>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H3><A name="06-02"></A>26.1.6.2 Get Status and Type of SI Device</H3>
+<P>
+<B>Function</B>
+</P>
+<P>
+<tt>osContStartQuery, osContGetQuery</tt> 
+</P>
+<p><i>Get Status and Type of SI Device</i></p>
+<P>
+<B>Syntax</B>
+</P>
+<pre>
+#include &lt;ultra64.h&gt;
+s32 osContStartQuery(OSMesgQueue *mq);
+void osContGetQuery(OSContStatus *status);
+</pre>
+<P>
+<B>Description</B>
+</P>
+<P>
+The <tt>osContStartQuery</tt> function starts to read the values for SI device status and type which is connected to the Controller Socket and the joyport connector. The <tt>osContGetQuery</tt> function returns those values to status. By calling these two functions, such status can be obtained whether a standard Controller is connected to the Controller Socket or that a Controller Pak is inserted to the joyport connector. These two functions must be paired for use. 
+</P>
+<P>
+The message queue, mq, must be the initialized message queue linked to OS_EVENT_SI. See the <A href="../../n64man/os/osSetEventMesg.htm">osSetEventMesg()</A> function in the N64 Online Function Reference Manual to learn how to create this link. 
+</P>
+<P>
+The <tt>osContStartQuery</tt> function is called only to issue read command, and the message for completed data reading is returned to the message queue mq. Therefore, the <tt>osContGetQuery</tt> function should be called to obtain data after the <tt>osContStartQuery</tt> function is called, and osRecvMesg receives a message indicating data reading is completed. The <tt>osContStartQuery</tt> function takes around 2 milliseconds to complete its data reading and for <tt>osRecvMesg</tt> to receive a final message. Other process such as re-drawing the screen can be performed while you are waiting. 
+</P>
+<P>
+You must supply a memory block large enough for MAXCONTROLLERS structures of type OSContStatus. <SUP><A href="#kome5">*5</A></SUP>
+ OSContStatus structure is shown below.
+</P>
+<PRE>
+typedef struct {
+        u16     type;   /* SI device type inserted to the Controller Socket */
+        u8      status; /* Joyport Status */
+        u8      errno;  /* error from device */
+}OSContStatus;
+</PRE>
+<P>
+One of the following bit is set to 1 to the value for status-&gt;type, depending on which kind of direct- SI device is inserted to the Controller Socket. 0 is returned when no device is inserted to the Controller Socket. 
+</P>
+<P>
+<A name="kome5"></A>*5 Regarding the osContSetCh() function (see <A href="#06-04">Section 26.1.6.4 "Set the Number of SI Devices to be Accessed"</A>), it is fine to set the number of direct-type SI devices to be used, to a value less than the value set for MAXCONTROLLERS, if the number of direct-type devices used will not be changed in the future.
+</P>
+<P>
+<B>CONT_ABSOLUTE</B>
+</P>
+<P>
+This bit is set to 1 when a Standard Controller is connected to the N64 Control Deck. The connected device is judged to be a Controller if the device has a built-in absolute value counter for counting the amount of movement of the Control Stick as an absolute value from the origin. Currently, this bit is only set when the Controller is attached. </P>
+<P>
+<B>CONT_RELATIVE</B>
+</P>
+<P>
+This bit is set to 1 when the mouse is attached. The connected device is judged to be a mouse if the device has a built-in relative counter for counting the amount of movement of the mouse from the current coordinates. As of December 1998, this bit is only set when the mouse is attached. 
+</P>
+<P>
+<B>CONT_JOYPORT</B>
+</P>
+<P>
+This bit is set to 1 when a joyport is attached to the direct-type SI device that is connected to the Controller Socket. As of December 1998, the only SI device with a joyport is the Standard Controller. 
+</P>
+<P>
+Confirm which kind of direct-type SI device is connected to the Controller Socket in the following way; If the status <img src="gif/right.gif" align=absmiddle> type value masked with CONT_TYPE_MASK is equal to CONT_TYPE_NORMAL, then a Standard Controller is connected. (When a Standard Controller is connected, the bits are set to 1 for both CONT_ABSOLUTE and CONT_JOYPORT in status <img src="gif/right.gif" align=absmiddle> type. CONT_TYPE_NORMAL includes the bits for both CONT_ABSOLUTE and CONT_JOYPORT.)  If the masked value is equal to CONT_TYPE_MOUSE, that means a mouse is connected.  If it is equal to CONT_TYPE_VOICE it means the Voice Recognition System is connected.
+</P>
+<P>
+If the direct-type SI device connected to the Controller Socket is a Standard Controller, then the status of that joyport can be
+checked with status <img src="gif/right.gif" align=absmiddle> status. The lower bit in status <img src="gif/right.gif" align=absmiddle> status is set to 1. If nothing is inserted in either the Controller Socket or the joyport connector, or if a direct-type SI device that is not a Controller is inserted, then 0 is returned. </P>
+<P>
+<B>CONT_CARD_ON</B>
+</P>
+<P>
+This bit is set when a device has been inserted.
+</P>
+<P>
+<B>CONT_CARD_PULL</B>
+</P>
+<P>
+This bit is set when the device has been removed after reset.
+</P>
+<P>
+An Error value is set to status <img src="gif/right.gif" align=absmiddle> errno when the function fails to read the status value of SI device. 0 is returned if the function
+was successful. One of the following values is returned should an error occur. 
+</P>
+<P>
+<B>CONT_NO_RESPONSE_ERROR</B>
+</P>
+<P>
+There is no response from the Controller. The Controller is not inserted.
+</P>
+<P>
+<B>CONT_OVERRUN_ERROR</B>
+</P>
+<P>
+A communication error has occurred between the N64 Controller Deck and the SI devices. Ignore the data when this error is detected.
+</P>
+<P>
+When it is recognized that the Controller socket was not connected, or a communication error occurs in a Controller Socket(bitpattern's
+bit is zero, or status <img src="gif/right.gif" align=absmiddle> errno is not zero), the Controller's status type and status value become invalid. You need to make sure the
+Controller is connected properly by looking at the bit pattern and status <img src="gif/right.gif" align=absmiddle> errno first before examining the Controller type and status.
+</P>
+<p>
+<B><Sample></B>
+</P>
+<PRE>
+void
+mainproc(void)
+{
+        OSMesgQueue     intMesgQueue;
+        OSMesg          intMesgBuf[1];
+        OSContStatus    sdata[MAXCONTROLLERS];
+        u8              pattern;
+
+        osCreateMesgQueue(&amp;intMesgQueue, intMesgBuf, 1);
+        osSetEventMesg(OS_EVENT_SI, &amp;intMesgQueue, NULL);
+
+        /* Initialize SI device */
+        osContInit(&amp;intMesgQueue, &amp;pattern, &amp;sdata[0]);
+        /* start reading SI device status and type */
+        osContStartQuery(&amp;intMesgQueue);
+                .
+                .
+        /* Confirm the end of reading */
+        osRecvMesg(&amp;intMesgQueue, NULL, OS_MESG_BLOCK);
+        /* Obtain SI device status and type */
+        osContGetQuery(&amp;sdata[0]);
+}
+</PRE>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H3><A name="06-03"></A>26.1.6.3 Reset an SI Device</H3>
+<P>
+<B>Function</B>
+</P>
+<P>
+<tt>osContReset</tt>
+</P>
+<p><i>Reset all SI Devices</i></p>
+<P>
+<B>Syntax</B>
+</P>
+<pre>
+#include &lt;ultra64.h&gt;
+s32 osContReset(OSMesgQueue *mq, OSContStatus *status);
+</pre>
+<P>
+<B>Description</B>
+</P>
+<P>
+<tt>osContReset</tt> resets all the direct SI devices that are connected to the Controller Sockets. Specifically, it sets the current position of a 3D stick of a standard Controller back to the neutral position. If it's a voice recognition system, <tt>osContReset</tt> resets the parameters set by the initialization functions back to the default values. 
+</P>
+<P>
+mq is the message queue for initialized messages associated with OS_EVENT_SI events. Please see <A href="../../n64man/os/osSetEventMesg.htm">osSetEventMesg()</A> in the N64 Online Function Reference Manual, to learn how to make this association.
+</P>
+<P>
+SI device type and status are returned to status.You must supply a memory block large enough for MAXCONTROLLERS structures of type OSContStatus.<SUP><A href="#kome6">*6</A></SUP>. OSContStatus structure <SUP><A href="#kome7">*7</A></SUP> is shown below.
+</P>
+<PRE>
+typedef struct {
+        u16     type;   /* The type of SI device inserted in the Controller Socket */
+        u8      status; /* The status of the joyport */
+        u8      errno;  /* Error from the SI device */
+}OSContStatus;
+</PRE>
+<P>
+<B>Notes</B>
+</P>
+<P>
+This function is utilized at the time of SI device development, and is not normally required when creating applications.
+</P>
+<P>
+<A name="kome6"></A>*6 Regarding the <tt>osContSetCh()</tt> function (see <A href="#06-04">Section 26.1.6.4 "Set the Number of SI Devices to be Accessed"</A>), it is fine to set the number of direct-type SI devices to be used, to a value less than the value set for MAXCONTROLLERS, if the number of direct-type devices used will not be changed in the future.
+</P>
+<P>
+<A name="kome7"></A>*7 For details on OSContStatus structure, see the section on <tt>osContInit()</tt>.
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H3><A name="06-04"></A>26.1.6.4 Set the Number of SI Devices to be Accessed </H3>
+<P>
+<B>Function Name</B>
+</P>
+<P>
+<tt>osContSetCh</tt>
+</P>
+<p><i>Set the Number of SI Devices to be Accessed </i></p>
+<P>
+<B>Syntax</B>
+</P>
+<pre>
+#include &lt;ultra64.h&gt;
+s32 osContSetCh(u8 ch);
+</pre>
+<P>
+<B>Description</B>
+</P>
+<P>
+The <tt>osContSetCh()</tt> function specifies the number of devices for the functions to access when those functions access multiple direct SI devices. Specifically, those functions are <tt>osContStartReadData()</tt>, <tt>osContGetReadData()</tt>,  <tt>osContStartQuery()</tt>, <tt>osContGetQuery()</tt>, and <tt>osPfsIsPlug()</tt>. By default, it is set up for the system to read device data of the number specified in MAXCONTROLLERS.
+</P>
+<P>
+Direct SI devices that the system reads range from port 0 to port (ch-1). Note that it cannot be used to obtain the data only from the devices connected to Port 2 and Port 3 out of the number specified in MAXCONTROLLERS. It must start with the first port which is Port 0 in this case. Also ch cannot be greater than the number of MAXCONTROLLERS.
+</P>
+<P>
+By setting ch to a number smaller than MAXCONTROLLERS, you can save time in reading for Controller data. For instance, it can take as much as 2 milliseconds for the the <tt>osContStartReadData</tt> function to issue a read command and receive a message for completed data reading and for the <tt>osContGetReadData</tt> function to obtain data from Controller when ch is set to MAXCONTROLLERS. However, you can save around 0.3  milliseconds for every MAXCONTROLLERS you reduce. 
+</P>
+<P>
+<B>Notes</B>
+</P>
+<P>
+The function <tt>osContInit()</tt> must be called before the <tt>osContSetCh</tt> function is called. If the <tt>osContSetCh</tt> function is called before the <tt>osContInit</tt> function, the value specified for ch will be returned to MAXCONTROLLERS. 
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H2><A name="07"></A>26.1.7 Exchanging Pak-Type SI Devices</H2>
+<P>
+This section discusses the precautions related to exchanging Pak-type SI devices such as the Controller Pak, Rumble Pak, and the N64 Transfer Pak, in a single application. Please note the following three points when creating programs that assume switching between Pak-type SI devices. 
+</P>
+<OL>
+  <LI>When exchanging and using more than one type of Pak-type SI device, always initialize each specific device each time. For example, if you initialize and use a Controller Pak and then replace that device with an N64 Transfer Pak, you must initialize the N64 Transfer Pak to use it. If you then reinsert the Controller Pak, you must initialize the Controller Pak once again. This is because the SI device hardware must be initialized whenever it is newly inserted.  The OSPf structure is used as a common file handle for Pak-type SI devices. However, whenever the initialization process is executed for an SI device, this structure is initialized in the form best suited to that particular device. As a result, in order to handle a different SI device, the OSPf structure must be re-initialized so that it can take on the appropriate form for the new device. 
+  <LI>When a Pak-type SI device is removed while it is being accessed, you run the risk of a latch-up occurring. (A latch-up is a dangerous state in which an electric current continues to flow.) The hardware and the OS specifications are designed to avoid such an event. However, it is important that you also take measures on the application side. Please display a message that warns the user to be careful not to accidently pull the device out during game play. Clearly display messages prompting the user to remove the device in scenes where devices are to be switched. Also, in scenes where devices are not to be removed or inserted, let the player know they need to be careful about removing the device by displaying a message asking them to wait for the OK sign before removing the device. 
+  <LI>If the removal and insertion of Pak-type SI devices is to be detected automatically, please do so by checking the appropriate flags. Do not use the initialization functions to recognize the removal and insertion of particular devices. Rather, use the values of status returned by the <tt>osContStartQuery()</tt> and <tt>osContGetQuery()</tt> functions. If the CONT_CARD_PULL flag is up in status, you know that a device has been removed.  If the CONT_CARD_ON flag is up, you know that some device is inserted.  For example, if a Controller Pak is inserted and you want to confirm automatically when it has been replaced by a Rumble Pak, do NOT check this status by continually calling the <tt>osMotorInit()</tt> function. Instead, call the <tt>osContStartQuery()</tt>and <tt>osContGetQuery()</tt> functions and look at the values in status. Confirm that the Controller Pak was removed and a Rumble Pak was inserted, and then call the <tt>osMotorInit()</tt> function to initialize the Rumble Pak. 
+</OL>
+<P>
+The diagrams below provide only one example of the possible flow, and do not need to be followed exactly as written. Please feel free to design the process and display messages which fit the needs of your specific application.
+</P>
+<P>
+<IMG src="gif/f26-01-03.gif" border="0">
+</P>
+<P>
+<IMG src="gif/f26-01-04.gif" border="0">
+</P>
+<P>
+<IMG src="gif/f26-01-05.gif" border="0">
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+</BODY>
+</HTML>

@@ -1,0 +1,335 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 30 - Video Interface (VI)</title>
+<!-- Editor: Paula W
+      Notes: Converted from Word format, performed spell check. 
+             MAP- 10/26/99 edited content, updated format-->
+</head> 
+
+<H1>30.1 Introduction</H1>
+<P>
+This chapter gives a detailed description of the video interface assembly. The video interface for the N64 platform provides numerous hardware functions.  The purpose of this chapter is to give you a good understanding of these various functions so that you can use them appropriately as needed. 
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H2><A name="01"></A>30.1.1 What is a Video Interface (VI)?</H2>
+<P>
+The video interface performs the following functions. 
+</P>
+<ul>
+  <li>Creates signal timing when outputting to television monitor. 
+  <li>Specifies resolution and depth of color frame buffer. 
+  <li>Transfers from color frame buffer to video DAC (D-A converter) and specifies filters used during transfers. 
+  <li>Provides current display position information. 
+</ul>
+<P>
+<b>Note:</b>  The video DAC creates analog data from digital data and outputs said data as a television video image.  
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H2><A name="02"></A>30.1.2 What is the VI Manager?</H2>
+<P>
+Usually, video output must be sent as a signal that is based on television standards.  In addition, noise can appear on the television screen when the display timing suddenly changes or when the frame buffer changes during the display period.  Synchronization with V-blanking (the vertical retrace interval) and adding changes usually prevents this noise.  The VI Manager controls this. 
+</P>
+<P>
+The VI Manager also manages the timer processing and uses messages to notify the application of the V-blanking timing as events. 
+</P>
+<P>
+Separate frame buffers usually are provided for display and for rendering (drawing) to eliminate noise on the screen caused by rendering during display.  
+</P> 
+<P>
+An outline of this procedure is shown below. 
+</P>
+<ol>
+  <li>The application renders in the frame buffer not currently being displayed. 
+  <li>After the RDP completes rendering, the application sends the address of that frame buffer over to the  VI Manager. 
+  <li>The VI Manager refreshes the display frame buffer in synch with the next V-blank. 
+  <li>The application uses flags, etc. to replace the display and rendering frame buffers. 
+  <li>The procedure is repeated starting from 1.
+</ol> 
+<P>
+Sample Initialization Procedure (other initializations are actually necessary)
+</P>
+<dl>
+  <dd><img alt="Initialization Procedure" src="Image122.gif">
+</dl>
+<P>
+<b>Note:</b>  See <A href="../pro04/04-02.htm#09">Section 4.2.9 "VI Manager"</A> for details about the VI Manager.
+</P> 
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H3><A name="03"></A>30.1.3 What is the Display Mode?</H3>
+<P>
+The display mode consists of various combinations of 5 flags:  NTSC/PAL (FPAL)/MPAL format, high/low-resolution, anti-aliasing/point sampling, interlaced/non-interlaced mode, and 16/32-bit color pixel.
+</P>
+<table border=1 cellspacing=0>
+  <caption>Table 30-1 Display Mode Flags</caption>
+  <tr><td rowspan=4> Flag 1</td><td vspace=20>NTSC format</td></tr>
+  <tr><td>PAL format</td></tr>
+  <tr><td>MPAL format</td></tr>
+  <tr><td>FPAL (Full-screen PAL) format</td></tr>
+
+  <tr><td rowspan=2> Flag 2</td><td>H = High-resolution</td></tr>
+  <tr><td>L = Low-resolution</td></tr>
+
+  <tr><td rowspan=2> Flag 3</td><td>A = Anti-aliasing</td></tr>
+  <tr><td>P = Point sampling</td></tr>
+
+  <tr><td width=100> Flag 4</td>
+      <td><table border=1 cellspacing=0> 
+        <tr><td rowspan=2>Low-resolution</td><td>N = Non-interlaced</td></tr>
+        <tr><td>F = Interlaced</td></tr>
+        <tr><td rowspan=2>High-resolution</td><td>N = Normal interlacing</td></tr>
+        <tr><td>F = Deflickered interlacing</td></tr>
+      </td>
+      </table>
+
+  <tr><td width=100 rowspan=2> Flag 5</td><td>1 = 16-bit pixel size</td></tr>
+  <tr><td>2 = 32-bit pixel size</td></tr>
+</table>
+<P>
+See osViSetMode in the Function Reference for details on how to use these flags. 
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H3><A name="03-01"></A>30.1.3.1 Supported Television System Formats</H3>
+<P>
+The N64 libraries are compatible with NTSC, PAL, and MPAL television system formats.
+</P>
+<P>
+The television system format in Japan and North America, etc. is called the NTSC (National Television System Commission) format, which has 525 scan lines and a scanning frequency of 60Hz.
+</P>
+<P> 
+The PAL (Phase Alternation by Line) format is the television system format used in Europe (except for parts of France, etc.), Australia, and parts of Southeast Asia, and has 625 scan lines and a scanning frequency of 50Hz.
+</P>
+<P>  
+The MPAL (Phase Alternation by Line-M) format is the television system format for Brazil, and is the PAL format with 525 scan lines and a scanning frequency of 60Hz. 
+</P>
+<P>
+Refer to <a href="../../caution/caution/index5.htm">Programming Cautions, Section 5 "Video Mode"</a>. 
+</P>
+<P>
+<b>Note:</b>  FPAL is an acronym for Full-screen PAL that is used in connection with the N64, and is not the name of a television system format. 
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H3><A name="03-02"></A>30.1.3.2 High-resolution/Low-resolution</H3>
+<P>
+With the exception of FPAL, low resolution displays at 320x240 dots (FPAL displays at 320x288 dots in low-resolution).  High-resolution displays at 640x480 dots.  Usually when creating games, low-resolution is used.  The reasons for this are to speed up rendering (minimize the screen area that is drawn), and to reduce the amount of memory required. 
+</P>
+<P>
+The advantages of high resolution are that jagged edges (step-like noise) are less apparent due to the finer dot array, and that extremely intricate text and video images can be displayed.  Deciding which to use should be determined after considering the characteristics of the game.  
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H3><A name="03-03"></A>30.1.3.3 Anti-aliasing/Point Sampling</H3>
+<P>
+Point sampling was used in previous display formats.  However, when polygons are displayed at low-resolution, jagged edges are obvious in the outline.  Anti-aliasing can be performed with the N64 to minimize this.  This function is accomplished by pre-processing on the RDP and post-processing with the video interface.  
+</P>
+<P>
+If anti-aliasing is not performed with the video interface, the processing done with the RDP will have no effect.  In addition, even if anti-aliasing is performed with the video interface, it will have no effect if it is not also done with the RDP. 
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H3><A name="03-04"></A>30.1.3.4 Non-interlaced/Interlaced</H3> 
+<P>
+When the normal television system format is NTSC, a frame is expressed in approximately 1/30-second.  In this situation, one frame is divided into odd-numbered fields and even-numbered fields, which are not displayed at the same time, but are displayed respectively in alternating 1/60-second intervals.  This is referred to as interlaced display.  There is a great deal of flicker when interlaced display is used.  Since there are many cases in which low-resolution is used with the N64, non-interlaced display is used in which only the even-numbered fields are displayed.  (However, it is possible to set the system to use interlaced display even at low-resolution.)
+</P>
+<P> 
+Since high-resolution doubles the number of lines displayed in low-resolution, only interlaced display can be used.  If deflickered interlaced mode is used, the lines are averaged and displayed, making it possible to display video with minimal flicker.  However, since the data for both (odd-numbered and even-numbered) fields are needed to display one field in this situation, multiple-buffer processing is required. 
+</P>
+<P>
+<b>Note:</b>  Due to restrictions on the memory bandwidth when deflickered interlaced mode is used, there are cases in which noise will appear on the screen when there is frequent memory access to the same memory bank (1MB units) as that of the frame buffer during display.  The various frame buffers and the Z-buffer need to be situated in separate memory banks.  Also make sure not to situate the buffers used for DMA transfer (audio heap, etc.) in the same memory bank as the frame buffers.
+</P> 
+<dl>
+  <dt><a name="Image123"><strong>Figure 30-1 Interlaced scanning and non-interlaced scanning</strong></a>
+  <dd><img alt="[Figure 30-1]" src="Image123.gif">
+</dl>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H3><A name="03-05"></A>30.1.3.5 16/32 Pixel Size</H3>
+<P>
+The expressive capacity of each pixel that displays a video image is stated as the number of bits of color in terms of pixels.  16-bit pixels use 5 bits each for the three RGB colors, while 32-bit pixels use 8 bits each.  When this is expressed as gradations of white (excluding black), 16-bit pixels are capable of displaying up to 32 gradations, and 32-bit pixels are capable of displaying up to 255 gradations. 
+</P>
+<P>  
+There is a great deal of difference between the two.  Mach bands (stripe noise) will appear in areas in which there are subtle color changes when 16-bit pixels are used.  Mach bands are almost completely unnoticeable with 32-bit pixels, but twice the amount of memory is used as with 16-bit pixels.
+</P>
+<P> 
+A dither filter is available with the N64 to make Mach bands less apparent with 16-bit pixels. 
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H2><A name="04"></A>30.1.4 Special Video Interface Functions</H2>
+<P>
+The N64 video interface has special features that are set with <tt>osViSetSpecialFeatures</tt>.  Since these features are the final filters on the video image generated with the RDP, and have an effect on the entire screen, it is crucial that you accurately understand them. 
+</P>
+<table border=1 width=500 cellspacing=0>
+<caption>Table 30-2 Flags for Special VI Features</caption>
+<tr>
+  <th>Flag</th>
+  <th>Description</th>
+  <th>Default</th>
+</tr>
+<tr>
+  <td>OS_VI_GAMMA_ON<br>
+      OS_VI_GAMMA_OFF</td>
+  <td>Gamma correction ON/OFF</td>
+  <td>ON</td>
+</tr>
+<tr>
+  <td>OS_VI_GAMMA_DITHER_ON<br>
+      OS_VI_GAMMA_DITHER_OFF</td>
+  <td>Gamma dither ON/OFF</td>
+  <td>ON</td>
+</tr>
+<tr>
+  <td>OS_VI_DIVOT_ON<br>
+      OS_VI_DIVOT_OFF</td>
+  <td>Divot ON/OFF</td>
+  <td>ON</td>
+</tr>
+<tr>
+  <td>OS_VI_DITHER_FILTER_ON<br>
+      OS_VI_DITHER_FILTER_OFF</td>
+  <td>Dither filter ON/OFF</td>
+  <td>16-bit: ON<br>
+      32-bit: OFF</td>
+</tr>
+</table>
+<P>
+It is possible to use these constants as bit sums. 
+</P>
+<P>
+<b>Note:</b>  If <tt>osViSetMode</tt> is called, these flags are reset to their default values.  When the screen mode has been changed with <tt>osViSetMode</tt>, use <tt>osViSetSpecialFeatures</tt> to reset these flags.
+</P> 
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H3><A name="04-01"></A>30.1.4.1 Gamma Correction (GAMMA)</H3>
+<P>
+Gamma correction performs corrections so that the luminance curve of the Braun tube is in a proportionate relationship with the luminance curve of the original video image.  On the N64 as a default it  is ON.  Generally, since gamma correction is automatically added to the original video image output from CG Tools, etc., there are cases when the default is used and the image becomes entirely white due to the double correcting action.  In this case, it is necessary either to not perform gamma correction on the original video image, or to turn the gamma correction OFF with <tt>osViSetSpecialFeatures</tt>. 
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H3><A name="04-02"></A>30.1.4.2 Gamma Dither (GAMMA DITHER)</H3>
+<P>
+Gamma dither is the function that performs gamma correction using a dither pattern.  This feature is enabled when gamma correction is ON. 
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H3><A name="04-03"></A>30.1.4.3 Divot (DIVOT)</H3>
+<P>
+Divot is a filter for eliminating "divots" (single-pixel holes created when multiple boundary edges overlap in one pixel) in anti-aliased pixels.  Since there are cases in which one-pixel holes will appear where polygons are connected together, etc. when this is turned OFF, as a rule, it should be ON when anti-aliasing is being performed.  However, this correction is not a cure-all.  There are cases in which "divots" cannot be eliminated. 
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H3><A name="04-04"></A>30.1.4.4 Dither Filter (DITHER FILTER)</H3>
+<P>
+Mach bands can be made less apparent on the N64 with a method of creating pseudo-intermediate gradations with the RDP (dithering).  However, when this is done, a dither pattern "roughness" becomes apparent.  To counter this a dither filter is used.  Since the number of times that memory is accessed from the video interface increases when this filter is specified, there are cases in which the overall system performance will drop by as much as 1%. 
+</P>
+<P>
+<b>Note:</b>  Dither filter combinations
+</P>
+<P> 
+Depending on the combination of the dither filter specified with <tt>gDPSetColorDither</tt> and the dither filter specified with <tt>osViSetSpecialFeatures</tt>, there are cases when there is an effect and some cases where there is very little.
+</P>
+<P>
+When G_SHADING_SMOOTH has been specified with <tt>gSPSetGeometryMode</tt>, dithering will be effective, but there are instances in which it is better not to perform dithering when this mode has not been specified.  In addition, the dithering effect will be different when the surface area of the polygon is large and when it is small.  Specifically, the effects of dithering may not be noticeable when a lot of polygons with small surface area are used. 
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H3><A name="04-05"></A>30.1.4.5 Serrate (serrate)</H3>
+<P>
+Serrate are bits to absorb shifting between the even-numbered frames and odd-numbered frames when interlacing is performed.  This is generally always ON when interlacing is used, and OFF when non-interlacing is specified.  Since this setting is automatically made when the mode is selected with osViSetMode, there is no need for the user to do it. 
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H2><A name="05"></A>30.1.5 List of Video Interface Functions</H2>
+<ul>
+  <li><tt>osCreateViManager</tt><br>
+This creates and starts the VI Manager (VIM) system thread.  Call this only once during start-up.
+<P>
+  <li><tt>osViBlack</tt><br>
+This enables you to blackout the screen at the next V-blank. OsViSetYScale(1.0) must have been called at this time.          The setting will be updated at the next V-blank.
+<P>
+  <li><tt>osViFade</tt><br>
+This will fade the entire screen by changing the colors of the values of the first and second rows in the frame buffer using the interpolation coefficient.  Fade-out processing, etc. can be performed by changing this at each V-blank.  This function is enabled when the system is set for low-resolution, point sampling, and non-interlacing. 
+When a PreNMI occurs, osViFade will need to be disabled and osViSetYScale(1.0) called before osViBlack is used. The setting will be updated at the next V-blank.
+<P>
+  <li><tt>osViGetStatus</tt><br>
+This returns the contents of the status register currently being displayed by the video interface.  See the Function Reference for details.
+<P>
+  <li><tt>osViGetCurrentLine</tt><br>
+This returns the current half-line number that has been sampled at each line.  This function directly reads the hard register.
+<P>
+  <li><tt>osViGetCurrentMode</tt><br> 
+This returns the current display mode.  Once <tt>osViSetMode</tt> has been set, these contents will not be reflected until the next V-blank. 
+<P>
+  <li><tt>osViGetCurrentFramebuffer</tt><br>
+This returns the start address of the frame buffer currently being displayed.  When a frame buffer has been set with <tt>osViSwapBuffer</tt>, the address that was set by <tt>osViSwapBuffer</tt> will be returned when the next V-blank comes up. 
+<P>
+  <li><tt>osViGetNextFramebuffer</tt><br> 
+This returns the start address of the frame buffer set by the immediately preceding <tt>osViSwapBuffer</tt>.  The contents do not change, even when a V-blank comes up. 
+<P>
+  <li><tt>osViGetCurrentField</tt><br>
+This returns the field number currently being accessed by the video interface.  This function directly reads the hardware register.  A 0 (zero) will always be returned with non-interlaced video. 
+<P>
+  <li><tt>osViRepeatLine</tt><br>
+This repeatedly displays the data in the first line of the frame buffer over the entire screen.  The setting is updated at the next V-blank. 
+<P>
+  <li><tt>osViSetMode</tt> <br>
+This sets the video interface mode to one of 56 modes.  This setting is updated at the next V-blank. 
+<P>
+  <li><tt>osViSetEvent</tt><br>
+This registers the specified message queue and message in the VI Manager.  This makes it possible to receive message queues (mq) and notification messages (msg) from the VI Manager when the program is generating a V-blank.  It is enabled immediately after being called, but if it is registered multiple times, only the last registered one is valid. 
+<P>
+  <li><tt>osViSet[X/Y]Scale</tt><br> 
+The enlargement ratio in the horizontal direction (x-scale) and the enlargement ratio in the vertical direction (y-scale) can each be changed.  With a PreNMI event or when <tt>osViBlack</tt>, etc. is used, it is necessary to set the enlargement ratio in the vertical direction to 1.0.  This setting is updated at the next V-blank. 
+<P>
+  <li><tt>osViSetSpecialFeatures</tt> <br>
+This sets the special video interface features, such as gamma correction and dither filter, etc.  The video mode must be set with <tt>osViSetMode</tt> prior to making any of these settings.  This setting is updated at the next V-blank. 
+<P>
+<li><tt>osViSwapBuffer</tt> <br>
+This registers the start address of the frame buffer being displayed.  The address is updated at the next V-blank. 
+<P>
+  <li><tt>osTvType</tt><br>
+This shows the television system format supported by the N64 Control Deck.  This was already determined during boot-up.  This is for reference only and no alterations should be done to the program. 
+<P>
+  <li><tt>osViClock</tt><br>
+This shows the clock frequency corresponding to the television system format supported by the N64 Control Deck.  It was determined when osInitialize was called and is for reference only, so no alterations should be done to the program.
+</ul>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+</BODY>
+</HTML>

@@ -1,0 +1,237 @@
+<html>
+
+<!..
+-- CHANGE START --
+1998/10/07
+
+softimage scale was changed to unique scale
+
+-- CHANGE END --
+..>
+
+<HEAD>
+<TITLE>Flags</TITLE>
+</HEAD>
+<BODY LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff">
+
+<font face="arial" size="-1">
+<b><font size="3">Appendix #1 - Flags</font></b>
+<HR>
+
+<P>
+
+<font face="courier" size="2">
+<pre>
+
+/* Nintendo Intermediate File Format 2.0 Extension Flags */
+
+
+/* ShapeList -> Shape -> shape_type */
+
+SHAPE_TYPE_USE_VTX_ALPHA_FOR_FOG    0x00000100
+
+
+/* ObjList -> Obj -> obj_render_type* */
+
+/*********************************************************************
+N64 Style
+
+In the document of NIFF1.0, we describe the flag setting render mode.
+But this may be hard to use, especially for designers.
+So we changed N64 type render mode definition.
+Please set the following name and new n64 style bit.
+These names are "#define" macro name in /usr/include/PR/gbi.h, they are 
+usually used by N64 programmers.
+
+*********************************************************************/
+
+/********************************************************************
+ obj_render_type0 and obj_render_type0_for_fog
+
+31          22 21                         0
+[     0x4     |       render_macro        ]
+
+render_macro  bit     name
+
+OPA_SURF      0x100   Opaque Surface
+XLU_SURF      0x101   Transparent Surface
+OPA_DECAL     0x102   Opaque Decal(Only zbuffer using)
+XLU_DECAL     0x103   Transparent Decal(Only zbuffer using)
+OPA_INTER     0x104   Opaque Interpenetration(Only Anti-alias and zbuffer using)
+XLU_INTER     0x105   Transparent Interpenetration(Only Anti-aliasing and zbuffer using)
+TEX_EDGE      0x106   Texture Edge(Without Point sampling and zbuffer using)
+TEX_INTER     0x107   Texture Interpenetration(Only Anti-aliasing and zbuffer using)
+SUB_SURF      0x108   Subcutaneous Surface(Only Anti-aliasing)
+PCL_SURF      0x109   Particle Surface
+OPA_TERR      0x10a   Opaque Terrain(Only Anti-aliasing)
+TEX_TERR      0x10b   Texture Terrain(Only Anti-aliasing)
+SUB_TERR      0x10c   Subcutaneous Terrain(Only Anti-aliasing)
+CLD_SURF      0x10d   Cloud Surface(Only Point sampling)
+OVL_SURF      0x10e   Overlay Surface(Only Point sampling and zbuffer using)
+ADD	      0x10f   Add pixel color onto memory color
+NOOP	      0x110   Noop
+PASS	      0x111   Pass
+FOG_SHADE_A   0x112   Shading Fog
+FOG_PRIM_A    0x113   Primitive Fog
+
+***************************************************************************/
+
+#define OBJ_RENDER_TYPE0_GBI_MODE     0x01000000
+
+#define OBJ_RENDER_TYPE0_OPA_SURF     0x100
+#define OBJ_RENDER_TYPE0_XLU_SURF     0x101
+#define OBJ_RENDER_TYPE0_OPA_DECAL    0x102
+#define OBJ_RENDER_TYPE0_XLU_DECAL    0x103
+#define OBJ_RENDER_TYPE0_OPA_INTER    0x104
+#define OBJ_RENDER_TYPE0_XLU_INTER    0x105
+#define OBJ_RENDER_TYPE0_TEX_EDGE     0x106
+#define OBJ_RENDER_TYPE0_TEX_INTER    0x107
+#define OBJ_RENDER_TYPE0_SUB_SURF     0x108
+#define OBJ_RENDER_TYPE0_PCL_SURF     0x109
+#define OBJ_RENDER_TYPE0_OPA_TERR     0x10a
+#define OBJ_RENDER_TYPE0_TEX_TERR     0x10b
+#define OBJ_RENDER_TYPE0_SUB_TERR     0x10c
+#define OBJ_RENDER_TYPE0_CLD_SURF     0x10d
+#define OBJ_RENDER_TYPE0_OVL_SURF     0x10e
+#define OBJ_RENDER_TYPE0_ADD          0x10f
+#define OBJ_RENDER_TYPE0_NOOP         0x110
+#define OBJ_RENDER_TYPE0_PASS         0x111
+#define OBJ_RENDER_TYPE0_FOG_SHADE_A  0x112
+#define OBJ_RENDER_TYPE0_FOG_PRIM_A   0x113
+
+
+
+/*********************************************************************
+ obj_render_type1 and obj_render_type1_for_fog
+
+31          22 21                         0
+[     0x4     |       render_macro        ]
+
+render_macro  bit     name
+
+OPA_SURF      0x200   Opaque Surface
+XLU_SURF      0x201   Transparent Surface
+OPA_DECAL     0x202   Opaque Decal(Only zbuffer using)
+XLU_DECAL     0x203   Transparent Decal(Only zbuffer using)
+OPA_INTER     0x204   Opaque Interpenetration(Only Anti-alias and zbuffer using)
+XLU_INTER     0x205   Transparent Interpenetration(Only Anti-aliasing and zbuffer using)
+TEX_EDGE      0x206   Texture Edge(Without Point sampling and zbuffer using)
+TEX_INTER     0x207   Texture Interpenetration(Only Anti-aliasing and zbuffer using)
+SUB_SURF      0x208   Subcutaneous Surface(Only Anti-aliasing)
+PCL_SURF      0x209   Particle Surface
+OPA_TERR      0x20a   Opaque Terrain(Only Anti-aliasing)
+TEX_TERR      0x20b   Texture Terrain(Only Anti-aliasing)
+SUB_TERR      0x20c   Subcutaneous Terrain(Only Anti-aliasing)
+CLD_SURF      0x20d   Cloud Surface(Only Point sampling)
+OVL_SURF      0x20e   Overlay Surface(Only Point sampling and zbuffer using)
+ADD	      0x20f   Add pixel color onto memory color
+NOOP	      0x210   Noop
+
+************************************************************************/
+
+#define OBJ_RENDER_TYPE1_GBI_MODE     0x01000000
+
+#define OBJ_RENDER_TYPE1_OPA_SURF     0x200
+#define OBJ_RENDER_TYPE1_XLU_SURF     0x201
+#define OBJ_RENDER_TYPE1_OPA_DECAL    0x202
+#define OBJ_RENDER_TYPE1_XLU_DECAL    0x203
+#define OBJ_RENDER_TYPE1_OPA_INTER    0x204
+#define OBJ_RENDER_TYPE1_XLU_INTER    0x205
+#define OBJ_RENDER_TYPE1_TEX_EDGE     0x206
+#define OBJ_RENDER_TYPE1_TEX_INTER    0x207
+#define OBJ_RENDER_TYPE1_SUB_SURF     0x208
+#define OBJ_RENDER_TYPE1_PCL_SURF     0x209
+#define OBJ_RENDER_TYPE1_OPA_TERR     0x20a
+#define OBJ_RENDER_TYPE1_TEX_TERR     0x20b
+#define OBJ_RENDER_TYPE1_SUB_TERR     0x20c
+#define OBJ_RENDER_TYPE1_CLD_SURF     0x20d
+#define OBJ_RENDER_TYPE1_OVL_SURF     0x20e
+#define OBJ_RENDER_TYPE1_ADD          0x20f
+#define OBJ_RENDER_TYPE1_NOOP         0x210
+
+
+/* TexList -> Tex -> tex_filter */
+
+#define NIFF2_TEX_FILTER_POINT                0x00000000
+#define NIFF2_TEX_FILTER_BILERP               0x00000001
+#define NIFF2_TEX_FILTER_AVERAGE              0x00000002
+
+/* TexList -> Tex -> use_perspective_correction */
+
+#define NIFF2_NO_PERSPECTIVE_CORRECTION       0x00000000
+#define NIFF2_PERSPECTIVE_CORRECTION          0x00000001
+
+/* TexList -> Tex -> mipmap_level */
+
+#define NIFF2_NO_MIPMAP                       0x00000000
+
+/* TexList -> Tex -> use_color_palette */
+
+#define NIFF2_NO_USE_COLOR_PALETTE            0x00000000
+#define NIFF2_USE_COLOR_PALETTE               0x00000001
+
+/* AnimList -> AnimGroup */
+
+#define NIFF2_ANIM_CHANNEL_NO_USE                       0x00000000
+#define NIFF2_ANIM_CHANNEL_ROTATE_AXIS                  0x00000001
+#define NIFF2_ANIM_CHANNEL_ROTATE_X                     0x00000002
+#define NIFF2_ANIM_CHANNEL_ROTATE_Y                     0x00000004
+#define NIFF2_ANIM_CHANNEL_ROTATE_Z                     0x00000008
+#define NIFF2_ANIM_CHANNEL_ORIENTATION_XY               0x00000010
+#define NIFF2_ANIM_CHANNEL_TRANSLATION                  0x00000020
+#define NIFF2_ANIM_CHANNEL_UNIQUE_SCALE              0x00000040
+#define NIFF2_ANIM_CHANNEL_CLASSICAL_SCALE              0x00000080
+#define NIFF2_ANIM_CHANNEL_ORIENTATION_CONSTRAINT       0x00000100
+#define NIFF2_ANIM_CHANNEL_DIRECTION_CONSTRAINT         0x00000200
+#define NIFF2_ANIM_CHANNEL_UPVECTOR_CONSTRAINT          0x00000400
+#define NIFF2_ANIM_CHANNEL_POSITION_CONSTRAINT          0x00000800
+#define NIFF2_ANIM_CHANNEL_UNIQUE_SCALE_CONSTRAINT   0x00001000
+#define NIFF2_ANIM_CHANNEL_CLASSICAL_SCALE_CONSTRAINT   0x00002000
+
+/* AnimList -> AnimGroup -> *** -> interpolation_type */
+
+#define NIFF2_INTERPOLATION_TYPE_CONST        0x00000000
+#define NIFF2_INTERPOLATION_TYPE_FULL         0x00000001
+#define NIFF2_INTERPOLATION_TYPE_LINEAR       0x00000002
+#define NIFF2_INTERPOLATION_TYPE_HERMITE      0x00000003
+
+/* CiImgList -> CiImg -> ci_img_pixel_depth */
+
+#define NIFF2_CI_PIXEL_DEPTH_4                0x00000004
+#define NIFF2_CI_PIXEL_DEPTH_8                0x00000008
+
+/* ColorPaletteList -> ColorPalette -> color_num */
+
+#define NIFF2_PALETTE_COLOR_16                0x00000010
+#define NIFF2_PALETTE_COLOR_256               0x00000100
+
+/* ColorPaletteList -> ColorPalette -> color_type */
+
+#define NIFF2_PALETTE_RGBA16                  0x00000000
+#define NIFF2_PALETTE_IA16                    0x00000001
+
+/* JointList -> Joint -> joint_type */
+
+#define NIFF2_1ST_JOINT                       0x00000000
+#define NIFF2_2ND_JOINT                       0x00000001
+#define NIFF2_JOINT_UP                        0x00000000
+#define NIFF2_JOINT_DOWN                      0x00010000
+
+/* JointList -> Joint -> joint_index */
+
+#define NIFF2_NO_LINK_TO_JOINT                0xffffffff
+
+/* JointList -> Joint -> effector_index */
+
+#define NIFF2_NO_LINK_TO_EFFECTOR             0xffffffff
+
+</pre>
+</font>
+<p>
+
+<hr>
+
+</body>
+</html>
+
+

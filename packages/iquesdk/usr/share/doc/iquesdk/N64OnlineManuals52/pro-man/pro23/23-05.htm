@@ -1,0 +1,72 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 23 - GameShop Debugger</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. -->
+</head>
+
+<h1>23.5 Using the Debugger</h1>
+
+<p>Once you have all the required software installed on your system, you can modify your application to include rmon. Since rmon is a  rather passive <A target="keywords" HREF="../../keywords/index/data/system.htm#thread">thread</A>, it does not require you to run the debugger. It just waits for incoming requests and does not interfere with the game operation unless requests arrive. An include file, rmon.h, is provided as part of the distribution. It should be included by the file that creates and starts the rmon thread. </p>
+
+<p>Once you have built your application, you are ready to debug it.</p>
+
+<ol>
+  <li>Start <a href="../../n64man/tool/dbgif.htm">dbgif</a> in a window of its own.<br><br>
+  <li>Use <a href="../../n64man/tool/gload.htm">gload</a> to download your application.<br><br>
+  <li>You may now start <a href="../../n64man/tool/gvd.htm">gvd</a> itself.<br>
+
+For the Nintendo 64, it is required that <a href="../../n64man/tool/gvd.htm">gvd</a> be started with the name of your executable (the <A target="keywords" HREF="../../keywords/index/data/system.htm#boot">boot</A> executable, if there is more than one) on the command line. For example, if your executable is named sample, you would enter: <br>
+
+      <blockquote><pre>
+<a href="../../n64man/tool/gvd.htm">gvd</a> sample &amp;
+      </pre></blockquote>
+The debugger starts. It makes no attempt to contact the target system yet. You should have a source window and a small status window (which may be minimized if desired). Now you must establish a link to the target. <br><br>
+
+  <li>Select the Admin pulldown menu and click Switch Thread.<br>
+You will be prompted for the ID of the thread to which you wish to connect. Under the N64 OS, threads do not really have small integer IDs; instead, they are referenced by the address of their thread control blocks. When you created the thread initially, you assigned it an ID for the debugger to use. <br><br>
+
+  <li>Specify the ID you assigned to the thread to which you will be attaching.<br>
+
+You may only attach to a thread that is in a stopped state. If you start the application with all threads stopped as recommended above, you will not have any problems attaching. <br><br>
+</ol>
+
+<p>Once you have successfully attached, the host and target will communicate to pass information about the system state back and forth. This takes a few seconds, or even longer if you have many threads. Once completed, you may bring up other views as appropriate to
+your debug session. Open views by selecting the Views pulldown menu and then clicking on the view you wish to see. The most frequently used of these are: </p>
+
+<dl>
+  <dt><strong>Register View</strong>
+  <dd>This is where you may examine or modify the contents of all R4300 registers (except for some system control registers). Note that these registers apply to the thread to which you are currently attached. Switching threads with this view open refreshes it with the register contents for the new thread. You can only examine and modify the registers of a thread that is stopped. 
+</dl>
+<dl>
+  <dt><strong>Memory View</strong>
+  <dd>As you would expect, this is where you examine and modify memory contents. You may specify the window origin by address or symbol. This window has two modes. In single-word mode, it displays and modifies exactly one memory word without touching any other locations. This is the mode you would use for dealing with memory-mapped registers. In block mode, it displays a block of memory from the specified starting address. The size of the block is mostly determined by the size of the window on your screen. Stretching the window gives you more memory to look at. Shrinking it gives you less. You may specify the base in which you wish memory to be displayed. 
+</dl>
+<dl>
+  <dt><strong>Disassembly View</strong>
+  <dd>This view shows you memory contents as disassembled code based on the current Program Counter value, or else disassembled from some address you specify. The source line corresponding to the disassembled memory is also displayed. There are a number of configuration options for this window that let you customize it to the display that you find most useful. 
+</dl>
+<dl>
+  <dt><strong>Trap Manager</strong>
+  <dd>This view shows you all breakpoints that are set. Breakpoints also show up in the source and disassembly windows as pink lines. The current Program Counter shows up as a green line.
+</dl>
+
+<p>The source view, which is the main view of <a href="../../n64man/tool/gvd.htm">gvd</a>, consists of a set of control buttons for running and stopping the selected thread, plus two other windows. The source window (the middle portion of the view) displays the source at the current PC (by default), and tracks the program counter to keep it on screen whenever possible. You may set breakpoints here by clicking in the margin to the left of the line at which you wish to set the breakpoint. </p>
+
+<p>The bottom of the source view is a small command line window where you may enter commands and see the results. The mouse cursor must be in this window to use it. This window is usually used to examine data objects like structures. For example, if you wish to look at a message queue called audioMQ, you can enter print audioMQ, and the contents of the structure (including all its members) will be printed. Since the compiler and debugger were designed to work together, the debugger has quite good type information for displaying complex structures like this. </p>
+
+<p>If you plan to use this window much, it is probably a good idea to move the debugger higher on the screen and stretch the bottom down to enlarge the command portion of the view. The default size is a bit small. This window accepts most <A target="keywords" HREF="../../keywords/index/data/system.htm#dbx command">dbx commands</A>, for those of you familiar with this popular UNIX debugger. </p>
+
+<p>The command window is also useful for setting breakpoints in functions that are not on screen because they are in a different source file. While you can always change source files and set a breakpoint, it is more convenient (providing you wish to stop at the start of a
+function) to use the &QUOT;stop in&QUOT; command. If you know that you are trying to isolate a problem in a function called sendDisplayList, then it is probably best to type &QUOT;stop in sendDisplayList&QUOT; in the command window, then click Continue. This will run your application until any thread enters the specified function. </p>
+
+<p><strong>Note:</strong>  Encountering a breakpoint stops all threads with priorities in the user range (1 through 127). In general, co-processor interrupts are blocked while rmon is running, and CPU interrupts are enabled. </p>
+
+<p>The Admin pulldown menu also contains a few other useful items. First, this is how you exit the debugger. You may also change to a different executable here, but you should then do another Switch Thread command. There is a multithread view in this menu, which is useful to have opened if you use more than one thread. It allows you to start and stop multiple threads as a group, and indicates whether a given thread is running or stopped. If stopped, it shows you which function it was executing. It also shows you the name of the thread data structure used in thread <A target="keywords" HREF="../../keywords/index/data/system.htm#system call">system calls</A>. </p>
+
+<p>You will probably find <a href="../../n64man/tool/gvd.htm">gvd</a> to be fairly intuitive, especially if you have used other <A target="keywords" HREF="../../keywords/index/data/system.htm#source level debugger">source level debuggers</A>. The on-line help is provided in <a href="../../n64man/tool/gvd.htm">gvd</a> to answer most questions that arise in debugger operation.</p>
+
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+</body> </html>

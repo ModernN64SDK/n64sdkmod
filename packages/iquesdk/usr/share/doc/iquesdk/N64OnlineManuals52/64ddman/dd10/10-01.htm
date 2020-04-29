@@ -1,0 +1,614 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<TITLE>Chapter 10 64DD</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+<font face="arial" size="-1">
+<b>10.1 Sample Program ddspgame</b>
+<P>
+The program ddspgame is provided as a sample 64DD program.  The program calls disk functions while displaying to the screen.  It displays errors resulting from the function calls and the corresponding error messages, using the 64DD internal ROM fonts. The program's content is based on the sample game spgame, which has been included with the OS for some time, with the addition of programs for 64DD.
+</P>
+<P>
+The purpose of this sample is to provide the hdd.h module, an implementation of   64DD processing sequences, as a model for processing sequences.  Using this as a foundation, application creators can build original 64DD processing sequences and thereby quickly become familiar with creating applications for DD. 
+</P>
+<P>
+This section is organized as follows. 
+</P>
+<TABLE border="0" cellpadding="3">
+  <TR>
+    <TD><font face="arial" size="-1"><B>10.1.1</B></TD>
+    <TD><font face="arial" size="-1">A summary of the procedure for installing the hdd.h module.</TD></TR>
+  <TR>
+    <TD><font face="arial" size="-1"><B>10.1.2</B></TD>
+    <TD><font face="arial" size="-1">Terminology definitions. </TD></TR>
+  <TR>
+    <TD valign="top"><font face="arial" size="-1"><B>10.1.3 - 10.1.8</B></TD>
+    <TD><font face="arial" size="-1">A detailed description of the procedure of 10.1.1 using the sample program ddspgame. </TD></TR>
+  <TR>
+    <TD><font face="arial" size="-1"><B>10.1.9 - 10.1.11</B></TD>
+    <TD><font face="arial" size="-1">Description of the internal processing of the hdd.h module. </TD></TR>
+</TABLE>
+
+<P>
+<A href="index.htm"><IMG src="../../gif/index.gif" height="17" width="65" border="0"></A>
+<HR>
+<u><A name="01"></A>10.1.1  Procedure for Using the hdd.h Module</u>
+<P>
+First, a brief summary of the source-creation process used with the hdd.h module. <BR>
+Terminology explanations and detailed descriptions of each step in the process are given in subsequent sections. 
+</P><font face="arial" size="-1">
+<ol>
+<li>Including the header file.
+<ul>
+<li>Include hdd.h.</ul> 
+<P>
+<li>Transmitting wait messages for the disk processing thread. 
+<ul>
+<li>Place dd_flush( ) in the retrace wait thread. 
+</ul>
+<P><font face="arial" size="-1">
+<li>Creating the error message rendering area. </B>
+<ul>
+<li>Include herr.h and place scr_error( ) in the rendering thread. <BR>
+<li>Rewrite scr_error( ) to accommodate the rendering method of the application. 
+</ul>
+<P>
+<li>Determining the method used to check the integrity of 64DD RAM area data. 
+<ul>
+<li>Rewrite dd_checksum.c to accommodate the data checking method of the application. 
+</ul>
+<P><font face="arial" size="-1">
+<li>Describing the portion of the program for issuing processing instructions.</B>
+<ul>
+<li>Call dd_create( ) once when the application is initialized. <BR>
+<li>Declare the Tmessage4dd structure _ddmsg (can be given any name). <BR>
+<li>Set the _ddmsg member retQ to the message queue for command completion notification .<BR>
+<li>Inside if( dd_cheakGate(&amp;_ddmsg)) 
+</ul></ol>
+<ol>
+<ol>
+<li>Set _ddmsg to a command and execute dd_exec( ). <br>
+<li>Describe the processing of _ddmsg execution results. 
+</ol></ol>
+
+<P>
+<br>
+<A href="index.htm"><IMG src="../../gif/index.gif" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<u><A name="02"></A>10.1.2 Definitions of the Terminology Used in this Chapter</u>
+<P>
+<B>Module</B>
+</P>
+<P>
+A group of functionally similar functions.  The declarations for each module usually are collected in a single header file.  Thus, for convenience, the module is referred to by the name of this header file.  The following 7 modules are defined in this sample. 
+</P>
+<TABLE cellpadding="3">
+  <TR><td><font face="arial" size="-1">
+    cont.h<br>
+   font.h<br>
+    hdd.h<br>
+    main.h</TD></TR>
+  <TR>
+    <TD><font face="arial" size="-1">herr.h</br>
+    hscr.h</br>
+     htry.h</br>
+     </TD></TR>
+</TABLE>
+
+<P>
+sysassigned.h contains constants and macro definitions and sp_*.h contains sprite data. (Note: In the NW version, sp_*.h is created during make execution.)  They are not modules.  Header files used for library functions, such as ultra64.h
+and leo.h, also are referred to as modules here. 
+</P>
+<P>
+<B>Higher-Order Module</B>
+</P>
+<P>
+Some modules provide extern functions in a larger functional unit that includes all the functions of another module.  These are called higher-order modules. In this sample, hdd.h is designed as a higher-order module of leo.h.  There is no higher-order/lower-order relation between the other modules.  This sample adopts the policy that combined use of functions provided by higher-order and lower-order modules is not desirable.
+</P>
+<P>
+<B>Disk Thread</B>
+</P>
+<P>
+A thread used for execution and error handling of library functions that access 64DD. 
+</P>
+<P>
+<B>Wait, Executable, and Execution Thread States</B>
+</P>
+<P>
+When a thread executes osRecvMesg( ) in block mode, the thread is placed in the wait state if there are no messages queued and in the executable state if a message already has arrived.  Of the threads in the executable state, execution privilege is then granted to that with the highest priority.  The thread with execution privilege is said to be in the execution state.  For more information, see the references for the functions sSendMesg( ) and osRecvMesg( ). 
+</P>
+<P>
+<B>Posting Processing Instructions</B>
+</P>
+<P>
+The placement of messages in the queue used to receive disk thread command instructions.   In the disk thread, osRecvMesg( ) is executed for this queue in block mode, so the thread is placed in the executable state after the instructions are posted.
+</P>
+<P>
+<B>Wait</B>
+</P>
+<P>
+Refers to placement of the thread in the wait state until the next retrace.
+</P>
+<P>
+<B>Message Command</B>
+</P>
+<P>
+Refers to the TMessage4dd structure, which is passed to the disk processing thread as the OSMesg argument to osSendMesg().  Internal functions that perform various types of processing are called in the disk processing thread according to the value of the command member of the TMessage4dd structure.   For more information on the commands, see command.jp in the sample directory.
+</P>
+<P>
+<B>Synchronous Function</B>
+</P>
+<P>
+Refers here to a function whose processing the called thread waits for completion of.
+</P>
+<P>
+<A href="index.htm"><IMG src="../../gif/index.gif" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<u><A name="03"></A>10.1.3 Overall Structure</u>
+<P>
+The main change in ddspgame from spgame is the addition of a dedicated disk processing thread.  The main thread uses a function called dd_exec(
+) to post processing instructions to the disk thread.  Dividing processing across threads enables disk processing and screen rendering to be performed in parallel. 
+</P>
+<P>
+<A href="index.htm"><IMG src="../../gif/index.gif" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<u><A name="04"></A>10.1.4 Description of the Main Modules</u>
+<P>
+The following describes the main modules used by the sample program.
+</P>
+<P>
+<B>hdd.h</B>
+</P>
+<P>
+This module executes the 64DD library functions defined in leo.h and includes the error-handling sequences used after execution of these functions.  Because hdd.h is a higher-order module of leo.h, the usual 64DD library functions are not used when hdd.h is used.
+</P>
+<P>
+The following 6 functions are the main functions used.  Specific examples of their usage are described in the subsequent sections.  The file funcs.jp in the sample directory also describes the functions provided by this module.
+</P>
+<DL>
+  <DT>s32 dd_create( void )
+  <DD>Generates the disk processing thread and performs the necessary initialization.  Returns a value of -1 with normal termination; does nothing and returns 0 if it has already been called.
+</DL>
+<DL>
+  <DT>s32 dd_exec( TMessage4dd * msg )
+  <DD>Posts commands to the disk processing thread.  The disk thread processes the commands asynchronously if msg-&gt;retQ is specified.  Constants that specify msg-&gt;command are defined in hdd.h as LEOCMD_*.  If posting of a command fails, the function returns 0.
+</DL>
+<DL>
+  <DT>s32 dd_checkGate( TMessage4dd * msg )
+  <DD>Returns -1 if disk thread processing started by dd_exec( ) is completed and 0 if it is in progress.
+</DL>
+<DL>
+  <DT>TDDStatus *dd_getStatus(void)
+  <DD>A variety of information corresponding to the status of the disk thread is stored in dd_stat, an internal structure of the module. dd_getStatus( ) returns a pointer to this structure.  The rendering thread checks this structure each time and renders error messages as needed.
+</DL>
+<DL>
+  <DT>s32 dd_thaw(s32 target_err)
+  <DD>Resumes error handling in an interrupted disk thread.  target_err must match dd_getStatus( )-&gt;errno.
+</DL>
+<DL>
+  <DT>void dd_flush(void)
+  <DD> An auxiliary function that enables the disk thread wait function dd_wait( ).  When the hdd.h is used, dd_flush( ) must be called for every frame by threads other than the disk thread, which includes a retrace wait.
+</DL>
+<P>
+<B>hscr.h</B>
+</P>
+<P>
+A module added to spgame that has a screen-rendering section. test_64dd( ) is the central component of this application, which uses hdd.h.  It displays the messages posted to the disk thread and the results of those postings.
+</P>
+<P>
+<B>herr.h</B>
+</P>
+<P>
+An error message rendering module. scr_error( ) is called by test_64dd( ) for every frame. 
+</P>
+<P>
+<B>font.h</B>
+</P>
+<P>
+Defines functions for using fonts in DDROM.
+</P>
+<P>
+<A href="index.htm"><IMG src="../../gif/index.gif" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<u><A name="05"></A>10.1.5 Using the hdd.h Module </u>
+<P>
+hdd.h (dd.c, hdd_internal.h, dd_core.c, dd_func.c, and dd_checksum.c) was designed as an independent module that can easily be installed without modification in existing N64 programs.  However, there are rules for using hdd.h.  In addition, special editing is required for components that depend on methods specific to the application, such as error message rendering.  The following are guidelines for installing and using the hdd.h module in an application. 
+</P>
+<P>
+First, before performing disk processing, call dd_create( ) from the thread issuing the disk commands.  This creates and initializes the disk thread.
+</P>
+<HR align="left" noshade width="50%">
+<PRE><font face="courier" size="2">dd_create();</PRE></font>
+<HR align="left" noshade width="50%">
+<P>
+After performing the necessary initialization process with functions such as LeoInitialize( ), wait for command messages from other threads.
+</P>
+<P>
+Use dd_exec( ) to pass messages to the disk thread. In the following example, the disk ID is obtained.
+Execution of dd_exec( ) stores the disk ID in _id.
+</P>
+<HR align="left" noshade width="50%">
+<P>
+<PRE><font face="courier" size="2">Tmessage4dd _ddmsg;<BR>
+...<BR>
+_ddmsg.command = LEOCMD_GETID;<BR>
+_ddmsg.param.hi = (s32)&amp;_id;<BR>
+_ddmsg.param.lo = 0;<BR>
+<BR>
+dd_exec( &amp;_ddmsg );</pre></font>
+<HR align="left" noshade width="50%">
+<P>
+The Tmessage4dd structure is a command message passed to the disk thread.  It is usually defined as a static or global variable.
+<HR align="left" noshade width="50%">
+<PRE><font face="courier" size="2">typedef struct{
+        s32             command;  
+        s32             locked;         /* 0 means available */
+        struct
+        {
+                s32     hi;
+                s32     lo;
+                s32     rw;
+                s32     offs;
+        }param;
+        OSMesgQueue     *retQ;
+        s32             retVal;
+} TMessage4dd;
+</PRE></font>
+<HR align="left" noshade width="50%">
+<P>
+The member retQ is preset as a pointer to a message queue used for notification that the disk thread has terminated.  Following processing of the command, the member retVal is set by the disk thread to a value indicating the status of the results of processing.
+</P>
+<P>
+When a command is posted to the disk thread from another thread, the disk thread begins processing after all threads with a higher priority enter a wait state (eg, a retrace wait).  Once processing is finished, the disk thread returns to the message wait state.  The thread that posted the command obtains the results of processing using dd_checkGate( ).  In this sample, the rendering thread that posted the command has an even lower priority than the disk thread.  Although disk command processing finishes quickly in this case, problems such as decreased processing performance arise in cases such as heavy screen-rendering processing.  Decreasing the priority of the disk thread places greater priority on screen rendering than on the processing speed of disk commands.  Whether to give priority to the rendering thread or disk thread must be determined according to whether the application gives priority to rendering or to disk processing.   
+</P>
+<P>
+dd_checkGate( ) is used as follows.
+<HR align="left" noshade width="50%">
+<PRE><font face="courier" size="2">static TMessage4dd _ddmsg = {0};
+static s32 _step=0;
+
+if( dd_checkGate(&amp;_ddmsg) )
+        {
+        switch(_step)
+                {
+                case 0: /* Issue command. */
+                        _ddmsg.command  = LEOCMD_GETID;
+                        _ddmsg.param.hi = (s32)&amp;_id;
+                        _ddmsg.param.lo = 0; 
+                        dd_exec( &amp;_ddmsg );
+                        ++_step;
+                        break;
+
+                case 1: /* Check ID. */
+                        if( _ddmsg.retVal )
+                        {
+                                assert( !bcmp(_id.gameName,&quot;GAME&quot;,4) );
+                                ++_step;   
+                        }
+                        break;
+
+                case2:
+                ...
+        }
+}
+</PRE></font>
+<HR align="left" noshade width="50%">
+<P>
+In this example, a command is issued to obtain the disk ID and the ID is then checked. The Tmessage4dd structure issued by dd_exec(&amp;_ddmsg) is received by 
+dd_checkGate(&amp;_ddmsg).  dd_checkGate( ) returns true if the status allows _ddmsg to be used for the next command.  This usually means a status indicating that processing of the last command sent by dd_exec() has finished.
+</P>
+<P>
+Note that if dd_checkGate(&amp;_ddmsg) is not true, a value is not assigned to _ddmsg and _id is not referenced.  A value of false for dd_checkGate(&amp;_ddmsg) means that the last command set to _ddmsg is still being processed by the disk thread.  Because the disk thread processes one command at a time, it is meaningless to send the next command until processing of the previous command sent to the disk thread has finished (although commands are processed in order as long as the command queue does not overflow).  The reason why is that until dd_checkGate( ) returns true, there is no guarantee that the value of retVal and other return values will be same once command processing has finished (values set by the disk processing thread).
+ 
+<P>
+<br>
+<A href="index.htm"><IMG src="../../gif/index.gif" height="17" width="65" border="0"></A>
+ 
+<HR>
+<u><A name="06"></A>10.1.6 Disk Thread Internal Wait</u>
+<P>
+dd_flush( ) should be called for each frame in threads that perform a retrace wait (usually the scheduler thread or rendering thread).  This is necessary to use wait functions in the disk thread.  If this is not implemented, the application will not operate properly.
+</P>
+<P>
+The following describes waits in somewhat greater detail.  
+In the disk thread, 64DD library functions may be continuously called during processing of a single command, such as when a disk-insertion check is performed.  If the disk thread is not freed during this time (ie, osRecvMesg() is not called in block mode), the rendering thread cannot be executed while the command is being processed (ie, error messages cannot be displayed).  The functions that free the disk thread are referred to here as wait functions.
+</P>
+<P>
+To restore to executable status a thread that was placed in the wait state by a wait function, an event or message from another thread must be sent to the message queue specified by osRecvMesg( ) in the wait function.  dd_flush() is the function that sends this resume message.
+</P>
+<P>
+Freeing a thread is not a process that is limited to 64DD processing sequences.  It is a measure that is essential for parallel processing of multiple threads.  
+</P>
+<P>
+<br>
+<A href="index.htm"><IMG src="../../gif/index.gif" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<u><A name="07"></A>10.1.7  Rendering Error Messages</u>
+<P>
+The rendering thread, aside from performing the rendering required for the application, checks dd_getStatus( ) and renders error messages as necessary.  The procedure for error message rendering is described in err.c.
+</P>
+<P>
+Error Message Rendering Procedure 
+<HR align="left" noshade width="50%">
+<PRE><font face="courier" size="3">void
+_print(Gfx **gpp)
+        {
+        ...
+        _mes = dd_getStatus()-&gt;errmes;
+
+        if( dd_getStatus()-&gt;mode &amp; ( DDSTAT_DEAD | DDSTAT_DIALOGUE) )
+                {
+/*  Mandatory message (areas 1 and 2)   */
+                switch( _mes &amp; 0xFF) 
+                        {
+                        case ERRMES__SET_CLOCK:
+                                ...
+                                break;
+
+                        case ERRMES__RAMPACK_NOT_CONNECTED:
+                                ...
+
+                        ...
+                        }
+
+/* Mandatory message (area 3 )   */
+                switch( _mes &amp; 0xFF00 ) 
+                        {
+                        case ERRMES__DISK_WO_NUKE:
+                                ...
+                                break;
+
+                        ...
+
+                        }
+
+                }
+/*  Message specific to the application (if one exists) */
+        else if( dd_getStatus()-&gt;mode &amp; DDSTAT_KILLED )
+                {
+                switch( _mes &amp; 0xFF) 
+                        {
+                        case ERRMES__DRIVE_NOT_FOUND:
+                                ...
+                                break;
+                        }
+                }
+                ...
+
+        }
+</PRE></font>
+<HR align="left" noshade width="50%">
+<P>
+(For more information on areas 1, 2, and 3, see Section 10.2, Error-Handling Sequences, *Displaying Error Numbers and Messages.)
+</P>
+<P>
+Depending on the status of the disk processing thread, a variety of information is stored in the TDDStatus structure obtained by dd_getStatus( ).  The rendering thread checks the structure with each rendering update and renders error messages as necessary.
+ 
+<P>
+The TDDStatus structure is as follows.
+<HR align="left" noshade width="50%">
+<PRE><font face="courier" size="2">typedef struct {
+        s32     mode;           /* GOOD,BUSY,CONTINUE,KILLED,DEAD,DIALOG */
+        s32     errno;          /* The error value of the previously executed LEO function */   
+        s32     errmes;         /* For error message display */
+        s32     counter;        /* Reset counter */
+        s32     reserved;
+        u32     buffer_size;    /* Length of the data read */
+        u32     position;       /* Position (LBA) of the reading head  */
+        u32     read_offset;    /* Offset for starting the read from the buffer */
+} TDDStatus;
+</PRE></font>
+<HR align="left" noshade width="50%">
+<P>
+When using err.c, the creator of the application must modify the rendering procedure to suit the rendering method of the application.  However, the only portions that require modification are the rendering method and the method of obtaining controller input.  It is seldom necessary to modify message content or branching for dd_getStatus( )-&gt;errmes.  Particularly for the mandatory messages, eliminating display processing and changing message content should be avoided.  With non-mandatory error messages (including those specific to the application), branching may be added when issuance of a particular alert or notification message is desired, but such changes should be made only in cases like these.
+</P>
+<P>
+<A href="index.htm"><IMG src="../../gif/index.gif" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H3><A name="08"></A>10.1.8 RAM Area Reads </H3>
+<P>
+When data are read from the RAM area of the disk, the integrity of the data must be checked by the application  (see 7.9, Write Interrupts).
+</P>
+<P>
+An example of a data check used when reading from theRAM area is shown in dd_checksum.c.  In this sample, a checksum is located in the last 4 bytes of the specified read area. 
+dd_checksum.c should be modified to suit the data storage format of the application.
+ 
+<P>
+<A href="index.htm"><IMG src="../../gif/index.gif" height="17" width="65" border="0"></A>
+ 
+<HR>
+<P>
+The following are supplemental descriptions of the internal processing of the hdd.h and hfont.h modules.
+</P>
+<u><A name="09"></A>10.1.9 Supplement 1:  The Disk Thread Error-Handling Procedure</u>
+<P>
+This section uses an example to describe the flow of the error handling performed in hdd.h for the 64DD library functions.  In the example used, the application sets dd_exec() to issue a read command.  The flow of processing is followed beginning from coreObjectOfdd(), which is declared in dd_core.c.  All error handling in hdd.h is based on that described in 10.2, Error-Handling Sequences, so please also refer to that section.
+</P>
+<P>
+First, the disk thread receives a LEOCMD_LBAREAD message from dd_exec( ) in another thread.  Once the disk thread is in the executable state, it sets the address of the read buffer and calls dd_read( ).  In doing so, it passes as arguments the starting position of the read (first argument) and the size of the read (second argument).
+</P>
+<HR align="left" noshade width="50%">
+<PRE><font face="courier" size="2">case LEOCMD_BYTEREAD:
+        _setBuffer((u8 *)msg-&gt;param.rw);  
+        next_mode = dd_read(msg-&gt;param.hi , msg-&gt;param.lo , UNITMODE_BYTE);
+        if( next_mode == DDSTAT_GOOD )
+        {
+                msg-&gt;param.rw = (u32)_rwbuf + dd_stat.read_offset;
+                _retval = dd_stat.buffer_size;
+        }
+        break;
+</PRE></font>
+<HR align="left" noshade width="50%">
+<P>
+UNITMODE_LBA means that both arguments are to be treated as LBAs.  msg is a pointer to Tmessage4dd structure passed by dd_exec( ).  param.hi is set to the starting position of the read, and param.lo is set to the read size.
+<P>
+The dd_read( ) function is as follows.
+<HR align="left" noshade width="50%">
+<PRE><font face="courier" size="2">s32
+dd_read(s32 start_adr , s32 size ,s16 flag_convert )
+{
+  s32  start_lba, lba_size, actual_byte, byte_size;
+  s32  err_code = -1,ret=-1;
+  LEOCapacity cap;
+
+  if (flag_convert == UNITMODE_BYTE)
+    {
+      start_adr &amp;= 0x7FFFFFFF;
+      size  &amp;= 0x7FFFFFFF;
+      LeoByteToLBA(0 , start_adr , &amp;start_lba);
+      LeoLBAToByte(0 , (u32)start_lba , &amp;actual_byte);
+      if ( actual_byte &gt; start_adr )
+        {
+          --start_lba;
+          LeoLBAToByte(0 , (u32)start_lba , &amp;actual_byte);
+        }
+      dd_stat.read_offset = start_adr - actual_byte;
+      LeoByteToLBA(start_lba,(u32)size+dd_stat.read_offset, &amp;lba_size);
+    }
+  else /* UNITMODE_LBA */
+    {
+      start_lba = start_adr;
+      lba_size  = size;
+      dd_stat.read_offset = 0;
+    }
+
+  LeoLBAToByte( start_lba , lba_size , &amp;byte_size );
+  dd_stat.position = start_lba;
+  dd_stat.buffer_size = byte_size; /* used by error 23 */
+
+  if( byte_size &gt; _rwbuf_size )
+    {
+      err_code = LEO_ERROR_BUFFER_OVERFLOW; 
+      LeoRecv0(err_code,TLeoReadWrite);
+    }
+  else
+</PRE></font>
+<TABLE>
+  <TR>
+    <TD bgcolor="#CBCEF8">
+<PRE><font face="courier" size="2">
+   {
+    LeoReadWrite(&amp;_cmdBlk, OS_READ , (u32)start_lba ,
+                 _rwbuf, lba_size , &amp;diskQ );
+    LeoRecv(err_code,TLeoReadWrite);
+   }
+</PRE></font>
+</TD></TR>
+</TABLE>
+
+<PRE><font face="courier" size="2">
+  /*  check sum */
+
+  if( !err_code )
+    {
+      LeoReadCapacity( &amp;cap , OS_WRITE );
+      err_code = ((u32)start_lba &lt; cap.startLBA ) ? 0 : dd_checkSum();
+      dd_stat.position = start_lba + lba_size;
+    }
+  
+  return dd_errSeqDiskSeek( err_code );
+}
+</PRE></font>
+<HR align="left" noshade width="50%">
+<P>
+This function is used to read from the disk.  Its arguments are the starting position of the read and the read size.  The units of the read are specified in either blocks or bytes.  The return value is a status code such as DDSTAT_GOOD or DDSTAT_CONTINUE.  The status code is finally returned to the thread that posted the command as the value of retValue of the Tmessage4dd structure.  The meaning of each status code is as follows.
+</P>
+<table border="0" cellpadding="3" cellspacing="3">
+<tr><td><font face="arial" size="-1">DDSTAT_GOOD</td><td><font face="arial" size="-1"> --	Normal termination</td></tr>
+<tr><td><font face="arial" size="-1">DDSTAT_CONTINUE</td><td><font face="arial" size="-1"> --	Processing in progress</td></tr> 
+<tr><td><font face="arial" size="-1">DDSTAT_DEAD</td><td><font face="arial" size="-1"> --	Abnormal termination</td></tr>
+<tr><td><font face="arial" size="-1">DDSTAT_KILLED</td><td><font face="arial" size="-1"> --	Forced Termination</td></tr></table>
+ 
+<P>
+The portion in yellow is the portion that actually performs the read processing.   LeoReadWrite( ) reads from the 64DD disk and starts the transfer of data to the buffer. LeoRecv (a macro that contains osRecvMesg( )) then waits for a processing-termination message from 64DD.  During this period, the thread is put into a wait state and processing of other threads is performed.
+</P>
+<P>
+LeoRecv sets err_code to the error code returned by LeoReadWrite( ).   Processing corresponding to this error code is then performed by dd_errSeqDiskSeek( ).
+</P>
+<P>
+For example, consider the case in which the disk is removed at this point.  The error LEO_ERROR_MEDIUM_NOT_PRESENT is passed to dd_errSeqDiskSeek( ) and,  as part of this error, dd_errSeqDiskChange( ) is called to request reinsertion of the disk. 
+</P>
+<P>
+_rwbuf and _rwbuf_size are set by the execution of _setBuffer( ) preceding the<br>
+ call to dd_read ( ). 
+<HR align="left" noshade width="50%">
+<PRE><font face="courier" size="2">s32
+dd_errSeqDiskChange(void)
+{
+  s32    ret = -1;
+
+  while(1)
+    {
+      while ( ( ret = dd_checkInsert() ) &amp; DDSTAT_CONTINUE ) dd_wait();
+      if( ret != DDSTAT_INSERTED ) break;
+
+      if( dd_confirmDisk() ) 
+        {
+          ret = DDSTAT_GOOD;
+          break;
+        }
+      dd_openDialog( ERRMES__WRONG_DISK );
+
+      while ( ( ret = dd_checkEject() ) &amp; DDSTAT_CONTINUE ) dd_wait();
+      if( ret != DDSTAT_GOOD ) break;
+    }
+  return ret;
+}
+</PRE></font>
+<HR align="left" noshade width="50%">
+<P>
+As with dd_read( ), the functions dd_checkInsert( ) and dd_checkEject( ) called here include error codes for LeoReadDiskID( ) and LeoSpdlMotor( ) and pass the results of processing using DDSTAT_GOOD, DDSTAT_CONTINUE, DDSTAT_DEAD, and DDSTAT_KILLED.
+</P>
+<P>
+dd_errSeqDiskChange( ) checks whether the correct disk is inserted and, until a forced or abnormal termination, repeatedly executes disk-insertion waits, ID checks, and (if the ID is incorrect) ejection checks.  For information on forced and abnormal terminations, see 10.2, Error-Handling Sequences.  During this time, a messages appropriate for the disk processing being performed is displayed for the game player by the main thread.  The function dd_wait( ), which is called for disk-insertion waits and ejection checks, is a wait function that performs retrace waits to prevent needless calls to 64DD library functions.  If a disk ID check is successful, dd_errSeqDiskSeek( ) returns DDSTAT_CONTINUE and dd_read( ) is consequently re-executed. 
+</P>
+<P>
+Before passing err_code to dd_errSeqDiskSeek( ), dd_read( ) performs a check (checksum) for data corruption, which cannot be detected as an error code.  If a checksum error occurs, the disk thread rewrites to that area.  This process is further described in the following section.
+</P>
+<P>
+<A href="index.htm"><IMG src="../../gif/index.gif" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<u><A name="10"></A>10.1.10 Supplement 2:  Interrupting Processing</u>
+<P>
+There are two types of disk thread command interruptions.  One is the case when processing of a command is brought to a temporary halt by DDSTAT_KILLED.  The other is when the thread is put in a wait state part way through processing a command and is made to wait for an external resume instruction.   The former occurs with a RTC read failure at initialization, and the latter occurs when a checksum error occurs in the dd_read( ) checksum mentioned above.
+</P>
+<P>
+<B>RTC Read Failure at Initialization (with cassette startup)</B>
+</P>
+<P>
+If a LEO_ERROR_REAL_TIME_CLOCK_FAILURE error occurs with LeoReadRTC( ) at initialization, the disk thread brings command processing to a temporary halt with a DDSTAT_KILLED state and waits for the LEOCMD_SETRTC instruction.  During a DDSTAT_KILLED state, the disk thread will not process the command it was passed unless the command fulfills the conditions of reinstatement.  Once the LEOCMD_SETRTC instruction arrives, the disk thread executes dd_setRTC( ).  If this function returns DDSTAT_GOOD, the disk thread executes dd_init( ) again and finishes processing the command.
+If dd_setRTC( ) returns a value other than DDSTAT_GOOD, command processing ends with an abnormal termination.
+</P>
+<P>
+<B>Occurrence of a Checksum Error with dd_read( ) </B>
+</P>
+<P>
+When dd_checkSum( ) returns false, the disk thread calls dd_restoreData( ). dd_freeze( ) is called at the start of dd_restoreData( ), and the disk thread is temporarily interrupted.  During this time, the main thread renders the following message and waits for user input:  "The previous data could not be completely saved.  The data will be erased. Please press button A."  Once button A is pressed, the main thread calls dd_thaw( ) and resumes the disk thread.  In the main thread, a rewrite is executed in dd_restoreData( ).  Because this processing is contained in err.c, use of dd_thaw() requires no particular consideration by the application creator. For more information on checksum errors during reads, see 10.2, Error-Handling Sequences.
+<P>
+<A href="index.htm"><IMG src="../../gif/index.gif" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<u><A name="11"></A>10.1.11 Supplement 3:  Font Display and Related Items</u>
+<P>
+To make this sample program easy to understand, the font data in DDROM that are used in error messages are gathered at the time of the first rendering and transferred by DMA to a buffer in RAM.
+</P>
+<P>
+The long PI time of the 64DD library functions makes coexistence of audio and sprite display processing somewhat difficult to implement.  Inability of the application to  handle the DMA delay appropriately may, depending on the case, cause disordered rendering or introduce noise. 
+</P>
+<P>
+Consequently, appropriate exclusion control of disk processing and other threads using PIs is needed to basically preclude DMA during disk access.   Specifically, measures can be taken such as securing a large portion of the DMA buffer and gathering and loading the data needed in a particular case into memory in advance.  The 4 MB of expansion memory in 64DD is essentially provided for use as a DMA buffer area. (Of course, this is not compulsory.)
+</P>
+<P>
+<A href="index.htm"><IMG src="../../gif/index.gif" height="17" width="65" border="0"></A>
+<HR>
+</BODY>
+</HTML>

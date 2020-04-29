@@ -1,0 +1,674 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<!--Editor's Notes: Matt P.,2/18/2000- added revisions-->
+<TITLE>10-02</TITLE>
+</HEAD>
+
+<BODY bgcolor="#FFFFFF">
+<font face="arial" size="-1">
+<P>
+<A name="top"><STRONG>10.2  Error-Handling Sequences </STRONG></A>
+ 
+<P>
+<A href="#01">Termination Status</A><BR>
+<A href="#02">User's Guides</A><BR>
+<A href="#03">The Main Ways of Handling the Main Errors</A><BR>
+<A href="#04">Points to Note in Error Handling</A><BR>
+<A href="#05">Error Codes</A><BR>
+<A href="#06">Recommended Error Handling Sequences</A><STRONG> </STRONG>
+ 
+<P>
+<A href="index.htm"><IMG src="../../gif/index.gif" height="17" width="65" border="0"></A>
+<HR>
+<A name="01"><STRONG>Termination Status</STRONG></A> <P>
+This section refers to flowcharts in discussing the kinds of sequences that best handle errors.  These error-handling sequences use the following three expressions for the termination status of each function.
+</P>
+<UL>
+  <LI>Normal termination: The function's purpose was accomplished, and the function  terminated normally.
+<P>
+  <LI>Abnormal termination: Continuation of the game program is prevented by some type of abnormality.
+<P>
+  <LI>Forced termination: The function was intentionally interrupted by the programmer.
+</UL>
+<P>
+With abnormal termination, the error number and cause of the error are displayed on the screen.  The game user is asked to read the user's guides and attempt to solve the problem based on this information.  With forced termination, <A href="../../n64man/64dd/LeoClearQueue.htm">LeoClearQueue()</A> is called, and functions that have been interrupted during execution or canceled while awaiting execution are forcibly terminated. (<A href="../../n64man/64dd/LeoClearQueue.htm">LeoClearQueue()</A> itself always terminates normally.)  The reasons for interrupting the functions vary depending on the game.  Thus, subsequent efforts to cope with the error will take these reasons into account.
+</P>
+<P>
+<A href="#top"><IMG src="../../gif/index.gif" height="17" width="65" border="0"></A>
+ 
+<P>
+<A name="02"><STRONG>User's Guides</STRONG></A><STRONG> </STRONG>
+ 
+<P>
+There are two types of user's guides, the guide included with the 64DD and that included with the game.  For reference, <A href="../dd0c/index.htm">APPENDIX C</A> lists the error messages given in the user's guide included with the 64DD.  Future documentation will discuss how these error messages should be described in user guides that accompany games. 
+ 
+<P>
+<A href="#top"><IMG src="../../gif/index.gif" height="17" width="65" border="0"></A>
+</P>
+<P>
+<A name="03"><STRONG>The Main Ways of Handling the Main Errors (parentheses contain error numbers)</STRONG></A> 
+<P>
+This section discusses the handling of the main errors that occur and how these handling methods are implemented. For specific handling methods, please see the section <A href="#06">Recommended Error-Handling Sequences</A>. The items discussed for each error and their descriptions are as follows.
+</P>
+<TABLE width="100%" border="1" cellpadding="3" cellspacing="3">
+  <TR>
+    <TD><font face="arial" size="-1">Cause</TD>
+    <TD><font face="arial" size="-1">The main causes of the error are given.</TD></TR>
+  <TR>
+    <TD><font face="arial" size="-1">Coping Methods</TD>
+    <TD><font face="arial" size="-1">Coping methods that can be used in the program are briefly described. Please see <A href="#06">Recommended Error-Handling Sequences</A>.</TD></TR>
+  <TR>
+    <TD><font face="arial" size="-1">Display/Non-display of Error Numbers</TD>
+    <TD><font face="arial" size="-1">This indicates whether the error number should be displayed with the error message.</TD></TR>
+  <TR>
+    <TD><font face="arial" size="-1">Error Messages</TD>
+    <TD><font face="arial" size="-1">This item indicates the kind of expression that should be used to communicate the error to the user.  Text with (Example) before the quote marks is one example of message text.  Please use text that is appropriate for the game.  Ensure that message text that is not preceded by (Example) is displayed to the screen without revision.  (This should be strictly observed.)</TD></TR>
+</TABLE>
+<P>
+<A href="#top"><IMG src="../../gif/index.gif" height="17" width="65" border="0"></A>
+  
+<HR size="1">
+<P>
+<STRONG>DIAGNOSTIC_FAILURE(02) </STRONG>
+<P>
+<STRONG>Cause</STRONG>
+<p>This error occurs if the eject button remains in the partially depressed state for several seconds with the disk is inserted.  A partially depressed state is one in which the eject button is partially depressed and the disk has not been ejected (remains inserted).
+</P>
+<P>
+<STRONG>Coping Methods</STRONG>
+<p>Prompt the user to eject the disk once and then reinsert it.  Do not display the error number.  Continue to display this error until reinsertion (including the time during which the disk is ejected). 
+</P>
+<P>
+<STRONG>Display/Non-display of Error Numbers</STRONG>
+<p>Display
+ 
+<P>
+<STRONG>Error Messages (example)</STRONG>
+<p>
+"The eject button may have been pushed.  Please remove the disk once and completely reinsert it."
+
+<HR size="1">
+
+<P>
+<A name="real_time"> <STRONG>REAL_TIME_CLOCK_FAILURE(05)</STRONG> </A> 
+<P>
+ <STRONG>Cause</STRONG> 
+<ol>
+<li>This error occurs if the RTC backup battery in the 64DD dies.
+
+<P>
+<li>It may also occur the first time power to the 64DD is turned on after it is purchased.
+
+<P>
+<li>In addition, the error may occur as a result of 64DD failure.</ol>
+
+<P>
+<STRONG>Coping Methods</STRONG>
+<p>
+With cause 2), the RTC will operate normally once the time has been set.
+</P>
+<P>
+When the cause is 1), the RTC will operate normally immediately after it has been set, because power is supplied to the RTC from the N64 when it is turned on.  However, the same error will recur once the N64 power is turned off and on again.
+</P>
+<P>
+With disk-startup games, it is unlikely that 1) or 2) will occur as a result of a problem in the game. (The error most likely occurs in the IPL.  Thus, with 1) or 2, setting the time in the IPL will probably prevent the error from occurring in the game.)  Consequently, treat 3) as the cause, and consider the problem an abnormality.  
+</P>
+<P>
+With Game Pak ROM-startup games, check the clock time once at startup (see <A href="10-42.htm">2. Initialization Sequence for Game Pak-Startup Games</A>).  If the error occurs, prompt the user to set the clock once.  If the cause is not 3), the error will not likely occur until the N64 is turned off, as mentioned previously.  The game user can determine that the cause is 1) if the error appears to occur at every startup, 2) if it appears to occur only once, and 3) in other cases.  Ultimately, the only means of handling the error in the program is to prompt the user to set the clock once (put up a display asking the user to see the User's Guide for details). 
+</P>
+<P>
+<STRONG>Display/Non-display of Error Numbers</STRONG>
+<p>Non-display
+</P>
+<P>
+<STRONG>Error Messages (example)</STRONG>
+<P> With disk-startup games:  "Please refer to the User's Guide."
+</P>
+<P>
+<b>With Game Pak ROM-startup games (examples)</b>
+<P>
+"Please set the time.  For details, refer to the User's Guide."  "Please push the ** button to display the menu, then set the time.  For details, refer to the User's Guide." The first portion of each of the examples is given as a suggestion, but please be sure to add "For details, refer to the User's Guide" and provide a thorough description in the user's guide.
+</P>
+<HR size="1">
+<P>
+<STRONG>UNRECOVERED_READ_ERROR(23) </STRONG> 
+</P>
+<P>
+<STRONG>Cause</STRONG>
+<p>This error message appears when C2 error correction cannot be performed.  It also occurs when the program attempts to read from a block that has not been written to. (See 7.9, Power Failure During a Write).  In addition, this error occurs when reading is attempted of a block that has never been written to.  For information on C2 error correction, see 7.8, Retry and Error Correction.
+</P>
+<P>
+<STRONG>Coping Methods</STRONG>
+<P>If this error occurs when the program attempts to read from the ROM area, the disk cannot be used unless it has a mirror area (other disk area containing identical data).  Display the error and prompt the user to refer to the User's Guide. If the error occurs when backup data are being read, the disk itself can be used even though those data cannot be used. Please refer to <A href="../dd07/07-09.htm">7.9 Power Failure During a Write</A> and implement appropriate processing.  In addition, depending on the evaluation by the game, please provide the user with an explanation, such as indicating that the data have been lost. 
+</P>
+<P>
+The error also occurs when the program attempts to read from a block that has not been written to. (Please note, however, that occurrence of the error cannot be guaranteed; whether or not the error will occur is uncertain.) Consequently, please be sure to initialize at startup the RAM area used by the game, or submit the master with some type of initialization value inserted from the start. (See <A href="../dd12/index.htm">Chapter 12</A>).
+</P>
+<P>
+If a variable is used to specify the block, the variable may be destroyed by a bug, and a block may be accessed that was not intended to be accessed.  Please take adequate precautions against such problems. 
+</P>
+<P>
+<STRONG>Display/Non-display of Error Numbers</STRONG>
+<P>Display when the error occurs in the ROM area; Do not display when the error occurs in the RAM area.  Please see Coping Methods above.
+</P>
+<P>
+<STRONG>Error Messages</STRONG>
+<P>"Please refer to the User's Guide." (When an error occurs in the ROM area)
+</P>
+<HR size="1">
+<P>
+<STRONG>COMMAND_TERMINATED(34)</STRONG> 
+</P>
+<P>
+<STRONG>Cause</STRONG>
+<P>This error occurs when processing of the function is interrupted by<A href="../../n64man/64dd/LeoClearQueue.htm">LeoClearQueue()</A>. 
+<P>
+<STRONG>Coping Methods</STRONG>
+<P>The handling method depends on whether <A href="../../n64man/64dd/LeoClearQueue.htm">LeoClearQueue()</A>is used at some point in the game program.
+</P>
+<P>
+If it is, the programmer then deliberately interrupts functions that are in the middle of execution or waiting to be executed.  Thus, the coping method used depends on the reason for the interruption and varies between games and situations.  As a result, the expression used for all such cases is "Forced interruption."  Subsequent handling should be appropriate for the situation. 
+</P>
+<P>
+If LeoClearQueue()is not used in the game program, the error should not be returned, so the error should be handled as being of uncertain cause.  Display the error number and the message "Please refer to the User's Guide," and consider this an abnormal termination.
+</P>
+<P>
+<STRONG>Display/Non-display of Error Numbers</STRONG>
+<P>Depends on the case.  Please see Coping Methods above.
+</P>
+<P>
+<STRONG>Error Messages</STRONG>
+<P>"Please refer to the User's Guide." (when error message displayed)
+</P>
+<HR size="1">
+<P>
+<A name="35"><STRONG>QUEUE_FULL(35)</STRONG></A>
+</P>
+<P>
+<STRONG>Cause</STRONG>
+<P>Occurs when the size of the command queue is insufficient.
+</P>
+<P>
+<STRONG>Coping Methods</STRONG>
+<P>The first and foremost approach is to ensure that the document queue is large enough to prevent this error.  For the rare case of the error occurring despite this prevention, implement an error handling sequence or some other measure.
+</P>
+<P>
+An example of such a measure is to allow some time to pass after the error occurs, then again call the function for which it occurred (e.g. call during an interrupt of the next vertical trace).  However, if too much time is required for the command queue to empty, display the error message to the screen.
+</P>
+<P>
+<STRONG>Display/Non-display of Error Numbers</STRONG>
+<P>Depends on the case.  Please see Coping Methods above. 
+</P>
+<P>
+<STRONG>Error Messages</STRONG>
+<P>"Please refer to the User's Guide." (when error message displayed) 
+</P>
+<HR size="1">
+<P>
+<STRONG>DEVICE_COMMUNICATION_FAILURE(41)
+</STRONG> 
+
+<P>
+<STRONG>Cause</STRONG>
+<ol>
+<li>The connection between the N64 and 64DD is loose.
+</P>
+<P>
+<li>The connector between the N64 and 64DD is dirty.
+</P>
+<P>
+<li>(During development) The IPLROM cassette is not connected. </ol>
+</P>
+<P>
+<STRONG>Coping Methods</STRONG>
+<P>With either cause, resuming operation and accessing 64DD is very risky in this state.  Consider this an abnormal termination, interrupt processing, and prompt the user to refer to the User's Guide.
+</P>
+<P>
+Only during development can the IPLROM cassette not being connected be considered a possible cause of the error.  Using <A href="../dd05/05-03.htm">5.3 Debugging during Development</A> as a reference, ensure that the IPLROM cassette is connected. 
+</P>
+<P>
+<STRONG>Display/Non-display of Error Numbers</STRONG>
+<P>Display
+</P>
+<P>
+<STRONG>Error Messages</STRONG>
+<P>"Please refer to the User's Guide." 
+</P>
+<HR size="1">
+<P>
+<STRONG>MEDIUM_NOT_PRESENT(42)</STRONG> 
+</P>
+<P>
+<STRONG>Cause</STRONG>
+<P>Occurs when a function requiring the disk is called and the disk has not been inserted.
+</P>
+<P>
+<STRONG>Coping Methods</STRONG>
+<P>Prompt the user to insert the disk.
+</P>
+<P>
+<STRONG>Display/Non-display of Error Numbers</STRONG>
+<P>Either
+</P>
+<P>
+<STRONG>Error Messages (examples)</STRONG>
+<P>"Has the disk been inserted?" "Please insert disk."
+</P>
+<HR size="1">
+<P>
+<A name="43"> <STRONG>POWERONRESET_DEVICERESET_OCCURED(43)
+</STRONG></A>
+</P>
+<P>
+<STRONG>Cause</STRONG>
+<P>Occurs immediately after power to the 64DD is turned on or immediately after the 64DD is reset.  Power to the 64DD is provided through the 50-pin expansion connector on the underside of the N64.  Thus, the error may occur in the following cases.
+</P>
+<OL>
+  <LI>Immediately after power to the N64 is turned on
+<P>
+  <LI>Immediately after the N64 is reset (When the N64 is reset, an instruction to reset the 64DD is issued in the device driver.)
+<P>  
+<LI>The 50-pin connector is loosened for some reason and reconnected
+</OL>
+<P>
+<STRONG>Coping Methods</STRONG>
+<P>The methods vary depending on whether it is a disk-startup game or Game Pak-startup game.
+</P>
+<P>
+With a disk-startup game,  1), 2), and 3) do not occur in the game program.
+</P>
+<OL>
+  <LI>Errors with this cause occur in the IPL and are handled appropriately in the IPL.  They do not occur in the game program.
+<P>
+  <LI>As with 1), this is handled in the IPL.
+<P>
+  <LI>When the 50-pin connector is loose, the N64 hangs up before the error is detected, due to N64 security measures.
+</OL>
+<P>
+Therefore, with a disk-startup game, prepare for the rare case of this error occurring for another reason by simply displaying the error number and the message "Please refer to the User's Guide" to the screen. 
+</P>
+<P>
+With a Game Pak-startup game,(the cause may be 1), 2), or 3).
+</P>
+<P>
+Cases 1) and 2) are likely to occur in <A href="../../n64man/64dd/LeoReadDiskID.htm">LeoReadDiskID()</A>, which is called immediately after the initialization function is called.
+</P>
+<P>
+This error should not result in these two cases.  Therefore, in both cases, call <A href="../../n64man/64dd/LeoResetClear.htm">LeoResetClear()</A> (see section <A href="../dd07/07-05.htm#02">7.5.2, Clearing a Reset State</A>) to clear the reset.
+When this function is called, the "reset status" of the 64DD is cleared if roughly 300 ms has elapsed since power to the 64DD was turned on or it was reset.  If 300 ms has not elapsed when the function is called, the reset status is not cleared.  Whether the clearance was successful cannot be determined until the next function is called.   Therefore, please call <A href="../../n64man/64dd/LeoReadDiskID.htm">LeoReadDiskID()</A> again after calling <A href="../../n64man/64dd/LeoResetClear.htm">LeoResetClear()</A>. If LeoReadDiskID()does not return a POWERONRESET_DEVICE_OCCURRED error, the clearance was successful.  If it does return this error, return to the point where <A href="../../n64man/64dd/LeoResetClear.htm">LeoResetClear()</A> is called and repeat the call until the error is not returned (until approximately 300 ms elapses). It is recommended that the <A href="../../n64man/64dd/LeoResetClear.htm">LeoResetClear()</A>/<A href="../../n64man/64dd/LeoReadDiskID.htm">LeoReadDiskID()</A> calls be repeated at a rate of once per frame or less.  The elapsed time can be roughly measured by counting the number of such call repetitions.  If the error is returned even though 500 ms has elapsed, an abnormality is clearly indicated, and the error number and the message "Please refer to the User's Guide" should be displayed to the screen.  For example, if these functions are called once per frame and the error continues even if the calls are repeated 30 times, an abnormality has occurred.
+</P>
+<P>
+If the error occurs at a point other than 1) or 2), it is a case of 3) and should be considered a fatal error.  As with a disk-startup game, display the error number and the "Please refer to the User's Guide." (However, a hang up may also occur with a Game Pak-startup game due to security measures.)
+</P>
+<P>
+<STRONG>Display/Non-display of Error Numbers</STRONG>
+<P>Display (see Coping Methods above)
+</P>
+<P>
+<STRONG>Error Messages</STRONG>
+<P>"Please refer to the User's Guide." 
+</P>
+<HR size="1">
+<P>
+<STRONG>MEDIUM_MAY_HAVE_CHANGED(47) </STRONG>
+</P>
+<P>
+<STRONG>Cause</STRONG>
+<P>Occurs when the disk is exchanged for another.
+</P>
+<P>
+<STRONG>Coping Methods</STRONG>
+<P>First read the disk ID and confirm that the appropriate disk has been inserted.  If the appropriate disk has not been inserted, notify the user.  (Whether a disk is appropriate varies with the game and situation.  With single-disk games, the inserted disk is the appropriate disk.  With two-disk games, the second disk is appropriate when the situation calls for substituting it for the first disk.  The various marketing formats and the corresponding appropriate responses are to be discussed in a separate document.)
+</P>
+<P>
+<STRONG>Display/Non-display of Error Numbers</STRONG>
+<P>Either
+</P>
+<P>
+<STRONG>Error Messages</STRONG>
+<P>Vary with the situation. (Examples) "Disk 2 has been inserted.  Please insert Disk 1." "This is not a (game name) disk.  Please insert a (game name) disk."
+</P>
+<HR size="1">
+<P>
+<STRONG>EJECTED_ILLEGALLY_RESUME(49) </STRONG> 
+</P>
+<P>
+<STRONG>Cause</STRONG>
+<P>Occurs when the user pushes the eject button while the disk is being accessed.
+</P>
+<P>
+<STRONG>Coping Methods</STRONG>
+<P>Warn the user that doing so is risky and prompt them to insert the disk.
+</P>
+<P>
+<STRONG>Display/Non-display of Error Numbers</STRONG>
+<P>Display
+</P>
+<P>
+<STRONG>Error Messages</STRONG>
+<P>[Caution: Do not remove a disk when the access lamp is blinking.  For details, refer to the User's Guide.  Please insert a disk.] (Be sure to display portions except "Please insert a disk." "Please insert a disk." portion is simply an example.)
+</P>
+<HR size="1">
+<P>
+<STRONG>Other Errors</STRONG>
+</P>
+<P>
+The causes of other errors are briefly described below.  For handling methods, please see section <A href="#top">10.2, Error Handling Sequences</A>.
+</P>
+<P>
+<STRONG>DRIVE_NOT_READY(1) </STRONG>
+</P>
+<P>
+The motor is not turning or is unstable.
+</P>
+<P>
+<STRONG>COMMAND_PHASE_ERROR(3) </STRONG>
+</P>
+<P>
+The drive status is abnormal.
+</P>
+<P>
+<STRONG>DATA_PHASE_ERROR(4) </STRONG>
+</P>
+<P>
+Occurs when data transfer is not completed in the prescribed time.
+</P>
+<P>
+<STRONG>BUSY(8)</STRONG>
+</P>
+<P>
+The PI bus is in use when the <A href="../../n64man/64dd/LeoTestUnitReady.htm">LeoTestUnitReady( )</A>function is executed.
+</P>
+<P>
+<STRONG>INCOMPATIBLE_MEDIUM_INSTALLED(11)
+</STRONG>
+</P>
+<P>
+A disk of an unsupported format has been inserted.
+</P>
+<P>
+<STRONG>NO_SEEK_COMPLETE(21) </STRONG>
+</P>
+<P>
+Occurs when a seek cannot be performed.
+</P>
+<P>
+<STRONG>WRITE_FAULT(22) </STRONG>
+</P>
+<P>
+Occurs when track location information is not read, and the track over which the head is positioned cannot be determined.
+</P>
+<P>
+<STRONG>NO_REFERENCE_POSITION_FOUND(24)
+</STRONG>
+</P>
+<P>
+Occurs when the head is positioned over the desired track, but data for correcting its position to the center of the track cannot be read. 
+</P>
+<P>
+<STRONG>TRACK_FOLLOWING_ERROR(25) </STRONG>
+</P>
+<P>
+Occurs when the head strays from above the track after seeking is completed and reading or writing has begun.
+</P>
+<P>
+<STRONG>INVALID_COMMAND_OPERATION_CODE(31)
+</STRONG>
+</P>
+<P>
+Occurs when an erroneous command is issued to the Leo manager.  This error usually is not available.
+</P>
+<P>
+<STRONG>LBA_OUT_OF_RANGE(32) </STRONG>
+</P>
+<P>
+Occurs when a function specifies an LBA that is out of the LBA range.
+</P>
+<P>
+<STRONG>WRITE_PROTECT_ERROR(33) </STRONG>
+</P>
+<P>
+Occurs when an attempt is made to write to the ROM area.
+</P>
+<P>
+<STRONG>ILLEGAL_TIMER_VALUE(36) </STRONG>
+</P>
+<P>
+Occurs when <A href="../../n64man/64dd/LeoReadRTC.htm">LeoSetRTC( )</A> attempts to set the RTC to a non-existent date or time, such as February 30.
+</P>
+<P>
+<B>WAITING_NMI (37)</B>
+</P>
+<P>
+An error that is returned to the command that had been executing when LeoReset( ) was executed and to the subsequently executed command. 
+</P>
+<HR size="1">
+<P>
+The errors that can be returned from 64DD functions are those indicated above.  The following are not errors that are obtained as the returned value of a function.  Rather, they should be used with cassette-startup games as codes to be displayed to the screen to notify the game user. 
+</P>
+<P>
+<STRONG>RAMPACK_NOT_CONNECTED(44)</STRONG>
+</P>
+<P>
+An error that indicates that the Memory Expansion Pak has not been connected.  The developer needs to be aware of this code only for cassette-startup games.
+</P>
+<P>
+With cassette startup, the game program must check whether the Memory Expansion Pak is connected.  Specificially, if the return value of the <A href="../../n64man/os/osGetMemSize.htm">osGetMemSize( )</A> function is not 0x00800000, the Memory Expansion Pak is judged not to be connected.  In such cases, this number should be used as the displayed error number.  For more information, see <A href="10-42.htm">2. Initialization Sequence for Game Pak-Startup Games</A>.  Note that this error code is not the return value of <A href="../../n64man/os/osGetMemSize.htm">osGetMemSize()</A> function.
+</P>
+<P>
+With disk-startup games, the developer need not consider this code.  The IPL checks the Memory Expansion Pak connection and displays errors (see <A href="../dd04/04-01.htm">4.1 IPL</A> for detail.)
+</P>
+<HR size="1">
+<P>
+Although the following errors need be of no concern to the developer, they are briefly described here.  They are not returned as error codes, and the developer does not need to use them.
+</P>
+<P>
+<STRONG>NOT_BOOTED_DISK(45)<BR>
+DIDNOT_CHANGED_DISK_AS_EXPECTED(46)</STRONG>
+</P>
+<P>
+Reserved.  These values are not returned as error codes.
+</P>
+<P>
+<STRONG>RTC_NOT_SET_CORRECTLY(48)<BR>
+DIAGNOSTIC_FAILURE_RESET(50)<BR>
+EJECTED_ILLEGALLY_RESET(51)</STRONG>
+</P>
+<P>
+An error code used only by the IPL. The developer need not use them. 
+</P>
+<P>
+<A href="#top"><IMG src="../../gif/index.gif" height="17" width="65" border="0"></A>
+</P>
+<HR size="1">
+<P>
+<A name="04"><STRONG>Points to Note in Error Handling (items to be strictly observed)</STRONG></A>
+<P>
+This section discusses points that must be strictly observed in actually writing the error handling portion of a program.  Failure to observe these points may result in disk destruction or other irreversible problems.  Therefore, please take adequate note of these items.<BR>
+</P>
+<OL>
+  <LI>When MEDIUM_MAY_HAVE_CHANGED is returned, be sure to check the disk ID to confirm that the newly inserted disk is the correct one.  If the ID is not checked and writing is performed with another disk inserted, there is a risk that game data will be destroyed and the game will be rendered inoperable.<p>
+
+  <LI>When an EJECTED_ILLEGALLY_RESUME error occurs, be sure to display a warning such as "Caution:  Please do not remove the disk while the access lamp is blinking."  Ejecting the disk while the access lamp is blinking may negatively affect the hardware (drive and disk).<p>
+
+  <LI> When prompting the user to eject a disk, first be sure to halt the motor. (Such prompts are given in cases such as when the first disk of a two-disk game is replaced by the second disk, or when a disk from a different game has been inserted.)<p>
+
+  <LI>With Game Pak ROM-startup, the POWERONRESET_DEVICE_OCCURRED error occurs in the function called immediately after initialization.  Although this error can be cleared by calling <A href="../../n64man/64dd/LeoResetClear.htm">LeoResetClear()</A>, caution is required with NMIs and other such events. (In other words, if <A href="../../n64man/64dd/LeoResetClear.htm">LeoResetClear()</A> function is not called, this error will continue no matter what function is called, and commands will not be executed.)  In cases such as a NMI, however, LeoResetClear( ) should be used with caution.  For details, please see <A href="#43">The Main Ways of Handling the Main Errors</A><p>
+
+  <LI>When an UNRECOVERED_READ_ERROR occurs during a read, handling of the error varies depending on whether a RAM or ROM area is being read.  When this error occurs with a ROM area read, it should be considered an abnormal termination, and the error number and message "Please refer to the User's Guide" should be displayed.   When this error occurs with a RAM area read, the error should never be displayed.  The cause in this case may be a write interrupt, and this should be checked by writing to that area once.  For more information, see 7.9:  Write Interrupts.
+</OL>
+<A href="#top"><IMG src="../../gif/index.gif" height="17" width="65" border="0"></A>
+<P>
+<A name="05"><STRONG>Error Codes</STRONG></A>
+</P>
+<TABLE border="1" cellpadding="3" cellspacing="3">
+  <TR>
+    <TD width="108"><font face="arial" size="-1">Error Code</TD>
+    <TD width="432"><font face="arial" size="-1">Error Name(defined in <A href="../../header/leo.htm">leo.h</A>)</TD></TR>
+  <TR>
+    <TD width="108"><font face="arial" size="-1">0</TD>
+    <TD width="432"><font face="arial" size="-1">LEO_ERROR_GOOD</TD></TR>
+  <TR>
+    <TD width="108"><font face="arial" size="-1">1</TD>
+    <TD width="432"><font face="arial" size="-1">LEO_ERROR_DRIVE_NOT_READY</TD></TR>
+  <TR>
+    <TD width="108"><font face="arial" size="-1">2</TD>
+    <TD width="432"><font face="arial" size="-1">LEO_ERROR_DIAGNOSTIC_FAILURE</TD></TR>
+  <TR>
+    <TD width="108"><font face="arial" size="-1">3</TD>
+    <TD width="432"><font face="arial" size="-1">LEO_ERROR_COMMAND_PHASE_ERROR</TD></TR>
+  <TR>
+    <TD width="108"><font face="arial" size="-1">4</TD>
+    <TD width="432"><font face="arial" size="-1">LEO_ERROR_DATA_PHASE_ERROR</TD></TR>
+  <TR>
+    <TD width="108"><font face="arial" size="-1">5</TD>
+    <TD width="432"><font face="arial" size="-1">LEO_ERROR_REAL_TIME_CLOCK_FAILURE</TD></TR>
+  <TR>
+    <TD width="108"><font face="arial" size="-1">8</TD>
+    <TD width="432"><font face="arial" size="-1">LEO_ERROR_BUSY</TD></TR>
+  <TR>
+    <TD width="108"><font face="arial" size="-1">11</TD>
+    <TD width="432"><font face="arial" size="-1">LEO_ERROR_INCOMPATIBLE_MEDIUM_INSTALLED</TD></TR>
+  <TR>
+    <TD width="108"><font face="arial" size="-1">21</TD>
+    <TD width="432"><font face="arial" size="-1">LEO_ERROR_NO_SEEK_COMPLETE</TD></TR>
+  <TR>
+    <TD width="108"><font face="arial" size="-1">22</TD>
+    <TD width="432"><font face="arial" size="-1">LEO_ERROR_WRITE_FAULT</TD></TR>
+  <TR>
+    <TD width="108"><font face="arial" size="-1">23</TD>
+    <TD width="432"><font face="arial" size="-1">LEO_ERROR_UNRECOVERED_READ_ERROR</TD></TR>
+  <TR>
+    <TD width="108"><font face="arial" size="-1">24</TD>
+    <TD width="432"><font face="arial" size="-1">LEO_ERROR_NO_REFERENCE_POSITION_FOUND</TD></TR>
+  <TR>
+    <TD width="108"><font face="arial" size="-1">25</TD>
+    <TD width="432"><font face="arial" size="-1">LEO_ERROR_TRACK_FOLLOWING_ERROR</TD></TR>
+  <TR>
+    <TD width="108"><font face="arial" size="-1">31</TD>
+    <TD width="432"><font face="arial" size="-1">LEO_ERROR_INVALID_COMMAND_OPERATION_CODE</TD></TR>
+  <TR>
+    <TD width="108"><font face="arial" size="-1">32</TD>
+    <TD width="432"><font face="arial" size="-1">LEO_ERROR_LBA_OUT_OF_RANGE</TD></TR>
+  <TR>
+    <TD width="108"><font face="arial" size="-1">33</TD>
+    <TD width="432"><font face="arial" size="-1">LEO_ERROR_WRITE_PROTECT_ERROR</TD></TR>
+  <TR>
+    <TD width="108"><font face="arial" size="-1">34</TD>
+    <TD width="432"><font face="arial" size="-1">LEO_ERROR_COMMAND_TERMINATED</TD></TR>
+  <TR>
+    <TD width="108"><font face="arial" size="-1">35</TD>
+    <TD width="432"><font face="arial" size="-1">LEO_ERROR_QUEUE_FULL</TD></TR>
+  <TR>
+    <TD width="108"><font face="arial" size="-1">3<font face="arial" size="-1">6</TD>
+    <TD width="432"><font face="arial" size="-1">LEO_ERROR_ILLEGAL_TIMER_VALUE</TD></TR>
+  <TR>
+    <TD><font face="arial" size="-1">37</TD>
+    <TD><font face="arial" size="-1">LEO_ERROR_WAITING_NMI</TD></TR>
+  <TR>
+    <TD width="108"><font face="arial" size="-1">41</TD>
+    <TD width="432"><font face="arial" size="-1">LEO_ERROR_DEVICE_COMMUNICATION_FAILURE</TD></TR>
+  <TR>
+    <TD width="108"><font face="arial" size="-1">42</TD>
+    <TD width="432"><font face="arial" size="-1">LEO_ERROR_MEDIUM_NOT_PRESENT</TD></TR>
+  <TR>
+    <TD width="108"><font face="arial" size="-1">43</TD>
+    <TD width="432"><font face="arial" size="-1">LEO_ERROR_POWERONRESET_DEVICERESET_OCCURED</TD></TR>
+  <TR>
+    <TD><font face="arial" size="-1">44</TD>
+    <TD><font face="arial" size="-1">LEO_ERROR_RAMPACK_NOT_CONNECTED</TD></TR>
+  <TR>
+    <TD width="108"><font face="arial" size="-1">45</TD>
+    <TD width="432"><font face="arial" size="-1">LEO_ERROR_NOT_BOOTED_DISK</TD></TR>
+  <TR>
+    <TD width="108"><font face="arial" size="-1">46</TD>
+    <TD width="432"><font face="arial" size="-1">LEO_ERROR_DIDNOT_CHANGED_DISK_AS_EXPECTED</TD></TR>
+  <TR>
+    <TD width="108"><font face="arial" size="-1">47</TD>
+    <TD width="432"><font face="arial" size="-1">LEO_ERROR_MEDIUM_MAY_HAVE_CHANGED</TD></TR>
+  <TR>
+    <TD width="108"><font face="arial" size="-1">48</TD>
+    <TD width="432"><font face="arial" size="-1">LEO_ERROR_RTC_NOT_SET_CORRECTLY</TD></TR>
+  <TR>
+    <TD width="108"><font face="arial" size="-1">49</TD>
+    <TD width="432"><font face="arial" size="-1">LEO_ERROR_EJECTED_ILLEGALLY_RESUME</TD></TR>
+  <TR>
+    <TD><font face="arial" size="-1">50</TD>
+    <TD><font face="arial" size="-1">LEO_ERROR_DIAGNOSTIC_FAILURE_RESET</TD></TR>
+  <TR>
+    <TD><font face="arial" size="-1">51</TD>
+    <TD><font face="arial" size="-1">LEO_ERROR_EJECTED_ILLEGALLEY_RESET</TD></TR>
+</TABLE>
+
+<P>
+<A href="#top"><IMG src="../../gif/index.gif" height="17" width="65" border="0"></A>
+</P>
+<P>
+<A name="06"><STRONG>Recommended Error-Handling Sequences</STRONG></A>
+<P>
+Recommended error-handling sequences are shown below.  If these sequences are not used, please adhere to the guidelines given in the previously mentioned items to be strictly observed and to the handling methods given with the description of each function (not including the example sections).  Although loops are commonly used, please be careful to ensure that they are not infinite loops.  For example, when the program is waiting for disk insertion, a disk-insertion check once every 1 or 2 frames is sufficient.  Please note that programming the check itself as a loop entirely precludes graphics display and other such processing until the disk is inserted.  To see how a loop shown in one of the flowcharts can be programmed, please refer to the included sample program ddspgame.
+</P>
+<P>
+<b>Note:</b> When an error occurs during reading, the method of handling will likely depend on which block the program was attempting to read.  For example, when the block is in the ROM area, the game cannot continue to the next scene because the data cannot be read, and the game must at that point be interrupted.  However, when backup data in the RAM area cannot be read, even though these data cannot be used, the game can continue by using separately saved data.  Please handle these circumstances flexibly and in accordance with the needs of the particular game.  Each of the following sequences assumes that the error prevents the game from continuing.
+</P>
+<P>
+<A href="#top"><IMG src="../../gif/index.gif" height="17" width="65" border="0"></A>
+<P>
+<b>Index by Role</b>
+<P>
+<A href="10-41.htm">Error-Handling sequence for initialization (disk startup)</A><BR>
+<A href="10-42.htm">Error-Handling sequence for initialization (Game Pak startup)</A><BR>
+<A href="10-43.htm">Error-Handling sequence for read, write, seek, and rezero</A><BR>
+<A href="10-44.htm">Error-Handling sequence for disk-insertion check</A><BR>
+<A href="10-44.htm">Error-Handling sequence for reading the ID </A><BR>
+<A href="10-45.htm">Error-Handling sequence for reading the internal clock</A><BR>
+<A href="10-46.htm">Error-Handling sequence for setting the internal clock</A><BR>
+<A href="10-47.htm">Error-Handling sequence for changing the motor halt time</A><BR>
+<A href="10-48.htm">Error-Handling sequence for halting the motor</A><BR>
+<A href="10-49.htm">Error-Handling sequence for motor startup</A><BR>
+<A href="10-50.htm">Error-Handling sequence for ejection check</A>
+
+<P>
+<b>Index by Function Used</b>
+<P>
+<A href="10-41.htm">LeoCreateLeoManager( )</A><BR>
+<A href="10-42.htm">LeoC*CreateLeoManager( )</A><BR>
+<A href="10-43.htm">LeoReadWrite( )<BR>
+LeoSeek( )<BR>
+LeoRezero( )</A><BR>
+<A href="10-44.htm">LeoReadDiskID( )</A><BR>
+<A href="10-45.htm">LeoReadRTC( )</A><BR>
+<A href="10-46.htm">LeoSetRTC( )</A><BR>
+<A href="10-47.htm">LeoModeSelectAsync( )</A><BR>
+<A href="10-48.htm">LeoSpdlMotor( )(SLEEP)</A><BR>
+<A href="10-49.htm">LeoSpdlMotor( )(ACTIVE, STANDBY)</A><BR>
+<A href="10-51.htm">LeoTestUnitReady( )</A>
+</P>
+<P>
+* <A href="../../n64man/64dd/LeoInquiry.htm">LeoInquiry( )</A>, <A href="../../n64man/64dd/LeoReadCapacity.htm">LeoReadCapacity()</A>, and <A href="../../n64man/64dd/LeoClearQueue.htm">LeoClearQueue( )</A> do not return errors and are therefore omitted from the list of error-handling sequences.
+</P>
+<P>
+* <A href="../../n64man/64dd/LeoByteToLBA.htm">LeoByteToLBA( )</A> and <A href="../../n64man/64dd/LeoByteToLBA.htm">LeoLBAToByte()</A> return an LBA_OUT_OF_RANGE error when out-of-range numeric values are given as arguments but do not return an error in any other case.  They are therefore omitted from the list of error-handling sequences.
+</P>
+<P>
+<A name="em"></a> * Displaying Error Numbers and Messages
+</P>
+<P>
+In the sequences shown below, expressions like  "Display . . . in Area<B></B>"  are used to describe the display of error numbers and messages.  These "display areas" are assumed to be as shown in the following figure.
+</P>
+<P>
+<IMG src="10-40.gif" height="224" width="300">
+</P>
+<P>
+As the figure indicates, the message display region of the screen is divided into three major areas.  These are labeled areas (1), (2), and (3), indicating their relative distance from the top of the screen.  Area (1) is used for displaying error numbers, Area (2) for displaying material such as error descriptions and user alerts, and Area (3) for displaying specific instructions to the user (e.g., "Please remove the disk.").   
+</P>
+<P>
+In the sequences, the display of material in an area and the clearing of that area are generally matched (e.g., "Display . . . in Area (1) " and "Clear Area (1)).   Once material is displayed in an area, that display should not be erased until the processing for clearing that area has begun.  Although an area can be used to display a message before that area is cleared, the message will be written over the message previously displayed in that area.    (With abnormal termination, the sequence terminates without the screen first being cleared.  In this case, displaying and clearing are not matched).
+</P>
+<P>
+<A href="#top"><IMG src="../../gif/index.gif" height="17" width="65" border="0"></A>
+<hr>
+</P>
+</BODY>
+</HTML>

@@ -1,0 +1,75 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<TITLE>Developers News 1.8</TITLE>
+</HEAD>
+
+<BODY bgcolor="#FFFFFF">
+<font face="arial" size="-1">
+
+<HR>
+<P align="center">
+<FONT size="6"><STRONG><IMG src="gif/devnews.gif" height="44" width="453">1.8</STRONG></FONT>
+</P>
+<P align="left">
+Bug information and programming guides for the N64 will be periodically released.  All information that will become unnecessary with software (library, etc.) and hardware upgrades used in development will be noted together.  Please utilize this information after confirming that the information concerns your specific upgrade. 
+</P>
+<p>
+
+<b><A name="top"></A>Contents:</b>
+
+<ol>
+<li><A href="#p1">Regarding NMI Reset</A>
+<li><A href="#p2">Timing of the osAiSetFrequency() function</A>
+</ol>
+
+</P>
+<HR>
+
+<A name="p1"></A>1. Regarding NMI Reset
+<P>
+A problem was found that caused the application to halt when the reset button is pressed when the n_audio micro code is used with MPAL. This occurs if the application is re-started without first initializing the RSP program counter (PC). To fix this problem, we have added the following function into this patch: 
+</P>
+<TABLE border="1">
+  <TR>
+    <TD><font face="arial" size="-1"><u>Function name</u><BR>
+<font face="arial" size="-1">osAfterPreNMI<BR>
+<font face="arial" size="-1">Initializes the -&gt; RSP program counter(PC)<BR>
+<BR>
+<font face="arial" size="-1"><u>Syntax</u><BR>
+<font face="arial" size="-1">#include &lt;ultra64.h&gt;<BR>
+<font face="arial" size="-1">s32 osAfterPreNMI(void);<BR>
+<BR>
+<font face="arial" size="-1"><u>Description</u><BR>
+<font face="arial" size="-1">When the application receives a pre-NMI event, halt all RSP tasks and then call this function. 
+<BR>
+<BR>
+<font face="arial" size="-1">If the function call is successful, 0 is returned. If the RSP is active, the call fails and -1 is returned. In this case, wait for the executing RSP task to end and then call the function again.
+<font face="arial" size="-1">When a pre-NMI event arrives, the application must halt GFX tasks and audio tasks. At the time that a pre-NMI event is received, confirm that the executing RSP task has ended and that no new RSP task has begun, and then call the osAfterPreNMI() function.<BR>
+<BR>
+<font face="arial" size="-1">Please call the osAfterPreNMI() function whenever a pre-NMI event is received, even if you are using some mode other than MPAL (NTSC etc.). 
+</TD></TR>
+</TABLE>
+
+<P align="right">
+<A href="#top"><IMG src="../gif/index.gif" height="17" width="65" border="0"></A>
+</P>
+<hr>
+<A name="p2"></A>2. Timing of the osAiSetFrequency() function
+<P>
+A bug was found that produces a funny noise after the power is turned on to N64 and before playback of sounds begins. <BR>
+<BR>
+This is an N64 hardware problem. When more than around 0.5 second elapses between the time that the power is turned on to N64 and the time that the osAiSetFrequency() function is called, then this noise will be produced when the function is called. <BR>
+<BR>
+To avoid this noise, please call osAiSetFrequency() right after startup. However, note that osAiSetFrequency() must not be called until after the osInitialize() function has been called. In general, osInitialize() is the first function called in an N64 application. Therefore, we strongly recommend that you call osAiSetFrequency() immediately after calling the osInitialize() function. <BR>
+<BR>
+Even if you can not follow the above recommendation, please make sure to call the osAiSetFrequency() function within 0.5 second after calling osInitialize(). <BR>
+</P>
+<P align="right">
+<A href="#top"><IMG src="../gif/index.gif" height="17" width="65" border="0"></A>
+</P>
+<HR>
+
+</font>
+</BODY>
+</HTML>

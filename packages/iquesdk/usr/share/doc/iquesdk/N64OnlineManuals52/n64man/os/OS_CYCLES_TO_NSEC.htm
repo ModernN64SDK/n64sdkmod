@@ -1,0 +1,48 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.
+  PWC- updated formatting
+  MAP- added revisions
+-->
+<title>OS_CYCLES_TO_NSEC</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>OS_CYCLES_TO_NSEC</b></font><font style="font-size: 9pt"><b> (Macro)</b></font>
+
+<p>OS_CYCLES_TO_NSEC, OS_CYCLES_TO_USEC</p>
+
+<p><i>Converts from CPU Count register cycles to nanoseconds/microseconds</p></i>
+
+<h3>Syntax</h3>
+<p>
+<blockquote>
+    <pre>#include &lt;ultra64.h&gt;     /* <A HREF="../../header/ultra64.htm">ultra64.h</A> */
+u64 OS_CYCLES_TO_NSEC(OSTime cycles);
+u64 OS_CYCLES_TO_USEC(OSTime cycles);</pre></blockquote></p>
+
+<h3>Description</h3>
+
+<P>
+The OS_CYCLES_TO_NSEC and OS_CYCLES_TO_USEC macros convert the number of cycles in the CPU's count register into a length of time (nanoseconds or microseconds).
+</P>
+<P>
+The CPU's count register cycle is the unit of time used by the functions <A href="osGetTime.htm">osGetTime</A> and <A href="osSetTimer.htm">osSetTimer</A>.  Irregardless of whether the system is NTSC or PAL, this CPU count register increments at a period of 46.875 MHz, with 1 cycle equal to approximately 21.33 nanoseconds.
+</P>
+<P><!--  -->
+Note that the returned value is type u64 (unsigned long long), so you should specify "%llu" for the conversion format if the returned value is to be output by a printf function.<!--  -->
+</P>
+
+<h3>See Also</h3>
+
+<p><a href="osGetCount.htm">osGetCount</a>, <A HREF="../os/OS_NSEC_TO_CYCLES.htm">OS_NSEC_TO_CYCLES</A>
+
+</p>
+<H3>Revision history</H3>
+<P>
+1999/06/15 Completely revised
+
+</body>
+</html>

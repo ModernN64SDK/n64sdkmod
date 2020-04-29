@@ -1,0 +1,88 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.
+  PWC- updated formatting
+  MAP- added links, updated format
+-->
+<title>osDpGetStatus</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>osDpGetStatus</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p>osDpGetStatus, osDpSetStatus, osDpSetNextBuffer</p>
+
+<p><i>Controls/inquires Display processor (DP)</i></p>
+
+<h3>Syntax</h3>
+<p>
+<blockquote>
+    <pre>#include &lt;ultra64.h&gt;     /* <A HREF="../../header/ultra64.htm">ultra64.h</A> */
+
+u32 osDpGetStatus(void);
+void osDpSetStatus(u32 status);
+s32 osDpSetNextBuffer(void *bufPtr, u64 size);</pre>
+</blockquote></p>
+
+<h3>Description</h3>
+
+<p>These routines provide basic control for the DP interface.</p>
+
+<p>The <tt>osDpGetStatus</tt> call returns the hardware status of the DP command status register. The 32-bit returned value contains the following bits of potential interest: </p>
+<p>
+<table border="0">
+    <tr>
+        <td nowrap>DPC_STATUS_TMEM_BUSY</td>
+        <td nowrap>:DP texture load is in progress. </td>
+    </tr>
+    <tr>
+        <td nowrap>DPC_STATUS_PIPE_BUSY</td>
+        <td nowrap>:DP primitive is still being processed. </td>
+    </tr>
+    <tr>
+        <td nowrap>DPC_STATUS_CMD_BUSY</td>
+        <td nowrap>:DP command buffer is full. </td>
+    </tr>
+    <tr>
+        <td nowrap>DPC_STATUS_DMA_BUSY</td>
+        <td nowrap>:DP DMA is in progress.</td>
+    </tr>
+</table>
+</p>
+<p>The <A HREF="osDpSetStatus.htm">osDpSetStatus</A> call updates the DP command status register with status. The bits of potential interest include: </p>
+<p>
+<table border="0">
+    <tr>
+        <td nowrap>DPC_CLR_TMEM_CTR</td>
+        <td nowrap>:Reset DP TMEM counter. </td>
+    </tr>
+    <tr>
+        <td nowrap>DPC_CLR_PIPE_CTR</td>
+        <td nowrap>:Reset DP PIPE counter. </td>
+    </tr>
+    <tr>
+        <td nowrap>DPC_CLR_CMD_CTR</td>
+        <td nowrap>:Reset DP CMD counter. </td>
+    </tr>
+    <tr>
+        <td nowrap>DPC_CLR_CLOCK_CTR</td>
+        <td nowrap>:Reset DP CLOCK counter.</td>
+    </tr>
+</table></p>
+
+<p>The <A HREF="osDpSetNextBuffer.htm">osDpSetNextBuffer</A> call updates the DP pointers causing the DP to begin reading an RDP display list from the DRAM buffer located at the location pointed to by the bufPtr argument. The length of the buffer must be indicated by size, which is the number of bytes in the RDP display list. </p>
+
+<h3>See Also</h3>
+
+<p><a href="osDpGetCounters.htm">osDpGetCounters</a>, 
+<A HREF="../os/osDpSetStatus.htm">osDpSetStatus</A>, and <A HREF="../os/osDpSetNextBuffer.htm">osDpSetNextBuffer</A>
+</p>
+<H3>Revision History</H3>
+<P>
+1999/04/30  Changed Format
+</P>
+
+</body>
+</html>

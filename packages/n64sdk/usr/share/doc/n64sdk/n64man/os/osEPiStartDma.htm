@@ -1,0 +1,70 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.>
+<title>osEPiStartDma</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>osEPiStartDma</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p>osEPiStartDma, osEPiWriteIo, osEPiReadIo</p>
+
+<p><i> Expanded Peripheral Interface (EPI) using PI manager</i></p>
+
+<h3>Syntax</h3>
+<p><blockquote><pre>#include &lt;ultra64.h&gt;     /* <A HREF="../../header/ultra64.htm">ultra64.h</A> */
+s32 osEPiStartDma(OSPiHandle *pihandle, OSIoMesg *mb, s32 direction)
+s32 osEPiWriteIo(OSPiHandle *pihandle, u32 devAddr, u32 data);
+s32 osEPiReadIo(OSPiHandle *pihandle, u32 devAddr, u32 *data);</pre></blockquote></p>
+
+<h3>Description</h3>
+
+<p>The expanded peripheral interface (EPI) transfers data between RDRAM and a bulk storage device (BSD) such as ROM, Drive ROM, and the N64 Disk Drive. EPI supports many devices sharing the PI domain, and it can switch among these devices dynamically.</p>
+
+<p>These functions manage the PI bus by using the PI manager, and they support synchronization and independence when the PI is shared byperipheral IO utilities such as debug, print, logging, and profiling. You need to initialize the PI manager's system thread before using these EPIroutines. See <a href="osPiStartDma.htm">osPiStartDma</a> for more information on how to do it.</p>
+
+<p>The OSPiHandle data structure acts as a handler so the EPI routines can reference each PI device.The OSPiHandlestructure is allocated and initialized by each device's initialization routine. It is also used for saving each PI device attributes. </p>
+
+<p>The osEPiStartDma routine sets up a DMA transfer between RDRAM and the PI device address space (devAddr), by sending an IO message block request (mb) to the PI manager, based on the value of direction (OS_READ or OS_WRITE). The calling side specifies the following parameters in the request block (the device address devAddr, the RDRAM address dramAddr, transfer volume, and the message queue hdr.retQueue that is to receive the message from the PI manager that the IO operation has finished). If the priority request (hdr.pri) is OS_MESG_PRI_HIGH (the default is OS_MESG_PRI_NORMAL), the osEPiStartDma function pushes the message in front of the PI manager's command queue. If it is not OS_MESG_PRI_HIGH, the message is added to the end of the command queue. If the PI manager is not started, osEPiStartDma returns -1. Otherwise, the status is returned to either the <a href="osSendMesg.htm">osSendMesg</a> or the <a href="osJamMesg.htm">osJamMesg</a> function. The transfer volume is a maximum of 16 megabytes, and it must be a multiple of two. Two-byte alignment is required for the PI device address (devAddr), and eight-byte alignment is required for the RDRAM's virtual address (dramAddr). Nintendo recommends that you use a 16-byte alignment if the DMA operation is done with OS_READ. See <a href="OS_DCACHE_ROUNDUP_ADDR.htm">OS_DCACHE_ROUNDUP_ADDR </a> for information about the problems that can occur when the address and the transfer volume are not multiples of the cache line.</p>
+
+<p>The <a href="osEPiWriteIo.htm">osEPiWriteIo</a> routine performs a 32-bit IO Write operation from devAddr. Similarly, the <a href="osEPiReadIo.htm">osEPiReadIo</a> routine performs a 32-bit IO Read operation from devAddr and stores the value to data. </p>
+
+<h3>Note</h3>
+
+<p>To gain access to the PI, Nintendo strongly recommends that you use these high-level, managed functions (osEPiWriteIo, osEPiReadIo, or osEPiStartDma). Caution is especially required when high-and low-level functions are mixed. The PI can support only one IO at a time, so an out of synchronization condition may cause an error to occur in the PI. <tt>osEPiStartDma</tt>, <tt>osEPiWriteIo</tt>, and <tt>osEPiReadIo</tt> reset the PI bus if there is a discrepancy between the given PI bus setting specified by pihandle and the actual PI bus setting when the function is called. It is not necessary to call <a href="osCartRomInit.htm">osCartRomInit</a> each time.
+</p>
+
+<h3>Example</h3>
+<p>
+<pre>void romCopy(const char *src, const char *dest, const int len)
+{
+        OSIoMesg dmaIoMesgBuf; OSMesgQueue dmaMessageQ; OSMesg dummyMesg;
+                osInvalDCache((void *)dest, (s32) len); 
+                dmaIoMesgBuf.hdr.pri = OS_MESG_PRI_NORMAL;
+                dmaIoMesgBuf.hdr.retQueue = &amp;dmaMessageQ;
+                dmaIoMesgBuf.dramAddr = dest;
+                dmaIoMesgBuf.devAddr = (u32)src;
+                dmaIoMesgBuf.size = len;
+                osEPiStartDma(carthandle,
+                &amp;dmaIoMesgBuf, OS_READ);
+                (void) osRecvMesg(&amp;dmaMessageQ, &amp;dummyMesg, OS_MESG_BLOCK);</pre>
+
+<pre>}</pre></p>
+
+<h3>See Also</h3>
+
+<p><a href="osPiRawStartDma.htm">osPiRawStartDma </a>, <a
+href="osPiStartDma.htm">osPiStartDma </a>, <a
+href="osEPiRawStartDma.htm">osEPiRawStartDma</a>, <a
+href="osCartRomInit.htm">osCartRomInit </a>, <a
+href="osSendMesg.htm">osSendMesg </a>, and <a
+href="osJamMesg.htm">osJamMesg </a></p>
+<H3>Revision History</H3>
+<P>
+1999/04/30  Changed Format
+</P>
+
+</body>
+</html>

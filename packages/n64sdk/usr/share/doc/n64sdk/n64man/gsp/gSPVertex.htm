@@ -1,0 +1,310 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.>
+<TITLE>gSPVertex</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>gSPVertex<FONT size="+0"> [Macro]</FONT></H1>
+
+<p><b>Function</b></font></p>
+
+<p>gSPVertex</p>
+<P>
+<i>Loads vertices</i>
+</P>
+<p><b>Syntax</b></font></p>
+<p>
+<PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gbi.htm">gbi.h</A> */
+gSPVertex(Gfx *gdl, Vtx *v, u32 n, u32 v0)
+gsSPVertex(         Vtx *v, u32 n, u32 v0)</CODE></PRE></p>
+
+<p><b>Arguments</b></font></p>
+<p>
+<DL>
+  <DT><B>gdl</B>
+  <DD>the display list pointer. 
+  <DT><B>v</B>
+  <DD>the segment address of vertex list. 
+  <DT><B>n</B>
+  <DD>the number of vertices (1~32) 
+  <DD>Note: For the F3DEX2 microcode group (F3DEX2, F3DLX2, F3DLP2, and L3DEX2), the values are as follow:
+
+  <p>
+  <TABLE BORDER="1" CELLSPACING="0" CELLPADDING="3">
+  <TR>
+  <TD NOWRAP ALIGN="left" VALIGN="middle">
+    F3DEX2<BR>
+    F3DEX2.NoN<BR>
+    F3DLX2<BR>
+    F3DLX2.NoN<BR>
+    L3DEX2
+  </TD>
+  <TD NOWRAP ALIGN="center" VALIGN="middle">
+    1~32
+  </TD>
+  </TR>
+
+  <TR>
+  <TD NOWRAP ALIGN="left" VALIGN="middle">
+    F3DEX2.Rej<BR>
+    F3DLX2.Rej
+  </TD>
+  <TD NOWRAP ALIGN="center" VALIGN="middle">
+    1~64
+  </TD>
+  </TR>
+  </TABLE>
+
+  <DT><B>v0</B>
+  <DD>Starting index in vertex buffer where vertices are to be loaded 
+  <p>
+
+  <TABLE BORDER="1" CELLSPACING="0" CELLPADDING="3">
+  <TR>
+  <TD NOWRAP ALIGN="left" VALIGN="middle">
+    F3DEX<BR>
+    F3DEX.NoN<BR>
+    F3DLX<BR>
+    F3DLX.NoN<BR>
+    L3DEX
+  </TD><TD NOWRAP ALIGN="center" VALIGN="middle">
+    0~31
+  </TD></TR><TR>
+  <TD NOWRAP ALIGN="left" VALIGN="middle">
+    F3DLX.Rej
+  </TD><TD NOWRAP ALIGN="center" VALIGN="middle">
+    0~63
+  </TD></TR><TR>
+  <TD NOWRAP ALIGN="left" VALIGN="middle">
+    F3DLP.Rej
+  </TD><TD NOWRAP ALIGN="center" VALIGN="middle">
+    0~79
+  </TD></TR></TABLE>
+<p>
+  <DD>Note: For the F3DEX2 microcode group (F3DEX2, F3DLX2, F3DLP2, and L3DEX2), the values are as follow:
+<p>
+  <TABLE BORDER="1" CELLSPACING="0" CELLPADDING="3">
+  <TR>
+  <TD NOWRAP ALIGN="left" VALIGN="middle">
+    F3DEX2<BR>
+    F3DEX2.NoN<BR>
+    F3DLX2<BR>
+    F3DLX2.NoN<BR>
+    L3DEX2
+  </TD><TD NOWRAP ALIGN="center" VALIGN="middle">
+    0~31
+  </TD></TR><TR>
+  <TD NOWRAP ALIGN="left" VALIGN="middle">
+    F3DEX2.Rej<BR>
+    F3DLX2.Rej
+  </TD><TD NOWRAP ALIGN="center" VALIGN="middle">
+    0~63
+  </TD></TR></TABLE>
+</DL></p>
+<p><b>Description</b></font></p>
+<P>
+Loads into the RSP vertex buffer the vertices that will be used by the <A HREF="gSP1Triangle.htm">gSP1Triangle</A> commands that generates polygons. 
+</P>
+<P>
+The following table shows the vertex buffer size and the values of the <B>n</B> and <B>v0</B> arguments used in each microcode. Since no more than 32 vertices can be loaded at one time, you must divide up the job and use this macro two or more times in order to load more than this number of vertices. 
+</P>
+<P>
+<TABLE BORDER="1" CELLSPACING="0" CELLPADDING="3">
+<TR>
+<TD NOWRAP ALIGN="center" VALIGN="middle">
+Microcode
+</TD><TD NOWRAP ALIGN="center" VALIGN="middle">
+Vertex Buffer Size
+</TD><TD NOWRAP ALIGN="center" VALIGN="middle">
+Range of <B>n</B>
+</TD><TD NOWRAP ALIGN="center" VALIGN="middle">
+Range of <B>v0</B>
+</TD>
+</TR><TR>
+<TD NOWRAP ALIGN="center" VALIGN="middle">
+F3DEX, F3DEX.NoN
+</TD><TD NOWRAP ALIGN="center" VALIGN="middle">
+32
+</TD><TD NOWRAP ALIGN="center" VALIGN="middle">
+1~32
+</TD><TD NOWRAP ALIGN="center" VALIGN="middle">
+0~31
+</TD>
+</TR><TR>
+<TD NOWRAP ALIGN="center" VALIGN="middle">
+F3DLX, F3DLX.NoN
+</TD><TD NOWRAP ALIGN="center" VALIGN="middle">
+32
+</TD><TD NOWRAP ALIGN="center" VALIGN="middle">
+1~32
+</TD><TD NOWRAP ALIGN="center" VALIGN="middle">
+0~31
+</TD>
+</TR><TR>
+<TD NOWRAP ALIGN="center" VALIGN="middle">
+F3DLX.Rej
+</TD><TD NOWRAP ALIGN="center" VALIGN="middle">
+64
+</TD><TD NOWRAP ALIGN="center" VALIGN="middle">
+1~32(*)
+</TD><TD NOWRAP ALIGN="center" VALIGN="middle">
+0~63
+</TD>
+</TR><TR>
+<TD NOWRAP ALIGN="center" VALIGN="middle">
+F3DLP.Rej
+</TD><TD NOWRAP ALIGN="center" VALIGN="middle">
+80
+</TD><TD NOWRAP ALIGN="center" VALIGN="middle">
+1~32(*)
+</TD><TD NOWRAP ALIGN="center" VALIGN="middle">
+0~79
+</TD>
+</TR><TR>
+<TD NOWRAP ALIGN="center" VALIGN="middle">
+L3DEX
+</TD><TD NOWRAP ALIGN="center" VALIGN="middle">
+32
+</TD><TD NOWRAP ALIGN="center" VALIGN="middle">
+1~32
+</TD><TD NOWRAP ALIGN="center" VALIGN="middle">
+0~31
+</TD></TR></TABLE>
+<P>
+(*)To load 33 or more vertices, use gSPVertex more than once.
+</P>
+<P>
+Accompanying the change from F3DEX to F3DEX2, the vertex buffer size and values of the <B>n</B> and <B>v0</B> arguments were changed as follows: 
+</P>
+<P>
+<TABLE BORDER="1" CELLSPACING="0" CELLPADDING="3">
+<TR>
+<TD NOWRAP ALIGN="center" VALIGN="middle">
+Microcode
+</TD><TD NOWRAP ALIGN="center" VALIGN="middle">
+Vertex Buffer Size
+</TD><TD NOWRAP ALIGN="center" VALIGN="middle">
+Range of <B>n</B>
+</TD><TD NOWRAP ALIGN="center" VALIGN="middle">
+Range of <B>v0</B>
+</TD>
+</TR><TR>
+<TD NOWRAP ALIGN="center" VALIGN="middle">
+F3DEX2 F3DEX2.NoN
+</TD><TD NOWRAP ALIGN="center" VALIGN="middle">
+32
+</TD><TD NOWRAP ALIGN="center" VALIGN="middle">
+1~32
+</TD><TD NOWRAP ALIGN="center" VALIGN="middle">
+0~31
+</TD>
+</TR><TR>
+<TD NOWRAP ALIGN="center" VALIGN="middle">
+F3DLX2, F3DLX2.NoN
+</TD><TD NOWRAP ALIGN="center" VALIGN="middle">
+32
+</TD><TD NOWRAP ALIGN="center" VALIGN="middle">
+1~32
+</TD><TD NOWRAP ALIGN="center" VALIGN="middle">
+0~31
+</TD>
+</TR><TR>
+<TD NOWRAP ALIGN="center" VALIGN="middle">
+F3DEX2.Rej
+</TD><TD NOWRAP ALIGN="center" VALIGN="middle">
+64
+</TD><TD NOWRAP ALIGN="center" VALIGN="middle">
+1~64
+</TD><TD NOWRAP ALIGN="center" VALIGN="middle">
+0~63
+</TD>
+</TR><TR>
+<TD NOWRAP ALIGN="center" VALIGN="middle">
+F3DLX2.Rej
+</TD><TD NOWRAP ALIGN="center" VALIGN="middle">
+64
+</TD><TD NOWRAP ALIGN="center" VALIGN="middle">
+1~64
+</TD><TD NOWRAP ALIGN="center" VALIGN="middle">
+0~63
+</TD>
+</TR><TR>
+<TD NOWRAP ALIGN="center" VALIGN="middle">
+L3DEX2
+</TD><TD NOWRAP ALIGN="center" VALIGN="middle">
+32
+</TD><TD NOWRAP ALIGN="center" VALIGN="middle">
+1~32
+</TD><TD NOWRAP ALIGN="center" VALIGN="middle">
+0~31
+</TD></TR></TABLE>
+</P>
+<P>
+Note: Some microcode was added and deleted accompanying the change. For details, please refer to the "3D Graphics" in the Microcode manual.
+</P>
+<P>
+A vertex has either color or a normal (for shading). Therefore, which Vtx structure element to use (v or n) depends on whether color or normal is being used for the vertex. For details, please see Section 11.4, "Vertex State" in the N64 Online Programming Manual. 
+
+</P>
+<p><b>Note</b></font></p>
+<P>
+The coordinates of the normal range from -1.0 to 1.0. In other words, -128 must be specified for the -1.0 value, and 128 must be specified for the 1.0 value. However, since the precision is signed 8-bit, the maximum positive value is actually 127, so the 1.0 value cannot be represented exactly. Thus, 0.992 is the maximum positive value. 
+</P>
+<P>
+Since the RSP geometry transformation engine uses a vertex list (triangle list architecture), it is extremely powerful and exhibits its maximum performance when processing a simple, single triangle. In the N64, triangles are generated by connecting dots after the vertex buffer has been transformed, and performance usually is increased by reusing vertices that have already been transformed for each triangle (these vertices are not re-transformed). Therefore, performance can be increased more by raising the polygon-to-vertex ratio (number of triangles/number of vertices) than by performing triangle stripping (decreasing the number of triangles). 
+</P>
+<P>
+For the actual transformation processing, the maximum amount of vectorization is performed by the RSP geometry engine. 
+</P>
+<p><b>Comment</b></p>
+<P>
+The vertex coordinates x, y, z are transformed by the 4x4 projection matrix and the model view matrix. The texture coordinates s, t are transformed using the scale defined by <A HREF="gSPTexture.htm">gSPTexture</A>. 
+</P>
+<P>
+When lighting is on, one can conceptually think of shading being performed according to the lighting calculation after the vertex normal has been transformed by the rotation component of the current model view matrix (not the projection matrix), even if the calculation is actually completed using a different method. The lighting calculation is only executed when the appropriate state is set when the vertices are loaded. 
+</P>
+<P>
+The vertices within the buffer are not transformed again even when a new matrix is loaded. This optimization can be used for special effects. For example, geometry can be easily created from changing points using different matrices, such as for a figure's joints. 
+
+</P>
+<P>
+* The Vtx structure is as follows: 
+</P>
+<PRE><CODE>typedef struct {
+	short		ob[3];	/* x, y, z (signed 16-bit integer) */
+	unsigned short	flag;	/* Currently has no meaning */
+	short		tc[2];	/* Texture coordinates (s10.5) */
+	unsigned char	cn[4];	/* Color & alpha (0~255, unsigned 8-bit) */
+} Vtx_t;
+typedef struct {
+	short		ob[3];	/* x, y, z  (signed 16-bit integer) */
+	unsigned short	flag; 	/* Currently has no meaning */
+	short		tc[2];	/* Texture coordinates (s10.5) */
+	signed char	n[3];	/* Normal (-128~127, signed 8-bit) */
+	unsigned char	a;	/* Alpha (0~255, unsigned 8-bit) */
+} Vtx_tn;
+typedef union {
+	Vtx_t		v;	/* Color */
+	Vtx_tn		n;	/* Normal */
+	long long int	force_structure_alignment; 
+} Vtx;
+</CODE></PRE>
+<H3>Example</H3>
+<p>To load the vertex buffer entries 2, 3, and 4, you would specify the following:</p> 
+
+<pre>gSPVertex(glistp++, v, 3, 2);
+</PRE>
+<p><b>See Also</b></font></p>
+<P>
+<A HREF="gSP1Triangle.htm">gSP1Triangle</A>
+</P>
+<p><b>Revision History</b></font></p>
+<P>
+02/01/99  Entirely revised.
+</P>
+</BODY>
+</HTML>

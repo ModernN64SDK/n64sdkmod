@@ -1,0 +1,66 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.>
+<TITLE>gSPObjLoadTxSprite</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>gSPObjLoadTxSprite [Macro]</H1>
+
+<p><b>Function</b></font></p>
+
+<p>gSPObjLoadTxSprite</p>
+<P>
+<i>Loads a texture and draws a rotating sprite in a compound process</i>
+</P>
+<p><b>Syntax</b></font></p>
+<p>
+<PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gs2dex.htm">gs2dex.h</A> */
+gSPObjLoadTxSprite(Gfx *gdl, uObjTxSprite *txsp)
+gsSPObjLoadTxSprite(         uObjTxSprite *txsp)</CODE></PRE></p>
+
+<p><b>Arguments</b></font></p>
+<p>
+<DL>
+  <DT><B>gdl</B>
+  <DD>the pointer to the display list. 
+  <DT><B>txsp</B>
+  <DD>the pointer to the structure holding the texture-loading and sprite drawing data. 
+</DL></p>
+<p><b>Description</b></font></p>
+<P>
+Loads a texture and then draws a rotating sprite. This macro performs the successive processes of g*SPObjLoadTxtr and g*SPObjSprite as if they were a single macro. In other words, the results of process (A) below are the same as process (B): 
+<DL><p>
+  <DT>(A)
+  <DD><B>gsSPObjLoadTxSprite</B>(txsp),
+  <DT>(B)
+  <DD><B>gsSPObjLoadTxtr</B>(&amp;(txsp-&gt;txtr)),
+  <DD><B>gsSPObjSprite</B>(&amp;(txsp-&gt;sprite)),
+</DL></p>
+<p>If rotation is not necessary, use g*SPObjLoadTxRect or g*SPObjLoadTxRectR. Since g*SPObjLoadTxRect does not reference the 2D matrix settings, the settings do not affect the drawing results. g*SPObjLoadTxRectR references the 2D matrix settings to change the screen coordinates for drawing. 
+</P>
+<p><b>Note</b></font></p>
+<P>
+The uObjTxSprite structure is shown below: 
+<PRE><CODE>typedef struct {
+  uObjTxtr	txtr;
+  uObjSprite    sprite;
+} uObjTxSprite;
+</CODE></PRE>
+</P>
+<P>
+The uObjTxSprite structure is a concatenation of the uObjTxtr structure and the uObjSprite structure, so it holds both texture load data and sprite drawing data. For details, see <A HREF="gSPObjLoadTxtr.htm">gSPObjLoadTxtr</A> and <A HREF="gSPObjSprite.htm">gSPObjSprite</A>. 
+</P>
+<p><b>See Also</b></font></p>
+<P>
+<A HREF="gSPObjLoadTxRect.htm">gSPObjLoadTxRect</A>, <A HREF="gSPObjLoadTxRectR.htm">gSPObjLoadTxRectR</A>, <A HREF="gSPObjLoadTxtr.htm">gSPObjLoadTxtr</A>, <A HREF="gSPObjSprite.htm">gSPObjSprite</A>
+</P>
+<p><b>Revision History</b></font></p>
+<P>
+02/01/99  Entirely revised.
+</P>
+</BODY>
+</HTML>

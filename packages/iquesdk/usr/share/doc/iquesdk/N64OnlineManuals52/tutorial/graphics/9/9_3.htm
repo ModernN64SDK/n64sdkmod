@@ -1,0 +1,47 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Graphics-Chapter 9  Advanced Texture Mapping</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/22/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<font style="font-size:12pt"><B>9.3  Primitive Tile</B></FONT>
+<br>
+<P>
+    Regardless of whether LOD is enabled or disabled, if you are going to use multi-tile textures you need to determine the primitive tile, which is the tile on which a number of texture tiles are based.
+     The primitive tile index is specified in the second-to-last argument in the gSPTexture command.
+<br><br>
+    For no-LOD multi-tile textures, the primitive tile is accessed in cycle 1 and the next tile after the primitive tile is accessed in cycle 2.  In terms of the input source to the Combiner, TEXEL0 is the primitive tile and TEXEL1 is the next tile after the primitive tile.<br><br>
+     For LOD multi-tile textures, the tile is selected based on the calculation of the LOD value.  When LOD is 0 (the largest size) then primitive tile is used.  When LOD is n, the (primitive tile + n) tile is used.<br><br>
+     The table below shows the relationship between the tile index and the LOD index when the primitive tile is set to Tile2.
+</P>
+<TABLE BORDER=0><TR>
+<TD>&nbsp;</TD><TD>
+	<TABLE BORDER=1 CELLSPACING=1 CELLPADDING=2 WIDTH=260><TR>
+	<TD ALIGN=CENTER>Tile index</TD><TD ALIGN=CENTER>LOD index</TD>
+	</TR><TR>
+	<TD ALIGN=CENTER>0</TD><TD ALIGN=CENTER>-</TD>
+	</TR><TR>
+	<TD ALIGN=CENTER>1</TD><TD ALIGN=CENTER>-</TD>
+	</TR><TR>
+	<TD ALIGN=CENTER>2</TD><TD ALIGN=CENTER>0</TD>
+	</TR><TR>
+	<TD ALIGN=CENTER>3</TD><TD ALIGN=CENTER>1</TD>
+	</TR><TR>
+	<TD ALIGN=CENTER>4</TD><TD ALIGN=CENTER>2</TD>
+	</TR><TR>
+	<TD ALIGN=CENTER>5</TD><TD ALIGN=CENTER>3</TD>
+	</TR><TR>
+	<TD ALIGN=CENTER>6</TD><TD ALIGN=CENTER>-</TD>
+	</TR><TR>
+	<TD ALIGN=CENTER>7</TD><TD ALIGN=CENTER>-</TD>
+	</TR></TABLE>
+</TD></TR></TABLE>
+<P>
+ Actually, you can think of highlight textures as being a variation on multi-tile textures.  For the textures for light source 1 and light source 2, the programmer can use any tile specified with the gDPSetHiliteTile command (or the gDPSetHilite1Tile and gDPSetHilite2Tile commands).
+</P>
+</BODY>
+</HTML>

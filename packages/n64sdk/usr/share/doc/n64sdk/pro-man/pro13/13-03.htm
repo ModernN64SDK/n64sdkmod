@@ -1,0 +1,24 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 13 - Texture Mapping</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. -->
+</head>
+
+<h1>13.3 Texture Image Space </h1>
+
+<p>Texture coordinates are defined for textured primitives in Texture Image Space.  This space has a range of +/- 1K <a href="../../keywords/index/data/graphics.htm#texel" target="keywords">texel</a>.  Tiles are smaller rectangular regions of a texture that fit into the on-chip <a href="../../keywords/index/data/graphics.htm#texture memory" target="keywords">texture memory</a> of the RCP (<a href="../../keywords/index/data/graphics.htm#TMEM" target="keywords">TMEM</a>).</p>
+
+<dl>
+  <dt><a name="f13-02"><strong>Figure 13-2 Image Space and Tile Space</strong></a>
+  <dd><img alt="[Figure 13-2]" src="gif/f13-02.gif">
+</dl>
+
+<p>Tiles are defined in Texture Image Space using SL, TL and SH, TH coordinates, as shown in the figure above. Tile coordinates must lie in the positive S,T quadrant of Texture Image Space.  However texture coordinates of the primitive can lie in any of the four quadrants of image space.  In other words, primitives can have negative texture coordinates which can be useful when <a href="../../keywords/index/data/graphics.htm#wrap" target="keywords">wrapping</a> a texture on a very large primitive.  Tiles can be up to 1024 columns wide and up to 256 rows tall.  Tiles do not have to be sized to a power of 2 (wrapping and <a href="../../keywords/index/data/graphics.htm#mirror" target="keywords">mirroring</a>, however, happen on power-of-2 boundaries). </p>
+
+<p>The texture coordinates of the primitive (in Texture Image Space) are converted into Tile Space by subtracting the SL,TL from the (possibly <a href="../../keywords/index/data/graphics.htm#perspective correction" target="keywords">perspective-corrected</a>) texture coordinates of the pixel.  This indirection allows arbitrary placement of the tile with respect to the primitive.  This implies that the texture coordinates can be defined once in the database; and that the texture can be translated (or slid) with respect to the primitive by simply manipulating the SL,TL values using the SetTileSize RDP command. </p>
+
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+</body> </html>

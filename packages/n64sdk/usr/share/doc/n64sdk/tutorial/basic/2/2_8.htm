@@ -1,0 +1,54 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-N64 Programming Basics-Chapter 2  Mechanism of N64 Programming</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/20/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<FONT Style="font-size:12pt"><B>2.8  Compiling and Linking</B></FONT>
+<br>
+<P>
+In section 2.3 we introduced the boot function <tt>boot</tt> without much explanation.  Yet there is no set specification for this function, and the programmer is free to change the settings for this function using the spec  file, which we introduced in Chapter 1.<br><br> 
+     The spec file specifies the final ROM image information for the compiled object files when they are linked. 
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=5><TR>
+	<TD NOWRAP COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE><B>List 2-6</B>  <B>See basic2 "spec"</B></FONT>
+</TR><TR>
+	<TD NOWRAP BGCOLOR="666666" WIDTH="4" ALIGN=LEFT VALIGN=TOP><HR NOSHADE SIZE=0></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>
+<FONT COLOR="#000080"><PRE><CODE>#include &lt;nusys.h&gt;
+
+/* Code area  */
+beginseg
+          name    &quot;code&quot;
+          flags   BOOT OBJECT
+          entry   nuBoot
+          address NU_SPEC_BOOT_ADDR
+          stack   NU_SPEC_BOOT_STACK
+          include &quot;codesegment.o&quot;
+          include &quot;$(ROOT)/usr/lib/PR/rspboot.o&quot;
+          include &quot;$(ROOT)/usr/lib/PR/gspF3DEX.fifo.o&quot;
+            (Some lines have been omitted)
+          include &quot;$(ROOT)/usr/lib/PR/gspS2DEX.fifo.o&quot;
+          include &quot;$(ROOT)/usr/lib/PR/gspS2DEX.fifo_d.o&quot;
+endseg
+
+beginwave
+        name &quot;64basic2&quot;
+        include &quot;code&quot;
+endwave
+</CODE></PRE></FONT>
+	</TD>
+</TR></TABLE>
+<P>
+Take a look at the actual spec file for the basic2 program.   On line 7,  you see the following description:
+<BR><br>
+    entry  nuBoot<BR><br>
+ As you probably already understand, if for example, you were to write "entry afunc" here, the function <tt>afunc</tt> would become the boot function that is executed when the program is activated (if you use NuSystem, please call <tt>nuBoot</tt>).  
+     You can also specify with the spec file, the array to be used as the framebuffer area (the program, and not the spec file, determines what it will be used for). 
+</P>
+</BODY>
+</HTML>

@@ -1,0 +1,66 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../n64man.css">
+<title>MusHandleSetPan()</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check-->
+</head>
+
+<h1>MusHandleSetPan()</h1>
+
+<h2>Syntax</h2>
+
+<pre>
+int MusHandleSetPan(musHandle handle, int pan);
+</pre>
+
+<h2>Arguments</h2>
+
+<dl>
+  <dt><b>handle</b>
+  <dd>the sound handle
+  <dt><b>pan</b>
+  <dd>the stereo pan scale
+</dl>
+
+<h2>Description</h2>
+
+<p>It sets the pan position scale value for the channels associated with the specified sound handle. This function allows the programmer to "move" the pan position of songs and sound effects relevant to the position originally defined within the sound data.
+</p>
+
+<p>The handle must be a sound handle returned by <a href="MusStartSong.html">MusStartSong()</a>, <a href="MusStartSongFromMarker.html">MusStartSongFromMarker()</a>, <a href="MusStartEffect.html">MusStartEffect()</a>, or <a href="MusStartEffect2.html">MusStartEffect2()</a>.  If a handle of zero is supplied, this function will always return zero.</p>
+
+<p>The pan value should be within the range of 0 to 0x100 (256), with this range representing 0% to 200% of the value defined in the original sound data. The default pan position scale value for all channels is 0x80 (100%).</p>
+
+<h2>Return Value</h2>
+
+<p>Number of channels that have been changed.</p>
+
+<h2>Example</h2>
+
+<pre>void PanFromAngle(unsigned long handle, float angle)
+{
+  int pan;
+
+  /* calculate pan position */
+  if (angle&gt;180.0)
+    angle -= 180.0;
+  else
+    angle = 180.0-angle;
+  angle = angle*(256.0/180.0);
+  pan = (int)angle;
+
+  MusHandleSetPan(handle, pan);
+}
+</pre>
+
+<h2>See Also</h2>
+<p>
+<a href="MusHandleSetVolume.html">MusHandleSetVolume()</a>,
+<a href="MusStartSong.html">MusStartSong()</a>,
+<a href="MusStartEffect.html">MusStartEffect()</a>,
+<a href="MusStartEffect2.html">MusStartEffect2()</a>
+</p>
+
+</body>
+</html>

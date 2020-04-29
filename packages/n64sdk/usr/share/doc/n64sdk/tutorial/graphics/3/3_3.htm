@@ -1,0 +1,131 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Graphics-Chapter 3  Simple Texture Mapping</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/22/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<font style="font-size:12pt"><B>3.3  Texture Image Format</B></FONT>
+<br>
+<P>
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=5><TR>
+	<TD NOWRAP COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE><B>List 3-1</B>
+</TR><TR>
+	<TD NOWRAP BGCOLOR="666666" WIDTH="4" ALIGN=LEFT VALIGN=TOP><HR NOSHADE SIZE=0></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>
+<FONT COLOR="#000080"><PRE><CODE>  /* Load texture (image rgba16sign1)  */
+  gDPLoadTextureBlock(glistp++,
+                      rgba16sign1,     /* pointer to texture image */
+                      G_IM_FMT_RGBA,   /* texel format */
+                      G_IM_SIZ_16b,    /* texel size */
+                      32, 32,          /* image width & height */
+                      0, ... (omitted)</CODE></PRE></FONT>
+	</TD>
+</TR></TABLE>
+<P>
+The third and fourth arguments of gDPLoadTextureBlock express the format of the texture image that is to be loaded and the texel size.
+     The texture format tells how the texture image is displayed in color space.  The N64 can utilize any of the following five kinds of texture formats:
+</P>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=2><TR>
+	<TD> </TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>G_IM_FMT_RGBA</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Texels expressed as RGB and alpha value</TD>
+</TR><TR>
+	<TD> </TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>G_IM_FMT_IA</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Texels expressed as intensity (R=G=B=I) and alpha 
+                                      value
+</TD>
+</TR><TR>
+	<TD> </TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>G_IM_FMT_I</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Texels expressed only as intensity (R=G=B=A=I) </TD>
+</TR><TR>
+	<TD> </TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>G_IM_FMT_YUV</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>YUV<SUP>*1</SUP>Texels expressed in YUV<SUP>*1</SUP> format</TD>
+</TR><TR>
+	<TD> </TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>G_IM_FMT_CI</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Texels expressed by color index (i.e., using palettes)</TD>
+</TR></TABLE>
+<P>
+ The texel size expresses the number of bits of each texel.  It can be any of the following four: 
+</P>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=2><TR>
+	<TD>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP COLSPAN=2>G_IM_SIZ_32b</TD>
+</TR><TR>
+	<TD>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP COLSPAN=2>G_IM_SIZ_16b</TD>
+</TR><TR>
+	<TD>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP COLSPAN=2>G_IM_SIZ_8b</TD>
+</TR><TR>
+	<TD>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP COLSPAN=2>(G_IM_SIZ_4b)</TD>
+</TR><TR>
+	<TD>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>(*)</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>G_IM_SIZ_4b cannot be used with the gDPLoadTextureBlock command.</TD>
+</TR><TR>
+	<TD>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>To use this size, please use the gDPLoadTextureBlock_4b command.</TD>
+</TR></TABLE>
+<P>
+The texture image should express a texture format and texel size that is appropriate for a given picture quality and the way in which the image is to be used.   However, you cannot combine all texture formats with all texel sizes in any which way you want.  The following table shows the permissible combinations and the bit allocation for each component in the specified situation.
+</P>
+<TABLE BORDER=1 CELLSPACING=0 CELLPADDING=3><TR>
+<TD NOWRAP COLSPAN=2 ROWSPAN=2>Å@</TD>
+        <TD NOWRAP ALIGN=CENTER VALIGN=MIDDLE COLSPAN=4>G_IM_SIZ_(size)</TD>
+</TR><TR>
+        <TD NOWRAP ALIGN=CENTER VALIGN=MIDDLE>4b</TD>
+        <TD NOWRAP ALIGN=CENTER VALIGN=MIDDLE>8b</TD>
+        <TD NOWRAP ALIGN=CENTER VALIGN=MIDDLE>16b</TD>
+        <TD NOWRAP ALIGN=CENTER VALIGN=MIDDLE>32b</TD>
+</TR><TR>
+	<TD NOWRAP ROWSPAN=5 ALIGN=CENTER VALIGN=CENTER>G_IM_FMT_<BR>(format)</TD>
+        <TD NOWRAP ALIGN=CENTER VALIGN=MIDDLE>RGBA</TD>
+        <TD NOWRAP ALIGN=CENTER VALIGN=MIDDLE HEIGHT=28>&nbsp;</TD>
+        <TD NOWRAP ALIGN=CENTER VALIGN=MIDDLE HEIGHT=28>&nbsp;</TD>
+        <TD NOWRAP ALIGN=CENTER VALIGN=MIDDLE HEIGHT=28>X<BR>(5/5/5/1)</TD>
+        <TD NOWRAP ALIGN=CENTER VALIGN=MIDDLE HEIGHT=28>X<BR>(8/8/8/8)</TD>
+</TR><TR>
+        <TD NOWRAP ALIGN=CENTER VALIGN=MIDDLE>YUV<SUP>*1</SUP></TD>
+        <TD NOWRAP ALIGN=CENTER VALIGN=MIDDLE HEIGHT=28>&nbsp;</TD>
+        <TD NOWRAP ALIGN=CENTER VALIGN=MIDDLE HEIGHT=28>&nbsp;</TD>
+        <TD NOWRAP ALIGN=CENTER VALIGN=MIDDLE HEIGHT=28>X</TD>
+        <TD NOWRAP ALIGN=CENTER VALIGN=MIDDLE HEIGHT=28>&nbsp;</TD>
+</TR><TR>
+        <TD NOWRAP ALIGN=CENTER VALIGN=MIDDLE>CI</TD>
+        <TD NOWRAP ALIGN=CENTER VALIGN=MIDDLE HEIGHT=28>X</TD>
+        <TD NOWRAP ALIGN=CENTER VALIGN=MIDDLE HEIGHT=28>X</TD>
+        <TD NOWRAP ALIGN=CENTER VALIGN=MIDDLE HEIGHT=28>&nbsp;</TD>
+        <TD NOWRAP ALIGN=CENTER VALIGN=MIDDLE HEIGHT=28>&nbsp;</TD>
+</TR><TR>
+        <TD NOWRAP ALIGN=CENTER VALIGN=MIDDLE>IA</TD>
+        <TD NOWRAP ALIGN=CENTER VALIGN=MIDDLE HEIGHT=28>X<BR>(3/1)</TD>
+        <TD NOWRAP ALIGN=CENTER VALIGN=MIDDLE HEIGHT=28>X<BR>(4/4)</TD>
+        <TD NOWRAP ALIGN=CENTER VALIGN=MIDDLE HEIGHT=28>X<BR>(8/8)</TD>
+        <TD NOWRAP ALIGN=CENTER VALIGN=MIDDLE HEIGHT=28>&nbsp;</TD>
+</TR><TR>
+        <TD NOWRAP ALIGN=CENTER VALIGN=MIDDLE>I</TD>
+        <TD NOWRAP ALIGN=CENTER VALIGN=MIDDLE HEIGHT=28>X</TD>
+        <TD NOWRAP ALIGN=CENTER VALIGN=MIDDLE HEIGHT=28>X</TD>
+        <TD NOWRAP ALIGN=CENTER VALIGN=MIDDLE HEIGHT=28>&nbsp;</TD>
+        <TD NOWRAP ALIGN=CENTER VALIGN=MIDDLE HEIGHT=28>&nbsp;</TD>
+</TR></TABLE>
+<P>
+The samples in this tutorial do not deal with color index textures and YUV<SUP>*1</SUP> textures.  If you are going to use color index textures, remember to set the texture lookup table using the gDPLoadTLUT_pal* command.  Similarly, if you are going to use YUV<SUP>*1</SUP> textures, remember to perform color conversion in the Texture Filter using the gDPSetConvert and gDPSetTextureConvert commands.
+</P>
+<p>
+  <SUP>*1</SUP>The operation of YUV textures is not guaranteed at the present time.<BR>
+<p>
+</p>
+</BODY>
+</HTML>

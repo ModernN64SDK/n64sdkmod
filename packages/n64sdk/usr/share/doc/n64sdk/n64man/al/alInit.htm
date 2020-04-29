@@ -1,0 +1,71 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+
+<!--
+Editors Notes:
+  JLR made formating edits for 4.1.
+  PWC- updated formatting
+  MAP- added links, updated format
+-->
+
+<title>alInit</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>alInit</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p>alInit, n_allnit<br><p><i>
+Initializes the N64 Audio Library</i>
+
+<p><b>Syntax</b></p>
+<p>
+<blockquote>
+  <pre>#include &lt;libaudio.h&gt;     /* <a href="../../header/libaudio.htm">libaudio.h</a> */
+void alInit(ALGlobals *globals, ALSynConfig *c);</pre>
+  <pre>#include &lt;n_libaudio.h&gt;     /* <a href="../../header/n_libaudio.htm">n_libaudio.h</a> */
+void n_alInit(N_ALGlobals *globals, ALSynConfig *c);</pre>
+</blockquote>
+</p>
+<p><b>Arguments</b></font></p>
+<p>
+<dl>
+  <dt><strong>globals</strong></dt>
+  <dd>Pointer to the ALGlobals structure <br>
+    <br>
+  </dd>
+  <dt><strong>c</strong></dt>
+  <dd>Pointer to the Synthesis Driver configuration structure<br>
+    <br>
+  </dd>
+</dl>
+</p>
+<p><b>Description</b></font></p>
+
+<p>To use the Audio Library, you must first call the <tt>allnit</tt> function, which initializes a Synthesis driver with the configuration specified by c and initializes the Audio Library global variables. </p>
+
+<p>For details on n_audio library, see "Chapter 28: n_audio library" in the N64 Programming Manual.</p>
+<p><B>Configuration Structure</B></p>
+<p>
+The configuration structure includes these members:
+<UL><LI><code>maxVVoices</code> is maximum number of virtual voices to allocate</li>
+<LI><code>maxPVoices</code> is the maximum number of physical voices to allocate</li>
+<LI><code>maxUpdates</code> is the maximum number of synthesizer updates to allocate</li>
+<LI><code>maxFXBusses</code> is the maximum number of effects busses to allocate</li>
+<LI><code>dmaproc</code> is the pointer to the Audio DMA callback initialization routine, which is called once for each physical voice and must return a pointer to the <code>ALDMAproc</code> that the voice will use when requesting a direct memory access (DMA) of audio samples</li>
+<LI><code>heap</code> is the pointer to an <code>ALHeap</code> structure that has been already been initialized by a call to the <code><A HREF="../al/alHeapInit.htm">alHeapInit</A></code> function</li>
+<LI><code>outputRate</code> is the desired hardware output rate (22k, 32k, or 44.1k)</li>
+<LI><code>fxType</code> is the desired effects type</li>
+<LI><code>params</code> is the pointer to the parameter list to use when constructing a custom effects chain</li>
+</UL>
+</p>
+<p><b>See Also</b></p>
+
+<p><a href="alClose.htm">alClose</a>, <A HREF="../al/alHeapInit.htm">alHeapInit</A></p>
+<h3>Revision History</h3>
+<p>1999/04/30  Changed Format</p>
+<br><br>
+
+</body>
+</html>

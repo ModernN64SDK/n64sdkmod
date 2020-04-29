@@ -1,0 +1,101 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 9 - Basic Memory Management</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. -->
+</head>
+
+<h1>9.7 Mixing CPU and SP Addresses</h1>
+
+<p>It is permissible to link <A target="keywords" HREF="../../keywords/index/data/system.htm#segment">segments</A> given a CPU <A target="keywords" HREF="../../keywords/index/data/system.htm#virtual address">virtual address</A> with those given a SP <A target="keywords" HREF="../../keywords/index/data/system.htm#segment address">segment address</A>.   It may appear counter-intuitive and error-prone to link relocatables of entirely incompatible address spaces.  As it turns out, the benefits outweigh the potential risks, because it allows the application code to address SP display list data
+symbolically. </p>
+
+<p>For example, suppose a segment is composed of the following <a href="../../keywords/index/data/graphics.htm#display list" target="keywords">display list</a> data: </p>
+
+<blockquote>
+<pre>
+static Vp vp = {
+    SCREEN_WD*2,SCREEN_HT*2,G_MAXZ/2,0,        /* scale */
+    SCREEN_WD*2,SCREEN_HT*2,G_MAXZ/2,0,        /* translate */
+};
+Gfx rspinit_dl[] = {
+    gsSPViewport(&amp;vp),
+    gsSPClearGeometryMode(0xffffffff),
+    gsSPSetGeometryMode(G_SHADE|G_SHADING_SMOOTH),
+    gsSPEndDisplayList(),
+};
+</pre>
+</blockquote>
+
+<p>The beginning of the display list rspinit_dl is embedded somewhere in the segment. Rather than computing its offset into the segment, the display list is simply provided symbolically: </p>
+
+<blockquote>
+<pre>
+<a href="../../n64man/gsp/gSPDisplayList.htm">gSPDisplayList</a>(glistp++,rdpinit_dl);
+</pre>
+</blockquote>
+
+<p>The compiler and linker do the work of computing the address of rspinit_dl within the segment. Thus, if the relative location of the display list rspinit_dl changes, the code will still remain valid (and more readable). Note that the CPU does not reference any of the data in this display list; the CPU just passes a reference to the display list data to the
+SP. </p>
+
+<p>A more complicated example involves using the mixed symbol table to work with memory regions created by the CPU and read by the SP.   In this case, a single SP segment refers to two different underlying DRAM regions.  This technique can be useful when static display lists need to refer to dynamic data that is double buffered.  The actual DRAM location currently being pointed to is swapped by setting the appropriate SP segment register. </p>
+
+<p>The actual memory for the dynamic data can be declared and created within a KSEG0 code segment as follows: </p>
+
+<blockquote>
+<pre>
+typedef struct {
+    Mtx    projection;
+    Ntx    modeling;
+    Gfx    glist[2048];
+} Dynamic_t;
+
+Dynamic_t    dynamicBuffer[2];
+Dynamic_t    *dynamicPointer = &amp;dynamicBuffer[0];
+</pre>
+</blockquote>
+
+<p>The segment contents can then be modified by the CPU directly: </p>
+
+<blockquote>
+<pre>
+<a href="../../n64man/gu/guOrtho.htm">guOrtho</a>(&amp;dynamicp->projection,
+    -SCREEN_WD/2.0,SCREEN_WD/2.0,
+    -SCREEN_HT/2.0,SCREEN_HT/2.0,1,10,1.0);
+<a href="../../n64man/gu/guRotate.htm">guRotate</a>(&amp;dynamicp->modeling,theta,0.0,0.0,1.0);
+</pre>
+</blockquote>
+
+<p>The SP view of the dynamic segment is created by creating a relocatable with the following parallel definition and assigned to, for example, segment register 4 in the <A target="keywords" HREF="../../keywords/index/data/system.htm#ROM spec file">ROM spec file</A>:  </p>
+
+<blockquote>
+<pre>
+Dynamic_t    rspdynamic;
+</pre>
+</blockquote>
+
+<p>Since the relocatable contains only uninitialized data (<A target="keywords" HREF="../../keywords/index/data/system.htm#Bss">BSS</A>), no actual bits on the ROM are used. But more importantly, the symbol rspdynamic is made available to other objects. Its value is the segment address of the dynamic segment. </p>
+
+<p>The SP segment register 4 is then <A target="keywords" HREF="../../keywords/index/data/system.htm#map">mapped</a> to the actual memory for the dynamic segment with the following command: </p>
+
+<blockquote>
+<pre>
+gSegment(glistp++,4,osVirtualToPhysical(dynamicp);
+</pre>
+</blockquote>
+
+<p>Then the SP addresses of the dynamic structure can be used, even from static display lists, to build display lists that reference components of the dynamic section: </p>
+
+<blockquote>
+<pre>
+<a href="../../n64man/gsp/gSPMatrix.htm">gSPMatrix</a>(&amp;dynamic,projection,
+      G_MTX_PROJECTION|G_MTX_LOAD|G_MTX_NOPUSH);
+<a href="../../n64man/gsp/gSPMatrix.htm">gSPMatrix</a>(&amp;dynamic,modeling,G_MTX_MODELVIEW|G_MTX_LOAD|G_MTX_NOPUSH);
+</pre>
+</blockquote>
+
+<p>As with the previous example, using the compiler and linker to generate addresses allows the data structures to be modified, reordered, and so on, without changes to unaffected areas of the application. </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+</body> </html>

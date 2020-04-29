@@ -1,0 +1,316 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>11-06</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font face="arial" size="-1">
+<p> <strong>11.6 LBA (Logical Block Address)</strong> 
+
+<hr>
+
+<p>When disk blocks are actually to be accessed, the 64DD library assigns a serial number to each block, beginning with 0, and uses these numbers for access.  This number is called a logical block address (LBA).  Because each disk has 4,292 blocks, the LBAs range from 0 to 4291.  These numbers are assigned according to the following rules.
+</p>
+
+<ol>
+    <li>ROM area first, then RAM area <P>
+    <li>Head 0 first, then head 1 <P>
+    <li>Periphery first for head 0, center first for head 1
+    </li>
+</ol>
+
+<p>The following example is for a disk of Type 0. </p>
+
+<ol>
+    <li>Numbering starts from the outermost circumference of zone 0 for head 0, which is assigned LBA0 and LBA1.  With a Type 0 disk, the zones up to Zone 2 for head 0 are ROM area, with 268 blocks in Zone 0, 292 blocks in Zone 1, and 274 blocks in Zone 2.  Thus, the LBA for the innermost circumference/sector of Zone 2 is 833 (268+292+274-1).  (Because there are 2 blocks in each circumference, there are actually 2 LBAs for the innermost circumference of Zone 2, 832 and 833.)
+   <P>
+    <li>The next numbers are assigned to the bottom side of the disk.  The innermost circumference of Zone 2 for head 1 is labeled LBA834 and 835, and the numbers increase as the locations become more peripheral.  Both Zone 2 and Zone 1 have 292 blocks, so the LBAs of the outermost circumference/sector of Zone 1 are 1417 (834+292+292-1) and 1416 (same rationale).  The last ROM area LBA is 1417. 
+<P>
+    <li>The first LBA of the RAM area, 1418, is in the outermost circumference of Zone 3 for head 0.  The numbers increase as the locations become more central.  For head 0, there are 274 LBAs in zones 3-6 and 204 in Zone 7.  Thus, the LBAs for the innermost circumference for head 0 are 2717 (1418+274*4+204-1) and 2716.
+  <P>
+    <li>The next block (LBA2718) is in the innermost circumference of Zone 8 for head 1. The numbers increase as the locations become more peripheral.  For head 1, there are 274 LBAs in Zones 3-7 and 204 in Zone 8.  Thus, the LBAs for the outermost circumference of Zone 3 for head 1 are 4291 (2718+274*5+204-1) and 4290.
+
+</ol>
+
+<p><strong>LBA Map </strong> 
+
+<table border="1" cellpadding="3" cellspacing="3">
+    <tr>
+        <td align="center" width="80" bgcolor="#C0C0C0"><font face="arial" size="-1">ROM area </td>
+    </tr>
+    <tr>
+        <td align="center" width="80"><font face="arial" size="-1">RAM area </td>
+    </tr>
+</table>
+<P>
+
+<table border="1" cellpadding="3" cellspacing="3">
+    <tr>
+        <td width="54" bgcolor="#00FF00"> </td>
+        <td colspan="2" width="144" bgcolor="#FFFF00"><font face="arial" size="-1">Disk Type 0
+        </td>
+        <td colspan="2" width="144" bgcolor="#FFFF00"><font face="arial" size="-1">Disk Type 1
+        </td>
+        <td colspan="2" width="144" bgcolor="#FFFF00"><font face="arial" size="-1">Disk Type 2
+        </td>
+    </tr>
+    <tr>
+        <td width="54" bgcolor="#FF80FF"><font face="arial" size="-1">Zone</td>
+        <td width="72" bgcolor="#FFFF80"><font face="arial" size="-1">Head 0 </td>
+        <td width="72" bgcolor="#FFFF80"><font face="arial" size="-1">Head 1 </td>
+        <td width="72" bgcolor="#FFFF80"><font face="arial" size="-1">Head 0 </td>
+        <td width="72" bgcolor="#FFFF80"><font face="arial" size="-1">Head 1 </td>
+        <td width="72" bgcolor="#FFFF80"><font face="arial" size="-1">Head 0 </td>
+        <td width="72" bgcolor="#FFFF80"><font face="arial" size="-1">Head 1 </td>
+    </tr>
+    <tr>
+        <td width="54" bgcolor="#FF80FF"><font face="arial" size="-1">0 </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">0-267 </td>
+        <td width="72" bgcolor="#C0C0C0"> </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">0-267 </td>
+        <td width="72" bgcolor="#C0C0C0"> </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">0-267 </td>
+        <td width="72" bgcolor="#C0C0C0"> </td>
+    </tr>
+    <tr>
+        <td width="54" bgcolor="#FF80FF"><font face="arial" size="-1">1 </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">268-559 </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">1126-1417 </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">268-559 </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">1674-1965 </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">268-559 </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">2222-2513 </td>
+    </tr>
+    <tr>
+        <td width="54" bgcolor="#FF80FF"><font face="arial" size="-1">2 </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">560-833 </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">834-1125 </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">560-833 </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">1382-1673 </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">560-833 </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">1930-2221 </td>
+    </tr>
+    <tr>
+        <td width="54" bgcolor="#FF80FF"><font face="arial" size="-1">3 </td>
+        <td width="72"><font face="arial" size="-1">1418-1691 </td>
+        <td width="72"><font face="arial" size="-1">4018-4291 </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">834-1107 </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">1108-1381 </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">834-1107 </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">1656-1929 </td>
+    </tr>
+    <tr>
+        <td width="54" bgcolor="#FF80FF"><font face="arial" size="-1">4 </td>
+        <td width="72"><font face="arial" size="-1">1692-1965 </td>
+        <td width="72"><font face="arial" size="-1">3744-4017 </td>
+        <td width="72"><font face="arial" size="-1">1966-2239 </td>
+        <td width="72"><font face="arial" size="-1">4018-4291 </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">1108-1381 </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">1382-1655 </td>
+    </tr>
+    <tr>
+        <td width="54" bgcolor="#FF80FF"><font face="arial" size="-1">5 </td>
+        <td width="72"><font face="arial" size="-1">1966-2239 </td>
+        <td width="72"><font face="arial" size="-1">3470-3743 </td>
+        <td width="72"><font face="arial" size="-1">2240-2513 </td>
+        <td width="72"><font face="arial" size="-1">3744-4017 </td>
+        <td width="72"><font face="arial" size="-1">2514-2787 </td>
+        <td width="72"><font face="arial" size="-1">4018-4291 </td>
+    </tr>
+    <tr>
+        <td width="54" bgcolor="#FF80FF"><font face="arial" size="-1">6 </td>
+        <td width="72"><font face="arial" size="-1">2240-2513 </td>
+        <td width="72"><font face="arial" size="-1">3196-3469 </td>
+        <td width="72"><font face="arial" size="-1">2514-2787 </td>
+        <td width="72"><font face="arial" size="-1">3470-3743 </td>
+        <td width="72"><font face="arial" size="-1">2788-3061 </td>
+        <td width="72"><font face="arial" size="-1">3744-4017 </td>
+    </tr>
+    <tr>
+        <td width="54" bgcolor="#FF80FF"><font face="arial" size="-1">7 </td>
+        <td width="72"><font face="arial" size="-1">2514-2717 </td>
+        <td width="72"><font face="arial" size="-1">2922-3195 </td>
+        <td width="72"><font face="arial" size="-1">2788-2991 </td>
+        <td width="72"><font face="arial" size="-1">3196-3469 </td>
+        <td width="72"><font face="arial" size="-1">3062-3265 </td>
+        <td width="72"><font face="arial" size="-1">3470-3743 </td>
+    </tr>
+    <tr>
+        <td width="54" bgcolor="#FF80FF"><font face="arial" size="-1">8 </td>
+        <td width="72"> </td>
+        <td width="72"><font face="arial" size="-1">2718-2921 </td>
+        <td width="72"> </td>
+        <td width="72"><font face="arial" size="-1">2992-3195 </td>
+        <td width="72"> </td>
+        <td width="72"><font face="arial" size="-1">3266-3469 </td>
+    </tr>
+</table>
+
+
+<P>
+<table border="1" cellpadding="3" cellspacing="3">
+    <tr>
+        <td width="54" bgcolor="#00FF00"> </td>
+        <td colspan="2" width="144" bgcolor="#FFFF00"><font face="arial" size="-1">Disk Type 3
+        </td>
+        <td colspan="2" width="144" bgcolor="#FFFF00"><font face="arial" size="-1">Disk Type 4
+        </td>
+        <td colspan="2" width="144" bgcolor="#FFFF00"><font face="arial" size="-1">Disk Type 5
+        </td>
+    </tr>
+    <tr>
+        <td width="54" bgcolor="#FF80FF"><font face="arial" size="-1">Zone</td>
+        <td width="72" bgcolor="#FFFF80"><font face="arial" size="-1">Head 0</td>
+        <td width="72" bgcolor="#FFFF80"><font face="arial" size="-1">Head 1</td>
+        <td width="72" bgcolor="#FFFF80"><font face="arial" size="-1">Head 0</td>
+        <td width="72" bgcolor="#FFFF80"><font face="arial" size="-1">Head 1</td>
+        <td width="72" bgcolor="#FFFF80"><font face="arial" size="-1">Head 0</td>
+        <td width="72" bgcolor="#FFFF80"><font face="arial" size="-1">Head 1</td>
+    </tr>
+    <tr>
+        <td width="54" bgcolor="#FF80FF"><font face="arial" size="-1">0 </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">0-267 </td>
+        <td width="72" bgcolor="#C0C0C0"> </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">0-267 </td>
+        <td width="72" bgcolor="#C0C0C0"> </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">0-267 </td>
+        <td width="72" bgcolor="#C0C0C0"> </td>
+    </tr>
+    <tr>
+        <td width="54" bgcolor="#FF80FF"><font face="arial" size="-1">1 </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">268-559 </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">2770-3061 </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">268-559 </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">3318-3609 </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">268-559 </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">3796-4087 </td>
+    </tr>
+    <tr>
+        <td width="54" bgcolor="#FF80FF"><font face="arial" size="-1">2 </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">560-833 </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">2478-2769 </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">560-833 </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">3026-3317 </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">560-833 </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">3504-3795 </td>
+    </tr>
+    <tr>
+        <td width="54" bgcolor="#FF80FF"><font face="arial" size="-1">3 </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">834-1107 </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">2204-2477 </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">834-1107 </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">2752-3025 </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">834-1107 </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">3230-3503 </td>
+    </tr>
+    <tr>
+        <td width="54" bgcolor="#FF80FF"><font face="arial" size="-1">4 </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">1108-1381 </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">1930-2203 </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">1108-1381 </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">2478-2751 </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">1108-1381 </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">2956-3229 </td>
+    </tr>
+    <tr>
+        <td width="54" bgcolor="#FF80FF"><font face="arial" size="-1">5 </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">1382-1655 </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">1656-1929 </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">1382-1655 </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">2204-2477 </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">1382-1655 </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">2682-2955 </td>
+    </tr>
+    <tr>
+        <td width="54" bgcolor="#FF80FF"><font face="arial" size="-1">6 </td>
+        <td width="72"><font face="arial" size="-1">3062-3335 </td>
+        <td width="72"><font face="arial" size="-1">4018-4291 </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">1656-1929 </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">1930-2203 </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">1656-1929 </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">2408-2681 </td>
+    </tr>
+    <tr>
+        <td width="54" bgcolor="#FF80FF"><font face="arial" size="-1">7 </td>
+        <td width="72"><font face="arial" size="-1">3336-3539 </td>
+        <td width="72"><font face="arial" size="-1">3744-4017 </td>
+        <td width="72"><font face="arial" size="-1">3610-3813 </td>
+        <td width="72"><font face="arial" size="-1">4018-4291 </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">1930-2133 </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">2134-2407 </td>
+    </tr>
+    <tr>
+        <td width="54" bgcolor="#FF80FF"><font face="arial" size="-1">8 </td>
+        <td width="72"> </td>
+        <td width="72"><font face="arial" size="-1">3540-3743 </td>
+        <td width="72"> </td>
+        <td width="72"><font face="arial" size="-1">3814-4017 </td>
+        <td width="72"> </td>
+        <td width="72"><font face="arial" size="-1">4088-4291 </td>
+    </tr>
+</table>
+
+<P>
+<table border="1" cellpadding="3" cellspacing="3">
+    <tr>
+        <td width="54" bgcolor="#00FF00"> </td>
+        <td colspan="2" width="144" bgcolor="#FFFF00"><font face="arial" size="-1">Disk Type 6
+        </td>
+    </tr>
+    <tr>
+        <td width="54" bgcolor="#FF80FF"><font face="arial" size="-1">Zone</td>
+        <td width="72" bgcolor="#FFFF80"><font face="arial" size="-1">Head 0 </td>
+        <td width="72" bgcolor="#FFFF80"><font face="arial" size="-1">Head 1 </td>
+    </tr>
+    <tr>
+        <td width="54" bgcolor="#FF80FF"><font face="arial" size="-1">0 </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">0-267 </td>
+        <td width="72" bgcolor="#C0C0C0"> </td>
+    </tr>
+    <tr>
+        <td width="54" bgcolor="#FF80FF"><font face="arial" size="-1">1 </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">268-559 </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">4000-4291 </td>
+    </tr>
+    <tr>
+        <td width="54" bgcolor="#FF80FF"><font face="arial" size="-1">2 </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">560-833 </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">3708-3999 </td>
+    </tr>
+    <tr>
+        <td width="54" bgcolor="#FF80FF"><font face="arial" size="-1">3 </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">834-1107 </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">3434-3707 </td>
+    </tr>
+    <tr>
+        <td width="54" bgcolor="#FF80FF"><font face="arial" size="-1">4 </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">1108-1381 </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">3160-3433 </td>
+    </tr>
+    <tr>
+        <td width="54" bgcolor="#FF80FF"><font face="arial" size="-1">5 </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">1382-1655 </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">2886-3159 </td>
+    </tr>
+    <tr>
+        <td width="54" bgcolor="#FF80FF"><font face="arial" size="-1">6 </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">1656-1929 </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">2612-2885 </td>
+    </tr>
+    <tr>
+        <td width="54" bgcolor="#FF80FF"><font face="arial" size="-1">7 </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">1930-2133 </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">2338-2611 </td>
+    </tr>
+    <tr>
+        <td width="54" bgcolor="#FF80FF"><font face="arial" size="-1">8 </td>
+        <td width="72" bgcolor="#C0C0C0"> </td>
+        <td width="72" bgcolor="#C0C0C0"><font face="arial" size="-1">2134-2337 </td>
+    </tr>
+</table>
+
+<p><a href="index.htm"><img src="../../gif/index.gif" border="0"
+width="65" height="17"></a></p>
+</body>
+</html>

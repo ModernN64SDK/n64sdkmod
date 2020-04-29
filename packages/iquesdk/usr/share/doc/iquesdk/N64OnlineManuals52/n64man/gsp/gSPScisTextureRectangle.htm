@@ -1,0 +1,84 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.>
+<TITLE>gSPScisTextureRectangle</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>gSPScisTextureRectangle<FONT size="+0"> [Macro]</FONT></H1>
+
+<p><b>Function</b></font></p>
+
+<p>gSPScisTextureRectangle</p>
+<P>
+<i>Draws a rectangle with scissoring</i>
+</P>
+<p><b>Syntax</b></font></p>
+<p>
+<PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gbi.htm">gbi.h</A> */
+gSPScisTextureRectangle (
+        Gfx *gdl, 
+        s32 ulx,
+        s32 uly, 
+        s32 lrx,
+        s32 lry, 
+        s32 tile,
+        s32 s,
+        s32 t, 
+        s32 dsdx,
+        s32 dtdy)</CODE></PRE></p>
+
+<p><b>Arguments</b></font></p>
+<p>
+<DL>
+  <DT><B>gdl</B>
+  <DD>the display list pointer. 
+  <DT><B>ulx</B>
+  <DD>the x-coordinate of upper-left corner of rectangle (10.2, 0.0~1023.75) 
+  <DT><B>uly</B>
+  <DD>the y-coordinate of upper-left corner of rectangle (10.2, 0.0~1023.75) 
+  <DT><B>lrx</B>
+  <DD>the x-coordinate of lower-right corner of rectangle (10.2, 0.0~1023.75) 
+  <DT><B>lry</B>
+  <DD>the y-coordinate of lower-right corner of rectangle (10.2, 0.0~1023.75) 
+  <DT><B>tile</B>
+  <DD>the tile descriptor index (3-bit precision, 0 - 7)
+  <DT><B>s</B>
+  <DD>the texture coordinate s of upper-left corner of rectangle (s10.5) 
+  <DT><B>t</B>
+  <DD>the texture coordinate t of upper-left corner of rectangle (s10.5) 
+  <DT><B>dsdx</B>
+  <DD>the change in s for each change in x (s5.10) 
+  <DT><B>dtdy</B>
+  <DD>the change in t for each change in y (s5.10) 
+</DL></p>
+<p><b>Description</b></font></p>
+<P>
+Draws a textured 2D rectangle with scissoring. This macro differs from g*SPTextureRectangle in that negative values can be set. However, negative values that are entered are corrected to zero. 
+</P>
+<P>
+For information about other features of this macro, see <A HREF="gSPTextureRectangle.htm">gSPTextureRectangle</A>.
+</P>
+<H3>Note</H3>
+<P>
+In copy mode, scissoring is performed on multiples of 4 pixels, so the rectangle will not be accurately scissored. It will be either the same size or larger than a filled rectangle. 
+</P>
+<P>
+In 1-cycle mode and 2-cycle mode, scissoring is performed accurately.
+</P>
+<P>
+This macro can only be used dynamically. There is no static version (gsSPScisTextureRectangle).
+</P>
+<p><b>See Also</b></font></p>
+<P>
+<A HREF="../gdp/gDPFillRectangle.htm">gDPFillRectangle</A>, <A HREF="../gdp/gDPSetScissor.htm">gDPSetScissor</A>, <A HREF="../gdp/gDPSetTexturePersp.htm">gDPSetTexturePersp</A>, <A HREF="gSPTextureRectangle.htm">gSPTextureRectangle</A>, <A HREF="gSPTextureRectangleFlip.htm">gSPTextureRectangleFlip</A>
+</P>
+<p><b>Revision History</b></font></p>
+<P>
+02/01/99  Entirely revised.
+</P>
+</BODY>
+</HTML>

@@ -1,0 +1,62 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<link rel=stylesheet type="text/css" HREF="../N64man.css">
+<!--
+Editors Notes:
+  JLR made formating edits for 4.1.
+  PWC- updated formatting
+  MAP- added links, updated format
+-->
+
+<title>alHeapAlloc</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>alHeapAlloc</b></font><font style="font-size: 9pt"><b> (macro)</b></font>
+
+<p><i>
+Allocates memory from a Nintendo 64 audio heap</i>
+
+<p><b>Syntax</b></p>
+<p>
+<blockquote>
+    <pre>#include &lt;libaudio.h&gt;     /* <a href="../../header/libaudio.htm">libaudio.h</a> */
+void *alHeapAlloc(ALHeap *hp, s32 num, s32 size);</pre>
+</blockquote>
+</p>
+<p><b>Arguments</b></p>
+<p>
+<dl>
+    <dt><strong>hp</strong></dt>
+    <dd>Pointer to the ALHeap structure <br>
+        <br>
+        </dd>
+    <dt><strong>num</strong></dt>
+    <dd>Number of records to allocate <br>
+        <br>
+        </dd>
+    <dt><strong>size</strong></dt>
+    <dd>Size, in bytes, of the records to allocate<br>
+        <br>
+        </dd>
+</dl>
+</p>
+<p><b>Description</b></p>
+
+<p><tt>alHeapAlloc</tt> allocates cache-aligned memory from an audio DRAM heap.</p>
+
+<p>In the debug version of the libultra library (libultra_d), this function also inserts some debugging information that allows the <a href="alHeapCheck.htm">alHeapCheck</a> function to test for heap consistency. </p>
+
+<p>Most memory management schemes allocate additional memory for region headers to facilitate the management of the memory region. The non-debug version of this function does not allocate any memory other than that requested or required for cache alignment. As a result, memory allocated from audio heaps cannot be freed.</p>
+
+<p>Note that cache alignment is important for structures that contain elements shared with the reality co-processor (RCP). </p>
+
+<p><b>See Also</b></p>
+
+<p><a href="alHeapInit.htm">alHeapInit</a>, <a href="alHeapCheck.htm">alHeapCheck</a></p>
+<h3>Revision History</h3>
+<p>1999/04/30  Changed Format</p>
+<br><br>
+</body>
+</html>

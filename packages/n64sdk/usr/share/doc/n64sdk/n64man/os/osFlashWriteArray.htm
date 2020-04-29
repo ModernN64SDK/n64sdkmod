@@ -1,0 +1,42 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <title>osFlashWriteArray</title>
+</head>
+<body bgcolor="#FFFFFF">
+<font face="arial" size="-1">
+<h1>
+osFlashWriteArray <font size=+0> [Function]</font></h1>
+<font color="#FF0000">Writes data in Flash page.</font>
+<h3>
+Syntax</h3>
+
+<font face=courier>#include &lt;ultra64.h&gt;<br>
+s32&nbsp; osFlashWriteArray(u32 page_num);</font>
+
+<h3>
+Description</h3>
+This is a function that writes data in each page of 1M Flash from 1M Flash
+write buffer.
+<p>It specifies page numbers as an argument.
+<p>For return values, 0 is returned when writing is successful and -1 when
+failed.
+<p>In order to write data in specific pages of 1M Flash, follow the procedure
+below:
+<p>(1) Delete data
+<br>(2) Transfer data from RDRAM to 1M Flash write buffer
+<br>(3) Transfer data from write buffer to each page of 1M Flash
+<p>This function is used to do the operation listed in (3).
+<p>Page 0x3fe and 0x3ff are reserved by Nintendo.&nbsp; Please refrain
+from using the pages.
+<p>Timer wait is operated in osFlashWriteArray.&nbsp; Since timer management
+is done by VI manager, it is necessary to boot VI manager with <font face="courier">osCreateViManager</font>
+before using this function.
+<h3>
+Reference</h3>
+
+<h3>
+Revision History</h3>
+07/07/2000&nbsp; This function was added.
+</body>
+</html>

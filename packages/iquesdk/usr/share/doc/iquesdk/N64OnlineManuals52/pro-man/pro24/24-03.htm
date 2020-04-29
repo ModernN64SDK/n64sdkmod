@@ -1,0 +1,33 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 24 - Performance Tuning Guide</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. -->
+</head>
+
+<h1>24.3 Geometry Tuning(Turbo3D Microcode)</h1>
+
+<p>The <a href="../../n64man/ucode/gspTurbo3D.htm">gspTurbo3D</a> <A target="keywords" HREF="../../keywords/index/data/system.htm#microcode">microcode</a> is a feature-limited, precision-reduced, optimized version of the 3D <a href="../../keywords/index/data/graphics.htm#polygon" target="keywords">polygon</a> microcode. It uses a completely different <a href="../../keywords/index/data/graphics.htm#display list" target="keywords">display list</a> organization that is more efficient, but less general. </p>
+
+<p>Because of the reduced precision, the turbo microcode is not suitable for drawing backgrounds or objects with precise textures. It is designed to draw "characters" objects that generally remain in the middle of the viewing frustum. </p>
+
+<p>The following features are not supported with the turbo microcode:</p>
+
+<ul>
+  <li><a href="../../keywords/index/data/graphics.htm#clipping " target="keywords">clipping </a>
+  <li>dynamic lighting
+  <li><a href="../../keywords/index/data/graphics.htm#perspective-corrected texture" target="keywords">perspective-corrected textures</a>
+  <li><a href="../../keywords/index/data/graphics.htm#matrix stack" target="keywords">matrix stacks</a>
+  <li>antialiasing (antialiasing is supported, but not as well).
+</ul>
+
+<p>Applications are responsible for the decision whether objects are visible or not by the drawing order since clipping is not supported.</p>
+
+<p>Current performance measurements of this microcode are about 5K polygons per frame @ 60 Hz without using <a href="../../keywords/index/data/graphics.htm#Z buffer" target="keywords">Z-buffer</a> at all. For more information, consult the man page for <a href="../../n64man/ucode/gspTurbo3D.htm">gspTurbo3D()</a>.  Also, quality of graphics and the number of displayed polygon can be checked with the sample program, turbomonkey which the Turbo3D microcode is used in.</p>
+
+<p>This microcode is in it's first release and may change.</p>
+
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+</body> </html>

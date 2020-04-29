@@ -1,0 +1,94 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.>
+<TITLE>gSPInsertMatrix</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>gSPInsertMatrix [Macro]</H1>
+
+<p><b>Function</b></font></p>
+
+<p>gSPInsertMatrix</p>
+<P>
+<i>Updates elements of the matrix (without performing multiplication)</i>
+</P>
+<p><b>Syntax</b></font></p>
+<p>
+<PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gbi.htm">gbi.h</A> */
+gSPInsertMatrix(Gfx *gdl, u32 where, u32 num)
+gsSPInsertMatrix(         u32 where, u32 num)</CODE></PRE></p>
+
+<p><b>Arguments</b></font></p>
+<p>
+<DL>
+  <DT><B>gdl</B>
+  <DD>the display list pointer. 
+  <DD> 
+  <DT><B>where</B>
+  <DD>the two elements of the matrix to be changed: 
+  <DD>&lt;Integer part&gt; 
+  <DD><B>G_MWO_MATRIX_XX_XY_I</B> (x scale and xy components)
+  <DD><B>G_MWO_MATRIX_XZ_XW_I</B> (xz and xw  components)
+  <DD><B>G_MWO_MATRIX_YX_YY_I</B> (yx and y scale components)
+  <DD><B>G_MWO_MATRIX_YZ_YW_I</B> (yz and yw components)
+  <DD><B>G_MWO_MATRIX_ZX_ZY_I</B> (zx and zy components)
+  <DD><B>G_MWO_MATRIX_ZZ_ZW_I</B> (z scale and zw components)
+  <DD><B>G_MWO_MATRIX_WX_WY_I</B> (x and y translation components)
+  <DD><B>G_MWO_MATRIX_WZ_WW_I</B> (z translation and w scale components)
+  <DD>&lt;Fractional part&gt;
+  <DD><B>G_MWO_MATRIX_XX_XY_F</B> (x scale and xy components)
+  <DD><B>G_MWO_MATRIX_XZ_XW_F</B> (xz and xw components)
+  <DD><B>G_MWO_MATRIX_YX_YY_F</B> (yx and y scale components)
+  <DD><B>G_MWO_MATRIX_YZ_YW_F</B> (yz and yw components)
+  <DD><B>G_MWO_MATRIX_ZX_ZY_F</B> (zx and zy components)
+  <DD><B>G_MWO_MATRIX_ZZ_ZW_F</B> (z scale and zw components)
+  <DD><B>G_MWO_MATRIX_WX_WY_F</B> (x and y translation components)
+  <DD><B>G_MWO_MATRIX_WZ_WW_F</B> (z translation w scale components)
+  <DD> 
+  <DT><B>num</B>
+  <DD>the new values of the elements (32-bit integer: High-order 16 bits for the first element, and low-order 16 bits for the second element). 
+
+</DL></p>
+<p><b>Description</b></font></p>
+<P>
+This macro substitutes new values for two elements of the matrix used for vertex transformations (This matrix is the concatenated matrix of the model view and projection matrix). The internal format of the RSP matrix elements are modified in pairs. Please note that this matrix is the modified matrix of the model view matrix and projection matrix, and after this macro there is no matrix multiplication. Also, there is no matrix pushing or popping on the model view and projection matrix stacks, and the tops of the stacks are not modified. If <A HREF="gSPMatrix.htm">gSPMatrix</A> follows this macro, the matrix supplied by this macro will be destroyed, and it will have no effect on the RSP's new matrix (i.e., the result is the same as if this macro had not been used). 
+</P>
+<P>
+The elements that are to be replaced are specified by <B>where</B>. To completely modify the elements, both the integer part and fractional part of the matrix must be modified. For details, see <A HREF="gSPMatrix.htm">gSPMatrix</A>. 
+</P>
+<P>
+Since this is an advanced macro, before using it, you should have a good understanding of how matrices are used in the RSP microcode. For details, see <A HREF="gSPMatrix.htm">gSPMatrix</A> and Section 11.3, "Matrix State" in the N64 Online Programming Manual. 
+</P>
+<p><b>Note</b></font></p>
+<P>
+This macro does not affect lighting. Therefore, if this macro is used when light is being used, the object will be rendered in accordance with the light of the RSP matrix state prior to this macro. The object's position and orientation, however, will be determined by the matrix resulting from this macro. 
+</P>
+<P>
+For information related to the matrix format, see <A HREF="gSPMatrix.htm">gSPMatrix</A>. 
+</P>
+<P>
+This macro is not supported by F3DEX2.
+</P>
+<p><b>Example</b></font></p>
+<P>
+The following instructions modify the x and y transformation terms of the matrix to 20.5 and 15.25, respectively: 
+</P>
+<P>
+<PRE><CODE><B>gSPInsertMatrix</B>(glistp++, G_MWO_MATRIX_WX_WY_I, 0x0014000f);
+<B>gSPInsertMatrix</B>(glistp++, G_MWO_MATRIX_WX_WY_F, 0x80004000);
+</CODE></PRE>
+</P>
+<p><b>See Also</b></font></p>
+<P>
+<A HREF="gSPForceMatrix.htm">gSPForceMatrix</A>, <A HREF="gSPMatrix.htm">gSPMatrix</A>
+</P>
+<p><b>Revision History</b></font></p>
+<P>
+02/01/99  Entirely revised.
+</P>
+</BODY>
+</HTML>

@@ -1,0 +1,83 @@
+<HTML>
+<HEAD>
+<TITLE>nuContPakFileOpenJis</TITLE>
+</HEAD>
+
+<BODY bgcolor="#FFFFFF">
+<font face="arial" size="-1">
+
+<P>
+<FONT size="5"><b><IMG src="../nusystem2.gif" height="30" width="176">Function</b></FONT>
+
+<HR>
+<P>
+<FONT size="3"><b>nuContPakFileOpenJis</b></FONT>
+<p>
+<HR>
+<P>
+<b>Syntax</b>
+<font face="courier" size="2">
+<pre>s32 nuContPakFileNum(NUContPakFile *file, s32 *max_files, s32 *used_files)</pre>
+</font>
+
+<p><b>Arguments</b>
+<font face="courier" size="2">
+<pre>
+*file         Controller Pak structure
+*max_files    maximum number of notes in Pak
+*used_files   number of notes used in Pak</pre>
+</font>
+
+<p><b>Return Value</b>
+<font face="courier" size="2">
+<pre>Error</pre>
+</font>
+
+<p><b>Description</b>
+
+<p><i>Gets the maximum number of notes and the number of notes being used in the Controller Pak</i>
+
+<p>For "file", the device must be opened by the nuContPakOpen function.
+
+<p>The maximum number of notes is returned to max_files.
+
+
+<p>The number of files being used is returned to used_files.
+
+<p>The value returned by the osPfsNumFiles function is stored in file.error.
+
+<p><b>Errors</b>
+<p>
+<table border="1" cellspacing="1">
+    <tr>
+	<td><font face="arial" size="-1">PFS_ERR_NOPACK</font></td>
+	<td><font face="arial" size="-1">Nothing is inserted in the specified Controller.</font></td>
+    </tr>
+    <tr>
+	<td><font face="arial" size="-1">PFS_ERR_NEW_PACK</font></td>
+    	<td><font face="arial" size="-1">The Controller Pak may have been changed.  Please perform the Open process again.</font></td>
+    </tr>
+    <tr>
+	<td><font face="arial" size="-1">PFS_ERR_INCONSISTENT</font></td>
+       	<td><font face="arial" size="-1">There is an inconsistency in the file system management area.</font></td>
+    </tr>
+    <tr>
+	<td><font face="arial" size="-1">PFS_ERR_CONTRFAIL</font></td>
+	<td><font face="arial" size="-1">Data transfer with Controller has failed.</font></td>
+    </tr>
+    <tr>
+   	<td><font face="arial" size="-1">PFS_ERR_INVALID</font></td>
+	<td><font face="arial" size="-1">Invalid parameter or the game note does not exist.</font></td>
+    </tr>
+</table>
+	
+<p><b>See Also</b>
+<p><a href="nuContPakOpen.htm">nuContPakOpen</a>
+
+<p>
+<hr>
+
+<p align="right"><a href="index.htm"><img src="../index.gif" border="0"
+width="65" height="17"></a>
+</body>
+</html>

@@ -1,0 +1,88 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<META name="GENERATOR" content="IBM HomePage Builder V3.0.7  for Windows">
+<TITLE>Developers News 64DD issue 1.0</TITLE>
+</HEAD>
+
+<BODY bgcolor="#FFFFFF">
+
+<HR>
+<P align="center">
+<STRONG><FONT size="6"><IMG src="gif/devnews.gif" height="44" width="453"></FONT><BR>
+<FONT color="#8000FF"><BIG><BIG>64DD issue 2.0</BIG></BIG></FONT></STRONG>
+</P>
+<HR>
+<H3><FONT color="#008000">Danger of interrupting a write operation</FONT></H3>
+<P>
+(The following discussion refers to library behavior after installation of OS20I_*_*_Patch_1a,D2.)
+</P>
+<P>
+When the system is interrupted in the middle of a write operation, the contents of the block being written may be destroyed. Writing can be interrupted in the following ways: 
+</P>
+<OL type="I">
+  <LI>The user ejects the disk during writing.
+  <LI>The user turns the power off during writing. 
+  <LI>The user presses the reset button during writing.
+</OL>
+<P>
+(1) The first kind of interrupt I. can be detected by the return of an error 49 (LEO_EJECTED_ILLEGALLY_RESUME) from the write function. In this case, the next step varies depending on the user's reaction. If (and only if) the user reinserts the same disk, rewrite the data remaining in N64 main memory (RDRAM) to the disk. This data will be what the system was saving to disk before the interruption. The process flow on the program side is shown below: 
+</P>
+<P>
+Detect an error 49
+</P>
+<P>
+|
+</P>
+<P>
+Wait for the disk to be inserted
+</P>
+<P>
+|
+</P>
+<P>
+Check the disk ID (is it the same disk?)
+</P>
+<P>
+|
+</P>
+<P>
+Rewirte the data that was to be saved
+</P>
+<P>
+For details, refer to the section on the write process sequence in Chapter 10 of the 64DD Programming Manual. Please follow this sequence for your process.
+</P>
+<P>
+Data that was to be saved can only be rewritten this way if the write operation was interrupted as described in I. and if the user reinserts the same disk. If the user turns the power off or presses the reset button before reinserting the disk, or if the user reinserts a different disk, this type of rewrite process cannot be performed, and the situation becomes the same as if a (2) or (3) type of write interruption occurred. In this case, please read the explanation in II. below.
+</P>
+<P>
+(2) If the write operation is interrupted other than the situation described in (1), the only way to detect whether a write operation has been interrupted is to try to read that part of the disk. Specifically, you know the write was interrupted if: 
+</P>
+<OL>
+  <LI>An error 23 (LEO_ERROR_UNRECOVERED_READ_ERROR) occurs, or
+  <LI>No error occurs, but the data has been destroyed
+</OL>
+<P>
+In this second case, the only way to detect the interrupt is to devise some means like setting a checksum on the game program side. Please introduce some such means to detect this situation. 
+</P>
+<P>
+As a countermeasure to the interrupt you can rewrite the data the same as in (1). But unlike in (1), in this case the saved data that you tried to write has been lost. Instead, what you can do is insert the initial values of the data. Since the user has lost the data they tried to save, we recommend providing some kind of explanation. Please note the following precautions: 
+</P>
+<P>
+[Converning 1]
+</P>
+<P>
+As mentioned above, if an error 23 occurs when reading a RAM area, it means a "write interruption" was likely the cause. This is not a fatal error. Although you cannot restore the saved data, you can continue to use the disk by writing the initial data. On the other hand, if an error 23 occurs when reading a ROM area, this is a fatal error. Please display the error number and prompt the user to read the manual. (For details, refer to the explanation of error 23 in the 64DD Programming Manual, Chapter 10.2 Error Handling Sequences.) 
+</P>
+<P>
+[Converning 2]
+</P>
+<P>
+Note that data can be destroyed even though no error occurs. Please take some measure like setting a checksum on the game side to detect this type of event. 
+</P>
+<P>
+Unlike in case I., the data is destroyed and cannot be restored in any of the cases described in II. However, this does not mean that the disk itself has been destroyed. A way to preserve the data is described in Chapter 12.12 of the 64DD Programming Manual. 
+</P>
+<HR>
+</BODY>
+</HTML>

@@ -1,0 +1,67 @@
+<html>
+
+<head>
+
+<title>SELECT CHARACTER</title>
+
+</head>
+
+<body bgcolor="#FFFFFF">
+<FONT FACE="arial" SIZE="-1">
+
+<p align="center"><big><strong>SELECT CHARACTER DETAILS</strong></big></p>
+
+<p align="left"><strong>1. Description of Processing in Select Character</strong></p>
+
+<p align="left">Select Character has been created as a call-back function (om_select_character_main() function). Call-back functions can be registered with Nusystem's nuGfxFuncSet function, and registered functions will be executed on each vertical retrace. At present, primarily the following kinds of processing have been incorporated into Select Character.</p>
+
+<DL>
+<DT>(1) Deformation animation control for selectable characters<br>
+<DT>(2) Animation (key frame) control of character selected by player<br>
+<DT>(3) Character selection cursor control<br>
+<DT>(4) Drawing of Select Character BG texture data using F3DEX sprite library<p>
+
+<DD>NOTE: Select Character texture data are loaded from ROM by main.c .</DL><p>
+
+<p align="left"><strong>2. Texture Data</strong></p>
+
+<p align="left">There is one type of texture data drawn by Select Character (Select Character BG). The texture data are defined by the structure in (1) in the Data director. </p>
+
+<DL>
+<DT>(1) Texture data structure<p>
+
+<DD>Select Character BG . . . .  sp_select_bg.c<p>
+
+<DT>(2) Texture data format<p>
+
+<DD>The texture data format drawn by Select Character uses the sprite library data format for the F3DEX microcode.<p>
+
+<DD>"mksprite," available with the standard N64OS is used as the data format conversion tool. "mksprite" itself, is a script program written in the UNIX C shell, and generates data (C language source files) by calling the C program rgb2c in the script.<p>
+
+<DD><font color="#FF0000">NOTE:  "mksprite" and the rgb2c tool are provided only in the SGI version N64OS. </font><p>
+
+<DT>(3) How to use the tool command</p>
+
+<DD>The method of using the mksprite tool command is introduced below. For details about mksprite and the sprite library, please refer to Chapter 16 "N64 Sprite Library" in the N64 Programming Manual.<p>
+
+<DD>mksprite name imagefile.rgb 
+tileX tileY overlap &gt; outfilename<p>
+
+   <DL>
+    <DT>name<p>
+    <DD>Specify any tag name for the sprite data structure in name.<p>
+
+    <DT>imagefile.rgb<p> 
+    <DD>Specify the image file to be converted in imagefile.rgb. The format of this image file must be the SGI Image format. If the file is saved in a commercial image editing tool, select SGI Image format.<p>
+
+    <DT>tileX<p>
+    <DD>In tileX, specify the X size of 1 tile when the texture data for one picture is divided into tile units.<p>
+
+    <DT>tileY<p>
+    <DD>In tileY, specify the Y size of 1 tile when the texture data for one picture is divided into tile units.<p>
+
+    <DT>overlap<p>
+    <DD>Overlap is specified when the sprite size is to be scaled. Specify 0 when the sprite size is not to be scaled. For details, refer to Chapter 16 of the N64 Programming Manual. </DL></DL>
+
+</body>
+</html>

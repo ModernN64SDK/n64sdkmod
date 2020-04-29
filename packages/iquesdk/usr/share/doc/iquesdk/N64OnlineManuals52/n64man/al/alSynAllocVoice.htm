@@ -1,0 +1,79 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Author's Comments: JLR made formating edits for 4.1.
+MAP- updated format>
+<title>alSynAllocVoice</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>alSynAllocVoice</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+
+<p>alSynAllocVoice, n_alSynAllocVoice</p>
+
+<p><i>Allocates a synthesizer voice</i></p>
+
+<h3>Syntax</h3>
+<p>
+<blockquote>
+  <pre>#include &lt;libaudio.h&gt;     /* <a href="../../header/libaudio.htm">libaudio.h</a> */
+s32 *alSynAllocVoice(    ALSynth *drvr, ALVoiceConfig *vc);</pre>
+  <pre>#include &lt;n_libaudio.h&gt;     /* <a href="../../header/n_libaudio.htm">n_libaudio.h</a> */
+s32 n_alSynAllocVoice(N_ALVoice *voice, ALVoiceConfig *vc);</pre>
+</blockquote>
+</p>
+<h3>Arguments</h3>
+<p>
+<dl>
+  <dt><strong>drvr</strong></dt>
+  <dd>Pointer to the synthesizer driver<br>
+    <br>
+  </dd>
+  <dt><strong>voice</strong></dt>
+  <dd>Pointer to a voice structure<br>
+    <br>
+  </dd>
+  <dt><strong>vc</strong></dt>
+  <dd>Pointer to a voice configuration structure<br>
+    <br>
+  </dd>
+</dl>
+</p>
+<h3>Description</h3>
+
+<p>It uses an argument specified in the voice configuration structure to allocate to virtual voice. It returns the pointer to a voice structure when it is possible to allocate virtual voice. If it fails to allocate, <tt>alSynAllocVoice</tt> returns 0. If there are no physical voices available, it tries to steal a physical voice from another virtual voice. To do this, it searches the list of voices and steals the physical voice with the lowest priority voice that is equal to or lower than the priority specified in the configuration structure. If no physical voice is found with an equal or lower priority <tt>alSynAllocVoice</tt>, it returns the pointer to the virtual voice, and no new voice will be pronounced. Note that voice stealing occurs only when there are more virtual voices than physical voices. </p>
+
+<p>The arguments in the ALVoiceConfig structure are as follows:</p>
+<p>
+<dl>
+  <dt><strong>priority</strong></dt>
+  <dd>Voice's playback priority<br>
+    <br>
+  </dd>
+  <dt><strong>fxBus</strong></dt>
+  <dd>Auxiliary effect bus to which the voice is assigned. Currently there is</dd>
+  <dd>only one auxiliary bus<br>
+    <br>
+  </dd>
+  <dt><strong>unityPitch</strong></dt>
+  <dd>Flag that is set to specify for the voice to be played at a pitch of 1.0.<br>
+    <br>
+  </dd>
+  <dt>For details on n_audio library, see "Chapter 28: n_audio library" in the N64 Programming Manual.</dt>
+</dl>
+</p>
+<h3>Warning</h3>
+
+<p>Call <tt>alSynAllocVoice</tt> only from within the ALVoiceHandler.</p>
+
+<h3>See Also</h3>
+
+<p><a href="alSynFreeVoice.htm">alSynFreeVoice</a>, <a href="alSynStartVoice.htm">alSynStartVoice</a>, and <a href="alSynStopVoice.htm">alSynStopVoice</a></p>
+<h3>Revision History</h3>
+<p>1999/04/30  Changed Format</p>
+<br><br>
+
+</body>
+</html>

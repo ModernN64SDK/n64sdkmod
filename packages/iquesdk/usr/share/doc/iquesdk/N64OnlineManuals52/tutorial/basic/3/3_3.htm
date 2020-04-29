@@ -1,0 +1,111 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-N64 Programming Basics-Chapter 3  The Display List and Tasks</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/20/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<FONT Style="font-size:12pt"><B>3.3  Two Kinds of Display Lists</B></FONT>
+<br>
+<P>
+    In the display list we used as an example in the previous section, the display list was provided as a Gfx type data array.  You may have wondered at that time whether display lists are always that inflexible. <br><br> 
+     Actually, this is a valid point.  If the array is to be defined, the elements must be decided at the time of compilation.  In other words, the contents of the display list must all be provided as constants before interpretation by the compiler.  Imagine you are using the display list to draw a rectangle on the screen.  If you must provide all information about the rectangle's position, size and fill color as constants, then you cannot change the color or move the position at the time of execution.   Naturally, there will be times when you want a "dynamic" display list rather than this "static" kind of the display list.<br><br>
+     In fact, both kinds of display lists are available: static and dynamic.  As you may have surmised, rspinit_dl and rdpinit_dl are classified as static display lists.  A static display list is suitable for initialization purposes since it is almost always okay to decide on the contents at compile time.<br><br>
+     To see an example of a dynamic display list, look at the array glist defined in graphic.c.  
+
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=5><TR>
+	<TD NOWRAP COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE><B>List 3-2</B>  <B>See basic3 "graphic.c"</FONT>
+</TR><TR>
+	<TD NOWRAP BGCOLOR="666666" WIDTH="4" ALIGN=LEFT VALIGN=TOP><HR NOSHADE SIZE=0></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>
+<FONT COLOR="#000080"><PRE><CODE>/* Display list */                          
+Gfx    glist[GLIST_LENGTH];
+Gfx *  glistp;</CODE></PRE></FONT>
+	</TD>
+</TR></TABLE>
+<P>
+The glist array also stores a display list, but unlike rspinit_dl and rdpinit_dl, none of the array content is specified at compile time.  In other words, at the time when the array is defined, the memory area for storing the commands is reserved, but the content remains empty.<br><br>
+     The functions that actually create the contents of glist are <tt>ClearBackground</tt> and <tt>DrawBlueRectangle</tt>.  When gSP... or gDP... commands are called, the commands are stored one by one in glist.
+<BR>
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=5><TR>
+	<TD NOWRAP COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE><B>List 3-3</B>  <B>See basic3 "graphic.c"</b>
+</TR><TR>
+	<TD NOWRAP BGCOLOR="666666" WIDTH="4" ALIGN=LEFT VALIGN=TOP><HR NOSHADE SIZE=0></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>
+<FONT COLOR="#000080"><PRE><CODE>void  DrawBlueRectangle(void)
+{
+  /* The blue rectangle's upper-left coordinates  */
+  static int      x = 0, y = 0;
+
+  /* Specify the fill color (moving rectangle, blue)*/
+  gDPSetFillColor(glistp++,
+                 (GPACK_RGBA5551(0, 0, 255, 1) &lt;&lt; 16 |
+                  GPACK_RGBA5551(0, 0, 255, 1)));
+
+  /* This process when the blue rectangle protrudes from the screen */
+  if(x &gt;= SCREEN_WD)
+    x = 0;
+  if(y &gt;= SCREEN_HT)
+    y = 0;
+
+  /*
+   * If the blue rectangle protrudes from the bottom of the screen, divide it into top and bottom parts for display.
+   *  The top and bottom look like they are connected.
+   * Since the code is complicated, do not process in the horizontal direction.
+   */
+  if(y + 100 &gt;= SCREEN_HT)
+  {
+    /* If it protrudes, draw two rectangles. */
+    gDPFillRectangle(glistp++, x, y, x + 100, SCREEN_HT - 1);
+    gDPPipeSync(glistp++);
+    gDPFillRectangle(glistp++, x++, 0,
+      x + 100, (y++) + 100 - SCREEN_HT);
+  }
+  else
+  {
+    /* If it does not protrude, one rectangle is sufficient. */
+    gDPFillRectangle(glistp++, x++, y++, x + 100, y + 100);
+  }
+  gDPPipeSync(glistp++);
+}
+</CODE></PRE></FONT>
+	</TD>
+</TR></TABLE>
+<P>
+There is a line in the <tt>DrawBlueRectangle</tt> function that reads like this:<BR><br>Here, x and y are variables, so they take various values during execution.  A dynamic display list can handle these with no problem, making it possible to create the animation of a moving rectangle.  
+</P>
+<P>
+<br><br>
+<IMG SRC="image05.gif">
+</P>
+<P>
+<B>Figure 3-2  The gDPFillRectangle command in operation</B>
+</P>
+<br> 	
+<P>
+Once a command has been stored in a certain element in the glist array, you cannot overwrite that space with the next command.  Thus, you follow a procedure of inserting commands in order into the command list while incrementing the Gfx pointer variable glistp.
+</P>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=2><TR><TD NWRAP ALIGN=CENTER VALIGN=TOP>
+	<B>Characteristics of the two types of display lists<B>
+</TD></TR><TR><TD  NWRAP ALIGN=CENTER VALIGN=TOP>
+	<TABLE BORDER CELLSPACING=0 CELLPADDING=1 WIDTH=466><TR>
+		<TD WIDTH="11%" ALIGN=CENTER VALIGN="TOP">   </TD>
+		<TD NOWRAP WIDTH="45%" ALIGN=CENTER VALIGN="MIDDLE">Static display list</TD>
+		<TD NOWRAP WIDTH="45%" ALIGN=CENTER VALIGN="MIDDLE">Dynamic display list</TD>
+	</TR><TR>
+		<TD NOWRAP WIDTH="11%" ALIGN=CENTER VALIGN="TOP">Advantages</TD>
+		<TD WIDTH="45%" ALIGN=LEFT VALIGN="TOP">Fast to build (decided at compile time) and easy to handle.</TD>
+		<TD WIDTH="45%" ALIGN=LEFT VALIGN="TOP">You can decide the contents at execution time.</TD>
+	</TR><TR>
+		<TD NOWRAP WIDTH="11%" ALIGN=CENTER VALIGN="TOP">Disadvantages</TD>
+		<TD WIDTH="45%" ALIGN=LEFT VALIGN="TOP">Command contents are fixed and inflexible.  </TD>
+		<TD WIDTH="45%" ALIGN=LEFT VALIGN="TOP">Slow to build at execution time (rendering speed is the same).</TD>
+</TR></TABLE>
+</TD></TR></TABLE>
+</BODY>
+</HTML>

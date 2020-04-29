@@ -1,0 +1,25 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 23 - GameShop Debugger</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. -->
+</head>
+
+<h1>23.3 rmon Theory of Operation</h1>
+
+<p>As mentioned in the previous section, rmon consist of three <A target="keywords" HREF="../../keywords/index/data/system.htm#thread">threads</A> that run under the operating system, but these threads run very infrequently. The rmon main thread consists of a <A target="keywords" HREF="../../keywords/index/data/system.htm#command parser">command parser</A>, a <A target="keywords" HREF="../../keywords/index/data/system.htm#command dispatcher">command dispatcher</A>, and a collection of <A target="keywords" HREF="../../keywords/index/data/system.htm#service routine">service routines</A>. In operation, the debugger sends a request to the target. This request consists of a number of 32-bit words that describe the work to be done; (for example, read 40 words starting at address 0x10000000 in the address space of thread 6). This request is passed through <a href="../../n64man/tool/dbgif.htm">dbgif</a> to the driver. The host (through operation of the driver) alerts the target that it wishes to send a <A target="keywords" HREF="../../keywords/index/data/system.htm#message">message</a>. A very small, high-priority thread called the rmon I/O thread responds to the interrupts that occur when the driver writes to one of the GIO registers. Only one access to the &QUOT;Virtual ROM&QUOT; is allowed at a time, so the host must wait until any DMA access in progress is completed. </p>
+
+<p><strong>Note:</strong>  All threads run in the same address space in this environment, but the debugger could support a more complex environment where this was not the case. The debugger does consider the RCP to be a separate address space internally. </p>
+
+<p>When accessing to DMA has happened, the target notifies the host that it is now possible to use the memory. At this point, the target system starts a high-priority <A target="keywords" HREF="../../keywords/index/data/system.htm#system thread">system thread</A> (the rmon spin thread) that keeps the game from running and starting any more accesses to virtual ROM. Since the game is not accessing this memory, the host is now free to load the request packet into a predetermined location at the high end of memory. When the packet has been deposited in memory, the host notifies the target that a request has arrived. This stops the rmon spin thread. The rmon I/O thread notifies the main rmon thread and waits for the next interrupt. </p>
+
+<p>The rmon main thread wakes up in response to the message from the rmon I/O thread. It fetches the incoming packet and <A target="keywords" HREF="../../keywords/index/data/system.htm#dispatch">dispatches</A> a service routine based on what service was requested. In our example, rmonReadMem will be called. This function examines the arguments, reads the memory, and deposits the contents in another section of virtual ROM as part of a reply packet. It then sends an interrupt to the host, alerting it to the arrival of the reply packet in memory. The host responds to this interrupt by copying the reply packet out of virtual ROM and sending another interrupt to the target. This provides feedback to the target that the host has finished with the reply buffer and the target may use it again. </p>
+
+<p>Most transactions between the host and target follow this model, but there are a few exceptions. It is likely that the target will asynchronously send a packet to the host that is not a reply to a host request. This occurs whenever a breakpoint has been encountered, for example. Both host and target &QUOT;<A target="keywords" HREF="../../keywords/index/data/system.htm#sign on">sign on</A>&QUOT; when starting, and each has a reply that it sends to the other when such a sign-on is received. The debugger can also process notification that a thread has been created and destroyed. While not currently used, these may be added in the future. </p>
+
+<p>Target-generated interrupts are received by the driver on the host system and routed to processes (for example, <a href="../../n64man/tool/dbgif.htm">dbgif</a>) that have registered that they would like to receive a given set of interrupts. (Interrupts are associated with a six-bit value identifying which interrupt occurred.) Thus, rmon sends a specific interrupt code to the host. This code indicates that the message should be send to <a href="../../n64man/tool/dbgif.htm">dbgif</a> and not some other process. The driver does not read the communication buffers except as an agent for <a href="../../n64man/tool/dbgif.htm">dbgif</a> or another application process. </p>
+
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+</body> </html>

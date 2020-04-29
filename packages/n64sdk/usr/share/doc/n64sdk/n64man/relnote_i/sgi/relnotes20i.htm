@@ -1,0 +1,263 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../n64man.css">
+<title>2.0I SGI Release Notes</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check-->
+</head>
+
+<h1>2.0I SGI Release Notes (12/15/98)</h1>
+
+<hr>
+
+<h2>Summary:</h2>
+
+<p>This release of N64 OS (for RCP 2.0 version2.0I) includes the various patches that were released since version 2.0H.</p>
+
+<p>A problem with multiplication when using the R4300 CPU was explained in release 2.0C. This still applies.  To solve this problem,  the patch included in IRIX 5.3 needs to be installed.  A brief explanation is described in Appendix A below.  More detailed instruction on the patch installation is explained in the release note which is attached to the patch.  (This patch is also included on this CD.)</p>
+
+<p>
+ 	The directory structure under /usr/src/PR was completely revised, and demo software is now installed in /usr/src/PR/demos. For detailed structre, refer to /usr/src/PR/demos/Readme_Demos.  It is recommended that you erase the entire /usr/src/PR directory before installation. By doing this, it is possible to prevent mixing up the old directories with the newly installed directories.</p>
+
+<p>A description of "to executed gload" is found in a README in the directories of some sample demos under /usr/src/PR/demos/README_DEMOS and /usr/src/PR/demos. This is how to execute a program in the development environment for the Indy + a development board. For Partner-N64 users, please execute a program following the procedures for Partner-N64.</p>
+
+<p>A conflict may occur during the installation and the message "As the patch is dependent, the old version cannot be erased." is displayed.  If this occurs,  select "Erase the patch, too."</p>
+
+<hr>
+
+<h2>New functions:</h2>
+
+<p>A new sprite microcode, S2DEX was added. For its function and usage, refer to the document in /usr/src/PR/doc/gfxucode.S2DEX.  This is same as Release 1.06 of S2DEX microcode which was distributed as a patch for 2.0H. Please note that there is no compatibility between Sprite2D microcode that has been distributed and S2DEX microcode.</p>
+
+<hr>
+
+<h2>New demo software:</h2>
+<p>The following new demos are available:
+<dl>
+  <dt><strong>gs2dex</strong></dt>
+  <dd>A sample program for S2DEX micorcode. Controller 1 is used.  * perl is needed in order to compile this program.  Please install the following package from the IRIX CD.</dd>
+</dl>
+
+<blockquote>
+  <ul>
+    <li>eoe2.sw.gifts_perl(For IRIX5.3)</li>
+    <li>eoe.sw.gifts_perl(For IRIX6.X)</li>
+  </ul>
+</blockquote>
+
+<dl>
+  <dt><strong>eeptest</strong></dt>
+  <dd>A test program for EEPROM. It executes WRITE/READ for EEPROM and checks if reading/writing is performed correctly. It is compatible with a 16K-EEPROM.<br>
+    <br>
+  </dd>
+  <dt><strong>sramtest</strong></dt>
+  <dd>A sample program for SRAM. A 256Kb SRAM is needed for execution. The result is returned to a terminal using osSyncPrintf.<br>
+    <br>
+  </dd>
+</dl>
+
+<hr>
+
+<h2>Modifyed demo software:</h2>
+
+<p>The following demos have been modified:
+
+<dl>
+  <dt><strong>motortest</strong></dt>
+  <dd>This program was changed to call osMotorStop() three times when stopping the Rumble Pak.<br>
+    <br>
+  </dd>
+  <dt><strong>nosPak</strong></dt>
+  <dd>A sample library for the Controller Pak menu libnos_jpn.a, libnos.a was provided in its entirety for the previous version.  It was changed so that by executing make using lib/, a library is created.  Also,  when using the previous Controller Pak menu program, the setting for screen mode was designed only for NTSC within a menu.  Therefore, it could not be used for other modes (such as PAL). In order to make the Controller Pak menu usable with other modes, the screen mode is no longer set within a menu.  That is, it is necessary to set a screen mode before calling the Controller Pak menu.  It was changed so that a version of Controller Pak Library would be displayed by the Controller Pak menu.  If one's own Controller Pak menu is used, please be sure to display a version number.<br>
+    <br>
+  </dd>
+  <dt><strong>pfs</strong></dt>
+  <dd>A character error for the screen display was fixed.  Also, specifications were changed so that it conforms to Controller Pak guidelines. The function used to change the number of pages of a game note with the L and R buttons was deleted.<br>
+    <br>
+  </dd>
+  <dt><strong>nnsample1,2</strong></dt>
+  <dd>An error with RDP FIFO buffer size was corrected. And in case rmon is used, it was changed to USE_RMON to be specified. <br>
+    <br>
+  </dd>
+</dl>
+
+<hr>
+
+<h2>Corrected problems:</h2>
+
+<dl>
+  <dt><strong>AUDIO</strong></dt>
+  <dd>The osAiSetNextBuffer() function was modififed.  Previously, a bug was considered to be found if the last address of DMA source is bXX10 0000 0000 0000.  It is now considered that a bug would be found when the address is bXXX0 0000 0000 0000.  It has been changed to avoid that address.<br>
+    <br>
+  </dd>
+  <dt><strong>GRAPHICS</strong></dt>
+  <dd>Yield processing could not be done for Sprite2D Microcode in the previous version.  This has been corrected.  Previously, this occurred when it was combined with naudio microcode.<br>
+    <br>
+  </dd>
+  <dt><strong>F3DEX</strong></dt>
+  <dd>When flat shading was used for gSP1Quadrangle of F3DEX microcode, occasionally the outcome was not as expected.  gbi.h was modified to make this function more reliable.<br>
+    <br>
+  </dd>
+  <dt><strong>OS</strong></dt>
+  <dd>With the previous OS, operation became unstable if osMotorStart()or osMotorStop() was called without first calling osMotorInit(). In this case, it was changed to return an error such as PFS_ERR_INVALID. <br>
+    <br>
+  </dd>
+  <dd>The portion of code in which a 15ms wait occurred for each read using the CPU timer within osEepromLongRead() was deleted.  Only writing requires a 15ms wait.<br>
+    <br>
+  </dd>
+  <dd>In the previous version, when a Controller Pak was removed and re-inserted PFS_ERR_NEW_PACK was not returned. This problem has been corrected.   Similarly, if a Controller Pak was removed and re-inserted for a Controller of another port,PFS_ERR_NEW_PACK was not returned. This has also been corrected.<br>
+    <br>
+  </dd>
+  <dd>When trying to delete a game note using osPfsDeleteFile() and the 1M Controller Pak (under development) was used, another game note was deleted as well.  This problem was corrected.  When a 256K Controller Pak was used, this problem never occurred.  To ensure that the Controller Pak library which was corrected is used, the following was added.  OS_PFS_VERSION indicates that a version of Controller Pak library was added.  Please be sure to display this version in the Controller Pak menu for each game application.   OS_PFS_VERSION is a 16bit value.  The upper 8bits contain the integer part of the version number.  The lower 8bits contain the decimal part.  For example, if the value of OS_PFS_VERSION is 0x0200, the version of Controller Pak library is 2.0.   For examples of usage, refer to the attached sample, nosPak.</dd>
+  <dd>When osEPi(Raw)ReadIo()and osEPi(Raw)WriteIo() are used, the set value of the PI bus was not changed according to the handler given by an argument.  This problem was corrected.<br>
+    <br>
+  </dd>
+  <dd>The portion in a macro definition, missing parenthesis was corrected.<br>
+    <br>
+  </dd>
+  <dd>The definition of a macro OS_CYCLES_TO_*SEC, OS_*SEC_TO_CYCLES was 
+	changed so that overflow is unlikely to occur. <br>
+    <br>
+  </dd>
+  <dd>The extern declaration of osViRepeatLine() in the header file os.h was 
+	osRepeatLine() by mistake.  This was corrected.<br>
+    <br>
+  </dd>
+  <dd>The value of SEGMENT_NUMBER was the upper 8bits of the address.  It was changed so that the upper 4bits will be ignored.  Therefore, a malfunction will not occur when the address of KSEG0,1 is entered.<br>
+    <br>
+  </dd>
+  <dd>When hostio is used for Partner-N64, a thread was made to wait by polling if the data was not received. This has been corrected.<br>
+    <br>
+  </dd>
+  <dd>When osUnmapTLBAll() is used, entries 1 - 31 were unmapped instead of entries 0 - 30 (Entry 31 is used by the system.)  This has been corrected.<br>
+    <br>
+  </dd>
+  <dd>An exception handler of Version 2.0H would overwrite a global variable area to be used for N64 Disk Drive programs in the previous version.  This has been corrected.<br>
+    <br>
+  </dd>
+  <dd>When osDestroyThread() is called, specifying a thread that does not exist,  (for example, a thread which had already been destroyed), unexpected results would occur. This has been corrected. If this happens now it returns without doing anything.<br>
+    <br>
+  </dd>
+  <dt><strong>TOOL</strong></dt>
+  <dd>None</dd>
+</dl>
+
+<hr>
+
+<h2>Expanded functions:</h2>
+
+<dl>
+  <dt><strong>AUDIO</strong></dt>
+  <dd>None</dd>
+  <dt><strong>GRAPHICS</strong></dt>
+  <dd>EEPROM function for 16K-EEPROM<br>
+    <br>
+  </dd>
+  <dd>osGetMemSize() function was added. This is to check if the Memory Pak is inserted by actually accessing the part of extended memory area of RDRAM.  Please use this for N64 Disk Drive games.  The difference from the previous osMemSize is that this is a variable and the size of RDRAM acquired at the time of activation is stored.  But osGetMemSize() checks if it is possible to access when it is called.<br>
+    <br>
+  </dd>
+  <dd>The osEPiLinkHandle() function was added.  This is used when you create a custom handler acquisition function.  For details, refer to the sample demo, sramtest.<br>
+    <br>
+  </dd>
+</dl>
+
+<hr>
+
+<h2>Functions no longer supported:</h2>
+
+<p> osPfsReSizeFile() function was deleted.</p>
+
+<hr>
+
+<h2>Notes:</h2>
+
+<p>None</p>
+
+<hr>
+
+<h2>Documentation:</h2>
+
+<p>Information has been added to and correlated in the documentation.</p>
+
+<hr>
+
+<h2>Warnings:</h2>
+
+<p>None</p>
+
+<hr>
+
+<h2>Appendix A</h2>
+
+<p>Important notes requiring attention from previous release:</p>
+ 
+<p>To execute the application 'spin', 'sgitcl' is necessary.  Though this tool is included in the distribution CD for IRIX5.3  it is also included in this release for the sake of convenience.  When you install the default N64 OS/Library, 'sgitcl' will not be installed. </p>
+
+<p>The IRIX patch, patchSG0001118 needs to be installed.  This patch is required to fix your C compiler with the assembler in order to avoid the multiplication problem when using the R4300.  This patch is included in this release for the sake of convenience.  When you install the N64 OS/Library, the patchSG0001118 will not be installed by default.  For detailed instructions for installing this patch, refer to patch1118/patchSG0001118/relnotes/ch1.z. </p>
+
+<p>Note: This patch needs to be chosen when installing. For default installations of 'inst', the patch will not be installed.  Therefore, it is important to clearly indicate that this patch is to be installed.  (Detailed information is found in the on-line manual of inst.)</p>
+
+<hr>
+
+<h2>Appendix B</h2>
+
+<h3>makerom Revision History</h3>
+
+<dl>
+  <dt>06/10/97</dt>
+  <dd>ver1.1a</dd>
+</dl>
+
+<blockquote>
+  <ul>
+    <li>IRIX6.X compatible</li>
+    <li>Partner delta transfer comatible</li>
+  </ul>
+</blockquote>
+
+<dl>
+  <dt>06/13/97</dt>
+  <dd>ver1.42beta</dd>
+</dl>
+
+<blockquote>
+  <ul>
+    <li>beta version that fixed a bug in ver1.1a.</li>
+  </ul>
+</blockquote>
+
+<dl>
+  <dt>07/10/97</dt>
+  <dd>ver.2.0</dd>
+</dl>
+
+<blockquote>
+  <ul>
+    <li>IRIX5.3,IRIX6.X compatible</li>
+    <li>Partner delta transfer compatible</li>
+  </ul>
+</blockquote>
+
+<dl>
+  <dt>09/30/97</dt>
+  <dd>ver.2.1</dd>
+</dl>
+
+<blockquote>
+  <ul>
+    <li>Changed algorithm due to increased speed.  (evaluation version,  limited release)</li>
+  </ul>
+</blockquote>
+
+<dl>
+  <dt>10/13/97</dt>
+  <dd>ver.2.2</dd>
+</dl>
+
+<blockquote>
+  <ul>
+    <li>Modified the algorithm slightly.  (OS2.0I release version)</li>
+  </ul>
+</blockquote>
+</body>
+</html>

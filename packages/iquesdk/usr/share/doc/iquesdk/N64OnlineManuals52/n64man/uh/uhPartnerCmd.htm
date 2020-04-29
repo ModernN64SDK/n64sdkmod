@@ -1,0 +1,118 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<!--
+Editors Notes:
+  PWC- updated formatting
+  MAP added links, updated format
+-->
+<TITLE>uhPartnerCmd</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+<font style="font-size: 12pt"><b>uhPartnerCmd (for PARTNER)</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+<P>
+uhPartnerCmd, uhGLoad
+</P>
+<P>
+<i>Passes commands to PARTNER</i>
+</P>
+<H3>Syntax</H3>
+<P>
+#include &lt;ultrahost.h&gt;     /* <A HREF="../../header/ultrahost.htm">ultrahost.h</A> */<br>
+
+int uhPartnerCmd(int fd,char * cmd);<BR>
+int uhGLoad(int fd,char * gamename);
+</P>
+<H3>Return Values</H3>
+<P>
+<STRONG>uhPartnerCmd</STRONG>
+</P>
+<P>
+When successful, returns the length of the command sent to PARTNER.<BR>
+With failure, returns an error code with a negative value.
+</P>
+<P>
+<STRONG>uhGLoad</STRONG>
+</P>
+<P>
+Returns 0 when successful and -1 when it fails.
+</P>
+
+<H3>Description</H3>
+<P>The uhGLoad and usPartnerCmd routines set up and use communication channels for data transfer between PARTNER and 64 on the host application. The device handler that is passed to the commands, fd, is obtained from <A HREF="uhOpenGame.htm">uhOpenGame</A>. For more information, please see uhOpenGame.
+</P>
+<P>
+uhPartnerCmd issues the various commands that PARTNER can use. For more information, see the PARTNER manual.
+</P>
+<P>
+uhGLoad uses PARTNER to load and execute the 64 game specified by gamename. 
+</P>
+
+<h3>Example</h3>
+<P>
+Following is an example of the uh functions used for Partner.
+</P>
+<P>
+This example is a host application that responds to instructions from the game once it is loaded. In this example, instructions from the game are received and passed after being stored in the structure TCommandPacket. PARTNER must be started before the application is executed. 
+</P>
+<PRE>
+    #include &lt;ultrahost.h&gt;
+
+    #define DEV_U64_DATA    &quot;PARTNER-N64&quot;
+
+    typedef TCommandPacket int;
+    TCommandPacket cmdpkt;
+    extern s32 errStop(char *);
+
+    main(int argc, char **argv) /* Host side code */
+        {
+          int     cmd,done;    
+
+    /* Open the device */
+            if ((fd = uhOpenGame(DEV_U64_DATA)) &lt; 0)
+                errStop(&quot;device open error&quot;);
+
+    /* Load the game */         
+           if( uhGLoad(fd ,0) != 0 ) errStop(&quot;gload failed&quot;);
+
+           while (!done)  
+                {
+                      cmd = catchCommand(); // Receive a command from the 64 game
+  
+                      switch(cmd)   // Process according to the command
+                        {
+                            case CMD_A:
+                                ....                
+                            case CMD_B:
+                                ...
+                        }
+                }
+
+            uhCloseGame(fd);
+        }
+    
+    int
+    catchCommand(void) // Receive 64 data.  Take care to avoid using the wrong endian format
+      {
+        TCommandPacket cmdpkt;
+        if ( uhReadGame(fd, (void *)&amp;cmdpkt, sizeof(TCommandPacket)) &lt; 0)
+              errStop(&quot;fail uhReadGame&quot;);
+
+    #ifdef __PARTNER_PC__
+        rev((unsigned *)&amp;cmdpkt);    // Reverse the endian format for PC
+    #endif
+
+        return (int)cmdpkt;
+      }
+</PRE>
+<H3>See Also</H3>
+<A href="../os/osReadHost.htm">osReadHost</A>, <A href="../os/osWriteHost.htm">osWriteHost</A>, <A href="uhOpenGame.htm">uhOpenGame</A>, <A href="uhCloseGame.htm">uhCloseGame</A>, <A href="uhReadGame.htm">uhReadGame</A>, and <A href="uhWriteGame.htm">uhWriteGame</A>
+<H3>Revision History</H3>
+<P>
+1999/04/30 Changed format
+</P>
+
+</BODY>
+</HTML>

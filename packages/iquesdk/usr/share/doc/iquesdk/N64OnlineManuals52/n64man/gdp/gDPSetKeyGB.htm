@@ -1,0 +1,77 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.>
+<title>gDPSetKeyGB</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<h1>gDPSetKeyGB [Macro]</h1>
+
+<p><b>Function</p></b>
+
+<p>gDPSetKeyR, gsDPSetKeyR, gDPSetKeyGB, gsDPSetKeyGB</p>
+
+<p><i>Selects the color for chroma key operation</i></p>
+
+<p><b>Syntax</p></b>
+<p>
+<blockquote>
+    <pre>#include &quot;gbi.h&quot;
+gDPSetKeyR(Gfx *gdl, cR, sR, wR)
+gsDPSetKeyR(         cR, sR, wR)
+gDPSetKeyGB(Gfx *gdl, cG, sG, wG, cB, sB, wB)
+gsDPSetKeyGB(         cG, sG, wG, cB, sB, wB)</pre>
+</blockquote>
+</p>
+<p><b>Arguments</p></b>
+<p>
+<dl>
+    <dt><strong>*gdl</strong></dt>
+    <dd>Pointer to graphics display list<br>
+        <br>
+        </dd>
+    <dt><strong>color center</strong></dt>
+    <dd>defines the intensity at which key is active (0~255)<br>
+        <br>
+        </dd>
+    <dt><strong>color scale</strong></dt>
+    <dd>(1.0/(size of soft edge))*255.</dd>
+    <dd>The scale is in the range 0~255. For hard edge keying, set scale to 255.<br>
+        <br>
+        </dd>
+    <dt><strong>color width</strong></dt>
+    <dd>(Size of half the key window including the soft edge)<br>
+        <br>
+        </dd>
+    <dt><strong>*scale</strong></dt>
+    <dd>Width is in 12bit4.8 format. When width&gt;1.0, keying is disabled for the channel.<br>
+        <br>
+        </dd>
+</dl>
+</p>
+<p><b>Description</b></p>
+
+<p>This macro selects the color for chroma key operation.</p>
+
+<p>Conceptually, the equation used for keying is:</p>
+</p>
+<blockquote>
+    <pre>key = clamp(0.0, -abs((X - center) * scale) + width, 1.0)</pre>
+</blockquote>
+</p>
+<p>The alpha key is the minimum of KeyR, KeyG, KeyB</p>
+
+<p><b>Note</b></p>
+
+<p>The red, green, and blue chroma key information is split into two separate macros simply because they do not all fit in one. </p>
+
+<p><b>See Also</b></p>
+
+<p><a href="gDPSetCombineKey.htm">gDPSetCombineKey</a>
+
+</p>
+</body>
+</html>

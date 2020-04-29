@@ -1,0 +1,68 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>mfsHInitCasBoot</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font face="arial" size="-1">
+<b><font size="3">mfsHInitCasBoot</b></font>
+
+<hr>
+
+<p><strong>Syntax</strong> 
+<font face="courier" size="2">
+<pre>s32 mfsHInitCasBoot(MfsFilehandle,u8 handleNum,u8 *company, u8* game,u8 dest)</pre></font>
+
+<p><strong>Arguments</strong></p>
+<dl>
+<dd>handle		&nbsp; File handle structure array pointer
+<dd>handleNum	&nbsp; Number of file handle structures
+<dd>*company	&nbsp; Company code
+<dd>*game		&nbsp; Game code
+<dd>dest		&nbsp; Destination code</dl></dd>
+
+<p><strong>Return value</strong>
+<dl>
+<dd>Error</dl></dd>
+
+
+<p><strong>Function</strong>
+<dl>
+<dd>Initializes libraries (for Game Pak booting)</dl></dd>
+
+<p><strong>Description</strong>
+<P>This function initializes the Leo library, MFS low-level library, and MFS high-level library so that the NINTENDO64 Disk Drive (64DD) can be accessed.  This function is used when the Game Pak is used for booting.</p>
+
+<p>When an application handles files, it prepares the MfsFileHandle structure array in a buffer for specified file handles.  "handle" is the pointer to this buffer.  The MfsFileHandle structure pointer is declared as MfsFile.  The array size is specified by handleNum.  The number of files that the application can open at the same time is equal to the number of file handles specified here.</p>
+
+<p>The Nintendo-issued company code and game code (initial codes) are specified for company and game.  Besides being recorded as file attributes, these are used to restrict file access.</p>
+
+<p>"dest," which is the destination code, is used as disk information when the RAM area is formatted.  The following values can be specified.</p>
+
+<P>
+<table border="0" cellpadding="3" cellspacing="3">
+<tr><td valign="top"><font face="arial" size="-1">MFS_DESTINATION_JAPAN</td>
+<td><font face="arial" size="-1">0</td>
+<td><font face="arial" size="-1">Japan-oriented</td></tr>
+<tr><td><font face="arial" size="-1">MFS_DESITNATION_US</td>
+<td><font face="arial" size="-1">1</td>
+<td><font face="arial" size="-1">	US-oriented</td></tr></table>
+		
+
+<p><strong>Main errors</strong>
+<P>
+<table border="0" cellpadding="3" cellspacing="3">
+<tr><td valign="top"><font face="arial" size="-1">MFS_ERR_NO</td>
+<td><font face="arial" size="-1">Normal termination</td></tr>
+<tr><td valign="top"><font face="arial" size="-1">MFS_ERR_DEVICE</td>
+<td><font face="arial" size="-1">Device error
+<br>An error occurred in LeoC*CreateLeoManager().
+Check the variable mfsError.  The value returned from LeoC*CreateLeoManager() is stored here.</td></tr></table>
+	
+
+
+
+<hr>
+</body>
+</html>

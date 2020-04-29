@@ -1,0 +1,230 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<!--
+Editors Notes:
+  PWC- updated formatting
+-->
+<TITLE>gspSprite2D</TITLE>
+</HEAD>
+
+<BODY bgcolor="#FFFFFF">
+
+<H1>gspSprite2D</H1>
+<P>
+<i>-> Changed to the S2DEX microcode (not compatible)</i>
+</P>
+<H2>Function</H2>
+<P>
+<STRONG>gspSprite2D, gspSprite2D.dram, gspSprite2D.fifo</STRONG>
+</P>
+<P>
+<i>-> High-quality 2D sprite geometry microcode</i>
+</P>
+<H2>Description</H2>
+<P>
+this is the optimized, high-quality, full-featured 2D sprite geometry microcode. It supports automatic subdivision and loads any size of all of the texture format sizes and types supported in the <A href="../gsp/gSPTextureRectangle.htm">gSPTextureRectangle</A> command, and sends it directly to the RDP. Additionally, images can be scaled up or inverted in the X or Y directions. 
+</P>
+<H2>Commands</H2>
+<HR>
+<P>
+The sprite microcode is accessed through a combination of four new commands. The first command, <A href="../gu/guSprite2DInit.htm">guSprite2DInit</A> initializes a specified a sprite structure. <A href="../gsp/gSPSprite2DBase.htm">gSPSprite2DBase</A> command sends the sprite structure to the sprite microcode to start actual processing. <A href="../gu/guSprite2DInit.htm">guSprite2DInit</A> command is a useful function that the application doesn't need to initialize the sprite structure.
+</P>
+<P>
+<A href="../gsp/gSPSprite2DBase.htm">gSPSprite2DBase</A> initializes or the common sprite parameters. It does not perform actual screen drawing.
+</P>
+<P>
+<A href="../gsp/gSPSprite2DScaleFlip.htm">gSPSprite2DScaleFlip</A> is used to specify the X/Y scaling and/or flipping parameters for a sprite. It does not perform actual screen drawing. 
+</P>
+<P>
+<A href="../gsp/gSPSprite2DDraw.htm">gSPSprite2DDraw</A> specifies the screen coordinates where the sprite is to be drawn, and starts actual screen drawing using the parameters specified by <A href="../gsp/gSPSprite2DBase.htm">gSPSprite2DBase</A> and <A href="../gsp/gSPSprite2DScaleFlip.htm">gSPSprite2DScaleFlip</A>.
+</P>
+<P>
+Simple code for displaying a Sprite:
+</P>
+<BLOCKQUOTE>
+
+<PRE>
+#include &quot;gu.h&quot;
+#include &quot;gbi.h&quot;
+        uSprite MySprite;
+        guSprite2DInit(&amp;MySprite, ImagePointer, TlutPointer,
+        ImageWidth, RectangleWidth, RectangleHeight,
+        ImageType, ImageSize,
+        TextureStartS, TextureStartT); 
+
+        gSPSprite2DBase(glistp++, OS_K0_TO_PHYSICAL(&amp;MySprite));
+        gSPSprite2DScaleFlip(glistp++, ScaleX, ScaleY,
+                    FlipTextureX, FlipTextureY);
+        gSPSprite2DDraw(glistp++, PScreenX, PScreenY)
+</PRE>
+</BLOCKQUOTE>
+<P>
+Each of the arguments is explained below.
+</P>
+<BLOCKQUOTE>
+
+<PRE>
+typedef struct {
+        void *SourceImagePointer;
+        void *TlutPointer;
+        short Stride;
+        short SubImageWidth;
+        short SubImageHeight;
+        char SourceImageType;
+        char SourceImageBitSize;
+        short SourceImageOffsetS;
+        short SourceImageOffsetT;
+        /* 20 bytes for above */ 
+
+        /* padding to bring structure size to 64 bit allignment */;
+        char dummy[4];
+
+        } uSprite_t;
+
+typedef union {
+        uSprite_t s; 
+        /* Need to make sure this is 64 bit aligned */; 
+        long long int force_structure_allignment[3];
+        } uSprite;
+
+void guSprite2DInit(uSprite *SpritePointer,
+        void *SourceImagePointer,
+        void *TlutPointer,
+        int  Stride,
+        int  SubImageWidth,
+        int  SubImageHeight,
+        int  SourceImageType,
+        int  SourceImageBitSize,
+        int  SourceImageOffsetS,
+        int  SourceImageOffsetT);
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<H2>Arguments</H2>
+<DL>
+  <DT><STRONG>SpritePointer</STRONG>
+  <DD>is the pointer to the sprite structure that sets the parameters.
+</DL>
+<DL>
+  <DT><STRONG>SourceImagePointer</STRONG>
+  <DD> is the base pointer of the texture image in memory containing the rectangle to be displayed.
+</DL>
+<DL>
+  <DT><STRONG>TlutPointer</STRONG>
+  <DD>is the pointer to the color index used for CI images. Set it to Null when CI images will not be used. 
+</DL>
+<DL>
+  <DT><STRONG>Stride</STRONG>
+  <DD>is the texel width of the base image in memory. 
+</DL>
+<DL>
+  <DT><STRONG>SbuImageWidth</STRONG>
+  <DD>is the texel width of the image to be displayed. 
+</DL>
+<DL>
+  <DT><STRONG>SubImageHeight</STRONG>
+  <DD>is the texel height of the image to be displayed
+</DL>
+<DL>
+  <DT><STRONG>SourceImageType</STRONG>
+  <DD>specifies the format of the texture image in memory. All texture formats supported by the hardware are allowed, such as G_IM_FMT_RGB or G_IM_FMT_CI.
+  <DT><STRONG>SourceImageBitSize</STRONG>
+  <DD> is the number of bits per texel of the input image. All texture sizes supported by the hardware are allowed, such as G_IM_SIZ_32b or G_IM_SIZ_4b. 
+</DL>
+<DL>
+  <DT><STRONG>ScaleX</STRONG>
+  <DD>specifies the scale in the X axis for the input screen image as a s 5.10 fixed-point number. A value of 1024 specifies 1 to 1 scaling. A value of 512 enlarges the input texels by 2 times in the output scaling pixels.  Scale values should be 1024 in order to avoid an unnatural feel. Scale values must be positive. Use the FlipTextureX variable to create negatively scaled images. 
+</DL>
+<DL>
+  <DT><STRONG>ScaleY</STRONG>
+  <DD>specifies the scale in the X axis for the input screen image as a s 5.10 fixed-point number. A value of 1024 specifies 1 to 1 scaling. A value of 512 enlarges the input texels by 2 times in the output scaling pixels.  Scale values should be 1024 in order to avoid an unnatural feel. Scale values must be positive. Use the FlipTextureY variable to create negatively scaled images.
+</DL>
+<DL>
+  <DT><STRONG>FlipTextureX</STRONG>
+  <DD>specifies whether the image to be displayed should be inverted in the X direction. 
+</DL>
+<DL>
+  <DT><STRONG>FlipTextureY</STRONG>
+  <DD>specifies whether the image to be displayed should be inverted in the Y direction. 
+</DL>
+<DL>
+  <DT><STRONG>SourceImageOffsetS</STRONG>
+  <DD>is the offset in texel columns from the origin of the base image. It specifies the starting point of the rectangular region for texel display within the base image. 
+</DL>
+<DL>
+  <DT><STRONG>SourceImageOffsetT</STRONG>
+  <DD>is the offset in texel lines from the origin of the base image. It specifies the starting point of the rectangular region for texel display within the base image.
+</DL>
+<DL>
+  <DT><STRONG>PScreenX</STRONG>
+  <DD>specifies the X location in the screen coordinates of the output image. The origin is in the upper-left corner of the screen.
+</DL>
+<DL>
+  <DT><STRONG>PScreenY</STRONG>
+  <DD>Specifies the Y location in the screen coordinates of the output image. The origin is in the upper-left corner of the screen.
+</DL>
+<H2>GBI</H2>
+<P>
+The following GBI commands are not supported by this microcode: 
+</P>
+<P>
+<A href="../gsp/gSPLine3D.htm">gSPLine3D</A>, <A href="../gsp/gSP1Triangle.htm">gSP1Triangle</A>
+</P>
+<H2>Note</H2>
+<P>
+The sprite microcode does not directly support Z-Buffering. This is unnecessary as Z-Buffering can be accomplished outside of the sprite microcode by setting up the proper rendering mode and making use of the hardware primitive depth registers. Following is a code fragment that does Z-Buffering. 
+</P>
+<BLOCKQUOTE>
+
+<PRE>
+gDPSetRenderMode(glistp++, G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
+gDPSetDepthSource(glistp++, G_ZS_PRIM);
+gDPSetCombineMode(glistp++, G_CC_DECALRGB, G_CC_DECALRGB);
+gDPSetPrimDepth(glistp++, ZBufferValue, 0);
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<BLOCKQUOTE>
+
+<PRE>
+guSprite2DInit(&amp;MySprite, ImagePointer, TlutPointer,
+                ImageWidth, RectangleWidth, RectangleHeight,
+                ImageType, ImageSize,
+                TextureStartS, TextureStartT);
+
+gSPSprite2DBase(glistp++, OS_K0_TO_PHYSICAL(&amp;MySprite));
+gSPSprite2DScaleFlip(glistp++, ScaleX, ScaleY,
+                FlipTextureX, FlipTextureY);
+gSPSprite2DDraw(glistp++, PScreenX, PScreenY);
+</PRE>
+</BLOCKQUOTE>
+<HR>
+<H2>Warnings, Limitations, and Workarounds</H2>
+<P>
+Images that have been non-unit scaled and flipped around the Y axis may not be smoothly converted in the vertical direction, depending on the quantity of sub-pixels. Jumping will occur at a certain quantity. The solution is to convert non-unit scaling to unit amounts in the vertical direction.
+</P>
+<P>
+The Sprite Microcode was designed to be able to scale up images by any amount. Images can also be scaled down together with some attendant artifacts. Please note that, while the TextureScaleX and TextureScaleY parameters are s 5.10 fixed-point numbers, they are restricted to being positive. Consequently, the largest usable scale value is 32767, which corresponds to a texel to pixel ratio of 31.999.
+</P>
+<P>
+Texture images that are either scaled in the Y axis or placed on a subpixel scanline boundary require filtering by the hardware texture filter unit. This filtering requires that at least one extra line in the screen image be loaded in the texture memory so that the filtering can occur. The texture memory is limited to 4K bytes, so there are some restrictions:
+</P>
+<P>
+32 bit subrectangles that are scaled in the Y direction are clamped by the microcode to a maximum of 512 texels wide. 
+</P>
+<P>
+32 bit subrectangles that are placed at the beginning of a subpixel boundary in the Y direction and that are larger than 512 texels in width are clamped by the microcode to being on an integral scan line boundary. 
+</P>
+<P>
+These filtering conditions also mean that, when displaying a Y-scaled image, you will need to add 1 to the T value to prevent filtering of texels outside the range. 
+</P>
+<P>
+Y flipped images that have been scaled vertically by a non-squared value will be slightly different in height than their non-flipped versions. If you are doing an animation involving scaled flipped and non-flipped textures, restrict the Y scale value to a squared value. 
+</P>
+<H2>See Also</H2>
+<P>
+<A href="gspLine3D.htm">gspLine3D</A>, <A href="gspTurbo3D.htm">gspTurbo3D</A>, <A href="gspFast3D.htm">gspFast3D</A>, <A href="../os/osSpTaskStart.htm">osSpTaskStart</A>, <A href="../gsp/gSPSprite2DBase.htm">gSPSprite2DBase</A>, <A href="../gsp/gSPSprite2DScaleFlip.htm">gSPSprite2DScaleFlip</A>, <A href="../gsp/gSPSprite2DDraw.htm">gSPSprite2DDraw</A></P>
+</BODY>
+</HTML>

@@ -1,0 +1,94 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.
+  PWC- updated formatting
+  MAP- added links, updated format
+-->
+<title>osSetTLBASID</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>osSetTLBASID</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p>osMapTLB, osUnmapTLB, osUnmapTLBAll, osSetTLBASID</p>
+
+<p><b>Syntax</b></p>
+<p>
+<blockquote>
+    <pre>#include &lt;ultra64.h&gt;     /* <A HREF="../../header/ultra64.htm">ultra64.h</A> */
+void osMapTLB(s32 index, OSPageMask pm, void *vaddr, u32 evenpaddr, 
+                u32 oddpaddr, s32 asid);
+void osUnmapTLB(s32 index);
+void osUnmapTLBAll(void);
+void osSetTLBASID(s32 asid);</pre></blockquote></p>
+
+<h3>Description</h3>
+<p>
+These calls provide low-level access to the CPU Translation Lookaside Buffer (TLB). The remainder of the CPU virtual address space outside of the direct mapped address spaces KSEG0 and KSEG1 are mapped address spaces that use the TLB to specify the mapping to physical memory on a per-page basis. The CPU TLB consists of 32 entries, which provide mapping to 32 odd/even physical page pairs (64 total pages). Each TLB entry is associated with a particular page size that varies from 4096 bytes to as much as 16 megabytes.</p>
+
+<p>The <a href="osMapTLB.htm">osMapTLB</a> function sets the TLB entry index, where index ranges from 0 to 31. The <b>pm</b> argument specifies the page size; it can be one of the following defined constants:</p>
+<p>
+<table border="0" cellspacing="0">
+    <tr>
+        <td nowrap>OS_PM_4K</td>
+        <td nowrap>: </td>
+        <td align="right" nowrap>4096 byte page size</td>
+    </tr>
+    <tr>
+        <td nowrap>OS_PM_16K</td>
+        <td nowrap>: </td>
+        <td align="right" nowrap>16384 byte page size</td>
+    </tr>
+    <tr>
+        <td nowrap>OS_PM_64K</td>
+        <td nowrap>: </td>
+        <td align="right" nowrap>65536 byte page size</td>
+    </tr>
+    <tr>
+        <td nowrap>OS_PM_256K</td>
+        <td nowrap>: </td>
+        <td align="right" nowrap>262144 byte page size</td>
+    </tr>
+    <tr>
+        <td nowrap>OS_PM_1M</td>
+        <td nowrap>: </td>
+        <td align="right" nowrap>1048576 byte page size</td>
+    </tr>
+    <tr>
+        <td nowrap>OS_PM_4M</td>
+        <td nowrap>: </td>
+        <td align="right" nowrap>4194304 byte page size</td>
+    </tr>
+    <tr>
+        <td nowrap>OS_PM_16M</td>
+        <td nowrap>: </td>
+        <td align="right" nowrap>16777216 byte page size</td>
+    </tr>
+</table></p>
+
+<p>The <b>vaddr</b> argument specifies the beginning virtual address to map, and the <b>evenpaddr</b> and <b>oddpaddr</b> arguments specify the corresponding odd and even physical page addresses. A value of -1 for <b>evenpaddr</b> or <b>oddpaddr</b> indicates that no mapping is to be made for the even or odd page, respectively. The <b>asid</b> argument specifies an address space identifier that makes the mappings valid only when a specific address space identifier register is loaded. (See <tt>osSetTLBASID</tt>.) A value of -1 for <b>asid</b> specifies a global mapping that is always valid. For example, the following call specifies a global mapping of the virtual address range [0x2000, 0x3000] to the physical address range [0xab000, 0xac000] and the virtual address range [0x3000, 0x4000] to the physical address range [0xcd000, 0xce000]:</p>
+<p>
+<blockquote>
+    <pre>osMapTLB(0, (void *)0x2000, 0xab000, 0xcd000, -1);</pre>
+</blockquote></p>
+
+<p>The <a href="osUnmapTLB.htm">osUnmapTLB</a> function removes any existing even or odd page mapping for the TLB entry index. 
+The <a href="osUnmapTLBAll.htm">osUnmapTLBAll</a> function removes all mappings at all indexes effectively invalidating the entire TLB. Call <tt>osUnmapTLBAll</tt> before using any other TLB calls to remove any stale mappings. </p>
+
+<p>The <tt>osSetTLBASID</tt> function sets a system-wide address space identifier register that makes valid only mappings of the given address space identifier (as well as global mappings). This feature can be useful for detecting address errors that may lead to unpredictable results.</p>
+
+<p><b>See Also</b><br>
+<A HREF="../os/osMapTLB.htm">osMapTLB</A>, 
+<A HREF="../os/osUnmapTLB.htm">osUnmapTLB</A>, 
+<A HREF="../os/osUnmapTLBAll.htm">osUnmapTLBAll</A>, and 
+<a href="osVirtualToPhysical.htm">osVirtualToPhysical</a>
+</p>
+<H3>Revision history</H3>
+<P>
+1999/04/30 Changed format
+</P>
+
+</body>
+</html>

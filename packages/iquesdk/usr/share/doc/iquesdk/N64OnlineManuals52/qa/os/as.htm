@@ -1,0 +1,151 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN"
+PWC 2/21/00>
+<HTML>
+<HEAD><link rel=stylesheet type="text/css" href="gif/style.css">
+<TITLE>Assembler ETLB</TITLE>
+</HEAD>
+
+<BODY>
+
+
+<P>
+<A name="index"></A>
+
+<IMG src="../../gif/n64_logo2.gif" height="21" width="136"> 
+<h3><FONT color="#FF8000">Q&A</font>-  Assembler & TLB</h3>
+
+<P>
+<TABLE border="0">
+  <TR>
+    <TD valign="top" width="50"><A href="as.htm#01"><b>QA1</b></A></TD>
+    <TD> About TLB.</TD></TR>
+  <TR>
+    <TD valign="top" width="50"><A href="as.htm#02"><b>QA2</b></A></TD>
+    <TD> How do I use the assembler? </TD></TR>
+  <TR>
+    <TD valign="top" width="50"><A href="as.htm#03"><b>QA3</b></A></TD>
+    <TD> How do I use the reverse assembler tool "gdis," for SGI? </TD></TR>
+  <TR>
+    <TD valign="top" width="50"><A href="as.htm#04"><b>QA4</b></A></TD>
+    <TD> Is the assembler compatible with 64-bit registers?</TD></TR>
+  <TR>
+    <TD valign="top" width="50"><A href="as.htm#05"><b>QA5</b></A></TD>
+    <TD> nop is entered after a branch command in the assembler...</TD></TR>
+  <TR>
+    <TD valign="top" width="50"><A href="as.htm#06"><b>QA6</b></A></TD>
+    <TD>Is there any documentation for the assembler?</TD></TR>
+</TABLE>
+
+<HR>
+<P>
+<A name="01"><FONT  color="#FF0000"><b>Q1</b></FONT></A>
+<b>About TLB</b>
+</P>
+<P>
+<FONT color="#008000"><b>A1</b></FONT> At present, we  do not handle any systems that utilize TLB.  We also don't have any reports about systems using TLB in related development groups.  Unfortunately, we cannot provide information about TLB at this time. 
+</P>
+<P align="right">
+<A href="as.htm#index">top</A>
+</P>
+<HR>
+<P>
+<A name="02"><FONT   color="#FF0000"><b>Q2</b></FONT></A>
+<b> How do I  use the assembler? </b>
+</P>
+<P>
+<FONT   color="#008000"><b>A2</b></FONT> First of all, please be aware that Nintendo does not support programming with the assembler.  The answer to this question will be based on this fact.  Since we currently don't have an assembler programming guidebook for the R4300, we are using NEC's guide for the R4300.  Create an assembler code, save it with the extension *.s, then assemble it using the c compiler.  The procedure is the same as when compiling a *.c file.  For example, "when the assembler code called "prog.s" has been created, it can be assembled by entering if cc prog.s in the command line. 
+</P>
+<P align="right">
+<A href="as.htm#index">top</A>
+</P>
+<HR>
+<P>
+<A name="03"><FONT   color="#FF0000"><b>Q3</b></FONT></A><b>
+ How do I use the reverse assembler tool </b><b>&quot;<A href="../../n64man/tool/gdis.htm">gdis</A>&quot; for SGI? </b>
+</P>
+<P>
+<FONT   color="#008000"><b>A3</b></FONT> It is basically the same as the &quot;dis&quot; reverse assembler. 
+</P>
+<P>
+Enter <A href="../../n64man/tool/gdis.htm">gdis</A> &quot;wave filename&quot; to display the code when the wave file is executed.  With dis, the code was displayed when the segment file was executed, but could not be used with wave file code.  With <A href="../../n64man/tool/gdis.htm">gdis</a> the code can now be displayed when the wave file is executed. Details about <A href="../../n64man/tool/gdis.htm">gdis</A> can be found in the Tools section of the Function Reference. 
+
+<P>
+
+<PRE>
+----------------------------------------------------
+%gdis -S codesegment.o /*Output reverse assembly data for sourced 
+                  code*/
+----------------------------------------------------</PRE>
+
+<P align="right">
+<A href="as.htm#index">top</A>
+</P>
+<HR>
+<P>
+<A name="04"><FONT   color="#FF0000"><b>Q4</b></FONT></A>
+<b> Is the assembler compatible with 64-bit registers? </b>
+</P>
+<P>
+<FONT color="#008000"><b>A4</b></FONT> It is not currently compatible with 64-bit registers.  Divide the register into 32-bit segments. 
+</P>
+<P align="right">
+<A href="as.htm#index">top</A>
+</P>
+<HR>
+<P>
+<A name="05"><FONT   color="#FF0000"><b>Q5</b></FONT></A>
+When the following kind of source code is assembled with the IRIX5.3 assembler (as), nop is always entered after a branch command, but does not appear in the branch delay slot in the following commands. 
+</P>
+<P>
+<b>&lt;Source&gt;</b>
+</P>
+<BLOCKQUOTE>
+<PRE>
+<b>bnel a0, zero, branch1 
+srl a2, a1, 1</b>
+</PRE>
+</BLOCKQUOTE>
+
+<P>
+<b>&lt;Assembly Result&gt;</b>
+</P>
+<BLOCKQUOTE>
+<PRE>
+<b>bnel a0, zero, branch1
+nop
+srl a2, a1, 1</b>
+</PRE>
+
+</BLOCKQUOTE>
+<P>
+<FONT  color="#008000"><b>A5</b></FONT> nop does not need to be entered as long as the assembler pseudo-command 
+</P>
+<BLOCKQUOTE>
+<PRE>
+.set    noreorder
+</PRE>
+</BLOCKQUOTE>
+<P>
+is present. 
+</P>
+<P align="right">
+<A href="as.htm#index">top</A>
+</P>
+<HR>
+<P>
+<A name="06"><FONT   color="#FF0000"><b>Q6</b></FONT></A>
+<b> Is there any documentation for the assembler?</b>
+</P>
+<P>
+<FONT   color="#008000"><b>A6</b></FONT> MIPSpro
+Assembly Language Programmers's Guide (English) is provided on the IDO with IRIS Insight as assembler documentation for IRIX. 
+</P>
+<P>
+In Japanese, (while it is actually an architecture book, rather than an assembler book - and it is a little old) you can refer to the Appendix of "mips RISC Architecture -R2000/R3000-" (published by Tomotachi). 
+
+<P align="right">
+<A href="as.htm#index">top</A>
+</P>
+<HR>
+</BODY>
+</HTML>

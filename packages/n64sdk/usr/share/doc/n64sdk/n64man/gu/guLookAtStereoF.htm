@@ -1,0 +1,82 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.>
+<TITLE>guLookAtStereoF</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>guLookAtStereoF<FONT size="+0"> [Function]</FONT></H1>
+
+<p><h3>Function</h3></p>
+
+<p>guLookAtStereoF</p>
+<P>
+<i>Creates a viewing matrix (floating point)</i>
+</P>
+<H3>Syntax</H3>
+
+<p><PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gu.htm">gu.h</A> */
+void guLookAtStereoF(
+        float mf[4][4],
+        float xEye,
+        float yEye,
+        float zEye,
+        float xAt,
+        float yAt,
+        float zAt,
+        float xUp,
+        float yUp,
+        float zUp,
+        float eyedist);</CODE></PRE></p>
+
+<H3>Arguments</H3>
+<p><DL>
+  <DT><B>mf</B>
+  <DD>Matrix resulting from calculation
+  <DT><B>xEye</B>
+  <DD>x-coordinate of viewpoint
+  <DT><B>yEye</B>
+  <DD>y-coordinate of viewpoint
+  <DT><B>zEye</B>
+  <DD>z-coordinate of viewpoint
+  <DT><B>xAt</B>
+  <DD>x-coordinate of lookat point
+  <DT><B>yAt</B>
+  <DD>y-coordinate of lookat point
+  <DT><B>zAt</B>
+  <DD>z-coordinate of lookat point
+  <DT><B>xUp</B>
+  <DD>x component of upward vector
+  <DT><B>yUp</B>
+  <DD>y component of upward vector
+  <DT><B>zUp</B>
+  <DD>z component of upward vector
+  <DT><B>eyedist</B>
+  <DD>Distance from viewpoint to "eye"
+  <DD>* Positive value is for "right eye" and negative value is for "left eye"
+</DL></p>
+<H3>Returned value</H3>
+<P>
+None
+</P>
+<H3>Description</H3>
+<P>
+Returns a viewing matrix for stereographics to <B>mf</B>.  Fixed point can be handled with the <A HREF="guLookAtStereo.htm">guLookAtStereo</A> function.
+</P>
+<H3>Note</H3>
+<P>
+Calling this function one time returns the matrix for one "eye," so you normally need to call this function twice, once for the "right eye" and once for the "left eye."  Unlike <A HREF="guLookAt.htm">guLookAt</A>, with this function you need the distance from the viewpoint (<B>xEye</B>, <B>yEye</B>, <B>zEye</B>) to the lookat point (<B>xAt</B>, <B>yAt</B>, <B>zAt</B>).  The lookat point must be specified as the focal point of both eyes.
+</P>
+<H3>See also</H3>
+<P>
+<A HREF="guLookAtStereo.htm">guLookAtStereo</A>
+</P>
+<H3>Revision history</H3>
+<P>
+03/01/99  Completely rewritten.
+</P>
+</BODY>
+</HTML>

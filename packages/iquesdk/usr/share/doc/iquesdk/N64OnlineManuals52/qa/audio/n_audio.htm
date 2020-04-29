@@ -1,0 +1,410 @@
+<HTML>
+<!--Editor notes-MAP- edited content 10/20/99
+PWC 2/23/00-->
+<HEAD><link rel="stylesheet" type="text/css" href="../style.css">
+<TITLE>n_audio</TITLE>
+</HEAD>
+
+<BODY>
+
+
+<A name="index">
+<IMG src="../../gif/n64_logo2.gif" height="21" width="136">
+<h3><FONT color="#FF8000">Q&A</FONT>- n_audio</h3>
+
+<P>
+<TABLE border="0">
+  <TR>
+    <TD valign="top" width="50"><A href="n_audio.htm#01"><b>QA1</b></A></TD>
+    <TD>Why does the tempo change when I change the playback rate?</TD>
+  </TR>
+  <TR>
+    <TD valign="top" width="50"><A href="n_audio.htm#02"><b>QA2</b></A></TD>
+    <TD>Playback rate settings, sequence data resolution and tempo settings.</TD>
+  </TR>
+  <TR>
+    <TD valign="top" width="50"><A href="n_audio.htm#03"><b>QA3</b></A></TD>
+    <TD>Can't get rid of small noises.</TD>
+  </TR>
+  <TR>
+    <TD valign="top" width="50"><A href="n_audio.htm#04"><b>QA4</b></A></TD>
+    <TD>Can't get rid of small noises Part II.</TD>
+  </TR>
+</TABLE>
+
+<HR>
+
+<P>
+<A name="01"><FONT  color="#FF0000"><b>Q1</b></FONT></A>
+<b> This is a question regarding the n_audio sample demo "playseq_naudio."  I understand why the pitch changes when samplerate in playseq.h is changed from 33k to 11k, but why does the tempo change?</b>
+
+
+<P>
+<FONT  color="#008000"><b>A1</b></FONT>
+ This is not a problem with the tempo of this song.  The number of sample data which are processed per frame is calculated in playseq_naudio in the following segment.  
+
+
+<blockquote><pre>fsize = (f32) NUM_FIELDS * c.outputRate / (f32) 60;
+frameSize = (s32) fsize;
+if (frameSize &lt; fsize)
+frameSize++;
+
+frameSize = ((frameSize / SAMPLES) + 1) * SAMPLES;
+minFrameSize = frameSize - SAMPLES;</pre></blockquote>
+
+<p>
+With a playback frequency of 11kHzm, 
+
+
+<blockquote><pre>frameSize = 368
+minFrameSize = 184</pre></blockquote>
+
+<p>
+Meanwhile, when the playback frequency is 11kHz, the number of data necessary for one frame is 
+
+
+<blockquote><pre>11000 / 60 = 183.33333</pre></blockquote>
+
+<p>
+Therefore, excess samples are created in each frame due to the combination of the above frameSize and minFrameSize.  As a result, there are data which have been created but which are not played back (audio buffer).  The sequence data which are played back at this time will sound as though the tempo has been sped up.  The sounds will also be erratically cut off. 
+
+
+<p>
+There is a countermeasure to this, but, in the case of playseq_naudio, first, the segment in which the number of sample data is calculated is changed as follows. 
+
+
+<blockquote><pre>fsize = (f32) NUM_FIELDS * c.outputRate / (f32) 60;
+frameSize = (s32) fsize;
+if (frameSize &lt; fsize)
+frameSize++;
+
+minFrameSize = frameSize - SAMPLES;</pre></blockquote>
+
+<p>
+At this time, at a playback frequency of 11kHz, 
+
+
+<blockquote><pre>frameSize = 184
+minFrameSize = 0</pre></blockquote>
+
+<p>
+Since the application will in some cases stop if minFrameSize=0, make the following changes inside the main loop (do{...}while()). 
+
+
+<p>
+(Before changes) 
+
+
+
+<blockquote><pre>       
+
+/*######### n_audio : begin #########*/
+/*
+ * Samples in this frame
+ */
+if((samplesLeft &gt;= (SAMPLES + EXTRA_SAMPLES)) &amp;&amp; min_only_one)
+{
+    audioSamples[buf] = minFrameSize;
+    min_only_one = 0;
+}
+else
+{
+    audioSamples[buf] = frameSize;
+    min_only_one = 1;
+}
+/*########## n_audio : end ##########*/
+
+        .
+        .
+        .
+
+<a href="../../n64man/os/osWritebackDCacheAll.htm">osWritebackDCacheAll()</a>;
+<a href="../../n64man/os/osSpTaskStart.htm">osSpTaskStart</a>(tlistp);
+CleanDMABuffs();
+
+        .
+        .</pre></blockquote>
+
+<p>
+(After changes) 
+
+
+
+<blockquote><pre>       
+
+/*######### n_audio : begin #########*/
+/*
+ * Samples in this frame
+ */
+if((samplesLeft &gt;= (SAMPLES + EXTRA_SAMPLES)) &amp;&amp; min_only_one)
+
+{
+    <a href="../../n64man/os/osSendMesg.htm">osSendMesg</a>(&amp;taskMessageQ, NULL, OS_MESG_BLOCK);
+    min_only_one = 0;
+}
+else
+{
+    audioSamples[buf] = frameSize;
+    min_only_one = 1;
+}
+/*########## n_audio : end ##########*/
+
+
+        .
+        .
+        .
+
+osWritebackDCacheAll();
+if(min_only_one)
+osSpTaskStart(tlistp);
+CleanDMABuffs();
+
+        .
+        .</pre></blockquote>
+
+<p>
+Thus the tempo of the song is restored. 
+
+
+<p>
+You can use, e.g., <a href="../../n64man/os/osSyncPrintf.htm">osSyncPrintf()</a>, to check the value of samplesLeft (the number of excess samples per frame), and here you can see that the value for samplesLeft is 0 (zero). 
+
+
+<p>
+This could be said to be the ideal state, but, on the other hand, there is a possibility that sounds will be cut off.  EXTRA_SAMPLES is available essentially for subdividing this condition, but EXTRA_SAMPLES has no significance at a playback frequency of 11kHz.  
+
+
+<p>
+As a countermeasure, consider the method of creating sound data once every two frames. 
+
+<p>
+The tempo was restored in the above revision, but noise will sometimes randomly pop into the song.  This is caused by various things.  Limiting the discussion to n_audio, if the envelope length (particularly the release length) is not set to a multiple of the time per 184 samples of sound data, playback will stop before the sound has been sufficiently damped, and noise will occur.
+
+
+<p>
+In addition, expanding the discussion beyond n_audio, if the DMA length of one iteration of sound data is too long, the DMA transfer from ROM to RAM may not get completed in time.  In this case as well, noise will occur during the song.  In this case, in playseq_naudio, change the following values as appropriate. 
+
+
+<p>
+&lt;playseq.h&gt;
+
+
+
+<blockquote><pre>#define MAX_BUFFER_LENGTH 1024 &lt;- One DMA length
+#define DMA_QUEUE_SIZE 50      &lt;- Number of DMA message buffers</pre></blockquote>
+
+<p>
+&lt;playseq.c&gt;
+
+
+<font face="courier" szie="2">
+<blockquote><pre>#define NBUFFERS 124 &lt;- Number of DMA buffers</pre></blockquote>
+
+<p>
+The above values are the values already in playseq_naudio. 
+
+
+<P align="right">
+<A href="n_audio.htm#index">top</A>
+
+
+<HR>
+
+<P>
+<A name="02"><FONT  color="#FF0000"><b>Q2</b></FONT></A>
+<b> Regarding specifying of the playback rate and setting the sequence data resolution and tempo when using n_Audio, I would like to use N_Audio with the playback rate at 22.05kHz and the sequence data resolution at 480 quarter notes, but is this possible?  When I actually tried to get the sequence tempo with the above settings, I got a tempo of approximately 15bpm. </b>
+
+
+<p>
+<b>In addition, when trying to get this kind of tempo, it seems that I can't actually use the tempo which was specified in the sequence data, but that I can only use the tempo calculated by this equation.  Is this true?</b>
+
+
+<P>
+<FONT  color="#008000"><b>A2</b></FONT>
+ To answer your first question, it is possible. 
+
+<p>
+Since n_audio was used, in order to minimize the shift in the sounds produced, it is necessary to align the timing at which the envelope is changed, and the timing of sound generation and damping with the smallest units (184 samples) in which sounds are processed.  The former is accomplished by revising the inst file, and the latter is accomplished by adjusting the tempo of the MIDI sequence. 
+
+<p>
+Now, since 22,050 samples are processed in one second, there are (22050/184=119.83695(=120)) units (sub-frames) in which 184 samples are processed per second.  In other words, the smallest unit for sound processing time is the inverse of this (1/120) second.  The shift in the sounds produced by n_audio can be kept to a minimum if a tempo is selected that processes the sound generation time in units of integeral multiples of this time.  When considering a timebase 480 MIDI sequence, if quarter notes are processed divided exactly by 480, the tempo would be ((1/120)*480=4, 60/4=15 bpm), as you have said.  The tempo is no more than the smallest unit in which the inverse of this integer can be processed.  (This could be thought of as the smallest unit of processing time having become an integer multiple of (1/120).)  However, upon actually listening, the fine resolution used up until now may seem no longer necessary for the sequence data.  Consequently, assuming that 10 units of resolution are thought of as one, and sound is produced only in those units, when 48 steps are matched to the smallest unit for sound processing of (1/120) second, the shift in sound resulting from using n_audio can be minimized by using a tempo such as 150 bpm, 75 bpm, ...
+
+<p>
+The critical thing here is that the shift in the very first sound be minimized when generating or damping sounds at the position of the integer multiple of this smallest processing unit.  This can, of course, be accomplished by adjusting the tempo, but the tempo can also be corrected by playing with the Timebase in the MIDI file.  (In this case, the MIDI data are directly corrected with a binary editor, or the like.)  Considering, e.g., eighth notes in 24 steps, at the same tempo, processing eighth notes in 26 steps could be thought of as slowing the tempo.  In any case, if you do not wish to change the sound by the sound generation timing, try making corrections around this area. 
+
+
+<P align="right">
+<A href="n_audio.htm#index">top</A>
+
+
+<HR>
+
+<P>
+<A name="03"><FONT   color="#FF0000"><b>Q4</b></FONT></A>
+<b> n_audio Test Environment (Can't get rid of small noises..)</b>
+
+<p>
+<b>The program is based on a simple system, and the routines of the n_audio related sample program are transplanted unaltered.</b>
+
+<p>
+The data used in testing are the sequence data and other test data used by the sample program. 
+
+<p>
+<b>Test Results</b>
+
+
+<p>The symptoms changed as follows according to the adjustment value for the extra samples specified in the program.
+
+<ol>
+<B><li>Extra Sample Adjustment Value = 0</b>
+<br>Specifying the extra sample adjustment value as 0 is the value specified in the sample program, but when run with this value, the compatibility with the sound player deteriorated and operation became unstable.  In particular, the following phenomena were observed.</ol>
+        <ul>
+            <li> Depending on the sequence data, there were those which were not recognized as data which were normally played.  Those which were not normally played were cut off and the tempo was odd.  However, it seemed that even those data which could not be normally played could be played if the data which could be normally played were played first.<P>
+            <li> If the sound player was played first, the sounds would definitely be cut off.  However, it seemed that these could be played, as above, if the sequence data which could be normally played were played first.<P>
+            <li> The sound generation entries in the sound player were ignored at a rate of about once every several times.  This happened whether they were played normally or not.  In addition, if the sound generation entry were continuously repeated, a phenomenon occurred in which the sound which had been played normally (including the sequence player) would suddenly become odd.         </ul>
+  
+<ol start="2">
+<b><li>Extra Sample Adjustment Value = Not 0</b> 
+<br>
+If a value equal to or greater than a multiple of the maximum number of samples (= 184) were specified as the extra sample adjustment value, the problems when the extra sample adjustment value = 0 were eliminated.  Instead, random popping noises occurred.  It appears that the noises were more or less likely to occur depending on the waveform, but their timing was also random.  They seemed to be most apparent in simple loop waveforms, such as sin waves, etc.</ol>
+
+<P>
+<FONT  color="#008000"><b>A4</b></FONT>
+We were also able to reproduce these popping noises.  We are considering ways to quickly find the cause and implement a countermeasure.  We currently believe that the noise can be avoided to some extent by adjusting the length of the envelope release time.  
+
+<p>
+<b>Example</b>
+
+<p>
+Release time of the sin wave in sfx.inst included with the development environment : 5000 (us)
+
+<p>
+Release time set on the long side : 18000 (us)
+
+<p>
+The following source code is the main segment in this revised diagnostic version of audiomgr.c in simple. 
+
+
+
+<blockquote><pre>static u32 __amHandleFrameMsg(AudioInfo *info, AudioInfo *lastInfo)
+{
+    s16 *audioPtr;
+    Acmd *cmdp;
+    s32 cmdLen;
+    int samplesLeft = 0;
+    OSScTask *t;
+
+    /* ##### for n_audio ##### */
+    static u8
+    min_only_one = 1;
+    /* ##### for n_audio ##### */
+
+    /* ##### for n_audio ##### */
+    samplesLeft = <a href="../../n64man/os/osAiGetLength.htm">osAiGetLength()</a> &gt;&gt; 2;
+    /* ##### for n_audio ##### */
+
+    __clearAudioDMA(); /* call once a frame, before doing alAudioFrame */
+
+    audioPtr = (s16 *) <a
+
+href="../../n64man/os/osVirtualToPhysical.htm">osVirtualToPhysical</a>(info-&gt;data);
+
+    if (lastInfo)
+        <a href="../../n64man/os/osAiSetNextBuffer.htm">osAiSetNextBuffer</a>(lastInfo-&gt;data, lastInfo-&gt;frameSamples&lt;&lt;2);
+
+    /* ##### for n_audio ##### */
+
+    /*
+    samplesLeft = <a href="../../n64man/os/osAiGetLength.htm">osAiGetLength()</a> &gt;&gt; 2;
+    info-&gt;frameSamples = 16 + (frameSize - samplesLeft + EXTRA_SAMPLES)&amp;
+
+    ~0xf;
+    if(info-&gt;frameSamples &lt; minFrameSize)
+    info-&gt;frameSamples = minFrameSize;
+    */
+
+    if((samplesLeft &gt; (SAMPLES + EXTRA_SAMPLES)) &amp;&amp; min_only_one){
+        info-&gt;frameSamples = minFrameSize;
+        min_only_one = 0;
+    } else {
+        info-&gt;frameSamples = frameSize;
+        min_only_one = 1;
+    }
+    /* ##### for n_audio ##### */
+
+    cmdp = <a href="../../n64man/al/alAudioFrame.htm">alAudioFrame</a>(__am.ACMDList[curAcmdList], &amp;cmdLen, audioPtr,
+                        info-&gt;frameSamples);
+
+    assert(cmdLen &lt;= maxRSPCmds);
+
+    if(cmdLen == 0) /* no task produced, return zero to show no valid task */
+
+        return 0;
+
+    t = &amp;info-&gt;task;
+
+    t-&gt;next = 0; /* paranoia */
+    t-&gt;msgQ = &amp;__am.audioReplyMsgQ; /* reply to when finished */
+    t-&gt;msg = (OSMesg)&amp;info-&gt;msg; /* reply with this message */
+    t-&gt;flags = OS_SC_NEEDS_RSP;
+
+    t-&gt;list.t.data_ptr = (u64 *) __am.ACMDList[curAcmdList];
+    t-&gt;list.t.data_size = (cmdp - __am.ACMDList[curAcmdList]) * sizeof(Acmd);
+
+    t-&gt;list.t.type = M_AUDTASK;
+    t-&gt;list.t.ucode_boot = (u64 *)rspbootTextStart;
+    t-&gt;list.t.ucode_boot_size =
+                ((int) rspbootTextEnd - (int) rspbootTextStart);
+    t-&gt;list.t.flags = OS_TASK_DP_WAIT;
+
+    /* ##### for n_audio ##### */
+
+    /*
+    t-&gt;list.t.ucode = (u64 *) aspMainTextStart;
+    t-&gt;list.t.ucode_data = (u64 *) aspMainDataStart;
+    */
+
+    t-&gt;list.t.ucode = (u64 *)n_aspMainTextStart;
+    t-&gt;list.t.ucode_data = (u64 *)n_aspMainDataStart;
+    t-&gt;list.t.ucode_size = SP_UCODE_SIZE;
+    /* ##### for n_audio ##### */
+
+    t-&gt;list.t.ucode_data_size = SP_UCODE_DATA_SIZE;
+    t-&gt;list.t.dram_stack = (u64 *) NULL;
+    t-&gt;list.t.dram_stack_size = 0;
+    t-&gt;list.t.output_buff = (u64 *) NULL;
+    t-&gt;list.t.output_buff_size = 0;
+    t-&gt;list.t.yield_data_ptr = NULL;
+    t-&gt;list.t.yield_data_size = 0;
+
+    <a href="../../n64man/os/osSendMesg.htm">osSendMesg</a>(sched_cmdQ, (OSMesg) t, OS_MESG_BLOCK);
+
+    curAcmdList ^= 1; /* swap which acmd list you use each frame */ 
+
+    return 1;
+}</pre></blockquote>
+
+<P align="right">
+<A href="n_audio.htm#index">top</A>
+
+
+<HR>
+
+<P>
+<A name="04"><FONT  color="#FF0000"><b>Q4</b></FONT></A>
+<b> When I played back a single sound with the sound player in the N_audio library, irregular "popping" noises occurred in the sustain portion of sounds in which the envelope did not change. (Can't get rid of small noises, part II.) </b>
+
+
+<P>
+<FONT   color="#008000"><b>A4</b></FONT>
+ Run <a href="../../n64man/os/osAiGetStatus.htm">osAiGetStatus()</a> before executing <a href="../../n64man/os/osAiSetNextBuffer.htm">osAiSetNextBuffer()</a>, and try making it so that processing is not performed if the return value is AI_STATUS_FIFO_FULL (both the audio DMA registers were set when they were programmed).  This conditional equation will prevent the DMABuffer value from being skipped because the DMA setting register is not empty, even if the DMA has been set.  
+
+
+<P align="right">
+<A href="n_audio.htm#index">top</A>
+
+
+<HR>
+
+</BODY>
+</HTML>

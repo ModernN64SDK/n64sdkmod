@@ -1,0 +1,22 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Graphics-Chapter 7  Z Buffering</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/23/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<BR>
+<font style="font-size:12pt"><B>7.3  Z Value and DeltaZ</B></FONT>
+<BR>
+<P>
+With the Z value, you can determine the depth-relationship between the polygon now being rendered and the polygon that has already been rendered in the framebuffer.  Using the Z buffer algorithm, you either overwrite the framebuffer if the polygon now being rendered is in front of the other polygon, or else you do nothing.<br><br>
+     The task can be accomplished with just the Z value if you are determining the depth of different polygons.  Yet, the Z value does not provide enough information to determine whether the polygon rendered in the framebuffer and the polygon now being rendered are the same or not.  When rendering decal polygons on the N64, such a determination is essential.<br><br>
+
+     This is where the DeltaZ value comes into play.  The DeltaZ value is calculated by computing the rate of change of the Z value of the polygon from the slope of the rendering plane.<br><br>
+     One problem is that when a polygon is rendered in the depth-wise direction, the DeltaZ value can become extremely large.  Because the allowable range of differences in Z value expands, pixels that ought to be hidden become visible and interior edges are not correctly anti-aliased.  To prevent this from happening, the pixel's coverage value can be weighted and blended with the DeltaZ value.<br><br>
+     See the Programming Manual, Chapter 15.5.9, "Z Image Format" to read about the format and precision for expressing Z values.
+</P>
+</BODY>
+</HTML>

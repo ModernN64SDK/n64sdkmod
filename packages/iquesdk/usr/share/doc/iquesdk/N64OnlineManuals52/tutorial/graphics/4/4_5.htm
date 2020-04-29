@@ -1,0 +1,54 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Graphics-Chapter 4  The Color Combiner</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/22/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<font style="font-size:12pt"><B>4.5  Gradations with Textures</B></FONT>
+<br>
+<P>
+As the first example, we will look at the implementation of a combine mode to express the gradation of a single color on the surface of a cube.  If you compile and run gf4.c without making any changes, the images like those shown in Figure 4-2 will appear on the screen.
+
+</P>
+<P>
+<IMG SRC="image08.gif">
+</P>
+<P>
+<B>Figure 4-2  Screen shots from sample program gfx4.c</B>
+</P>
+<P>
+ These are the results from the combine mode as set on line 280 of the gfx4.c program.</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=5><TR>
+	<TD NOWRAP COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE><B>List 4-1</B>
+</TR><TR>
+	<TD NOWRAP BGCOLOR="666666" WIDTH="4" ALIGN=LEFT VALIGN=TOP><HR NOSHADE SIZE=0></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>
+<FONT COLOR="#000080"><PRE><CODE>  /*
+   *   Combiner outputs shade color (single color) multiplied by texture intensity.
+   *  color = (SHADE - 0) * TEXEL0 + 0 = SHADE * TEXEL0
+   */
+  gDPSetCombineLERP(glistp++, SHADE,    0, TEXEL0,     0,
+                                  0,    0,      0, SHADE,
+                              SHADE,    0, TEXEL0,     0,
+                                  0,    0,      0, SHADE);</CODE></PRE></FONT>
+	</TD>
+</TR></TABLE>
+<P>
+In this example, the shade color is multiplied by an 8bit intensity texture and output from the Combiner.  The alpha value is the shade alpha, but it this has no special meaning in this example because no degree of transparency is employed.<br><br>
+     Figure 4-3 shows the texture(shading image) used.  It is a gradation drawing, white in the center changing to black at the four corners of the square.  When you multiply a flat shade color by this texture color, you get an effect like that shown in Figure 4-2.
+</P>
+<P>
+<IMG SRC="image09.gif" WIDTH="128" HEIGHT="128">
+</P>
+<P>
+<B>Figure 4-3  The texture used in the sample</B>
+</P>
+<P>
+ With intensity textures, the intensity of the texture is used for the R, G, B, A channels.  It is important to remember that the texture intensity is copied in for not only the R, G, B colors but also for the alpha value as well.
+</P>
+</BODY>
+</HTML>

@@ -1,0 +1,38 @@
+<HTML>
+<HEAD>
+<TITLE>Chapter 2 Nodes</TITLE>
+</HEAD>
+<BODY LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff">
+
+<font face="arial" size="-1">
+<b><font size="3">Chapter 2 Nodes</b></font>
+<HR>
+
+<P>
+<b>2-2. Links to Nodes in NIFF</b>
+<P>
+
+
+<u>6. Handling of Materials in NIFF (#2)</u>
+<P>
+Materials mainly consist of attributes of shapes or parts such as color, light, or shading type, and links to textures.
+<p>
+In NIFF, a color attribute is selected from vertex colors,  triangle colors,  primitive colors,  or texture colors.  However, in order to convert to the graphics data for Nintendo 64, there are some restrictions.
+<p>
+When performing a lighting treatment, color data cannot be used as vertex color.  That's because Nintendo 64 cannot use a vertex color when specifying a normal vector.  And for a triangle color,  we need to mix the color of light for each color with a triangle color when converting it into data for Nintendo 64,  or we need to convert once again as a primitive color.  Therefore, if we consider performing a lighting treatment and efficiency in editing NIFF data,  we suggest when specifying a lighting treatment you should divide each part by the same color, and use a primitive color in materials linked to the part.  If done so, by editing the material node,  you can change the information on the primitive color which has a link to the material at once, improving the efficiency.
+<p>
+
+<hr>
+
+<p align="right"><a href="../index.htm">
+<img src="../../../gif/index.gif"
+border="0" width="65" height="17"></a>
+&nbsp; <a href="./seg2-7.htm">
+<img src="../../../gif/next.gif"
+border="0" width="65" height="17"></a></p>
+
+
+</body>
+</html>
+
+

@@ -1,0 +1,225 @@
+<HTML>
+<HEAD>
+<TITLE>MatNode</TITLE>
+</HEAD>
+<BODY LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff">
+
+<font face="arial" size="-1">
+<b><font size="3">9. MatNode</font></b>
+<HR>
+
+<P>
+<b>(1) MatNode</b><BR>
+<p>
+<blockquote>
+
+<table border="1" width="600">
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">
+float ambient_red<br>
+float ambient_green<br>
+float ambient_blue<br>
+float ambient_alpha
+</font>
+</td>
+<td>
+<font face="arial" size="-1">ambient color<p>
+0 <img src="../../gif/equalless.gif"> ambient_* <img src="../../gif/equalless.gif"> 1
+<p>
+If the user will not be setting the values, please set 1.0 as the default for all values.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">
+float emission_red<br>
+float emission_green<br>
+float emission_blue<br>
+float emission_alpha
+</font>
+</td>
+<td>
+<font face="arial" size="-1">
+emission color<p>
+0 <img src="../../gif/equalless.gif"> emission_* <img src="../../gif/equalless.gif"> 1
+</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">
+float diffuse_red<br>
+float diffuse_green<br>
+float diffuse_blue<br>
+float diffuse_alpha
+</font>
+</td>
+<td>
+<font face="arial" size="-1">
+diffuse color<p>
+0 <img src="../../gif/equalless.gif"> diffuse_* <img src="../../gif/equalless.gif"> 1
+<p>
+If the user will not be setting the values, please set 1.0 as the default for all values.
+</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 external_local_light_file_name_index</font>
+</td>
+<td>
+<font face="arial" size="-1">When local light references an external file, that file name is described with an ExternalNameList index number.<p>
+Please do not include the directory name etc. when describing the file name.<p>
+If an external file is not referenced, please describe with 0xffffffff.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 external_local_light_name_index</font>
+</td>
+<td>
+<font face="arial" size="-1">When local light references and external file, that Light name is described with an ExternalNameList index number.
+<p>
+If an external file is not referenced, please describe with 0xffffffff.</font>
+</td>
+</tr>
+
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 external_tex_num</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the external file reference Tex number.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 prim_color_anim_num</font>
+</td>
+<td>
+<font face="arial" size="-1">Describe the PrimColorAnim number if animating primitive colors.  If not animating, please set prim_color_animation_num = 0x0.  Also note that if animation is being done, the normal prim_red, prim_green, prim_blue, prim_alpha are not used.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 external_tex_file_name_index</font>
+</td>
+<td>
+<font face="arial" size="-1">When Tex references an external file, the referenced file name is specified with an ExternalNameList index number.<p>
+Please do not include the directory name etc. when describing the file name.<p>
+This field is not described when an external file is not referenced (external_tex_num = 0).</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 external_tex_name_index</font>
+</td>
+<td>
+<font face="arial" size="-1">When Tex references an external file, that Tex name is described with an ExternalNameList index number.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">PrimColorAnim</font>
+</td>
+<td>
+<font face="arial" size="-1">This is the area describing the primitive color for each key.  The are is not described when prim_color_anim_num = 0x0.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">*_for_fog</font>
+</td>
+<td>
+<font face="arial" size="-1">*_for_fog data in a Mat node indicate the attributes to be handled in scenes
+which use fog. The contents of the data are similar to those data without
+_for_fog attached. </font>
+
+</td>
+</tr>
+
+</table>
+</center>
+<p>
+<a href="./mat_C.htm">Go to the data chunk</a>
+<p>
+</blockquote>
+
+<b>(2) PrimColorAnim, PrimColorAnimForFog</b>
+
+<blockquote>
+
+<table border="1" width="600">
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 interpolation_type</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the interpolation type from this key to the next.  The following flags are defined:
+
+<font face="courier" size="2">
+<pre>
+<b>
+NIFF2_INTERPOLATION_TYPE_CONST&#9;&#9;0x00000000
+NIFF2_INTERPOLATION_TYPE_LINEAR&#9;&#9;0x00000002
+</b>
+</pre>
+</font>
+NIFF2_INTERPOLATION_TYPE_CONST retains the data from this key to the next key.<br>
+NIFF2_INTERPOLATION_TYPE_LINEAR performs linear interpolation from this key to the next key.<p>
+
+Please set the same value for each interpolation_type inside every
+PrimColorAnim and PrimColorAnimForFog.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 key</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the Key value.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">
+float prim_color_anim_red<br>
+float prim_color_anim_green<br>
+float prim_color_anim_blue<br>
+float prim_color_anim_alpha
+</font>
+</td>
+<td>
+<font face="arial" size="-1">primitive color<p>
+0 <img src="../../gif/equalless.gif"> prim_color_anim_* <img src="../../gif/equalless.gif"> 1</font>
+</td>
+</tr>
+
+</table>
+</center>
+
+<p>
+<a href="./mat_C.htm">Go to the data chunk</a>
+<p>
+
+</blockquote>
+
+<hr>
+
+</body>
+</html>

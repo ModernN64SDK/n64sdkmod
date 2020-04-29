@@ -1,0 +1,251 @@
+<html>
+<body bgcolor="ffffff">
+<title>
+CiImgNode
+</title>
+
+<h1>
+<font color="ff0000">
+<i>
+Nintendo Confidential
+</i>
+</font>
+</h1>
+<hr size="3">
+
+
+<h2>
+13. CiImgList
+
+</h2>
+<hr size="3">
+<h3>
+(1) CiImgList
+</h3>
+<blockquote>
+
+
+
+
+<table border width="600">
+
+<tr>
+<td nowrap>
+u32 ci_img_list_tag
+</td>
+<td>
+CiImgListはカラーインデックステクスチャで使用されるインデックスイメージのリストです。下記のタグを記述してください。
+<pre>
+<b>
+TAG_CI_IMG_LIST         0x00200000
+</b>
+</pre>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 ci_img_list_header_size
+</td>
+<td>
+CiImgListHeaderのバイト数を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 ci_img_list_size
+</td>
+<td>
+CiImgListのバイト数を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 ci_img_num
+</td>
+<td>
+CiImgList内に含まれるCiImg数を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 ci_img_num_byte
+</td>
+<td>
+それぞれのCiImgのバイト数を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+CiImg
+</td>
+<td>
+CiImgエリアです。一つのカラーインデックスイメージが格納されます。
+</td>
+</tr>
+
+
+</table>
+
+<p>
+<a href="./ci_img_C.htm">
+Go to the data chunk
+</a>
+<p>
+<a href="./index.htm">
+Go back to the index
+</a>
+
+
+</blockquote>
+
+<h3>
+(2) CiImg
+</h3>
+
+<blockquote>
+
+<table border Width="600">
+
+<tr>
+<td nowrap>
+u32 ci_img_tag
+</td>
+<td>
+CiImgを示すタグを記述します。下記のタグを記述してください。
+<pre>
+<b>
+TAG_CI_IMG              0x00200100
+</b>
+</pre>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 this_ci_img_index
+</td>
+<td>
+このCiImgのインデックス番号を記述します。
+</td>
+</tr>
+
+<!..
+-- DELETE START --
+1998/09/30
+
+<tr
+<td nowrap
+u32 ci_img_header_size
+</td
+<td
+CiImgHeaderのバイト数を記述します。
+</td
+</tr
+
+-- DELETE END --
+..>
+
+<tr>
+<td nowrap>
+u32 ci_img_size
+</td>
+<td>
+CiImgのバイト数を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 ci_img_name_index
+</td>
+<td>
+CiImg名を示すNameList内のインデックス番号を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 ci_img_width
+</td>
+<td>
+CiImgの幅を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 ci_img_height
+</td>
+<td>
+CiImgの高さを記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 ci_img_pixel_depth
+</td>
+<td>
+CiImgの1ピクセルあたりのビット数を記述します。下記のフラグが定義されています。
+<pre>
+<b>
+NIFF2_CI_PIXEL_DEPTH_4&#9;0x00000004
+NIFF2_CI_PIXEL_DEPTH_8&#9;0x00000008
+</b>
+</pre>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 reserved
+</td>
+<td>
+0x0を記述してください。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 pixel_index_array
+</td>
+<td>
+ピクセル毎にパレット内のどのカラーを使用するかを記述するエリアです。<p>
+ピクセルデータはイメージデータの左下から順に記述されます。<p>
+4bitCIの場合、イメージデータの左下から順に8ピクセルずつ、pixel_index_arrayにビッグエンディアンで格納されます。<p>
+8bitの場合、イメージデータの左下から順に4ピクセルずつ、pixel_index_arrayにビッグエンディアンで格納されます。<p>
+それぞれ最後のデータが32bitに満たない場合は、残りのデータを0x0で埋めます。<p>
+なお、pixel_index_array_numは上記のように作成したpixel_index_array数です。
+</td>
+</tr>
+
+
+</table>
+
+
+<p>
+<a href="./ci_img_C.htm">
+Go to the data chunk
+</a>
+<p>
+<a href="./index.htm">
+Go back to the index
+</a>
+
+
+</blockquote>
+
+
+<hr>
+<i>
+Copyright 1998,1999 NINTENDO Co.,Ltd. All rights reserved.<br>
+Copyright 1998,1999 MONEGI CORPORATION All rights reserved.
+</i>
+
+</body>
+</html>

@@ -1,0 +1,134 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>2.2</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<p>
+<font face="arial" size="-1">
+<strong>2.2 Modifying polyline </strong>
+
+
+<p>First the sample program polyline will be modified and run on the 64DD.  A work directory (called $(WORK) here) will be created, and the program will be copied to that directory and run.  (For example, with a work directory of /usr/people/mario/work, the notation $(WORK) should be read as /usr/people/mario/work.)
+</p>
+
+<p><b>1.  Copy polyline to $(WORK)</b>
+<P>
+<table border="1" cellpadding="3" cellspacing="3" width=100%>
+  <tr>
+    <td valign="top" width=50%><font face="arial" size="-1">[NW] <p>% cp -r /usr/src/PR/demos/polyline $(WORK) </td>
+    <td width=50%><font face="arial" size="-1">[PC] <p>Use a tool such as Explorer to copy ultra\usr\src\PR\demos\polyline to $(WORK)
+    </td>
+  </tr>
+</table>
+
+<P>
+<b>2. Switch to that directory</b>
+
+<P>
+<table border="1" cellpadding="3" cellspacing="3" width=100%>
+<tr>
+    <td valign="top" width=50%><font face="arial" size="-1">[NW] <p>% cd $(WORK)/polyline</td>
+    <td width=50%><font face="arial" size="-1">[PC] <p>Open an MS-DOS window, and enter
+<p>C&gt;cd $(WORK)\polyline </td></tr></table>
+
+<p>
+<strong>3. Open an editor and modify Makefile as shown below.</strong><P>
+
+<table border="1" cellpadding="3" cellspacing="3" width=100%>
+  <tr>
+    <td width="50%"><font face="arial" size="-1">[NW] <p>.......... <br>
+    $(MAKEROM) -r rom spec
+    ..........</td>
+    <td width="50%"><font face="arial" size="-1">[PC] <p>..........<br>
+    $(MAKEROM) -r rom specifies
+    ..........</td>
+  </tr>
+  <tr>
+    <td width="50%"><font face="arial" size="-1">(modified)</td>
+    <td width="50%"><font face="arial" size="-1">(modified)</td>
+  </tr>
+  <tr>
+    <td width="50%"><font face="arial" size="-1">..........<br>
+    <font color="#FF0000">/usr/sbin/<a href="../../n64man/64dd/64ddtool/makedisk.htm">makedisk</a> 
+    -t 0</font> -r rom spec<br>
+    .......... </td>
+    <td width="50%"><font face="arial" size="-1">..........<br>
+    $(MAKEROM) <font color="#FF0000">-DD64 -t 0</font> -r rom spec<br>
+    .......... </td>
+  </tr>
+</table>
+
+<p>The -t 0 option specifies a disk type of 0.  Disk types are discussed in <a
+href="../dd11/11-05.htm">section 11.5</a>,  Disk Types (ROM and RAM areas).</p>
+
+<p><strong>4. Compile</strong>
+<P>
+<table border="1" cellpadding="3" cellspacing="3" width=100%>
+  <tr>
+    <td width="50%"><font face="arial" size="-1">[NW] <p>% make </td>
+    <td width="50%"><font face="arial" size="-1">[PC] <p>C&gt;make </td>
+  </tr>
+</table>
+
+<p><strong>5. Start Partner </strong>
+<P>
+<table border="1" cellpadding="3" cellspacing="3" width=100%>
+  <tr>
+    <td width="50%"><font face="arial" size="-1">[NW] <p>% ptn64 </td>
+    <td width="50%"><font face="arial" size="-1">[PC] <p>Double-click on the Partner N64 PC icon. 
+    </td>
+  </tr>
+</table>
+
+<p>The commands that follow are entered in the Partner command box.
+
+<p><strong>6.  Insert the 64DD disk</strong>
+<P>
+Insert the 64DD disk and write the previously compiled polyline program to the disk.  
+
+
+<p>[ NW and PC ] 
+
+<p>&gt; &lt;gwrite</p>
+
+<p>gwrite is a batch file created by <a href="../../n64man/64dd/64ddtool/makedisk.htm"><font
+color="#FF0000">makedisk</font></a> for writing rom images to disk.  &quot;&lt;&quot;is a Partner command that runs the subsequently named batch file.
+</p>
+
+<p><strong>7. Load debugging information</strong>
+<P>
+<table border="1" cellpadding="3" cellspacing="3" width=100%>
+  <tr>
+    <td width="50%"><font face="arial" size="-1">[NW] <p>&gt; ls lines </td>
+    <td width="50%"><font face="arial" size="-1">[PC] <p>&gt; ls lines.out (.out can be omitted)</td>
+  </tr>
+</table>
+
+<p><strong>8.  Next start the IPL.</strong>
+<P>
+
+<p> Until a disk is inserted, the IPL runs a demonstration.  Details are provided in <a href="../dd04/index.htm">"Chapter 4 64DD Internal ROM"</a>  In this example, however, the disk is not ejected after it is written to, so the game is started from the disk without the demonstration. 
+</p>
+
+<p>[ NW and PC ] </p>
+
+<p>&gt;resetdd</p>
+
+<p><strong>9.  Run the game (polyline)</strong>
+
+<p>[ NW and PC ] </p>
+
+<p>&gt;g<br>
+</p>
+
+<p>
+<font color="#FF0000"><strong>Warning:</strong></font> <font face="arial" size="-1">&lt;gwrite, ls "debugging file name" and "resetdd" can be automatically run in sequence in Partner versions 1.05 or later using the command l debugging information file name.  In this section, however, the commands were discussed separately for the purpose of explanation.  In the examples that follow, the l command is used.
+
+<p><a href="index.htm"><img src="../../gif/index.gif" border="0" width="65" height="17"></a></p>
+
+<hr>
+</body>
+</html>

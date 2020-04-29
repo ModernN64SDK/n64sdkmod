@@ -1,0 +1,602 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN"
+pwc 2/21/00>
+<HTML>
+<HEAD><link rel=stylesheet type="text/css" href="../style.css">
+<TITLE>Texture</TITLE>
+</HEAD>
+
+<BODY>
+<A name="index"></a>
+<IMG src="../../gif/n64_logo2.gif" height="21" width="136"></STRONG></FONT>
+
+<h3><FONT color="#FF8000">Q&A</FONT>- Texture</h3>
+
+
+<P><TABLE>
+  <TR>
+    <TD width=50><B><A href="#qa1">QA1</A></B></TD>
+    <TD>Processing textures which can't be placed in TMEM</td></tr>
+  <TR>
+    <TD><B><A href="#qa2">QA2</A></B></TD>
+    <TD>What is G_TEXTURE_GEN?</td></tr>
+  <TR>
+    <TD><B><A href="#qa3">QA3</A></B></TD>
+    <TD>YUV format </td></tr>
+  <TR>
+    <TD><B><A href="#qa4">QA4</A></B></TD>
+    <TD>Is it absolutely impossible to paste a texture that exceeds the TMEM size?</td></tr>
+  <TR>
+    <TD><B><A href="#qa5">QA5</A></B></TD>
+    <TD>What is the TLUT method for a CI texture?</td></tr>
+  <TR>
+    <TD><B><A href="#qa6">QA6</A></B></TD>
+    <TD>Garbage line around texture</td></tr>
+  <TR>
+    <TD><B><A href="#qa7">QA7</A></B></TD>
+    <TD>Loading a texture to a specific location</td></tr>
+  <TR>
+    <TD><B><A href="#qa8">QA8</A></B></TD>
+    <TD>What are a texture's s and t coordinates in the vertex data? </td></tr>
+  <TR>
+    <TD><B><A href="#qa9">QA9</A></B></TD>
+    <TD>Priority of texture mapped "transparent" polygons when using the Z-buffer</td></tr>
+  <TR>
+    <TD><B><A href="#qa10">QA10</A></B></TD>
+    <TD>Can I use translucence with "rectangle" in Palette mode?</td></tr>
+  <TR>
+    <TD><B><A href="#qa11">QA11</A></B></TD>
+    <TD>How do I make Texture translucent?</td></tr>
+  <TR>
+    <TD><B><A href="#qa12">QA12</A></B></TD>
+    <TD>How do I past texture data greater than 32x32 pixels?</td></tr>
+  <TR>
+    <TD><B><A href="#qa13">QA13</A></B></TD>
+    <TD>How do I handle multiple TLUT?</td></tr>
+  <TR>
+    <TD><B><A href="#qa14">QA14</A></B></TD>
+    <TD>How do I display a texture whose IA16 Tlut has been stored in 4bitCI?</td></tr>
+  <TR>
+    <TD><B><A href="#qa15">QA15</A></B></TD>
+    <TD>How do I display a texture that has been made "invisible"?</td></tr>
+  <TR>
+    <TD><B><A href="#qa16">QA16</A></B></TD>
+    <TD>What size textures can be stored in TMEM?</td></tr>
+  <TR>
+    <TD><A href="#qa17"><B>QA17</font></B></A></TD>
+    <TD>About linking textures...</td></tr>
+  <TR>
+    <TD><B><A href="#qa18">QA18</A></B></TD>
+    <TD>The difference between the maximum number of lines that is the limit to the number of lines in LoadBlock and the absolute maximum number of lines...</TD></TR>
+</TABLE>
+
+<HR>
+<P>
+<B><FONT  color="#ff0000"><A name="qa1"></A>Q1</FONT> When pasting a single texture which is too large to be placed in TMEM, e.g., 256x256, etc., onto a 4-sided polygon, I would have think that one would split the texture up with <A href="../../n64man/gdp/gDPLoadTexture.htm">gDPLoadTexture()</A>, or something, and paste it, but how should I specify the texture coordinates if I am not dividing up the polygon? </B>
+
+<P>
+<B><FONT   color="#008000">A1</FONT></B> There is no other way to do this but to split up the polygon. 
+
+<P align="right">
+<A href="#index">top</A>
+
+<HR>
+<P>
+<A name="qa2"></A><B><FONT  color="#ff0000">Q2</FONT></B> <b>When I set G_TEXTURE_GEN_LENEAR in <A href="../../n64man/gsp/gSPSetGeometryMode.htm">gSPSetGeometryMode()</A>, does the texture's linear mode become tri-linear?  Or does it become bi-linear?</b>
+
+<P>
+<B><FONT color="#008000">A2</FONT></B> This is setting is unrelated to bi-linear or tri-linear. 
+
+<P>
+G_TEXTURE_GEN_LENEAR and G_TEXTURE_GEN specify whether a polygon surface is flat or if it is spherical.  If it is spherical, it is calculated from the normal vector of the polygon. 
+
+<P>
+Specify bi-linear or tri-linear with <A href="../../n64man/gdp/gDPSetTextureFilter.htm">gDPSetTextureFilter</A>. 
+
+<P align="right">
+<A href="#index">top</A>
+
+<HR>
+<P>
+<A name="qa3"></A><B><FONT  color="#ff0000">Q3</FONT> What kind of format is the 16-bit YUV texel format?</B>
+
+<P>
+<FONT  color="#008000"><B>A3</B></FONT> The YUV format is explained in detail in the "Texture Memory" section of the N64 Online Programming Manual.  YUV is a color designation method made up of Y = brilliance, U = U axis component of the hue saturation, and V = V axis component of the hue saturation.  It is used with CD-I and JPEG, etc.  It is a convenient format for displaying video images compressed by JPEG or MPEG, etc.  However, operation of this format is not currently guaranteed on the N64. 
+
+<P align="right">
+<A href="#index">top</A>
+
+<HR>
+<P>
+<A name="qa4"></A><B><FONT  color="#ff0000">Q4</FONT> When the texture in a polygon or rectangle doesn't use wrapping or clamping, is it impossible to paste a texture which is too large to fit into TMEM?</B>
+
+<P>
+<B><FONT  color="#008000">A4</FONT></B> A texture which is too large to fit into TMEM cannot be pasted onto a single triangle polygon or rectangle.  The size of one triangular polygon or rectangle onto which this texture can be pasted is determined by the size of TMEM.  If you wish to paste a texture which is larger than TMEM, it can be pasted by dividing up the polygon or rectangle.  Large textures are handled by only the size which can fit into TMEM being loaded and the texture being partially rendered.  In the case of a rectangle, it is probably best to split the rectangle along the horizontal length.  Polygons should be split into nearly right triangles. 
+
+<P>
+Are you possibly using a texture which is too detailed?  How about trying to decrease the intricacy of the texture and adjust the enlargement ratio? 
+
+<P>
+Trying making it a 4bitCi texture.  Double (4096 texels) the size of a 16 bit texture can be fit into TMEM. 
+
+<P align="right">
+<A href="#index">top</A>
+
+<HR >
+<P>
+<A name="qa5"></A><B><FONT  color="#ff0000">Q5</FONT> When using LoadTlut with a CI texture, what is the best way of doing this?</B>
+
+<P>
+<B><FONT color="#008000">A5</FONT></B> A sample is given below. 
+
+<BLOCKQUOTE>
+
+
+<PRE>
+/* a 32x32 8-bit CI Texture */
+
+#incldue &quot;CI8mario.h&quot;
+
+Gfx textri_dl[] = {
+    <A href="../../n64man/gdp/gDPSetCycleType.htm">gsDPSetCycleType</A>(G_CYC_1CYCLE),
+    <A href="../../n64man/gdp/gDPSetTextureFilter.htm">gsDPSetTextureFilter</A>(G_TF_POINT),
+    <A href="../../n64man/gdp/gDPSetTexturePersp.htm">gsDPSetTexturePersp</A>(G_TP_NONE),
+    <A href="../../n64man/gdp/gDPSetRenderMode.htm">gsDPSetRenderMode</A>(G_RM_OPA_SURF, G_RM_OPA_SURF2),
+    <A href="../../n64man/gdp/gDPSetCombineMode.htm">gsDPSetCombineMode</A>(G_CC_DECALRGB, G_CC_DECALRGB),
+    <A href="../../n64man/gdp/gDPLoadTLUT_pal256.htm">gsDPLoadTLUT_pal256</A>(CI8mariotlut),
+    <A href="../../n64man/gdp/gDPSetTextureLUT.htm">gsDPSetTextureLUT</A>(G_TT_RGBA16),
+    <A href="../../n64man/gdp/gDPLoadTextureBlock.htm">gsDPLoadTextureBlock</A>(CI8mario, G_IM_FMT_CI, G_IM_SIZ_8b,
+            32, 32, 0,
+            G_TX_WRAP | G_TX_NOMIRROR,
+            G_TX_WRAP | G_TX_NOMIRROR,
+            G_TX_NOMASK, G_TX_NOMASK
+            G_TX_NOLOD, G_TX_NOLOD),
+    <A href="../../n64man/gdp/gDPPipeSync.htm">gsDPPipeSync()</A>,
+
+#define MAG_LOG    1
+
+/* 1 or 2 works. anything bigger gets scissored */
+
+#define SZ_X    (32 &lt;&lt; MAG_LOG)
+#define SZ_Y    (32 &lt;&lt; MAG_LOG)
+#define POS_X   (160 - (SZ_X / 2))
+#define POS_Y   (120 - (SZ_Y / 2))
+
+    <A href="../../n64man/gsp/gSPTextureRectangle.htm">gsSPTextureRectangle</A>((POS_X) &lt;&lt; 2, (POS_Y) &lt;&lt; 2,
+            (POS_X + SZ_X - 1) &lt;&lt; 2, (POS_Y + SZ_Y -1) &lt;&lt; 2,
+            G_TX_RENDERTILE, 0, 0,
+            1 &lt;&lt; (10 - MAG_LOG), 1 &lt;&lt; (10 - MAG_LOG)),
+
+    <A href="../../n64man/gsp/gSPEndDisplayList.htm">gsSPEndDisplayList()</A>,
+};
+</PRE>
+
+</BLOCKQUOTE>
+<P align="right">
+<A href="#index">top</A>
+
+<HR>
+<P>
+<A name="qa6"></A><B><FONT  color="#ff0000">Q6</FONT></B>
+<B>When using <A href="../../n64man/gdp/gDPSetTextureFilter.htm">gsDPSetTextureFilter</A>(G_TF_BILERP), a white line of garbage appears at the edges of the texture.  How do I get rid of this garbage?</B>
+
+<P>
+<B><FONT color="#008000">A6</FONT></B> This symptom is not peculiar to this function, but it is associated with bilinear interpolation.  To put it simply, when bilinear interpolation is applied to one texel, if the texel information for the 4 texels surrounding the target texel is not used as a reference value in the very end texels, then garbage data will appear.  For more details, refer to the "Bilinear Filter" section and the "Bilinear Filtering and Point Sampling" section in the Programming Manual. 
+
+<P align="right">
+<A href="#index">top</A>
+
+<HR>
+<P>
+<A name="qa7"></A><B><FONT   color="#ff0000">Q7</FONT> Whenever I see the gDPLoadTextureBlock or gDPLoadTextureTile command, it seems that I don't see anything in the argument for where in the TMEM to load data.  For example, what should I do when I want to place two different types of texture data in TMEM at the same time? </B>
+
+<P>
+<B><FONT   color="#008000">A7</FONT></B> First, a portion of /usr/include/PR/gbi.h is excerpted below. 
+
+<BLOCKQUOTE>
+
+<PRE>
+&lt;Definition statement for gDPSetTile &gt;
+#define <A href="../../n64man/gdp/gDPSetTile.htm">gDPSetTile</A>(pkt, fmt, siz, line, tmem, tile, palette, cmt,f       \
+        maskt, shiftt, cms, masks, shifts)                               \
+{                                                                        \
+    Gfx *_g = (Gfx *)(pkt);                                              \
+                                                                         \
+    _g-&gt;words.w0 = _SHIFTL(G_SETTILE, 24, 8) | _SHIFTL(fmt, 21, 3) |     \
+               _SHIFTL(siz, 19, 2) | _SHIFTL(line, 9, 9) |               \
+               _SHIFTL(tmem, 0, 9);                                      \
+    _g-&gt;words.w1 = _SHIFTL(tile, 24, 3) | _SHIFTL(palette, 20, 4) |      \
+               _SHIFTL(cmt, 18, 2) | _SHIFTL(maskt, 14, 4) |             \
+               _SHIFTL(shiftt, 10, 4) |_SHIFTL(cms, 8, 2) |              \
+               _SHIFTL(masks, 4, 4) | _SHIFTL(shifts, 0, 4);             \
+}
+
+&lt;Definition statement for gDPLoadTextureBlock&gt;
+#define <A href="../../n64man/gdp/gDPLoadTextureBlock.htm">gDPLoadTextureBlock</A>(pkt, timg, fmt, siz, width, height,          \
+        pal, cms, cmt, masks, maskt, shifts, shiftt)                     \
+{                                                                        \
+    <A href="../../n64man/gdp/gDPSetTextureImage.htm">gDPSetTextureImage</A>(pkt, fmt, siz##_LOAD_BLOCK, 1, timg);             \
+    <A href="../../n64man/gdp/gDPSetTile.htm">gDPSetTile</A>(pkt, fmt, siz##_LOAD_BLOCK, 0, 0, G_TX_LOADTILE,          \
+                0 , cmt, maskt, shiftt, cms, masks, shifts);             \
+    <A href="../../n64man/gdp/gDPLoadSync.htm">gDPLoadSync</A>(pkt);                                                    \
+    <A href="../../n64man/gdp/gDPLoadBlock.htm">gDPLoadBlock</A>(pkt, G_TX_LOADTILE, 0, 0,                               \
+            (((width)*(height) + siz##_INCR) &gt;&gt; siz##_SHIFT) -1,         \
+            CALC_DXT(width, siz##_BYTES));                               \
+    <A href="../../n64man/gdp/gDPPipeSync.htm">gDPPipeSync</A>(pkt);                                                    \
+    <A href="../../n64man/gdp/gDPSetTile.htm">gDPSetTile</A>(pkt, fmt, siz,                                            \
+            (((width) * siz##_LINE_BYTES)+7)&gt;&gt;3, 0,                      \
+            G_TX_RENDERTILE, pal, cmt, maskt, shiftt, cms, masks,        \
+            shifts);                                                     \
+    <A href="../../n64man/gdp/gDPSetTileSize.htm">gDPSetTileSize</A>(pkt, G_TX_RENDERTILE, 0, 0,                           \
+            ((width)-1) &lt;&lt; G_TEXTURE_IMAGE_FRAC,                         \
+            ((height)-1) &lt;&lt; G_TEXTURE_IMAGE_FRAC)                        \
+}
+
+&lt;Definition statement for _gDPLoadTextureBlock&gt;
+#define _gDPLoadTextureBlock(pkt, timg, tmem, fmt, siz, width, height,   \
+        pal, cms, cmt, masks, maskt, shifts, shiftt)                     \
+{                                                                        \
+    <A href="../../n64man/gdp/gDPSetTextureImage.htm">gDPSetTextureImage</A>(pkt, fmt, siz##_LOAD_BLOCK, 1, timg);             \
+    <A href="../../n64man/gdp/gDPSetTile.htm">gDPSetTile</A>(pkt, fmt, siz##_LOAD_BLOCK, 0, tmem, G_TX_LOADTILE,       \
+            0, cmt, maskt, shiftt, cms, masks, shifts);                  \
+    <A href="../../n64man/gdp/gDPLoadSync.htm">gDPLoadSync</A>(pkt);                                                    \
+    <A href="../../n64man/gdp/gDPLoadBlock.htm">gDPLoadBlock</A>(pkt, G_TX_LOADTILE, 0, 0,                               \
+            (((width)*(height) + siz##_INCR) &gt;&gt; siz##_SHIFT)-1,          \
+            CALC_DXT(width, siz##_BYTES));                               \
+    <A href="../../n64man/gdp/gDPPipeSync.htm">gDPPipeSync</A>(pkt);                                                    \
+    <A href="../../n64man/gdp/gDPSetTile.htm">gDPSetTile</A>(pkt, fmt, siz, (((width) * siz##_LINE_BYTES)+7)&gt;&gt;3,       \
+            tmem, G_TX_RENDERTILE, pal, cmt,                             \
+            maskt, shiftt, cms, masks, shifts);                          \
+    <A href="../../n64man/gdp/gDPSetTileSize.htm">gDPSetTileSize</A>(pkt, G_TX_RENDERTILE, 0, 0,                           \
+            ((width)-1) &lt;&lt; G_TEXTURE_IMAGE_FRAC,                         \
+            ((height)-1) &lt;&lt; G_TEXTURE_IMAGE_FRAC)                        \
+}
+
+&lt;Definition statement for gDPLoadTextureTile&gt;
+#define gDPLoadTextureTile(pkt, timg, fmt, siz, width, height,           \
+        uls, ult, lrs, lrt, pal,                                         \
+        cms, cmt, masks, maskt, shifts, shiftt)                          \
+{                                                                        \
+    <A href="../../n64man/gdp/gDPSetTextureImage.htm">gDPSetTextureImage</A>(pkt, fmt, siz, width, timg);                      \
+    <A href="../../n64man/gdp/gDPSetTile.htm">gDPSetTile</A>(pkt, fmt, siz,                                            \
+            (((((lrs)-(uls)+1) * siz##_TILE_BYTES)+7)&gt;&gt;3), 0,            \
+            G_TX_LOADTILE, 0 , cmt, maskt, shiftt, cms, masks,           \
+            shifts);                                                     \
+    <A href="../../n64man/gdp/gDPLoadSync.htm">gDPLoadSync</A>(pkt);                                                    \
+    gDPLoadTile(    pkt, G_TX_LOADTILE,                                  \
+            (uls)&lt;&lt;G_TEXTURE_IMAGE_FRAC,                                 \
+            (ult)&lt;&lt;G_TEXTURE_IMAGE_FRAC,                                 \
+            (lrs)&lt;&lt;G_TEXTURE_IMAGE_FRAC,                                 \
+            (lrt)&lt;&lt;G_TEXTURE_IMAGE_FRAC);                                \
+    <A href="../../n64man/gdp/gDPPipeSync.htm">gDPPipeSync</A>(pkt);                                                    \
+    <A href="../../n64man/gdp/gDPSetTile.htm">gDPSetTile</A>(pkt, fmt, siz,                                            \
+            (((((lrs)-(uls)+1) * siz##_LINE_BYTES)+7)&gt;&gt;3), 0,            \
+            G_TX_RENDERTILE, pal, cmt, maskt, shiftt, cms, masks,        \
+            shifts);                                                     \
+    <A href="../../n64man/gdp/gDPSetTileSize.htm">gDPSetTileSize</A>(pkt, G_TX_RENDERTILE,                                 \
+            (uls)&lt;&lt;G_TEXTURE_IMAGE_FRAC,                                 \
+            (ult)&lt;&lt;G_TEXTURE_IMAGE_FRAC,                                 \
+            (lrs)&lt;&lt;G_TEXTURE_IMAGE_FRAC,                                 \
+            (lrt)&lt;&lt;G_TEXTURE_IMAGE_FRAC)                                 \
+}
+
+&lt;Definition statement for gDPLoadMultiTile&gt;
+#define gDPLoadMultiTile(pkt, timg, tmem, rtile, fmt, siz, width, height,\
+        uls, ult, lrs, lrt, pal,                                         \
+        cms, cmt, masks, maskt, shifts, shiftt)                          \
+{                                                                        \
+    <A href="../../n64man/gdp/gDPSetTextureImage.htm">gDPSetTextureImage</A>(pkt, fmt, siz, width, timg);                      \
+    <A href="../../n64man/gdp/gDPSetTile.htm">gDPSetTile</A>(pkt, fmt, siz,                                            \
+            (((((lrs)-(uls)+1) * siz##_TILE_BYTES)+7)&gt;&gt;3), tmem,         \
+            G_TX_LOADTILE, 0 , cmt, maskt, shiftt, cms, masks,           \
+            shifts);                                                     \
+    <A href="../../n64man/gdp/gDPLoadSync.htm">gDPLoadSync</A>(pkt);                                                    \
+    gDPLoadTile(    pkt, G_TX_LOADTILE,                                  \
+            (uls)&lt;&lt;G_TEXTURE_IMAGE_FRAC,                                 \
+            (ult)&lt;&lt;G_TEXTURE_IMAGE_FRAC,                                 \
+            (lrs)&lt;&lt;G_TEXTURE_IMAGE_FRAC,                                 \
+            (lrt)&lt;&lt;G_TEXTURE_IMAGE_FRAC);                                \
+    <A href="../../n64man/gdp/gDPPipeSync.htm">gDPPipeSync</A>(pkt);                                                    \
+    <A href="../../n64man/gdp/gDPSetTile.htm">gDPSetTile</A>(pkt, fmt, siz,                                            \
+            (((((lrs)-(uls)+1) * siz##_LINE_BYTES)+7)&gt;&gt;3), tmem,         \
+            rtile, pal, cmt, maskt, shiftt, cms, masks,                  \
+            shifts);                                                     \
+    <A href="../../n64man/gdp/gDPSetTileSize.htm">gDPSetTileSize</A>(pkt, rtile,                                           \
+            (uls)&lt;&lt;G_TEXTURE_IMAGE_FRAC,                                 \
+            (ult)&lt;&lt;G_TEXTURE_IMAGE_FRAC,                                 \
+            (lrs)&lt;&lt;G_TEXTURE_IMAGE_FRAC,                                 \
+            (lrt)&lt;&lt;G_TEXTURE_IMAGE_FRAC)                                 \
+}
+</PRE>
+</BLOCKQUOTE>
+<P>
+As shown above, 0 [zero] is substituted for tmem at the point where <A href="../../n64man/gdp/gDPLoadTextureTile.htm">gDPLoadTextureTile()</A> or 
+<A href="../../n64man/gdp/gDPLoadTextureBlock.htm">gDPLoadTextureBlock()</A> are defining a macro.  Now a macro is also partially prepared, as shown by <A href="../../n64man/gdp/gDPLoadTextureTile.htm">gDPLoadTextureTile()</A>, which can directly define tmem.  If the features of _gDPLoadTexture are given as an example, the advantage of using this function is that, as much as possible, small textures are stored in TMEM only once, saving the time required for switching TMEMs.  However, it was determined that the frequency that small textures are used is generally not very high, and it was set apart with a "_".  Macros with "_" in gbi.h can be used the same as normal macros without any problems. 
+
+<P align="right">
+<A href="#index">top</A>
+
+<HR>
+<P>
+<A name="qa8"></A><B><FONT  color="#ff0000">Q8</FONT> Please explain the "texture coordinates"</b><pre>((0<<6) or (127<<6), etc.)</pre> 
+<b>in the texture data </B>
+<blockqoute>
+<pre>static Vtx tex_vtx{........};
+</pre></blockquote>
+<P>
+<B>used with onetri, etc.  I don't understand the significance of including this in vertex data.  In addition, I understand fixed point numbers, but why is there a 6 bit shift?</b>
+
+<P>
+<B><FONT  color="#008000">A8</FONT></B> The texture coordinates show at which coordinates in the texture image the vertex should be placed.  Try changing these coordinates and see what happens.  The way the texture is pasted should change. 
+
+<P>
+Incidentally, various special effects can be obtained by dynamically changing these coordinates. 
+
+<P>
+As for the significance of the 6 bit shift, please refer to another sample.  There are a variety of samples showing 5 bit shift and no shift. Since these texture coordinates are given in s10.5 format, an whole number value is expressed by a 5 bit shift.  Subsequently, the value of the shift changes according to the precision and pasting method, etc. 
+
+<P align="right">
+<A href="#index">top</A>
+
+<HR >
+<P>
+<A name="qa9"></A><B><FONT  color="#ff0000">Q9</FONT> Priority of texture mapped "transparent" polygons when using the Z-buffer</B>
+<P>
+<B>When rendering translucent polygons, rendering doesn't seem to update the Z-buffer.  (Consequently, this is good since, once a translucent polygon in the foreground has been drawn, even if a more distant translucent polygon is drawn later, it will still be displayed.)</B>
+
+<P>
+<B>It says in the Nintendo 64 Programming Manual that "billboard objects with tree outlines" can be created, but it seems that it would be necessary to set the function as follows, for example, making the rendering mode for the tree object polygons so that it is translucent, in order to determine which texels to eliminate. </B>
+
+<BLOCKQUOTE>
+
+<PRE>
+<A href="../../n64man/gdp/gDPSetRenderMode.htm">gsDPSetRenderMode</A>(G_RM_ZB_XLU_SURF, G_RM_ZB_XLU_SURF2),
+</pre>
+</BLOCKQUOTE>
+<P>
+<B>However, when you do this, the priority is followed with respect to the polygons that were previously rendered, but since the Z-buffer is not updated, when the distant trees are subsequently rendered, the display priority per the Z-buffer does not function.</B>
+
+<P>
+<B>Does this mean simply that, even when rendering only the "transparent" and translucent objects, e.g., polygons with their wire frame truss structure mapped, they must be registered in the display list after a Z-sort in order to be rendered in the correct display order?  In addition, is it possible to set the mode for updating the Z-buffer when displaying "billboard objects with tree outlines" (which updates the Z-buffer values of pixels with an alpha value which is greater than the THRESHOLD value set by <A href="../../n64man/gdp/gDPSetBlendColor.htm">gDPSetBlendColor()</A>, etc.)?</B>
+
+<P>
+<B><FONT  color="#008000">A9</FONT></B> This problem can probably be resolved with the gsDPSetRenderMode settings.  gDPSetRenderMode specifies the parameters which are defined by the macro, but the following kind of definition can be created by changing the existing parameters to create and specify original parameters
+
+<P>
+G_RM_ZB_XLU_SURF is defined as follows. 
+
+<BLOCKQUOTE>
+
+<PRE>
+#define RM_ZB_XLU_SURF(clk) Z_CMP | IM_RD | CVG_DST_FILL | FORCE_BL | Z_MODE_XLU 
+                        | GBL_c##clk(G_BL_CLR_IN, G_BLA_IN, G_BLCLR_MEM, G_BL_IMA)
+#define G_RM_ZB_XLU_SURF RM_ZB_XLU_SURF(1)
+#define G_RM_ZB_XLU_SURF2 RM_ZB_XLU_SURF(2)
+</pre>
+</BLOCKQUOTE>
+<P>
+By adding Z_UPD to this, 
+
+<BLOCKQUOTE>
+
+<PRE>
+#define RM_ZB_XLU_SURF(clk) Z_CMP | Z_UPD | IM_RD | CVG_DST_FILL | FORCE_BL | ZMODE_XLU 
+                        | GBL_c##clk(G_BL_CLR_IN, G_BLA_IN, G_BLCLR_MEM, G_BL_IMA) 
+#define G_RM_ZB_XLU_SURF RM_ZB_XLU_SURF(1)
+#define G_RM_ZB_XLU_SURF2 RM_ZB_XLU_SURF(2)
+</pre>
+</BLOCKQUOTE>
+<P>
+the Z-buffer will be updated even when rendring translucent polygons. 
+
+<P>
+In addition, G_RM_ZB_OPA_SURF is defined as follows.
+
+<BLOCKQUOTE>
+
+<PRE>
+#define RM_ZB_OPA_SURF(clk) Z_CMP | Z_UPD | CVG_DST_FILL | ALPHA_CVG_SEL | ZMODE_OPA 
+                        | GBL_c##clk(G_BL_CLR_IN, G_BLA_IN, G_BLCLR_MEM, G_BL_A_MEM)
+#define G_RM_ZB_OPA_SURF RM_ZB_OPA_SURF(1)
+#define G_RM_ZB_OPA_SURF2 RM_ZB_OPA_SURF(2)
+</pre>
+</BLOCKQUOTE>
+<P>
+By deleting ALPHA_SVG_SEL from this, 
+
+<BLOCKQUOTE>
+
+<PRE>
+#define RM_ZB_OPA_SURF(clk) Z_CMP | Z_UPD | CVG_DST_FILL | ZMODE_OPA
+                        | GBL_c##clk(G_BL_CLR_IN, G_BLA_IN, G_BLCLR_MEM, G_BL_A_MEM)
+#define G_RM_ZB_OPA_SURF RM_ZB_OPA_SURF(1)
+#define G_RM_ZB_OPA_SURF2 RM_ZB_OPA_SURF(2)
+</pre>
+</BLOCKQUOTE>
+<P>
+and combining it with <A href="../../n64man/gdp/gDPSetAlphaCompare.htm">gsDPSetAlphaCompare</A> (G_AC_THRESHOLD) a "transparency" can be created in a translucent polygon. 
+
+<P>
+Refer to the gbi.h file regarding macro parameters. 
+
+<P>
+In addition, refer to the detailed explanation of these macros in the Render Mode section of the Programming Manual. 
+
+<P align="right">
+<A href="#index">top</A>
+
+<HR>
+<P>
+<A name="qa10"></A><B><FONT  color="#ff0000">Q10</FONT> Can I use translucence with "rectangle" in Palette mode? </B>
+
+<P>
+<B><FONT color="#008000">A10</FONT></B> The palette contents are 21-bit color, so you cannot achieve translucent effects.  To use translucence, you need 32-bit color or IA mode.
+
+<P align="right">
+<A href="#index">top</A>
+
+<HR>
+<P>
+<A name="qa11"></A><B><FONT  color="#ff0000">Q11</FONT> How do I make Texture translucent?</B>
+
+<P>
+<B><FONT s  color="#008000">A11</FONT></B> Translucency cannot be realized with only the texture unless the texture is an RGBA32 texture or an IA texture.  However, besides textures such as primitives,  all sorts of translucent textures can be realized by combining alpha values and the alpha combiner.
+
+<P align="right">
+<A href="#index">top</A>
+
+<HR>
+<P>
+<A name="qa12"></A><B><FONT  color="#ff0000">Q12</FONT> I am currently using the <A href="../../n64man/gdp/gDPLoadTextureBlock.htm">gDPLoadTextureBlock()</A> function to past texture data which is larger than 32x32 texels, but I can't use it to paste up to 32x64 data. </B>
+
+<P>
+<B><FONT   color="#008000">A12</FONT></B> Using gDPLoadTextureTile allows you to paste larger textures.  However, since, naturally, only one texture can be pasted onto a polygon per 1 cycle, textures which are too large to fit into TMEM must be pasted by dividing the polygon accordingly.  (It is preferable to do this on the data level.)  The TMEM capacity is as follows. 
+
+<UL>
+  <LI>32bit RGBA - 4Kbytes
+  <LI>16bit RGBA - 4Kbytes
+  <LI>8 bit CI - 2Kbytes
+  <LI>4 bit CI - 2Kbytes
+</UL>
+<P>
+With CI, the front 2K of TMEM are used for pixels, while the back 2K are used for the color table.  When the CI format is used, a single, large texture can be pasted if the polygon is divided so that it can fit in TMEM (at least, it will appear to be pasted).  gDPLoadTextureTile allows you to transfer part of a large image to TMEM as a texture.  Therefore, the surface area of the texture of the model data can divided into polygons of a size which can fit into TMEM, or a converter can be used to do that. 
+
+<DL>
+  <DT>Example
+  <DD>Texture image: 256x256 pixel
+  <DD>
+<PRE>
++------------+
+|            |
+|            |
+|  texture   |
+|            |
+|            |
++------------+
+</pre>
+  <DD>Pasted on the entire polygon below (s,t are tex coord)
+  <DD>(s,t)=(0,0)
+  <DD>
+<PRE>
++------------+
+|            |
+|            |
+|  polygon   |
+|            |
+|            |
++------------+
+</pre>
+  <DD>(s,t)=(255,255)
+  <DD>With 32 bit RGBA, the TMEM size which can be handled at once is 32x32 (256x4 is also possible)
+  <DD>
+<p>
+<img src="./img/image1.gif">
+<p>
+  <DD>The <img src="./img/image2.gif"> above is 
+  <DD>
+<PRE>
+(s,t)=(0,0)
+  . 
+  (s,t)=(31,31)
+</pre>
+  <DD>The <img src="./img/image3.gif"> above is 
+<PRE>
+(s,t)=(63,31)
+</pre>
+  <DD>such that the image is divided into a total of 8x8=64 polygons.  The display list is as follows.
+  <DL>
+    <DD>
+<PRE>
+<A href="../../n64man/gdp/gDPLoadTextureTile.htm">gsDPLoadTextureTile</A>(tex_image,
+G_IM_FMT_RGBA,
+G_IM_SIZ_32b,
+256,256,
+0,0,31,31,
+0,G_TX_CLAMP,G_TX_CLAMP,
+6,6,G_TX_NOLOD,G_TX_NOLOD),
+<A href="../../n64man/gsp/gSP1Triangle.htm">gsSP1Triangle</A>(0,1,2,0),
+<A href="../../n64man/gsp/gSP1Triangle.htm">gsSP1Triangle</A>(2,3,0,0),
+<A href="../../n64man/gdp/gDPLoadTextureTile.htm">gsDPLoadTextureTile</A>(tex_image,G_IM_FMT_RGBA,
+G_IM_SIZ_32b,
+256,256,
+32,0,63,31,
+0,G_TX_CLAMP,G_TX_CLAMP,
+6,6,G_TX_NOLOD,G_TX_NOLOD),
+<A href="../../n64man/gsp/gSP1Triangle.htm">gsSP1Triangle</A>(4,5,6,0),
+<A href="../../n64man/gsp/gSP1Triangle.htm">gsSP1Triangle</A>(6,7,4,0),
+:
+:
+</pre>
+  </DL>
+  <DD>(Of course, it is necessary to align the tex coord(s,t) of the Vtx.)
+</DL>
+<P align="right">
+<A href="#index">top</A>
+
+<HR>
+<P>
+<A name="qa13"></A><B><FONT   color="#ff0000">Q13</FONT> How do I handle multiple TLUT?</B>
+
+<P>
+<B><FONT  color="#008000">A13</FONT></B> Normally, when there are multiple TLUT, they are loaded separately.  When two CI textures are being used at the same time, and they each have a different TLUT, a technique is needed such as decreasing their colors 128 colors each, and using the TLUT one half at a time. 
+
+<P align="right">
+<A href="#index">top</A>
+
+<HR>
+<P>
+<B><A name="qa14"></A><FONT   color="#ff0000">Q14</FONT> What settings do I use to be able to display a texture whose IA16 Tlut has been stored in 4bitC.</B>
+
+<P>
+<B><FONT   color="#008000">A14</FONT></B> After preparing texture data and the CI palette, you can display the texture by setting "G_TT_IA16" with gDPSetTextureLUT and the specifying "G_IM_FMT_C" where a texture is loaded, such as at gDPTextureLoadBlock.  Use a translucent setting such as XLU_SURF or CLD_SURF for the RenderMode.
+
+<P align="right">
+<A href="#index">top</A>
+
+<HR>
+<P>
+<B><A name="qa15"></A><FONT   color="#ff0000">Q15</FONT> I would like to display a polygon with an "invisible" texture.  The texture data are 4bitCI texture.</B>
+
+<P>
+<B><FONT  color="#008000">A15</FONT></B> As for 4bitCI textures, RGBA16 format color textures or IA16 format intensity alpha textures are stored in 16 palettes.  Let's continue the discussion supposing that you wish to use the RGBA16 format.  THe RGBA16 mode consists of R:5, G:5, B:5, alpha:1bit.  Therefore, create a texture in which a color (e.g., 0xfffe) with "alpha-0" is placed in one of the 16 palettes, while the pixels of that color are placed in the location that you wish to be transparent.  If rendered with RenderMode set to TEX_EDGE or XLU_SURF and CombineMode set to DECALRGBA, the alpha will be removed.  It is also possible to remove the alpha in the OPA_SURF mode if alpha compare is used. 
+
+<P align="right">
+<A href="#index">top</A>
+
+<HR>
+<P>
+<B><A name="qa16"></A><FONT  color="#ff0000">Q16</FONT> I am transferring texture data to TMEM using gDPLoadTextureTile_4b, but when transferring 64x32 texture, will processing automatically switch to transferring two 32x32 textures?  With respect to the size of TMEM, it seems that 4-bit texture data can be transferred as one 64x32 piece.  Or is there a limit on the texture size of 32x32?</B>
+
+<P>
+<B><FONT color="#008000">A16</FONT></B> The size of TMEM is 4Kbyte.  As long as it within that range, a texture can be loaded all at one time.  Since 4Kbyte=32768 bits, it is possible to load up to 2047 texels, i.e., 32x64, of texture as long as it is a 16bit RGBA texture.  Of course, 16x128 is OK, too.  Therefore, there is not need particularly to process textures in 32x32 units.  However, please note that even TLUT must be loaded into the 4Kbyte when in the color index mode. 
+
+<P align="right">
+<A href="#index">top</A>
+
+<HR>
+<P>
+<B><FONT  color="#ff0000"><A name="qa17"></A>Q17</FONT></B> <b>Is it possible in the 2CYCLE mode to link a 4bitI texture as an alpha source to a 4bitCI texture?</b>
+
+<P>
+<B><FONT color="#008000">A17</FONT></B> Unfortunately, you cannot link a CI texture to any other type in the 2 cycle mode.  This is because the format in MEM is prepared for LUT (See Chapter 13 page 30 in the Programming Manual). 
+
+<P align="right">
+<A href="#index">top</A>
+
+<HR>
+<P>
+<B><FONT  color="#ff0000"><A name="qa18"></A>Q18</FONT></B> <b>In Chapter 13 "Texture Mapping," Appendix A, of the N64 Programming Manual, there is mention of "limits on the number of lines that can be set with the LoadBlock command."  What is the difference between the maximum number of lines and the absolute maximum number of lines?  In addition, when using other 4-bit and 8-bit texture, how should the maximum number of lines be calculated?</b>
+
+<P>
+<B><FONT  color="#008000">A18</FONT></B> As explained on page 39 in Chapter 13 of the of the Programming Manual, the line counter is incremented using the dxt parameter in LoadBlock.  If this dxt value is not a multiple of 2, the program will crash due to the counter accumulating errors.  That limit value is the "maximum number of lines", while the "absolute maximum number of lines" is the TMEM capacity divided by the width of the texture as a logical value.  In addition, when other 4-bit and 8-bit textures are used, consider the following.
+
+<P>
+4b  &nbsp; View the list as 1/4 the width<br>
+8b  &nbsp; View the list as 1/2 the width<br>
+32b &nbsp;View the list as double the width
+
+<P align="right">
+<A href="#index">top</A>
+
+<HR>
+</BODY>
+</HTML>

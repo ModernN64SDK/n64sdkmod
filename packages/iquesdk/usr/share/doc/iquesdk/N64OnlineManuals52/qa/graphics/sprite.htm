@@ -1,0 +1,64 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN"
+--Editor notes- MAP- edited content 10/18/99
+PWC 2/21/00-->
+<HTML>
+<HEAD><link rel=stylesheet type="text/css" href="../style.css">
+<TITLE>Sprite</TITLE>
+</HEAD>
+
+<BODY>
+<a name=index></a>
+<IMG src="../../gif/n64_logo2.gif" height="21" width="136">
+
+<h3><FONT color="#FF8000">Q&A</FONT>- Sprite</h3>
+
+<P>
+<TABLE>
+  <TR>
+    <TD><B><A href="sprite.htm#qa1">QA1</a></b></td>
+    <TD>How do I express a sprite?</td></tr>
+  <TR>
+    <TD><B><A href="sprite.htm#qa2">QA2</a></b></td>
+    <TD>How many sprites can be displayed?</td></tr>
+  <TR>
+    <TD><B><A href="sprite.htm#qa3">QA3</a></b></td>
+    <TD>How do I make the seams between sprite tiles less apparent?</td></tr>
+</TABLE>
+
+<HR>
+<P>
+<B><A name="qa1"></A><FONT color="#ff0000">Q1</FONT> What is the procedure for expressing a sprite?</B>
+
+<P>
+<B><FONT color="#008000">A1</FONT></B> Currently, the popular method is to use the S2DEX microcode.  Since there are samples of this included here, install and use them. 
+
+<P>
+As for typical methods that don't use S2DEX, there are two concepts.  First, you can use the sprite library or use the sprite microcode in the case of sprites with which parallel motion and/or clipping will be performed.  However, textures must be used when performing rotation, reduction, or enlargement.  Since there are samples of each in "spgame,", "spritemonkey," and "spball" in the /usr/src/PR/ directory, please refer to them.  Until you have referenced these, you could probably just apply the sprite to a polygon as a texture, as shown below. <BR>
+<IMG src="img/gfx15.gif" height="320" width="502">
+
+<P align="right">
+<A href="sprite.htm#index">top</A>
+
+<HR>
+<P>
+<B><A name="qa2"></A><FONT color="#ff0000">Q2</FONT> When several sprites are displayed in the samples, the processing immediately slows down.  As a rule of thumb, about how many sprites can be displayed in a finished version? </B>
+
+<P>
+<B><FONT color="#008000">A2</FONT></B> This is probably a problem in the layout of the program.  If it is efficiently put together, we have confirmed displaying 1000 sprites at this point. 
+
+<P align="right">
+<A href="sprite.htm#index">top</A>
+
+<HR>
+<P>
+<B><A name="qa3"></A><FONT color="#ff0000">Q3</FONT> I am using the N64 Sprite Library.  I noticed that, when I wanted to make a slightly smaller image of a large scene and scaled the sprites, the seams between the various tiles became really noticeable.  How can I resolve this?</B>
+
+<P>
+<B><FONT color="#008000">A3</FONT></B> This is a phenomenon which is caused by the bilinear texture interpolation function.  Since bilinear interpolation interpolates looking at the surrounding pixels, the edge of the texture will become unnatural out of necessity (especially when tiling).  It is common here to create filtered textures increasing the perimeter per dot, and to adjust the st value (0.5 shift).  Since the N64 Sprite Library that you are using has an attribute called SP_TEXSHIFT in spSetAttribute, you can utilize this.
+
+<P align="right">
+<A href="sprite.htm#index">top</A>
+
+<HR>
+</BODY>
+</HTML>

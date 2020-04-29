@@ -1,0 +1,427 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 17 - Audio Library</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. -->
+</head>
+
+<H1>
+17.4 The Synthesis Driver</H1>
+
+<p>The Synthesis Driver is the Audio Library object used by the <a href="../../keywords/index/data/audio.htm#sound player" target="keywords">Sound Player</a>, the <a href="../../keywords/index/data/audio.htm#sequence player" target="keywords">Sequence Player</a>, and application-specific players to create Audio Command Lists, which are passed to the Audio <A target="keywords" HREF="../../keywords/index/data/system.htm#microcode">Microcode</a>. This section defines various <A target="keywords" HREF="../../keywords/index/data/system.htm#API">API</A> calls which can be used by application programmers who want to create their own Players. </p>
+
+<P>Programmers who use the Sequence Player and Sound Player need only be familiar with the initialization of the driver, the <A HREF="../../n64man/al/alAudioFrame.htm">alAudioFrame()</A> function that creates audio Command Lists, and the mechanism by which the Synthesis Driver satisfies the need for sound data. </p>
+
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="01"></A>
+<H2>
+17.4.1 Initializing the Driver</H2>
+<p>The Synthesis driver needs to be initialized in order to be used. This is accomplished by calling <A HREF="../../n64man/al/alSynNew.htm">alSynNew()</A> with a configuration structure that specifies the number of <a href="../../keywords/index/data/audio.htm#virtual voice" target="keywords">virtual voice</a>, <a href="../../keywords/index/data/audio.htm#physical voice" target="keywords">physical voice</a>, and effects busses to instantiate. The configuration structure also provides information regarding the Audio <a href="../../keywords/index/data/audio.htm#DMA call back" target="keywords">DMA call back</a> routines, the Audio Heap, <a href="../../keywords/index/data/audio.htm#FX TYPE" target="keywords">FXType</a> and the audio <a href="../../keywords/index/data/audio.htm#playback rate" target="keywords">playback rate</a> to use. (Audio DMA callbacks are discussed later in this chapter.)</p>
+
+<P><strong>Note:</strong>  The <A HREF="../../n64man/al/alInit.htm">alInit()</A> call will call <A HREF="../../n64man/al/alSynNew.htm">alSynNew()</A>.</p>
+
+<P>The configuration also specifies a callback procedure pointer of type ALDMANew, which is used by the synthesis driver initialization procedure to set up <a href="../../keywords/index/data/audio.htm#callback" target="keywords">callbacks</a> for sound data requests. The procedure specified in the configuration structure is called once during initialization for every physical voice that is instantiated. The Synthesis Driver expects the procedure to return another procedure pointer that defines a callback of type ALDMAproc, and a pointer to some state information that can be used in various ways to manage sound data requests. </p>
+
+<P><strong>Note:</strong>  Only one driver may be instantiated at any given time. </p>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="02"></A>
+<H2>17.4.2 Building and Executing Command Lists</H2>
+
+<p>The main function of the Synthesis Driver is to build Audio Command Lists, which are executed by the microcode to synthesize audio. Command lists are built in frames. A frame is a number of samples (usually something close to the number of samples required to fill a
+complete video frame time at the regular video <A target="keywords" HREF="../../keywords/index/data/graphics.htm#frame rate" target="keywords">frame rate</a> (e.g. 30 or 60 Hz)). </p>
+
+<P>From an application, the Command List (to synthesize a number of audio samples) is built by making a call to <A HREF="../../n64man/al/alAudioFrame.htm">alAudioFrame()</A>. Parameters for this call define the number of samples (which must be a multiple of 16), a physical address of an output buffer where the Microcode will put the audio samples, and a pointer to an array that can be used to store the Command List. </p>
+
+<P>During the construction of the Command List, the Synthesis Driver makes callbacks to its clients (the players) to process the various <a href="../../keywords/index/data/audio.htm#event" target="keywords">events</a> that determine the parameters and timing of the playback of <a href="../../keywords/index/data/audio.htm#sound effect" target="keywords">sound effects</a> and sequences. </p>
+
+<P>The Driver also makes callbacks to the defined ALDMAproc routine with requests for sound data.</p>
+
+<P>To execute an audio Command List, it is first put in OSTask structure and then passed to the microcode with a call to <A HREF="../../n64man/os/osSpTaskStart.htm">osSpTaskStart()</A>. The OSTask structure specifies pointers to microcode and data along with the Command List which allows the RCP to execute. </p>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="03"></A>
+<H2>
+17.4.3 Synthesis Driver Sound Data Callbacks</H2>
+
+<p>The application is responsible for making sure that the required sound data is located in RAM before the command list is executed by the audio microcode. The application programmer has the freedom to load complete compressed sounds from the ROM before playback, or, as is
+more likely, to initiate DMAs from ROM to RAM in response to callbacks from the Synthesis Driver (Normally, use the latter case). Initiating DMAs in response to callbacks allows the application to only load the portion of the sound needed, and thus greatly reduce the RAM needed for audio. </p>
+
+<P>The Audio DMA callback routines are initialized when <A HREF="../../n64man/al/alInit.htm">alInit</A> is called. The synthesizer configuration structure must contain a pointer to a routine for initializing the Audio DMAs. This routine will be called once for each physical voice. Typically this routine will initialize any state variables, and then must return a pointer to the ALDMAproc. </p>
+
+<P>The ALDMAproc procedure is called by each physical voice during the construction of the command list when compressed sound data is required. The call specifies the required data address, the length, and the state pointer, and it expects to receive a physical memory
+address where the data can be (or at least will be) found in memory. 
+</p>
+
+<P>The example applications (playseq, and simple) provide examples of how these callback routines can be implemented. </p>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="04"></A>
+<H2>
+17.4.4 Assigning Players to the Driver</H2>
+
+<p>In order to make calls to the driver interface, you must first make your player known to the driver (both sound and sequence players are automatically registered to driver at initialization time). This is accomplished with the <A HREF="../../n64man/al/alSynAddPlayer.htm">alSynAddPlayer()</A> call. For more information on writing your own player, see <a href="17-05.htm">Section 17.5 &QUOT;Writing Your Own Player&QUOT;</a>. </p>
+
+<P><strong>Note:</strong>  Both the Sequence Player and the Sound Player add themselves to the driver when they are initialized by calling alSynAddPlayer(). If you are not creating your own players you should not need to call <A HREF="../../n64man/al/alSynAddPlayer.htm">alSynAddPlayer</A>. </p>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="05"></A>
+<H2>
+17.4.5 Allocating and Controlling Voices</H2>
+
+<p>The Synthesis driver manages two types of voices: virtual voices and physical voices.</p>
+
+<P>Virtual voices are described by the ALVoice structure, and represent the voice from the player's perspective. In order to play a <a href="../../keywords/index/data/audio.htm#wave table" target="keywords">wave table</a>, players must allocate a virtual voice on which to play it. This is accomplished with the <A HREF="../../n64man/al/alSynAllocVoice.htm">alSynAllocVoice()</A> call. The voice configuration structure allows you to specify the voice priority and bus assignment. The number of virtual voices available is established when the driver is initialized, and you may specify more virtual voices than you have resources to play. There is no benefit to specifying more physical voices than virtual voices since the player will have no way to use them. </p>
+
+<P>Physical voices represent the actual sound processing modules available to the driver. They consist of an ADPCM decompresser, a pitch shifter, and a gain unit. The <a href="../../keywords/index/data/audio.htm#ADPCM" target="keywords">ADPCM</a> decompresser converts mono ADPCM compressed (approximately 4:1) wavetables to mono 16-bit raw format. The pitch shifter resamples the resulting data (up one octave, down any number of octaves) to the desired <a href="../../keywords/index/data/audio.htm#pitch" target="keywords">pitch</a>. The gain unit then applies a <a href="../../keywords/index/data/audio.htm#volume" target="keywords">volume</a>, <a href="../../keywords/index/data/audio.htm#envelope" target="keywords">envelope</a>, <a href="../../keywords/index/data/audio.htm#pan" target="keywords">pan</a>, and mixes the (stereo) output into the master bus and an effect bus at gains specified by the <a href="../../keywords/index/data/audio.htm#wet" target="keywords">wet</a>/<a href="../../keywords/index/data/audio.htm#dry" target="keywords">dry</a> parameters associated with the voice. </p>
+
+<P><strong>Note:</strong>  To prevent a <a href="../../keywords/index/data/audio.htm#voice steal" target="keywords">voice steal</a>, you can set the voice priority to the highest priority with <A HREF="../../n64man/al/alSynSetPriority.htm">alSynSetPriority()</A>. </p>
+
+<P>The driver <A target="keywords" HREF="../../keywords/index/data/system.htm#map">map</a> virtual voices to physical voices based on virtual voice priority. If there are more active virtual voices than available physical voices, the driver allocates the physical voices to the highest priority virtual voices. The driver may steal a physical voice from a virtual voice if a higher priority virtual voice is allocated. After you allocate a virtual voice, you can use it to play a wavetable with the <A HREF="../../n64man/al/alSynStartVoice.htm">alSynStartVoice()</A> call. You can stop the playback with the <A HREF="../../n64man/al/alSynStopVoice.htm">alSynStopVoice()</A> call.</p>
+
+<P>Once you start a voice, you can control pitch, volume, and panning and effect mix with the appropriate calls listed in Section 17.4.9 &QUOT;Summary of Driver Functions&QUOT;. </p>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="06"></A>
+<H2>
+17.4.6 Effects and Effect Busses</H2>
+
+<p>Each voice can be assigned to one effects bus.  (Currently, only one bus can be used for the audio library. Also, the only supported <a href="../../keywords/index/data/audio.htm#effect" target="keywords">effects</a> are reverb and <a href="../../keywords/index/data/audio.htm#echo" target="keywords">echo</a>). Each effects bus can contain any number of effects units (up to the limit imposed by the processing resources). The number of busses and effects units are specified in the driver configuration structure and are established at initialization time. </p>
+
+<P><strong>Note:</strong>  The Audio Library currently only supports one effects bus. Future version may support multiple busses. </p>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="07"></A>
+<H2>
+17.4.7 Creating Your Own Effects</H2>
+
+<p>The Nintendo 64 uses a general purpose effects implementation that manipulates data in a single <a href="../../keywords/index/data/audio.htm#delay line" target="keywords">delay line</a>. A small number of default configurations have been supplied (see libaudio.h), but application developers can also specify there own custom <a href="../../keywords/index/data/audio.htm#reverb format" target="keywords">reverb</a> and <a href="../../keywords/index/data/audio.htm#chorus/flange format" target="keywords">chorus/flange format</a> effects. </p>
+
+<P>The way in which the data is manipulated is defined by a set of parameters specified in blocks where each block represents a single effects primitive. An effect is constructed by attaching an arbitrary number of effects primitives to a single delay line. There is only one input to this delay line which is the sum (slightly attenuated to minimize overflow) of the left and right effects send busses. The contribution of a voice to this bus can be specified by a call to <A HREF="../../n64man/al/alSynSetFXMix.htm">alSynSetFXMix</A>. This delay line is then operated on by the effect specified in the the fxType field of the synthesizer configuration structure. The delay memory will be allocated from the audio heap by a call to <A HREF="../../n64man/al/alInit.htm">alInit</A>, so the application must be sure that the audio heap is big enough to contain the delay memory and its associated effects primitive structures. The parameters for each primitive in the effect are specified in an array which is passed to the audio initialization code. Each primitive consists of an input offset, an output offset, coefficients specifying output contribution to input and input contribution to output, chorus rate and depth parameters which control modulation of the output offset, a <a href="../../keywords/index/data/audio.htm#DC normalization" target="keywords">DC normalized</a> (unity gain at DC) <a href="../../keywords/index/data/audio.htm#single pole" target="keywords">single pole</a> low-pass filter, and finally, an output gain specifying how much of this primitives output contributes to the final effect output. </p>
+
+<P>The particular combination of values in each of the parameters for a primitive specifies the function of that primitive as a whole within the effect. For example, if the ffcoef and fbcoef are the same except for a sign change, that primitive will be an all pass; if ffcoef and fbcoef are different, or one or the other is zero, the primitive will be a filter of some kind. If both ffcoef and fbcoef are zero, the primitive will be pure delay only, possibly modulated and low pass filtered. </p>
+<DL>
+<DT>
+<A NAME="f17-02"></A><strong>Figure 17-2 Effects Primitives</strong></DT>
+
+<DD>
+<IMG SRC="gif/f17-02.gif" ALT="[Figure 17-2]" ></DD>
+</DL>
+
+<p>The function of the effects primitives can be thought of in two ways, the first of which is as an individual signal processing block. The effect as a whole would then be thought of as a set of concatenated and/or <a href="../../keywords/index/data/audio.htm#nest" target="keywords">nested</a> primitives arranged to produce the overall desired effect. The second way of conceptualizing the primitive is the way it is actually implemented, which is to say, as an operator on a single longer delay line shared with all the other primitives. Both conceptualizations are illustrated in figure 17-2. By careful selection of the effects parameters, a large class of cascaded/nested all-pass and comb filter based effects can be created. (For a more detailed description of this class of effects, see Bill Gardner's MIT
+masters thesis, &QUOT;The Virtual Acoustic Room&QUOT; section 4.6, available from &QUOT;<A HREF="http://sound.media.mit.edu/papers.html" target="_top">http://sound.media.mit.edu/papers.html</A>&QUOT;, and his Macintosh &QUOT;Reverb&QUOT; program and documentation in same location). </p>
+
+<P>Builders of custom effects will also discover that the effect specification controls not only the nature of the effect, but the processing resources consumed by the effect. Only those functions which are driven by non-zero parameters actually generate any audio command operations in the RCP. This gives application developers a great degree of flexibility in defining an effect that is appropriate both in terms of sonic quality and efficiency. If a developer wishes to use one of the pre-defined effects, they need only specify that effect in the fxType field of the synthesizer configuration structure. If, on the other hand, they wish to build their own effect, they would specify an fxType of AL_FX_CUSTOM, and then allocate and fill in the fields for the primitives. See the playseq source for one example of how to use this capability to build a complex effect. </p>
+
+<P>To create a custom effect, an application specifies the number of sections, the overall length of the delay memory used by the total effect, and then the input and output addresses, feedforward and feedback coefficients, gain, chorus rate and depth, and low-pass coefficient for each section. Following is a brief explanation of the significance of each parameter and what processing actually takes place as a result of its inclusion. Although parameters are interpreted in different ways, they are all stored in signed 32-bit numbers. </p>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="08"></A>
+<H2>
+17.4.8 Parameter Description</H2>
+
+<p>The following two parameters are specified only once for the entire effect: </p>
+
+<DL>
+<DT>
+<strong>sections:</strong></DT>
+
+<DD>
+This parameter specifies the total number of sections in the effect. A section comprises of one primitive and its associated parameters. 
+</DD>
+</DL>
+
+<DL>
+<DT>
+<strong>length:</strong></DT>
+
+<DD>
+This parameter specifies the total length of delay memory used by the effect, and must be a multiple of 8 bytes. Since data is processed in blocks, this parameter should be greater than or equal to the largest output offset parameter PLUS the length of a processing buffer. This length is defined to be 160 samples, or 320 bytes. If the last section of the effect has a non-zero chorus rate parameter which corresponds to a slow <a href="../../keywords/index/data/audio.htm#modulation rate" target="keywords">modulation rate</a>, and a deep <a href="../../keywords/index/data/audio.htm#modulation depth" target="keywords">modulation depth</a> (&gt;1<a href="../../keywords/index/data/audio.htm#semi tone" target="keywords">semi tone</a>), the total delay length may need to be larger depending on the rate and depth of the chorus. 
+</DD>
+</DL>
+
+<p>The rest of these parameters constitute one processing element, so there must be one set of these parameters for each section specified by the sections parameter. </p>
+
+<P>The following two address parameters must be positive and must be on 8 bytes (or 4 sample) boundaries. The application playseq.c shows an easy way to specify addresses in the convenient unit of milliseconds which are properly aligned. 
+<DL>
+<DT>
+<strong>input:</strong></DT>
+
+<DD>
+This parameter specifies the input address for this section of the effect. This address must be on a 4 sample (or 8 byte) boundary. 
+</DD>
+</DL>
+
+<DL>
+<DT>
+<strong>output:</strong></DT>
+
+<DD>
+This parameter specifies the output address for this section of the effect. This address must be on a 4 sample (or 8 byte) boundary. </DD>
+</DL>
+
+<p>The following three parameters, along with the lpfilt coef parameter, are interpreted as signed 16-bit fractional fixed point values. The upper sixteen bits should be sign extended: </p>
+<DL>
+<DT>
+<strong>fbcoef:</strong></DT>
+
+<DD>
+This parameter specifies the coefficient of the feedback portion of the section. If this parameter is zero, no action takes place. </DD>
+</DL>
+
+<DL>
+<DT>
+<strong>ffcoef:</strong></DT>
+
+<DD>
+This parameter specifies the coefficient of the feedforward portion of the section. If this parameter is zero, no action takes place. If the chorus rate parameter is non-zero, because it is not possible to store the loaded output back into the delay line since it is not the same length), the ffcoef parameter controls how much of the input to add to the interpolated output allowing flange type effects. </DD>
+</DL>
+
+<DL>
+<DT>
+<strong>gain:</strong></DT>
+
+<DD>
+This parameter specifies how much of this primitives output to contribute to the total effect output, and can be thought of as a &QUOT;tap&QUOT; value. If zero, no multiply is performed. Note that at least one section of the effect must have a non-zero <a href="../../keywords/index/data/audio.htm#gain value" target="keywords">gain value</a> for the effect to be heard. If no section of an effect has a non-zero gain value, then no effect output will be heard. 
+</DD>
+</DL>
+
+<DL>
+<DT>
+<strong>chorus rate:</strong></DT>
+
+<DD>
+This parameter specifies the modulation frequency of the output tap position of the delay line, i.e., how quickly the tap position will be modulated. The value of this parameter is (frequency/sample rate)*225. For example, a modulation frequency of .5Hz at a synthesizer sample rate of 44.1kHz would be (.5/44100)*33,554,432 = 380 </DD>
+</DL>
+
+<DL>
+<DT>
+<strong>chorus depth:</strong></DT>
+
+<DD>
+This parameter specifies the modulation depth, or pitch change, of the effect. The parameter is specified approximately in hundredths of a <a href="../../keywords/index/data/audio.htm#cent" target="keywords">cent</a>. So a modulation depth of +/-25 cents, or a quarter of a semitone, would be 2500. The approximation to cents is good over the range useful for musical chorusing and flanging, i.e., less than a few semitones. The error at 1 semitone (100 cents) is about 3 cents and at 3 semitones is about 30 cents. If you wish to know the exact value (in cents) of the modulation depth , use the following equation: </DD>
+
+<BR><A NAME="m17-00-00"></A>
+<BR><IMG SRC="gif/m17-00-00.gif" ALT="[Figure]" ></DL>
+
+<DL>
+<DT>
+<strong>lpfilt coef:</strong></DT>
+
+<DD>
+This parameter specifies the single pole low-pass filter coefficient. The derivation of this value as a function of frequency and sample rate can be found in numerous documents regarding signal processing, and is left as an exercise to the reader. Generate a table once and forget about it. Only positive values will actually be low-pass. Negative values will generate DC normalized boost at high frequencies causing possible overflow. </DD>
+</DL>
+
+<p>Armed with this knowledge about primitive parameters, let's look at some example effects: 
+<DL>
+<DT>
+<A NAME="f17-03"></A><strong>Figure 17-3 A simple echo effect</strong></DT>
+
+<DD>
+<IMG SRC="gif/f17-03.gif" ALT="[Figure 17-3]" ></DD>
+</DL>
+
+<p>The effect is a simple echo effect, and can be selected using AL_FX_ECHO, would be implemented using the following parameters.</p>
+
+<BLOCKQUOTE>
+<PRE>#define ms      *(((s32)((f32)44.1))&amp; ^ 0x7)
+param[0] = 1;   /* the number of sections in this effect */
+param[1] = 200 ms;      /* total allocated memory */
+param[2] = 0;   /* input is beginning of delay line */
+param[3] = 179 ms; /* output location on delay line */
+param[4] = 12000;       /* fbcoef of .36 */
+param[5] = 0;   /* no feedforward coefficient */
+param[6] = 0x7fff;      /* full gain 1.0 - 1/2~15 */
+param[7] = 0;   /* no chorus rate */
+param[8] = 0;   /* no chorus depth */
+param[9] = 0;   /* no low-pass filter */</PRE>
+</BLOCKQUOTE>
+
+<p>This is, in fact, the echo effect implemented when AL_FX_ECHO is specified in the fxType field of the synthesizer configuration structure. </p>
+
+<P>Let's try something a little more interesting: </p>
+<DL>
+<DT>
+<A NAME="f17-04"></A><strong>Figure 17-4 A nested all-pass inside a comb effect</strong></DT>
+
+<DD>
+<IMG SRC="gif/f17-04.gif" ALT="[Figure 17-4]" ></DD>
+</DL>
+<p>In this effect, we have used the more compact Gardner-style notation. Note that section 2 is &QUOT;nested&QUOT; inside section 1. This effect which is the AL_FX_SMALLROOM effect, would be specified using the following parameters: </p>
+<BLOCKQUOTE>
+<PRE>param[0] = 3;      /* the number of sections in this effect */
+param[1] = 100 ms;      /* total allocated memory */
+/* SECTION 1 */
+param[2] = 0;           /* input */
+param[3] = 54ms;        /* output */
+param[4] = 9830;        /* fbcoef */
+param[5] = -9830;       /* ffcoef */
+param[6] = 0;           /* no out gain */
+param[7] = 0;           /* no chorus rate */
+param[8] = 0;           /* no chorus delay */
+param[9] = 0;           /* no low pass filter */
+/* SECTION 2 */
+param[10] = 19 ms;      /* input */
+param[11] = 38 ms;      /* output */
+param[12] = 3276;       /* fbcoef */
+param[13] = -3276;      /* ffcoef */
+param[14] = 0x3fff;     /* gain */
+param[15] = 0;          /* chorus rate */
+param[16] = 0;          /* chorus depth */
+param[17] = 0;          /* low-pass filter */
+/* SECTION 3 */
+param[18] = 0;          /* input */
+param[19] = 60 ms;      /* output */
+param[20] = 5000;       /* fbcoef */
+param[21] = 0;          /* ffcoef */
+param[22] = 0;          /* gain */
+param[23] = 0;          /* chorus rate */
+param[24] = 0;          /* chorus depth */
+param[25] = 0x5000;     /* low-pass filter */</PRE>
+</BLOCKQUOTE>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="09"></A>
+<H2>
+17.4.9 Summary of Driver Functions</H2>
+
+<TABLE BORDER >
+<CAPTION><A NAME="t17-05"></A><strong>Table 17-5 Synthesizer Functions</strong></CAPTION>
+
+<TR>
+<TH>Function</TH>
+
+<TH>Description</TH>
+</TR>
+
+<TR>
+<TD><A HREF="../../n64man/al/alSynNew.htm">alSynNew()</A></TD>
+
+<TD>Opens and initializes the synthesizer driver.</TD>
+</TR>
+
+<TR>
+<TD><A HREF="../../n64man/al/alSynDelete.htm">alSynDelete()</A></TD>
+
+<TD>Deletes the synthesizer driver.</TD>
+</TR>
+
+<TR>
+<TD><A HREF="../../n64man/al/alSynAddPlayer.htm">alSynAddPlayer()</A></TD>
+
+<TD>Adds a client player to the synthesizer.</TD>
+</TR>
+
+<TR>
+<TD><A HREF="../../n64man/al/alSynRemovePlayer.htm">alSynRemovePlayer()</A></TD>
+
+<TD>Removes a player from the synthesizer.</TD>
+</TR>
+
+<TR>
+<TD><A HREF="../../n64man/al/alSynAllocVoice.htm">alSynAllocVoice()</A></TD>
+
+<TD>Allocates and returns a synthesizer (virtual) voice.</TD>
+</TR>
+
+<TR>
+<TD><A HREF="../../n64man/al/alSynFreeVoice.htm">alSynFreeVoice()</A></TD>
+
+<TD>Deallocates a synthesizer (virtual) voice.</TD>
+</TR>
+
+<TR>
+<TD><A HREF="../../n64man/al/alSynStartVoice.htm">alSynStartVoice()</A></TD>
+
+<TD>Starts a virtual voice playing.</TD>
+</TR>
+
+<TR>
+<TD><A HREF="../../n64man/al/alSynStartVoiceParams.htm">alSynStartVoiceParams()</A></TD>
+
+<TD>Starts a virtual voice with the specified parameters.</TD>
+</TR>
+
+<TR>
+<TD><A HREF="../../n64man/al/alSynStopVoice.htm">alSynStopVoice()</A></TD>
+
+<TD>Stops a virtual voice from playing.</TD>
+</TR>
+
+<TR>
+<TD><A HREF="../../n64man/al/alSynSetVol.htm">alSynSetVol()</A></TD>
+
+<TD>Sets the volume for the specified voice.</TD>
+</TR>
+
+<TR>
+<TD><A HREF="../../n64man/al/alSynSetPitch.htm">alSynSetPitch()</A></TD>
+
+<TD>Sets the pitch for the specified voice.</TD>
+</TR>
+
+<TR>
+<TD><A HREF="../../n64man/al/alSynSetPan.htm">alSynSetPan()</A></TD>
+
+<TD>Sets the pan values for the specified voice.</TD>
+</TR>
+
+<TR>
+<TD><A HREF="../../n64man/al/alSynSetFXMix.htm">alSynSetFXMix()</A></TD>
+
+<TD>Sets the wet/dry/effects/mix for the specified voice.</TD>
+</TR>
+
+<TR>
+<TD><A HREF="../../n64man/al/alSynSetPriority.htm">alSynSetPriority()</A></TD>
+
+<TD>Sets the priority of the specified virtual voice.</TD>
+</TR>
+
+<TR>
+<TD><A HREF="../../n64man/al/alSynGetPriority.htm">alSynGetPriority()</A></TD>
+
+<TD>Returns the priority of the specified virtual voice.</TD>
+</TR>
+
+<TR>
+<TD><A HREF="../../n64man/al/alSynAllocFX.htm">alSynAllocFX()</A></TD>
+
+<TD>Allocates a new effect of the specified type to the specified bus.</TD>
+</TR>
+
+<TR>
+<TD><A HREF="../../n64man/al/alSynFreeFX.htm">alSynFreeFX()</A></TD>
+
+<TD>Removes from the bus for the specified effect.</TD>
+</TR>
+
+<TR>
+<TD><A HREF="../../n64man/al/alSynGetFXRef.htm">alSynGetFXRef()</A></TD>
+
+<TD>Returns a pointer to the FX structure.</TD>
+</TR>
+
+<TR>
+<TD><A HREF="../../n64man/al/alSynSetFXParam.htm">alSynSetFXParam()</A></TD>
+
+<TD>Currently has no effect. </TD>
+</TR>
+</TABLE>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR>
+</BODY>
+</HTML>

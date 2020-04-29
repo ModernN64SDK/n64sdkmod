@@ -1,0 +1,66 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.>
+<TITLE>gSPSelectBranchDL</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>gSPSelectBranchDL<FONT size="+0"> [Macro]</H1>
+
+<p><b>Function</b></font></p>
+
+<p>gSPSelectBranchDL</p>
+<P>
+<i>Conditionally branches the display list</i>
+</P>
+<p><b>Syntax</b></font></p>
+<p>
+<PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gs2dex.htm">gs2dex.h</A> */
+gSPSelectBranchDL(Gfx *gdl, Gfx *bdl, u8 sid, u32 flag, u32 mask)
+gsSPSelectBranchDL(         Gfx *bdl, u8 sid, u32 flag, u32 mask)</CODE></PRE></p>
+
+<p><b>Arguments</b></font></p>
+<p>
+<DL>
+  <DT><B>gdl</B>
+  <DD>the pointer to the graphics display list. 
+  <DT><B>bdl</B>
+  <DD>the pointer to the display list branch. 
+  <DT><B>sid</B>
+  <DD>the status ID (0, 4, 8 or 12). 
+  <DT><B>flag</B>
+  <DD>the status flag. 
+  <DT><B>mask</B>
+  <DD>the status mask. 
+</DL></p>
+<p><b>Description</b></font></p>
+<P>
+Using a method similar to the texture loading decision process, this macro evaluates the status (status ID) and then branches to another display list according to the True/False result. The macro uses the following processes to decide whether or not to branch to the other display list: 
+<ul>
+<li>Checks whether (Status[<B>sid</B>] &amp; <B>mask</B>) == <B>flag</B>.</li>
+<li>If the result is true, the macro terminates without doing anything.</li>
+<li>If the result is false, the macro updates Status[<B>sid</B>] so Status[<B>sid</B>] = (Status[<B>sid</B>] &amp; ~<B>mask</B>) | (<B>flag</B> &amp; <B>mask</B>) and branches to the display list specified by <B>bdl</B>.</li>
+</ul>
+<P>
+The status region is set using gSPSetStatus (see the "4.7.1 gSPSetStatus" in the Readme of the latest version of the S2DEX microcode). 
+</P>
+<P>
+This macro differs from <A HREF="gSPSelectDL.htm">gSPSelectDL</A> in that the display list to be used is not pushed on the calling stack. In other words, this macro's call is a "jump" and not a "call" like the <A HREF="gSPSelectDL.htm">gSPSelectDL</A> macro. Both macros are used to link long lists. 
+</P>
+<p><b>Note</b></font></p>
+<P>
+Unlike <A HREF="gSPSelectDL.htm">gSPSelectDL</A>, there is no return to the calling display list even when the target display list after the branch is completed. 
+</P>
+<p><b>See Also</b></font></p>
+<P>
+<A HREF="gSPSelectDL.htm">gSPSelectDL</A>
+</P>
+<p><b>Revision History</b></font></p>
+<P>
+02/01/99  Entirely revised.
+</P>
+</BODY>
+</HTML>

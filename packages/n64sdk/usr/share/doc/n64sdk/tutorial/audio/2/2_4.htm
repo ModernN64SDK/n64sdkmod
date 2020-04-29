@@ -1,0 +1,85 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Audio-Chapter 2 AUDIO MANIPULATIONS BY THE PROGRAMMER</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/16/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<font style="font-size:12pt"><B>2.4  Using Synchronization Markers</B></FONT>
+<br>
+<P>
+You can use Sound Tools to set synchronization markers in songs.  Synchronization markers are meant for use by the programmer, and have no effect on the songs themselves.  They make it easier to synchronize audio with events on screen in the application.  In this section we explain how to use synchronization markers.<br><br>
+     There are two ways of using synchronization markers.  The first is to start playback from some place within the song using <tt>MusStartSongFromMarker</tt>.  This function starts the song from an arbitrary synchronization marker.
+<BR>
+<HR>
+<p><b>Start song from specified synchronization marker</b><br>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Function name:</TD>
+	<TD COLSPAN=2 ALIGN=LEFT VALIGN=TOP NOWRAP><tt>MusStartSongFromMarker</tt></TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Syntax:</TD>
+	<TD COLSPAN=2 ALIGN=LEFT VALIGN=TOP NOWRAP>musHandle MusStartSongFromMarker(void *addr, s32 marker)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Arguments: </TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP><b>addr</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Address of song</TD>
+</TR><TR>
+<TD>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP><b>marker</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>The number of the marker to start from (0 to 255)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Return value:</TD>
+	<TD COLSPAN=2 ALIGN=LEFT VALIGN=TOP NOWRAP>Sound handle value</TD>
+</TR></TABLE>
+<HR>
+<p>
+Be careful, because the system will hang if you specify a synchronization marker that does not exist here.
+</P>
+<P>
+ The other way of using synchronization markers is as signposts for the progress of a song, letting the programmer know where a song is and signaling that it is time to start some other program.  To utilize this method you must register a callback function with <tt>MusSetMarkerCallback</tt>.
+<BR>
+<HR>
+<p><b>Set a callback function for a synchronization marker</B><br>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Function name:</TD>
+	<TD COLSPAN=2 ALIGN=LEFT VALIGN=TOP NOWRAP><tt>MusSetMarkerCallback</tt></TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Syntax:</TD>
+	<TD COLSPAN=2 ALIGN=LEFT VALIGN=TOP NOWRAP>void MusSetMarkerCallback(void *callback)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Arguments: </TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP><b>callback</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Address of the callback function</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Return value:</TD>
+	<TD COLSPAN=2 ALIGN=LEFT VALIGN=TOP NOWRAP>None</TD>
+</TR></TABLE>
+<HR>
+</P>
+<P>
+Below is an example of a callback function registered for a synchronization marker:<br>
+<BR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR><TD>&nbsp;</TD><TD>
+<TABLE BORDER=1 CELLSPACING=0 CELLPADDING=4><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP><FONT COLOR="#000080"><PRE><CODE>musHandle target_handle;
+s32       target_marker;
+
+void CallBackProcess(musHandle handle, s32 marker)     
+{
+    if(handle==target_handle)
+               target_marker = marker;
+}</CODE></PRE></FONT>
+</TD>
+</TR></TABLE>
+</TD></TR></TABLE>
+</P>
+<P>
+Here target_handle and target_marker are global variables.  When the programmer specifies a sound handle in target_handle, the last passed synchronization marker is set in target_marker by the callback function.  The callback function is executed on an audio thread that has higher priority than the game thread, so be careful not to overlap processes. You can change the callback function by calling MusSetMarkerCallback again. You can release the callback function by calling this function with NULL set in the arguments.
+</P>
+<br>
+<br>
+</BODY>
+</HTML>

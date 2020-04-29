@@ -1,0 +1,50 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.
+  PWC- updated formatting
+  MAP- added links, updated format  
+-->
+<title>osCreateThread</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>osCreateThread</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p>osCreateThread, osDestroyThread</p>
+
+<p><i>Registers/unregisters a schedulable object</i></p>
+
+<h3>Syntax</h3>
+<p>
+<blockquote>
+    <pre>#include &lt;ultra64.h&gt;     /* <A HREF="../../header/ultra64.htm">ultra64.h</A> */
+    <pre>void osCreateThread(OSThread *t, OSId id, void (*entry)(void *),
+                void *arg, void *sp, OSPri pri);
+void osDestroyThread(OSThread *t);</pre>
+</blockquote></p>
+
+<h3>Description</h3>
+
+<p>Threads are the basic schedulable unit of the Nintendo 64 operating system. The OSThread data structure stores the context of the thread and acts as a handle by which the thread may be referenced by thread manipulation routines.</p>
+
+<p>The osCreateThread routine initializes the given thread pointed to by the <b>t</b> argument and puts the thread on an active queue so that it becomes known to the Nintendo 64 debugger (<a href="../tool/gvd.htm">gvd</a>). Threads are initialized in the stopped state. The thread will eventually be placed on the run queue by calling the <a href="osStartThread.htm">osStartThread</a> routine. The <b>id</b> argument is assigned to the thread by the application and is used solely by the debugger user interface to provide a more convenient handle to the thread than the thread structure address. <!--  -->When Thread Profiler is used, it is necessary to specify any number from 1-62.<!--  --> The procedure specified by the entry argument is jumped to when the thread is started, and this procedure is passed the single argument specified by the <b>arg</b> argument. Similarly, the stack is initialized to the location pointed to by the <b>sp</b> argument. Note that stacks grow backwards (towards smaller addresses) with the MIPS compiler tools. The memory region assigned to the stack must be a minimum in size of OS_MIN_STACKSIZE in bytes. The maximum size of the stack must be the sum of the stack frame sizes of its maximum procedure call depth plus 16. Stacks must also be 64-bit aligned, so they should be declared as 'long long int'. Use the <a href="../tool/stacktool.htm">stacktool</a> program to help compute stack sizes. The <b>pri</b> argument specifies a nondegradable priority value that must range from OS_PRIORITY_IDLE (0) to OS_PRIORITY_APPMAX (127). </p>
+
+<p>The <a href="osDestroyThread.htm">osDestroyThread</a> routine removes the given thread pointed to by the t argument from the active queue as well as any other queue the thread may be on. More specifically, after you call osDestroyThread if the thread was on the run queue, it is no longer runnable. If the thread was blocked on a message queue, it can no longer send or receive a message. If the argument is NULL, the dispatcher is called and the invoking (running) thread is not returned to the run queue. Unexpected results will occur if a destroyed thread is ever placed back on the run queue. </p>
+
+<h3>See Also</h3>
+
+<p><a href="osGetThreadId.htm">osGetThreadId</a>, <a
+href="osGetThreadPri.htm">osGetThreadPri</a>, <a
+href="osStartThread.htm">osStartThread</a>, <a
+href="osStopThread.htm">osStopThread</a>, and <a
+href="osYieldThread.htm">osYieldThread</a></p>
+<H3>Revision History</H3>
+<P>
+1999/04/30  Changed Format<br>
+1999/07/15  Added the explanation of restrictions when using thread profiler
+</P>
+
+</body>
+</html>

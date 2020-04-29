@@ -1,0 +1,630 @@
+<html>
+<head>
+<title>[N64 CITextureEditor] 2.Specifications</title>
+</head>
+<body>
+<FONT FACE="Arial" SIZE="-1">
+<p align="right"><a href="../ja/spec.html">Japanese</a></p>
+<h3>2. <font color=#008000>Specifications</font></h3>
+<ol>
+ <li><a href="spec.html#FILE">Files</a>
+ <ol>
+  <li><a href="spec.html#FILE_EDITABLE">Editable types of files</a>
+  <li><a href="spec.html#FILE_IMPORT">Importable types of files</a>
+  <li><a href="spec.html#FILE_EXPORT">Exportable types of files</a>
+ </ol>
+ <li><a href="spec.html#DIR">Directories</a>
+ <ol>
+  <li><a href="spec.html#DIR_TPF">TPF directory</a>
+  <li><a href="spec.html#DIR_TMF">TMF directory</a>
+  <li><a href="spec.html#DIR_TLF">TLF directory</a>
+ </ol>
+ <li><a href="spec.html#OBJECT">Objects</a>
+ <ol>
+  <li><a href="spec.html#OBJECT_PROJECT">Project</a>
+  <li><a href="spec.html#OBJECT_PICTURE">Picture</a>
+  <li><a href="spec.html#OBJECT_IMAGE">Image</a>
+  <li><a href="spec.html#OBJECT_PALETTE">Palette</a>
+ </ol>
+ <li><a href="spec.html#METHOD">Functions</a>
+ <ol>
+  <li><a href="spec.html#METHOD_EDIT">Editing functions</a>
+  <ol>
+   <li><a href="spec.html#METHOD_EDIT_PICTURE">Picture</a>
+   <li><a href="spec.html#METHOD_EDIT_PALETTE">Palette</a>
+   <li><a href="spec.html#METHOD_EDIT_IMAGE">Image</a>
+  </ol>
+  <li><a href="spec.html#METHOD_DRAW">Drawing functions</a>
+  <ol>
+   <li><a href="spec.html#METHOD_DRAW_PIXEL">Pixel</a>
+   <li><a href="spec.html#METHOD_DRAW_PEN">Pen</a>
+   <li><a href="spec.html#METHOD_DRAW_LINE">Line</a>
+   <li><a href="spec.html#METHOD_DRAW_BOX">Box</a>
+   <li><a href="spec.html#METHOD_DRAW_BOX_FILL">Box fill</a>
+   <li><a href="spec.html#METHOD_DRAW_CIRCLE">Circle</a>
+   <li><a href="spec.html#METHOD_DRAW_CIRCLE_FILL">Circle fill</a>
+   <li><a href="spec.html#METHOD_DRAW_PAINT">Paint</a>
+   <li><a href="spec.html#METHOD_DRAW_REPLACER">Replacer</a>
+   <li><a href="spec.html#METHOD_DRAW_SPUIT">Pick with right-click</a>
+  </ol>
+  <li><a href="spec.html#METHOD_VIEW">Viewing functions</a>
+  <ol>
+   <li><a href="spec.html#METHOD_VIEW_ZOOM">Zoom function</a>
+   <li><a href="spec.html#METHOD_VIEW_GRID">Grid display ON/OFF</a>
+   <li><a href="spec.html#METHOD_VIEW_TARGET">Preview function</a>
+   <li><a href="spec.html#METHOD_VIEW_PALETTE">Palette dialog bar ON/OFF</a>
+  </ol>
+  <li><a href="spec.html#METHOD_PLUGINS">Plug-In functions</a>
+  <ol>
+   <li><a href="spec.html#METHOD_PLUGINS_BMP">Import/Export Plug-in for BMP</a>
+   <li><a href="spec.html#METHOD_PLUGINS_RGB">Import/Export Plug-in for RGB</a>
+   <li><a href="spec.html#METHOD_PLUGINS_EXPORT_C">Export C plug-in</a>
+   <li><a href="spec.html#METHOD_PLUGINS_PREVIEW_ISVIEWER64">Preview IS-VIEWER64 plug-in</a>
+  </ol>
+ </ol>
+ <li><a href="spec.html#PLUGIN">Plug-In Interface</a>
+ <li><a href="spec.html#FORMAT">File Formats</a>
+ <ol>
+  <li><a href="spec.html#FORMAT_TPF">TPF format</a>
+  <li><a href="spec.html#FORMAT_TMF">TMF format</a>
+  <li><a href="spec.html#FORMAT_TLF">TLF format</a>
+ </ol>
+</ol>
+<hr>
+<ol>
+ <a name="FILE">
+ <li><b>Files</b>
+ <p>
+  TextureEditor can handle the following files:
+ </p>
+ <ol>
+  <a name="FILE_EDITABLE">
+  <li>Editable Types of Files
+  <p>
+  <table border=1>
+  <tr>
+   <td bgcolor=#c0c0c0 align=center nowrap><font face="arial" size="-1">
+    <a name="FILE_TPF">
+    Texture Project File<br>
+    (<font color=#ff0000><b>TPF</b></font>)
+   </font></td>
+   <td><font face="arial" size="-1">
+    <p>
+    A file that manages a number of "<a href="#OBJECT_PICTURE">pictures</a>," where texture image files (TMF) and texture lookup table files (TLF)are registered together.<br>
+    N64 CITextureEditor can only open 1 such file.<br>
+    </p>
+    <p>
+    Expressed as a Makefile-like texture file.<br>
+    </p>
+   </font></td>
+  </tr>
+  <tr>
+   <td bgcolor=#c0c0c0 align=center nowrap><font face="arial" size="-1">
+    <a name="FILE_TMF">
+   Texture Image File<br>
+    (<font color=#ff0000><b>TMF</b></font>)
+   </font></td>
+   <td><font face="arial" size="-1">
+    <p>
+    A file that handles the texture <a href="#OBJECT_IMAGE">image</a>.<br>
+    For a CI, if there is no color lookup table (if one is not attached) then the CI cannot be displayed.<br>
+    Currently, 4bit(16 color)/8bit(256 color) image files can be handled.
+    With N64 CITextureEditor various editing can be done.<br>
+    </p>
+    <p>
+    This file is an uncompressed binary image file.
+    </p>
+   </font></td>
+  </tr>
+  <tr>
+   <td bgcolor=#c0c0c0 align=center nowrap><font face="arial" size="-1">
+    <a name="FILE_TLF">
+    Texture Lookup Table File<br>
+    (<font color=#ff0000><b>TLF</b></font>)
+   </font></td>
+   <td><font face="arial" size="-1">
+    <p>
+    A file that handles CI texture colors.  It is also called the <a href="#OBJECT_PALETTE">palette</a><br>
+    Currently, 4bit (16 color)/8bit (256 color) palettes can be handled.
+    With N64 CITextureEditor various editing can be done.<br>
+    </p>
+    <p>
+    This file is an uncompressed binary image file.
+    </p>
+   </font></td>
+  </tr>
+  <tr>
+   <td bgcolor=#c0c0c0 align=center nowrap><font face="arial" size="-1">
+    <a name="FILE_BMP">
+    BMP File<br>
+    (<font color=#ff0000><b>BMP</b></font>)
+   </font></td>
+   <td><font face="arial" size="-1">
+    <p>
+    BMP files can be handled as TMF/TLF.
+    
+When the BMP file is read, the TLF is automatically extracted and created from the BMP.
+(The number of colors must be reduced to 16 or 256 colors.)
+Saving this with a TMF name makes it a TMF.  The reverse is also possible.
+    </p>
+    <p>
+    This file cannot be handled unless it is an uncompressed 4bit/8bit BMP file.
+    </p>
+   </font></td>
+  </tr>
+  </table>
+  </p>
+  <a name="FILE_IMPORT">
+  <li>Importable Types of Files
+  <p>
+The Import functions enable files of different formats to be inserted into an image during editing.<br>
+  These functions are added using the <a href="#METHOD_PLUGINS">plug-ins</a>.
+  </p>
+  <p>
+The Import plug-ins automatically perform color reduction (reduction to 16/256 colors) and paste the file into the currently edited TMF/TLF.
+  <font color=red>The current version does not perform this color reduction correctly.  The cause is currently being investigated.  If the conversion does not proceed well, we recommend using another image editing application to perform the color reduction, and then importing the file.</font>
+  </p>
+  <p>
+  <table border=1>
+   <tr>
+    <td bgcolor=#c0c0c0 align=center nowrap><font face="arial" size="-1"><a href="#METHOD_PLUGINS_BMP">BMP Files</a></font></td>
+    <td><font face="arial" size="-1">Windows (uncompressed) bitmap files</font></td>
+   </tr>
+   <tr>
+    <td bgcolor=#c0c0c0 align=center nowrap><font face="arial" size="-1"><a href="#METHOD_PLUGINS_RGB">RGB Files</a></font></td>
+    <td><font face="arial" size="-1">SGI (uncompressed) image files</font></td>
+   </tr>
+  </table>
+  </p>
+  <a name="FILE_EXPORT">
+  <li>Exportable Types of Files
+  <p>
+The Export functions enable an image file to be converted into another format.
+<br>
+  These are functions added from the <a href="#METHOD_PLUGINS">plug-ins</a>.
+  </p>
+  <p>
+  <table border=1>
+   <tr>
+    <td bgcolor=#c0c0c0 align=center nowrap><font face="arial" size="-1"><a href="#METHOD_PLUGINS_BMP">BMP Files</a></font></td>
+    <td><font face="arial" size="-1">Windows (uncompressed) bitmap files</font></td>
+   </tr>
+   <tr>
+    <td bgcolor=#c0c0c0 align=center nowrap><font face="arial" size="-1"><a href="#METHOD_PLUGINS_RGB">RGB Files</a></font></td>
+    <td><font face="arial" size="-1">SGI (uncompressed) image files</font></td>
+   </tr>
+   <tr>
+    <td bgcolor=#c0c0c0 align=center nowrap><font face="arial" size="-1"><a href="#METHOD_PLUGINS_EXPORT_C">C Language Source Files</a></font></td>
+    <td><font face="arial" size="-1">
+The texture image file is turned into a compilable C language source file using CC/GCC.
+This file is just a binary image converted into a source file, so it alone cannot actually be displayed on the screen.  It requires the use of a suitable display list.
+    </font></td>
+   </tr>
+  </table>
+  </p>
+ </ol>
+ <a name="DIR">
+ <li><b>Directories</b>
+ <p>
+ The following directories are used with N64 CITextureEditor:
+ </p>
+ <ol>
+  <a name="DIR_TPF">
+  <li>TPF Directory
+  <ul>
+   <p>
+   The directory with <a href="#FILE_TPF">.TPF</a> files.
+   </p>
+  </ul>
+  <a name="DIR_TMF">
+  <li>TMF Directory
+  <ul>
+   <p>
+   The directory with <a href="#FILE_TMF">.TMF</a> files.
+   </p>
+  </ul>
+  <a name="DIR_TLF">
+  <li>TLF Directory
+  <ul>
+   <p>
+   The directory with <a href="#FILE_TLF">.TLF</a> files.
+   </p>
+  </ul>
+ </ol>
+ <a name="OBJECT">
+ <li><b>Objects</b>
+ <p>
+ The following objects are handled by N64 CITextureEditor:
+ </p>
+ <ol>
+  <a name="OBJECT_PROJECT">
+  <li>Project
+  <ul>
+   <p>
+   A project manages <a href="#OBJECT_PICTURE">pictures</a> using the <a href="#FILE_TPF">TPF</a> file.<br>
+   N64 CITextureEditor can only edit one project at a time.<br>
+   </p>
+  </ul>
+  <a name="OBJECT_PICTURE">
+  <li>Picture
+  <ul>
+   <p>
+   A picture is an object comprising an 
+   <a href="#OBJECT_IMAGE">image</a> (<a href="#FILE_TMF">TMF</a>) and 
+   <a href="#OBJECT_PALETTE">palette</a> (<a href="#FILE_TLF">TLF</a>).<br>
+The <a href="#OBJECT_IMAGE">image</a> and <a href="#OBJECT_PALETTE">palette</a> can be referenced from another picture.<br>
+   This object is stored in the <a href="#OBJECT_PROJECT">project</a> (<a href="#FILE_TPF">TPF</a>)<br>
+   </p>
+  </ul>
+  <a name="OBJECT_IMAGE">
+  <li>Image
+  <ul>
+   <p>
+   An image is the <a href="#FILE_TMF">TMF</a>, the file with image data detached from the <a href="#OBJECT_PALETTE">palette</a>.<br>
+
+   This object can be referenced by a <a href="#OBJECT_PICTURE">picture</a>.<br>
+   Currently, only 4bit/8bit CI textures can be handled.
+   </p>
+  </ul>
+  <a name="OBJECT_PALETTE">
+  <li>Palette
+  <ul>
+   <p>
+   The palette is the <a href="#FILE_TLF">TLF</a>, the file with image data detached from the <a href="#OBJECT_IMAGE">image</a>.<br>
+
+
+   This object can be referenced by a <a href="#OBJECT_PICTURE">picture</a>.<br>
+   Currently, only lookup tables for 4bit/8bit CI textures can be handled.
+   </p>
+  </ul>
+ </ol>
+ <a name="METHOD">
+ <li><b>Functions</b>
+ <ol>
+  <a name="METHOD_EDIT">
+  <li>Editing Functions
+  <ol>
+   <a name="METHOD_EDIT_PICTURE">
+   <li><a href="#OBJECT_PICTURE">Pictures</a>
+   <p>
+   <font color=#ff0000>[Restricted]</font>
+   The picture editing functions do not support Undo/Redo and Cut & Paste.
+   </p>
+   <ol>
+    <a name="METHOD_EDIT_PICTURE_ADD">
+    <li>Add
+    <ul>
+     Selects <a href="#FILE_TMF">TMF</a> and <a href="#FILE_TMF">TLF</a> files with different names and adds them as a <a href="#OBJECT_PICTURE">picture</a> to the project.<br>
+    </ul>
+	<a name="METHOD_EDIT_PICTURE_EDIT">
+    <li>Edit
+    <ul>
+     This function can be used to change the <a href="#FILE_TMF">TMF</a> and <a href="#FILE_TMF">TLF</a> composition of the specified <a href="#OBJECT_PICTURE">picture</a>.<br>
+    </ul>
+	<a name="METHOD_EDIT_PICTURE_REMOVE">
+    <li>Remove
+    <ul>
+     Deletes the specified <a href="#OBJECT_PICTURE">picture</a>.<br>
+    </ul>
+   </ol>
+   <a name="METHOD_EDIT_PALETTE">
+   <li><a href="#OBJECT_PALETTE">Palettes</a>
+   <ol>
+    <a name="METHOD_EDIT_PALETTE_SELECT">
+    <li>Select
+    <ul>
+     Multiple <a href="#OBJECT_PALETTE">Palettes</a> can be selected when handling two or more <a href="#OBJECT_PALETTE">Palettes</a>.<br>
+     Single <a href="gui.html#UI_CTRL_PALETTE_BAR">Palette</a> can be selected by clicking on a <a href="gui.html#UI_CTRL_PALETTE_BAR">Palette</a> while click & drag operation of a mouse can extend the selected area.
+     
+	 
+    </ul>
+	<a name="METHOD_EDIT_PALETTE_UNDO">
+    <li>Undo
+    <ul>
+     Lets you undo a change and return the <a href="#OBJECT_PALETTE">palette</a> to its original form.
+     <!--memory limit-->The Undo buffer can hold up to 100 changes.
+    </ul>
+	<a name="METHOD_EDIT_PALETTE_REDO">
+    <li>Redo
+    <ul>
+     Lets you redo what was just undone.   
+
+    </ul>
+	<a name="METHOD_EDIT_PALETTE_COPY">
+    <li>Copy
+    <ul>
+    Copies the selected range to the clipboard.
+    </ul>
+	<a name="METHOD_EDIT_PALETTE_PASTE">
+    <li>Paste
+    <ul>
+     Takes the <a href="#OBJECT_PALETTE">palette</a> data that was copied to the clipboard and inserts it starting from the selected position (or the upper-left position if a rectangle was selected, pasting all that was in the clipboard irregardless of the size of the selected region).
+    </ul>
+   </ol>
+   <a name="METHOD_EDIT_IMAGE">
+   <li><a href="#OBJECT_IMAGE">Images</a>
+   <ol>
+    <a name="METHOD_EDIT_IMAGE_SELECT">
+    <li>Select rectangle
+    <ul>
+     Drag a rectangle to specify a region for editing.
+    </ul>
+	<a name="METHOD_EDIT_IMAGE_UNDO">
+    <li>Undo
+    <ul>
+    Lets you undo a change and return the <a href="#OBJECT_IMAGE">image</a> to its original form.
+     <!--memory limit-->The Undo buffer can hold up to 100 changes.
+    </ul>
+	<a name="METHOD_EDIT_IMAGE_REDO">
+    <li>Redo
+    <ul>
+     Lets you redo what was just undone.
+    </ul>
+	<a name="METHOD_EDIT_IMAGE_CUT">
+    <li>Cut
+    <ul>
+     Copies the selected region to the clipboard and then deletes it.
+    </ul>
+	<a name="METHOD_EDIT_IMAGE_COPY">
+    <li>Copy
+    <ul>
+     Copies the selected region to the clipboard.
+    </ul>
+	<a name="METHOD_EDIT_IMAGE_PASTE">
+    <li>Paste
+    <ul>
+     Inserts the <a href="#OBJECT_IMAGE">image</a> that was copied to the clipboard.<br>
+     A select frame is prepared corresponding to the copy size, so please decide on the position and size.<br>
+     Changing the size will enlarge or reduce the <a href="#OBJECT_IMAGE">image</a> to fit that size.
+     Pressing the Return key or clicking outside the range or switching operations will implement the paste. <br>
+     To cancel the paste, press the Escape key.
+    </ul>
+	<a name="METHOD_EDIT_IMAGE_FLIP_X">
+    <li>Flip vertically
+    <ul>
+     Flips the selected <a href="#OBJECT_IMAGE">image</a> range vertically (left-right).
+    </ul>
+	<a name="METHOD_EDIT_IMAGE_FLIP_Y">
+    <li>Flip horizontally
+    <ul>
+      Flips the selected <a href="#OBJECT_IMAGE">image</a> range horizontally (up-down).
+    </ul>
+   </ol>
+  </ol>
+  <a name="METHOD_DRAW">
+  <li>Drawing Functions
+  <ol>
+   <a name="METHOD_DRAW_PIXEL">
+   <li>Pixel
+   <ul>
+Draws one point.  The point is drawn with the color currently assigned to the pen.
+   </ul>
+   <a name="METHOD_DRAW_PEN">
+   <li>Pen
+   <ul>
+This is the "free draw" mode.  The line is drawn with the color currently assigned to the pen.
+   </ul>
+   <a name="METHOD_DRAW_LINE">
+   <li>Line
+   <ul>
+Draws a straight line.  The line is drawn with with the color currently assigned to the pen.
+   </ul>
+   <a name="METHOD_DRAW_BOX">
+   <li>Box
+   <ul>
+Draws a rectangle.  The rectangle is drawn with with the color currently assigned to the pen.
+   </ul>
+   <a name="METHOD_DRAW_BOX_FILL">
+   <li>Box fill
+   <ul>
+Draws a rectangle filled with the color currently assigned to the pen.
+   </ul>
+   <a name="METHOD_DRAW_CIRCLE">
+   <li>Circle
+   <ul>
+Draws a circular shape.  The circle is drawn with the color currently assigned to the pen.   </ul>
+   <a name="METHOD_DRAW_CIRCLE_FILL">
+   <li>Circle fill
+   <ul>
+    
+Draws a circle filled with the color currently assigned to the pen.
+   </ul>
+   <a name="METHOD_DRAW_PAINT">
+   <li>Paint
+   <ul>
+Fills the selected location with the color currently assigned to the pen.
+   </ul>
+   <a name="METHOD_DRAW_REPLACER">
+   <li>Replacer
+   <ul>
+    Replacer replaces the color of the selected area or the entire area with the color that is currently assigned to pen.<br>
+	It would be effective to use replacer when replacing the color of an area.<br>
+   </ul>
+   <a name="METHOD_DRAW_SPUIT">
+   <li>Pick with right-click
+   <ul>
+When this is ON, and when status is 1~8, picks up a color from the <a href="spec.html#OBJECT_IMAGE">image</a> and assigns it as the current color of the pen.   </ul>
+  </ol>
+  <a name="METHOD_VIEW">
+  <li>View Functions
+  <ol>
+   <a name="METHOD_VIEW_ZOOM">
+   <li>Zoom function
+   <ul>
+    Magnification can be 1x to 16x (100% ~ 1600%)
+   </ul>
+   <a name="METHOD_VIEW_GRID">
+   <li>Grid display ON/OFF
+   <ul>
+    Turns display of the 8x8 alignment grid ON/OFF.
+   </ul>
+   <a name="METHOD_VIEW_TARGET">
+   <li>Preview functions
+   <ul>
+When the IS-VIEWER64 is connected and the Preview function is ON, textures can be checked in real time on the console.<br>
+    This is a function added by the <a href="#METHOD_PLUGINS">plug-in</a>.
+    (See also: <a href="#METHOD_PLUGINS_PREVIEW_ISVIEWER64">IS-VIEWER64 Preview plug-in</a>)
+   </ul>
+   <a name="METHOD_VIEW_PALETTE">
+   <li>Palette dialog bar ON/OFF
+   <ul>
+    It turns the <a href="gui.html#UI_CTRL_PALETTE_BAR">Palette dialog bar</a> on/off.
+   </ul>
+  </ol>
+  <a name="METHOD_PLUGINS">
+  <li>Plug-in Functions
+  <p>
+  Plug-in functions expand the functionality of the application.  A plug-in module is the module which carries out that plug-in function.<br>
+  There is a <b>PlugIns</b> subdirectory in the application folder where these plug-in modules are stored.  When the application starts up, it automatically identifies these modules.<br>
+  (Details about the plug-ins can be viewed in the <a href="gui.html#UI_DLG_ABOUT">About dialog</a>.<br>
+  </p>
+  <p>
+  Here we explain about the four plug-ins that were introduced from the start.<br>
+  </p>
+  <ol>
+   <a name="METHOD_PLUGINS_IMPORT_BMP">
+   <a name="METHOD_PLUGINS_BMP">
+   <li>BMP Import/Export plug-ins (<font color=#008000>MSBMP.DLL</font>)
+   <ul>
+    <font color=#008000>BMP Import</font><br>
+    This function can be used to paste a Microsoft <a href="#FILE_IMPORT">BMP file</a> into the image currently being edited.<br>
+If a color palette is already assigned to the image currently being edited, the BMP file is blended and pasted.<br>
+(At this time, the contents of the palette are forcibly replaced, so if the Escape key is pressed to interrupt the paste, the palette is nevertheless changed.)<br>
+If no palette has been assigned yet, then a new palette is created and assigned to the image.<br>
+    <font color=#008000>BMP Export</font><br>
+     This function can be used to save TMF/TLF as an uncompressed BMP.<br>
+   </ul>
+   <a name="METHOD_PLUGINS_IMPORT_RGB">
+   <a name="METHOD_PLUGINS_RGB">
+   <li>RGB Import/Export plug-ins(<font color=#008000>SGIRGB.DLL</font>)
+   <ul>
+    <font color=#008000>RGB Import</font><br>
+   This function can be used to paste an SGI <a href="#FILE_IMPORT">RGB file</a> into the image currently being edited.<br><br>
+   Functionally, this plug-in works the same as the <a href="#METHOD_PLUGINS_IMPORT_BMP">BMP Import plug-in</a>.<br>
+    <font color=#008000>RGB Export</font><br>
+    This function can be used to save TMF/TLF as an uncompressed RGB.<br>
+   </ul>
+   <a name="METHOD_PLUGINS_EXPORT_C">
+   <li>C Export plug-in (<font color=#008000>TMFtoC.DLL</font>)
+   <ul>
+Saves the currently edited image as a C language file that can be used by Nintendo 64.<br>
+A dialog opens to set the file specifications and the scope and label.<br>
+    <ol>
+     <li>Scope is determined by <font color=#808000>extern/static</font>.
+     <ul>
+      When "extern" is selected, a source file (.c) and header file (.h) are output, and they can used as a compiled & linked module.<br>
+      When "static" is selected, only a source file (.c) is output, so you need add #include "texture1.c" etc. to a referenced source and combine this with the source file.<br>
+     </ul>
+     <li><font color=#808000>const</font> is the read-only specifier.  Since the data is always in ROM, please check this item.<br>
+     <li>The <font color=#808000>64bit alignment</font> check box specification only works for the GNU C compiler.
+     <li><font color=#808000>label</font> is the picture label name.
+     <ul>
+For related labels, the label is automatically created by appending a character string to the base name specified by the user.
+     </ul>
+    </ol>
+   </ul>
+   <a name="METHOD_PLUGINS_PREVIEW_ISVIEWER64">
+   <li>IS-VIEWER64 Preview plug-in (<font color=#008000>Preview.DLL</font>)
+   <ul>
+This plug-in enables the currently edited texture to be previewed via the IS-VIEWER64.<br>
+    A number of basic operations and menus are provided on the IS-VIEWER64 side.<br>
+    <p>
+    Basic Operations
+    <ul>
+     <li>L-R -- Switch menu pages
+     <li>Z trigger -- Menu display ON/OFF
+     <li>Control pad -- Move menu items
+     <li>A/B Buttons -- Change values one at a time
+     <li>Analog stick UP/DOWN -- Make big change to values
+     <li>C Control Pad UP/DOWN -- Set value to maximum, minimum
+	 <li>C Control Pad LEFT/RIGHT -- Switch picture whose parameters are being manipulated
+    </ul>
+    Menus
+    <ul>
+     <li>Texture Menu
+     <ul>
+      <li><font color=#008080>Offset X,Y</font> . . . Texture's offset position (X=-640~640/Y=-480~480: X,Y independent)
+      <li><font color=#008080>Scale X,Y</font> . . . Texture's scale (00.10~10.00: X,Y independent)
+      <li><font color=#008080>Scale X&Y</font> . . . Texture's scale (00.10~10.00: X,Y simultaneous) (Common to all pictures)
+      <li><font color=#008080>Back Ground</font> . . . Background color (Common to all pictures)
+     </ul>
+     <li>Filter Menu
+     <ul>
+      <li><font color=#008080>Filter</font>
+      <ol>
+       <li>G_TF_POINT . . . Point sampling
+       <li>G_TF_AVERAGE . . . Average filtering
+       <li>G_TF_BILERP . . . Bilinear interpolation filtering
+      </ol>
+     </ul>
+     <li>Combiner Menu
+     <ul>
+      <li><font color=#008080>Mode</font>
+      <ol>
+       <li>G_CC_DECALRGBA . . . Transfer the design as-is
+       <li>G_CC_PRIMITIVE . . . Transfer the primitive color
+       <li>G_CC_BLENDPE . . . Blend primitive color and environment color
+
+      </ol>
+      <li><font color=#008080>Primitive</font> . . . Primitive color 
+      <li><font color=#008080>Environment</font> . . . Environment color
+     </ul>
+     <li>Blender Menu
+     <ul>
+      <li><font color=#008080>Render Mode</font>
+      <ol>
+       <li>G_RM_AA_ZB_OPA_SURF . . . Opaque surface (Anti-aliased Z buffer algorithm) 
+       <li>G_RM_AA_ZB_XLU_SURF . . . Translucent surface (Anti-aliased Z buffer algorithm)
+       <li>G_RM_AA_ZB_TEX_EDGE . . . Texture edge mode (Anti-aliased Z buffer algorithm)
+      </ol>
+     </ul>
+    </ul>
+   </ul>
+  </ol>
+ </ol>
+ <a name="PLUGIN">
+ <li><b>Plug-in Interface</b>
+ <ul>
+  <p>
+Click below to reference the documentation for the development of plug-ins.
+  </p>
+  <p>
+   <a href="plugin.html">TextureEditor Plug-In SDK</a>
+  </p>
+ </ul>
+ <a name="FORMAT">
+ <li><b>File format</b>
+ <p>
+ <ol>
+  <p>
+Click below to reference the documentation regarding the file formats handled by the N64 CITextureEditor.
+  </p>
+  <a name="FORMAT_TPF">
+  <li><a href="tpf.html">TPF format</a>
+  <a name="FORMAT_TMF">
+  <li><a href="tmf.html">TMF format</a>
+  <a name="FORMAT_TLF">
+  <li><a href="tlf.html">TLF format</a>
+ </ol>
+</ol>
+<p align="right"><a href="../ja/spec.html">Japanese</a></p>
+<hr>
+<table width=100%>
+ <tr>
+  <td valign=top>
+   <a href="index.html">Return</a>
+  </td>
+  <td valign=top align=right nowrap>
+   <font size=-1>
+   Copyright (C) 1998-1999 NINTENDO Co.,Ltd.<br>
+   Copyright (C) 1998-1999 NINTENDO OF AMERICA, Inc.<br>
+   Copyright (C) 1998-1999 MONEGI CORPORATION.<br>
+   Copyright (C) 1998-1999 INTELLIGENT SYSTEMS Co.,Ltd.<br>
+   All rights reserved.<br>
+   </font>
+
+  </td>
+ </tr>
+</table>
+</body>
+</html>

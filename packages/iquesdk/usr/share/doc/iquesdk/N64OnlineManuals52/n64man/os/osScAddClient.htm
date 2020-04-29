@@ -1,0 +1,54 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits
+MAP- added links, updated format>
+<title>osScAddClient</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>osScAddClient</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p><i>Adds a client to the RCP task scheduler</i></p>
+
+<h3>Syntax</h3>
+<p>
+<blockquote>
+    <pre>#include &lt;ultra64.h&gt;     /* <A HREF="../../header/ultra64.htm">ultra64.h</A> */
+void osScAddClient(OSSched *s, OSScClient *c, OSMesgQueue *msgQ);</pre></blockquote></p>
+
+<h3>Arguments</h3>
+<p>
+<dl>
+    <dt><strong>s</strong></dt>
+    <dd>the pointer to the scheduler structure <br>
+        <br>
+        </dd>
+    <dt><strong>c</strong></dt>
+    <dd>the pointer to the client structure to add to the scheduler's list <br>
+        <br>
+        </dd>
+    <dt><strong>msgQ</strong></dt>
+    <dd>the message queue on which to send "task done" messages<br>
+        <br>
+        </dd>
+</dl></p>
+
+<h3>Description</h3>
+
+<p>The Scheduler shows the VI manager and receives all retrace messages. However, clients of the Scheduler can receive a copy of the retrace message by providing a message queue when they sign in. This is accomplished by calling the <tt>osScAddClient</tt> function.</p>
+
+<p>One of the arguments to this call is the message queue msgQ on which you want to receive retrace messages. Make sure that the queue is big enough if you do not want to lose messages because the Scheduler does not block when the queue is full. </p>
+
+<h3>See Also</h3>
+
+<p><a href="osCreateScheduler.htm">osCreateScheduler</a>, <a
+href="osScGetTaskQ.htm">osScGetTaskQ</a></p>
+<H3>Revision History</H3>
+<P>
+1999/04/30 Changed format
+</P>
+
+</body>
+</html>

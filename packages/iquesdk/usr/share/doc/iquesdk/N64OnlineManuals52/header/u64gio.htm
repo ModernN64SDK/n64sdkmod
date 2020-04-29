@@ -1,0 +1,115 @@
+<HTML><HEAD>
+<TITLE></TITLE>
+</HEAD></BODY>
+<PRE>#ifndef __SYS_U64GIO_H__
+#define __SYS_U64GIO_H__
+
+<FONT COLOR="red">/*
+ * Copyright 1995, Silicon Graphics, Inc.
+ * All Rights Reserved.
+ *
+ * This is UNPUBLISHED PROPRIETARY SOURCE CODE of Silicon Graphics, Inc.;
+ * the contents of this file may not be disclosed to third parties, copied or
+ * duplicated in any form, in whole or in part, without the prior written
+ * permission of Silicon Graphics, Inc.
+ *
+ * RESTRICTED RIGHTS LEGEND:
+ * Use, duplication or disclosure by the Government is subject to restrictions
+ * as set forth in subdivision (c)(1)(ii) of the Rights in Technical Data
+ * and Computer Software clause at DFARS 252.227-7013, and/or in similar or
+ * successor clauses in the FAR, DOD or NASA FAR Supplement. Unpublished -
+ * rights reserved under the Copyright Laws of the United States.
+ *
+ */</FONT>
+
+#define DEV_U64	&quot;/dev/u64&quot;
+#define DEV_U64_PRINT &quot;/dev/u64_print&quot;
+#define DEV_U64_DEBUG &quot;/dev/u64_debug&quot;
+#define DEV_U64_LOG &quot;/dev/u64_logging&quot;
+#define DEV_U64_DATA &quot;/dev/u64_data&quot;
+#define DEV_U64_FAULT &quot;/dev/u64_fault&quot;
+#define DEV_U64_KDEBUG &quot;/dev/u64_kdebug&quot;
+#define DEV_U64_PROFILE &quot;/dev/u64_profile&quot;
+<FONT COLOR="red">/*
+ * ioctls
+ */</FONT>
+#define U64IOC		('u'&lt;&lt;24|'6'&lt;&lt;16)
+#define U64IOCTL(x)	(U64IOC|x)
+
+#define U64_RESET	U64IOCTL(1)	<FONT COLOR="red">/* arg: 0 - deassert, 1 - assert */</FONT>
+#define U64_WRITE	U64IOCTL(2)
+#define U64_READ	U64IOCTL(3)
+#define U64_SAFE_WRITE	U64IOCTL(4)
+#define U64_SAFE_READ	U64IOCTL(5)
+#define U64_LISTEN	U64IOCTL(6)	<FONT COLOR="red">/* arg is register value for listen */</FONT>
+#define	U64_SIGNAL	U64IOCTL(7)	<FONT COLOR="red">/* arg is register value for signal */</FONT>
+
+#if defined(_LANGUAGE_C) || defined(_LANGUAGE_C_PLUS_PLUS)
+
+<FONT COLOR="red">/* structure for WRITE  &amp; SAFE_WRITE*/</FONT>
+typedef struct u64_write_arg {
+    void *buffer;
+    long ramrom_addr;
+    int nbytes;
+} u64_write_arg_t;
+
+<FONT COLOR="red">/* structure for READ &amp; SAFE_READ */</FONT>
+typedef struct u64_read_arg {
+    void *buffer;
+    long ramrom_addr;
+    int nbytes;
+} u64_read_arg_t;
+
+<FONT COLOR="red">/* NOTE: if game is in reset, don't interrupt the game */</FONT>
+
+struct u64_board {
+    volatile unsigned int	product_id_reg;	<FONT COLOR="red">/* bf400000, read only */</FONT>
+    unsigned char 			fill_0[0x3fc];
+    volatile unsigned int	reset_control;	<FONT COLOR="red">/* bf400400, write only */</FONT>
+    unsigned char 			fill_1[0x3fc];
+    volatile unsigned int	cart_interrupt;	<FONT COLOR="red">/* bf400800, read/write */</FONT>
+    unsigned char 			fill_3[0x1fc];
+    volatile unsigned int	dram_page_cntrl;<FONT COLOR="red">/* bf400a00, read/write */</FONT>
+    unsigned char 			fill_2[0x1fc]; 
+    volatile unsigned int	gio_interrupt;	<FONT COLOR="red">/* bf400c00, read only */</FONT> 
+    unsigned char 			fill_4[0x1fc]; 
+    volatile unsigned int	gio_sync;	<FONT COLOR="red">/* bf400e00, read only */</FONT>
+};
+
+#endif <FONT COLOR="red">/* defined(_LANGUAGE_C) || defined(_LANGUAGE_C_PLUS_PLUS) */</FONT>
+
+<FONT COLOR="red">/* 
+ * _U64_PRODUCT_ID_REG - GIO bus Product ID register 
+ */</FONT>
+#define	_U64_PRODUCT_ID_MASK		0x0000007f
+#define	_U64_PRODUCT_ID_VALUE		0x00000015
+
+<FONT COLOR="red">/*
+ * reset control register has two bits defined
+ */</FONT>
+#define _U64_RESET_CONTROL_NMI		0x4
+#define _U64_RESET_CONTROL_RESET	0x2
+
+<FONT COLOR="red">/*
+ * Only look at the least significant 5 bits of the sync and interrupt
+ * registers.  Future revs of the firmware may provide more.
+ */</FONT>
+
+#define _U64_REGMASK			0x1f
+
+<FONT COLOR="red">/*
+ * 16MB available, one meg at a time, selected by the 4 bit 
+ * dram_page_cntrl register setting.
+ */</FONT>
+#define U64_MEM_SIZE			0x100000
+
+<FONT COLOR="red">/*
+ * Declare size of gio-addressable memory to mmap, and provide the base
+ * physical address so that clients who want to mmap() may do so.
+ */</FONT>
+#define U64_GIOBUS_SIZE	0x200000	<FONT COLOR="red">/* 2 MB */</FONT>
+#define U64_GIOBUS_BASE 0x1f400000
+
+#endif <FONT COLOR="red">/* __SYS_U64GIO_H__ */</FONT>
+</PRE>
+</BODY>

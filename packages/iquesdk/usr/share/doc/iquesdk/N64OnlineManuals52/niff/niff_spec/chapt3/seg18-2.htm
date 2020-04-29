@@ -1,0 +1,400 @@
+<HTML>
+<HEAD>
+<TITLE>Chapter 3 Binary Format</TITLE>
+</HEAD>
+<BODY LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff">
+
+<font face="arial" size="-1">
+<b><font size="3">Chapter 3 Binary Format</b></font>
+<HR>
+
+<b>3-18 CamList</b>
+<P>
+<u>2. Cam Area</u>
+
+<p>
+<table border="1" cellpadding="3" cellspacing="3">
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+cam_tag
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+this_cam_index
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+cam_size
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+cam_name_index
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+cam_type
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+float
+</td>
+<td><font face="arial" size="-1">
+cam_near_clip
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+float
+</td>
+<td><font face="arial" size="-1">
+cam_far_clip
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+float
+</td>
+<td><font face="arial" size="-1">
+cam_right_clip
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+float
+</td>
+<td><font face="arial" size="-1">
+cam_left_clip
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+float
+</td>
+<td><font face="arial" size="-1">
+cam_top_clip
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+float
+</td>
+<td><font face="arial" size="-1">
+cam_bottom_clip
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+float
+</td>
+<td><font face="arial" size="-1">
+cam_fovy
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+float
+</td>
+<td><font face="arial" size="-1">
+cam_aspect
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+float
+</td>
+<td><font face="arial" size="-1">
+cam_scale
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+cam_lookat_obj
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+cam_eye_obj
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+cam_up_obj
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+nintendo_extension_block_size
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+user_extension_block_size
+</td>
+</tr>
+<tr>
+<td colspan="2"><font face="arial" size="-1">
+<center>
+NintendoExtensionBlock
+</center>
+</td>
+</tr>
+<tr>
+<td colspan="2"><font face="arial" size="-1">
+<center>
+UserExtensionBlock
+</center></td></tr>
+</table>
+
+<p>
+Figure: Cam Area Memory Map
+
+<p>
+<table border="1" cellpadding="3" cellspacing="3">
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 cam_tag
+</td>
+<td>
+<font face="arial" size="-1">
+Tag indicating Cam. Set the following.
+<pre><font face="courier" size="2"><b>TAG_CAM&#9;0x000e0100</b></pre></font>
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 this_cam_index
+</td>
+<td>
+<font face="arial" size="-1">
+Index number of Cam
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 cam_size
+</td>
+<td>
+<font face="arial" size="-1">
+Size of Cam
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 cam_name_index
+</td>
+<td>
+<font face="arial" size="-1">
+Index number of camera name in NameList
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+<a href="../chapt5/seg1.htm#CAM_TYPE">u32 cam_type</a>
+</td>
+<td>
+<font face="arial" size="-1">
+Specifies the camera type. The following are currently defined. 
+<pre><font face="courier" size="2"><b>CAM_TYPE_PERSP&#9;0x00000000
+CAM_TYPE_ORTHO&#9;0x00000001</b></pre></font>
+<P>
+CAM_TYPE_PERSP is a perspective camera.<p>
+CAM_TYPE_ORTHO is an ortho camera.
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+float cam_near_clip
+</td>
+<td>
+<font face="arial" size="-1">
+near clipping plane
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+float cam_far_clip
+</td>
+<td>
+<font face="arial" size="-1">
+far clipping plane
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+float cam_right_clip
+</td>
+<td>
+<font face="arial" size="-1">
+right clipping plane
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+float cam_left_clip
+</td>
+<td>
+<font face="arial" size="-1">
+left clipping plane
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+float cam_top_clip
+</td>
+<td>
+<font face="arial" size="-1">
+top clipping plane
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+float cam_bottom_clip
+</td>
+<td>
+<font face="arial" size="-1">
+bottom clipping plane
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+float cam_fovy
+</td>
+<td>
+<font face="arial" size="-1">
+fovy value
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+float cam_aspect
+</td>
+<td>
+<font face="arial" size="-1">
+aspect value
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+flaot cam_scale
+</td>
+<td>
+<font face="arial" size="-1">
+scale value
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 cam_lookat_obj
+</td>
+<td>
+<font face="arial" size="-1">
+ObjList index of camera's close-up point of view Obj.
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 cam_eye_obj
+</td>
+<td>
+<font face="arial" size="-1">
+ObjList index of camera's point of view Obj.
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 cam_up_obj
+</td>
+<td>
+<font face="arial" size="-1">
+ObjList index of camera's upward-facing Obj.
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 nintendo_extension_block_size
+</td>
+<td>
+<font face="arial" size="-1">
+Nintendo extension block size
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 user_extension_block_size
+</td>
+<td>
+<font face="arial" size="-1">
+User extension block size
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+NintendoExtensionBlock
+</td>
+<td>
+<font face="arial" size="-1">
+Nintendo extension block
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+UserExtensionBlock
+</td>
+<td>
+<font face="arial" size="-1">
+User extension block</td>
+</tr>
+</table>
+
+
+<p>
+
+
+<hr>
+
+<p align="right"><a href="../index.htm">
+<img src="../../../gif/index.gif"
+border="0" width="65" height="17"></a>
+&nbsp; <a href="./seg19.htm">
+<img src="../../../gif/next.gif"
+border="0" width="65" height="17"></a></p>
+
+</body>
+</html>
+
+

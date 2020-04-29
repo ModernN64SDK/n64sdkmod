@@ -1,0 +1,161 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Audio-Chapter 2 AUDIO MANIPULATIONS BY THE PROGRAMMER</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/16/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<font style="font-size:12pt"><B>2.5  Pause Functions</B></FONT>
+<br>
+<P>
+ The MUS library has functions for temporarily stopping and restarting songs and sound effects.  You pause the audio by calling <tt>MusHandlePause</tt>, and restart the audio by calling <tt>MusHandleUnPause.</tt>
+<HR>
+<p><b>Pause using sound handle</B><br>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Function name: </TD>
+	<TD COLSPAN=2 ALIGN=LEFT VALIGN=TOP NOWRAP><tt>MusHandlePause</tt></TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Syntax: </TD>
+	<TD COLSPAN=2 ALIGN=LEFT VALIGN=TOP NOWRAP>s32 MusHandlePause(musHandle handle)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Arguments:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP><b>handle</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Sound handle</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Return value:</TD>
+	<TD COLSPAN=2 ALIGN=LEFT VALIGN=TOP NOWRAP>0&nbsp;&nbsp;Failure<BR>Non-zero                  Success</TD>
+</TR></TABLE>
+<HR>
+<p><b>Release pause using sound handle</B><br>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Function name: </TD>
+	<TD COLSPAN=2 ALIGN=LEFT VALIGN=TOP NOWRAP><tt>MusHandleUnPause</tt></TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Syntax: </TD>
+	<TD COLSPAN=2 ALIGN=LEFT VALIGN=TOP NOWRAP>s32 MusHandleUnPause(musHandle handle)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Arguments:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP><b>handle</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Sound handle</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Return value:</TD>
+	<TD COLSPAN=2 ALIGN=LEFT VALIGN=TOP NOWRAP>0&nbsp;&nbsp;Failure<BR>Non-zero                  Success</TD>
+</TR></TABLE>
+<HR>
+<p>
+When 0 is returned by these functions,  please wait for a retrace message and then call the function again.</P>
+<P>
+Two points must be taken into consideration when using the pause function.  The first point is that when you pause a song, those channels are still reserved, so if you pause one song and start another song you may not have enough channels.  If the general location of pauses has been decided to some extent, we recommend using synchronization markers.  The other point is that during a pause, a playing sound will continue to play, so you should drop the volume to 0 by the frame prior to the pause.  Also, don't forget to turn the volume back up when playback resumes.
+</P>
+<P>
+Below is a programming example of a pause process:<BR><br>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR><TD>&nbsp;</TD><TD>
+
+<TABLE BORDER=1 CELLSPACING=0 CELLPADDING=4><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP><FONT COLOR="#000080"><PRE><CODE>// The handle of the song you want to pause is set in this variable 
+musHandle set_pause_handle;
+
+s32 PauseProcess1(void)
+{
+    static s32 pause_flag=0;
+    static s32 fade_volume;
+    static musHandle save_handle=0;
+
+    if(set_pause_handle &amp;&amp; !save_handle)
+    {
+      // set_pause_handle is copied to the local variable save_handle
+       // It's okay to overwrite set_pause_handle
+        save_handle = set_pause_handle;
+        set_pause_handle = 0;
+    }
+
+    if(!save_handle)
+        return(0);         // A pause is not processed, so this,
+                           // time PauseProcess1 does nothing.
+
+    if(!pause_flag)        // If pause starts
+    {
+        pause_flag++;
+        fade_volume=0x80;   // When pause starts, fade_volume is set to 0x80
+    }
+
+// If this point is reached, it means a pause is being processed
+    if(fade_volume)  // If fade_volume is not 0, drop 0x20
+                            
+      {         // and set volume to this.        
+        fade_valume-=0x20;
+        MusHandleSetVolume(save_handle, fade_volume);
+    }
+    else              // Otherwise, volume has dropped to 0, so pause.
+    {
+        if(!MusHandlePause(save_handle))
+        {
+            save_handle = 0;
+            pause_flag = 0;   // Otherwise, volume has dropped to 0, so pause.        }
+    }
+    return(0); // PauseProcess1 terminated normally this time.
+}</CODE></PRE></FONT>
+</TD>
+</TR></TABLE>
+</TD></TR></TABLE>
+</P>
+<P>
+In the above example, the function must be called in every frame.  When you set a new song to be paused in set_pause_handle, the song fades out for 4 frames and then actually pauses.  If a non-zero value is returned in <tt>MusHandlePause</tt> the process has succeeded, so the variable is initialized.  However, if the Return value is 0, the function has failed, so it will be called in the next frame.
+<br><br>
+     There are two restrictions on the use of the function <tt>ProcessPause1</tt> in this example.  The first is that you cannot perform a pause process on two songs at the same time. If you set things up so set_pause_handle cannot be set again when it is not 0, then you can make sure the processes are performed, albeit a few frames delayed.  The second restriction is that if the song's original volume is set to anything other than 0x80 there will be problems with the fadeout process.
+</P>
+<P>
+Now let's look at another example:<BR><br>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR><TD>&nbsp;</TD><TD>
+<TABLE BORDER=1 CELLSPACING=0 CELLPADDING=4><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP><FONT COLOR="#000080"><PRE><CODE>s32 ProcessPause2(musHandle handle, s32 volume)
+{
+    if(volume)
+    {
+        volume -=0x20;
+        if(volume&lt;0)
+            volume = 0;                      // Make volume at least 0
+        MusHandleSetVolume(handle, volume);  // Lower volume
+        return(volume);                      // Return current volume 
+    }
+
+   // By this point volume should be 0, so perform pause process
+
+    if(MusHandlePause(handle))
+        return(-1);       // Pause failed (non-zero value returned)
+    else
+        return(0);        // Pause succeeded (0 returned)
+}</CODE></PRE></FONT>
+</TD>
+</TR></TABLE>
+</TD></TR></TABLE>
+</P>
+<P>
+ In this example, the function is called when it is time to pause a song, and if it is called in every frame until the Return value is -1, the song will fade out for a number of frames and then pause.  The first time the function is called, "volume" gets the volume set in that "handle" at that time (or 0x80 if nothing is set).  For the second and subsequent calls, "volume" gets the value returned by the function.  Compared to the previous example, you need to be careful about how you call the function, but there are no restrictions like with ProcessPause1 so it can be put to general use.
+</P>
+<P>
+ Next we look at a programming example for restarting a paused song:<BR><br>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR><TD>&nbsp;</TD><TD>
+<TABLE BORDER=1 CELLSPACING=0 CELLPADDING=4><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP><FONT COLOR="#000080"><PRE><CODE>s32 ProcessUnPause(musHandle handle, s32 volume)
+{
+    if(!MusHandleUnPause(handle))
+    return(0)
+    MusHandleSetVolume(handle, volume);
+    return(volume);
+}</CODE></PRE></FONT>
+</TD>
+</TR></TABLE>
+</TD></TR></TABLE>
+</P>
+<P>
+  This is the simplest program example, restarting the song with no fade-in.  You need to set the volume for after restart and call the function, calling it in every frame until the Return value is non-zero.
+</P>
+<P>
+These are just a few examples, so try making your own functions for pausing and restarting songs based on the situation.
+</P>
+</BODY>
+</HTML>

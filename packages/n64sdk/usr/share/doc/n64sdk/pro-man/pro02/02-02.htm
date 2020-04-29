@@ -1,0 +1,68 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 2 - Software Development Troubleshooting</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check.-->
+</head>
+
+<h1>2.2 Graphics </h1>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="01"><h2>2.2.1 There is no picture on the screen, but the drawing loop is running </h2></a>
+
+<p>You are probably sending a bad <A target="keywords" HREF="../../keywords/index/data/system.htm#segment address">segment address</A> to the RSP graphics pipeline.  This problem is easy to overlook, as there are no warnings.  Make sure you thoroughly
+understand how a MIPS family processor performs addressing and how KSEG0 works (most games run in KSEG0). It allows cached access with no TLB translation. All CPU
+registers are accessible.  KSEG addresses use the most significant bits of the address to indicate the addressing modes. 
+</p>
+
+<dl>
+  <dt><a name="f02-01"><strong>Figure 2-1 CPU KSEG0-3 Addresses 
+</strong></a>
+  <dd><img src="gif/f02-01.gif" alt="[Figure 2-1]">
+</dl>
+
+<p>The RSP uses a segment addressing scheme with base pointers.  It is very easy to hand a CPU KSEG0 address to the RSP by mistake and spend hours locating a simple error. Note that KSEG0 CPU address would reference an invalid <A target="keywords" HREF="../../keywords/index/data/system.htm#segment">segment</A> if decoded as an RSP address. </p>
+
+<dl>
+  <dt><a name="f02-01"><strong>Figure 2-2 RSP Address</strong></a>
+  <dd><img src="gif/f02-02.gif" alt="[Figure 2-2]">
+</dl>
+
+<p>For example, if you have the following code, the RSP/RDP pipeline will receive garbage: </p>
+
+<dl>
+  <dd><kbd>Mtx matrix;</kbd><br>
+      <kbd><a href="../../n64man/gsp/gSPMatrix.htm">gSPMatrix</a>(gdl++, &amp;matrix, G_MTX_.....);</kbd><br>
+</dl>
+
+<p>matrix is a KSEG0 CPU address 0x8xxxxxxx.  When this is handed to RSP, it fetches garbage. Below is a list of common commands with pointers: </p>
+
+<ol>
+  <li><a href="../../n64man/gdp/gDPSetColorImage.htm">gDPSetColorImage</a>
+  <li><a href="../../n64man/gdp/gDPSetTextureImage.htm">gDPSetTextureImage</a>
+  <li>gDPSetMaskImage
+  <li><a href="../../n64man/gsp/gSPMatrix.htm">gSPMatrix</a>
+  <li><a href="../../n64man/gsp/gSPViewport.htm">gSPViewport</a>
+  <li><a href="../../n64man/gsp/gSPVertex.htm">gSPVertex</a>
+  <li><a href="../../n64man/gsp/gSPDisplayList.htm">gSPDisplayList</a>
+</ol>
+
+<p>Keep in mind that CPU addresses and RSP/RDP addresses use different addressing schemes and are not interchangeable. 
+</p>
+
+<p>One useful way to debug possible display list problems is to link with the GBI <A target="keywords" HREF="../../keywords/index/data/system.htm#dump">dumping</A> routines in libgu, and print out the <a href="../../keywords/index/data/graphics.htm#display list" target="keywords">display list</a>. This will immediately show bad pointers
+and garbage <a href="../../keywords/index/data/graphics.htm#matrix" target="keywords">matrix</a>. See the main page for <a href="../../n64man/gu/guParseGbiDL.htm">guParseGbiDL()</a> and <a href="../../n64man/gu/guParseRdpDL.htm">guParseRdpDL()</a>.</p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="02"><h2>2.2.2 Ending a Display List</h2></a>
+
+<p>Make sure that your recent <a href="../../keywords/index/data/graphics.htm#graphics binary interface" target="keywords">gbi</a> display edit has <a href="../../n64man/gsp/gSPEndDisplayList.htm">gSPEndDisplayList</a> in each display list.  Without this, the RSP will probably hang.  The RDP requires a <a href="../../n64man/gdp/gDPFullSync.htm">gDPFullSync</a> at the end of the entire display list sequence to make the DP interrupt the CPU for notification.</p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="03"><h2>2.2.3 Flicker on the Screen </h2></a>
+
+<p>The beginning of the framebuffer and z-buffer addresses must be 64 byte <A target="keywords" HREF="../../keywords/index/data/system.htm#boundary alignment">boundary aligned</a>.</p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+</body> </html>

@@ -1,0 +1,33 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 11 - RSP Graphics Programming</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. -->
+</head>
+
+<h1>11.4 Vertex State </h1>
+
+<p>The RSP state includes a vertex buffer, holding up to 16 vertices. This buffer can be loaded with any number of consecutive vertices, beginning at any location. </p>
+
+<table border=1 align="center">
+  <caption><a name="t11-07"><strong>Table 11-7 <a href="../../n64man/gsp/gSPVertex.htm">gsSPVertex</a>(Vtx *v,unsigned int n,unsigned int v0)</strong></a></caption>
+  <tr><th>Parameter</th><th>Values</th></tr>
+  <tr><td align="center">v</td><td>pointer to a list of vertices</td></tr>
+  <tr><td align="center">n</td><td>number of vertices</td></tr>
+  <tr><td align="center">v0</td><td>vertex buffer location to load vertices into</td></tr>
+</table>
+
+<p>At the time the vertices are loaded, they are transformed by the current <a href="../../keywords/index/data/graphics.htm#matrix" target="keywords">matrix</a> state and possibly shaded by the current lighting state. </p>
+
+<p>Vertices are not re-transformed again, if the matrix state changes, the old (previously-transformed) vertices are not affected.  This feature can be exploited to construct data that is knit together between two groups of points with different transformations (such as an elbow joint of a character). </p>
+
+<p>Since the vertex processing is heavily vectorized and pipelined, it is important that each load loads as many vertices as possible.</p>
+
+<p>Since the vertex loading is a relatively slow operation, it is also important that any triangles that share vertices be <a href="../../keywords/index/data/graphics.htm#rendering" target="keywords">rendered</a> using the same vertex state, rather than re-loading these same vertices later.</p>
+
+<p>Please see <a href="../pro11/11-03.htm#04">Section 11.3.4, "Note on Coordinate Systems and Big Numbers"</a> for information about keeping coordinates from becoming too large. </p>
+
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+</body> </html>

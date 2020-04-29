@@ -1,0 +1,170 @@
+<HTML>
+<HEAD>
+<TITLE>STEP3 [N64 3D Graphics] - Chapter 1 Basic 3D Concepts</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park 7/12/1999 
+reviewed PWC 7/16/99 -->
+
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+
+<font style="font-size:12pt"><B>1-4 Vector Basics</B></FONT><BR>
+<BR>
+<BR>
+It is easier to place an object into a three-dimensional space if you first move the vertex coordinate to its starting position. Then in your game, you can apply changes to the objects such as translating, rotating, or scaling them -- all of which are easily accomplished by using vectors and matrices.<BR>
+<BR>
+<BR>
+<font style="font-size:10pt"><B>1-4-1 Vector</B></FONT><BR>
+<BR>
+<BR>
+A scalar is a quantity that has only one magnitude on a specific scale such as length, time, or volume. A vector is a quantity that has both magnitude and a direction such as force or rate.<P>
+<TABLE BORDER=1 CELLSPACING=0><TR><TD>
+	<IMG SRC="img00041.gif">
+</TD></TR></TABLE>
+<BR>
+<B>Figure 1-4-1 Scalar and Vector</B><BR>
+<BR>
+<BR>
+The following shows a vector moving from point A to point B:<BR>
+<BR>
+<IMG SRC="img00042.gif"><BR>
+<BR>
+<B>Figure 1-4-2 Vector<IMG SRC="img00043.gif" ALIGN="absmiddle"></B><BR>
+<BR>
+<BR>
+The direction of the arrow is the direction of its vector. A is called the initial point and B is called the terminal. This vector is expressed as <IMG SRC="img00044.gif" ALIGN="absmiddle"> or <IMG SRC="img00045.gif" ALIGN="absmiddle">.<BR>
+<BR>
+<BR>
+<BR>
+<B>1-4-2 Vector Addition</B><BR>
+<BR>
+<BR>
+Given two vectors, <IMG SRC="img00046.gif" ALIGN="absmiddle"> and <IMG SRC="img00047.gif" ALIGN="absmiddle">, you can add them together to define a diagonal vector, which in turn specifies a parallelogram as shown here:<BR>
+<BR>
+<IMG SRC="img00050.gif"><BR>
+<BR>
+<B>Figure 1-4-3 Vector Addition</B><BR>
+<BR>
+<BR>
+The following shows how vector addition is done:<BR>
+ <IMG SRC="img00051.gif" ALIGN="absmiddle"> <IMG SRC="img00052.gif" ALIGN="absmiddle"><BR>
+ <IMG SRC="img00053.gif" ALIGN="absmiddle"><BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<B>1-4-3 Vector Subtraction</B><BR>
+<BR>
+<BR>
+To subtract vector <IMG SRC="img00055.gif" ALIGN="absmiddle"> from vector <IMG SRC="img00054.gif" ALIGN="absmiddle">, invert vector <IMG SRC="img00055.gif" ALIGN="absmiddle">'s direction first, and then add vector <IMG SRC="img00055.gif" ALIGN="absmiddle"> to the inverted vector <IMG SRC="img00055.gif" ALIGN="absbottom"> to form the resulting vector <IMG SRC="img00060.gif" ALIGN="absmiddle">:  
+<BR>
+<BR>
+<IMG SRC="img00061.gif"><BR>
+<BR>
+<B>Figure 1-4-4 Vector Subtraction</B><BR>
+<BR>
+<BR>
+The following shows how vector subtraction is done:<BR>
+ <IMG SRC="img00062.gif" ALIGN="absmiddle"> <IMG SRC="img00063.gif" ALIGN="absmiddle"><BR>
+ <IMG SRC="img00064.gif" ALIGN="absmiddle"><BR>
+<BR>
+<BR>
+<BR>
+# Scalar Multiplication of a Vector<BR>
+To find the product of a vector <IMG SRC="img00065.gif" ALIGN="absmiddle">and a scalar (k), multiply the length of vector <IMG SRC="img00066.gif" ALIGN="absmiddle"> by k, but be careful to take the sign of the scalar into account:<BR>
+<BR>
+<IMG SRC="img00067.gif"><BR>
+<BR>
+<B>Figure 1-4-5 The product of vector <IMG SRC="img00068.gif" ALIGN="absmiddle"> and scalar (k) is multiplied vector <IMG SRC="img00069.gif" ALIGN="absmiddle">by (k)</B><BR>
+<BR>
+<BR>
+
+   The following shows how scalar multiplication of a vector is done:<BR>
+ <IMG SRC="img00070.gif" ALIGN="absmiddle"><BR>
+ <IMG SRC="img00071.gif" ALIGN="absmiddle"><BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<B>1-4-4 Normal Vector</B><BR>
+<BR>
+<BR>
+A vector that expresses the vertical direction of a surface is called a <B>normal vector</B>:<BR>
+<BR>
+<IMG SRC="img00072.gif"><BR>
+<BR>
+<B>Figure 1-4-6 Normal Vector</B><BR>
+<BR>
+<BR>
+To calculate the normal vector of a surface, you need to find what is called the cross-product of the two vectors that specify that surface. You can use the following step-by-step technique to calculate the cross-product of two vectors<IMG SRC="img00073.gif" ALIGN="absmiddle"> and <IMG SRC="img00074.gif" ALIGN="absmiddle">:<BR>
+<BR>
+ <IMG SRC="img00075.gif" ALIGN="absmiddle">, <IMG SRC="img00076.gif" ALIGN="absmiddle"><BR>
+<BR>
+ 1. Arrange and write down the coordinates of each vector <IMG SRC="img00077.gif" ALIGN="absmiddle"> and <IMG SRC="img00078.gif" ALIGN="absmiddle"> as two lines like this:<BR>
+<br>
+  <IMG SRC="img00079.gif" ALIGN="absmiddle"><BR>
+  <IMG SRC="img00080.gif" ALIGN="absmiddle"><BR>
+<BR>
+ 2. Repeat each X coordinate of <IMG SRC="img00081.gif" ALIGN="absmiddle"> and <IMG SRC="img00082.gif" ALIGN="absmiddle"> on the far right end of each line like this:<BR>
+<br>
+  <IMG SRC="img00083.gif" ALIGN="absmiddle"><BR>
+  <IMG SRC="img00084.gif" ALIGN="absmiddle"><BR>
+<BR>
+ 3. Draw connecting lines like this:<BR>
+<br>
+  <IMG SRC="img00085.gif" ALIGN="absmiddle"><BR>
+<BR>
+ 4. Calculate Alpha, Beta, Gamma using these formulas: <BR>
+<br>
+  <IMG SRC="img00086.gif" ALIGN="absmiddle"><BR>
+  <IMG SRC="img00087.gif" ALIGN="absmiddle"><BR>
+  <IMG SRC="img00088.gif" ALIGN="absmiddle"><BR>
+<br>
+  Alpha is the coordinate of the result, Beta  is the Y coordinate, and Gamma is the Z coordinate.<BR>
+<BR>
+ 5. To obtain the cross-product of vectors <IMG SRC="img00089.gif" ALIGN="absmiddle"> and <IMG SRC="img00090.gif" ALIGN="absmiddle">, use this formula:<BR>
+<br>
+  <IMG SRC="img00091.gif" ALIGN="absmiddle"><BR>
+  <BR>
+<BR>
+Here is a second example that shows how to find the normal vector <IMG SRC="img00093.gif" ALIGN="absmiddle"> of the plane defined by the three points <IMG SRC="img00092.gif" ALIGN="absmiddle"> shown in this illustration:
+<BR>
+<BR>
+<IMG SRC="img00094.gif"><BR>
+<BR>
+<B>Figure 1-4-7 Example of a normal vector</B><BR>
+<BR>
+<BR>
+When working with the two vectors <IMG SRC="img00095.gif" ALIGN="absbottom"> and <IMG SRC="img00096.gif" ALIGN="top">, you must be very careful to factor in each vector's direction.<BR><br>
+ <IMG SRC="img00099.gif" ALIGN="absmiddle"><BR>
+<BR>
+
+   To get the cross-product of the vectors, apply these formulas:<BR>
+<br>
+ <IMG SRC="img00101.gif" ALIGN="absmiddle"><BR>
+ <IMG SRC="img00102.gif" ALIGN="absmiddle"><BR>
+ <IMG SRC="img00103.gif" ALIGN="absmiddle"><BR>
+<BR>
+Because <IMG SRC="img00104.gif" ALIGN="absmiddle"> and <IMG SRC="img00105.gif" ALIGN="absmiddle"> are vectors, specify each coordinate component like this:<BR>
+<br>
+ <IMG SRC="img00106.gif" ALIGN="absmiddle"><BR>
+ <IMG SRC="img00107.gif" ALIGN="absmiddle"><BR>
+<BR>
+Therefore, the final detailed formula for the normal vector N <IMG SRC="img00108.gif" ALIGN="absmiddle"> is:<BR>
+<br>
+ <IMG SRC="img00109.gif" ALIGN="absmiddle"><BR>
+ <IMG SRC="img00110.gif" ALIGN="absmiddle"><BR>
+ <IMG SRC="img00111.gif" ALIGN="absmiddle"><BR>
+<BR>
+
+   You need the cross-product for many geometric calculations, not just to calculate the normal vector.
+<BR>
+
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+</BODY>
+</HTML>

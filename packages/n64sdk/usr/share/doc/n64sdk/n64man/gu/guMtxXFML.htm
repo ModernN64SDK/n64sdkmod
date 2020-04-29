@@ -1,0 +1,81 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.>
+<TITLE>guMtxXFML</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>guMtxXFML<FONT size="+0"> [Function]</FONT></H1>
+
+<p><h3>Function</h3></p>
+
+<p>guMtXFML</p>
+<P>
+<i>Coordinate transformation (fixed-point matrix)</i>
+</P>
+<H3>Syntax</H3>
+<p>
+<PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gu.htm">gu.h</A> */
+void guMtxXFML(
+        Mtx *m,
+        float x,
+        float y,
+        float z,
+        float *ox,
+        float *oy,
+        float *oz);</CODE></PRE></p>
+
+<H3>Arguments</H3>
+<p><DL>
+  <DT><B>m</B>
+  <DD>Pointer to the 4x4 matrix
+  <DT><B>x</B>
+  <DD>x-coordinate to transform
+  <DT><B>y</B>
+  <DD>y-coordinate to transform
+  <DT><B>z</B>
+  <DD>z-coordinate to transform
+  <DT><B>ox</B>
+  <DD>Pointer to resulting x-coordinate
+  <DT><B>oy</B>
+  <DD>Pointer to resulting y-coordinate
+  <DT><B>oz</B>
+  <DD>Pointer to resulting z-coordinate
+</DL></p>
+<H3>Returned value</H3>
+<P>
+None.
+</P>
+<H3>Description</H3>
+<P>
+Transforms one set of coordinates (<B>x</B>, <B>y</B>, <B>z</B>) using the specified matrix.  This function provides a useful way to process matrices on the host CPU.  When this function is called, the result is the creation of coordinates as shown below:
+</P>
+<P>
+<IMG SRC="guMtxXFML00.gif">
+</P>
+<P>
+For a detailed explanation about the fixed-point format, see <A HREF="../gsp/gSPMatrix.htm">gSPMatrix</A>. Floating point is handled with the <A HREF="guMtxXFMF.htm">guMtxXFMF</A> function.
+</P>
+<H3>Comment</H3>
+<P>
+The Mtx structure looks like this:
+<PRE><CODE>typedef long  Mtx_t[4][4];
+typedef union {
+     Mtx_t          m;
+     long long int  force_structure_alignment;
+} Mtx;
+</CODE></PRE>
+</P>
+<H3>See also</H3>
+<P>
+<A HREF="../gsp/gSPMatrix.htm">gSPMatrix</A>, <A HREF="guMtxCatF.htm">guMtxCatF</A>, <A HREF="guMtxCatL.htm">guMtxCatL</A>, and <A HREF="guMtxXFMF.htm">guMtxXFMF</A>
+</P>
+<H3>Revision history</H3>
+<P>
+03/01/99  Completely rewritten.
+</P>
+</BODY>
+</HTML>

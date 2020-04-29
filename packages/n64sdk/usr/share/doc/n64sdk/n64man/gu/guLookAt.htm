@@ -1,0 +1,84 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.>
+<TITLE>guLookAt</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>guLookAt<FONT size="+0"> [Function]</FONT></H1>
+
+<p><h3>Function</h3></p>
+
+<p>guLookAt</p>
+<P>
+<i>Creates a viewing matrix (fixed point)</i>
+</P>
+<H3>Syntax</H3>
+<p>
+<PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gu.htm">gu.h</A> */
+void guLookAt(
+        Mtx *m,
+        float xEye,
+        float yEye,
+        float zEye,
+        float xAt,
+        float yAt,
+        float zAt,
+        float xUp,
+        float yUp,
+        float zUp);</CODE></PRE></p>
+
+<H3>Arguments</H3>
+<p><DL>
+  <DT><B>m</B>
+  <DD>Pointer to 4x4 matrix resulting from calculation
+  <DT><B>xEye</B>
+  <DD>x-coordinate of viewpoint
+  <DT><B>yEye</B>
+  <DD>y-coordinate of viewpoint
+  <DT><B>zEye</B>
+  <DD>z-coordinate of viewpoint
+  <DT><B>xAt</B>
+  <DD>x-coordinate of lookat point
+  <DT><B>yAt</B>
+  <DD>y-coordinate of lookat point
+  <DT><B>zAt</B>
+  <DD>z-coordinate of lookat point
+  <DT><B>xUp</B>
+  <DD>x component of upward vector
+  <DT><B>yUp</B>
+  <DD>y component of upward vector
+  <DT><B>zUp</B>
+  <DD>z component of upward vector
+</DL><p>
+<H3>Returned value</H3>
+<P>
+None.
+</P>
+<H3>Description</H3>
+<P>
+The viewing matrix is returned to the structure indicated by <b>m</b>.  For details about the fixed point format, see <A HREF="../gsp/gSPMatrix.htm">gSPMatrix</A>.  Floating point can be handled with the <A HREF="guLookAtF.htm">guLookAtF</A> function.
+</P>
+<H3>Note</H3>
+<P>
+The Mtx structure is shown below:
+<PRE><CODE>typedef long  Mtx_t[4][4];
+typedef union {
+     Mtx_t          m;
+     long long int  force_structure_alignment;
+} Mtx;
+</CODE></PRE>
+</P>
+<H3>See also</H3>
+<P>
+<A HREF="../gsp/gSPMatrix.htm">gSPMatrix</A>, <A HREF="guLookAtF.htm">guLookAtF</A>
+</P>
+<H3>Revision history</H3>
+<P>
+03/01/99  Completely rewritten.
+</P>
+</BODY>
+</HTML>

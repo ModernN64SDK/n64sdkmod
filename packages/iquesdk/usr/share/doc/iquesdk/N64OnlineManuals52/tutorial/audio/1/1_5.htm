@@ -1,0 +1,142 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Audio-Chapter 1 AUDIO PLAYBACK</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: MAP created file 9/16/1999
+-->
+</HEAD>
+<BODY BGCOLOR=#ffffff>
+<BASE TARGET="keywords">
+<br>
+<FONT style="font-size:12pt"><B>1.5  Preparations for Audio Playback</B></FONT>
+<br>
+<P>
+Once the library has been initialized all of the library functions can be used, but at this point no data has been prepared yet.  Here we make the preparations in order to make each data set usable in sequence.<br><br>
+     First we DMA transfer the data from ROM that needs to be placed in RAM.  The function used to secure a memory area in RAM from the audio heap is nuAuStlHeapAlloc.
+<HR><p><b>
+Reserve memory from the audio heap</b><BR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Function name: </TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><tt>nuAuStlHeapAlloc</tt></TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Syntax: </TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>void *nuAuStlHeapAlloc(s32 length)</TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Arguments: </TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><b>length</b>&nbsp;The size of memory secured from the heap</TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Return value: </TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Pointer to the reserved heap memory </TD>
+</TR></TABLE>
+<HR>
+<p>
+Next we use <tt>nuPiReadRom</tt> to transfer the data to the reserved area.<BR>
+<HR><p><b>
+Load data from ROM</b><BR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Function name: </TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><tt>nuPiReadRom</tt></TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Syntax: </TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>void nuPiReadRom(u32 rom_addr, void* buf_ptr, u32 size)</TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Arguments: </TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>
+	<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><b>rom_addr</b>&nbsp;</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Transfer origin(from) ROM address</TD>
+	</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><b>buf_ptr</b></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Pointer to transfer destination(to) buffer</TD>
+	</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><b>size</b></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Transfer size</TD>
+	</TR></TABLE></TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Return value: </TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>None</TD>
+	</TR></TABLE>
+<HR>
+<p>
+(*)Be sure that the size is an even number of bytes.<BR>
+<P>
+There are also two functions that can be used to find out the present state of the heap<BR>
+<HR>
+<p>
+<b>Return the previously used sizes with audio heap</b><BR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Function name: </TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><tt>nuAuStlGetHeapUsed</tt></TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Syntax:</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>s32 nuAuStlGetHeapUsed(void)</TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Arguments: </TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>None</TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Return value: </TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Size of audio heap being used</TD>
+</TR></TABLE>
+<HR><p>
+<b>Return sizes with audio heap still available </b><BR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Function name: </TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><tt>nuAuStlGetHeapFree</tt></TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Syntax:</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>s32 nuAuStlGetHeapFree(void)</TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Arguments: </TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>None</TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Return value: </TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Size of audio heap remaining</TD>
+</TR></TABLE>
+<HR>
+</P>
+<P>
+Next, we perform the necessary initialization of the Sound Effect Bank and Sample Bank from among the data to be used for audio playback.  The first items initialized automatically become the default banks.  For songs, all you have to do is place the data in RAM, and no initialization is necessary.
+<HR><p><b>
+Initialize Sound Effect Bank</b><BR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Function name:</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP COLSPAN=2>MusFxBankInitialize</TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Syntax:</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP COLSPAN=2>void MusFxBankInitialize(void *fxbank)</TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Arguments: </TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><b>fxbank</b>&nbsp;</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Address of sound effect bank in RAM</TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Return value:</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP COLSPAN=2>None</TD>
+</TR></TABLE>
+<HR><p><b>
+Initialize a sample bank</b><BR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Function name:</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><tt>MusPtrBankInitialize</tt></TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Syntax:</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>void MusPtrBankInitialize(void *pbank, void *wbank)</TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Arguments:</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>
+	<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><b>pbank</b>&nbsp;</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Address of Sample Pointer Bank in RAM</TD>
+	</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>wbank</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Address of Sample Wave Bank in ROM</TD></TR></TABLE>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Return value:</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>None</TD>
+</TR></TABLE>
+<HR>
+</P>
+<BR>
+<BR>
+<BR>
+</BODY>
+</HTML>

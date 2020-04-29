@@ -1,0 +1,221 @@
+<html>
+<HEAD>
+<TITLE>CiImgNode</TITLE>
+</HEAD>
+<BODY LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff">
+
+<font face="arial" size="-1">
+<b><font size="3">13. CiImgList</font></b>
+<HR>
+
+<P>
+<b>(1) CiImgList</b>
+<p>
+<blockquote>
+
+<table border width="600">
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 ci_img_list_tag</font>
+</td>
+<td>
+<font face="arial" size="-1">CiImgList is the list of index images that are used by the color index texture.  Please describe the tags shown below.
+<font face="courier" size="2">
+<pre>
+<b>
+TAG_CI_IMG_LIST         0x00200000
+</b>
+</pre>
+</font>
+</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 ci_img_list_header_size</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the CiImgListHeader byte size.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 ci_img_list_size</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the CiImgList byte size.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 ci_img_num</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the CiImg number included in CiImgList.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 ci_img_num_byte</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the byte size of each CiImg.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">CiImg</font>
+</td>
+<td>
+<font face="arial" size="-1">This is the CiImg area.  One color index image is stored here.</font>
+</td>
+</tr>
+</table>
+<p>
+<a href="./ci_img_C.htm">Go to the data chunk</a>
+<p>
+</blockquote>
+
+<b>(2) CiImg</b>
+
+<blockquote>
+
+<table border Width="600">
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 ci_img_tag</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the tags of CiImg.  Please describe the tags shown below.
+<font face="courier" size="2">
+<pre>
+<b>
+TAG_CI_IMG              0x00200100
+</b>
+</pre>
+</font>
+</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 this_ci_img_index</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes this CiImg index number.</font>
+</td>
+</tr>
+
+<!..
+-- DELETE START --
+1998/09/30
+
+<tr
+<td nowrap
+u32 ci_img_header_size
+</td
+<td
+Describes the CiImgheader byte size.
+</td
+</tr
+
+-- DELETE END --
+..>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 ci_img_size</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the CiImg byte size.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 ci_img_name_index</font>
+</td>
+<td>
+<font face="arial" size="-1">Uses a NameList index number indicating the CiImg name.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 ci_img_width</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the CiImg width.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 ci_img_height</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the CiImg height.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 ci_img_pixel_depth</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the CiImg pixel bit size.  The following flags have been defined:
+<font face="courier" size="2">
+<pre>
+<b>
+NIFF2_CI_PIXEL_DEPTH_4&#9;0x00000004
+NIFF2_CI_PIXEL_DEPTH_8&#9;0x00000008
+</b>
+</pre>
+</font>
+</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 reserved</font>
+</td>
+<td>
+<font face="arial" size="-1">Please describe 0x0.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 pixel_index_array</font>
+</td>
+<td>
+<font face="arial" size="-1">This area describes which palette color to use for each pixel.<p>
+The pixel data is described in order from the bottom-left of the image data.<p>
+In the case of 4bit CI, stored using the big endian method in 8-pixel units in pixel_index_array in order from the bottom-left of the image data. <p>
+In the case of 8bit, stored using the big endian method in 4-pixel units in pixel_index_array in order from the bottom-left of the image data.<p>
+In either case, if the last data is less than 32-bits, the remainder is filled with 0x0.<p>
+pixel_index_array_num is the pixel_index_array number created with the processes above. </font>
+</td>
+</tr>
+</table>
+
+
+<p>
+<a href="./ci_img_C.htm">Go to the data chunk</a>
+<p>
+
+</blockquote>
+
+<hr>
+
+</body>
+</html>

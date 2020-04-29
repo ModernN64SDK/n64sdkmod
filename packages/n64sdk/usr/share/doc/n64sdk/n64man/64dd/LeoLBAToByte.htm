@@ -1,0 +1,67 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Author's Comments: JLR made formating edits.
+MAP updated format, links 9/28/99>
+<title>LeoLBAToByte</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>LeoLBAToByte</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p>LeoByteToLBA, LeoLBAToByte</p>
+
+<p><i>Converts between LBA and bytes</i></p>
+
+<h3>
+Syntax </h3>
+<p>
+<pre>#include &lt;PR/leo.h&gt;     /* <A HREF="../../header/leo.htm">leo.h</A> */
+
+
+s32 LeoByteToLBA(s32 startlba, u32 nbytes, s32 *lba);
+
+s32 LeoLBAToByte(s32 startlba, u32 nlbas, s32 *bytes);
+</pre></p>
+
+<h3>Description</h3>
+
+<p>They convert between a logical block address (LBA) and a physical byte address. The size of one block is different from other blocks for the N64 Disk Drive, so you need to convert back and forth between bytes and LBAs by calling these functions. (See "Hardware Specifications" section of the N64 Disk Drive programming manuals for more details on block size.)
+</p>
+
+<p>Caution: The <a href="LeoByteToLBA.htm">LeoByteToLBA</a> and <tt>LeoLBAToByte</tt> functions make expedient use of Leo Manager's internal variables. As a result, LBA calculations depend on the disk type. If the disk is swapped with another disk of a different type immediately before you call the <tt>LeoByteToLBA</tt> or <tt>LeoLBAToByte</tt> function, the resulting LBA size will not be correct for the for the currently inserted disk. You need to exercise caution because a DISK_MAY_HAVE_CHANGED error is not returned by these functions. Therefore, if you use a calculated value for a disk read, write, or seek operation and a DISK_MAY_HAVE_CHANGED error is returned, plan to re-run your code from the LBA-to-byte conversion to make sure you have the correct value. For more detailed information on this, see the "Error-Handling Sequences" section of your N64 Disk Drive programming manuals.
+</p>
+
+<p>The <tt>LeoByteToLBA</tt> function converts from a byte size into an LBA size. It calculates the number of LBAs in the nbytes from the start of the block specified by startlba and returns this to the location pointed to by the lbas argument.
+</p>
+
+<p>The <tt>LeoLBAToByte</tt> function converts from an LBA size into a byte size. It calculates the number of bytes in the nlbas blocks from the start of the block specified by startlba and returns this to the location pointed to by the bytes argument. </p>
+
+<p>The returned values are:</p>
+
+<p><strong>-1 </strong></p>
+
+<p>Leo Manager has not started. The conversion refers to the current disk type that is in use; therefore, make sure these functions are called after starting Leo Manager. </p>
+
+<p><font size="2"><strong>LEO_ERROR_LBA_OUT_OF_RANGE </strong></font></p>
+
+<p>The specified LBA or resulting LBA is out of range.</p>
+
+<p><font size="2"><strong>LEO_ERROR_GOOD </strong></font></p>
+
+<p>Normal execution.</p>
+
+<h3>
+See Also </h3>
+
+<p><a href="64ddtool/byte2lba.htm">byte2lba</a>, <a
+href="64ddtool/lba2byte.htm">lba2byte</a>, <a
+href="LeoCreateLeoManager.htm">Leo*CreateLeoManager</a>, <a
+href="LeoReadCapacity.htm">LeoReadCapacity</a></p>
+<h3>Revision History</h3>
+<p>04/30/1999  Changed Format</p>
+<br><br>
+
+</body>
+</html>

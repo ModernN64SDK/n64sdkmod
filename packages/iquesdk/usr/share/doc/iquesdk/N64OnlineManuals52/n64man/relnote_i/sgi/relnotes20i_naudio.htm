@@ -1,0 +1,107 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../n64man.css">
+<title>2.0I SGI Release Notes for naudio</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check-->
+</head>
+
+<h1>2.0I SGI Release Notes for naudio (12/15/98)</h1>
+
+<p><strong>n_audio<br>
+(naudio.dev)</strong></p>
+
+<hr>
+
+<h2>Summary:</h2>
+
+<p>The n_audio library, which was released as a patch for 2.0H, is 
+	contained in Version 2.0I for RCP 2.0.</p>
+
+<p>The directory structure under /usr/src/PR was changed completely and demo software is supposed to be installed in /usr/src/PR/demos.  Refer to /usr/src/PR/README.txt for other detailed structure.  Refer to /usr/src/PR/demos/README_DEMOS_NAUDIO.txt for description of each demo software.</p>
+
+<hr>
+
+<h2>New functions:</h2>
+
+<p>Refer to <a href="../../../pro-man/pro28/index.htm">Chapter 28 "n_audio Library"</a> of the N64 Programming Manual for details such as how to use the n_audio library.</p>
+
+<hr>
+
+<h2>New demo software:</h2>
+
+<p>playseq.naudio
+        This is a sample program playseq which was changed to be compatible with n_audio.  This is a modification of playseq_naudio, which was attached as a patch when released. A bug was contained that caused Partner-N64 to stop due to a large amount of error outputs when Partner-N64 was used.  This was fixed for n_audio.  Other than that, this is same as the previous sample program playseq_naudio.</p>
+
+<hr>
+
+<h2>Modified demo software:</h2>
+
+<p>None</p>
+
+<hr>
+
+<h2>Modifications:</h2>
+
+<p>The following changes were made to the header file, n_libaudio.h.
+
+<ol>
+  <li>1.extern declaration related with n_audio microcode was included. 
+	Specifically, the following two lines were added.<br>
+    <br>
+    extern long long int n_aspMainTextStart[], n_aspMainTextEnd[];<br>
+    extern long long int n_aspMainDataStart[], n_aspMainDataEnd[];<br>
+    <br>
+  </li>
+  <li>A declaration of the function n_alSynFreeFX() was added.  However, 
+	    it is not implemented like SGI audio library.<br>
+    <br>
+  </li>
+  <li>A declaration of the function n_alSynSetFXtype() was deleted.  This is because the SGI audio library function alSynSetFXtype() which corresponds to this function does not exist, and also this function itself is incomplete.<br>
+    <br>
+  </li>
+</ol>
+
+<p>Due to the above changes, the following changes were made to the header file, n_libaudio_s_to_n.h.
+
+<ol>
+  <li>A macro to convert the SGI audio library function alSynFreeFX() into n_audio library function n_alSynFreeFX() was added.<br>
+    <br>
+  </li>
+  <li>A macro to convert the SGI audio library function alSynSetFXtype() into n_audio library function n_alSynSetFXtype() was deleted.<br>
+    <br>
+  </li>
+</ol>
+
+<hr>
+
+<h2>Expanded functions:</h2>
+
+<p>None</p>
+
+<hr>
+
+<h2>Functions which will no longer be supported:</h2>
+
+<p>None</p>
+
+<hr>
+
+<h2>Cautions:</h2>
+
+<p>None</p>
+
+<hr>
+
+<h2>Documents:</h2>
+
+<p>Documents provide additional information and updates.</p>
+
+<hr>
+
+<h2>Warnings:</h2>
+
+<p>None</p>
+
+</body>
+</html>

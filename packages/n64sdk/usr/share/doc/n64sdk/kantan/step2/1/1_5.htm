@@ -1,0 +1,36 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<title>STEP2 [A Guide to the N64 Programming] - Chapter 1 N64 Programming</title><base target="keywords">
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!--
+Editors Notes:
+  PWC- updated formatting
+-->
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<p><font style="font-size:12pt; font-weight:bold">1-5 Tasks</font><br>
+<br>
+<br>
+In the N64 operating system, a "task" is a process control unit provided by the RSP in the RCP.  A task is for the RCP similar to what a thread is for the CPU. However, the addressing scheme and the access methods for tasks processed by the RCP are different from the addressing scheme and access methods for threads processed by the CPU.  There are basically two kinds of tasks, an audio task and a graphics task. <br>
+<br>
+To execute a task, you need to set the necessary information for the task execution in the OSTask data structure defined in the N64 operating system. When you execute the task, the process follows these steps:<br>
+<ol>
+<li>The CPU stops the RSP. </li>
+<li>The CPU transfers boot <a href="../../../keywords/index/data/system.htm#microcode" target="keywords">microcode</a> to IMEM in the RSP.</li>
+<li>The CPU transfers the task header to DMEM in the RSP.</li>
+<li>The CPU initializes the RSP program counter to zero (0) and releases the RSP stop.</li>
+<li>The boot microcode operates on the RSP, transfers the microcode to IMEM, and transfers the necessary data to DMEM.</li>
+<li>Execution begins at the <a href="../../../keywords/index/data/graphics.htm#GBI" target="keywords">GBI</a> or ABI command list pointed to by the data pointer written in the task header.</li></ol> </p>
+<table border="1" cellspacing="0">
+    <tr>
+        <td><img src="img00018.gif"> </td>
+    </tr>
+</table>
+<p><br>
+<b>Figure 1-5-1 RCP task processing</b></p>
+</body>
+</html>

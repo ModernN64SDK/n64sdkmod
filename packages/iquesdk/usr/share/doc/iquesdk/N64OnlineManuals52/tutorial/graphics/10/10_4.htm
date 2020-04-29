@@ -1,0 +1,72 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Graphics-Chapter 10  Texture Rectangles</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/23/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<font style="font-size:12pt"><B>10.4  Transparency Effects in Copy Mode
+</B></FONT>
+<br>
+<P>
+  As we explained previously, rendering in Copy mode is fast, but you skip over all the processing that goes on in the Combiner and Blender.  Thus, you cannot make use of functions like Z buffering, which is processed with the Blender.
+     There is one exception, however, and that is the alpha compare function, which can be used even in Copy mode.
+<br><br>
+     Next we will change the gfx10.c sample program to render in copy mode, and then use the alpha compare function to get a transparency effect.  When you change line 40 from undef to define, the small texture rectangle is rendered in Copy mode.
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=5><TR>
+	<TD NOWRAP COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE><B>List 10-6</B>
+</TR><TR>
+	<TD NOWRAP BGCOLOR="666666" WIDTH="4" ALIGN=LEFT VALIGN=TOP><HR NOSHADE SIZE=0></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>
+<FONT COLOR="#000080"><PRE><CODE>  /* Set the cycle type to Copy mode  */
+  gDPSetCycleType(glistp++, G_CYC_COPY);
+  /* Specify 0 for the combine mode coefficients  */
+  gDPSetCombineLERP(glistp++, 0, 0, 0, 0,
+                              0, 0, 0, 0,
+                              0, 0, 0, 0,
+                              0, 0, 0, 0);
+  /* Set rendering mode to G_RM_NOOP, G_RM_NOOP2 (Blender does nothing)  */
+  gDPSetRenderMode(glistp++, G_RM_NOOP, G_RM_NOOP2);
+  /*
+   *  Set the blend color alpha to 1 in order to perform an
+   *  alpha compare and remove the background.  When this is done,
+   *  places with an alpha of 0 become transparent pixels.  This also
+   *  works in G_RM_NOOP mode where Blender processes are skipped.
+   */
+  gDPSetBlendColor(glistp++, 0, 0, 0, 1);
+  gDPSetAlphaCompare(glistp++, G_AC_THRESHOLD);
+
+  /* (Parts have been omitted) */
+
+  /* Draw the texture rectangle  */
+  gSPTextureRectangle(glistp++,
+                      posx &lt;&lt; 2, posy &lt;&lt; 2,
+                     (posx + RECT_WD - 1) &lt;&lt; 2, (posy + RECT_HT - 1) &lt;&lt; 2,
+                      G_TX_RENDERTILE,
+                      0 &lt;&lt; 5, 0 &lt;&lt; 5,
+                      4 &lt;&lt; 10, 1 &lt;&lt; 10);
+  gDPPipeSync(glistp++);
+  /* Set alpha compare back to OFF  */
+  gDPSetAlphaCompare(glistp++, G_AC_NONE);</CODE></PRE></FONT>
+	</TD>
+</TR></TABLE>
+<P>
+By looking at the above source you should be able to deduce what is happening, but a simple explanation of the steps in order follows.</P>
+<UL>
+<LI>The cycle type is set to Copy mode (G_CYC_COPY).
+<LI>All of the combine mode coefficients are set to 0 (the pipeline does not pass through the Combiner in Copy mode).
+<LI>The rendering mode is set to G_RM_NOOP (the pipeline does not pass through the Blender in Copy mode).
+<LI>An alpha compare of type G_AC_THRESHOLD is performed.
+<LI>The blend color alpha value is set to 1 (texels with an alpha value of less than 1 become transparent).
+<LI>Since this is Copy mode, the texture rectangle's lower-right coordinates are changed.
+<LI>gDPPipeSync is inserted before the alpha compare mode is returned to G_AC_NONE.</UL>
+<BR>
+<BR>
+<BR>
+<BR>
+</BODY>
+</HTML>

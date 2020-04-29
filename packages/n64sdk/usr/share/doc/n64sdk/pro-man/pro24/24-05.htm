@@ -1,0 +1,55 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 24 - Performance Tuning Guide</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. -->
+</head>
+
+<h1>24.5 CPU Tuning</h1>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="01"><h2>24.5.1 Parallel Execution of the CPU and the RCP</h2></a>
+
+<p>Full speed <a href="../../keywords/index/data/graphics.htm#rendering" target="keywords">rendering</a> in the Nintendo 64 can only be accomplished by fully utilizing all of it's resources. One of the most powerful is the coarse-grain <A target="keywords" HREF="../../keywords/index/data/system.htm#parallelism">parallelism</A> that can be achieved between the CPU and the RCP.</p>
+
+<p>There are many ways you can exploit this parallelism, here are some ideas:</p>
+
+<ul>
+  <li>compute game and animation parameters for frame (n+1) while frame (n) is rendered with the RCP. <br><br>
+  <li>compute game and animation parameters while another RCP task is being processed.<br><br>
+  <li>instruct the RDP to render from a DRAM <a href="../../keywords/index/data/graphics.htm#display list" target="keywords">display list</a> while the RSP is used to compute another task, such as audio.<br><br>
+</ul>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="02"><h2>24.5.2 Sorting</h2></a>
+
+<p>A detailed analysis of sorting algorithms is beyond the scope of this document. The reader is referred to texts by Knuth<sup>1</sup> or Sedgewick<sup>2</sup>, among others. It is useful to review major properties of sorting algorithm analysis and see how they relate to real-time system performance. </p>
+
+<blockquote>
+<p><sup>1</sup>Knuth, D. E., The Art of Computer Programming, Volume 3: Searching and Sorting, Addison-Wesley Publishing, 1973, ISBN: 0-201-03803-X.</p>
+
+<p><sup>2</sup>Sedgewick, R., Algorithms in C, Addison-Wesley Publishing, 1990, ISBN: 0-201-51425-7.</p>
+</blockquote>
+
+<p>Properties of sorting algorithms which we want to compare include:</p>
+
+<ul>
+  <li>best case sorting time 
+  <li>worst case sorting time
+  <li>average case sorting time 
+  <li>additional memory requirements
+  <li>size of the code to implement
+  <li>ability to exploit coherence 
+</ul>
+
+<p>The time to sort is probably the most important; obviously we want to choose an algorithm that is fast. But it is not that easy. Some of the fastest sorting algorithms have the widest disparity between their average time and their worst-case time. This makes it difficult to predict performance necessary for a real-time system. </p>
+
+<p>Often the difference between worst-average-best-case performance is the initial order of the data. By knowing what we are sorting (and why) we can choose a better sort.  For example, if we are sorting Z-values in order to determine visibility drawing order, we can reason that this order varies only slightly from frame to frame (objects do not
+move "dramatically" and sort interchanges are local).   By exploiting this frame to frame coherence, we can choose a sort with linear performance for the "already nearly sorted" case, speeding up our sort tremendously. </p>
+
+<p>Additional memory requirements are also a major concern in an embedded system. They must be minimal, and most of all, predictable. Consider the sorting problem when designing your data structures. </p>
+
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+</body> </html>

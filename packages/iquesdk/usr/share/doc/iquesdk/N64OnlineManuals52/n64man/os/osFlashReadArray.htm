@@ -1,0 +1,45 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <title>osFlashReadArray</title>
+</head>
+<body bgcolor="#FFFFFF">
+<font face="arial" size="-1">
+<h1>
+osFlashReadArray <font size=+0> [Function]</font></h1>
+<font color="#FF0000">Reads from Flash pages.</font>
+<h3>
+Syntax</h3>
+
+<font face=courier>#include &lt;ultra64.h&gt;<br>
+s32&nbsp; osFlashReadArray(OSIoMesg *mb, s32 priority, u32 page_num,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; void *dramAddr, u32 n_pages, OSMesgQueue *mq);</font>
+
+<h3>
+Description</h3>
+This is a function that read data written in 1M Flash.
+<p>The arguments are Message request block (*mb), Request priority (priority),
+The page number where reading starts (page_num), Buffer address to be read,
+Buffer address to be read (*dramAddr), the number of pages read (n_pages)
+and DMA end receiving message queue (*mq) accordingly.
+<p>For the return values, return -1 when PI manager is not executed, otherwise
+return the status of either osSendMesg or osJamMesg.
+<p>The use method is basically in the form that is in accordance with s32
+osPiStartDma(OSIoMesg *mb, s32 priority, s32 direction, u32 devAddr,void
+*dramAddr, u32 size, OSMesgQueue *mq).&nbsp; The following are the points
+which differ from osPiStartDma.
+<p>*There is no argument "direction" (because it is exclusively for read)
+<br>*There is a reading page number " n_pages" instead of the argument "size"
+<br>*Instead of the argument "devAddr," the page number where reading starts
+" page_num" is the argument.
+<p>When one execution of DMA does not fit in each 32K byte unit of page
+0x0~0xff, 0x100~0x1ff, 0x200~0x2ff and 0x300~0x3ff, DMA is divided
+multiple times and executed in the library.
+<h3>
+Reference</h3>
+
+<h3>
+Revision History</h3>
+07/07/2000&nbsp; This function was added.
+</body>
+</html>

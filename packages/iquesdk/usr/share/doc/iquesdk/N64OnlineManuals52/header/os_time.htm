@@ -1,0 +1,119 @@
+<HTML><HEAD>
+<TITLE></TITLE>
+</HEAD></BODY>
+<PRE>
+<FONT COLOR="red">/*====================================================================
+ * os_time.h
+ *
+ * Copyright 1995, Silicon Graphics, Inc.
+ * All Rights Reserved.
+ *
+ * This is UNPUBLISHED PROPRIETARY SOURCE CODE of Silicon Graphics,
+ * Inc.; the contents of this file may not be disclosed to third
+ * parties, copied or duplicated in any form, in whole or in part,
+ * without the prior written permission of Silicon Graphics, Inc.
+ *
+ * RESTRICTED RIGHTS LEGEND:
+ * Use, duplication or disclosure by the Government is subject to
+ * restrictions as set forth in subdivision (c)(1)(ii) of the Rights
+ * in Technical Data and Computer Software clause at DFARS
+ * 252.227-7013, and/or in similar or successor clauses in the FAR,
+ * DOD or NASA FAR Supplement. Unpublished - rights reserved under the
+ * Copyright Laws of the United States.
+ *====================================================================*/</FONT>
+
+<FONT COLOR="red">/*---------------------------------------------------------------------*
+        Copyright (C) 1998 Nintendo. (Originated by SGI)
+        
+        $RCSfile: os_time.h,v $
+        $Revision: 1.1 $
+        $Date: 1998/10/09 08:01:19 $
+ *---------------------------------------------------------------------*/</FONT>
+
+#ifndef _OS_TIME_H_
+#define	_OS_TIME_H_
+
+#ifdef _LANGUAGE_C_PLUS_PLUS
+extern &quot;C&quot; {
+#endif
+
+#include &lt;PR/ultratypes.h&gt;
+#include &quot;os_message.h&quot;
+
+
+#if defined(_LANGUAGE_C) || defined(_LANGUAGE_C_PLUS_PLUS)
+
+<FONT COLOR="red">/**************************************************************************
+ *
+ * Type definitions
+ *
+ */</FONT>
+
+<FONT COLOR="red">/*
+ * Structure for time value 
+ */</FONT>
+typedef u64	OSTime;
+
+<FONT COLOR="red">/*
+ * Structure for interval timer
+ */</FONT>
+typedef struct OSTimer_s {
+	struct OSTimer_s	*next;	<FONT COLOR="red">/* point to next timer in list */</FONT>
+	struct OSTimer_s	*prev;	<FONT COLOR="red">/* point to previous timer in list */</FONT>
+	OSTime			interval;	<FONT COLOR="red">/* duration set by user */</FONT>
+	OSTime			value;		<FONT COLOR="red">/* time remaining before */</FONT>
+						<FONT COLOR="red">/* timer fires           */</FONT>
+	OSMesgQueue		*mq;		<FONT COLOR="red">/* Message Queue */</FONT>
+	OSMesg			msg;		<FONT COLOR="red">/* Message to send */</FONT>
+} OSTimer;
+
+
+#endif <FONT COLOR="red">/* defined(_LANGUAGE_C) || defined(_LANGUAGE_C_PLUS_PLUS) */</FONT>
+
+<FONT COLOR="red">/**************************************************************************
+ *
+ * Global definitions
+ *
+ */</FONT>
+
+
+#if defined(_LANGUAGE_C) || defined(_LANGUAGE_C_PLUS_PLUS)
+
+<FONT COLOR="red">/**************************************************************************
+ *
+ * Macro definitions
+ *
+ */</FONT>
+
+
+<FONT COLOR="red">/**************************************************************************
+ *
+ * Extern variables
+ *
+ */</FONT>
+
+
+<FONT COLOR="red">/**************************************************************************
+ *
+ * Function prototypes
+ *
+ */</FONT>
+
+<FONT COLOR="red">/* Timer interface */</FONT>
+
+extern OSTime		osGetTime(void);
+extern void		osSetTime(OSTime);
+extern int		osSetTimer(OSTimer *, OSTime, OSTime,
+				   OSMesgQueue *, OSMesg);
+extern int		osStopTimer(OSTimer *);
+
+
+#endif  <FONT COLOR="red">/* defined(_LANGUAGE_C) || defined(_LANGUAGE_C_PLUS_PLUS) */</FONT>
+
+#ifdef _LANGUAGE_C_PLUS_PLUS
+}
+#endif
+
+#endif <FONT COLOR="red">/* !_OS_TIME_H_ */</FONT>
+</PRE>
+</BODY>

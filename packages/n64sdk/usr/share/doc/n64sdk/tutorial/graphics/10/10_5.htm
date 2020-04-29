@@ -1,0 +1,102 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Graphics-Chapter 10  Texture Rectangles</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/23/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<font style="font-size:12pt"><B>10.5  Multi-tile Texture Rectangles</B></FONT>
+<br>
+<P>
+ Next, we turn to the topic of multi-tile texture rectangles.  Naturally, this involves the use of no-LOD multi-tile textures.
+     Of course, to benefit from the use of a multi-tile texture you need to load the texture with a consideration for tiles.  Thus, it is no good simply using a load command like gDPLoadTextureBlock or gDPLoadTextureTile, which cannot specify what tile number to load.  You would be better off using the gDPLoadMultiTile command.  You could also choose to make direct use of the low-level gDPLoadBlock, gDPSetTile and gDPSetTileSize commands, like when we loaded mipmap textures in the previous chapter.
+<br><br>
+     When you change undef to define on line 34 of the gfx10.c sample program, multi-tile texture rectangles are used for texture rectangle morphing.
+<br><br>
+     Take a look below at the source for the part where the texture is loaded and the texture rectangle is drawn:
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=5><TR>
+	<TD NOWRAP COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE><B>List 10-7</B>
+</TR><TR>
+	<TD NOWRAP BGCOLOR="666666" WIDTH="4" ALIGN=LEFT VALIGN=TOP><HR NOSHADE SIZE=0></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>
+<FONT COLOR="#000080"><PRE><CODE>  for(i = 0; i &lt; (BACK_HT / ROWS); i++)
+  {
+    gDPLoadMultiTile(glistp++,
+                    tree1,
+                    0,
+                    G_TX_RENDERTILE,
+                    G_IM_FMT_RGBA,
+                    G_IM_SIZ_16b,
+                    BACK_WD,
+                    BACK_HT,
+                    0,
+                    i * ROWS,
+                    SCREEN_WD - 1,
+                    i * ROWS + (ROWS - 1),
+                    0,
+                    G_TX_WRAP, G_TX_WRAP,
+                    0, 0,
+                    G_TX_NOLOD, G_TX_NOLOD);
+    gDPLoadMultiTile(glistp++,
+                    tree2,
+                    240,
+                    G_TX_RENDERTILE + 1,
+                    G_IM_FMT_RGBA,
+                    G_IM_SIZ_16b,
+                    BACK_WD,
+                    BACK_HT,
+                    0,
+                    i * ROWS,
+                    SCREEN_WD - 1,
+                    i * ROWS + (ROWS - 1),
+                    0,
+                    G_TX_WRAP, G_TX_WRAP,
+                    0, 0,
+                    G_TX_NOLOD, G_TX_NOLOD);
+    gSPTextureRectangle(glistp++,
+                    0 &lt;&lt; 2,
+                    (i * ROWS) &lt;&lt; 2,
+                    (SCREEN_WD - 1) &lt;&lt; 2,
+                    (i * ROWS + ROWS) &lt;&lt; 2,
+                                    /* Not (ROWS - 1) like in Copy mode */
+                    G_TX_RENDERTILE,
+                    0 &lt;&lt; 5, (i * ROWS) &lt;&lt; 5,
+                    1 &lt;&lt; 10, 1 &lt;&lt; 10);
+  }
+</CODE></PRE></FONT>
+	</TD>
+</TR></TABLE>
+<P>
+ When the program runs with this source, a texel from the tree1 texture is input for the Combiner's TEXEL0, and a texel from the tree2 texture is input for TEXEL1.<br><br>
+     After that, you can set combine mode to perform linear interpolation on TEXEL0 and TEXEL1.  Next, we show what happens when the environment alpha for the interpolation coefficient is used:
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=5><TR>
+	<TD NOWRAP COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE><B>List 10-8</B>
+</TR><TR>
+	<TD NOWRAP BGCOLOR="666666" WIDTH="4" ALIGN=LEFT VALIGN=TOP><HR NOSHADE SIZE=0></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>
+<FONT COLOR="#000080"><PRE><CODE>  gDPSetCycleType(glistp++, G_CYC_2CYCLE);
+  gDPSetCombineLERP(glistp++, TEXEL1, TEXEL0, ENV_ALPHA, TEXEL0,
+                                   0,      0,         0, TEXEL0,
+                                   0,      0,         0, COMBINED,
+                                   0,      0,         0, COMBINED);
+  gDPSetRenderMode(glistp++, G_RM_PASS, G_RM_PASS);
+  gDPSetTexturePersp(glistp++, G_TP_NONE);
+
+  gDPSetEnvColor(glistp++, 0, 0, 0, (blend &gt;&gt; 8) &amp; 0xFF);
+</CODE></PRE></FONT>
+	</TD>
+</TR></TABLE>
+<P>
+  In the gfx10.c sample program, the int type variable <tt>blend</tt> is the interpolation coefficient and it is gradually changed, with the environment alpha being set to the value of the <tt>blend</tt> variable in every frame.  We used a minor adjustment here to make "blend" change at a slow rate, but this is not that essential. 
+</P>
+<BR>
+<BR>
+<BR>
+<BR>
+</BODY>
+</HTML>

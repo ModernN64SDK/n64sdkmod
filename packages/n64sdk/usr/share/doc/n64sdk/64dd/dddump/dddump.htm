@@ -1,0 +1,316 @@
+<HTML>
+<HEAD>
+<TITLE>DDDump</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff" link="#0000ff" vlink="#800080">
+<font face="arial">
+<a name="1">
+<b><font size="3">Chapter 1 DDDump</a></font></b></a>
+
+<hr>
+<font face="arial" size="-1">
+<a name="1-1"><b>1-1. Summary</b></a>
+
+
+<p>DDDump is a tool that provides an easy way to dump N64  Disk  Drive disk image files onto Windows95.   With DDDump you can specify the disk type, specify which LBA to start the file from, and edit. </p>
+
+<p>DDDump performs the dump display in LBA units. </p>
+
+<hr>
+<a name="1-2"><b>1-2.  Operating Environment</b>
+</a>
+
+
+<p>DDDump operates under Windows95.
+<hr>
+<a name="1-3"><b>1-3. Functions</b></a>
+
+
+<p>DDDump has the following functions:</p>
+
+<ul>
+  <li>Dump the N64 DISK DRIVE disk image file. 
+  <li>Overwrite and edit the N64 DISK DRIVE disk image file. 
+  <li>Search the data. 
+  <li>View data in Big Endian and Little Endian. 
+</ul>
+
+<hr>
+<font face="arial" size="3">
+<a name="2"><b>Chapter 2  Method of Operation</a></b></font>
+
+<hr>
+
+<font face="arial" size="-1">
+<a name="2-1"><b>2-1. Basic Operations</b></a>
+
+<P>
+<img src="gifs/f020100a.gif">
+
+<hr>
+<a name="2-1-1"><u>2-1-1.  Loading the Image File</u></a>
+
+<p>The image file can be loaded using the following methods:</p>
+
+<dl>
+  <dt>Drag & drop the file. 
+  <dd>Drag & drop the target file from Explorer to the main window. 
+      <br><br>
+  <dt><strong>Load button</strong> or from the "File" menu  <strong> choose "Open"</strong>.
+  <dd>In the open dialog box open select the target file. 
+      <br><br>
+</dl>
+
+<img src="gifs/f020101a.gif">
+
+<hr>
+<a name="2-1-2"><u>2-1-2. Saving the Image File</u></a>
+
+<p>Since the image file is saved whenever it is changed, the user does not have to pay particular attention to saving his work.</p>
+
+<hr>
+<a name="2-1-3"><u>2-1-3.  Specifying the Disk Type</u></a>
+
+<p>The disk type is specified in the Disk Type Combo Box. </p>
+
+<p>The default disk type is 0.</p>
+
+<img src="gifs/f020103a.gif">
+
+<hr>
+<a name="2-1-4"><u>2-1-4. Specifying Top LBA</u></a>
+
+<p>With DDDump it is possible to specify which LBA the input file will start from.</p>
+
+<p>There are two ways to make this setting:</p>
+
+<ul>
+  <li>Input directly into the <B>Top LBA edit box</B>. 
+  <li>Select using the <B>ROM or RAM radio button</B>.  (The numeric value varies depending on the disk type.)
+</ul>
+
+<p>In default, LBA is 0 (zero). </p>
+
+<img src="gifs/f020104a.gif">
+
+<hr>
+<a name="2-1-5">
+<u>2-1-5. Changing the LBA for Display</u></a>
+
+<p>To change the currently displayed LBA, input directly to the LBA edit box. </p>
+
+<p>The vales that can be specified are TopLBA ~ 4291 (varies depending on the file size). </p>
+
+<img src="gifs/f020105a.gif">
+
+<p>When the focus is in the dump area, it is possible to use the following:</p>
+<ul>
+  <li>CTRL + Page Up ... Display the one prior LBA.
+  <li>CTRL + Page Down   ...  Display the one later LBA.
+</ul>
+
+
+<hr>
+<a name="2-1-6"><u>2-1-6. Moving Within the LBA</u></a>
+
+<p>To jump a certain offset within the same LBA, input directly to the  Offset Combo Box, or select from the drop-down list (this window opens by clicking the arrow on the right side of the combo box).  If  inputting with a hexadecimal number,  add "0x" to the beginning.
+</p>
+
+<img src="gifs/f020106a.gif">
+
+<p>When the focus is in the dump area, it is possible to use the following <B>Move Keys</B>: </p>
+
+<ul>
+  <li>Cursor Key ...	Move cursor up, down, right and left.
+  <li>Page Up ...	Move upward
+  <li>Page Down ...	Move downward.
+  <li>Home ...		Move to the start of the data (offset 0)
+  <li>End ...		Move to the end of the current LBA.
+</ul>
+
+
+<p>It is possible to set up to 8 offset marks and jump to them.</p>
+
+<p>The mark jumps can even be performed between different LBAs. (Refer to <a href="#2-4">&quot;2 - 4. Using Marks&quot;</a>)</p>
+
+<hr>
+<a name="2-1-7">
+<u>2-1-7. Selecting Data Inside an LBA</u></a>
+
+<p>When copying or writing a certain pattern, you must select the write range.  This is done using a <strong>Shift + Move Key</strong> combination or by <strong>dragging the mouse</strong>.  </p>
+
+<p>Please refer to <a href="#2-1-6">"2-1-6"</a> for details about the move keys.  </p>
+
+<hr>
+<a name="2-1-8">
+<u>2-1-8.  Overwriting the Data Inside an LBA</u></a>
+
+<p>Data at the current position of the cursor  is overwritten when performing certain operations, such as:</p>
+
+<ul>
+  <li>Inputting  hexadecimal numbers in the binary dump area
+  <li>Inputting characters in the character dump area
+</ul>
+
+
+<p>Please be careful about rewriting the data.</p>
+
+<p>(We recommend creating a backup in advance.) </p>
+
+<p>When the <B>Write Disable Check Box</B> is marked, it is impossible to overwrite data.  </p>
+
+<hr>
+<a name="2-2">
+<b>2-2. Copy, Paste, and Pattern Write Operations</b></a>
+
+<hr>
+<a name="2-2-1">
+<u>2-2-1. Copying Data</u></a>
+
+<p>To copy a certain range of data to another place, follow the steps below:</p>
+
+<ol>
+  <li>Select the range that you want to copy.  Please refer to section "2-1-7" for information about how to select a range. 
+  <li>Press either the <B>CTRL + C</B> key combination, the <B>Copy Button</B> or from the menu <B>"Edit" > "Copy"</B>.
+  <li>Move the cursor to the start of where you want to copy the data.  
+  <li>Press either the <B>CTRL + V</B> key combination, the  <B>Paste Button</B>or from the menu <B>"Edit" > "Paste"</B>.
+</ol>
+
+<p>* The &quot;paste&quot; cannot extend beyond the LBA.</p>
+
+<p>* When &quot;pasting&quot;, make sure the <B>Write Disable Check Box</B> is not checked.</p>
+
+<img src="gifs/f020201a.gif" alt="[image]" width="297" height="123">
+
+<hr>
+<a name="2-2-2">
+<u>2-2-2. Pasting Data</u></a>
+
+<p>A range that has already been copied can be pasted again using either the <B>CTRL + V</B> key combination, the <B>Paste Button</B> or from the menu <B>"Edit" > "Paste"</B>.</P>
+
+
+<p>* When &quot;pasting&quot;, make sure the <B>Write Disable Check Box</B> is not checked.</p>
+
+<hr>
+<a name="2-2-3">
+<u>2-2-3. Pattern Writing</u></a>
+
+<p>To  write a selected range using a certain pattern, press the <B>CTRL + S</B> key combination. </p>
+
+<img src="gifs/f020203a.gif" alt="[image]" width="400" height="116">
+
+<p>This opens the dialog box shown above.</p>
+
+<p>Enter the pattern you want to write with in the <B>Pattern Input Edit Box</B>. </p>
+
+<p>When the cursor is in the binary dump area, please input with a hexadecimal number.  When the cursor is in the character dump area, please input with a character string. </p>
+
+
+<hr>
+<a name="2-3">
+<b>2-3. Searching for Data</b></a>
+
+<p>To locate specific data, use the Find function.</p>
+
+<p>The method is explained below.</p>
+
+<hr>
+<a name="2-3-1">
+<u>2-3-1. Find</u></a>
+
+<p>To find data, move the cursor to the starting position for the search and then press either the <B>CTRL + F</B> key combination, the <B>Find Button</B> or from the menu <B>"Find" > "Find"</B>.</p>
+
+<img src="gifs/f020301a.gif" alt="[image]" width="297" height="97">
+
+<p>The Find dialog box appears.: </p>
+
+<img src="gifs/f020301b.gif" alt="[image]" width="574" height="114">
+
+<dl>
+  <dt>
+      <ol>
+	<li>When searching with hexadecimal:
+      </ol>
+  <dd>Set the <B>Radio Button</B> to "Search with a hexadecimal number," and then input the hexadecimal string that you want to find in the <B>Edit Box</B>.   At this time, only hexadecimal numbers can be entered.  
+      <br><br>
+  <dt>
+      <ol start="2">
+	<li>When searching with a character string: 
+      </ol>
+  <dd>Set the <B>Radio Button</B> to "Search with a character string," and then input the character string that you want to find in the <B>Edit Box</B>.
+      <br><br>
+</dl>
+
+<p>After making the entry, press the <B>Enter</B> key or the <B>OK</B> button to begin the search.</p>
+
+<hr>
+<a name="2-3-2">
+<u>2-3-2. Find Next</u></a>
+
+<p>If, after finding the data, you want to search for the same data again, press either the <B>F3</B> key, the <B>Find Next</B> button, or from the menu <B>"Find" > "Find next."</B>  When this is done, the same data is searched for again.</p>
+
+<img src="gifs/f020302a.gif" alt="[image]" width="297" height="92">
+
+<hr>
+<a name="2-4">
+<b>2-4. Using Marks</b></a>
+
+<p>If the current cursor position is saved, it is possible to return to this place later with the press of a button.  The following sections explain how to set and cancel marks and perform mark jumps.  </p>
+
+<hr>
+<a name="2-4-1">
+<u>2-4-1. Setting and Canceling Marks</u></a>
+
+<p>When you want to set a mark, position the cursor at the desired location and then either press the <B>F1 key</B> or the <B>Mark Set button</B> or right-click to call up the pop-up menu and select <B>"Mark Set"</B></p>
+
+<img src="gifs/f020401a.gif">
+
+<p>When the mark is successfully set, a mark will be displayed at the current position.  The mark-set operation acts like a toggle, so to cancel a mark, simply perform the same mark-set operation at the place of the existing mark.</p>
+
+<p>* A maximum of 8 marks can be set.  </p>
+
+<hr>
+<a name="2-4-2">
+<u>2-4-2. Mark Jump</u></a>
+
+<p>To jump to a mark, either press the <B>F2 key</B> or the <B>Mark Jump Button</B> or right-click to open the pop-up menu and select <B>"Mark Jump."</B></p>
+
+<img src="gifs/f020402a.gif">
+
+<hr>
+<a name="2-5">
+<b>2-5. Viewing Data</b></a>
+
+<p>Use the Data View function to see how data is expressed in decimal or binary numbers, and  to look at data after the Endian is changed.</p>
+
+<hr>
+<a name="2-5-1">
+<u>2-5-1. Viewing Data </u></a>
+
+<p>Select the range of data range you want to view, and then either press the <B>F4 key</B> or the <B>View Data button</B>.</p>
+
+<img src="gifs/f020501a.gif">
+
+<p>Select a range of up to 4 bytes. </p>
+
+<img src="gifs/f020501b.gif">
+
+<p>When finished, click the <B>OK</B> button to close the dialog box.</p>
+
+<hr>
+<a name="3">
+<font face="arial" size="3">
+<b>Chapter 3  Precautions</b></a></font>
+<hr>
+<p>Please note the following precautions when using DDDump:</p>
+
+<ul>
+  <li>DDDump is designed to deal with one file. 
+  <li>When running multiple DDDumps, <B>never use the same file.</B>
+  <li>When editing, please rewrite <B>very carefully</B>.  <br>
+      (We recommend creating a backup using Explorer etc. in advance.)
+</ul>
+
+</BODY>
+</HTML>

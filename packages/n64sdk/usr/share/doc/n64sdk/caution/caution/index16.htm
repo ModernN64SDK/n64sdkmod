@@ -1,0 +1,40 @@
+<html>
+
+	<head>
+              <link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+		<!-- Edited by Ron Daring on 2/18/2000. Changed numbering "14" and "14-1" to "16" and "16-1" to make room for N64 Transfer Pak and General Cautions. -->
+		<base target="contents">
+		<title>Game Pak</title>
+	</head>
+       <body>
+
+		<font size="3" face="arial"><b><a name="p16"></a>16. Audio</b></font>
+		<p><font face="arial" size="2">16-1 <a href="#16-1">Prevention of Audio Pop (Required)</a></font></p>
+		<p><font face="arial" size="2">
+		<hr>
+		</font><font size="3" face="arial"><b><a name="16-1"></a>16-1 Prevention of Audio Pop (Required)</b></font></p>
+		<p><font face="arial" size="2"><b>Description</b></font></p>
+		<p><font face="arial" size="2">Perform audio initialization as soon as possible (within the first 500ms) after power is applied to the N64 Control Deck.</font></p>
+		<p><font face="arial" size="2"><b>Reason</b></font>
+		<p><font face="arial" size="2">The following three signals are input to the audio DAC.</font></p>
+		<ul>
+			<li><font face="arial" size="2">Audio clock</font>
+			<li><font face="arial" size="2">LR clock (indicates which signal, L/R, is being transferred)</font>
+			<li><font face="arial" size="2">Audio data</font>
+		</ul>
+		<p><font face="arial" size="2">When power is applied to the N64 Control Deck, DC bias is applied to the outputs (L and R) of the audio DAC. When the audio DAC is initialized (osAiSetFrequency called), the clock is input to the audio DAC and the DC bias voltage rises. An audio pop may be generated when the voltage rise is amplified by the audio amplifier.</font></p>
+		<p><font face="arial" size="2">Audio output is muted during the first 500ms after power is applied to the N64 Control Deck. The potential for this audio pop is greatly reduced if the audio initialization is performed during this period.</font></p>
+		<p><font face="arial" size="2"><b>Reference</b></font>
+		<p><font face="arial" size="2"><br>
+		</font></p>
+		<p><font face="arial" size="2"><b>Remarks</b></font>
+		<p><font face="arial" size="2">When using Partner-N64, the N64 OS initialization takes longer than the N64 Control Deck. Because of this, audio DAC initialization is done after the mute period and an audio pop is generated.</font></p>
+		<div align="right">
+			<p><a href="#p16"><font face="arial" size="2"><img src="../../gif/index.gif" border="0" width="65" height="17"></font></a></p>
+		</div>
+		<p><font face="arial" size="2">
+		<hr>
+		</font>
+	</body>
+
+</html>

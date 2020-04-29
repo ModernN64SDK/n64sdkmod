@@ -1,0 +1,52 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Author's Comments: JLR made formating edits for 4.1.
+MAP- added links, updated format>
+<title>alSynAddPlayer</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>alSynAddPlayer</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p>alSynAddPlayer</p>
+
+<p><i>Adds a client player to the synthesizer</i></p>
+
+<h3>Syntax</h3>
+<p>
+<blockquote>
+    <pre>#include &lt;libaudio.h&gt;     /* <a href="../../header/libaudio.htm">libaudio.h</a> */
+void alSynAddPlayer(ALSynth *drvr, ALPlayer *client);</pre>
+</blockquote>
+</p>
+<h3>Arguments</h3>
+<p>
+<dl>
+    <dt><strong>drvr</strong></dt>
+    <dd>Pointer to the synthesizer driver <br>
+        <br>
+        </dd>
+    <dt><strong>client</strong></dt>
+    <dd>Pointer to the client to be added<br>
+        <br>
+        </dd>
+</dl>
+</p>
+<h3>Description</h3>
+
+<p><tt>alSynAddPlayer</tt> adds a client player (for example, a sequence player) to the synthesizer driver. A synthesizer can have multiple players. All clients will be called back by the driver when client event times are reached. </p>
+
+<p>Ensure that this function is not called while a call to <a href="alAudioFrame.htm">alAudioFrame</a> is processing. This could happen if <tt>alSynAddPlayer</tt> is called from within a voice handler, or if the thread that calls <a href="alAudioFrame.htm">alAudioFrame</a> is blocked for some reason.</p>
+
+<p>Note that this function is for use by those who want to develop their own client players. This function is already called from within <a href="alSeqpNew.htm">alSeqpNew</a> and <a href="alSndpNew.htm">alSndpNew</a>. For information on how to build your own client player, see the audio section of the N64 Programming Manual.</p>
+
+<h3>See Also</h3>
+
+<p><a href="alSynRemovePlayer.htm">alSynRemovePlayer</a>, <A HREF="../al/alAudioFrame.htm">alAudioFrame</A><BR> </p>
+<h3>Revision History</h3>
+<p>1999/04/30  Changed Format</p>
+<br><br>
+</body>
+</html>

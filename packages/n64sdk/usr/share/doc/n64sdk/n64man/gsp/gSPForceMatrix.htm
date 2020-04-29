@@ -1,0 +1,56 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.>
+<TITLE>gSPForceMatrix</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>gSPForceMatrix [Macro]</H1>
+
+<p><b>Function</b></font></p>
+
+<p>gSPForceMatrix</p>
+<P>
+<i>Loads new matrix without performing multiplication</i>
+</P>
+<p><b>Syntax</b></font></p>
+<p>
+<PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gbi.htm">gbi.h</A> */
+gSPForceMatrix(Gfx *gdl, Mtx *mptr)
+gsSPForceMatrix(         Mtx *mptr)</CODE></PRE></p>
+
+<p><b>Arguments</b></font></p>
+<p>
+<DL>
+  <DT><B>gdl</B>
+  <DD>the display list pointer. 
+  <DT><B>mptr</B>
+  <DD>the pointer to the matrix to load. 
+</DL></p>
+<p><b>Description</b></font></p>
+<P>
+gSPForceMatrix loads a new matrix (indicated by <B>mptr</B>) on to the top of the RSP's matrix stack. Without undergoing matrix multiplication, this new matrix replaces the single matrix (the concatenated matrix of the modelview and projection matrices) used for the entire transformation. There is no matrix pushing or popping on the model view and projection matrix stacks, and the tops of the stacks are not modified. If <A HREF="gSPMatrix.htm">gSPMatrix</A> follows this macro, the matrix supplied by this macro will be destroyed, so it will have no effect on the RSP's new matrix (i.e., the result will be the same as if this macro had not been used). 
+</P>
+<P>
+This is an advanced macro. You need to have a good understanding of how matrices work in the RSP microcode before using this macro. For details, see <A HREF="gSPMatrix.htm">gSPMatrix</A> and Section 11.3, "Matrix State" in the N64 Online Programming Manual. 
+</P>
+<p><b>Note</b></font></p>
+<P>
+This macro does not affect lighting. Therefore, if this macro is used when light is being used, the object will be rendered in accordance with the light of the RSP matrix state prior to this macro. The object's position and orientation, however, will be determined by the matrix resulting from this macro. 
+</P>
+<P>
+For information about the matrix format, see <A HREF="gSPMatrix.htm">gSPMatrix</A>.
+</P>
+<p><b>See Also</b></font></p>
+<P>
+<A HREF="gSPInsertMatrix.htm">gSPInsertMatrix</A>, <A HREF="gSPMatrix.htm">gSPMatrix</A>
+</P>
+<p><b>Revision History</b></font></p>
+<P>
+02/01/99  Entirely revised.
+</P>
+</BODY>
+</HTML>

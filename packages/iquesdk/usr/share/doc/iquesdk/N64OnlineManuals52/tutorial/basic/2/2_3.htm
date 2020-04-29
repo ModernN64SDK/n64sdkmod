@@ -1,0 +1,34 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-N64 Programming Basics-Chapter 2  Mechanism of N64 Programming</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/20/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<FONT Style="font-size:12pt"><B>2.3  N64 Program Execution Flow</B></FONT>
+<br>
+<P>
+Next, we will move onto explaining N64 programs in a format closer to C language.  
+     In an N64 program, the first thing that is activated is the <tt>boot</tt> function specified by the programmer.  The way to specify this <tt>boot</tt> function is explained later in Section 2.8, "Compiling and Linking".  For the time being, we will only mention the function called, <tt>boot</tt>.<br><br>
+
+     The <tt>boot</tt> function it is the first function called in the program, so in this sense it is similar to the <tt>main</tt> function.  However, unlike the <tt>main</tt> function, the <tt>boot</tt> function does not need to call all the functions required for the program.
+</P>
+<P>
+<br><br><br>
+<IMG SRC="image02.gif">
+</P>
+<P>
+<B>Figure 2-1  <tt>boot</tt> function and threads</B>
+<br>
+</P>
+<P>
+For example, say the boot function activates Thread A.  If Thread A is in charge of the principal work of the program, then you can terminate the boot function at this point, since Thread A can be expected to accomplish its processes.  Actually, we are talking about general multi-thread programming here, and the situation is a little different for the N64.  We will explain this in detail in the next section. <br><br> 
+     Next, assume that Thread A activates Thread B, which performs other tasks.  Since a thread is a group of processes executing in parallel, Thread A can continue its own work even after activating Thread B.  <br><br>
+     In N64 programming, each thread is given a role to play, with one in charge of graphics processes and another in charge of audio playback, for example, and the threads all work together to realize operation of the whole program.<br><br>
+     In addition, you can set the order of priority for the various threads.  So when the graphics thread and the audio thread are both activated, the process can give priority to the audio thread, since the game player is more aware of an audio dropout than a loss of some video frames.
+</P>
+</BODY>
+</HTML>

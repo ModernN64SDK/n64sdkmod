@@ -1,0 +1,1900 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<title>Sprite Microcode S2DEX document</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<FONT FACE="Arial" SIZE="-1">
+
+<h2>4. S2DEX, GBIs</h2>
+
+<p align="right"><a href="index.htm"><img
+src="../../gif/index.gif" alt="[UP]" border="0"
+width="65" height="17"></a></p>
+
+<hr>
+
+<h3><a name="01">4.1 BG Render GBIs</a></h3>
+
+<p>S2DEX has been equipped with functions to easily create scroll screens in the respective vertically or horizontally looped closed areas with which past game hardware was equipped.  This will probably reduce the time and labor required to create a scrolling game like 2D Mario. 
+</p>
+
+<p align="right"><a href="index.htm"><img
+src="../../gif/index.gif" alt="[UP]" border="0"
+width="65" height="17"></a></p>
+
+<hr>
+
+<h4><a name="01-01">4.1.1 uObjBg Structure</a></h4>
+
+<p>The uObjBg structure holds the BG rendering data.  A pointer to this structure is provided as an argument for BG rendering GBIs.
+</p>
+
+<p>The uObjBg accurately comprises 3 common structures.  One is for aligning the structures on 8-byte boundaries, and no attention need be paid to this one.  The remaining two have data structures which correspond with the two BG rendering GBIs discussed below.</p>
+
+<p>The structure which corresponds with the BG rendering GBI by Copy mode described in 4.1.2 is uObjBg_t, and the structure which corresponds with the BG rendering GBI in 1 Cycle mode is uObjScaleBg_t.</p>
+
+<hr>
+
+<blockquote>
+    <pre><FONT SIZE="3">typedef union {
+        uObjBg_t        b;
+        uObjScaleBg_t   s;
+        long long int   force_structure_alignment;
+} uObjBg;
+</FONT></pre>
+</blockquote>
+
+<p align="right"><a href="index.htm"><img
+src="../../gif/index.gif" alt="[UP]" border="0"
+width="65" height="17"></a></p>
+
+<hr>
+
+<h5><a name="01-01-01">4.1.1.1 uObjBg_t Structure</a></h5>
+
+<p>The members of the uObjGb_t structure are divided into two groups -- a front half and a back half.</p>
+
+<p>The front half are member variables which are directly set by the user.  Rendering of the BG screen is controlled by controlling these values.  This front half is shared with the uObjScaleBg_t structure.</p>
+
+<p>In contrast to this, the back half comprises member variables for which values must be calculated in advance by the CPU in order to assist the microcode.  These member variables are set by calling the function guS2DInitBg() with the pointer to the uObjBg structure as the argument.  However, it is not necessary to call guS2DInitBg every time.</p>
+
+<p>Since the member variables of the latter half are extracted from the member variables of the front half --imageLoad, imageFmt, imageSiz, imageW, frameW -- It is only necessary to call guS2DInitBg immediately after those values have changed.</p>
+
+<p>Since these values normally do not frequently change when uObjBg is used as the BG screen, it is probably enough to call guS2DInitBg only once prior to using a BG screen.</p>
+
+<p>However, when the uObjBg data have changed due to the uObjScaleBg_t  structure, which is shared by uObjBg_t, being used, i.e., when the values for the member variables, scaleW, scaleH, imageYorig, of the uObjScaleBg_t structure have changed, the member variables in the latter half of uObjBg_t may be overwritten.  In this kind of situation, it probably will be necessary to call guS2DInitBg again.</p>
+
+<p>Following is the section in the gs2dex.h header file in which uObjBg is defined.  The size of uObjBg is 40 bytes and uObjBg must be aligned at 8 bytes.</p>
+
+<p>The front half member is explained under the item describing an actual GBI. While the arrangement of the member variables is somewhat difficult, please understand that it is an unavoidable circumstance in the optimization of RSP processing.</p>
+
+<p>Please note that the format for the member variables imagePal and imageFlip changed from u8 to u16 in S2DEX Release 1.00 and later.
+</p>
+
+<hr>
+
+<pre><FONT SIZE="3"><tt>typedef struct  {
+    u16 imageX;     // X coordinate at upper-left position of BG image  (u10.5)
+    u16 imageW;     // BG image width 					(u10.2)
+    s16 frameX;     // Upper-left position of transfer frame		(s10.2)
+    u16 frameW;     // Transfer frame width		                (u10.2)
+    u16 imageY;     // Y coordinate at upper left position of BG image	(u10.5)
+    u16 imageH;     // BG image height			                (u10.2)
+    s16 frameY;     // Upper-left position of transfer frame	        (s10.2)
+    u16 frameH;     // Transfer frame height		                (u10.2)
+
+    u64 *imagePtr;  // Texture address at upper-left position of BG image
+    u16 imageLoad;  // Use LoadBlock or LoadTile?
+    u8  imageFmt;   // BG image format		     G_IM_FMT_*
+    u8  imageSiz;   // BG image size	             G_IM_SIZ_*
+    u16 imagePal;   // Pallette number
+    u16 imageFlip;  // Flip image with horizontal flip G_BG_FLAG_FLIPS
+                    // Up to this point is shared by uObgScaleBg_t
+                    // Since the following are set in the initialization routin
+                    // guS2DInitBg() they do not need to be set by the user
+    u16 tmemW;      // TMEM width Word size for frame 1 line
+                    // When LoadBlock 	GS_PIX2TMEM(imageW/4,imageSiz)
+                    // When LoadTile 	GS_PIX2TMEM(frameW/4,imageSiz)+1 
+    u16 tmemH;      // Quadruple TMEM height(s13.2) which can be loaded at once                    // When normal texture 512/tmemW*4
+                    // When CI Texture 	256/tmemW*4
+    u16 tmemLoadSH; // SH value
+                    // When LoadBlock  	tmemSize/2-1
+                    // When LoadTile 	tmemW*16-1
+    u16 tmemLoadTH; // TH value or Stride value 
+                    // When LoadBlock 	GS_CALC_DXT(tmemW)
+                    // When LoadTile  	tmemH-1
+    u16 tmemSizeW;  // imagePtr skip value for one line of image 1
+                    // When LoadBlock 	tmemW*2
+                    // When LoadTile  	GS_PIX2TMEM(imageW/4,imageSiz)*2
+    u16 tmemSize;   // imagePtr skip value for one load iteration
+                    // = tmemSizeW*tmemH
+} uObjBg_t;         // 40 bytes
+</tt></FONT></pre>
+
+<hr>
+
+<p>Definition of initialization function guS2DInitBg</p>
+
+<hr>
+
+<p><strong>void guS2DInitBg(uObjBg *bg);</strong></p>
+
+<dl>
+    <dt><strong>Description:</strong></dt>
+    <dd>Initializes uObjBg structure (uObjBg_t). GBI of S2DEX microcode results unexpected behaviors if it takesnon-initialized uObjBg structure as its parameter.<br>
+        <br>
+        </dd>
+    <dt><strong>Argument:</strong></dt>
+    <dd>bg<dl>
+            <dd>Pointer to uObjBg structure</dd>
+        </dl>
+    </dd>
+</dl>
+
+<p align="right"><a href="index.htm"><img
+src="../../gif/index.gif" alt="[UP]" border="0"
+width="65" height="17"></a></p>
+
+<hr>
+
+<h5><a name="01-01-02">4.1.1.2 uObjScaleBg_t Structure</a></h5>
+
+<p>The members of the uObjScaleBg_t structure have no variables for which the values must be calculated in advance by the CPU as with uObjBg_t.  All of the member variables are directly set by the user.  Rendering of the BG screen is controlled in this way.
+</p>
+
+<p>In addition, when shared by the uObjBg structure, the uObjScaleBg_t member variables from imageX through imageFlip are shared by the uObjBg_t structure.</p>
+
+<hr>
+
+<blockquote>
+    <pre><FONT SIZE="3">typedef struct  {
+    u16 imageX;     // X coordinate at upper-left position of BG image	(u10.5)
+    u16 imageW;     // BG image width			                (u10.2)
+    s16 frameX;     // Upper-left position of transfer frame	        (s10.2)
+    u16 frameW;     // Transfer frame width		                (u10.2)
+    u16 imageY;     // Y coordinate at upper-left position of BG image  (u10.5)
+    u16 imageH;     // BG image height			                (u10.2)
+    s16 frameY;     // Upper-left position of transfer frame	        (s10.2)
+    u16 frameH;     // Transfer frame height		                (u10.2)
+
+    u64 *imagePtr;  // Texture address of BG image upper-left corner
+    u16 imageLoad;  // Use LoadBlock or LoadTile?
+    u8  imageFmt;   // BG image format	           G_IM_FMT_*
+    u8  imageSiz;   // BG image size	           G_IM_SIZ_*
+    u16 imagePal;   // Pallette number
+    u16 imageFlip;  // Flip image with horizontal flip G_BG_FLAG_FLIP
+                    // Up to this point is shared by uObjBG_t
+    u16 scaleW;     // Scale value in X direction  (u5.10)
+    u16 scaleH;     // Scale value in Y direction  (u5.10)
+    s32 imageYorig; // Rendering origin in image   (s20.5)
+    u8  padding[4];
+} uObjScaleBg_t;    // 40 bytes</FONT></pre>
+</blockquote>
+
+<p align="right"><a href="index.htm"><img
+src="../../gif/index.gif" alt="[UP]" border="0"
+width="65" height="17"></a></p>
+
+<hr>
+
+<h4><a name="01-02">4.1.2 gSPBgRectCopy</a></h4>
+
+<hr>
+
+<blockquote>
+    <pre><FONT SIZE="3">gSPBgRectCopy(Gfx *gdl, uObjBg *bg)
+gsSPBgRectCopy(uObjBg *bg)
+Gfx        *gdl;       Display list point
+uObjBg     *bg;        Pointer to rendering data structure
+</FONT></pre>
+</blockquote>
+
+<hr>
+
+<p>g[s]SPBgRectCopy  is one of the BG screen rendering GBIs provided by S2DEX, and is the most simple.  It has the following features.</p>
+
+<hr>
+
+<ul>
+    <li> Scaling possible</li>
+    <li> Scrolling is possible in respective vertically and horizontally looped closed areas</li>
+    <li> Texture can be flipped only horizontally, vertical flipping is not possible</li>
+    <li> Dedicated for rendering in Copy mode</li>
+    <li> Texture interpolated display, sub-pixel motion not possible</li>
+    <li> Anti-Alias processing not possible</li>
+    <li> Rendering by sequentially loading texture data in DRAM to TMEM on GBI side</li>
+</ul>
+
+<hr>
+
+<p>Since rendering in Copy mode is presumed, its greatest advantage is its high speed.  Because of this, CycleType must be in Copy mode when this GBI is used.</p>
+
+<p>The BG function in S2DEX transfer data from the BG image buffer to a rectangular area in the actual frame buffer, as shown below.  Scrolling is possible by using imageX and imageY to specify the place in the BG image buffer to which the upper-left corner of the rectangular area in the frame buffer at that time (hereinafter, the transfer frame) corresponds.  These variables imageX and imageY can be specified in the (u10.5) format, but due to restrictions in using the Copy mode, the values for imageX and imageY must be rounded to the nearest integer value.</p>
+
+<blockquote>
+<font face="courier" SIZE="2">
+<pre>   
+  BG image                        Color Frame Buffer 
+                                +--------------------+ 
++------------+   ^              |(frameX,frameY)     | 
+|  |         |   |              | *------------+ ^   | 
+|--*---------|   |              | |            | |   | 
+|  |(imageX, | imageH           | |            | |   | 
+|  | imageY) |   |              | |            |frameH 
+|  |         |   |              | |            | |   | 
++------------+   v              | |Trans  Frame| |   | 
+<-- imageW --&gt;                  | +------------+ v   | 
+                                  |&lt;-- frameW --&gt;| 
+                                +--------------------+
+</pre></font>
+</blockquote>
+
+<p>The size of the BG image is set with imageW and imageH, and the head address (address of the upper-left corner) is specified by imagePtr.  In other words, the Bg image can be viewed as imageW wide by imageH high texture data whose head is at the address imagePtr.</p>
+
+<p>The width imageW of the BG image must be aligned on 8 bytes.  Since the values for imageW and imageH which are actually used are in (u10.2) format, it is necessary to substitute the 4x value.  Taking the (u10.2) format into consideration, the concrete limitations on imageW when it has been quadrupled are shown below.  There is no need to align imageH.</p>
+
+<hr>
+
+<blockquote>
+<pre><FONT SIZE="3">G_IM_SIZ_4b:      imageW must be a multiple of 64
+G_IM_SIZ_8b:      imageW must be a multiple of 32
+G_IM_SIZ_16b:     imageW must be a multiple of 16
+G_IM_SIZ_32b:     imageW must be a multiple of 8</FONT></pre>
+</blockquote>
+
+<hr>
+
+<p>In addition, when doing horizontal scrolling, imageW must be greater than frameW.  The following values are the values when considering the (u10.2) format.  In the case of G_IM_SIZ_16b, it must be increased by 4 pixels. 
+</p>
+
+<hr>
+
+<blockquote>
+    <pre><FONT SIZE="3">G_IM_SIZ_4b:        frameW+64 &lt;= imageW 
+G_IM_SIZ_8b:        frameW+32 &lt;= imageW 
+G_IM_SIZ_16b:       frameW+16 &lt;= imageW 
+G_IM_SIZ_32b:       frameW+ 8 &lt;= imageW</FONT></pre>
+</blockquote>
+
+<hr>
+
+<p>The size of the transfer frame is specified by frameW and frameH, and the position on the screen of the upper-left corner of the transfer frame is specified by frameX and frameY.  The frameW/frameH parameters are in (u10.2) format, while the frameX/frameY parameters are in (s10.2) format.  In other words, negative numbers can be specified as the values for frameX and frameY, and if the transfer is projected from a scissor box specified by g[s]DPSetScissor, the microcode will clip the projecting part.</p>
+
+<p>There is a problem if the BG image is larger than the transfer frame, but proper functioning cannot be guaranteed if the transfer frame conversely is larger than the BG image.  Please be careful that the transfer frame does not become larger than the BG image.</p>
+
+<p>In addition, right edge and left edge of the BG image are shifted one step in the Y direction to make a smooth transition.  Concretely speaking, the one pixel to the right of the pixel at the right edge of the BG image (imageW-1,n) is (0,n+1).  This is necessary to improve the RDRAM access efficiency when loading the Texture.  Persons creating applications should be fully aware of this.
+</p>
+
+<p>The format and size of textures in the BG image are substituted into imageFmt and imageSiz by the macros G_IM_FMT_* and G_IM_SIZ_*, respectively.  In addition, when using CI4 textures, the TLUT number is specified in imagePal.</p>
+
+<p>There are two methods for loading textures in a BG image.  These are the method of using LoadBlock and that of using LoadTile.  Since there are various advantages and disadvantages to each of these two methods, the user is able to select which of these two methods will be used by the member variable imageLoad.  The following values (G_BGLT_*) are substituted into imageLoad.</p>
+
+<hr>
+
+<table border="1">
+    <tr>
+        <th nowrap><FONT SIZE="-1">imageLoad Value</FONT></th>
+        <th nowrap><FONT SIZE="-1">Meaning</FONT></th>
+    </tr>
+    <tr>
+        <td nowrap><FONT SIZE="-1">G_BGLT_LOADBLOCK</FONT></td>
+        <td nowrap><FONT SIZE="-1">Use LoadBlock</FONT></td>
+    </tr>
+    <tr>
+        <td nowrap><FONT SIZE="-1">G_BGLT_LOADTILE</FONT></td>
+        <td nowrap><FONT SIZE="-1">Use LoadTile</FONT></td>
+    </tr>
+</table>
+
+<p>Using LoadBlock will, under certain conditions, yield the maximum performance, but it cannot be used unless those conditions are met, and it has a great deal of overhead for processing.  In contrast, LoadTile performs processing at suitable performance under virtually any circumstances.  Consequently, it is recommended that you switch back and forth so that you use LoadBlock under the conditions in which LoadBlock will operate effectively, and use LoadTile in any other situations.
+</p>
+
+<p>The conditions under which LoadBlock would be used are those in which there are restrictions on the width of the BG image that can be used.  The values for imageW which can be processed by LoadBlock are as follows, when imageSiz is 16 bits.</p>
+
+<blockquote>
+    <p>4, 8, 12, 16, 20, 24, 28, 32, 36, 40, 48, 64, 72, 76, 100,
+    108, 128, 144, 152, 164, 200, 216, 228, 256, 304, 328, 432,
+    456, 512, 684, 820, 912</p>
+</blockquote>
+
+<p>When imageSiz is 8 bits, the number string when the various items in the above number string have each been doubled becomes the value for imageW.  Similarly, when it is 4 bits, the numbers are quadrupled, and when it is 32 bits, the numbers are halved.  This coincides with the expression in Appendix A in Chapter 13 of the N64 Programming Manual which states that, "there is a limit to the number of lines which can be transferred with the LoadBlock command."  If the width of the BG image cannot be processed with LoadBlock, you have no choice but to use LoadTile. 
+</p>
+
+<p>In order for LoadBlock to render one line of the transfer frame, one entire line worth of the corresponding BG image is loaded.  Since a normal scrolling BG screen requires that a slightly larger BG image be available for the BG refresh area, imageW>frameW must be true.  Because of this, excess data are loaded when LoadBlock is used. 
+</p>
+
+<p>In contrast, LoadTile loads no more than the required amount of data.  Since the LoadBlock command performs processing faster than the LoadTile command, LoadBlock is more advantageous when that difference is several pixels, but if imageW is a fair amount larger than frameW, the resulting excess load processing produces a large overhead and it becomes advantageous to use LoadTile.  Thus, it is necessary to select which of these to use taking this point into consideration.
+</p>
+
+<p>As a typical example, a BG screen which covers the entire screen (320x240) is defined.</p>
+
+<p>Because the transfer frame is the entire frame, frameW=320 pixels.  Then, when 8 pixels are set aside as the BG refresh area, imageW=328 pixels.  In this case, since the difference between frameW and imageW is slight, LoadBlock may be used at 328 pixels.</p>
+
+<p>Flipping of the BG image in only the horizontal direction is supported by this GBI.  Substitute G_BG_FLAG_FLIPS in the member variable imageFlip to flip the texture image.  Substitute a 0 [zero] for normal display (not flipped).</p>
+
+<p align="right"><a href="index.htm"><img
+src="../../gif/index.gif" alt="[UP]" border="0"
+width="65" height="17"></a></p>
+
+<hr>
+
+<h4><a name="01-03">4.1.3 gSPBgRect1Cyc</a></h4>
+
+<hr>
+
+<blockquote>
+    <pre><FONT SIZE="3"><strong>gSPBgRect1Cyc(Gfx *gdl, uObjBg *bg)
+gsSPBgRect1Cyc(uObjBg *bg)</strong></FONT></pre>
+</blockquote>
+
+<table border="0" cols="3">
+    <tr>
+        <td nowrap><FONT SIZE="-1">Gfx</FONT></td>
+        <td nowrap><FONT SIZE="-1">*gdl;</FONT></td>
+        <td nowrap><FONT SIZE="-1">Display list pointer</FONT></td>
+    </tr>
+    <tr>
+        <td nowrap><FONT SIZE="-1">uObjBg</FONT></td>
+        <td nowrap><FONT SIZE="-1">*bg;</FONT></td>
+        <td nowrap><FONT SIZE="-1">Pointer to BG rendering data structure</FONT></td>
+    </tr>
+</table>
+
+<hr>
+
+<p>g[s]SPBgRect1Cyc is one of the BG screen rendering GBIs provided by S2DEX which enables scaling of BG screens.  Its features are shown below.</p>
+
+<hr>
+
+<ul>
+    <li> Scaling possible</li>
+    <li> Scrolling is possible in respective vertically and horizontally looped closed areas</li>
+    <li> Texture can be flipped only horizontally, vertical flipping is not possible</li>
+    <li> Dedicated for rendering in 1 Cycle mode</li>
+    <li> Texture interpolated display possible, sub-pixel motion possible only in horizontal direction</li>
+    <li> Anti-Alias processing not possible</li>
+    <li> Rendering by sequentially loading texture data in DRAM to TMEM on GBI side</li>
+</ul>
+
+<hr>
+
+<p>Please note that this GBI cannot be used in Copy mode.
+</p>
+
+<p>The parameters required for rendering with g[s]SPBgRect1Cyc are the parameters which are required when using g[s]SPBgRectCopy described in 4.1.2, plus scaleW, scaleH, and imageYorig.  See Section 4.1.2 for descriptions of the parameters which are common with g[s]SPBgRectCopy.  The additional parameters will be explained here. 
+</p>
+
+<p>The biggest difference between g[s]SPBgRect1Cyc and  g[s]SPBgRectCopy is that it supports BG scaling.  Scaling of the BG is controlled by the member variables scaleW and scaleH of the uObjScaleBg_t structure.  This scaling is centered on the BG image (imageX, imageY).</p>
+
+<p>In other words, even when the BG image is scaled, it is rendered in the same (frameX, frameY) location in the frame buffer as when the BG image (imageX,imageY) is not scaled.  (However, when it is flipped horizontally, it is rendered at the position (frameX+frameW-1,frameY).)</p>
+
+<p>In addition, during enlargement, the image is clamped by the size of the frame.  Conversely, during reduction, there are cases in which the frame is clamped by the size of the image.  Refer to the S2DEX sample program regarding this.</p>
+
+<p>However, there are cases in which the clamping on the frame during reduction is slightly larger or smaller due to calculation differences.  If a strict size is required, set the size by calculating frameW and frameH on the CPU side.</p>
+
+<p>Bilinear interpolated display of an image is supported by  g[s]SPBgRect1Cyc.  When bilinear interpolated display is used, jaggies are less apparent in the texels, making them apparently more smooth, during enlargement.  However, this effect is minimized during reduction.
+</p>
+
+<p>When bilinear interpolation is used, RDP rendering performance is decreased as compared to when it is not used.  Since the percentage of this decrease increases to the extent that the number of image lines which can be loaded at once is small, when a case in which a 320x240 image is rendered at 1:1 size in a 320x240 frame is compared with a case in which a 640x480 image is rendered reduced by 1/2, the proportion of overhead will increase due to the 640x480 image using bilinear interpolation, substantially reducing performance even more than when a 640x480 is similarly reduced and displayed by point sampling.  Considering that the effect of bilinear interpolation becomes minimal during reduction, as explained above, one should also look into switching to point sampling during reduction.
+</p>
+
+<p>g[s]SPBgRect1Cyc renders an image by automatically dividing it into multiple sub-planes, but if this division processing is carelessly performed, there is the possibility that unnatural wrinkles will appear in the rendering result.  This is especially noticeable during scrolling processing,  and uObjScaleBg_t is equipped with the member variable imageYorig in order to prevent these wrinkles.  The value for imageYorig indicates the Y coordinate of the origin of scaling, but it also indicates the division origin of the sub-plane.  Thus, is possible to avoid the wrinkles described above.  Typically, imageYorig operates as follows.</p>
+
+<dl>
+    <dt>o During initialization:</dt>
+    <dd>The value for imageY is substituted for imageYorig<br>
+        <br>
+        </dd>
+    <dt>o When the value for scaleH has been changed:</dt>
+    <dd>The value for imageY is substituted for imageYorig<br>
+        <br>
+        </dd>
+    <dt>o When imageX and imageY are wrap processed:</dt>
+    <dd>The same processing that is performed on imageY is performed also on imageYorig<br>
+        <br>
+        </dd>
+    <dt>o When only imageY is to be changed</dt>
+    <dd>Do not change imageYorig<br>
+        <br>
+        </dd>
+    <dt>Based on the above, the processing when scrolling the image by only dx, dy is shown below.</dt>
+</dl>
+
+<hr>
+
+<blockquote>
+    <pre><FONT SIZE="3">/* Add the scroll value */
+bg-&gt;s.imageX += dx;
+bg-&gt;s.imageY += dy;
+
+/* Wrap processing of screen edge */
+if (bg-&gt;s.imageX &lt; 0){
+        bg-&gt;s.imageX         += bg-&gt;s.imageW;
+        bg-&gt;s.imageY         -= 32;
+        bg-&gt;s.imageYorig -= 32;
+}
+
+if (bg-&gt;s.imageX &gt;= bg-&gt;s.imageW){
+        bg-&gt;s.imageX         -= bg-&gt;s.imageW;
+        bg-&gt;s.imageY         += 32;
+        bg-&gt;s.imageYorig += 32;
+}
+
+if (bg-&gt;s.imageY &lt; 0){
+        bg-&gt;s.imageY         += bg-&gt;s.imageH;
+        bg-&gt;s.imageYorig += bg-&gt;s.imageH;
+}
+
+if (bg-&gt;s.imageY &gt;= bg-&gt;s.imageH){
+        bg-&gt;s.imageY         -= bg-&gt;s.imageH;
+        bg-&gt;s.imageYorig -= bg-&gt;s.imageH;
+}</FONT></pre>
+</blockquote>
+
+<hr>
+
+<p>With this GBI, as when in the COPY mode, flipping of the BG image in only the horizontal direction is supported.  Substitute G_BG_FLAG_FLIPS in the member variable imageFlip to flip the texture image.  Substitute a 0 [zero] for normal display (not flipped). </p>
+
+<p>When using this GBI, the value for the member variable imagePtr of the uObjScaleBg_t structure is limited.  A location from the head of RDRAM to the 4069 byte must not be specified as the value of imagePtr.  These are the addresses from 0x00000000 to 0x00000fff of the so-called physical addresses, and so the value for imagePtr after segment conversion must not be in this range.  Please make a note of this.</p>
+
+<p>This GBI is installed with S2DEX Release 1.00 and later.</p>
+
+<p>The function guS2DEmuBgRect1Cyc has been added which emulates processing which is equivalent to gSPBgRect1Cyc from S2DEX Release 0.75 by combining several GBIs such as gSPTextureRectangle, etc. It is possible to render scalable BG screens even when this is used.  Refer to Chapter 5 for details.</p>
+
+<p align="right"><a href="index.htm"><img
+src="../../gif/index.gif" alt="[UP]" border="0"
+width="65" height="17"></a></p>
+
+<hr>
+
+<h3><a name="02">4.2 Sprite Rendering GBIs</a></h3>
+
+<p>The sprites referred to here are the same as OBJECTs in past Famicom and SuperFamicom.  Since sprites are used to render an area which is smaller than the BG screen, historically, they have come to be well used as Player characters.  With S2DEX, processing such as scaling and rotation become possible for conventional sprites.  In addition, since bilinear interpolation processing is also possible during enlargement, more natural realization is made possible.
+</p>
+
+<p>A conversion matrix is provided in the 2D coordinate system in order to support sprite rotation.  By setting the various elements in this matrix, it is possible to freely rotate the sprite.  This matrix must be set up prior to rendering processing of the sprite.  In addition, unlike the matrixes in Fast3D and F3DEX microcodes, since there is no matrix stack, Push/Pop cannot be done.  In addition, matrix multiplication is also disabled.  Only load processing is possible.  (See section 4.3)</p>
+
+<p>In the S2DEX sprite function, there are specifications that allow TMEM loading processing, sprite rendering processing, and there are other GBIs that perform various other functions.  In other words, when rendering a sprite, the texture used by the sprite must already be loaded using a texture load GBI (See section 4.5).
+</p>
+
+<p>The rendering modes for sprites can be generally divided into those which allow rotation and those which do not, and processing is performed by the corresponding GBI, as shown below.</p>
+
+<hr>
+
+<table border="1">
+    <tr>
+        <th nowrap><FONT SIZE="-1">Render Mode</FONT></th>
+        <th nowrap><FONT SIZE="-1">Corresponding GBI</FONT></th>
+    </tr>
+    <tr>
+        <td><FONT SIZE="-1">No rotation</FONT></td>
+        <td><FONT SIZE="-1">g[s]SPObjRectangle, g[s]SPObjRectangleR</FONT></td>
+    </tr>
+    <tr>
+        <td><FONT SIZE="-1">Rotation</FONT></td>
+        <td><FONT SIZE="-1">g[s]SPObjSprite</FONT></td>
+    </tr>
+</table>
+
+<p align="right"><a href="index.htm"><img
+src="../../gif/index.gif" alt="[UP]" border="0"
+width="65" height="17"></a></p>
+
+<hr>
+
+<h4><a name="02-01">4.2.1 uObjSprite Structure</a></h4>
+
+<p>The uObjsprite structure is the structure which handles sprite information.  Pointers are given in the sprite rendering GBI to this structure as arguments. 
+
+<hr>
+
+<blockquote>
+    <pre><FONT SIZE="3">typedef struct {
+    s16 objX;       // s10.2    X coordinate at upper-left of OBJ
+    u16 scaleW;     // u5.10    Scaling in width direction
+    u16 imageW;     // u10.5    Width of texture (length in S direction)
+    u16 paddingX;   // Not used    Always 0
+    s16 objY;       // s10.2    Y coordinate at upper-left of OBJ
+    u16 scaleH;     // u5.10    Scaling in height direction 
+    u16 imageH;     // u10.5    Height of texture (length in T direction)
+    u16 paddingY;   // Not used   Always 0
+    u16 imageStride;// Texel wrap width (64 bit word units)
+    u16 imageAdrs;  // Texture head position in TMEM (64 bit word units)
+    u8  imageFmt;   // Texel format    G_IM_FMT_*
+    u8  imageSiz;   // Texel size          G_IM_SIZ_*
+    u8  imagePal;   // Pallette number
+    u8  imageFlags; // Display flags
+} uObjSprite_t;     // 24 bytes
+
+typedef union {
+    uObjSprite_t    s;
+    long long int   force_structure_alignment;
+} uObjSprite;</FONT></pre>
+</blockquote>
+
+<hr>
+
+<p>While the arrangement of the member variables is somewhat difficult, please understand that, as with the uObjBg structure, it is an unavoidable circumstance in the optimization of RSP processing.</p>
+
+<p align="right"><a href="index.htm"><img
+src="../../gif/index.gif" alt="[UP]" border="0"
+width="65" height="17"></a></p>
+
+<hr>
+
+<h4><a name="02-02">4.2.2 uObjMtx/uObjSubMtx Structures</a></h4>
+
+<p>An area is provided in the S2DEX microcode for maintaining a 2D matrix for the control of sprite rotation.  There are 8 parameters {A, B, C, D, X, Y, BaseScaleX, BaseScaleY).</p>
+
+<p>The uObjMtx structure is used to alter the entire 2D matrix on a 1:1 correlation with this 2D matrix area.  See section 4.2.5 regarding rotation processing using this 2D matrix.</p>
+
+<hr>
+
+<blockquote>
+    <pre><FONT SIZE="3">typedef struct {
+        s32     A, B, C, D;        /* s15.16 */
+        s16     X, Y;              /* s10.2  */
+        u16     BaseScaleX;        /* u5.10  */
+        u16     BaseScaleY;        /* u5.10  */
+} uObjMtx_t;                       /* 24 bytes */
+
+typedef union {
+        uObjMtx_t        m;
+        long long int    force_structure_alignment;
+} uObjMtx;</FONT></pre>
+</blockquote>
+
+<hr>
+
+<p>uObjSubMtx is a subset of uObjMtx which is used to alter only those elements outside the 2D matrix rotation matrix {x, y, BaseScaleX, BaseScaleY}, and is primarily used when rendering a sprite using g[s]SPObgRectangleR.  This is explained in detail in section 4.2.4.</p>
+
+<hr>
+
+<blockquote>
+    <pre><FONT SIZE="3">typedef struct {
+        s16     X, Y;             /* s10.2  */
+        u16     BaseScaleX;       /* u5.10  */
+        u16     BaseScaleY;       /* u5.10  */
+} uObjSubMtx_t;                   /* 8 bytes */
+
+typedef union {
+        uObjSubMtx_t        m;
+        long long int       force_structure_alignment;
+} uObjSubMtx;</FONT></pre>
+</blockquote>
+
+<hr>
+
+<p>The 8 elements in the 2D matrix {A, B, C, D, W, Y, BaseScaleX, BaseScaleY} are referred to by g[s]SPObjsprite and g[s]SPRectangleR.  However, this does not necessarily mean that all 8 of the elements are referenced.  Reference is done as shown below.  {X,Y} are referenced in both cases.</p>
+
+<blockquote>
+    <pre><FONT face="courier" SIZE="3">+- Referenced by g[s]SPObjSprite -+
+|                          |
+|    A, B    +-------------+----------------+
+|    C, D    |     X, Y    |   BaseScaleX   |
++------------+-------------+   BaseScaleY   |
+             |                              |
+             +- Referenced by g[s]SPObjRectangleR -+</FONT></pre>
+</blockquote>
+
+<p align="right"><a href="index.htm"><img
+src="../../gif/index.gif" alt="[UP]" border="0"
+width="65" height="17"></a></p>
+
+<hr>
+
+<h4><a name="02-03">4.2.3 gSPObjRectangle</a></h4>
+
+<hr>
+
+<blockquote>
+    <pre><FONT SIZE="3"><strong>gSPObjRectangle(Gfx *gdl, uObjSprite *sp)
+gsSPObjRectangle(uObjSprite *sp)</strong></FONT></pre>
+</blockquote>
+
+<table border="0" cols="3">
+    <tr>
+        <td nowrap><FONT SIZE="-1">Gfx</FONT></td>
+        <td nowrap><FONT SIZE="-1">*gd;</FONT></td>
+        <td nowrap><FONT SIZE="-1">Display list pointer</FONT></td>
+    </tr>
+    <tr>
+        <td nowrap><FONT SIZE="-1">uObjSprite</FONT></td>
+        <td nowrap><FONT SIZE="-1">*sp;</FONT></td>
+        <td nowrap><FONT SIZE="-1">Pointer to Sprite rendering data structure</FONT></td>
+    </tr>
+</table>
+
+<hr>
+
+<p>g[s]SPObjRectangle is one of the sprite rendering GBIs provided by S2DEX, and is used to render sprites which do not rotate.  The processing which occurs inside the RSP is to create a TextureRectangle command from the data in the uObjsprite structure which has been input, and then send said command to the RDP.</p>
+
+<p>The g[s]SPObjRectangle GBI renders the texture in a rectangular area whose screen coordinates at the upper-left corner are (objX, objY) and whose coordinates at the lower-right corner are (objX+imageW/scaleW-1, objY+imageH/scaleY-1).  The texture area which is rendered is the one whose upper-left corner is (0,0) and whose lower-right corner is (imageW-1, imageH-1).  If scaleW and scaleH are 1<<10, the texture is rendered at 1:1 magnification, without any scaling.</p>
+
+<blockquote>
+    <pre><FONT face="courier" SIZE="3">       +--------TMEM--------+      +---------Frame Buffer---------+
+       |                    |      |(objX,objY)                   |
+       |        (0,0)       |      |   X-------------+            |
+   imageAdrs-&gt;X---------+   |      |   |             |            |
+       |      | Texture |   |      |   | Sprite Area |            |
+       |      |  Area   |   | ===&gt; |   |             |            |
+       |      |         |   |      |   |             |            |
+       |      +---------X   |      |   |             |            |
+       +------------- (imageW-1,   |   +-------------X            |
+                         imageH-1) |       (objX+imageW/scaleW-1, |
+                                   |        objY+imageH/scaleH-1) |
+                                   |                              |
+                                   +------------------------------+</FONT></pre>
+</blockquote>
+
+<p>In addition, during sprite rendering, clip processing of the rendering area is automatically performed, referring to the scissor box which has been set by gDPSetScissor.  Because of this, it is also possible to set negative values as the values for objX and objY.
+</p>
+
+<p>The TMEM address which corresponds with the origin (0,0) of the texture area can be specified by imageadrs.  Normally, the head load location in TMEM which has been specified in the texture loading GBI is specified as imageAdrs.  It would probably be convenient to use the macro GS_PIX2TMEM() when making this specification.  GS_PIX2TMEME() is a macro which converts the numeric value in pixel units to one in TMEM address units, and is defined in gs2dex.h.</p>
+
+<hr>
+
+<dl>
+    <dt><strong>GS_PIX2TMEM(pix,siz)</strong></dt>
+    <dd>pix: Number of pixels</dd>
+    <dd>siz: Specified by size of one texel G_IM_SIZ_*</dd>
+</dl>
+
+<hr>
+
+<p>In addition, the horizontal width (wrap width) when loading a texture is set in imageStride.  This is because there may be a difference between the width of the texture when it was loaded and the value for imageW for the sprite which is actually rendered.  GS_PIX2TMEM() can be used here as well since this is also specified in TMEM address units.</p>
+
+<p>When these imageAdrs and imageStride specifications are employed, several small textures (sub-textures) are laded inside TMEM and textures can be selected from among these by setting the following values in imageAdrs.
+</p>
+
+<blockquote>
+    <pre><FONT SIZE="3">imageW          = (Sub-texture width); 
+imageH          = (Sub-texture height); 
+imageAdrs       = GS_PIX2TMEM((S coordinate inside TMEM)+ 
+                  (T coordinate inside TMEM)*(Texture width when loaded), 
+                                                G_IM_SIZ_*); 
+imageStride = GS_PIX2TMEM(Texture width when loaded);</FONT></pre>
+</blockquote>
+
+<p>Concretely, a large texture is prepared first which combines 4 textures as follows.</p>
+
+<blockquote>
+    <pre><FONT face="courier" SIZE="3">     &lt;---------- 64 ---------&gt;
+   ^ +-----------+-----+-----+
+   | |           |     |     |
+   | |           |  B  |  C  | 16
+32 | |     A     +-----+-----+
+   | |           |           |
+   | |           |     D     | 16
+   v +-----------+-----------+
+     &lt;---- 32 ---&gt;  16    16</FONT></pre>
+</blockquote>
+
+<p>This texture is loaded as a 64x32 texture, and the various textures can be used when actually rendering a sprite by respectively specifying it as shown below.</p>
+
+<blockquote>
+    <pre><FONT SIZE="3">Sub-texture A:   imageW      = 32;
+                    imageH      = 32;
+                    imageAdrs   = GS_PIX2TMEM(0*64+0,G_IM_SIZ_16b)
+                    imageStride = GS_PIX2TMEM(64,    G_IM_SIZ_16b);
+
+Sub-texture B:   imageW      = 16;
+                    imageH      = 16;
+                    imageAdrs   = GS_PIX2TMEM(0*64+32,G_IM_SIZ_16b)
+                    imageStride = GS_PIX2TMEM(64,     G_IM_SIZ_16b);
+
+Sub-texture C:   imageW      = 16;
+                    imageH      = 16;
+                    imageAdrs   = GS_PIX2TMEM(0*64+48,G_IM_SIZ_16b)
+                    imageStride = GS_PIX2TMEM(64,     G_IM_SIZ_16b);
+
+Sub-texture D:   imageW      = 32;
+                    imageH      = 16;
+                    imageAdrs   = GS_PIX2TMEM(16*64+32,G_IM_SIZ_16b)
+                    imageStride = GS_PIX2TMEM(64,      G_IM_SIZ_16b);</FONT></pre>
+</blockquote>
+
+<p>However, there is a restriction in this specification method.  The shapes in which the texture data are stored in TMEM differ between their even numbered lines and their odd numbered lines.  Because of this, a TMEM address which corresponds to an odd numbered line cannot be specified in imageAdrs when loading a texture.  In other words, an odd numbered value cannot be set in (T coordinate inside TMEM) in the imageAdrs calculation formula described above.</p>
+
+<p>The texture format and size in g[s]SPObjRectangle are substituted into imageFmt and imageSize using the macros G_IM_FMT_* and G_IM_SIZ_*, respectively.  In addition, when using CI4 textures, the TLUT number is specified in imagePal.</p>
+
+<p>Flipping of the texture pattern in the S direction and the T direction is supported by g[s]SPObjRectangle.  The rendering direction is changed by setting the following values in imageFlags.</p>
+
+<hr>
+
+<table border="1" cols="2">
+    <tr>
+        <th nowrap><FONT SIZE="-1">imageFlags Value</FONT></th>
+        <th nowrap><FONT SIZE="-1">Rendering Direction</FONT></th>
+    </tr>
+    <tr>
+        <td nowrap><FONT SIZE="-1">0</FONT></td>
+        <td nowrap><FONT SIZE="-1">No rotation</FONT></td>
+    </tr>
+    <tr>
+        <td nowrap><FONT SIZE="-1">G_OBJ_FLAG_FLIPS</FONT></td>
+        <td nowrap><FONT SIZE="-1">Flip in S direction(X)</FONT></td>
+    </tr>
+    <tr>
+        <td nowrap><FONT SIZE="-1">G_OBJ_FLAG_FLIPT</FONT></td>
+        <td nowrap><FONT SIZE="-1">Flip in T direction(Y)</FONT></td>
+    </tr>
+    <tr>
+        <td nowrap><FONT SIZE="-1">G_OBJ_FLAG_FLIPS|G_OBJ_FLAG_FLIPT</FONT></td>
+        <td nowrap><FONT SIZE="-1">Flip in S direction (X) and T direction(Y)</FONT></td>
+    </tr>
+</table>
+
+<hr>
+
+<p>g[s]SPObjRectangle can be used as CycleType in both 1 Cycle, 2 Cycle modes and the Copy mode.  The rendering speed is faster in Copy mode than in the other modes, but on the other hand, there are restrictions on the rendering functions in Copy mode.</p>
+
+<p>Bilinear interpolation, sub-pixel processing, and scaling in the X direction are not supported in the Copy mode.  Proper function cannot be guaranteed when these functions are used in the Copy mode.  In the worst case, the RDP may break down.  It is recommended that you use the modes according to the functions that are required.
+</p>
+
+<p>The rendering results of g[s]SPObjRectangle will change by setting binary interpolation and other rendering modes.  This is explained in detail in section 4.3 "Setting the Object Rendering Mode."</p>
+
+<p>The 2D matrix settings are not referred to by g[s]SPObjRectangle.  Because of this, the 2D matrix settings will not affect the rendering results of this GBI.</p>
+
+<p align="right"><a href="index.htm"><img
+src="../../gif/index.gif" alt="[UP]" border="0"
+width="65" height="17"></a></p>
+
+<hr>
+
+<h4><a name="02-04">4.2.4 gSPObjRectangleR</a></h4>
+
+<hr>
+
+<blockquote>
+    <pre><FONT SIZE="3"><strong>gSPObjRectangleR(Gfx *gdl, uObjSprite *sp) 
+gsSPObjRectangleR(uObjSprite *sp) 
+</strong></FONT></pre>
+</blockquote>
+
+<table border="0" cols="3">
+    <tr>
+        <td nowrap><FONT SIZE="-1">Gfx</FONT></td>
+        <td nowrap><FONT SIZE="-1">*gdl;</FONT></td>
+        <td nowrap><FONT SIZE="-1">Display list pointer</FONT></td>
+    </tr>
+    <tr>
+        <td nowrap><FONT SIZE="-1">uObjSprite</FONT></td>
+        <td nowrap><FONT SIZE="-1">*sp;</FONT></td>
+        <td nowrap><FONT SIZE="-1">Pointer to rendering data structure for Sprite</FONT></td>
+    </tr>
+</table>
+
+<hr>
+
+<p>g[s]SPObjRectangleR is one of the sprite rendering GBIs provided by S2DEX and, like g[s]SPObjRectangle described above, is used to render sprites that do not rotate.  g[s]SPObjRectangleR differs from g[s]SPObjRectangle in that it refers to the 2D matrix settings and changes the coordinate values of the screen being rendered.
+</p>
+
+<p>The values {X, Y, BaseScaleX, BaseScaleY} in the 2D matrix are referenced by g[s]SPObjRectangleR, and the vertex coordinates of the sprite are determined by the following calculation formulas.</p>
+
+<blockquote>
+    <pre><FONT SIZE="3">Upper-left coordinate values ( X + objX / BaseScaleX, Y+objY/BaseScaleY )
+Lower-right coordinate values ( X + (objX + imageW / scaleW) / BaseScaleX - 1,
+                Y + (objY + imageH / scaleH) / BaseScaleY - 1 )</FONT></pre>
+</blockquote>
+
+<p>The g[s]SPObjSubMatrix GBI is used to change { X,Y,BaseScaleX,BaseScaleY}.  When X=Y=0 and BaseScaleX=BaseScaleY=1.0, the results are the same as with g[s]SPObjRectangle.</p>
+
+<p>By changing these 2D matrix {X, Y, BaseScaleX, BaseScaleY} settings, multiple sprites can be moved and/or scaled as a group.</p>
+
+<p>For example, consider a case in which sprites A, B, and C are lined up horizontally, as shown below.</p>
+
+<blockquote>
+    <pre><FONT face="courier" SIZE="3">       32      32      32 
+   +-------+-------+-------+ 
+   |       |       |       | 
+32 |   A   |   B   |   C   | 
+   |       |       |       | 
+   +-------+-------+-------+</FONT></pre>
+</blockquote>
+
+<p>In order to realize this, data like those below are set in (objX, objY). 
+</p>
+
+<blockquote>
+    <pre><FONT SIZE="3">A: (objX, objY) = ( 0&lt;&lt;2, 0&lt;&lt;2)
+B: (objX, objY) = (32&lt;&lt;2, 0&lt;&lt;2)
+C: (objX, objY) = (64&lt;&lt;2, 0&lt;&lt;2)</FONT></pre>
+</blockquote>
+
+<p>When X and Y are changed with these settings as the base, these 3 sprites are moved at once as though they were one large sprite.</p>
+
+<p>However, there are cases in which spaces actually may develop between A and B and between B and C due to calculation errors resulting from multiplication, etc.  In this case, it would be necessary to counter this by slightly overlapping the sprites with their adjacent sprite, as shown below.</p>
+
+<blockquote>
+    <pre><FONT SIZE="3">B: (objX, objY) = ((32&lt;&lt;2)-2, 0&lt;&lt;2)
+C: (objX, objY) = ((64&lt;&lt;2)-4, 0&lt;&lt;2)</FONT></pre>
+</blockquote>
+
+<p>The differences between g[s]SPObjRectangleR and g[s]SPObjRectangle are described above.  Please refer to the explanation of g[s]SPObjRectangle for a description of the other functions.</p>
+
+<p align="right"><a href="index.htm"><img
+src="../../gif/index.gif" alt="[UP]" border="0"
+width="65" height="17"></a></p>
+
+<hr>
+
+<h4><a name="02-05">4.2.5 gSPObjSprite</a></h4>
+
+<hr>
+
+<blockquote>
+    <pre><FONT SIZE="3"><strong>gSPObjSprite(Gfx *gdl, uObjSprite *sp)
+gsSPObjSprite(uObjSprite *sp)</strong></FONT></pre>
+</blockquote>
+
+<table border="0" cols="3">
+    <tr>
+        <td nowrap><FONT SIZE="-1">Gfx</FONT></td>
+        <td nowrap><FONT SIZE="-1">*gdl;</FONT></td>
+        <td nowrap><FONT SIZE="-1">Display list pointer</FONT></td>
+    </tr>
+    <tr>
+        <td nowrap><FONT SIZE="-1">uObjSprite</FONT></td>
+        <td nowrap><FONT SIZE="-1">*sp;</FONT></td>
+        <td nowrap><FONT SIZE="-1">Pointer to rendering data structure for Sprite</FONT></td>
+    </tr>
+</table>
+
+<hr>
+
+<p>g[s]SPObjsprite is one of the sprite rendering GBIs provided by S2DEX.  This GBI is used to render sprites which rotate.  The elements (A,B,C,D,X,Y} of the 2D matrix are used by g[s]SPObjsprite to rotate the sprite.  g[s]SPObjMatrix is used to set up this 2D matrix.  (See section 4.3.1)</p>
+
+<p>A point (x,y) in a sprite is moved to the following position (x',y'), when the sprite is not rotating, by multiplying the 2D matrix.
+</p>
+
+<blockquote>
+    <pre><FONT SIZE="3">x' = A * x + B * y + X
+y' = C * x + D * y + Y</FONT></pre>
+</blockquote>
+
+<p>The various vertexes of the sprite are also moved in this way, and the sprite is rendered in a 4-sided area according to the moved vertexes.</p>
+
+<p>T rotation of the sprite is performed by setting the next rotation matrix in the 2D matrix A,B,C,D.</p>
+
+<blockquote>
+    <pre><FONT SIZE="3">|A  B|   |  cosT  sinT |
+|    | = |             |
+|C  D|   | -sinT  cosT |</FONT></pre>
+</blockquote>
+
+<p>In this case, the sprite is rotated with the screen coordinates (X,Y) as the origin.  Furthermore, when scaling is added, multiply the various items {A,B,C,D} by a scale value.</p>
+
+<p>Which location in the sprite will correspond with the rotational center (X,Y) is determined by the values for (objX,objY).  When objX=objY=0, the center of rotation for the sprite is the upper-left vertex when the sprite is not rotated.  At this point, when you wish to rotate the sprite centered at this point, set objX and objY as follows.</p>
+
+<blockquote>
+    <pre><FONT SIZE="3">objX = - (imageW / scaleW) / 2;
+objY = - (imageH / scaleH) / 2;</FONT></pre>
+</blockquote>
+
+<p>In addition, by adjusting the values for objX and objY, as with g[s]SPObjRectangleR, several sprites can be rotated at once as a group.  In addition, the occurrence of gaps due to computational errors can also be minimized by rendering the sprites slightly overlapping, as with g[s]SPObjRectangleR.
+</p>
+
+<p>The position of the sprite when not rotating (A=D=1.0, B=C=0.0), matches the rendering area by g[s]SPObjRectangleR when BaseScaleX=BaseScaleY=1.0.  For sprites which rotate and do not rotate, it is recommended that you render them by switching back and forth so that they are rendered by g[s]SPObjRectangle when they are not rotating and are rendered by g[s]SPObjsprite when they are rotating.  This is because g[s]SPObjsprite renders a sprite by combining two polygons, which increases the processing burden on both the RSP and the RDP far more than with g[s]SPObjRectangleR.
+</p>
+
+<p>In addition, when enlarging a sprite when it is not rotating, there are cases in which the rendering result will differ slightly from the rendering result by g[s]SPObjRectangle.  Please understand that there are some sprites (those in which the rectangular rendering will differ when polygons are pasted together) with which this is unavoidable due to the differences in their rendering methods.</p>
+
+<p>The settings for the texture which is pasted onto a sprite are the same as those for g[s]SPObjRectangle.  Refer to the corresponding section above for details.
+</p>
+
+<p align="right"><a href="index.htm"><img
+src="../../gif/index.gif" alt="[UP]" border="0"
+width="65" height="17"></a></p>
+
+<hr>
+
+<h3><a name="03">4.3 2D Matrix Operations</a></h3>
+
+<p>S2DEX microcode is constructed as described above so that the 2D matrix is used as rendering parameters.  Several GBIs are available to modify this 2D matrix.</p>
+
+<p align="right"><a href="index.htm"><img
+src="../../gif/index.gif" alt="[UP]" border="0"
+width="65" height="17"></a></p>
+
+<hr>
+
+<h4><a name="03-01">4.3.1 gSPObjMatrix</a></h4>
+
+<hr>
+
+<blockquote>
+    <pre><FONT SIZE="3"><strong>gSPObjMatrix(Gfx *gdl, uObjMtx *mtx)
+gsSPObjMatrix(uObjMtx *mtx)</strong></FONT></pre>
+</blockquote>
+
+<table border="0" cols="3">
+    <tr>
+        <td nowrap><FONT SIZE="-1">Gfx</FONT></td>
+        <td nowrap><FONT SIZE="-1">*gdl;</FONT></td>
+        <td nowrap><FONT SIZE="-1">Display list pointer</FONT></td>
+    </tr>
+    <tr>
+        <td nowrap><FONT SIZE="-1">uObjMtx</FONT></td>
+        <td nowrap><FONT SIZE="-1">*mtx;</FONT></td>
+        <td nowrap><FONT SIZE="-1">Pointer to 2D matrix structure</FONT></td>
+    </tr>
+</table>
+
+<hr>
+
+<p>This GBI loads the 2D matrix parameters inside the uObjMtx structure to the 2D matrix area inside the RSP.  Normally, this GBI is used to set up a rotating sprite.
+</p>
+
+<p>Since the 6 matrix elements {A,B,C,D,X,Y} are the only matrix elements required for rotation processing, one may think that it is not necessary to transfer the entire matrix, but since transfers from main memory to the RSP matrix area must be done in 8 byte units, {BaseScaleX,BaseScaleY} are transferred together with the rest as 24 bytes.</p>
+
+<p>Consequently, the values for BaseScaleX and BaseScaleY will certainly be overwritten.  If these parameters will not be used (when g[s]SPObjRectangleR will not be used immediately subsequently), it is recommended that the default value of 1024 (1.0 when expressed in s5.10 format) be substituted in the meantime as the values for BaseScaleX and BaseScaleY.</p>
+
+<p align="right"><a href="index.htm"><img
+src="../../gif/index.gif" alt="[UP]" border="0"
+width="65" height="17"></a></p>
+
+<hr>
+
+<h4><a name="03-02">4.3.2 gSPObjSubMatrix</a></h4>
+
+<hr>
+
+<blockquote>
+    <pre><FONT SIZE="3"><strong>gSPObjSubMatrix(Gfx *gdl, uObjMtx *mtx) 
+gsSPObjSubMatrix(uObjMtx *mtx)</strong></FONT></pre>
+</blockquote>
+
+<table border="0" cols="3">
+    <tr>
+        <td nowrap><FONT SIZE="-1">Gfx</FONT></td>
+        <td nowrap><FONT SIZE="-1">*gdl;</FONT></td>
+        <td nowrap><FONT SIZE="-1">Display list pointer</FONT></td>
+    </tr>
+    <tr>
+        <td nowrap><FONT SIZE="-1">uObjSubMtx</FONT></td>
+        <td nowrap><FONT SIZE="-1">*mtx;</FONT></td>
+        <td nowrap><FONT SIZE="-1">Pointer to 2D matrix structure</FONT></td>
+    </tr>
+</table>
+
+<hr>
+
+<p>g[s]SPObjSubMatrix loads the data in the uObjSubMtx structure to the 2D matrix area in the RSP.  However, the uObjSubMtx structure is a subset of the uObjMtx structure, and holds values for the 2D matrix elements {X, Y, BaseScaleX, BaseScaleY} used by g[s]SPObjRectangleR.</p>
+
+<p>This GBI changes only the 2D matrix parameters {X, Y, BaseScaleX, BaseScaleY} which correspond with the member variables of the uObjSubMtx structure, and has no effect on the values for the other parameters {A, B, C, D}.</p>
+
+<p>This GBI is primarily used in association with g[s]SPObjRectangleR. 
+</p>
+
+<p align="right"><a href="index.htm"><img
+src="../../gif/index.gif" alt="[UP]" border="0"
+width="65" height="17"></a></p>
+
+<hr>
+
+<h3><a name="04">4.4 Setting the Object Rendering Mode</a></h3>
+
+<p>There are a variety of rendering parameters in the RDP, which handles the rendering of sprites and BGs.  Polygon rendering and rectangle rendering processing is minutely influenced by the mode of this RDP.  For example, the texture coordinates shift 0.5 between when bilinear interpolation is enabled and when it is disabled.  With S2DEX, these effects are corrected by the RSP, and efforts have been made so that it is hardly necessary for the user to be aware of these influences.  The correction processing of the RSP corresponds with the mode of the RDP.  The mode of this correction processing in the RSP is called the Object Rendering Mode (or OBJ Rendering Mode).</p>
+
+<p>Since having the RSP automatically select this mode increases the overhead on the RSP, it current only discerns between Copy mode and 1,2 Cycle modes.  The RSP must be informed of other modes in the form of GBIs.  The Object rendering modes which are currently installed, in addition to their function of correcting the effects of the RDP mode, also add independent rendering functions.  This is discussed in detail in the following sections.</p>
+
+<p align="right"><a href="index.htm"><img
+src="../../gif/index.gif" alt="[UP]" border="0"
+width="65" height="17"></a></p>
+
+<hr>
+
+<h4><a name="04-01">4.4.1 gSPObjRenderMode</a></h4>
+
+<hr>
+
+<blockquote>
+    <pre><FONT SIZE="3"><strong>gSPObjRenderMode(Gfx *gdl, u32 mode)
+gsSPObjRenderMode(u32 mode)</strong></FONT></pre>
+</blockquote>
+
+<table border="0" cols="3">
+    <tr>
+        <td nowrap><FONT SIZE="-1">Gfx</FONT></td>
+        <td nowrap><FONT SIZE="-1">*gdl;</FONT></td>
+        <td nowrap><FONT SIZE="-1">Display list pointer</FONT></td>
+    </tr>
+    <tr>
+        <td nowrap><FONT SIZE="-1">u32</FONT></td>
+        <td nowrap><FONT SIZE="-1">mode;</FONT></td>
+        <td nowrap><FONT SIZE="-1">Object rendering mode</FONT></td>
+    </tr>
+</table>
+
+<hr>
+
+<p>g[s]SPObjRenderMode is for changing the object rendering mode in the RSP.  This is normally set according to the display mode.</p>
+
+<p>The flags which can be set are as shown below.  When specifying multiple flags, please link them with a logical sum (OR).  However, G_OBJRM_SHRINKSIZE_1 and G_OBJRM_SHRINKSIZE_2 cannot be specified at the same time.</p>
+
+<hr>
+
+<table border="1" cols="2">
+    <tr>
+        <th nowrap><FONT SIZE="-1">Macro Name</FONT></th>
+        <th nowrap><FONT SIZE="-1">Description of Function</FONT></th>
+    </tr>
+    <tr>
+        <td nowrap><FONT SIZE="-1">G_OBJRM_NOTXCLAMP</FONT></td>
+        <td nowrap><FONT SIZE="-1">Processing to clamp the texture perimeter is disabled</FONT></td>
+    </tr>
+    <tr>
+        <td nowrap><FONT SIZE="-1">G_OBJRM_ANTIALIAS</FONT></td>
+        <td nowrap><FONT SIZE="-1">On when Anti-Alias/ReducedAlias</FONT></td>
+    </tr>
+    <tr>
+        <td nowrap><FONT SIZE="-1">G_OBJRM_BILERP</FONT></td>
+        <td nowrap><FONT SIZE="-1">Turned ON during bilinear interpolation</FONT></td>
+    </tr>
+    <tr>
+        <td nowrap><FONT SIZE="-1">G_OBJRM_SHRINKSIZE_1</FONT></td>
+        <td nowrap><FONT SIZE="-1">Shrinks the rendered image by 0.5 texel at the perimeter</FONT></td>
+    </tr>
+    <tr>
+        <td nowrap><FONT SIZE="-1">G_OBJRM_SHRINKSIZE_2</FONT></td>
+        <td nowrap><FONT SIZE="-1">Shrinks the rendered image by 1.0 texel at the perimeter</FONT></td>
+    </tr>
+    <tr>
+        <td nowrap><FONT SIZE="-1">G_OBJRM_WIDEN</FONT></td>
+        <td nowrap><FONT SIZE="-1">Expands the rendered image by 3/8 texel</FONT></td>
+    </tr>
+    <tr>
+        <td nowrap><FONT SIZE="-1">G_OBJRM_XLU</FONT></td>
+        <td nowrap><FONT SIZE="-1">Draws a translucence Object</FONT></td>
+    </tr>
+</table>
+
+<hr>
+
+<p>Each flag will be explained in detail below.</p>
+
+<dl>
+    <dt><strong>o G_OBJRM_NOTXCLAMP:</strong></dt>
+    <dd>When a texture is pasted to a sprite, the following relationships are true between the size of the texture imageW, imageH, the scale value scaleW, scaleH and the size of the sprite objW, objH.<dl>
+            <dd><pre><FONT SIZE="3">objW = imageW / scaleW;
+objH = imageH / scaleH;</FONT></pre>
+            </dd>
+        </dl>
+    </dd>
+    <dd>When the texture is pasted to the sprite, the area (0,0) - (imageW-1,imageH-1), in texture coordinates,  is rendered on the sprite.  However, due to calculation errors, etc., texture outside that range is sometimes displayed, even slightly, outside the perimeter of the sprite.</dd>
+    <dd>In order to avoid this, the RSP will clamp the outside of the rendering target range for the texture.  Thus, it is possible to avoid the aforementioned problem.  Refer to Chapter 13 Texture Mapping in the N64 Manual for details about this.</dd>
+    <dd>The flag G_OBJRM_NOTXCLAMP indicates to the RSP to not perform this clamp processing.  Normally, it is not necessary to turn this flag ON.<br>
+        <br>
+        </dd>
+    <dt><strong>o G_OBJRM_ANTIALIAS:</strong></dt>
+    <dd>This flag corresponds to turning ON/OFF Anti-Alias processing in the RDP rendering modes.  Turn it ON when using Anti-Alias (G_RM_AA_*) and ReducedAlias (G_RM_RA_*) as the RDP rendering mode.</dd>
+    <dd>When this flag is ON, subpixel calculation is enabled at the outer edge.  The outer edge is the outer-most perimeter of the sprite rendering area.  This flag has no significance for sprites whose entire outer edge is translucent.
+        <br>
+        <br>
+        </dd>
+    <dt><strong>o G_OBJRM_BILERP:</strong></dt>
+    <dd>Set this flag when you wish to perform bilinear interpolation on a texture.  This flag corrects the 0.5 shift in the texture which occurs during bilinear interpolation as mentioned in the example in the preceding section.</dd>
+    <dd>In addition, when this flag is in effect, the RSP will use the bilinear interpolation function to support movement of the internal image in sub-pixel units.  This enables motion in 1/4 pixel units.
+        <br>
+        <br>
+        </dd>
+    <dt><strong>o G_OBJRM_SHRINKSIZE_1:</strong></dt>
+    <dd>When you wish to align several bilinear interpolated sprites and handle them as a large bilinear interpolated sprite, the connectedness between the images at their boundaries becomes problematic.  In order to maintain this connectedness, it is necessary to overlap the textures of the various sprites by one line.  When this is done, the outer 0.5 texel (shown by the # in the figure below) becomes unnecessary.   This is because this portion gets taken up by the adjacent sprite.<dl>
+            <dd><pre><FONT face="courier" SIZE="3">    0  0.5  1       2       3  S
+  0 +-------+-------+-------+--
+    |#######|#######|#######|##
+0.5 |###+---+-------+-------+--
+    |###|   |       |       |
+  1 +---+---+-------+-------+--
+    |###|   |       |       |
+    |###|   |       |       |
+    |###|   |       |       |
+  2 +---+---+-------+-------+--
+  T |###|   |       |       |
+</FONT></pre>
+            </dd>
+        </dl>
+    </dd>
+    <dd>When the G_OBJRM_SHRINKSIZE_1 flag is ON, the RSP shrinks the rendered image of the sprite and renders it using a texture image from which the aforementioned outer 0.5 texel is shaved off.  The texture images are each 0.5 texels smaller, but since the upper-left screen coordinate does not change, the rendering effect is as shown below. 
+<dl>
+            <dd><pre><FONT face="courier" SIZE="3">                          1/scaleX
+               (objX,objY)  -&gt; &lt;-
+           +-----------------+-+
+           |                 | |
+           |              &lt;--+-+----- G_OBJRM_SHRINKSIZE_1 enabled
+           |                 | |
+           |                 | |&lt;---- G_OBJRM_SHRINKSIZE_1 disabled
+           |                 | |
+           |                 | |
+         | |                 | |
+         v +-----------------+ |
+1/scaleY   +-------------------+
+         ^
+         |</FONT></pre>
+            </dd>
+        </dl>
+    </dd>
+    <dt><strong>o G_OBJRM_SHRINKSIZE_2:</strong></dt>
+    <dd>This is very similar to G_OBJRM_SHRINKSIZE_1, except for one difference, which is that the amount of image reduction is doubled.  (1 texel is removed for the outside of each texture.)</dd>
+    <dd>In cases where subpixel processing is being performed, use this flag when you wish to overlap the texels of adjacent sprites by two lines, as when seeking even greater connectedness, etc.<br>
+        <br>
+        </dd>
+    <dt><strong>o G_OBJRM_WIDEN:</strong></dt>
+    <dd>This enlarges the rendered image by 3.8 pixel in the positive S and T directions. Use this flag to prevent blank gaps at the seams between sprites when sprites are combined to display a rotating Object, or the like, which is larger than TMEM.
+    </dd>
+    <dd>This is effective when rendering an object in conjuction with opaque Sprite. This is not necessary with translucent Sprite because seams are filled with the Blender process.<br>
+        <br>
+        </dd>
+    <dt><strong>o G_OBJRM_XLU:</strong></dt>
+    <dd>Set this flag when rendering semitranslucent sprites.  Specify G_RM_XLU_SPRITE as the RDP RenderMode in semitranslucent rendering.</dd>
+    <dd>This flag was supported by S2DEX 1.02 and later.  It would make the seams less apparent when rendering semitranslucent sprites in a line.
+        <br>
+        <br>
+        </dd>
+</dl>
+
+<p align="right"><a href="index.htm"><img
+src="../../gif/index.gif" alt="[UP]" border="0"
+width="65" height="17"></a></p>
+
+<hr>
+
+<h3><a name="05">4.5 Texture Loading GBIs</a></h3>
+
+<p>Among the sprite functions in S2DEX, sprite rendering processing is as described in the sprite GBI sections.  This is one more piece of that, and describes the loading processing for TMEM.</p>
+
+<p align="right"><a href="index.htm"><img
+src="../../gif/index.gif" alt="[UP]" border="0"
+width="65" height="17"></a></p>
+
+<hr>
+
+<h3><a name="05-01">4.5.1 uObjTxtr Structure</a></h3>
+
+<p>In the texture loading GBI, 3 different formats of texture data are processed by a common GBI.  These 3 formats are distinguished by the member variable type in the uObjTxtr structure.  Those 3 formats are shown below.</p>
+
+<blockquote>
+    <p>1) Loading textures using LoadBlock<br>
+    2) Loading textures using LoadTile<br>
+    3) Loading of TLUT</p>
+</blockquote>
+
+<p>1) Loading texture using LoadBlock is able to do processing faster than 2) loading with LoadTile, but the width of the texture which can be loaded is limited.  Since that limitation is as described in regards to LoadBlock in Section 4.1.2, please refer to this section for details.</p>
+
+<p>The various structures which correspond to these various formats are respectively defined.  However, these various structures have the same structure, except that the names of the member variables differ.  Thus, these three structures are compiled into a common body forming the uObjTxtr.</p>
+
+<hr>
+
+<h5>1) Structure for loading textrue using LoadBlock
+uObjTxtrBlock_t</h5>
+
+<hr>
+
+<blockquote>
+    <pre><FONT SIZE="3">typedef struct  {
+    u32     type;   // Type G_OBJLT_TXTRBLOCK
+    u64     *image; // Texture source address in DRAM
+    u16     tmem;   // TMEM word address of load destination(8byteWORD)
+    u16     tsize;  // Texture size	    Specified by the macro GS_TB_TSIZE()
+    u16     tline;  // Texture 1 line width Specified by the macro GS_TB_TLINE()
+    u16     sid;    // Status ID  Select from { 0, 4, 8, 12 }
+    u32     flag;   // Status flag
+    u32     mask;   // Status mask
+} uObjTxtrBlock_t;  // 24 bytes</FONT></pre>
+</blockquote>
+
+<hr>
+
+<h5>2) Structure for loading texture using LoadTile	uObjTxtrTile_t</h5>
+
+<hr>
+
+<blockquote>
+    <pre><FONT SIZE="3">typedef struct  {
+    u32     type;   // Type G_OBJLT_TXTRTILE
+    u64     *image; // Texture source address in DRAM
+    u16     tmem;   // TMEM words address of load destination(8byteWORD)
+    u16     twidth; // Texture width  Specified by the macro GS_TT_TWIDTH()
+    u16     theight;// Texture height  Specified by the macro GS_TT_THEIGHT()
+    u16     sid;    // Status ID  Select from { 0, 4, 8, 12 }
+    u32     flag;   // Status flag
+    u32     mask;   // Status mask
+} uObjTxtrTile_t;   // 24 bytes</FONT></pre>
+</blockquote>
+
+<hr>
+
+<h5>3) Structure for laoding TLUT	uObjTxtrTLUT_t</h5>
+
+<hr>
+
+<blockquote>
+    <pre><FONT SIZE="3">typedef struct  {
+    u32     type;   // Type G_OBJLT_TLUT
+    u64     *image; // Texture source address in DRAM
+    u16     phead;  // Number in TLUT area over 256 and under 511 of load destination
+    u16     pnum;   // Number of TLUT to be loaded - 1
+    u16     zero;   // 0 is always substituted
+    u16     sid;    // Status ID  Select from { 0, 4, 8, 12 }
+    u32     flag;   // Status flag
+    u32     mask;   // Status mask
+} uObjTxtrTLUT_t;   // 24 bytes</FONT></pre>
+</blockquote>
+
+<hr>
+
+<p>uObjTxtr Common Body</p>
+
+<hr>
+
+<blockquote>
+    <pre><FONT SIZE="3">typedef union {
+    uObjTxtrBlock_t block;  // Parameter for loading texture with LoadBlock
+    uObjTxtrTile_t  tile;   // Parameter for loading texture with LoadTile
+    uObjTxtrTLUT_t  tlut;   // TLUT loading parameter
+    long long int   force_structure_alignment;
+} uObjTxtr;</FONT></pre>
+</blockquote>
+
+<p align="right"><a href="index.htm"><img
+src="../../gif/index.gif" alt="[UP]" border="0"
+width="65" height="17"></a></p>
+
+<hr>
+
+<h4><a name="05-02">4.5.2 gSPObjLoadTxtr</a></h4>
+
+<hr>
+
+<blockquote>
+    <pre><FONT SIZE="3"><strong>gSPObjLoadTxtr(Gfx *gdl, uObjTxtr *tx)
+gsSPObjLoadTxtr(uObjTxtr *tx)</strong></FONT></pre>
+</blockquote>
+
+<table border="0" cols="3">
+    <tr>
+        <td nowrap><FONT SIZE="-1">Gfx</FONT></td>
+        <td nowrap><FONT SIZE="-1">*gdl;</FONT></td>
+        <td nowrap><FONT SIZE="-1">Display list pointer</FONT></td>
+    </tr>
+    <tr>
+        <td nowrap><FONT SIZE="-1">uObjTxtr</FONT></td>
+        <td nowrap><FONT SIZE="-1">*tx;</FONT></td>
+        <td nowrap><FONT SIZE="-1">Pointer to texture load data structure
+        </FONT></td>
+    </tr>
+</table>
+
+<hr>
+
+<p>gSPObjLoadTxtr performs various loading processing, referring to the texture load parameters stored in the 3 different structures described above.  The 3 structures have common member variables type, image, sid, flag, and mask.  First these 5 common member variables will be described. 
+</p>
+
+<dl>
+    <dt><strong>o type</strong></dt>
+    <dd>gSPObjLoadTxtr discriminates between the various structures by the value of the structure member variable type. The structures and processing which correspond to the various values for type are as shown below.<br>
+        <br>
+        </dd>
+</dl>
+
+<hr>
+
+<table border="1" cols="3">
+    <tr>
+        <th nowrap><FONT SIZE="-1">Value for type</FONT></th>
+        <th nowrap><FONT SIZE="-1">Structure</FONT></th>
+        <th nowrap><FONT SIZE="-1">Processing</FONT></th>
+    </tr>
+    <tr>
+        <td nowrap><FONT SIZE="-1">G_OBJLT_TXTRBLOCK</FONT></td>
+        <td nowrap><FONT SIZE="-1">uObjTxtrBlock_t</FONT></td>
+        <td nowrap><FONT SIZE="-1">Load texture using LoadBlock</FONT></td>
+    </tr>
+    <tr>
+        <td nowrap><FONT SIZE="-1">G_OBJLT_TXTRTILE</FONT></td>
+        <td nowrap><FONT SIZE="-1">uObjTxtrTile_t</FONT></td>
+        <td nowrap><FONT SIZE="-1">Load texture using LoadTile</FONT></td>
+    </tr>
+    <tr>
+        <td nowrap><FONT SIZE="-1">G_OBJLT_TLUT</FONT></td>
+        <td nowrap><FONT SIZE="-1">uObjTLUT_t</FONT></td>
+        <td nowrap><FONT SIZE="-1">Load TLUT</FONT></td>
+    </tr>
+</table>
+
+<hr>
+
+<dl>
+    <dt><strong>o image</strong></dt>
+    <dd>The address of the texture data or TLUT data situated in the main memory is specified by the member variable image.  These texture data must be aligned in 8 byte units.<br>
+        <br>
+        </dd>
+    <dt><strong>o sid, flag, mask</strong></dt>
+    <dd>These 3 member variables are available to make the judgment that it is unnecessary to reload a texture which has already been loaded.  If it is determined that the texture that you are trying to load next has already been loaded, g[s]SPObjLoadTxtr will terminate without performing said load.
+        <br>
+        <br>
+        </dd>
+</dl>
+
+<p>Since the determination of whether or not a certain texture exists in TMEM is performed entirely by the RSP, each time the RSP loads a texture, it must perform an analysis of the load destination area.  It would be an incorrect decision to take up time with this judgment processing. </p>
+
+<p>Consequently, in S2DEX, rather than having the RSP perform an analysis of the texture to be loaded, the data pertaining to the area to be loaded are added in advance to the texture data structure, whereby the load judgment can be accomplished with a simple computation.
+</p>
+
+<p>For example, when loading data to TMEM, a simple load judgment can be done by writing an ID which corresponds to the texture which is to be loaded to the Status area in the RSP, and then doing a comparison of this ID the next time that data are loaded to TMEM.
+</p>
+
+<p>The load judgment processing which is built into S2DEX expands on this concept.  By setting two 32 bit-wide values, flag and mask, the load judgment processing can also be applied to situations in which the TMEM area is divided and a partial load is performed.
+</p>
+
+<p>As in the RSP, four 32 bit Status variables are available as Status areas.  When the microcode is started, these values are 0.  Which Status value to use is determined by sid.  The values handled by sid are {0, 4, 8, 12}.</p>
+
+<p>g[s]ObjLoadTxtr actually performs the load judgment by means of the following processing, and determines whether or not to load a texture.
+</p>
+
+<p>+ Check whether (Status[sid] &amp; mask) == flag<br>
++ If the result is TRUE, it is judged that the texture is already loaded, and load processing is terminated.<br>
++ If the result is FALSE, the texture is loaded.</p>
+
+<blockquote>
+    <p>Status[sid] is updated as follows:</p>
+	<pre><FONT SIZE="3">Status[sid] = (Status[sid] &amp; ~mask) | (flag &amp; mask);</FONT></pre>
+    
+</blockquote>
+
+<p>The simplest method of using flag is to substitute -1(=0xffffffff) to mask and the address of the texture source data (=the value for the member variable image) to flag.  If there are no other texture data starting from the same address, this can be operated as a simple texture cache.
+</p>
+
+<p>In addition, when (flag&~mask)!=0, since the judgment equation is definitely false, the texture will always be loaded.</p>
+
+<p>The following is an example in which the TMEM is divided in two and managed.  Here, bits 31-16 of Status[0] are assigned to the front half of the TMEM area, while bits 15-0 are assigned to the back half, and serial numbers are assigned to each texture. Value of sid is always 0.</p>
+
+<table border="1" cols="4">
+    <tr>
+        <td nowrap>&nbsp;</td>
+        <th nowrap><FONT SIZE="-1">Area Being Loaded</FONT></th>
+        <th nowrap><FONT SIZE="-1">flag</FONT></th>
+        <th nowrap><FONT SIZE="-1">mask</FONT></th>
+    </tr>
+    <tr>
+        <td nowrap><FONT SIZE="-1">A:Texture 1</FONT></td>
+        <td nowrap><FONT SIZE="-1">0 to 255</FONT></td>
+        <td nowrap><FONT SIZE="-1">0x00010000</FONT></td>
+        <td nowrap><FONT SIZE="-1">0xffff0000 </FONT></td>
+    </tr>
+    <tr>
+        <td nowrap><FONT SIZE="-1">B:Texture 2</FONT></td>
+        <td nowrap><FONT SIZE="-1">256 to 511</FONT></td>
+        <td nowrap><FONT SIZE="-1">0x00000002</FONT></td>
+        <td nowrap><FONT SIZE="-1">0x0000ffff</FONT></td>
+    </tr>
+    <tr>
+        <td nowrap><FONT SIZE="-1">C:Texture 3</FONT></td>
+        <td nowrap><FONT SIZE="-1">0 to 511</FONT></td>
+        <td nowrap><FONT SIZE="-1">0x00030003</FONT></td>
+        <td nowrap><FONT SIZE="-1">0xffffffff</FONT></td>
+    </tr>
+    <tr>
+        <td nowrap><FONT SIZE="-1">D:Back 1/2 of Texture 3</FONT></td>
+        <td nowrap><FONT SIZE="-1">256 to 511</FONT></td>
+        <td nowrap><FONT SIZE="-1">0x00000003</FONT></td>
+        <td nowrap><FONT SIZE="-1">0x0000ffff</FONT></td>
+    </tr>
+</table>
+
+<p>Even though the front half of TMEM from load A is changed after the entire texture 3 was loaded in C, since the data for texture 3 are stored in the back half of TMEM, even though a load of only the back half of texture 3 is performed in D, the load is not actually performed.</p>
+
+<p>S2DEX has GBIs - gSPSelectDL and gSPSelectBranchDL - which perform DL branching by applying this Status-based processing to make similar judgments.</p>
+
+<p>The member variables of the other structures in each various processing will be explained next.
+</p>
+
+<h5>1) Load texture by LoadBlock (uObjTxtrBlock_t structure)</h5>
+
+<dl>
+    <dt>o tmem</dt>
+    <dd>The TMEM address of the load destination is specified in the member variable tmem in Double Word units.  It is typical to use the value of this load destination as the value of imageAdrs in the uObjsprite structure.  When this value is specified as a pixel unit, it plays the role of the macro GS_PIX2TMEM() described above.<br>
+        <br>
+        </dd>
+    <dt>o tsize</dt>
+    <dd>Data on the size of the texture to be loaded are given in the member variable tsize.  The macro GS_TB_TSIZE() is used when finding this value from the texture size.<br>
+        <br>
+        </dd>
+</dl>
+
+<hr>
+
+<dl>
+    <dt>GS_TB_TSIZE(pix,siz): tsize setting</dt>
+    <dd>pix: Number of textels to be loaded (=
+        texture horizontal width x vertical width)</dd>
+    <dd>siz: Size of one texel  Specified by G_IM_SIZ_*</dd>
+</dl>
+
+<hr>
+
+<dl>
+    <dt>o tline</dt>
+    <dd>Data on the horizontal width of the texture to be loaded are given in the member variable tline.  The macro GS_TB_TLINE() is used when finding this value from the width of the texture. <br>
+        <br>
+        </dd>
+</dl>
+
+<hr>
+
+<dl>
+    <dt>GS_TB_TLINE(pix,siz): tline setting</dt>
+    <dd>pix: Number of texels in horizontal width of texture</dd>
+    <dd>siz: Size of one texel  Specified by G_IM_SIZ_*<br>
+        <br>
+        </dd>
+</dl>
+
+<hr>
+
+<h5>2) Load texture by LoadTile (uObjTxtrTile_t structure)</h5>
+
+<dl>
+    <dt>o tmem</dt>
+    <dd>This member is the same as when performing load processing with LoadBlock.  The TMEM address of the load destination is specified in the member variable tmem in Double Word units.</dd>
+    <dt>o twidth</dt>
+    <dd>Data pertaining to the width of the texture to be loaded is given in the member variable twidth.  The macro GS_TT_TWIDTH() is used when finding this value from the width of the texture.<br>
+        <br>
+        </dd>
+</dl>
+
+<hr>
+
+<dl>
+    <dt>GS_TT_TWIDTH(pix,siz): twidth setting</dt>
+    <dd>pix: Texture width</dd>
+    <dd>siz: Size of one texel  Specified by  G_IM_SIZ_*<br>
+        <br>
+        </dd>
+</dl>
+
+<hr>
+
+<dl>
+    <dt>o theight</dt>
+    <dd>Data on the height of the texture to be loaded are given in the member variable theight.  The macro GS_TT_THEIGHT() is used when finding this value from the height of the texture. </dd>
+</dl>
+
+<hr>
+
+<dl>
+    <dt>GS_TT_THEIGHT(pix,siz): theight setting</dt>
+    <dd>pix: Texture height</dd>
+    <dd>siz: Size of one texel  Specified by G_IM_SIZ_*<br>
+        <br>
+        </dd>
+</dl>
+
+<hr>
+
+<h5>3) Load TLUT (uObjTLUT_t structure)</h5>
+
+<dl>
+    <dt>o phead</dt>
+    <dd>The head number of the TLUT area to be loaded is set in the member variable phead.  Since the number of the TLUT area is a value of the TLUT ID plus 256, the value set should be from 256 to 511.  The macro GS_PAL_HEAD() is available to make this setting.<br>
+        <br>
+        </dd>
+</dl>
+
+<hr>
+
+<dl>
+    <dt>GS_PAL_HEAD(head): phead setting (Simply add 256 to head)</dt>
+    <dd>phead: ID of head of  TLUT to be loaded</dd>
+</dl>
+
+<p><br>
+</p>
+
+<hr>
+
+<dl>
+    <dt>o pnum</dt>
+    <dd>(TLUT color number being loaded -1) is set in the member variable pnum.  The macro GS_PAL_NUM() is avialable to make this setting.<br>
+        <br>
+        </dd>
+</dl>
+
+<hr>
+
+<dl>
+    <dt>GS_PAL_NUM(num): pnum setting(Simply subtract 1 from num)</dt>
+    <dd>phead: Number TLUT to be loaded<br>
+        <br>
+        </dd>
+</dl>
+
+<hr>
+
+<dl>
+    <dt>o zero</dt>
+    <dd>This member is not used by uObjTLUT_t.  However, always substitute 0 here for the sake of compatibility with the other structures.</dd>
+</dl>
+
+<p>Following are setting examples for the 3 structures.</p>
+
+<p>(1) Load RGBA16 Texture with LoadBlock</p>
+
+<blockquote>
+    <pre><FONT SIZE="3">uObjTxtr objTxtrBlock_RGBA16 = {
+        G_OBJLT_TXTRBLOCK,                  /* type    */
+        (u64 *)textureRGBA16,               /* image   */
+        GS_PIX2TMEM(0,      G_IM_SIZ_16b),  /* tmem    */
+        GS_TB_TSIZE(32*32,  G_IM_SIZ_16b),  /* tsize   */
+        GS_TB_TLINE(32,     G_IM_SIZ_16b),  /* tline   */
+        0,                                  /* sid     */
+        (u32)textureRGBA16,                 /* flag    */
+        -1                                  /* mask    */
+};</FONT></pre>
+</blockquote>
+
+<p>(2) Load CI4 Texture with LoadTile</p>
+
+<blockquote>
+    <pre><FONT SIZE="3">uObjTxtr objTxtrTile_CI4 = {
+        G_OBJLT_TXTRTILE,                   /* type    */
+        (u64 *)textureCI4,                  /* image   */
+        GS_PIX2TMEM  (0,    G_IM_SIZ_4b),   /* tmem    */
+        GS_TT_TWIDTH (32,   G_IM_SIZ_4b),   /* twidth  */
+        GS_TT_THEIGHT(32,   G_IM_SIZ_4b),   /* theight */
+        0,                                  /* sid     */
+        (u32)textureCI4,                    /* flag    */
+        -1                                  /* mask    */
+};</FONT></pre>
+</blockquote>
+
+<p>(3) Load TLUT</p>
+
+<blockquote>
+    <pre><FONT SIZE="3">uObjTxtr objTLUT_CI4 = {
+        G_OBJLT_TLUT,           /* type    */
+        (u64 *)textureCI4pal,   /* image   */
+        GS_PAL_HEAD(0),         /* phead   */
+        GS_PAL_NUM(16),         /* pnum    */
+        0,                      /* zero    */
+        0,                      /* sid     */
+        (u32)textureCI4pal,     /* flag    */
+        -1                      /* mask    */
+};</FONT></pre>
+</blockquote>
+
+<p align="right"><a href="index.htm"><img
+src="../../gif/index.gif" alt="[UP]" border="0"
+width="65" height="17"></a></p>
+
+<hr>
+
+<h3><a name="06">4.6 Complex Processing GBIs</a></h3>
+
+<p>In the creation of an actual game, there are situations in which it is advantageous in screens, such as the sprite management, etc., to collect the texture loading GBI and sprite rendering GBI into one.  S2DEX has a structure which makes it possible to process these two GBIs as one GBI.  The GBI for this kind of complex processing is explained below.</p>
+
+<p align="right"><a href="index.htm"><img
+src="../../gif/index.gif" alt="[UP]" border="0"
+width="65" height="17"></a></p>
+
+<hr>
+
+<h4><a name="06-01">4.6.1 uObjTxSprite Structure</a></h4>
+
+<p>The uObjTxsprite structure links a uObjTxtr structure and a uObjsprite structure and follows the following format.  Pointers to this structure are given as arguments in the complex processing GBI.</p>
+
+<hr>
+
+<blockquote>
+    <pre><FONT SIZE="3">typedef struct  {
+        uObjTxtr        txtr;
+        uObjSprite      sprite;
+} uObjTxSprite;         /* 48 bytes */</FONT></pre>
+</blockquote>
+
+<p align="right"><a href="index.htm"><img
+src="../../gif/index.gif" alt="[UP]" border="0"
+width="65" height="17"></a></p>
+
+<hr>
+
+<h4><a name="06-02">4.6.2 gSPObjLoadTxRect</a></h4>
+
+<hr>
+
+<blockquote>
+    <pre><FONT SIZE="3"><strong>gSPObjLoadTxRect(Gfx *gdl, uObjTxSprite *txsp)
+gsSPObjLoadTxRect(uObjTxSprite *txsp)</strong></FONT></pre>
+</blockquote>
+
+<table border="0" cols="3">
+    <tr>
+        <td nowrap><FONT SIZE="-1">Gfx</FONT></td>
+        <td nowrap><FONT SIZE="-1">*gdl;</FONT></td>
+        <td nowrap><FONT SIZE="-1">Display list pointer</FONT></td>
+    </tr>
+    <tr>
+        <td nowrap><FONT SIZE="-1">uObjTxSprite</FONT></td>
+        <td nowrap><FONT SIZE="-1">*txsp;</FONT></td>
+        <td nowrap><FONT SIZE="-1">Pointer to texture loading and Sprite rending data structures</FONT></td>
+    </tr>
+</table>
+
+<hr>
+
+<p>The g[s]SPObjLoadTxRect GBI performs texture loading processing and then performs rendering of a non-rotating sprite.</p>
+
+<p>This command sequentially processes two GBIs g[s]SPObjLoadTxtr and g[s]SPObjRectangle as one GBI.  The processing results of (A) and (B) below are the same.</p>
+
+<blockquote>
+    <p>(A) gsSPObjLoadTxRect(txsp);</p>
+    <p>(B) gsSPObjLoadTxtr(&amp;(txsp-&gt;txtr));<br>
+    gsSPObjRectangle(&amp;(txsp-&gt;sprite));</p>
+</blockquote>
+
+<p align="right"><a href="index.htm"><img
+src="../../gif/index.gif" alt="[UP]" border="0"
+width="65" height="17"></a></p>
+
+<hr>
+
+<h4><a name="06-03">4.6.3 gSPObjLoadTxRectR</a></h4>
+
+<hr>
+
+<blockquote>
+    <pre><FONT SIZE="3"><strong>gSPObjLoadTxRectR(Gfx *gdl, uObjTxSprite *txsp)
+gsSPObjLoadTxRectR(uObjTxSprite *txsp)</strong></FONT></pre>
+</blockquote>
+
+<table border="0" cols="3">
+    <tr>
+        <td nowrap><FONT SIZE="-1">Gfx</FONT></td>
+        <td nowrap><FONT SIZE="-1">*gdl;</FONT></td>
+        <td nowrap><FONT SIZE="-1">Display list pointer</FONT></td>
+    </tr>
+    <tr>
+        <td nowrap><FONT SIZE="-1">uObjTxSprite</FONT></td>
+        <td nowrap><FONT SIZE="-1">*txsp;</FONT></td>
+        <td nowrap><FONT SIZE="-1">Pointer to texture loading and Sprite rendering data structures</FONT></td>
+    </tr>
+</table>
+
+<hr>
+
+<p>The g[s]SPObjLoadTxRectR GBI performs texture loading processing and then performs the rendering of a non-rotating sprite, referring to the 2D matrix.</p>
+
+<p>This command sequentially processes the two GBIs g[s]SPObjLoadTxtr and g[s]SPObjRectangleR as one GBI.  The processing results of (A) and (B) below are the same. </p>
+
+<blockquote>
+    <p>(A) gsSPObjLoadTxRectR(txsp);</p>
+</blockquote>
+
+<blockquote>
+    <p>(B) gsSPObjLoadTxtr(&amp;(txsp-&gt;txtr));<br>
+    gsSPObjRectangleR(&amp;(txsp-&gt;sprite));</p>
+</blockquote>
+
+<p align="right"><a href="index.htm"><img
+src="../../gif/index.gif" alt="[UP]" border="0"
+width="65" height="17"></a></p>
+
+<hr>
+
+<h4><a name="06-04">4.6.4 gSPObjLoadTxSprite</a></h4>
+
+<hr>
+
+<blockquote>
+    <pre><FONT SIZE="3"><strong>gSPObjLoadTxSprite(Gfx *gdl, uObjTxSprite *txsp)
+gsSPObjLoadTxSprite(uObjTxSprite *txsp)</strong></FONT></pre>
+</blockquote>
+
+<table border="0" cols="3">
+    <tr>
+        <td nowrap><FONT SIZE="-1">Gfx</FONT></td>
+        <td nowrap><FONT SIZE="-1">*gdl;</FONT></td>
+        <td nowrap><FONT SIZE="-1">Display list pointer</FONT></td>
+    </tr>
+    <tr>
+        <td nowrap><FONT SIZE="-1">uObjTxSprite</FONT></td>
+        <td nowrap><FONT SIZE="-1">*txsp;</FONT></td>
+        <td nowrap><FONT SIZE="-1">Pointer to texture loading and Sprite rending data structures</FONT></td>
+    </tr>
+</table>
+
+<hr>
+
+<p>The g[s]SPObjLoadTxsprite GBI performs texture loading processing and then performs rendering of a rotating sprite.</p>
+
+<p>This command sequentially processes the two GBIs g[s]SPObjLoadTxtr and g[s]SPObjsprite as one GBI.  The processing results of (A) and (B) below are the same.</p>
+
+<blockquote>
+    <p>(A) gsSPObjLoadTxSprite(txsp);</p>
+    <p>(B) gsSPObjLoadTxtr(&amp;(txsp-&gt;txtr));<br>
+    gsSPObjSprite(&amp;(txsp-&gt;sprite));</p>
+</blockquote>
+
+<p align="right"><a href="index.htm"><img
+src="../../gif/index.gif" alt="[UP]" border="0"
+width="65" height="17"></a></p>
+
+<hr>
+
+<h3><a name="07">4.7 Conditional Branching GBIs</a></h3>
+
+<p>It has been explained above that texture loading judgment is performed in S2DEX using the RSP Status.  GBIs which apply this Status to DL branching and linking will be explained here.</p>
+
+<p align="right"><a href="index.htm"><img
+src="../../gif/index.gif" alt="[UP]" border="0"
+width="65" height="17"></a></p>
+
+<hr>
+
+<h4><a name="07-01">4.7.1 gSPSetStatus</a></h4>
+
+<hr>
+
+<blockquote>
+    <pre><FONT SIZE="3"><strong>gSPSetStatus(Gfx *gdl, u8 sid, u32 val)
+gsSPSetStatus(u8 sid, u32 val)</strong></FONT></pre>
+</blockquote>
+
+<table border="0" cols="3">
+    <tr>
+        <td nowrap><FONT SIZE="-1">Gfx</FONT></td>
+        <td nowrap><FONT SIZE="-1">*gdl;</FONT></td>
+        <td nowrap><FONT SIZE="-1">Display list pointer</FONT></td>
+    </tr>
+    <tr>
+        <td nowrap><FONT SIZE="-1">u8</FONT></td>
+        <td nowrap><FONT SIZE="-1">sid;</FONT></td>
+        <td nowrap><FONT SIZE="-1">Status ID   Select from{ 0, 4, 8, 12 }</FONT></td>
+    </tr>
+    <tr>
+        <td nowrap><FONT SIZE="-1">u32</FONT></td>
+        <td nowrap><FONT SIZE="-1">val;</FONT></td>
+        <td nowrap><FONT SIZE="-1">Value to be set</FONT></td>
+    </tr>
+</table>
+
+<hr>
+
+<p>g[s]SPSetStatus substitutes the value for val in the Status area specified by sid (Status[sid]).  This Status value is referred to during texture loading and during branching decisions.
+</p>
+
+<p align="right"><a href="index.htm"><img
+src="../../gif/index.gif" alt="[UP]" border="0"
+width="65" height="17"></a></p>
+
+<hr>
+
+<h4><a name="07-02">4.7.2 gSPSelectDL</a></h4>
+
+<hr>
+
+<blockquote>
+    <pre><FONT SIZE="3"><strong>gSPSelectDL(Gfx *gdl, Gfx *ldl, u8 sid, u32 flag, u32 mask)
+gsSPSelectDL(Gfx *ldl, u8 sid, u32 flag, u32 mask)</strong></FONT></pre>
+</blockquote>
+
+<table border="0" cols="3">
+    <tr>
+        <td nowrap><FONT SIZE="-1">Gfx</FONT></td>
+        <td nowrap><FONT SIZE="-1">*gdl;</FONT></td>
+        <td nowrap><FONT SIZE="-1">Display list pointer</FONT></td>
+    </tr>
+    <tr>
+        <td nowrap><FONT SIZE="-1">Gfx</FONT></td>
+        <td nowrap><FONT SIZE="-1">*ldl;</FONT></td>
+        <td nowrap><FONT SIZE="-1">Display list to be linked</FONT></td>
+    </tr>
+    <tr>
+        <td nowrap><FONT SIZE="-1">u8</FONT></td>
+        <td nowrap><FONT SIZE="-1">sid;</FONT></td>
+        <td nowrap><FONT SIZE="-1">Status ID   Select from { 0, 4, 8, 12 }</FONT></td>
+    </tr>
+    <tr>
+        <td nowrap><FONT SIZE="-1">u32</FONT></td>
+        <td nowrap><FONT SIZE="-1">flag;</FONT></td>
+        <td nowrap><FONT SIZE="-1">Status flag</FONT></td>
+    </tr>
+    <tr>
+        <td nowrap><FONT SIZE="-1">u32</FONT></td>
+        <td nowrap><FONT SIZE="-1">mask;</FONT></td>
+        <td nowrap><FONT SIZE="-1">Status mask</FONT></td>
+    </tr>
+</table>
+
+<hr>
+
+<p>g[s]SPSelectDL detects Status[sid] using the judgment formula as in texture loading judgment, and calls another display list according to the True/False result.</p>
+
+<p>g[s]SPSelectDL performs branching judgment by the following processing and then determines whether or not to call the display list.
+</p>
+
+<p>+ Check (Status[sid] &amp; mask) == flag</p>
+
+<p>+ If result is TRUE, terminate GBI without doing anything</p>
+
+<p>+ If result if False, update Status[sid] so that </p>
+
+<blockquote>
+    <pre><FONT SIZE="3">Status[sid] = (Status[sid] &amp; ~mask) | (flag &amp; mask);</FONT></pre>
+</blockquote>
+
+<blockquote>
+    <p>and call the display list ldl</p>
+</blockquote>
+
+<p align="right"><a href="index.htm"><img
+src="../../gif/index.gif" alt="[UP]" border="0"
+width="65" height="17"></a></p>
+
+<hr>
+
+<h4><a name="07-03">4.7.3 gSPSelectBranchDL</a></h4>
+
+<hr>
+
+<blockquote>
+    <pre><FONT SIZE="3"><strong>gSPSelectBranchDL(Gfx *gdl, Gfx *bdl, u8 sid, u32 flag,u32 mask)
+gsSPSelectBranchDL(Gfx *bdl, u8 sid, u32 flag, u32 mask)</strong></FONT></pre>
+</blockquote>
+
+<table border="0" cols="3">
+    <tr>
+        <td nowrap><FONT SIZE="-1">Gfx</FONT></td>
+        <td nowrap><FONT SIZE="-1">*gdl;</FONT></td>
+        <td nowrap><FONT SIZE="-1">Display list pointer</FONT></td>
+    </tr>
+    <tr>
+        <td nowrap><FONT SIZE="-1">Gfx</FONT></td>
+        <td nowrap><FONT SIZE="-1">*link;</FONT></td>
+        <td nowrap><FONT SIZE="-1">Display list to be linked</FONT></td>
+    </tr>
+    <tr>
+        <td nowrap><FONT SIZE="-1">u8</FONT></td>
+        <td nowrap><FONT SIZE="-1">sid;</FONT></td>
+        <td nowrap><FONT SIZE="-1">Status ID  Select from { 0, 4, 8, 12 }</FONT></td>
+    </tr>
+    <tr>
+        <td nowrap><FONT SIZE="-1">u32</FONT></td>
+        <td nowrap><FONT SIZE="-1">flag;</FONT></td>
+        <td nowrap><FONT SIZE="-1">Status flag</FONT></td>
+    </tr>
+    <tr>
+        <td nowrap><FONT SIZE="-1">u32</FONT></td>
+        <td nowrap><FONT SIZE="-1">mask;</FONT></td>
+        <td nowrap><FONT SIZE="-1">Status mask</FONT></td>
+    </tr>
+</table>
+
+<hr>
+
+<p>g[s]SPSelectBranchDL detects Select[sid] using the judgment formula as in texture loading judgment, and calls another display list according to the True/False result. </p>
+
+<p>g[s]SPSelectBranchDL performs branching judgment by the following processing and then determines whether or not to call the display list.</p>
+
+<p>+ Check (Status[sid] &amp; mask) == flag</p>
+
+<p>+ If result is TRUE, terminate GBI without doing anything</p>
+
+<p>+ If result if False, update Status[sid] so that </p>
+
+<blockquote>
+    <pre><FONT SIZE="3">Status[sid] = (Status[sid] &amp; ~mask) | (flag &amp; mask);</FONT></pre>
+    <p>and branch to the display list bdl</p>
+</blockquote>
+
+<p align="right"><a href="index.htm"><img
+src="../../gif/index.gif" alt="[UP]" border="0"
+width="65" height="17"></a></p>
+
+<hr>
+</body>
+</html>

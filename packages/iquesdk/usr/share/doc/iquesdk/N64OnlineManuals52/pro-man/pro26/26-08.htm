@@ -1,0 +1,1827 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 26 - SI Devices</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. 
+             MAP- 10/25/99 edited content, updated format-->
+</head>
+
+<H1>26.8 Voice Recognition System</H1>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<P>
+<A name="01"></A>
+</P>
+<H2>26.8.1 Voice Recognition System Definition</H2>
+<P>
+The Voice Recognition System is a peripheral device for the N64 which makes it possible for words spoken by the user to be recognized during an N64 game. To use the system, insert the plug on the Voice Recognition Unit into the N64 controller port, thereby connecting the
+special microphone on the Voice Recognition Unit. This makes it possible to make the characters in the game move and respond by voice in addition to the conventional controller-only interface. This allows the game to proceed with a sense of &QUOT;realism&QUOT;, for instance, allowing the player to give verbal commands which put secondary characters into action, while moving the main character with the controller. 
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<P>
+<A name="02"></A>
+</P>
+<H2>26.8.2 Features of the Voice Recognition System</H2>
+<P>
+The main features of the Voice Recognition System are shown below.
+</P>
+<TABLE width="600" border="1" cellspacing="1" cellpadding="2">
+  <TR>
+    <TD valign="top" width="22%">
+    <P><b>Item</b></P>
+</TD>
+    <TD valign="top" width="78%">
+    <P><b>Function</b></P>
+</TD></TR>
+  <TR>
+    <TD valign="top" width="22%">
+    <P>
+Voice recognition format
+    </P>
+</TD>
+    <TD valign="top" width="78%">
+    <P>
+Semisyllabic voice recognition system *1
+    </P>
+</TD></TR>
+  <TR>
+    <TD valign="top" width="22%">
+    <P>
+Language recognized
+    </P>
+</TD>
+    <TD valign="top" width="78%">
+    <P>
+Japanese words (delineates one word by a 0.4 second silence after pronunciation is completed)
+    </P>
+</TD></TR>
+  <TR>
+    <TD valign="top" width="22%">
+    <P>
+Speakers recognized
+    </P>
+</TD>
+    <TD valign="top" width="78%">
+    <P>
+Any speaker (speaker needs no specific prior training)
+    </P>
+</TD></TR>
+  <TR>
+    <TD valign="top" width="22%">
+    <P>
+Maximum registered words
+    </P>
+</TD>
+    <TD valign="top" width="78%">
+    <P>
+Maximum 255 words (about 80 words at 5 syllables per word) *2
+    </P>
+</TD></TR>
+  <TR>
+    <TD valign="top" width="22%">
+    <P>
+Characters per word
+    </P>
+</TD>
+    <TD valign="top" width="78%">
+    <P>
+Maximum 17 characters
+    </P>
+</TD></TR>
+  <TR>
+    <TD valign="top" width="22%">
+    <P>
+Text registration method
+    </P>
+</TD>
+    <TD valign="top" width="78%">
+    <P>
+Enter using shift-JIS code
+    </P>
+</TD></TR>
+  <TR>
+    <TD valign="top" width="22%">
+    <P>
+Maximum pronunciation length
+    </P>
+</TD>
+    <TD valign="top" width="78%">
+    <P>
+About 10 seconds (any sound in excess of the maximum pronunciation length is processed as noise)
+    </P>
+</TD></TR>
+  <TR>
+    <TD valign="top" width="22%">
+    <P>
+Recognition result output method
+    </P>
+</TD>
+    <TD valign="top" width="78%">
+    <P>
+Words closest to voice input are output ranked 1<sup>st</sup> ~ 5<sup>th</sup>
+    </P>
+</TD></TR>
+</TABLE>
+
+<P>
+*1 Words are comprised of syllables. Syllables divided into two parts by the center of the vowels are called &QUOT;semisyllables&QUOT;.<BR>
+*2 Use <tt>osVoiceCountSyllables</tt>() function, described later, to obtain the number of semisyllables in a word.
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<P>
+<A name="03"></A>
+</P>
+<H2>26.8.3 Voice Recognition System Configuration</H2>
+<P>
+The Voice Recognition System configuration is shown below. The system is used by inserting the plug on the Voice Recognition Unit into the N64 controller port, thereby connecting the special microphone on the Voice Recognition Unit. Since power is supplied by the N64,
+batteries are not needed. 
+</P>
+<P>
+<IMG src="gif/f26-08-01.gif">
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<P>
+<A name="04"></A>
+</P>
+<H2>26.8.4 Voice Recognition Structure</H2>
+<P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<P>
+<A name="04-01"></A>
+</P>
+<H3>26.8.4.1 Voice Recognition Structure</H3>
+<P>
+Words to be recognized by the Voice Recognition System are placed in a registered word dictionary. Words can be freely registered in the registered word dictionary from the program side. The words which are determined to match closest to the voice input, are output from
+among these registered words. The Voice Recognition structure is shown in the figure below.  A description of each step follows.
+</P>
+<P>
+<IMG src="gif/f26-08-02.gif">
+</P>
+<P>
+<B>(1) Registration of word data to dictionary</B>
+</P>
+<P>
+Input the words that are to be recognized using the SJIS code. The words which have been input are converted to the format necessary for voice recognition processing and registered in the dictionary.
+</P>
+<P>
+<B>(2) Voice input</B>
+</P>
+<P>
+The user's voice is input via the special microphone connected to the Voice Recognition System. The input voice is then converted into the format necessary for voice recognition processing. 
+</P>
+<P>
+<B>(3) Comparison between input voice pattern and registered words</B>
+</P>
+<P>
+The voice input is compared with the patterns of the words registered in the dictionary and a distance value (a numeric value expressing how different the voice input is from the word to which it is being compared) is computed. 
+</P>
+<P>
+<B>(4) Output of similar word ranking</B>
+</P>
+<P>
+The words from among those words registered in the dictionary with the smallest distance values are output ranked in order from  1<sup>st</sup> ~ 5<sup>th</sup> place.
+</P>
+<P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<P>
+<A name="04-02"></A>
+</P>
+<H3>26.8.4.2 Status When Voice Recognition is Running</H3>
+<P>
+Changes in status while voice recognition is running are explained below. There are 5 command statuses during voice recognition execution. 
+</P>
+<UL>
+  <LI>Stop/End (VOICE_STATUS_READY)
+</UL>
+<UL>
+  <LI>Voice Undetected (VOICE_STATUS_START)
+</UL>
+<UL>
+  <LI>Cancel (VOICE_STATUS_CANCEL)
+</UL>
+<UL>
+  <LI>Detected/Detecting (VOICE_STATUS_BUSY)
+</UL>
+<UL>
+  <LI>End Recognition Processing (VOICE_STATUS_END)
+</UL>
+<P>
+The processing flow is shown in the figure below.  A description of each step follows. 
+</P>
+<P>
+<IMG src="gif/f26-08-03.gif">
+</P>
+<UL>
+  <LI>Status is VOICE_STATUS_READY when voice recognition processing is not being performed. 
+</UL>
+<UL>
+  <LI>If a voice is not detected after the Start Voice Recognition command has been executed, the status switches to VOICE_STATUS_START. 
+</UL>
+<UL>
+  <LI>If a noise is input for a short time which cannot be recognized as a word, the status switches to VOICE_STATUS_CANCEL. VOICE_STATUS_CANCEL is the same condition as VOICE_STATUS_START, in which some noise or voice input can be accepted.
+</UL>
+<UL>
+  <LI>When a voice is detected and recognition processing is executed, the status switches to VOICE_STATUS_BUSY.
+</UL>
+<UL>
+  <LI>A lapse of 0.4 seconds after voice input is seen as the end of voice input. Recognition processing is terminated, and the status switches to VOICE_STATUS_END. 
+</UL>
+<UL>
+  <LI>After switching to VOICE_STATUS_END, the status returns to VOICE_STATUS_READY after several seconds have lapsed.
+</UL>
+<P>
+When the status moves from VOICE_STATUS_END to VOICE_STATUS_READY or is VOICE_STATUS_END, the Get Recognition Results command can be executed. If the Get Recognition Results command is executed while the status is VOICE_STATUS_END, the status will switch to VOICE_STATUS_READY after completion of the Get Recognition Results command. Once the status has switched to VOICE_STATUS_READY, the next Start Recognition command can be executed. 
+</P>
+<P>
+The variable which indicates the current status is stored in the voice recognition system control structure. Please see <A href="#06-01">Section 26.8.6.1 "Initialize Voice Recognition System"</A> for details.
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<P>
+<A name="05"></A>
+</P>
+<H2>26.8.5 Assembling the Voice Recognition System Program</H2>
+<P>
+Following is a simple example of the flow of a program for performing voice recognition. 
+</P>
+<TABLE>
+  <TR>
+    <TD><IMG src="gif/f26-08-04.gif"></TD>
+    <TD valign="top">First, initialize the Voice Recognition System. Next, initialize<BR>
+ the registered word dictionary and register the words to be recognized. Once word registration is completed, the program moves to voice recognition processing. By starting voice recognition, voice input from the microphone can be acquired as words. Execute the Get Voice Recognition Results function to acquire a word. <BR>
+The library functions for the Voice Recognition System which perform processing at each step of the flow are explained in Section 8.6. Detailed programming procedures, including error branching, etc., are explained in Section 8.7.<BR>
+</TD></TR>
+</TABLE>
+
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<P>
+<A name="06"></A>
+</P>
+<H2>26.8.6 Voice Recognition System Function Specifications</H2>
+<P>
+The library functions used when the Voice Recognition System is handled by an N64 program are explained below. There are a total of 10 Voice Recognition System-related functions.
+</P>
+<UL>
+  <LI>Initialize Voice Recognition System (<tt>osVoiceInit</tt>())
+</UL>
+<UL>
+  <LI>Initialize Registered Word Dictionary (<tt>osVoiceClearDictionary</tt>())
+</UL>
+<UL>
+  <LI>Register Words into Dictionary (<tt>osVoiceSetWord</tt>())
+</UL>
+<UL>
+  <LI>Check Registerable Words (<tt>osVoiceCheckWord</tt>())
+</UL>
+<UL>
+  <LI>Count Semisyllables in Word (<tt>osVoiceCountSyllables</tt>())
+</UL>
+<UL>
+  <LI>Mask Registered Words (<tt>osVoiceMaskDictionary</tt>())
+</UL>
+<UL>
+  <LI>Start Voice Recognition (<tt>osVoiceStartReadData</tt>())
+</UL>
+<UL>
+  <LI>Acquire Registration Results (<tt>osVoiceGetReadData</tt>())
+</UL>
+<UL>
+  <LI>Forcibly Stop Recognition Processing (<tt>osVoiceStopReadData</tt>())
+</UL>
+<UL>
+  <LI>Adjust Input Gain (<tt>osVoiceControlGain</tt>())
+</UL>
+<P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<P>
+<A name="06-01"></A>
+</P>
+<H3>26.8.6.1 Initialize Voice Recognition System</H3>
+<P>
+<b>Function</b>
+</P>
+<P>
+<tt>osVoiceInit</tt>
+</P>
+<p><i>Initialize Voice Recognition System control structure and hardware</i></p>
+<P>
+<b>Syntax</b>
+</P>
+<PRE>
+#include &lt;ultra64.h&gt;
+s32 osVoiceInit(OSMesgQueue *siMessageQ, OSVoiceHandle *hd, int channel);
+</PRE>
+<P>
+<b>Arguments</b>
+</P>
+<dl>
+<dt><b>siMessageQ</b>
+<dd>Initialized message queue associated with OS_EVENT_SIOS_EVENT_SI
+<dt><b>hd</b>
+<dd>Voice Recognition System control structure
+<dt><b>channel</b>
+<dd>Controller channel number
+</dl>
+<P>
+<b>Description</b>
+</P>
+<P>
+The <tt>osVoiceInit</tt>() function initializes the Voice Recognition System. It initializes both the hardware and the Voice Recognition System control structure. Consequently, there is no need to initialize the hd structure on the application side. Call this function first when using the Voice Recognition System. 
+</P>
+<P>
+It is recommended that you check to see which device is connected to a particular port prior to initialization. Standard controllers and peripheral devices other than the Voice Recognition System may be inserted into the controller ports as well. This check can be accomplished with the <tt>osContStartQuery</tt>() function and the <tt>osContGetQuery</tt>() function. The Voice Recognition System is connected if the value of the member variable "errno" of the OSContStatus structure is 0 (zero), and if the AND (logical product) of the value for type and CONT_TYPE_MASK is CONT_TYPE_VOICE. 
+</P>
+<P>
+siMessageQ is the message queue initialized in connection with OS_EVENT_SI. Please refer to the <A href="../../n64man/os/osSetEventMesg.htm">osSetEventMesg()</A> function regarding how to establish this connection. channel is the channel number of the controller port to which the Voice Recognition Unit is connected. It is a value 0~3. 
+</P>
+<P>
+The Voice Recognition System control structure OSVoiceHandle is configured as follows:
+</P>
+<PRE>
+typedef struct {
+        OSMesgQueue *__mq;      /* SI message queue */
+        int  __channel;     /* Controller port No. */
+        s32 __mode;             /* Used within the OS */
+        u8 cmd_status;          /* Command status */
+} OSVoiceHandle;
+</PRE>
+<P>
+Do not change the values of these various members in the application. In addition, the only member variable which is referred to and which has any meaning is cmd_status. The member variables other than cmd_status are used by the system and therefore do not need to be referred to by the application. 
+</P>
+<P>
+The member variable cmd_status indicates the voice recognition command status. When the voice recognition command status is checked within the voice recognition library, that value is stored in cmd_status. Specifically,the following function calls update the values.
+</P>
+<BLOCKQUOTE>
+<p>
+<tt>osVoiceInit</tt>()<BR>
+<tt>osVoiceClearDictionary</tt>()<BR>
+<tt>osVoiceSetWord</tt>()<BR>
+<tt>osVoiceMaskDictionary</tt>()<BR>
+<tt>osVoiceStartReadData</tt>()<BR>
+<tt>osVoiceStopReadData()</tt><BR>
+<tt>osVoiceGetReadData</tt>()
+</p>
+</BLOCKQUOTE>
+<P>
+The following values can be handled by cmd_status. Please see <A href="#04-02">Section 26.8.4.2 "Status When Voice Recognition is Running"</a> for details on each status. 
+</P>
+<TABLE width="600" border="1" cellspacing="1" cellpadding="0">
+  <TR>
+    <TD valign="top" width="36%">
+    <P align="center">
+<b>Definition Name</b>
+    </P>
+</TD>
+    <TD valign="top" width="8%">
+    <P align="center">
+<b>Value</b>
+    </P>
+</TD>
+    <TD valign="top" width="55%">
+    <P align="center">
+<b>Description</b>
+    </P>
+</TD></TR>
+  <TR>
+    <TD valign="top" width="36%">
+    <P>
+VOICE_STATUS_READY
+    </P>
+</TD>
+    <TD valign="top" width="8%">
+    <P align="center">
+0
+    </P>
+</TD>
+    <TD valign="top" width="55%">
+    <P>
+Stop/End
+    </P>
+</TD></TR>
+  <TR>
+    <TD valign="top" width="36%">
+    <P>
+VOICE_STATUS_START
+    </P>
+</TD>
+    <TD valign="top" width="8%">
+    <P align="center">
+1
+    </P>
+</TD>
+    <TD valign="top" width="55%">
+    <P>
+Voice Undetected (no voice input)
+    </P>
+</TD></TR>
+  <TR>
+    <TD valign="top" width="36%">
+    <P>
+VOICE_STATUS_CANCEL
+    </P>
+</TD>
+    <TD valign="top" width="8%">
+    <P align="center">
+3
+    </P>
+</TD>
+    <TD valign="top" width="55%">
+    <P>
+Cancel (cancel extraneous noise)
+    </P>
+</TD></TR>
+  <TR>
+    <TD valign="top" width="36%">
+    <P>
+VOICE_STATUS_BUSY
+    </P>
+</TD>
+    <TD valign="top" width="8%">
+    <P align="center">
+5
+    </P>
+</TD>
+    <TD valign="top" width="55%">
+    <P>
+Detected/Detecting (voice being input, recognition processing under way)
+    </P>
+</TD></TR>
+  <TR>
+    <TD valign="top" width="36%">
+    <P>
+VOICE_STATUS_END
+    </P>
+</TD>
+    <TD valign="top" width="8%">
+    <P align="center">
+7
+    </P>
+</TD>
+    <TD valign="top" width="55%">
+    <P>
+End recognition processing (enable execution of Get Recognition Results command)
+    </P>
+</TD></TR>
+</TABLE>
+
+<P>
+The returned value is an error code. A 0 (zero) is returned when processing ends normally. If an error occurs, this function has the following error codes.
+</P>
+<P>
+<B>CONT_ERR_NO_CONTROLLER</B>
+</P>
+<P>
+Nothing is connected to the controller port. 
+</P>
+<P>
+<B>CONT_ERR_DEVICE</B>
+</P>
+<P>
+Something other than the Voice Recognition System is connected to the controller port.
+</P>
+<P>
+<B>CONT_ERR_VOICE_NO_RESPONSE</B>
+</P>
+<P>
+There was no response from the Voice Recognition System. There may be a problem with the hardware.
+</P>
+<P>
+<B>CONT_ERR_CONTRFAIL</B>
+</P>
+<P>
+There was a data transmission failure. There is a problem in the Voice Recognition System connection.
+</P>
+<P>
+<B>CONT_ERR_INVALID</B>
+</P>
+<P>
+There is an error in the function call method or in the argument. This error will not occur if the function is being used correctly. Write your program so that this error does not occur when development is completed. 
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H3><A name="06-02"></A>26.8.6.2 Initialize Registered Word Dictionary</H3>
+<P>
+<b>Function</b>
+</P>
+<P>
+<tt>osVoiceClearDictionary</tt>
+</P>
+<p><i>Initialize Registered Word Dictionary</i></p>
+<P>
+<b>Syntax</b>
+</P>
+<PRE>
+#include &lt;ultra64.h&gt;
+s32 osVoiceClearDictionary(OSVoiceHandle *hd, u8 words);
+</PRE>
+<P>
+<b>Arguments</b>
+</P>
+<dl>
+<dt><b>hd</b>
+<dd>Voice Recognition System control structure
+<dt><b>words</b>
+<dd>Number of words registered
+</dl>
+
+<P>
+<b>Description</b>
+</P>
+<P>
+The <tt>osVoiceClearDictionary</tt>() function initializes the registered word dictionary for the Voice Recognition System. The dictionary is initialized so that the specified number of words can be registered in the dictionary. Words cannot be registered with the <tt>osVoiceSetWord</tt> before the dictionary is initialized with the <tt>osVoiceClearDictionary</tt>() function. 
+</P>
+<P>
+hd is the Voice Recognition System control structure. The Voice Recognition System must be initialized with the <tt>osVoiceInit</tt>() function before the <tt>osVoiceClearDictionary</tt>() function is called. The number of words to be registered is specified in words. 1~255 words can be registered in the dictionary.
+</P>
+<P>
+The returned value is an error code. A 0 (zero) is returned when processing ends normally. If an error occurs, this function has the following error codes.
+</P>
+<P>
+<B>CONT_ERR_NO_CONTROLLER</B>
+</P>
+<P>
+Nothing is connected to the controller port. 
+</P>
+<P>
+<B>CONT_ERR_DEVICE</B>
+</P>
+<P>
+Something other than the Voice Recognition System is connected to the controller port. 
+</P>
+<P>
+<B>CONT_ERR_VOICE_NO_RESPONSE</B>
+</P>
+<P>
+There was no response from the Voice Recognition System. There may be a problem with the hardware.
+</P>
+<P>
+<B>CONT_ERR_CONTRFAIL</B>
+</P>
+<P>
+There was a data transmission failure. There is a problem in the Voice Recognition System connection.
+</P>
+<P>
+<B>CONT_ERR_INVALID</B>
+</P>
+<P>
+There is an error in the function call method or in the argument. This error will not occur if the function is being used correctly. Write your program so that this error does not occur when development is completed.
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H3><A name="06-03"></A>26.8.6.3 Register Words into Dictionary</H3>
+<P>
+<b>Function</b>
+</P>
+<P>
+<tt>osVoiceSetWord</tt>
+</P>
+<p><i>Register Words into Voice Recognition System Dictionary</i></p>
+<P>
+<b>Syntax</b>
+</P>
+<PRE>
+#include &lt;ultra64.h&gt;
+s32 osVoiceSetWord(OSVoiceHandle *hd, u8 *word);
+</PRE>
+<P>
+<b>Arguments</b>
+</P>
+<dl>
+<dt><b>hd</b>
+<dd>Voice Recognition System control structure
+<dt><b>word</b>
+<dd>Word to be registered
+</dl>
+<P>
+<b>Description</b>
+</P>
+<P>
+The <tt>osVoiceSetWord</tt>() function is for registering words in the Voice Recognition System dictionary. hd is the Voice Recognition System control structure. The Voice Recognition System must be initialized with the <tt>osVoiceInit</tt>() function before the <tt>osVoiceSetWord</tt>() function is called.
+</P>
+<P>
+The word (SJIS) to be registered is specified in word. The word can be up to 17 characters long. Since calling the <tt>osVoiceSetWord</tt>() function once registers one word, execute <tt>osVoiceSetWord</tt>() multiple times to register multiple words. The number of words registered must match the number set by the <tt>osVoiceClearDictionary</tt>() function. Please note that an error will be generated when the <tt>osVoiceStartReadData</tt>() function is executed, if the number of words registered is greater than or less than the specified number of words. 
+</P>
+<P>
+The maximum number of words which can be registered in the dictionary is about 80 words, assuming 5 syllables per word. Therefore, while the maximum number of words which can be registered is set at 255, if there are several syllables per word, the dictionary may subsequently overflow the memory. In this case, voice recognition can be executed without an error being caused by the  <tt>osVoiceStartReadData</tt>() function even if the number of registered words is less than the number set by the <tt>osVoiceClearDictionary</tt>() function. 
+</P>
+<P>
+The characters which can be registered and their codes are shown in the table below. 
+</P>
+<P>
+<font face="arial" size="-1">
+<br>
+<table border=0 align="center">
+<tr><td>
+<img border=0 align="center" src="../pro26/gif/t26-08-01.gif"></tr></td></table>
+
+<P>
+In addition, the following restrictions apply to character combinations when registering words. Use the <tt>osVoiceCheckWord</tt>() function to check whether or not the word that you are trying to register can be registered in the Voice Recognition System. Use this in the case of game applications in which registered words will be input during debugging or by the game player. 
+</P>
+<font face="arial" size="-1">
+<br>
+<table border=1 cellspacing="3" cellpadding="3" width=80%>
+<tr><td valign="top" width=40%><font face="arial" size="-1"><b>Usage</b>
+<td valign="top" width=60%><font face="arial" size="-1"><b>Character</b></td></tr>
+<tr>
+<td valign="top" width=40%><font face="arial" size="-1">No limitation on use</td>
+<td width=60% valign="top"><img src="../pro26/gif/t26-08-02.1.gif"></td>
+</tr>
+<tr>
+<td width=40% valign="top"><font face="arial" size="-1">Can be used only after specified characters
+<br>(Combinable characters)</td>
+<td width=60% valign="top"><img src="../pro26/gif/t26-08-02.2.gif"></td>
+</tr>
+<tr>
+<td valign="top" width=40%><font face="arial" size="-1">Cannot be used at the beginning of a word</td>
+<td  width=60% valign="top"><img src="../pro26/gif/t26-08-02.3.gif"></td>
+</tr>
+<tr>
+<td valign="top" width=40%><font face="arial" size="-1">Cannot be used at the end of a word</td>
+<td width=60% valign="top"><img src="../pro26/gif/t26-08-02.4.gif"></td>
+</tr>
+<tr>
+<td width=40% valign="top"><font face="arial" size="-1">Cannot be used in front of "-"</td>
+<td width=60% valign="top"><img src="../pro26/gif/t26-08-02.5.gif"></td>
+</tr>
+<tr>
+<td valign="top" width=40%><font face="arial" size="-1">Cannot be used after small "tsu"</td>
+<td width=60% valign="top"><img src="../pro26/gif/t26-08-02.6.gif"></td>
+</tr>
+<tr><td valign="top" width=40%><font face="arial" size="-1">Combinations which cannot be used</td>
+<td width=60% valign="top"><img src="../pro26/gif/t26-08-02.7.gif"></td></tr>
+</table>
+
+<P>
+The returned value is an error code. A 0 (zero) is returned when processing ends normally. If an error occurs, this function has the following error codes.
+</P>
+<P>
+<B>CONT_ERR_NO_CONTROLLER</B>
+</P>
+<P>
+Nothing is connected to the controller port.
+</P>
+<P>
+<B>CONT_ERR_DEVICE </B>
+</P>
+<P>
+Something other than the Voice Recognition System is connected to the controller port. 
+</P>
+<P>
+<B>CONT_ERR_VOICE_NO_RESPONSE </B>
+</P>
+<P>
+There was no response from the Voice Recognition System. There may be a problem with the hardware.
+</P>
+<P>
+<B>CONT_ERR_CONTRFAIL</B>
+</P>
+<P>
+There was a data transmission failure. There is a problem in the Voice Recognition System connection.
+</P>
+<P>
+<B>CONT_ERR_INVALID</B>
+</P>
+<P>
+There is an error in the function call method or in the argument. This error will not occur if the function is being used correctly. Write your program so that this error does not occur when development is completed.
+</P>
+<P>
+This error will also occur when you attempt to register more words than specified with the <tt>osVoiceClearDictionary</tt>() function.
+</P>
+<P>
+<B>CONT_ERR_VOICE_WORD</B>
+</P>
+<P>
+A word containing improper characters has been registered. The set word is invalidated and the word number is not incremented. Execute the <tt>osVoiceSetWord</tt>() function to register a proper word.
+</P>
+<P>
+<B>CONT_ERR_VOICE_MEMORY</B>
+</P>
+<P>
+This indicates a dictionary memory overflow. However, if the recognition command is executed in this condition, normal recognition processing can be performed even if the number of words which have been set is less than the number of words set by the <tt>osVoiceClearDictionary</tt>() function. When this error is generated, control the number of words actually set on the application side. 
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H3><A name="06-04"></A>26.8.6.4 Check Registerable Words</H3>
+<P>
+<b>Function</b>
+</P>
+<P>
+<tt>osVoiceCheckWord</tt>
+</P>
+<p><i>Check to see if the target word can be registered in the dictionary</i></p>
+<P>
+<b>Syntax</b>
+</P>
+<PRE>
+#include &lt;ultra64.h&gt;
+s32 osVoiceCheckWord(u8 *word);
+</PRE>
+<P>
+<b>Arguments</b>
+</P>
+<dl>
+<dt><b>word</b>
+<dd>Word to be registered
+</dl>
+<P>
+<b>Description</b>
+</P>
+<P>
+The <tt>osVoiceCheckWord</tt>() function is for checking whether or not a specified word can be registered in the Voice Recognition System. Use this when the words to be registered will be input during debugging or by the game player. 
+</P>
+<P>
+<b>word</b> specifies the word (SJIS) to be registered. An error will be returned if a word is specified which contains a character combination which does not satisfy the conditions listed in the table below.
+</P>
+<font face="arial" size="-1">
+<br>
+<table border=1 cellspacing="3" cellpadding="3" width=80%>
+<tr><td valign="top" width=40%><font face="arial" size="-1"><b>Usage</b></td>
+<td valign="top" width=60%><font face="arial" size="-1"><b>Character</b></td></tr>
+<tr>
+<td valign="top" width=40%><font face="arial" size="-1">No limitation on use</td>
+<td width=60% valign="top"><img src="../pro26/gif/t26-08-03.1.gif"></td>
+</tr>
+<tr>
+<td width=40% valign="top"><font face="arial" size="-1">Can be used only after specified characters
+<br>(Combinable characters)</td>
+<td width=60% valign="top"><img src="../pro26/gif/t26-08-03.2.gif"></td>
+</tr>
+<tr>
+<td valign="top" width=40%><font face="arial" size="-1">Cannot be used at the beginning of a word</td>
+<td  width=60% valign="top"><img src="../pro26/gif/t26-08-03.3.gif"></td>
+</tr>
+<tr>
+<td valign="top" width=40%><font face="arial" size="-1">Cannot be used at the end of a word</td>
+<td width=60% valign="top"><img src="../pro26/gif/t26-08-03.4.gif"></td>
+</tr>
+<tr>
+<td width=40% valign="top"><font face="arial" size="-1">Cannot be used in front of "-"</td>
+<td width=60% valign="top"><img src="../pro26/gif/t26-08-03.5.gif"></td>
+</tr>
+<tr>
+<td valign="top" width=40%><font face="arial" size="-1">Cannot be used after small "tsu"</td>
+<td width=60% valign="top"><img src="../pro26/gif/t26-08-03.6.gif"></td>
+</tr>
+<tr><td valign="top" width=40%><font face="arial" size="-1">Combinations which cannot be used</td>
+<td width=60% valign="top"><img src="../pro26/gif/t26-08-03.7.gif"></td></tr>
+</table>
+<P>
+
+</P>
+<P>
+The returned value is an error code. A 0 (zero) is returned when processing ends normally. If an error occurs, this function has the following error codes.
+</P>
+<P>
+<B>CONT_ERR_VOICE_WORD</B>
+</P>
+<P>
+The word cannot be registered. This word cannot be registered in the voice recognition dictionary. 
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H3><A name="06-05"></A>26.8.6.5 Count Semisyllables in Word</H3>
+<P>
+<b>Function</b>
+</P>
+<P>
+<tt>osVoiceCountSyllables</tt>
+</P>
+<p><i>Count the number of semisyllables in word</i></p>
+<P>
+<b>Syntax</b>
+</P>
+<PRE>
+#include &lt;ultra64.h&gt;
+void osVoiceCountSyllables(u8 *word, u32 *syllable);
+</PRE>
+<P>
+<b>Arguments</b>
+</P>                
+<dl>
+<dt><b>word</b>
+<dd>Word to be registered
+<dt><b>syllable</b>
+<dd>Number of semisyllables in word (Number of syllables times two)
+</dl>
+<P>
+<b>Description</b>
+</P>
+<P>
+The <tt>osVoiceCountSyllables</tt>() function is for calculating how many syllables there are when registering a specific word in the Voice Recognition System. By using this function, you can later determine how many words can be registered in the dictionary. It is convenient to use the function during debugging or when asking the game player to input registered words. 
+</P>
+<P>
+<b>word</b> specifies the word (SJIS) to registered. The number of semisyllables resulting from the calculation is substituted for *syllables.
+</P>
+<P>
+The total number of semisyllables which can be registered in the Voice Recognition System dictionary is 880 (440 syllables). If more than this are registered with the <tt>osVoiceSetWord</tt>() function, a CONT_ERR_VOICE_MEMORY error will occur. 
+</P>
+<P>
+The number of semisyllables is calculated as follows. One semisyllable per word must be added as an offset value.
+</P>
+<DIV align="left">
+<TABLE border="1" cellspacing="1" cellpadding="0">
+  <TR>
+    <TD valign="top" width="14%">
+    <P align="center">
+<b>Type of Syllable</b>
+    </P>
+</TD>
+    <TD valign="top" width="13%">
+    <P align="center">
+<b>Number of Semisyllables</b>
+    </P>
+</TD>
+    <TD valign="top" width="74%">
+    <P align="center">
+<b>Conditions</b>
+    </P>
+</TD></TR>
+  <TR>
+    <TD valign="top" width="14%">
+    <P>
+Vowel only
+    </P>
+</TD>
+    <TD valign="top" width="13%">
+    <P align="center">
+2
+    </P>
+</TD>
+    <TD valign="top" width="74%">
+    <P>
+Start of word
+    </P>
+</TD></TR>
+  <TR>
+    <TD valign="top" width="14%">
+    <P>
+Vowel only
+    </P>
+</TD>
+    <TD valign="top" width="13%">
+    <P align="center">
+1
+    </P>
+</TD>
+    <TD valign="top" width="74%">
+    <P>
+Anywhere but start of word
+    </P>
+</TD></TR>
+  <TR>
+    <TD valign="top" width="14%">
+    <P>
+Consonant + vowel
+    </P>
+</TD>
+    <TD valign="top" width="13%">
+    <P align="center">
+2
+    </P>
+</TD>
+    <TD valign="top" width="74%">
+    <P>
+Start of word, or anywhere but when start of word is Romanized by k, t, c, or p
+    </P>
+</TD></TR>
+  <TR>
+    <TD valign="top" width="14%">
+    <P>
+Consonant + vowel
+    </P>
+</TD>
+    <TD valign="top" width="13%">
+    <P align="center">
+3
+    </P>
+</TD>
+    <TD valign="top" width="74%">
+    <P>
+Anywhere but start of word, anywhere except when preceding character is a small &QUOT;tsu&QUOT;, or when start of word is Romanized by k, t, c, or p
+    </P>
+</TD></TR>
+  <TR>
+    <TD valign="top" width="14%">
+    <P>
+Consonant + diphthong
+    </P>
+</TD>
+    <TD valign="top" width="13%">
+    <P align="center">
+2
+    </P>
+</TD>
+    <TD valign="top" width="74%">
+    <P>
+Small &quot;ya&quot; and the like. Start of word or when start of word is Romanized by k, t, c, or p
+    </P>
+</TD></TR>
+  <TR>
+    <TD valign="top" width="14%">
+    <P>
+Consonant + diphthong
+    </P>
+</TD>
+    <TD valign="top" width="13%">
+    <P align="center">
+3
+    </P>
+</TD>
+    <TD valign="top" width="74%">
+    <P>
+Small &quot;ya&quot; and the like. Anywhere but start of word, anywhere except when preceding character is a small &QUOT;tsu&QUOT;,  or when start of word is Romanized by k, t, c, or p
+    </P>
+</TD></TR>
+  <TR>
+    <TD valign="top" width="14%">
+    <P>
+&quot;n&quot; sound
+    </P>
+</TD>
+    <TD valign="top" width="13%">
+    <P align="center">
+1
+    </P>
+</TD>
+    <TD valign="top" width="74%">
+    <P>
+none
+    </P>
+</TD></TR>
+  <TR>
+    <TD valign="top" width="14%">
+    <P>
+Long &quot;-&quot; sound
+    </P>
+</TD>
+    <TD valign="top" width="13%">
+    <P align="center">
+1
+    </P>
+</TD>
+    <TD valign="top" width="74%">
+    <P>
+none
+    </P>
+</TD></TR>
+  <TR>
+    <TD valign="top" width="14%">
+    <P>
+Assimilated &quot;tsu&quot; sound
+    </P>
+</TD>
+    <TD valign="top" width="13%">
+    <P align="center">
+1
+    </P>
+</TD>
+    <TD valign="top" width="74%">
+    <P>
+none
+    </P>
+</TD></TR>
+</TABLE>
+
+</DIV>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H3><A name="06-06"></A>26.8.6.6 Mask Registered Words</H3>
+<P>
+<b>Function</b>
+</P>
+<P>
+osVoiceMaskDictionary
+</P>
+<p><i>Switch between recognizing words registered in the dictionary and eliminating words from recognition</i></p>
+<P>
+<b>Syntax</b>
+</P>
+<PRE>
+#include &lt;ultra64.h&gt;
+s32 osVoiceMaskDictionary(OSVoiceHandle *hd, u8 *maskpattern, int size);
+</PRE>
+<P>
+<b>Arguments</b>
+</P>
+<dl>
+<dt><b>hd</b>
+<dd>Voice Recognition System control structure
+<dt><b>maskpattern</b>
+<dd>All words mask pattern
+<dt><b>size</b>
+<dd>Number of bytes in maskpattern
+</dl>
+<P>
+<b>Description</b>
+</P>
+<P>
+The <tt>osVoiceMaskDictionary</tt>() function is for masking words registered in the Voice Recognition System. hd is the Voice Recognition System control structure. The Voice Recognition System must be initialized with the <tt>osVoiceInit</tt>() function before the <tt>osVoiceMaskDictionary</tt>() function is called. 
+</P>
+<P>
+Specify the word mask pattern in <b>maskpattern</b>. The mask data for all words are enumerated in maskpattern. The number of bytes in maskpattern is specified in size. In the mask data, one byte equals one word. A zero (0) indicates to mask (do not recognize a word) and a one (1) indicates not to mask (recognize a word). The word number (the number assigned the registered words in the order that they were registered) sequence in the mask data corresponds with the LSB to MSB sequence. In other words, bit 0 of the first byte corresponds with word No. 0, while bit 7 corresponds with word No. 7. If there are many words, prepare arrays for necessry number of bytes to create mask data. If the number of words is not a multiple of 8, put zeros (0) in the remaining most significant bits of the last byte of the mask data. If the <tt>osVoiceMaskDictionary</tt>() function has not been called, all of the words are unmasked.
+</P>
+<P>
+The returned value is an error code. A 0 (zero) is returned when processing ends normally. If an error occurs, this function has the following error codes.
+</P>
+<P>
+<B>CONT_ERR_NO_CONTROLLER</B>
+</P>
+<P>
+Nothing is connected to the controller port.
+</P>
+<P>
+<B>CONT_ERR_DEVICE</B>
+</P>
+<P>
+Something other than the Voice Recognition System is connected to the controller port. 
+</P>
+<P>
+<B>CONT_ERR_VOICE_NO_RESPONSE</B>
+</P>
+<P>
+There was no response from the Voice Recognition System. There may be a problem with the hardware.
+</P>
+<P>
+<B>CONT_ERR_CONTRFAIL</B>
+</P>
+<P>
+There was a data transmission failure. There is a problem in the Voice Recognition System connection.
+</P>
+<P>
+<B>CONT_ERR_INVALID</B>
+</P>
+<P>
+There is an error in the function call method or in the argument. This error will not occur if the function is being used correctly. Write your program so that this error does not occur when development is completed. 
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H3><A name="06-07"></A>26.8.6.7 Start Voice Recognition</H3>
+<P>
+<b>Function</b>
+</P>
+<P>
+<tt>osVoiceStartReadData</tt>
+</P>
+<p><i>Start voice recognition by the Voice Recognition System</i></p>
+<P>
+<b>Syntax</b>
+</P>
+<PRE>
+#include &lt;ultra64.h&gt;
+s32 osVoiceStartReadData(OSVoiceHandle *hd);
+</PRE>
+<P>
+<b>Arguments</b>
+</P>
+<dl>
+<dt><b>hd</b>
+<dd>Voice Recognition System control structure
+</dl>
+<P>
+<b>Description</b>
+</P>
+<P>
+The <tt>osVoiceStartReadData</tt>() function is for starting recognition processing by the Voice Recognition System. Before starting voice recognition processing with the <tt>osVoiceStartReadData</tt>() function, the Voice Recognition System must be initialized with the <tt>osVoiceInit</tt>() function, the dictionary must be initialized with the <tt>osVoiceClearDictionary</tt>() function, and word registration must be performed with the <tt>osVoiceSetWord</tt>() function. Be absolutely sure to call the <tt>osVoiceStartReadData</tt>() function after calling these functions. 
+</P>
+<P>
+After calling the <tt>osVoiceStartReadData</tt>() function, recognition results can be obtained by calling the <tt>osVoiceGetReadData</tt>() function. In addition, once voice recognition has been started, call the <tt>osVoiceStopReadData</tt>() function to forcibly stop recognition. 
+</P>
+<P>
+The returned value is an error code. A 0 (zero) is returned when processing ends normally. If an error occurs, this function has the following error codes.
+</P>
+<P>
+<B>CONT_ERR_NO_CONTROLLER</B>
+</P>
+<P>
+Nothing is connected to the controller port.
+</P>
+<P>
+<B>CONT_ERR_DEVICE</B>
+</P>
+<P>
+Something other than the Voice Recognition System is connected to the controller port. 
+</P>
+<P>
+<B>CONT_ERR_VOICE_NO_RESPONSE</B>
+</P>
+<P>
+There was no response from the Voice Recognition System. There may be a problem with the hardware.
+</P>
+<P>
+<B>CONT_ERR_CONTRFAIL</B>
+</P>
+<P>
+There was a data transmission failure. There is a problem in the Voice Recognition System connection.
+</P>
+<P>
+<B>CONT_ERR_INVALID</B>
+</P>
+<P>
+The voice recognition process attempted to start up, however, words were not registered properly in the dictionary with <tt>osVoiceSetWord</tt>(). There is an error in the function call method or in the argument. This error will not occur if the function is being used correctly. Write your program so that this error does not occur when development is completed.
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H3><A name="06-08"></A>26.8.6.8 Get Recognition Result</H3>
+<P>
+<b>Function</b>
+</P>
+<P>
+<tt>osVoiceGetReadData</tt>
+</P>
+<p><i>Get voice recognition result from the Voice Recognition System</i></p>
+<P>
+<b>Syntax</b>
+</P>
+<PRE>
+#include &lt;ultra64.h&gt;
+s32 osVoiceGetReadData(OSVoiceHandle *hd, OSVoiceData *result);
+</PRE>
+<P>
+<b>Arguments</b>
+</P>                
+<dl>
+<dt><b>hd</b>
+<dd>Voice Recognition System control structure
+<dt>result
+<dd>Recognition result
+</dl>
+<P>
+<b>Description</b>
+</P>
+<P>
+The <tt>osVoiceGetReadData</tt>() function is for getting the recognition result from the Voice Recognition System. <b>hd</b> is the Voice Recognition System control structure. The Voice Recognition System must be initialized with the <tt>osVoiceInit</tt>() function before the <tt>osVoiceGetReadData</tt>() function is called. 
+</P>
+<P>
+The recognition result is stored in result of the OSVoiceData structure. The contents of the OSVoiceData structure are as follows:
+</P>
+<PRE>
+        typedef struct {
+                u16 warning; /* Warning */
+                u16 answer_num; /* Candidate number (0~5) */
+                u16 voice_level; /* Voice input level */
+                u16 voice_sn; /* Relative voice level */
+                u16 voice_time; /* Voice input time */
+                u16 answer[5]; /* Candidate word number */
+                u16 distance[5]; /* Distance value */
+        } OSVoiceData;
+</PRE>
+<P>
+The warning member variable of the OSVoiceData structure is the warning which pertains to the recognition result. The following bits are flagged when there is any problem with the recognition result. 
+</P>
+<TABLE border="1" cellspacing="1">
+  <TR>
+    <TD valign="top" width="32%">
+    <P align="center">
+<b>Warning Name</b>
+    </P>
+</TD>
+    <TD valign="top" width="11%">
+    <P align="center">
+<b>Value</b>
+    </P>
+</TD>
+    <TD valign="top" width="26%">
+    <P align="center">
+<b>Description</b>
+    </P>
+</TD>
+    <TD valign="top" width="31%">
+    <P align="center">
+<b>Conditions</b>
+    </P>
+</TD></TR>
+  <TR>
+    <TD valign="top" width="32%">
+    <P>
+VOICE_WARN_TOO_SMALL
+    </P>
+</TD>
+    <TD valign="top" width="11%">
+    <P align="center">
+0x0400
+    </P>
+</TD>
+    <TD valign="top" width="26%">
+    <P>
+Voice level is too low
+    </P>
+</TD>
+    <TD valign="top" width="31%">
+    <P>
+100 &lt; Voice Level &lt; 150
+    </P>
+</TD></TR>
+  <TR>
+    <TD valign="top" width="32%">
+    <P>
+VOICE_WARN_TOO_LARGE
+    </P>
+</TD>
+    <TD valign="top" width="11%">
+    <P align="center">
+0x0800
+    </P>
+</TD>
+    <TD valign="top" width="26%">
+    <P>
+Voice level is too high
+    </P>
+</TD>
+    <TD valign="top" width="31%">
+    <P>
+Voice Level &gt; 3500
+    </P>
+</TD></TR>
+  <TR>
+    <TD valign="top" width="32%">
+    <P>
+VOICE_WARN_NOT_FIT
+    </P>
+</TD>
+    <TD valign="top" width="11%">
+    <P align="center">
+0x4000
+    </P>
+</TD>
+    <TD valign="top" width="26%">
+    <P>
+No words match recognition word
+    </P>
+</TD>
+    <TD valign="top" width="31%">
+    <P>
+No. 1 Candidate Distance Value &gt; 1600
+    </P>
+</TD></TR>
+  <TR>
+    <TD valign="top" width="32%">
+    <P>
+VOICE_WARN_TOO_NOISY
+    </P>
+</TD>
+    <TD valign="top" width="11%">
+    <P align="center">
+0x8000
+    </P>
+</TD>
+    <TD valign="top" width="26%">
+    <P>
+Too much ambient noise
+    </P>
+</TD>
+    <TD valign="top" width="31%">
+    <P>
+Relative Voice Level =&LT; 400
+    </P>
+</TD></TR>
+</TABLE>
+
+<P>
+The <tt>answer_num</tt> member variable is the number of valid candidates. This is the number of words judged by the Voice Recognition System being valid as candidates. It is a value from 0 to 5. If this is 0, there are no valid candidates. 
+</P>
+<P>
+The <tt>voice_level</tt> member variable is the level of the input voice. The greater the voice input, the larger this value is. 
+</P>
+<P>
+The <tt>voice_sn</tt> member variable is the relative level of the voice input to the noise input.
+</P>
+<P>
+The <tt>voice_time</tt> member variable is the voice input time in ms units.
+</P>
+<P>
+The <tt>answer[]</tt> member variable is the numbers of the words from the 1st candidate to the 5th candidate. The word numbers are always output from the 1st candidate to the 5th candidate, but those which are deemed by the Voice Recognition System to be valid are numbered as candidates from the first to number of words in <tt>answer_num</tt>. Normally, <tt>answer[]</tt> is a value 0 ~ 0x00ff, but if there are no suitable words, its value is 0x7fff. 
+</P>
+<P>
+The <tt>distance[]</tt> member variable is the distance value of the word from the 1st candidate to the 5th candidate. The more similar the word, the smaller this value is. 
+</P>
+<P>
+Before calling the <tt>osVoiceGetReadData</tt>() function, voice recognition processing must be started with the <tt>osVoiceStartReadData</tt>() function. 
+</P>
+<P>
+The returned value is an error code. A 0 (zero) is returned when processing ends normally. If an error occurs, this function has the following error codes.
+</P>
+<P>
+<B>CONT_ERR_NO_CONTROLLER</B>
+</P>
+<P>
+Nothing is connected to the controller port.
+</P>
+<P>
+<B>CONT_ERR_DEVICE</B>
+</P>
+<P>
+Something other than the Voice Recognition System is connected to the controller port. 
+</P>
+<P>
+<B>CONT_ERR_NOT_READY</B>
+</P>
+<P>
+Either no voice has been input, or results cannot be acquired for some reason, such as that processing is still underway, etc. Wait for a moment then try calling this function again. This error will occur if the status following execution of the <tt>osVoiceStartReadData</tt>() function is VOICE_STATUS_START, VOICE_STATUS_CANCEL, or VOICE_STATUS_BUSY. 
+</P>
+<P>
+<B>CONT_ERR_VOICE_NO_RESPONSE</B>
+</P>
+<P>
+There was no response from the Voice Recognition System. There may be a problem with the hardware.
+</P>
+<P>
+<B>CONT_ERR_CONTRFAIL</B>
+</P>
+<P>
+There was a data transmission failure. There is a problem with the Voice Recognition System connection.
+</P>
+<P>
+<B>CONT_ERR_INVALID</B>
+</P>
+<P>
+There is an error in the function call method or in the argument. This error will not occur if the function is being used correctly. Write your program so that this error does not occur when development is completed.
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H3><A name="06-09"></A>26.8.6.9 Forcibly Stop Recognition Processing</H3>
+<P>
+<b>Function</b>
+</P>
+<P>
+<tt>osVoiceStopReadData</tt>
+</P>
+<p><i>Forcibly stop voice recognition processing by the Voice Recognition System</i></p>
+<P>
+<b>Syntax</b>
+</P>
+<PRE>
+#include &lt;ultra64.h&gt;
+s32 osVoiceStopReadData(OSVoiceHandle *hd);
+</PRE>
+<P>
+<b>Arguments</b>
+</P>
+<dl>
+<dt><b>hd</b>
+<dd>Voice Recognition System control structure
+</dl>
+<P>
+<b>Description</b>
+</P>
+<P>
+The <tt>osVoiceStopReadData</tt>() function is for forcibly stopping recognition processing once recognition by the Voice Recognition System has been started. hd is the Voice Recognition System control structure. The Voice Recognition System must be initialized with the <tt>osVoiceInit</tt>() function before the <tt>osVoiceStopReadData</tt>() function is called. 
+</P>
+<P>
+The returned value is an error code. A 0 (zero) is returned when processing ends normally. If an error occurs, this function has the following error codes.
+</P>
+<P>
+<B>CONT_ERR_NO_CONTROLLER</B>
+</P>
+<P>
+Nothing is connected to the controller port.
+</P>
+<P>
+<B>CONT_ERR_DEVICE</B>
+</P>
+<P>
+Something other than the Voice Recognition System is connected to the controller port. 
+</P>
+<P>
+<B>CONT_ERR_VOICE_NO_RESPONSE</B>
+</P>
+<P>
+There was no response from the Voice Recognition System. There may be a problem with the hardware.
+</P>
+<P>
+<B>CONT_ERR_CONTRFAIL</B>
+</P>
+<P>
+There was a data transmission failure. There is a problem in the Voice Recognition System connection.
+</P>
+<P>
+<B>CONT_ERR_INVALID</B>
+</P>
+<P>
+There is an error in the function call method or in the argument. This error will not occur if the function is being used correctly. Write your program so that this error does not occur when development is completed.
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H3><A name="06-10"></A>26.8.6.10 Adjust Input Gain</H3>
+<P>
+<b>Function</b>
+</P>
+<P>
+<tt>osVoiceControlGain</tt>
+</P>
+<p><i>Adjust the input gain of the Voice Recognition System</i></p>
+<P>
+<b>Syntax</b>
+</P>
+<PRE>
+#include &lt;ultra64.h&gt;
+s32 osVoiceControlGain(OSVoiceHandle *hd, s32 analog, s32 digital);
+</PRE>
+<P>
+<b>Arguments</b>
+</P>                
+<dl>
+<dt><b>hd</b>
+<dd>Voice Recognition System control structure
+<dt><b>analog</b>
+<dd>Transmission system analog gain
+<dt><b>digital</b>
+<dd>Transmission system digital gain
+</dl>
+
+<P>
+<b>Description</b>
+</P>
+<P>
+The <tt>osVoiceControlGain</tt>() function is for adjusting the gain of the input voice in the Voice Recognition System. The strength of the input voice signal can be changed by adjusting the gain. If the input voice is too strong, try decreasing the gain to decrease the voice level (normally, there is no particular need to change the gain). 
+</P>
+<P>
+<b>hd</b> is the Voice Recognition System control structure. The Voice Recognition System must be initialized with the <tt>osVoiceInit</tt>() function before the <tt>osVoiceControlGain</tt>() function is called.
+</P>
+<P>
+<b>analog</b> is the analog gain of the transmission system. The analog gain is for adjusting the strength of the voice signal which is input from the microphone. The following values are available. 
+</P>
+<TABLE border="1" cellspacing="1">
+  <TR>
+    <TD valign="top" width="44%">
+    <P>
+<b>analog</b>
+    </P>
+</TD>
+    <TD valign="top" width="56%">
+    <P>
+<b>Transmission system analog gain</b>
+    </P>
+</TD></TR>
+  <TR>
+    <TD valign="top" width="44%">
+    <P align="center">
+0
+    </P>
+</TD>
+    <TD valign="top" width="56%">
+    <P align="center">
+0 dB (default)
+    </P>
+</TD></TR>
+  <TR>
+    <TD valign="top" width="44%">
+    <P align="center">
+1
+    </P>
+</TD>
+    <TD valign="top" width="56%">
+    <P align="center">
+-3 dB
+    </P>
+</TD></TR>
+</TABLE>
+
+<P>
+<b>digital</b> is the digital gain of the transmission system. The digital gain is for adjusting the strength of the digital signal converted from the analog voice signal. The following values are available. 
+</P>
+<TABLE border="1" cellspacing="1">
+  <TR>
+    <TD valign="top" width="26%">
+    <P>
+<b>digital</b>
+    </P>
+</TD>
+    <TD valign="top" width="74%">
+    <P>
+<b>Transmission system digital gain</b>
+    </P>
+</TD></TR>
+  <TR>
+    <TD valign="top" width="26%">
+    <P align="center">
+0
+    </P>
+</TD>
+    <TD valign="top" width="74%">
+    <P align="center">
+0 dB  (default)
+    </P>
+</TD></TR>
+  <TR>
+    <TD valign="top" width="26%">
+    <P align="center">
+1
+    </P>
+</TD>
+    <TD valign="top" width="74%">
+    <P align="center">
+-0.4 dB
+    </P>
+</TD></TR>
+  <TR>
+    <TD valign="top" width="26%">
+    <P align="center">
+2
+    </P>
+</TD>
+    <TD valign="top" width="74%">
+    <P align="center">
+-0.8 dB
+    </P>
+</TD></TR>
+  <TR>
+    <TD valign="top" width="26%">
+    <P align="center">
+3
+    </P>
+</TD>
+    <TD valign="top" width="74%">
+    <P align="center">
+-1.2 dB
+    </P>
+</TD></TR>
+  <TR>
+    <TD valign="top" width="26%">
+    <P align="center">
+4
+    </P>
+</TD>
+    <TD valign="top" width="74%">
+    <P align="center">
+-1.6 dB
+    </P>
+</TD></TR>
+  <TR>
+    <TD valign="top" width="26%">
+    <P align="center">
+5
+    </P>
+</TD>
+    <TD valign="top" width="74%">
+    <P align="center">
+-2.0 dB
+    </P>
+</TD></TR>
+  <TR>
+    <TD valign="top" width="26%">
+    <P align="center">
+6
+    </P>
+</TD>
+    <TD valign="top" width="74%">
+    <P align="center">
+-2.4 dB
+    </P>
+</TD></TR>
+  <TR>
+    <TD valign="top" width="26%">
+    <P align="center">
+7
+    </P>
+</TD>
+    <TD valign="top" width="74%">
+    <P align="center">
+-2.8 dB
+    </P>
+</TD></TR>
+</TABLE>
+
+<P>
+The returned value is an error code. A 0 (zero) is returned when processing ends normally. If an error occurs, this function has the following error codes.
+</P>
+<P>
+<B>CONT_ERR_INVALID</B>
+</P>
+<P>
+There is an error in the function call method or in the argument. This error will not occur if the function is being used correctly. Write your program so that this error does not occur when development is completed.
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H3><A name="07"></A>26.8.7 Examples Using Voice Recognition System Functions</H3>
+<P>
+Typical methods of using the various Voice Recognition System functions are described below. Please see Figure 27-8-1 for illustrated procedure and flow chart.
+</P>
+<P>
+Typically, there are 5 types of processing which are performed:
+</P>
+<P>
+(1) Initialize the Voice Recognition System using the <tt>osVoiceInit</tt>() function<BR>
+(2) Initialize the registered word dictionary using the <tt>osVoiceClearDictionary</tt>() function<BR>
+(3) Register words to the registered word dictionary using the <tt>osVoiceSetWord</tt>() function<BR>
+(4) Start voice recognition using the <tt>osVoiceStartReadData</tt>() function<BR>
+(5) Acquire voice recognition results using the <tt>osVoiceGetReadData</tt>() function
+</P>
+<P>
+Detailed descriptions of these 5 processes are given in <a href="../pro26/26-08.htm#07-01">Section 26.8.7.1 "Flow of Voice Recognition Processing"</a>. Processing in which errors are returned as the return values for the various functions is explained in <a href="../pro26/26-08.htm#07-02">Section 26.8.7.2 "Error Processing"</a>.
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H3><A name="07-01"></A>26.8.7.1 Flow of Voice Recognition Processing</H3>
+<P>
+<B>(1) Voice Recognition System Initialization Processing</B>
+</P>
+<P>
+The <tt>osVoiceInit</tt>() function is called in the processing here. The <tt>osVoiceInit</tt>() function initializes the Voice Recognition System. 
+</P>
+<P>
+It is recommended that you first check what is connected to which port prior to initialization because standard controllers,etc., other than the Voice Recognition System may be inserted into the controller ports as well. This check can be accomplished with the <tt>osContStartQuery</tt>() function and the <tt>osContGetQuery</tt>() function. The Voice Recognition System is connected if the value of the member variable errno of the OSContStatus structure is 0 (zero), and if the AND (logical product) of the value for type and CONT_TYPE_MASK is CONT_TYPE_VOICE.
+</P>
+<P>
+<B>(2) Initialize Registered Word Dictionary</B>
+</P>
+<P>
+The <tt>osVoiceClearDictionary</tt>() function is called in the processing here. The <tt>osVoiceClearDictionary</tt>() function initializes the registered word dictionary. Initialize the dictionary before registering words using the <tt>osVoiceSetWord</tt>() function. 
+</P>
+<P>
+<B>(3) Register Words to Registered Word Dictionary</B>
+</P>
+<P>
+The <tt>osVoiceSetWord</tt>() function is called in the processing here. The <tt>osVoiceSetWord</tt>() function registers words which are to be registered in the registered word dictionary. Since calling the <tt>osVoiceSetWord</tt>() function once registers one word, execute <tt>osVoiceSetWord</tt>() multiple times to register multiple words. The number of words registered must match the number set by the <tt>osVoiceClearDictionary</tt>() function. Please note that an error (CONT_ERR_INVALID) will be generated when the <tt>osVoiceStartReadData</tt>() function is executed if the number of words registered is greater than or less than the specified number of words. 
+</P>
+<P>
+<B>(4) Start Voice Recognition</B>
+</P>
+<P>
+The <tt>osVoiceStartReadData</tt>() function is called in the processing here. The <tt>osVoiceStartReadData</tt>() function is for starting voice recognition processing. After <tt>osVoiceStartReadData</tt>() has been called, the recognition results can be acquired by calling <tt>osVoiceGetReadData</tt>(). In addition, call <tt>osVoiceStopReadData</tt>() to forcibly stop recognition after voice recognition has been started. 
+</P>
+<P>
+<B>(5) Acquire Recognition Results</B>
+</P>
+<P>
+The <tt>osVoiceGetReadData</tt>() function is called in the processing here. The <tt>osVoiceGetReadData</tt>() function is for acquiring recognition results. The recognition results are stored in the OSVoiceData structure. Refer to the following example for the method of acquiring a recognized word from the data in the OSVoiceData structure. Please refer to <A href="#06-08">Section 26.8.6.8 "Get Recognition Result"</A> for details on the OSVoiceData structure. 
+</P>
+
+<UL>
+  <LI>Registered words are stored in a character string matrix. The word numbers of the registered words are 0, 1, 2, ... from the top of the matrix. 
+</UL>
+<P>
+<blockquote>
+<pre>
+u8 *registration_word[] = {
+  &QUOT;Yakiniku&QUOT;,
+  &QUOT;Mario&QUOT;,
+      .
+      .
+      .
+  &QUOT;Pikachu&QUOT;
+};
+</pre>
+</blockquote>
+
+<UL>
+  <LI>Define OSVoiceData structure variable as follows.
+</UL>
+
+<blockquote>
+<pre>
+OSVoiceData result;
+</pre>
+</blockquote>
+
+<UL>
+  <LI>The word group prepared in 1) is registered in the dictionary in order from the top of the matrix, and voice recognition is started. The results are stored in result by acquiring the recognition results. 
+</UL>
+<UL>
+  <LI>The numbers of the registered words closest to the word which has been recognized are stored in the member variables answer[0]~[4] of result in order of the smallest distance value (in order of similarity). When the word most similar to the recognized word has been acquired, it can be obtained in registration_word[result.answer[0]]. However, if result.answer_num is 0, there were no valid candidates. In this case, processing is repeated from recognition result acquisition. 
+</UL>
+<P>
+
+</P>
+<P>
+To continue recognition processing again after the voice has been detected again, repeat processing from (4). 
+</P>
+<P>
+In order to rapidly respond to voice input from the user, you may call the <tt>osVoiceGetReadData</tt>() function every frame to check for voice input from the user. 
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H3><A name="07-02"></A>26.8.7.2 Error Processing</H3>
+<P>
+Perform the processing shown below when an error is returned upon execution of the various functions.
+</P>
+<P>
+If one of the five errors CONT_ERR_NO_CONTROLLER, CONT_ERR_DEVICE, CONT_ERR_CONTRFAIL, CONT_ERR_VOICE_NO_RESPONSE, or CONT_ERR_INVALID occurs when any of the various functions is executed, display a message and repeat processing starting from (1). Since the two errors CONT_ERR_VOICE_NO_RESPONSE and CONT_ERR_INVALID are errors which are due to software or hardware failures or bugs, they will not normally occur. 
+</P>
+<P>
+If the CONT_ERR_VOICE_WORD error occurs when executing the <tt>osVoiceSetWord</tt>() function, the word that was being registered at the time contains improper characters. Re-register the proper word. 
+</P>
+<P>
+If the CONT_ERR_VOICE_MEMORY error occurs when executing the <tt>osVoiceSetWord</tt>() function, the dictionary has overflowed memory and no more words can be registered. However, even if the number of registered words is less than the number which was set by the  <tt>osVoiceClearDictionary</tt>()function in this case, recognition processing can still be performed from (4) on. Consequently, when this error occurs, store the number of words registered up to that point as the number of registered words and shift to the processing at (4). To repeat registration, redo processing from (2). 
+</P>
+<P>
+If the CONT_ERR_NOT_READY error is returned during execution of the <tt>osVoiceGetReadData</tt>() function, either no voice has been input or recognition processing is still underway. Wait a moment and retry the <tt>osVoiceGetReadData</tt>() function.
+</P>
+<P>
+You may also refer to the sample program "voice" which uses Voice Recognition System functions. It is stored under the /usr/src/PR/demos/ directory. 
+</P>
+<P>
+<IMG src="gif/f26-08-05.gif">
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H3><A name="08"></A>26.8.8 Precautions</H3>
+<p>
+<b>(1) Recognition Accuracy</b>
+</p>
+<P>
+The Voice Recognition System performs pattern characteristic extraction in syllable units to recognize one word. Because of this, there are cases in which recognition accuracy may be slightly inferior to characteristic extraction in word units. Since instances may arise in which the input voice cannot be recognized and the user is prompted to re-input, be particularly careful when real-time responses are required, as during an action game. In these cases, take measures so as to avoid mis-recognition, such as keeping the number of registered words low, or registering only words whose pronunciations are completely different. 
+</P>
+<P>
+For example, keep the words which are registered in the dictionary at that time low, or mask those words registered in the dictionary which are not needed, so that the user selects from the restricted vocabulary. Thus, the recognition success rate becomes very high since recognition is performed only from a limited small number of words.
+</P>
+<P>
+<IMG src="gif/f26-08-06.gif">
+</P>
+<p>
+<b>(2) To Change to a New Recognized Word During Recognition Processing</b>
+</p>
+<P>
+To newly register a recognized word when the <tt>osVoiceStartReadData</tt>() function has been called and recognition processing is being executed, be sure to temporarily interrupt recognition processing with the <tt>osVoiceStopReadData</tt>() function. Then repeat the <tt>osVoiceClearDictionary</tt>() function.
+</P>
+<P>
+<b>(3) Registration to Recognized Word Dictionary</b>
+</P>
+<P>
+Do not register words in the dictionary which contain invalid character combinations which would return an error when entered to the <tt>osVoiceCheckWord</tt>() function. There are instances in which an error will not be returned and operation of the software will become unstable if the specific character combinations shown below are entered in the dictionary.
+</P>
+
+<table border=0 align="center">
+<tr><td>
+<img border=0 align="center" src="../pro26/gif/t26-08-04.gif"></tr></td></table> 
+
+<P>
+<b>(4) Precautions During Voice Input</b>
+</P>
+<P>
+Depending on the words registered in the dictionary, valid word candidates may be output simply by coughing or breathing into the microphone. Because of this, limit the acceptance of voice input to when a controller button is being pressed, or the like, so as to avoid erroneous recognition. There may also be cases in which the Voice Recognition System is unable to complete preparation to accept voice input when voice input is performed at the same time that the button is pressed. In this case, you may perform the following procedure. 
+</P>
+<P align="center">
+
+</P>
+<P align="center">
+<IMG src="gif/f26-08-07.gif">
+</P>
+<P>
+<b>(5) Voice Input Gain Adjustment</b>
+</P>
+<P>
+Since the voice detection threshold value is determined by the strength of the input signal at the time that recognition processing is started, there are instances when the voice level is high (when voice recognition is started) in which the threshold value becomes high, making it difficult to detect voice input. If this occurs, try decreasing the gain to lower the voice level. Do not change the gain during the game except when it can be assumed that there will be unexpectedly high voice input levels at the start of recognition. 
+</P>
+<P>
+<b>(6) Precautions Regarding Warnings</b>
+</P>
+<P>
+The warnings which are returned to the warning member variable of the OSVoiceData structure represent the reliability of the recognition results, but do not indicate a serious failure as an error. For instance, even if valid candidates are returned to the <tt>answer[]</tt> member variable, VOICE_WARN_NOT_FIT (word is not among the recognized words) may be returned as a warning. This will occur when the <tt>distance[0]</tt> member variable, which expresses the distance value of the No. 1 candidate word, is a value 1600 or greater, even though the <tt>answer_num</tt> member variable, which expresses the number of valid candidates, returns a value of 1 or more. In this case, the judgment priority for the two member variables depends on the application, but the warning essentially can be ignored. Use of the warning results is up to the discretion of the person creating the application.
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+</BODY>
+</HTML>

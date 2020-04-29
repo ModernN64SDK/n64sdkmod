@@ -1,0 +1,45 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<html>
+
+	<head>
+              <LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+              <!-- Editor's Notes: JLR made reformating and copy edits.
+                    MAP- added links, updated format -->
+              <TITLE>osGbpakReadWrite</TITLE>
+	</head>
+
+	<body bgcolor="white">
+		<font style="font-size: 12pt"><b>osGbpakReadWrite</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+		<p><i>Reads/writes to the memory of the Game Boy Game Pak using the N64 Transfer Pak</i></p>
+		<p><b>Syntax</b></p>
+		<pre>#include &lt;ultra64.h&gt;     /* <a href="../../header/ultra64.htm">ultra64.h</a> */
+s32 osGbpakReadWrite(OSPfs *pfs, u16 flag, u16 address, u8 *buffer, u16
+size);</pre>
+		<p><b>Description</b></p>
+		<p><tt>osGbpakReadWrite</tt> function reads/writes to Game Boy Game Pak. It can be used to access the Game Pak memory when a Game Boy Game Pak is inserted into the N64 Transfer Pak.</p>
+		<p>Before calling <tt>osGbpakReadWrite</tt>, N64 Transfer Pak must be initialized by <a href="osGbpakInit.htm">osGbpakInit</a>, use <a href="osGbpakReadId.htm">osGbpakReadId</a> to read the Game Boy ROM registration area, turn the power on, and check both company code and game title. In addition, the connector must be checked by <a href="osGbpakCheckConnector.htm">osGbpakCheckConnector</a>.</p>
+		<p>The OSpfs structure pfs must be initialized by <tt>osGbpakInit</tt>. Specify in flag either OS_READ or OS_WRITE. When OS_READ is specified, data is read from the Game Boy Game Pak, while OS_WRITE specifies writing data to the Game Boy Game Pak. Specify in address the value of the Game Boy Game Pak's CPU address (0x0000 - 0xbfff). The number of bytes to read or write is specifed by size. <tt>address</tt> and <tt>size</tt> must be multiples of 32. <tt>buffer</tt> is a pointer to the buffer in RDRAM where the read or write is performed.</p>
+		<p><b>Note: Please refer to the <i>Game Boy Programming Manual,</i> Chapter 8 &quot;Game Boy Memory Controllers&quot; for information concerning ROM/RAM Bank switching.</b></p>
+		<p>Caution is required when dealing with the returned values. This function cannot determine whether the Game Boy Game Pak has been pulled out, or whether Game Boy Game Paks have been exchanged. That is to say, a &quot;0&quot; (normal termination) is returned even if the Game Boy Game Pak has been removed. Before and after this function is called, <a href="osGbpakGetStatus.htm">osGbpakGetStatus</a> or <tt>osGbpakReadId</tt> should be called for a status check. It should also be confirmed that the Game Boy Game Pak has not been removed and reinserted.</p>
+		<p>Return value is an error code. If the function terminates normally, a value of 0 is returned. If an error occurs, one of the following error codes is returned:</p>
+		<p><b>PFS_ERR_NOPACK</b></p>
+		<blockquote>
+			<p>Nothing is inserted in the specified Controller.</p>
+		</blockquote>
+		<p><b>PFS_ERR_CONTRFAIL</b></p>
+		<blockquote>
+			<p>Data transfers with the controller have failed. The Controller may not be connected correctly, or there may be some problem with the N64 Transfer Pak or the Controller connector.</p>
+		</blockquote>
+		<p><b>PFS_ERR_INVALID</b></p>
+		<blockquote>
+			<p>There are problems in the way the function was called or in the arguments specified. This error does not occur as long as the function usage is normal.</p>
+		</blockquote>
+		<p>When the Game Boy Game Pak is not being accessed for reading or writing using <tt>osGbpakReadWrite</tt>, the Game Boy Game Pak power should be turned off using <a href="osGbpakPower.htm">osGbpakPower</a>.</p>
+		<p><b>See Also</b></p>
+		<p><a href="osContInit.htm">osContInit</a>, <a href="osGbpakInit.htm">osGbpakInit</a>, <a href="osGbpakGetStatus.htm">osGbpakGetStatus</a>, <a href="osGbpakPower.htm">osGbpakPower</a>, <a href="osGbpakReadId.htm">osGbpakReadId</a>, and <a href="osGbpakCheckConnector.htm">osGbpakCheckConnector</a></p>
+		<h3>Revision History</h3>
+		<p>1999/04/13 Added PFS_ERR_INVALID error ID<br>
+		1999/04/30 Changed format
+	</body>
+
+</html>

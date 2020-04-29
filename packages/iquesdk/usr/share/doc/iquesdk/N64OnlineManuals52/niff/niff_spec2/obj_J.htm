@@ -1,0 +1,420 @@
+<html>
+<body bgcolor="FFFFFF">
+<title>
+ObjNode
+</title>
+
+<h1>
+<font color="ff0000">
+<i>
+Nintendo Confidential
+</i>
+</font>
+</h1>
+<hr size="3">
+
+<h2>
+6. ObjNode
+
+</h2>
+<hr size=2>
+<h3>
+(1) ObjNode
+</h3>
+<blockquote>
+
+
+<table border width="600">
+
+<tr>
+<td nowrap>
+u32 obj_render_pri
+</td>
+<td>
+オブジェクトの描画優先順位及びN64ブレンダのモードを設定します。なお、簡単にレンダーモードを設定するNIFFモードと、N64のマクロを厳密に設定するN64GBIモードとがあり、N64GBIモードを使用する場合はこのフィールドには描画時の優先順位のみを記述します。この場合レンダーモードはobj_render_type_*フィールドに記述することになります。NIFF1.0で定義されていましたN64モードは廃止されます。
+<p>
+NIFFモードの場合、2サイクル時でもobj_render_priフィールドは一つしかありませんので、NIFF→N64コンバータ内で自動的にG_RM_PASSフラグを使用する必要があります。
+<p>
+NIFFモードとN64GBIモードの切り替えは上位8bitのフラグで識別します。上位8bitに下記のフラグのうちどちらかを記述してください。
+<pre>
+<b>
+OBJ_RENDER_FLAG_NIFF&#9;0x00
+OBJ_RENDER_FLAG_N64GBI&#9;0x04
+</b>
+</pre>
+NIFFモードの場合はさらに下位24bitに対して下記のフラグが定義されています。いずれかのフラグをセットしてください。
+<pre>
+<b>
+OBJ_RENDER_NIFF_OPA_SURF&#9;0xd00000
+OBJ_RENDER_NIFF_OPA_INTER&#9;0xb00000
+OBJ_RENDER_NIFF_OPA_DECAL&#9;0x900000
+OBJ_RENDER_NIFF_TEX_EDGE&#9;0x700000
+OBJ_RENDER_NIFF_XLU_SURF&#9;0x500000
+OBJ_RENDER_NIFF_XLU_INTER&#9;0x300000
+OBJ_RENDER_NIFF_XLU_DECAL&#9;0x100000
+</b>
+</pre>
+OBJ_RENDER_NIFF_OPA_SURFは不透明サーフェイスをレンダリングする場合に設定します。<p>
+OBJ_RENDER_NIFF_OPA_INTERは不透明の貫通するサーフェイスをレンダリングする場合に設定します。<p>
+OBJ_RENDER_NIFF_OPA_DECALはあるサーフェイス上にデカールのように張り込むタイプの不透明サーフェイスをレンダリングする場合に設定します。<p>
+OBJ_RENDER_NIFF_TEX_EDGEはテクスチャのアルファチャンネルを「抜き」として使用する場合に設定します。<p>
+OBJ_RENDER_NIFF_XLU_SURFは半透明サーフェイスをレンダリングする場合に設定します。<p>
+OBJ_RENDER_NIFF_XLU_INTERは半透明の貫通するサーフェイスをレンダリングする場合に設定します。<p>
+OBJ_RENDER_NIFF_XLU_DECALはあるサーフェイス上にデカールのように張り込むタイプの半透明サーフェイスを使用する場合に設定します。<p>
+それぞれのモードは基本的にモデルやマテリアルによって異なりますので、本来はユーザーが設定するべき物です。CGツールからNIFFにコンバートする際にはその設定用のインターフェイスをユーザー側に提供するか、デフォルト値として不透明サーフェイスの場合はOBJ_RENDER_NIFF_OPA_SURFを、半透明サーフェイスの場合はOBJ_RENDER_NIFF_XLU_SURFを出力してください。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 obj_render_type0<br>
+u32 obj_render_type1
+</td>
+<td>
+obj_render_priフィールドでOBJ_RENDER_FLAG_N64GBIを設定した場合、このフィールドでレンダーモードを指定します。obj_render_type0が１サイクル目のレンダーモードを、obj_render_type1が２サイクル目のレンダーモードをそれぞれ表しています。<p>
+下記のようにそれぞれフラグが設定されていますので、ユーザーが自由にレンダーモードを設定してください。このテーブルとアンチエイリアス、ZBUFFER情報に従ってレンダーモードを組み立てて出力するように、NIFF→N64コンバータを作成してください。(例：アンチエイリアス及びZBUFFER使用時のOPA_SURFモードはG_RM_AA_ZB_OPA_SURF)
+<pre>
+<b>
+/******************************************************
+N64 Style
+
+In the document of NIFF1.0, we describe the flag setting
+render mode.
+But this may be hard to use, especially for designers.
+So we changed N64 type render mode definition.
+Please set the following name and new n64 style bit.
+These names are "#define" macro name
+in /usr/include/PR/gbi.h, they are 
+usually used by N64 programmers.
+
+********************************************************/
+
+/********************************************************
+ obj_render_type0 and obj_render_type0_for_fog
+
+31          22 21                         0
+[     0x4     |       render_macro        ]
+
+**********************************************************/
+
+#define OBJ_RENDER_TYPE0_GBI_MODE     0x01000000
+
+/* render_macro */
+
+#define OBJ_RENDER_TYPE0_OPA_SURF     0x100
+#define OBJ_RENDER_TYPE0_XLU_SURF     0x101
+#define OBJ_RENDER_TYPE0_OPA_DECAL    0x102
+#define OBJ_RENDER_TYPE0_XLU_DECAL    0x103
+#define OBJ_RENDER_TYPE0_OPA_INTER    0x104
+#define OBJ_RENDER_TYPE0_XLU_INTER    0x105
+#define OBJ_RENDER_TYPE0_TEX_EDGE     0x106
+#define OBJ_RENDER_TYPE0_TEX_INTER    0x107
+#define OBJ_RENDER_TYPE0_SUB_SURF     0x108
+#define OBJ_RENDER_TYPE0_PCL_SURF     0x109
+#define OBJ_RENDER_TYPE0_OPA_TERR     0x10a
+#define OBJ_RENDER_TYPE0_TEX_TERR     0x10b
+#define OBJ_RENDER_TYPE0_SUB_TERR     0x10c
+#define OBJ_RENDER_TYPE0_CLD_SURF     0x10d
+#define OBJ_RENDER_TYPE0_OVL_SURF     0x10e
+#define OBJ_RENDER_TYPE0_ADD          0x10f
+#define OBJ_RENDER_TYPE0_NOOP         0x110
+#define OBJ_RENDER_TYPE0_PASS         0x111
+#define OBJ_RENDER_TYPE0_FOG_SHADE_A  0x112
+#define OBJ_RENDER_TYPE0_FOG_PRIM_A   0x113
+
+
+
+/**************************************************
+ obj_render_type1 and obj_render_type1_for_fog
+
+31          22 21                         0
+[     0x4     |       render_macro        ]
+
+***************************************************/
+
+#define OBJ_RENDER_TYPE1_GBI_MODE     0x01000000
+
+/* render_macro */
+
+#define OBJ_RENDER_TYPE1_OPA_SURF     0x200
+#define OBJ_RENDER_TYPE1_XLU_SURF     0x201
+#define OBJ_RENDER_TYPE1_OPA_DECAL    0x202
+#define OBJ_RENDER_TYPE1_XLU_DECAL    0x203
+#define OBJ_RENDER_TYPE1_OPA_INTER    0x204
+#define OBJ_RENDER_TYPE1_XLU_INTER    0x205
+#define OBJ_RENDER_TYPE1_TEX_EDGE     0x206
+#define OBJ_RENDER_TYPE1_TEX_INTER    0x207
+#define OBJ_RENDER_TYPE1_SUB_SURF     0x208
+#define OBJ_RENDER_TYPE1_PCL_SURF     0x209
+#define OBJ_RENDER_TYPE1_OPA_TERR     0x20a
+#define OBJ_RENDER_TYPE1_TEX_TERR     0x20b
+#define OBJ_RENDER_TYPE1_SUB_TERR     0x20c
+#define OBJ_RENDER_TYPE1_CLD_SURF     0x20d
+#define OBJ_RENDER_TYPE1_OVL_SURF     0x20e
+#define OBJ_RENDER_TYPE1_ADD          0x20f
+#define OBJ_RENDER_TYPE1_NOOP         0x210
+
+
+</b>
+</pre>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 obj_render_cycle_type_for_fog
+</td>
+<td>
+Fogを使用したシーンにオブジェクトを配置した場合に使用するN64RDPのサイクルタイプを記述します。下記のフラグが定義されています。
+<pre>
+<b>
+OBJ_RENDER_CYC_1CYC&#9;0x00000000
+OBJ_RENDER_CYC_2CYC&#9;0x00000001
+</b>
+</pre>
+上記のフラグをいずれかをセットします。デフォルトではOBJ_RENDER_CYC_2CYCを指定してください。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 obj_render_pri_for_fog
+</td>
+<td>
+Fogを使用したシーンにオブジェクトを配置した場合に使用するオブジェクトの描画優先順位及びN64ブレンダのモードを設定します。なお、簡単にレンダーモードを設定するNIFFモードと、N64のマクロを厳密に設定するN64GBIモードとがあり、N64GBIモードを使用する場合はこのフィールドには描画時の優先順位のみを記述します。この場合レンダーモードはobj_render_type_*フィールドに記述することになります。
+<p>
+NIFFモードの場合、2サイクル時でもobj_render_priフィールドは一つしかありませんので、NIFF→N64コンバータ内で自動的にG_RM_FOG_SHADE_Aフラグを使用する必要があります。
+<p>
+NIFFモードとN64GBIモードの切り替えは上位8bitのフラグで識別します。上位8bitに下記のフラグのうちどちらかを記述してください。
+<pre>
+<b>
+OBJ_RENDER_FLAG_NIFF&#9;0x00
+OBJ_RENDER_FLAG_N64GBI&#9;0x04
+</b>
+</pre>
+NIFFモードの場合はさらに下位24bitに対して下記のフラグが定義されています。いずれかのフラグをセットしてください。
+<pre>
+<b>
+OBJ_RENDER_NIFF_OPA_SURF&#9;0xd00000
+OBJ_RENDER_NIFF_OPA_INTER&#9;0xb00000
+OBJ_RENDER_NIFF_OPA_DECAL&#9;0x900000
+OBJ_RENDER_NIFF_TEX_EDGE&#9;0x700000
+OBJ_RENDER_NIFF_XLU_SURF&#9;0x500000
+OBJ_RENDER_NIFF_XLU_INTER&#9;0x300000
+OBJ_RENDER_NIFF_XLU_DECAL&#9;0x100000
+</b>
+</pre>
+OBJ_RENDER_NIFF_OPA_SURFは不透明サーフェイスをレンダリングする場合に設定します。<p>
+OBJ_RENDER_NIFF_OPA_INTERは不透明の貫通するサーフェイスをレンダリングする場合に設定します。<p>
+OBJ_RENDER_NIFF_OPA_DECALはあるサーフェイス上にデカールのように張り込むタイプの不透明サーフェイスをレンダリングする場合に設定します。<p>
+OBJ_RENDER_NIFF_TEX_EDGEはテクスチャのアルファチャンネルを「抜き」として使用する場合に設定します。<p>
+OBJ_RENDER_NIFF_XLU_SURFは半透明サーフェイスをレンダリングする場合に設定します。<p>
+OBJ_RENDER_NIFF_XLU_INTERは半透明の貫通するサーフェイスをレンダリングする場合に設定します。<p>
+OBJ_RENDER_NIFF_XLU_DECALはあるサーフェイス上にデカールのように張り込むタイプの半透明サーフェイスを使用する場合に設定します。<p>
+それぞれのモードは基本的にモデルやマテリアルによって異なりますので、本来はユーザーが設定するべき物です。CGツールからNIFFにコンバートする際にはその設定用のインターフェイスをユーザー側に提供するか、デフォルト値として不透明サーフェイスの場合はOBJ_RENDER_NIFF_OPA_SURFを、半透明サーフェイスの場合はOBJ_RENDER_NIFF_XLU_SURFを出力してください。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 obj_render_type0_for_fog<p>
+u32 obj_render_type1_for_fog
+</td>
+<td>
+obj_render_pri_for_fogフィールドでOBJ_RENDER_FLAG_N64GBIを設定した場合、このフィールドでレンダーモードを指定します。obj_render_type0_for_fogが１サイクル目のレンダーモードを、obj_render_type1_for_fogが２サイクル目のレンダーモードをそれぞれ表しています。<p>
+下記のようにそれぞれフラグが設定されていますので、ユーザーが自由にレンダーモードを設定してください。このテーブルとアンチエイリアス、ZBUFFER情報に従ってレンダーモードを組み立てて出力するように、NIFF→N64コンバータを作成してください。(例：アンチエイリアス及びZBUFFER使用時のOPA_SURFモードはG_RM_AA_ZB_OPA_SURF)
+<pre>
+<b>
+
+/***************************************************
+N64 Style
+
+In the document of NIFF1.0, we describe the flag setting
+render mode.
+But this may be hard to use, especially for designers.
+So we changed N64 type render mode definition.
+Please set the following name and new n64 style bit.
+These names are "#define" macro name
+in /usr/include/PR/gbi.h, they are 
+usually used by N64 programmers.
+
+****************************************************/
+
+/****************************************************
+ obj_render_type0 and obj_render_type0_for_fog
+
+31          22 21                         0
+[     0x4     |       render_macro        ]
+
+*****************************************************/
+
+#define OBJ_RENDER_TYPE0_GBI_MODE     0x01000000
+
+/* render_macro */
+
+
+#define OBJ_RENDER_TYPE0_FOG_SHADE_A  0x112
+#define OBJ_RENDER_TYPE0_FOG_PRIM_A   0x113
+
+
+
+/*****************************************************
+ obj_render_type1 and obj_render_type1_for_fog
+
+31          22 21                         0
+[     0x4     |       render_macro        ]
+
+******************************************************/
+
+#define OBJ_RENDER_TYPE1_GBI_MODE     0x01000000
+
+/* render_macro */
+
+#define OBJ_RENDER_TYPE1_OPA_SURF     0x200
+#define OBJ_RENDER_TYPE1_XLU_SURF     0x201
+#define OBJ_RENDER_TYPE1_OPA_DECAL    0x202
+#define OBJ_RENDER_TYPE1_XLU_DECAL    0x203
+#define OBJ_RENDER_TYPE1_OPA_INTER    0x204
+#define OBJ_RENDER_TYPE1_XLU_INTER    0x205
+#define OBJ_RENDER_TYPE1_TEX_EDGE     0x206
+#define OBJ_RENDER_TYPE1_TEX_INTER    0x207
+#define OBJ_RENDER_TYPE1_SUB_SURF     0x208
+#define OBJ_RENDER_TYPE1_PCL_SURF     0x209
+#define OBJ_RENDER_TYPE1_OPA_TERR     0x20a
+#define OBJ_RENDER_TYPE1_TEX_TERR     0x20b
+#define OBJ_RENDER_TYPE1_SUB_TERR     0x20c
+#define OBJ_RENDER_TYPE1_CLD_SURF     0x20d
+#define OBJ_RENDER_TYPE1_OVL_SURF     0x20e
+#define OBJ_RENDER_TYPE1_ADD          0x20f
+#define OBJ_RENDER_TYPE1_NOOP         0x210
+
+</b>
+</pre>
+なお、本フィールドはFOG使用時のためのフィールドになりますので、obj_render_type0_for_fogはFOG_SHADE_AあるいはFOG_PRIM_Aのいずれかの選択になります。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 obj_chain_root_link_num
+</td>
+<td>
+このObjからリンクするChainRootノード数を記述します。
+</td>
+</tr>
+
+
+
+
+
+<tr>
+<td nowrap>
+u32 external_lod_obj_num
+</td>
+<td>
+外部ファイル参照するLOD Obj数を記述します。
+</td>
+</tr>
+
+
+<tr>
+<td nowrap>
+u32 external_obj_num
+</td>
+<td>
+外部ファイル参照するchild Obj数を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 obj_chain_root_link
+</td>
+<td>
+このObjからリンクするChainRootノードのインデックス番号を記述します。なお、obj_chain_root_link_num = 0の場合、このフィールドは記述されません。
+</td>
+</tr>
+
+
+
+<tr>
+<td nowrap>
+u32 external_lod_obj_dist
+</td>
+<td>
+LOD Objを外部ファイル参照する場合、そのObjのLODレベルの切り替え距離を記述します。
+外部ファイル参照しない(external_lod_obj_num = 0)場合、このフィールドは記述されません。
+</td>
+</tr>
+
+
+<tr>
+<td nowrap>
+u32 external_lod_obj_file_name_index
+</td>
+<td>
+LOD Objを外部ファイル参照する場合、参照するファイル名をExternalNameList内のインデックス番号で指定します。<p>
+ファイル名はディレクトリ名などを含まない形で記述してください。<p>
+外部ファイル参照しない(external_lod_obj_num = 0)場合、このフィールドは記述されません。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 external_lod_obj_name_index
+</td>
+<td>
+LOD Objを外部ファイル参照する場合、そのLOD Obj名をExternalNameList内のインデックス番号で記述します。<p>
+外部ファイル参照しない(external_lod_obj_num = 0)場合、このフィールドは記述されません。
+</td>
+</tr>
+
+
+
+<tr>
+<td nowrap>
+u32 external_obj_file_name_index
+</td>
+<td>
+child Objを外部ファイル参照する場合、参照するファイル名をExternalNameList内のインデックス番号で指定します。<p>
+ファイル名はディレクトリ名などを含まない形で記述してください。<p>
+外部ファイル参照しない(external_obj_num = 0)場合、このフィールドは記述されません。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 external_obj_name_index
+</td>
+<td>
+child Objを外部ファイル参照する場合、そのObj名をExternalNameList内のインデックス番号で記述します。
+外部ファイル参照しない(external_obj_num = 0)場合、このフィールドは記述されません。
+</td>
+</tr>
+
+
+
+</table>
+
+
+<p>
+<a href="./obj_C.htm">
+Go to the data chunk
+</a>
+<p>
+<a href="./index.htm">
+Go back to the index
+</a>
+
+
+</blockquote>
+
+<hr>
+<i>
+Copyright 1998,1999 NINTENDO Co.,Ltd. All rights reserved.<br>
+Copyright 1998,1999 MONEGI CORPORATION All rights reserved.
+</i>
+
+
+</body>
+</html>

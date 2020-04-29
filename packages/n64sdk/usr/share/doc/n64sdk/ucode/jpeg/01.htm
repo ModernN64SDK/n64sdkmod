@@ -1,0 +1,82 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<title>1</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<FONT FACE="Arial" SIZE="-1">
+
+<h2><a name="01">1. Introduction</a></h2>
+
+<p>The N64 JPEG library is an adapted version of the useful elements of the JPEG compression method customized for use in N64 game development. 
+</p>
+
+<p>The N64 JPEG library uses the Huffman entropy encoding method for data compression. 
+</p>
+
+<h3>Huffman Method</h3>
+
+<p>
+The Huffman method stores redundancy information, so it uses fewer bits to express data that appears frequently.
+</p>
+
+<p>As a result, the size of the compressed data is kept very
+small. Typically you can compress the original file down to 10% of its original size. Depending on the image, you may even be able to compress the file down to 5% of its original size. However, the speed of decompressing the compressed data slows things down. It typically takes more than 80 ms to decompress a 320x240 compressed image. Of course, the decompressing speed will vary depending on the image. </p>
+
+<p>The N64 JPEG library consists of library functions, microcode, and tools. There are two library functions that you can use for entropy encoding and decoding. 
+<ul>
+  <li>njpgHuffEncode() </li>
+</ul>
+
+<blockquote>
+  <p>to encode using the Huffman method.</p>
+</blockquote>
+
+<ul>
+  <li>njpgHuffDecode() </li>
+</ul>
+
+<blockquote>
+  <p>to decode data that was encoded using the Huffman method. </p>
+</blockquote>
+
+<p>There are two microcode object files that you can use for encoding and decoding. 
+<ul>
+  <li>njpgespMaio.o </li>
+</ul>
+
+<blockquote>
+  <p>Use the njpgespMain.o microcode to complete the YUV conversion, culling, DCT, quantization, and zigzag scanning processes on RGBA-formatted image data. It outputs entropy encodable data. 
+  </p>
+</blockquote>
+
+<ul>
+  <li>njpgdspMain.o </li>
+</ul>
+
+<blockquote>
+  <p>Use the njpgdspMain.o microcode to do reverse-zigzag scanning, reverse-quantization, and reverse-DCT to create entropy decoded (decompressed) data. It outputs data in YUV form. </p>
+</blockquote>
+
+<p>There are tools that you can use to compress an image to the proper form. 
+
+<ul>
+  <li>njpgCompress </li>
+</ul>
+
+<blockquote>
+  <p>Use the njpgCompress tool compresses an image to the N64 JPEG form. </p>
+</blockquote>
+
+<ul>
+  <li>njpgMakeSlide </li>
+</ul>
+
+<blockquote>
+  <p>Use the njpgMakeSlide tool compresses one or more images to the N64 JPEG form, and puts them into a file. 
+  </p>
+</blockquote>
+</body>
+</html>

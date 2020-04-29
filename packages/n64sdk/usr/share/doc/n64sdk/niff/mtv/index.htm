@@ -1,0 +1,685 @@
+<HTML>
+<HEAD>
+<title>Multi Texture Viewer Manual</title>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../mobile/allman.css">
+<!-- Editor's Notes: 9/16/1999 Ron Daring -->
+</head>
+
+<BODY bgcolor="#FFFFFF">
+<a name="top">
+
+Windows Version
+<center>
+<img width=640 height=200 src="img/mtvtitle.gif">
+</center>
+
+
+<hr>
+<P>
+
+<dl>
+	<a href="#gaiyou">1. Overview</a><br></li>
+	<a href="#directory">2. Directory Structure</a><br></li>
+	<a href="#siyou">3. How to Use</a><br></li>
+	<dl>
+		<li><a href="#fukusu">To view multiple pictures</a><br></li>
+		<li><a href="#iro">To view pictures in various formats</a><br></li>
+		<li><a href="#haikei">To view with a background</a><br></li>
+		<li><a href="#cgengo">To output the C language source file</a><br></li>
+	</dl>
+	<a href="#file">4. Description of Each File</a><br></li>
+	<dl>
+		<li><a href="#autoview"><TT>autoview.exe</TT></a><br></li>
+		<li><a href="#trans"><TT>trans.exe</TT></a><br></li>
+		<li><a href="#texview"><TT>texview.exe</TT></a><br></li>
+		<li><a href="#image64"><TT>image64</TT></a><br></li>
+		<li><a href="#texprev"><TT>texprev.bat</TT></a><br></li>
+		<li><a href="#texv"><TT>texv.n64</TT></a><br></li>
+		<li><a href="#tvbmp"><TT>tvBMP.dll</TT></a><br></li>
+		<li><a href="#tvrgb"><TT>tvRGB.dll</TT></a><br></li>
+	</dl>
+	<a href="#n64ctrl">5. Control via the Nintendo 64 System</a><br></li>
+<a href="tvdbin.htm">6. File Formats Output by the Converter</a><br></li>
+	<dl>
+		<li><a href="tvdbin.htm#tvd"><TT>.tvd files</TT></a><br></li>
+		<li><a href="tvdbin.htm#bin"><TT>.bin files</TT></a><br></li>
+	</dl>
+
+<P>
+<hr>
+
+<!--  --><p><B>Revision History</B></p>
+<p>
+03/11/99 - RLE-compressed SGI image can now be displayed<br>
+03/11/99 - Files with the extension <TT>.rgba</TT> can now be displayed<br>
+03/05/99 - Regarding BG, <TT>-w</TT> and <TT>-h</TT> are now disabled<br>
+02/17/99 - Width and height can now be specified</p><!--  -->
+
+<hr>
+
+<a name="gaiyou"><h1>1. Overview</h1>
+</a><br>
+
+<blockquote>
+This application is a tool for viewing images on the Nintendo<SUB>&reg;</SUB> 64.  You can view the same image in varying formats and bit depths.  The following image formats are presently supported:<p>
+<ul>
+	<li>CITextureEditor project files <b>(<TT>.tpf</TT>)</b></li>
+	<!--  --><li>SGI image format <B>(<TT>.sgi</TT>, <TT>.rgb</TT>, <TT>.rgba</TT>)</B><br>
+     However, depending upon the channel number used, the following conversions apply.</li><br>
+ <li>Channel 1:I
+ <li>Channel 2:IA
+ <li>Channel 3:RGB
+ <li>Channel 4:RGBA<!--  -->
+	<li>Windows bit map, provided it is a 1bit, 4bit, 8bit, 24bit image that is not RLE compressed.<b>(.bmp .dib)</b></li>
+	<li>As an overall restriction, the width and height must be no more than 1024 dots, and the file output by the converter must be no larger than 2MB.  Also note that the operation of YUV output cannot be guaranteed.</li>
+</ul>
+</blockquote>
+<br>
+
+<p align="right"><a href="#top">
+Top of Page
+<img src="../../gif/index.gif" border="0" width="65" height="17"></a></p>
+
+<P>
+<hr>
+
+<a name="directory"><h1>2. Directory Structure</h1>
+</a><br>
+
+<blockquote>
+
+<table border=0 cellspacing=0 cellpadding=>
+<tr>
+	<td align=left valign=top rowspan=9>
+	<table border=1 cellspacing=0 cellpadding=0 bgcolor="#efefaf">
+		<tr><td><font face="arial" size="-1">
+			<b>MultiTextureViewer</b><br></td>
+		</td></tr>
+	</table>
+	</td>
+	<td align=left valign=top>---<br></td>
+	<td align=center valign=top>
+	<table border=1 cellspacing=0 cellpadding=0 bgcolor="#efefaf">
+		<tr><td>
+			<b>/src</b><br></td>
+		</td></tr>
+	</table>
+	</td>
+	<td align=left valign=top>---<br></td>
+	<td align=left valign=top colspan=3><font face="arial" size="-1">(texv.n64 source)<br></td>
+</tr>
+<tr>
+	<td align=right valign=top rowspan=9><font face="arial" size="-1"> |-<br></td>
+	<td align=center valign=top rowspan=8>
+	<table border=1 cellspacing=0 cellpadding=0 bgcolor="#efefaf">
+		<tr><td><font face="arial" size="-1">
+			<b>/exe</b><br></td>
+		</td></tr>
+	</table>
+	</td>
+<tr>
+	<td align=left valign=top>---<br></td>
+	<td align=left valign=top colspan=3><a href="#autoview"><font face="arial" size="-1">autoview.exe</a><br></td>
+</tr>
+<tr>
+	<td align=right valign=top> |-<br></td>
+	<td align=left valign=top colspan=3><a href="#trans"><font face="arial" size="-1">trans.exe</a><br></td>
+</tr>
+<tr>
+	<td align=right valign=top> |-<br></td>
+	<td align=left valign=top colspan=3><a href="#texview">texview.exe</a><br></td>
+</tr>
+<tr>
+	<td align=right valign=top> |-<br></td>
+	<td align=left valign=top colspan=3><a href="#image64"><font face="arial" size="-1">image64.dll</a><br></td>
+</tr>
+<tr>
+	<td align=right valign=top> |-<br></td>
+	<td align=left valign=top colspan=3><a href="#texprev"><font face="arial" size="-1">texprev.bat</a><br></td>
+</tr>
+<tr>
+	<td align=right valign=top> |-<br></td>
+	<td align=left valign=top colspan=3><a href="#texv"><font face="arial" size="-1">texv.n64</a><br></td>
+</tr>
+<tr>
+	<td align=right valign=top rowspan=2> |-<br></td>
+	<td align=left valign=top rowspan=2>
+	<table border=1 cellspacing=0 cellpadding=0 bgcolor="#efefaf">
+		<tr><td>
+			<b><font face="arial" size="-1">/plugin</b><br></td>
+		</td></tr>
+	</table>
+	</td>
+	<td align=left valign=top>---<br></td>
+	<td align=left valign=top><a href="#tvbmp"><font face="arial" size="-1">tvBMP.dll</a><br></td>
+</tr>
+<tr>
+	<td align=right valign=top> |-<br></td>
+	<td align=left valign=top><a href="#tvrgb"><font face="arial" size="-1">tvRGB.dll</a><br></td>
+</tr>
+
+</table>
+
+</blockquote>
+<br>
+
+<p align="right"><a href="#top">
+Top of Page
+<img src="../../gif/index.gif" border="0" width="65" height="17"></a></p>
+
+<P>
+<hr>
+
+<a name="siyou"><h1>3. How to Use</h1>
+</a><br>
+
+<p>
+
+<a href="#fukusu">To view multiple pictures</a><br>
+<a href="#iro">To view pictures in various formats</a><br>
+<a href="#haikei">To view with a background</a><br>
+<a href="#cgengo">To output the C language source file</a><br>
+<br>
+
+<a name="fukusu"><h2>To View Multiple Pictures</h2></a><br>
+<dl>
+<li>
+Use <a href="#autoview"><TT>autoview.exe</TT></a><br>
+For example, in order to view <TT>image1.rgb</TT>,<TT>image2.bmp</TT>, <TT>image3.sgi</TT>, and <TT>image4.tpf</TT> at the same time from the command line, execute<br>
+>autoview <TT>image1.rgb image2.bmp image3.sgi image4.tpf</TT><br>
+to create the file <TT>out.bin</TT> and then execute<br>
+<TT>>nload texv.n64</TT><br>
+<TT>>nload -s0x400000 out.bin</TT><br>
+When this is done, you can view the images using IS-Viewer.<br>
+It is useful to put this all in a batch file.<br>
+<br>
+</li>
+</dl>
+
+<a name="iro"><h2>To View Pictures in Various Formats</h2></a><br>
+<dl>
+<li>
+Use <a href="#trans"><TT>trans.exe</TT></a> and <a href="#texview"><TT>texview.exe</TT></a><br>
+For example, if you want to view <TT>image1.rgb</TT> with a 256 color index and <TT>image2.bmp</TT> with 256 Intensity, then execute<br>
+<TT>>trans -s 8 -f CI -t C image1.rgb</TT><br>
+<TT>>trans -s 8 -f I image2.bmp</TT><br>
+This creates the files <TT>image1.tvd</TT> and <TT>image2.tvd</TT>.  You then execute<br>
+<TT>>texview image1 image2</TT><br>
+in order to create an <TT>out.bin</TT> file with the above format.  Now you can execute <br>
+<TT>>nload texv.n64</TT><br>
+<TT>>nload -s0x400000 out.bin</TT><br>
+so you can view the images with IS-Viewer64.<br>
+<br>
+</li>
+</dl>
+
+<a name="haikei"><h2>To View with a Background</h2></a><br>
+<dl>
+<li>
+Use the <TT>-B</TT> option when you want to give the picture background attributes.  The background image available for use as an example is <TT>bg.rgb</TT><br>
+If you are using <a href="#autoview"><TT>autoview.exe</TT></a>, then execute<br>
+<TT>>autoview image1.rgb image2.bmp image3.sgi image4.tpf <b>-B bg.rgb</b></TT><BR>
+If you are using <a href="#trans"><TT>trans.exe</TT></a> and <a href="#texview"><TT>texview.exe</TT></a>, then execute<br>
+<b><TT>>trans -s 16 -f IA -B bg.rgb</TT></b><br>
+to output a <TT>bg.tvd</TT> file, after which you execute <br>
+<TT>>texview image1 image2 <b>bg</b></TT><br>
+to create the <TT>out.bin</TT> file.  The rest of the procedure is as described above.<br>
+<br>
+</li>
+</dl>
+
+<a name="cgengo"><h2>To Output the C Language Source File</h2></a><br>
+<dl>
+<li>
+Use <a href="#trans"><TT>trans.exe</TT></a>.  Use the <TT>-o</TT> option to specify an appropriate name for the output file.  Execute <br>
+<TT>>trans -s 16 -f RGBA <b>-o image1.c</b> image1.rgb</TT><br>
+to create a C language source file <TT>image1.c</TT>.<br>
+If you describe <TT>image1.h</TT> after the <TT>-o</TT> option, the file can be output in C language header file format.<br>
+However, the output file basically can only be used with <TT>LoadTextureTile</TT>.<br>
+<br>
+</li>
+</dl>
+
+
+<p align="right"><a href="#top">
+Top of Page
+<img src="../../gif/index.gif" border="0" width="65" height="17"></a></p>
+
+<P>
+<hr>
+
+<a name="file"><h1>4. Description of Each File</h1><br>
+</a>
+<p>
+<a href="#autoview"><TT>autoview.exe</TT></a><br>
+<a href="#trans"><TT>trans.exe</TT></a><br>
+<a href="#texview"><TT>texview.exe</TT></a><br>
+<a href="#image64"><TT>image64</TT></a><br>
+<a href="#texprev"><TT>texprev.bat</TT></a><br>
+<a href="#texv"><TT>texv.n64</TT></a><br>
+<a href="#tvbmp"><TT>tvBMP.dll</TT></a><br>
+<a href="#tvrgb"><TT>tvRGB.dll</TT></a><br>
+
+<P>
+
+
+<a name="autoview"><h2><TT>autoview.exe</TT></h2>
+<p>
+Converts multiple image files into a format that can be viewed with Nintendo 64. <br>
+Since <a href="#trans"><TT>trans.exe</TT></a> and <a href="#texview"><TT>texview.exe</TT></a> are called internally, these two files must be in the same folder.
+<p>
+<b>Syntax</b><p>
+<TT>autoview [-(/)Options] image Files</TT>
+<P>
+
+
+<b>Options</b><br>
+
+<table cellspacing=5>
+<tr>
+	<td align=left valign=top><font face="arial" size="-1"><!--  --><TT>-s</TT><!--  --> <br></td>
+	<td align=left valign=top><font face="arial" size="-1"><!--  -->Size/Pixel<!--  --><br></td>
+	<td align=left valign=top><font face="arial" size="-1"><!--  -->Bit size per pixel.  Specify either 4, 8, 16 or 32.<!--  --><br>
+		<!--  -->The default is the maximum value that can be used with the specified format.
+		For example, the default is 8 in the case of CI and I.<!--  --><br></td>
+</tr>
+<tr>
+	<td align=left valign=top><font face="arial" size="-1"><TT>-f</TT> <br></td>
+	<td align=left valign=top><font face="arial" size="-1">Format<br></td>
+	<td align=left valign=top><font face="arial" size="-1">The format of the image.  Specify either RGBA, YUV, IA, I or CI.
+		The default is RGBA.<br></td>
+</tr>
+<tr>
+	<td align=left valign=top><font face="arial" size="-1"><TT>-t</TT> <br></td>
+	<td align=left valign=top><font face="arial" size="-1">TLUT<br></td>
+	<td align=left valign=top><font face="arial" size="-1">The palette type.  Specify either C or I.<br>
+		<font face="arial" size="-1">C is <TT>G_TT_RGBA16</TT>.  I is <TT>G_TT_IA16</TT>.  The default is C. <br></td>
+</tr>
+<tr>
+<td align=left valign=top><font face="arial" size="-1"><!--  --><TT>-w</TT><br></td>
+	<td align=left valign=top><font face="arial" size="-1"><!--  -->Width<br></td>
+	<td align=left valign=top><font face="arial" size="-1"><!--  -->If this is specified, one image is divided horizontally by the specified width.  However, this will not be applied to background.<br></td>
+</tr>
+<tr>
+	<td align=left valign=top><font face="arial" size="-1"><!--  --><TT>-h</TT> <br></td>
+	<td align=left valign=top><font face="arial" size="-1"><!--  -->Height<br></td>
+	<td align=left valign=top><font face="arial" size="-1"><!--  -->If this is specified, one image is divided vertically by the specified height. However, this will not be applied to background.<br></td><!--  -->
+</tr><!--  -->
+<tr>
+	<td align=left valign=top><font face="arial" size="-1"><TT>-o</TT> <br></td>
+	<td align=left valign=top><font face="arial" size="-1">FileName<br></td>
+	<td align=left valign=top><font face="arial" size="-1">The name of the output file.  If no extension is specified, then .bin will be automatically appended. The default file name is <TT>out.bin</TT>. <br></td>
+</tr>
+<tr>
+	<td align=left valign=top><font face="arial" size="-1"><TT>-B</TT> <br></td>
+	<td align=left valign=top><font face="arial" size="-1">ImageFile<br></td>
+	<td align=left valign=top><font face="arial" size="-1">Attaches background attribute to the specified image file. <br></td>
+</tr>
+</table>
+
+<P>
+<b><li>Cautions on Usage</b></p>
+<P>
+
+There is no set order for these options, but the image file must always be specified at the very end.<br>
+The image files do not have to all be the same size, but they end up being converted to the same format and size.  Also, <a href="tvdbin.htm#tvd"> <TT>.tvd</TT> files</a> are created temporarily and then deleted after execution.
+
+<P>
+Example
+<P>
+
+	<TT>>autoview -s 16 -f RGBA test.rgb</TT><br>
+	<dl>
+	<li>
+	<TT>test.rgb</TT> is displayed in RGBA16bit format.<br>
+	</li>
+	</dl>
+	<TT>>autoview -s 8 -f CI -t I  -B back.bmp image.rgb</TT><br>
+	<dl>
+	<li>
+	<TT>image.rgb</TT> is displayed with an 8bit Color Index and IA16 palette.
+	<TT>back.bmp</TT> is converted to the same, but it can only be displayed as background.
+	</li>
+	</dl>
+	<TT>>autoview -s 4 -f CI -o abc image.rgb -B back1.bmp char1.tpf -B back2.bmp</TT><br>
+	<dl>
+	<li>
+	The specified image file is converted to a 4 bit Color Index and RGBA16 palette.
+	<TT>back1.bmp</TT>, <TT>back2.bmp</TT> are converted as backgrounds.
+The converted data is output to the file <TT>abc.bin</TT>
+</dl>
+</dl>
+
+<P>
+<a name="trans"><h2><TT>trans.exe</TT></h2></a>
+<p>
+
+Converts images so they can be seen on the Nintendo 64. 
+However, the output files (<a href="tvdbin.htm#tvd"><TT>.tvd</TT> files</a>) must be integrated using <a href="#texview"><TT>texview.exe</TT></a> The files can also be output in C language source format.
+
+<p>
+<b>Syntax</b><p>
+<TT>>trans [-(/)Options] image Files</TT><br>
+
+<p>
+<b>Options</b><br>
+
+<table cellspacing=5>
+<tr>
+	<td align=left valign=top><font face="arial" size="-1"><TT>-s</TT> <br></td>
+	<td align=left valign=top><font face="arial" size="-1">Size/Pixel<br></td>
+	<td align=left valign=top><font face="arial" size="-1">Bit size per pixel.  Specify either 4, 8, 16 or 32.  <br>
+		The default is 32, but this will change depending on the format.
+		For example, IA is 16 and I is 8.<br></td>
+</tr>
+<tr>
+	<td align=left valign=top><font face="arial" size="-1"><TT>-f</TT> <br></td>
+	<td align=left valign=top><font face="arial" size="-1">Format<br></td>
+	<td align=left valign=top><font face="arial" size="-1">The format of the image.  Specify either RGBA, YUV, IA, I or CI.
+		The default is RGBA.<br></td>
+</tr>
+<tr>
+	<td align=left valign=top><font face="arial" size="-1"><TT>-t</TT> <br></td>
+	<td align=left valign=top><font face="arial" size="-1">TLUT<br></td>
+	<td align=left valign=top><font face="arial" size="-1">The palette type.  Specify either C or I. <br>
+		C is <TT>G_TT_RGBA16</TT>.  I is <TT>G_TT_IA16</TT>.  The default is C.  <br></td>
+</tr>
+<tr>
+	<td align=left valign=top><font face="arial" size="-1"><TT>-o</TT> <br></td>
+	<td align=left valign=top><font face="arial" size="-1">FileName<br></td>
+	<td align=left valign=top><font face="arial" size="-1">The name of the output file.  If no extension is specified, then <TT>.tvd</TT> will be automatically appended.
+		The default name is the base name of the initially specified image file with the .tvd extension appended.
+		Appending either <TT>.c</TT>, <TT>.cpp</TT> or <TT>.h</TT> as the extension will output the file in C language source format.<br></td>
+</tr>
+<tr>
+	<td align=left valign=top><font face="arial" size="-1"><TT>-w</TT> <br></td>
+	<td align=left valign=top><font face="arial" size="-1">Width<br></td>
+	<td align=left valign=top><font face="arial" size="-1">When this option is specified, the image will be divided horizontally at the specified width.<br></td>
+</tr>
+<tr>
+	<td align=left valign=top><font face="arial" size="-1"><TT>-h</TT> <br></td>
+	<td align=left valign=top><font face="arial" size="-1">Height<br></td>
+	<td align=left valign=top><font face="arial" size="-1">When this option is specified, the image will be divided vertically at the specified height.<br></td>
+</tr>
+<tr>
+	<td align=left valign=top colspan=2><font face="arial" size="-1"><TT>-B</TT> <br></td>
+	<td align=left valign=top><font face="arial" size="-1">Attaches background attribute to all specified image files. <br></td>
+</tr>
+<tr>
+	<td align=left valign=top colspan=2><font face="arial" size="-1"><!--  --><TT>-i</TT><!--  --> <br></td>
+	<td align=left valign=top><font face="arial" size="-1"><!--  -->When -f CI is specified, specification of the <TT>-i</TT> option will create a single palette from all the images.
+		If CI is not specified, then one palette will be created for each separate image. Please note that it was <TT>-p</TT> with the previous version.<br></td><!--  -->
+</tr></table>
+
+<P>
+
+Cautions on Usage
+<P>
+
+There is no set order for these options, but the image files must always be specified at the very end. 
+All the images need to be the same size <!--  -->when more than one image will be converted.<br><!--  -->
+
+<P>
+Example
+<P>
+
+<TT>>trans -s 16 -f RGBA test.rgb</TT><br>
+	<dl>
+	<li>
+	<TT>test.rgb</TT> is displayed in RGBA 16bit format<br>
+	</li>
+	</dl>
+	<TT>>trans -s 8 -f CI -t I image.rgb</TT><br>
+	<dl>
+	<li>
+	<TT>image.rgb</TT> is displayed with an 8bit Color Index and IA16 palette.
+	</li>
+	</dl>
+	<TT>>trans -s 8 -f CI -B -o abc image.rgb</TT><br>
+	<dl>
+	<li>
+	<TT>image.rgb</TT> is displayed with an 8bit Color Index and RGBA16 palette.<br>
+	This image can be displayed only as background.<br>
+	The converted data is output to the file <TT>abc.tvd</TT> <br>
+	</li>
+	</dl>
+	<TT>>trans -s 16 -f RGBA -o def image0.rgb image1.rgb image2.sgi</TT><br>
+	<dl>
+	<li>
+	The three images <TT>image0.rgb</TT>, <TT>image1.rgb</TT> and <TT>image2.rgb</TT> are all converted to RGBA16.<br>
+	Three sets of texture data are put in the created file <TT>def.tvd</TT> <br>
+	All three images must have the same width and height.<br>
+	</li>
+	</dl>
+	<TT>>trans -s 16 -f RGBA -w 80 -h 40 image.rgb</TT><br>
+	<dl>
+	<li>
+	If the size of <TT>image.rgb</TT> is 320x240 dots, then these <TT>-w</TT> and <TT>-h</TT> option settings will create 24 80x40 dot textures.
+	</li>
+	</dl>
+	<TT>>trans -s 16 -f RGBA -w 80 -h 40 -o src.h image.rgb</TT><br>
+	<dl>
+	<li>
+	After the above conversion is performed, the data is output in C language source format to the file <TT>src.h</TT> <br>
+
+	</dl>
+
+<P>
+
+<a name="texview"><h2>texview.exe</h2></a>
+
+<p>
+Integrates the files converted by trans into a file that can be loaded with nload on Nintendo 64.
+<p>
+<b>Syntax</b><p>
+<TT>>texview [-o FileName]Input file name* ...</TT>
+<p>
+<b>Option</b><br>
+<p>
+<table cellspacing=5>
+<tr>
+	<td align=left valign=top><font face="arial" size="-1"><TT>-o</TT> <br></td>
+	<td align=left valign=top><font face="arial" size="-1">FileName<br></td>
+	<td align=left valign=top><font face="arial" size="-1">The name of the output file.  If no extension is specified, then <a href="tvdbin.htm#bin"><TT>.bin</TT></a> will be appended automatically.
+		The default file name is <TT>out.bin</TT>. <br></td>
+</tr>
+</table>
+<p><!--  -->The extension of the input file name needs to be <a href="tvdbin.htm#tvd"><TT>.tvd</TT></a>. However, the extension can be omitted.<!--  -->
+
+<br>
+<P>
+
+<a name="image64"><h2><TT>image64.dll</TT></h2></a>
+<p>
+The dll which provides the option to convert the image into a format that can be displayed on the Nintendo 64. 
+<!--  -->It will be called from <TT>trans.exe</TT>, <TT>tvBMP.dll</TT> or <TT>tvRGB.dll</TT>.<!--  -->
+
+<P>
+
+<a name="texprev"><h2><TT>texprev.bat</TT></h2></a>
+
+<p>
+The batch file for viewing images. 
+Please rewrite this batch file to match the mode of the images you want to view.<p>
+The <a href="tvdbin.htm#bin"><TT>.bin</TT> file</a> output by <TT>autoview.exe</TT> and <TT>texview.exe</TT> 
+must be loaded with nload into address 0x400000.
+
+<P>
+
+<a name="texv"><h2><TT>texv.n64</TT></h2></a>
+<p>
+The Texture Viewer's program for the Nintendo 64.
+
+<P>
+<a name="tvbmp"><h2><TT>tvBMP.dll</TT></h2></a>
+<p>
+The plug-in for Windows bit map conversion. 
+<!--  -->It will be called from <TT>trans.exe</TT>.<!--  -->
+
+<P>
+
+<a name="tvrgb"><h2>tvRGB.dll</h2></a>
+<p>
+The plug-in for SGI image conversion. 
+<!--  -->It will be called from trans.exe.<!--  -->
+
+
+
+
+<p align="right"><a href="#top">
+Top of Page
+<img src="../../gif/index.gif" border="0" width="65" height="17"></a></p>
+
+<P>
+
+<hr>
+
+<a name="n64ctrl"><h1>5. Control via the Nintendo 64 </h1>
+</a>
+
+
+<h2>When the Menu is Not Displayed</h2>
+<p>
+<table cellspacing=5>
+	<tr>
+		<td align=left valign=top><font face="arial" size="-1">A Button, B Button<br></td>
+		<td valign=top><br></td>
+		<td align=left><font face="arial" size="-1">Switches textures.<br></td>
+	</tr>
+	<tr>
+		<td align=left valign=top><font face="arial" size="-1">C Buttons<br></td>
+		<td valign=top><br></td>
+		<td align=left><font face="arial" size="-1">Move the texture horizontally and vertically. <br>
+		<font face="arial" size="-1">The speed is doubled if you keep the Z Button pressed down. <br></td>
+	</tr>
+	<tr>
+		<td align=left valign=top><font face="arial" size="-1">Control Stick<br></td>
+		<td valign=top><br></td>
+		<td align=left><font face="arial" size="-1">Tilts the texture horizontally and vertically.<br>
+		Keep the Z Button pressed down to move the texture forward and backward.</td>
+	</tr>
+	<tr>
+		<td align=left valign=top><font face="arial" size="-1">Control Pad<br></td>
+		<td valign=top><br></td>
+		<td align=left><font face="arial" size="-1">Changes the speed at which the texture tilts, but the speed forward and backward does not change. <br></td>
+	</tr>
+	<tr>
+		<td align=left valign=top><font face="arial" size="-1">R Button <br></td>
+		<td valign=top><br></td>
+		<td align=left><font face="arial" size="-1">Returns texture to its original position.<br></td>
+	</tr>
+	<tr>
+		<td align=left valign=top><font face="arial" size="-1">Start Button<br></td>
+		<td valign=top><br></td>
+		<td align=left><font face="arial" size="-1">Displays the menu.<br></td>
+	</tr>
+	<tr>
+		<td align=left valign=top><font face="arial" size="-1">L Button<br></td>
+		<td valign=top><br></td>
+		<td align=left><font face="arial" size="-1">Toggles to show/hide the texture name.<br></td>
+	</tr>
+</table>
+
+<P>
+<h2>When the Menu is Displayed</h2>
+<p>
+<table cellspacing=5>
+	<tr>
+		<td align=left valign=top><font face="arial" size="-1">A Button, B Button<br></td>
+		<td valign=top><br></td>
+		<td align=left><font face="arial" size="-1">Switches item contents.<br>
+		<font face="arial" size="-1">The same switching can be done with the Z Button. <br>
+		If the cursor is on the color settings, the color value can be increased or decreased one at a time.<br></td>
+	</tr>
+	<tr>
+		<td align=left valign=top><font face="arial" size="-1">C Button<br></td>
+		<td valign=top><br></td>
+		<td align=left><font face="arial" size="-1">Not used. <br></td>
+	</tr>
+	<tr>
+		<td align=left valign=top><font face="arial" size="-1">Control Stick<br></td>
+		<td valign=top><br></td>
+		<td align=left><font face="arial" size="-1">Moves the cursor.<br>
+		<font face="arial" size="-1">If the cursor is on the color settings, while pushing the Z Button, <br>
+		<font face="arial" size="-1">manipulating the Control Stick will increase or decrease the color value. <br>
+		<font face="arial" size="-1">Changing speed is faster with UP/DOWN than with LEFT/RIGHT. <br></td>
+	</tr>
+	<tr>
+		<td align=left valign=top><font face="arial" size="-1">Control Pad<br></td>
+		<td valign=top><br></td>
+		<td align=left><font face="arial" size="-1">Not used.<br></td>
+	</tr>
+	<tr>
+		<td align=left valign=top><font face="arial" size="-1">R Button<br></td>
+		<td valign=top><br></td>
+		<td align=left><font face="arial" size="-1">Not used.<br></td>
+	</tr>
+	<tr>
+		<td align=left valign=top><font face="arial" size="-1">Start button<br></td>
+		<td valign=top><br></td>
+		<td align=left><font face="arial" size="-1">Quits the menu.<br></td>
+	</tr>
+	<tr>
+		<td align=left valign=top><font face="arial" size="-1">L Button<br></td>
+		<td valign=top><br></td>
+		<td align=left><font face="arial" size="-1">Not used.<br></td>
+	</tr>
+</table>
+
+<P>
+<h2>The Menu</h2>
+<p>
+<table border>
+	<tr>
+		<td align=center valign=center><font face="arial" size="-1">COMBINE<br></td>
+		<td align=left><font face="arial" size="-1">For setting the color combiner mode<br>
+		<font face="arial" size="-1">Can choose DECAL, PRIMITIVE or BLENDPE <br></td>
+	</tr>
+	<tr>
+		<td align=center valign=center><font face="arial" size="-1">BLENDER<br></td>
+		<td align=left><font face="arial" size="-1">For setting the render mode <br>
+		<font face="arial" size="-1">Can choose OPA_SURF, XLU_SURF or TEX_EDGE  <br></td>
+	</tr>
+	<tr>
+		<td align=center valign=center><font face="arial" size="-1">FILTER<br></td>
+		<td align=left><font face="arial" size="-1">For setting the texture filter<br>
+		<font face="arial" size="-1">Can choose POINT, BILERP or AVERAGE <br></td>
+	</tr>
+	<tr>
+		<td align=center valign=center><font face="arial" size="-1">TASKBAR<br></td>
+		<td align=left><font face="arial" size="-1">For setting the display of the task bar<br>
+		<font face="arial" size="-1">Can choose ON or OFF <br></td>
+	</tr>
+	<tr>
+		<td align=center valign=center> <font face="arial" size="-1">BG <br></td>
+		<td align=left> <font face="arial" size="-1">For switching the background <br>
+		 <font face="arial" size="-1">Can choose to read in a background or set it to OFF <br></td>
+	</tr>
+	<tr>
+		<td align=center valign=center> <font face="arial" size="-1">BG COLOR <br></td>
+		<td align=left> <font face="arial" size="-1">For switching the background color <br>
+		 <font face="arial" size="-1">Can set from a range of 0 to 225 for each element. <br></td>
+	</tr>
+	<tr>
+		<td align=center valign=center> <font face="arial" size="-1">PRIMITIVE COLOR <br></td>
+		<td align=left> <font face="arial" size="-1">For switching the primitive colors. <br>
+		 <font face="arial" size="-1">Can set from a range of 0 to 225 for each element. <br></td>
+	</tr>
+	<tr>
+		<td align=center valign=center> <font face="arial" size="-1">ENV COLOR <br></td>
+		<td align=left> <font face="arial" size="-1">For switching the environment color <br>
+		 <font face="arial" size="-1">Can set from a range of 0 to 225 for each element. <br></td>
+	</tr>
+</table>
+
+
+
+<p align="right"><a href="#top">
+Top of Page
+<img src="../../gif/index.gif" border="0" width="65" height="17"></a></p>
+
+<P>
+<hr>
+
+</body>
+</html>

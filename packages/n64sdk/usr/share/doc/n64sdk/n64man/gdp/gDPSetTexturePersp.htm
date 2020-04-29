@@ -1,0 +1,53 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<link rel=stylesheet type="text/css" HREF="../N64man.css">
+<!--
+Editors Notes:
+  JLR made reformating and copy edits.
+  PWC- updated formatting
+-->
+
+<TITLE>gDPSetTexturePersp</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>gDPSetTexturePersp [Macro]</h1><h2>Function</h2>
+
+<p>gDPSetTexturePersp<br><Br><i>
+Enables/disables texture map perspective correction</i></P>
+
+<p><b>Syntax</p></b>
+<p>
+<PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gbi.htm">gbi.h</A> */
+gDPSetTexturePersp(Gfx *gdl, u32 enable)
+gsDPSetTexturePersp(         u32 enable)</CODE></PRE></p>
+
+<p><b>Arguments</p></b>
+<p><DL>
+  <DT><B>gdl</B>
+  <DD>Display list pointer
+  <DT><B>enable</B>
+  <DD>Prespective correction flag:
+  <DD><B>G_TP_NONE</B> (Disable perspective correction)
+  <DD><B>G_TP_PERSP</B> (Enable perspective correction)
+</DL></p>
+<p><b>Description</b></p>
+<P>
+Enables/disables perspective correction in texture sampling mode.  When perspective correction is turned on, texture coordinates are corrected at every pixel by the RDP.  For details, see Section 12.4.6 "Texture Sampling Mode" in the N64 Programming Manual.
+</P>
+<p><b>Note</b></p>
+<P>
+Perspective correction must be enabled when you are rendering textured triangles, regardless of whether you are using perspective projection or orthogonal projection.  This is because perspective correction improves the precision of the texture coordinates.  On the other hand, you should always disable perspective correction when drawing textured rectangles (hardware sprites).
+</P>
+<p><b>See Also</b></p>
+<P>
+<A HREF="gDPSetPrimColor.htm">gDPSetPrimColor</A>, <A HREF="gDPSetTextureDetail.htm">gDPSetTextureDetail</A>, <A HREF="gDPSetTextureLOD.htm">gDPSetTextureLOD</A>, and <A HREF="gDPSetTextureLUT.htm">gDPSetTextureLUT</A>
+</P>
+
+<p><b>Revision History</p></b>
+<p>02/01/99&nbsp;&nbsp;&nbsp;Completely rewritten</p>
+
+</BODY>
+</HTML>

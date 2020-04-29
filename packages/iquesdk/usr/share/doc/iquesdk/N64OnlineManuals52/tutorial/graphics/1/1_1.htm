@@ -1,0 +1,33 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Graphics-CHAPTER 1  The Basics of N64 Graphics- Introduction to RSP</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/22/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<font style="font-size:16pt"><B>CHAPTER 1  THE BASICS OF N64 GRAPHICS-INTRODUCTION TO RSP
+</B></FONT>
+<br><br>
+<HR SIZE=3 NOSHADE>
+<P>
+In this introductory chapter of the Graphics tutorial, we focus on the RSP, which is one of the core elements of the RCP that lies at the heart of N64 graphics programming.  We explain every procedure from the description of a model to its rendering, with the aid of concrete examples of source code.
+</P>
+<font style="font-size:12pt"><B>1.1  RSP & RDP - Graphics Essentials</B></FONT>
+<P>
+If you think about the flow of an N64 program from defining a model to rendering that model, it is generally the same as any graphics process.  However, to put together an effective N64 application, you need to understand what kind of processes are happening and at what point in this flow.  In this section, we draw a simple outline showing where the various processes are performed in this flow.<br><br>
+
+     The first thing you need to understand is that the majority of graphics processing in the N64 is conducted by the RSP and the RDP.  Of course, you could also directly write a synthesized image to the framebuffer for display with the CPU.  However, this is a very involved topic so it will not be covered in this tutorial. <br><br>
+So what, then, is the CPU's role in an N64 graphics program?  The CPU instructs these two processors which processes they should perform.   Each instruction is a "command" and a collection of these commands is called the "display list."   More about the display list can be learned in Chapter 3 of the N64 Programming Basics Tutorial.<br><br>
+The RSP and RDP receive their instructions and go about the business of rendering graphics.  You need to understand how roles are shared between these two processors.  <br><br>
+It is the RSP's job to calculate the geometry of the 3D graphics.  This involves computations relating to vertex coordinates and normal vector transformations, lighting and texture mapping.  Note that the RSP does not go as far as to actually add colors.  Although we said the RSP calculates texture coordinates, it is not the job of this processor to determine which pixels get what colors.  As implied, the RSP does a lot of number crunching.  The RSP is a lot like the N64 CPU in terms of hardware, and it has a Vector Unit capable of performing a number of calculations at the same time.<br><br>
+
+     The RDP takes the results of these calculations by the RSP and outputs images to the framebuffer.  In a word, the role of the RDP is to output graphics.  In actuality, the RDP is a processor with extremely advanced functionality and expressive ability, performing such tasks as texture filtering, pixel color combining, and blending with the frame buffer.
+     When looking at the RDP from a functional standpoint, it is better to break it up into a number of units like the Texture Engine, Combiner and Blender.  Here we will treat the RDP as a single entity when explaining which processes in the graphics flow the device performs.   Details about its texture-related functions are covered in Chapters 3 and 9, while the Combiner is covered in Chapter 4, and topics relating to the Blender are covered in Chapters 5 to 7.<br><br>
+
+
+     From the above explanations you can see that the RSP and the RDP need to share roles and work cooperatively in order to display 3D graphics on the N64.  In other words, a 3D graphics program must make active use of both processors.  That being said, we will focus in this chapter on providing an explanation of how to make basic use of the RSP.</P>
+</BODY>
+</HTML>

@@ -1,0 +1,69 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<link rel=stylesheet type="text/css" HREF="../N64man.css">
+<!--
+Editors Notes:
+  JLR made reformating and copy edits.
+  PWC- updated formatting
+-->
+
+<TITLE>gDPSetFillColor</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>gDPSetFillColor [Macro]</H1>
+<h2>Function</h2>
+<p>gDPSetFillColor<br><Br><i>
+Sets the RDP fill color</i></P>
+
+<p><b>Syntax</p></b>
+<p>
+<PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gbi.htm">gbi.h</A> */
+gDPSetFillColor(Gfx *gdl, u32 c)
+gsDPSetFillColor(         u32 c)</CODE></PRE></p>
+
+<p><b>Arguments</p></b>
+<p><DL>
+  <DT><B>gdl</B>
+  <DD>Display list pointer.
+  <DT><B>c</B>
+  <DD>32-bit color value.
+</DL></p>
+<p><b>Description</b></p>
+<P>
+Sets the RDP fill color.  The fill color is an internal color register of the memory interface (MI) in the RDP.  32-bit fill color is only used in fill mode.  Because data is written at a rate of 64 bits per clock in fill mode, the 32-bit color data is written twice, 2 pixels each time, to make a block of 4 pixels (a 32-bit fill color composition of two different 16-bit pixels can be used for a "special effect").  To learn how to set the cycle type, see <A HREF="gDPSetCycleType.htm">gDPSetCycleType</A>.  For more details, see Section 12.8.8 "Fill Color" in the N64 Programming Manual.
+</P>
+<p><b>Note</b></p>
+<P>
+g*DPSetFillColor is used primarily to clear the color frame buffer and the Z buffer.  To clear the Z buffer, first set the Z buffer address to the color frame buffer address and then execute the command.  
+</P>
+<p><b>Comment</p></b>
+<P>
+Two color-packing macros are available to fill the color frame buffer and the Z buffer.  
+GPACK_RGBA5551 (r,g,b,a) and GPACK_ZD (z,dz) clear these respective buffers by packing them with 16-bit color.  The maximum Z buffer value is G_MAXFBZ (0x3fff).  Both macros return 16 bits and generate a 32-bit fill color the second time they are used.
+</P>
+<p><b>Example</b></p>
+<P>
+To fill the color frame buffer with red, you would use the following:
+<PRE><CODE><B>gDPSetFillColor</B>(gp++, GPACK_RGBA5551(255,0,0,1)&lt;&lt;16 | 
+GPACK_RGBA5551(255,0,0,1)); 
+</CODE></PRE>
+</P>
+<P>
+Clearing the Z buffer with the maximum value looks like this:
+<PRE><CODE><B>gDPSetFillColor</B>(gp++, GPACK_ZDZ(G_MAXFBZ, 0)&lt;&lt;16 | 
+GPACK_ZDZ(G_MAXFBZ, 0));
+</CODE></PRE>
+</P>
+<p><b>See Also</b></p>
+<P>
+<A HREF="gDPFillRectangle.htm">gDPFillRectangle</A>, <A HREF="gDPSetAlphaCompare.htm">gDPSetAlphaCompare</A>, <A HREF="gDPSetCombineMode.htm">gDPSetCombineMode</A>, <A HREF="gDPSetCycleType.htm">gDPSetCycleType</A>, and <A HREF="gDPSetRenderMode.htm">gDPSetRenderMode</A> 
+</P>
+
+<p><b>Revision History</p></b>
+<p>02/01/99&nbsp;&nbsp;&nbsp;Completely rewritten</p>
+
+</BODY>
+</HTML>

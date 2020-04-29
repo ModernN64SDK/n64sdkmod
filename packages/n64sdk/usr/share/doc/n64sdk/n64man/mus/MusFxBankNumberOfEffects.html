@@ -1,0 +1,54 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../n64man.css">
+<title>MusFxBankNumberOfEffects()</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check-->
+</head>
+
+<h1>MusFxBankNumberOfEffects()</h1>
+
+<h2>Syntax</h2>
+
+<pre>
+int MusFxBankNumberOfEffects(void *ifxbank);
+</pre>
+
+<h2>Arguments</h2>
+
+<dl>
+  <dt><b>ifxbank</b>
+  <dd>the address of an initialized sound effect bank 
+</dl>
+
+<h2>Description</h2>
+
+<p>It gets the number of sound effects stored in the specified initialized sound effect bank. When starting sound effects using a sound effect bank, the valid range is 0 to MusFxBankNumberOfEffects()-1 inclusive.</p>
+
+<p>The ifxbank must contain the address of a sound effect bank initialized with the <a href="MusFxBankInitialize.html">MusFxBankInitialize()</a> function.</p>
+
+<h2>Return Value</h2>
+
+<p>Number of sound effects in the specified sound effect bank.</p>
+
+<h2>Example</h2>
+
+<pre>musHandle AudioStartEffect(void *fxbank, int number)
+{
+  musHandle handle;
+
+  if (number&gt;=MusFxBankNumberOfEffects(fxbank))
+    return (0); /* failure! */
+  <a href="MusFxBankSetSingle.html">MusFxBankSetSingle</a>(fxbank);
+  handle = <a href="MusStartEffect.html">MusStartEffect</a>(number);
+  return (handle);
+}
+</pre>
+
+<h2>See Also</h2>
+<p>
+<a href="MusFxBankInitialize.html">MusFxBankInitialize()</a>
+</p>
+
+</body>
+</html>

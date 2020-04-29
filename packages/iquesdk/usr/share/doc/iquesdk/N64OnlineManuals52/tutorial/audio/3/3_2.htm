@@ -1,0 +1,123 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Audio-Chapter 3 USING MULTIPLE BANKS</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/16/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<font style="font-size:12pt"><B>3.2  Using Multiple Sound Effect Banks</B></FONT>
+<br>
+<P>
+In this section we explain how to use a number of sound effect banks.  As already explained, the first thing that needs to be done is to initialize all of the sound effect banks. It does not matter how many sound effect banks are going to be initialized with <tt>MusFxBankInitialize</tt>.  At the time of initialization, the sound effect bank specified the first time by <tt>MusFxBankInitialize</tt> is automatically set as the default sound effect bank.  Sound effect banks initialized on the second and subsequent times are not set as the default, but this can be changed and one of these sound effect banks can be set as the default using <tt>MusFxBankSetCurrent</tt>.  When a bank is set as the default, any sound effect started after that point will make use of that bank.
+<BR>
+<HR>
+<p><b>Set initialized sound effect bank as the default</B><br>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Function name:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP COLSPAN=2><tt>MusFxBankSetCurrent</tt></TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Syntax:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP COLSPAN=2>void MusFxBankSetCurrent(void *ifxbank)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Arguments:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP><b>ifxbank</b>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Address of the initialized sound effect bank</TD>
+	</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Return value:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP COLSPAN=2>None</TD>
+	</TR><TR>
+</TR></TABLE>
+<HR>
+</P>
+<P>
+You can make use of a number of sound effect banks with just <tt>MusFxBankSetCurrent</tt>, but there is another function with different characteristics called, <tt>MusFxBankSetSingle</tt>, that you can also use.  This function sets an override that is different from the default.  The override has higher priority than the default, but it is cleared after one use.  Thus, you can utilize this function to make temporary use of a different sound effect bank when the need arises.
+<BR>
+<HR>
+<p><b>Temporarily set the next sound effect bank to use</B><br>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Function name:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP COLSPAN=2><tt>MusFxBankSetSingle</tt></TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Syntax:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP COLSPAN=2>void MusFxBankSetSingle(void *ifxbank)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Arguments:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP><b>ifxbank</b>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Address of the initialized sound effect bank</TD>
+	</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Return value: </TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP COLSPAN=2>None</TD>
+	</TR><TR>
+</TR></TABLE>
+<HR>
+</P>
+<P>
+The following is an example of how these two functions can be combined to make use of a number of sound effect banks.</P>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0><TR><TD>&nbsp;</TD><TD>
+<TABLE BORDER=1 CELLSPACING=0 CELLPADDING=4><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP><FONT COLOR="#000080"><PRE><CODE>MusFxBankInitialize(A_bfx);   // Initialize A and set as default
+MusFxBankInitialize(B_bfx);   // Initialize B
+MusFxBankInitialize(C_bfx);    // Initialize C
+
+MusStartEffect(0);           // Play the 0th effect of default bank A (there is no override)
+
+MusFxBankSetCurrent(B_bfx);  // Change the default to B
+MusStartEffect(1);           // Play the 1st effect of default bank B (there is no override)
+
+
+MusFxBankSetSingle(C_bfx);   // Set the override to C
+MusStartEffect(2);  // Play the 2nd effect of override bank C(override is cleared)
+
+MusStartEffect(3);  // Play the 3rd effect of default bank B (there is no override)</CODE></PRE></FONT></TD>
+	</TR></TABLE>
+</TD></TR></TABLE>
+<P>
+There is one point you need to be careful about, as the next example demonstrates:</P>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0><TR><TD>&nbsp;</TD><TD>
+<TABLE BORDER=1 CELLSPACING=0 CELLPADDING=4><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP><FONT COLOR="#000080"><PRE><CODE>MusFxBankInitialize(A_bfx);   // Initialize A and set as default
+MusFxBankInitialize(B_bfx);   // Initialize B
+MusFxBankInitialize(C_bfx);   // Initialize C
+
+MusStartEffect(0);       // Play the 0th effect of default A (there is no override)
+
+MusFxBankSetSingle(C_bfx);    // Set the override to C
+
+MusFxBankSetCurrent(B_bfx);   // Change the default to B
+MusStartEffect(1);    // Play the 1st effect of override C (override is cleared)</CODE></PRE></FONT></TD>
+	</TR></TABLE>
+</TD></TR></TABLE>
+<P>
+ In other words, the override is cleared at the time when the sound effect starts, and not when the only thing that has been executed is <tt>MusFxBankSetCurrent</tt>. For this reason, you should execute <tt>MusFxBankSetSingle</tt> immediately before starting the sound effect.  You can forcefully clear the override by setting NULL in the argument of <tt>MusFxBankSetSingle</tt>.
+</P>
+<P>
+ You have no doubt noticed that all of the sample banks have been the same in the explanations up until now.  However, when multiple sample banks and multiple sound-effect banks are being used, sound effects and songs can get mixed up, and controlling them all can become a difficult task.  Control becomes a much easier task if you use <tt>MusFxBankSetPtrBank</tt> to set a certain default sample bank in the sound effect bank, since when this is done the default value set in <tt>MusPtrBankSetCurrent</tt> will only be used for songs.  The order of priority of sample banks, from highest to lowest, is MusPtrBankSetSingle > MusFxBankSetPtrBank > MusPtrBankSetCurrent.
+<BR>
+<HR>
+<p><B>Set the sound effect bank's sample bank</b><br>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Function name:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP COLSPAN=2><tt>MusFxBankSetPtrBank</tt></TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Syntax:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP COLSPAN=2>void MusFxBankSetPtrBank(void *ifxbank, void *ipbank)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Arguments:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP><b>ifxbank</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Address of an initialized sound effect bank</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP><b>ipbank</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Address of an initialized sample bank</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Return value:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP COLSPAN=2>None</TD>
+	</TR><TR>
+</TR></TABLE>
+<HR>
+</P>
+</BODY>
+</HTML>

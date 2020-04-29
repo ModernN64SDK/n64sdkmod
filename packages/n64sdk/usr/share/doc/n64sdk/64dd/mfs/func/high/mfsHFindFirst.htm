@@ -1,0 +1,97 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>mfsHFindFirst</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font face="arial" size="-1">
+<b><font size="3">mfsHFindFirst</b></font>
+
+<hr>
+
+<P>
+<b>Syntax</b>
+<font face="courier" size="2">
+<pre>s32 mfsHFindFirst(const u8* path, MfsFfblk *ffblk, u16 attr)</pre></font>
+
+<p><strong>Arguments</strong></p>
+<dl>
+<dd>*path	&nbsp; Search target pathname
+<dd>*ffblk	&nbsp; MfsFfblk structure
+<dd>attr	&nbsp; Attribute of file to be found</dl></dd>
+
+<p><strong>Return value</strong>
+<dl>
+<dd>Error</dl></dd>
+
+<p><strong>Function</strong>
+<dl>
+<dd>Searches a directory</dl></dd>
+
+<p><strong>Description</strong>
+<P>This function begins a search for the file specified by path.</p>
+
+<p>path is a character string that contains the drive, directory, and file name (including extension) of the search target.  Wildcard characters (* or ?) can be included in the file name.  If a matching file is found, its information is stored in the MfsFfblk structure.  The MfsFfblk structure consists of the following members.</p>
+<font face="courier" size="2">
+<pre>typedef struct st_ffblk {
+	MfsFileOperations* fileOpe;
+	MfsStat stat;
+	u8 name[MFS_FILE_NAME_SIZE + MFS_FILE_TYPE_SIZE];
+	u8 path[MFS_FILE_NAME_SIZE + MFS_FILE_TYPE_SIZE];
+	MfsDirList dirList;
+} MfsFfblk;</pre>
+</font>
+
+<p>File information is entered in stat among these members. Also, the matched file name is entered in name.  The other members are used by the library.</p>
+
+<p>The attribute of the file to be found is specified for attr.  The values that can be specified are the values shown below or a value obtained by taking the logical OR of these values.</p>
+<P>
+<table border="0" cellpadding="3" cellspacing="3">
+<tr><td><font face="arial" size="-1">MFS_FILE_ATTR_DIRECTORY</td>
+<td><font face="arial" size="-1">0x8000</td>
+<td><font face="arial" size="-1">Directory</td></tr>
+<tr><td><font face="arial" size="-1">MFS_FILE_ATTR_FILE	</td>
+<td><font face="arial" size="-1">0x4000</td>
+<td><font face="arial" size="-1">File</td></tr>
+<tr><td><font face="arial" size="-1">MFS_FILE_ATTR_FORBID_W</td>
+<td><font face="arial" size="-1">0x2000</td>
+<td><font face="arial" size="-1">Write protected</td></tr>
+<tr><td><font face="arial" size="-1">MFS_FILE_ATTR_FORBID_R	</td>
+<td><font face="arial" size="-1">0x1000</td>
+<td><font face="arial" size="-1">Read protected</td></tr>
+<tr><td><font face="arial" size="-1">MFS_FILE_ATTR_HIDDEN	</td>
+<td><font face="arial" size="-1">0x0800</td>
+<td><font face="arial" size="-1">Hidden file</td></tr>
+<tr><td><font face="arial" size="-1">MFS_FILE_ATTR_ENCODE	</td>
+<td><font face="arial" size="-1">0x0400</td>
+<td><font face="arial" size="-1">Encoded file</td></tr>
+<tr><td><font face="arial" size="-1">MFS_FILE_ATTR_COPYLIMIT	</td>
+<td><font face="arial" size="-1">0x0200</td>
+<td><font face="arial" size="-1">Copy limited</td></tr></table>
+
+
+
+<p>If a matching file is found, MFS_ERR_NO is returned.
+If no file is found, MFS_ERR_SEARCHEND is returned.</p>
+
+<p><strong>Main errors</strong></p>
+<P>
+<P>
+<table border="0" cellpadding="3" cellspacing="3">
+<tr><td><font face="arial" size="-1">MFS_ERR_NO		</td>
+<td><font face="arial" size="-1">Normal termination</td></tr>
+<tr><td><font face="arial" size="-1">MFS_ERR_NOTFOUND</td>
+<td><font face="arial" size="-1">Drive not found</td></tr>
+<tr><td valign="top"><font face="arial" size="-1">MFS_ERR_DEVICE</td>
+<td><font face="arial" size="-1">Device error
+<br>An error occurred in an internally called Leo function. Since a Leo function error is stored in the variable mfsError, check this variable to perform processing.</td></tr>
+<tr><td valign="top"><font face="arial" size="-1">MFS_ERR_PROTECT</td>
+<td><font face="arial" size="-1">Write protected
+<br>The volume attribute is write protected, or the medium is volume protected.</td></tr></table>
+
+
+
+<hr>
+</body>
+</html>

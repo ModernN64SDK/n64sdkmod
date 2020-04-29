@@ -1,0 +1,62 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<!--
+Editors Notes:
+  PWC- updated formatting
+  MAP- updated format
+-->
+<title>flt2c</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>flt2c</b></font><font style="font-size: 9pt"><b> (tool command)</b></font>
+
+<p><i>MultiGen .flt database for converter for a Nintendo 64 graphics data-structure</p></i>
+
+<h3>Syntax</h3>
+<p>
+flt2c [-s scale] [-m model] fltfile
+</p>
+
+<h3>Description</h3>
+
+<p>flt2c reads a MultiGen .flt database and generates Nintendo 64 C data structures. The vertex and material data structures are written to a .h file, and the texture data structures and mbi commands to construct the scene are sent to standard output. A top-level display list can be called by the application.
+</p>
+
+<p>If textures are referenced from the .flt file, their paths are replaced with Textures and they are inserted into the C file as an array. See <a href="rgb2c.htm">rgb2c</a> for the list of supported texture types. The input texture files must be in SGI RGB format. </p>
+
+<p>Command line options
+</p>
+
+<dl>
+    <dt><strong>-m model</strong></dt>
+    <dd>Names the top-level data structure and specifies the base name of the output .h file For instance, if &quot;moddel&quot; is defined, references to this model in the application use this name and a length of 1. 
+        <br>
+        <br>
+        </dd>
+    <dt><strong>-s scale</strong></dt>
+    <dd>Scale object coordinates by the real-number scale. This allows the database to maximize object resolution. <br>
+        <br>
+        </dd>
+</dl>
+
+<h3>Note</h3>
+
+<p>Subfaces are not handled very well. A subface may actually get obscured by the parent face. Vertex, texture, and material usage are not optimal. Vertices and textures should be grouped so as not to be redundantly transformed or loaded.
+</p>
+
+<p>Physical structure definitions may be redundant; currently there is no reuse of previously specified equivalent elements. 
+</p>
+
+<h3>See Also</h3>
+
+<p><a href="rgb2c.htm">rgb2c</a></p>
+<h3>Revision History</h3>
+<p>1999/04/30  Changed Format</p>
+<br><br>
+
+</body>
+</html>

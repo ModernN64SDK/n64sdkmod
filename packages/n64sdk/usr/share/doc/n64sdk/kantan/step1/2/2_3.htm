@@ -1,0 +1,250 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<title>STEP1 [What is N64?] - Chpater 2 Hardware Configuration</title>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Ron Daring 7/21/1999, -->
+</head>
+
+<body bgcolor="#FFFFFF">
+<base target="keywords">
+
+<p><font style="font-size:12pt"><b>2-3 RCP (Reality Co-Processor)</b></font></p>
+
+<p>
+The RCP has two processors (RSP and RDP) and I/O interfaces. The RCP is the most important component of the N64 hardware system as shown in the following illustration. All data passes through the RCP, and the RCP serves as a memory controller for the CPU.</p>
+
+<table border="1" cellspacing="0">
+    <tr>
+        <td><img src="img00005.gif" width="409" height="373"> </td>
+    </tr>
+</table>
+
+<p><b>Figure2-3-1 The N64 Hardware Block(RCP)</i></b></font><br>
+<br>
+<br>
+<img src="img00006.gif" width="394" height="531"> <br>
+<p><b>Figure 2-3-1 The RCP Process Blocks</i></b></font><br>
+<br>
+<br>
+<br>
+<p><b>2-3-1 RSP</b></font><br>
+<br>
+<br>
+<p><b>*RSP (Reality Signal Processor)</b></p>
+
+<p>The RSP executes graphics and audio tasks.  It works based on <a
+href="../../../keywords/index/data/system.htm#microcode"
+target="keywords">microcode</a>.</p>
+
+<table border="1" cellspacing="0">
+    <tr>
+        <td><img src="img00007.gif" width="395" height="361"> </td>
+    </tr>
+</table>
+
+<p><b>Figure 2-3-3 The N64 Hardware Block(RSP)</b></p>
+<br>
+<br>
+<p><b>*RSP Process Units</b></p>
+<br>
+<img src="img00008.gif" width="394" height="531"> <br>
+<p><b>Figure 2-3-4 RSP Process Units</b></p>
+<br>
+<br>
+<p><b>SU    :Scalar Unit</b></p>
+
+<p>The Scalar Unit (SU) uses a <a
+href="../../../keywords/index/data/system.htm#subset"
+target="keywords">subset</a> of R4000 instructions for execution.</p>
+<br>
+<p><b>VU    :Vector Unit</b></p>
+
+<p>The Vector Unit (VU) has eight 16-bit product-sum operation mechanisms.</p>
+<br>
+<p><b>IMEM  :Instruction Memory</b></p>
+
+<p>Instruction Memory (IMEM) is the memory that stores microcode.</p>
+<br>
+<p><b>DMEM:Data memory</b></p>
+
+<p>Data memory (DMEM) is the internal working memory for the RSP microcode.</p>
+<br>
+<br>
+<p><b>*Processes Executed by the RSP</b></p>
+<p><b>(Graphics)</b></p>
+
+<p>Most of the processes provided by the RSP are executed when vertex data is loaded into the <a
+href="../../../keywords/index/data/graphics.htm#vertex cache"
+target="keywords">vertex cache</a>.  The following are the main processes:</p>
+<br>
+<p><b>Geometric transformation:</b></p>
+
+<p>This is necessary when three-dimensional objects move or must be scaled. The RSP does all necessary geometric transformations as needed. The RSP uses the 32-bit fixed-point vertex calculations to perform these transformations.</p>
+<br>
+<p><b>Clipping:</b></p>
+
+<p>The clipping process cuts off <a
+href="../../../keywords/index/data/graphics.htm#polygon"
+target="keywords">polygons</a> and pieces of polygons that are out of view of the screen as demonstrated in this illustration:</p>
+<br>
+<img src="img00025.gif" width="352" height="116"><br>
+<br>
+<p><b>Figure 2-3-5 Example of <a
+href="../../../keywords/index/data/graphics.htm#clipping"
+target="keywords">clipping</a></b></p>
+<br>
+<br>
+<p><b>Culling:</b></p>
+
+<p>The <a
+href="../../../keywords/index/data/graphics.htm#culling"
+target="keywords">culling</a> process culls data that is not needed from the graphics pipeline. For example, data to draw the back of an object is unnecessary because it cannot be seen, so it is culled. The N64 supports two types of culling:</p>
+<p><b>-Back-face culling</b></p>
+<p>Back-face culling to cull the unseen back of objects</p>
+
+<table border="1" cellspacing="0">
+    <tr>
+        <td><img src="img00026.gif" width="314" height="95"> </td>
+    </tr>
+</table>
+
+
+<p><b>Figure 2-3-6 Image of Back-face culling</b></p>
+<br>
+<br>
+<p><b>-Volume culling</b></p>
+<p>Volume culling to cull items from the <a
+href="../../../keywords/index/data/graphics.htm#display list"
+target="keywords">display list</a> that draw objects that lie completely outside the current visual field as demonstrated in this illustration:</p>
+<br>
+<img src="img00027.gif" width="245" height="204"><br>
+<br>
+<p><b>Figure 2-3-7 Example of <a
+href="../../../keywords/index/data/graphics.htm#volume culling"
+target="keywords">Volume culling</a></b></p>
+<br>
+<br>
+<p><b>Lighting calculations:</b></p>
+<p>Used to calculate lighting.</p>
+<br>
+<p><b>(Audio)</b></p>
+<p>The RSP processes waveform synthesis by using ABI (Audio Binary Interface) commands.</p>
+<br>
+<br>
+<br>
+<p><b>2-3-2 RDP</b></p>
+<br>
+<br>
+<p><b>*RDP (Reality Display Processor)</b></p>
+<p>The RDP processes the display list created by the RSP and CPU to create the graphics data.  The RDP works only with graphics; it does nothing with audio. In other words, the RDP draws the graphics in the frame buffer and processes several drawing-related operations.</p>
+
+<table border="1" cellspacing="0">
+    <tr>
+        <td><img src="img00009.gif" width="418" height="382"> </td>
+    </tr>
+</table>
+
+<p><br>
+<p><b>Figure 2-3-8 The N64 Hardware Block(RDP)</b></p>
+<br>
+<br>
+<p><b>*RDP Process Units</b></p>
+<br>
+<img src="img00010.gif" width="412" height="531"> <br>
+<p><b>Figure 2-3-9 RDP Process Units</b></p>
+<br>
+<br>
+<p><b>RS    :Rasterizer</b></p>
+<p>The Rasterizer (RS) changes triangles and rectangles into pixels</p>
+<br>
+<p><b>TX    :Texture Engine</b></p>
+<p>The Texture Engine (TX) provides sampling for 
+<a href="../../../keywords/index/data/graphics.htm#texel"
+target="keywords">texels</a>(picture elements) by using <a
+href="../../../keywords/index/data/graphics.htm#TMEM"
+target="keywords">TMEM</a>(<a
+href="../../../keywords/index/data/graphics.htm#texture memory"
+target="keywords">Texture Memory</a>).</p>
+<br>
+<p><b>TF    :Texture Filter</b></p>
+<p>The Texture Filter (TF) provides filtering for texels created by TX.</p>
+<br>
+<p><b>CC/AC
+:Color Combiner/Alpha Combiner</b></p>
+<p>The Color Combiner/Alpha Combiner (CC/AC) combines two colors of pixels created by RS and texels created by TF and interpolates between these two colors. </p>
+<br>
+<p><b>BL    :<a
+href="../../../keywords/index/data/graphics.htm#blender"
+target="keywords">Blender</a></b></p>
+
+<p>The Blender (BL) blends the pixel color set from CC, the color in the frame buffer, the fog color, and so on. It draws the resulting color into the frame buffer. At this time, it can also provide <a
+href="../../../keywords/index/data/graphics.htm#Z buffer"
+target="keywords">Z-buffering</a> for the first part of the anti-aliasing process.</p>
+<br>
+<p><b>MI    :Memory Interface</b></p>
+<p>The Memory Interface (MI) processes pixel information in the frame buffer including read, modify, and write operations.</p>
+<br>
+<br>
+<p><b>*RDP Drawing Cycle Modes</b></p>
+<p>The RDP has the following four cycle modes:</p>
+<br>
+<p><b>Fill mode (FILL):</b></p>
+<p>In FILL mode, the RDP writes pixels set in the fill color register.  Four pixels in 16-bit frame buffer mode and two pixels in 32-bit frame buffer mode are written per cycle.</p>
+<br>
+<p><b>Copy mode (COPY):</b></p>
+<p>In COPY mode, the RDP transfers the pixels in TMEM to the frame buffer.  Four 16-bit pixels or two 32-bit pixels are copied per cycle.</p>
+<br>
+<p><b>One-cycle mode (1CYCLE):</b></p>
+<p>In one-cycle mode, the RDP uses each process in the RDP pipeline once to write a pixel per cycle.</p>
+<br>
+<p><b>Two-cycle mode (2CYCLE):</b></p>
+<p>In two-cycle mode, the RDP uses each process in the RDP pipeline twice, except the RS (rasterizer), to write one pixel per two cycles.</p>
+<br>
+<br>
+<br>
+<p><b>2-3-3 VI (Video Interface)</b></p>
+<br>
+<p>
+The VI reads data from the frame buffer using a fixed time interval, and sends it to the DA (digital-to-analog) converter (video DAC) to produce the video output.</p>
+
+<table border="1" cellspacing="0">
+    <tr>
+        <td><img src="img00011.gif" width="439" height="370"> </td>
+    </tr>
+</table>
+
+<p><b>Figure 2-3-10 The N64 Hardware Block(VI)</b></p>
+<br>
+<br>
+<img src="img00012.gif" width="394" height="531"> <br>
+<p><b>Figure 2-3-11 The N64 Hardware Block(VI)</b></p>
+<br>
+<br>
+<br>
+<p><b>2-3-4 AI (Audio Interface)</b></p>
+<p>
+The AI reads data from the audio buffer using a fixed time interval, and sends it to the DA (digital-to-analog) converter (audio DAC) to produce the sound output.</p>
+
+<table border="1" cellspacing="0">
+    <tr>
+        <td><img src="img00013.gif" width="425" height="359"> </td>
+    </tr>
+</table>
+
+<p><b>Figure 2-3-12 N64 Hardware Block(AI)</b></p>
+<br>
+<br>
+<img src="img00014.gif" width="394" height="541"><br>
+<p><b>Figure 2-3-13 The N64 Hardware Block(AI)</b></p>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+</p>
+</body>
+</html>

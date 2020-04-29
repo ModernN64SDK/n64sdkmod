@@ -1,0 +1,57 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.
+  PWC- updated formatting
+  MAP- added links, updated format
+-->
+<title>osCreatePiManager</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>osCreatePiManager</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p>osPiStartDma, osPiWriteIo, osPiReadIo,
+osCreatePiManager, osPiGetCmdQueue</p>
+
+<p><i>Manages access to the parallel interface (PI)</i></p>
+
+<h3>Syntax</h3>
+<p>
+<blockquote>
+    <pre>#include &lt;ultra64.h&gt;     /* <A HREF="../../header/ultra64.htm">ultra64.h</A> */
+
+s32 osPiStartDma(OSIoMesg *mb, s32 priority, s32 direction,
+                u32 devAddr, void *vAddr,u32 nbytes, OSMesgQueue *mq);
+void osCreatePiManager(OSPri pri, OSMesgQueue *cmdQ, OSMesg *cmdBuf, 
+                s32 cmdMsgCnt);
+OSMesgQueue *osPiGetCmdQueue(void);
+s32 osPiWriteIo(u32 devAddr, u32 data);
+s32 osPiReadIo(u32 devAddr, u32 *data);</pre></blockquote></p>
+
+<h3>Description</h3>
+
+<p>The PI is responsible for the transport of data between RDRAM and bulk-storage devices (BSD) such as ROM, RAM, Magnetic disk, and other technologies. These functions provide "managed" control of the PI; they provide synchronization and mutual exclusion support when the PI is to be shared for debugging, printing, logging, profiling, and simple peripheral IO. The use of these PI routines require that the operating system be correctly initialized.</p>
+
+<p>The <a href="osPiStartDma.htm">osPiStartDma</a> routine sets up a DMA transfer between RDRAM and the PI device address space by sending an IO message block request (mb) to the PI manager. The caller specifies various parameters to be included in the request block such as device address (devAddr), RDRAM address vAddr, nbytes of transfer, and message queue (mq) to receive the notification from PI manager once the IO operation is finished. If the requested priority is OS_MESG_PRI_HIGH (the default is OS_MESG_PRI_NORMAL), <tt>osPiStartDma</tt> jams the message to the front of PI manager's command queue. Otherwise, it appends the message to the end of the queue. If the PI manager has not been started, <tt>osPiStartDma</tt> returns -1. Otherwise, it returns the status of either <a href="osSendMesg.htm">osSendMesg</a> or <a href="osJamMesg.htm">osJamMesg</a>.
+The length count (nbytes) is the number of bytes to transfer (up to 16 megabytes) and must be a multiple of 2 bytes. The PI device address (devAddr) must be 2-byte aligned. The RDRAM virtual address (vAddr) must be 8-byte aligned, but for OS_READ DMA operations, a stricter alignment is recommended. See <a href="OS_DCACHE_ROUNDUP_ADDR.htm">OS_DCACHE_ROUNDUP_ADDR</a> for a description of the problems that can occur when transfers are not an integral number of cache lines. </p>
+
+<p><tt>osCreatePiManager</tt> Creates and starts the PI Manager system thread to provide mutual exclusion and synchronization support for the PI devices. The caller specifies the priority (pri) at which the PI manager will run and the command message queue (cmdQ) where the PI manager will accept its request messages. Together, cmdBuf and cmdMsgCnt specify the message buffer and its number of entries needed by the command message queue. The <a href="osPiGetCmdQueue.htm">osPiGetCmdQueue</a> function returns a pointer to the command queue of the PI manager or NULL if the PI manager has not been started. </p>
+
+<p>The <a href="osPiWriteIo.htm">osPiWriteIo</a> routine performs a 32-bit programmed IO write to the PI device address (devAddr). The <a href="osPiReadIo.htm">osPiReadIo</a> routine performs a 32-bit programmed IO read from the PI device address (devAddr) and returns the value in data. </p>
+
+<h3>Note</h3>
+
+<p>Nintendo strongly recommends that you use these high-level functions (i.e., <tt>osCreatePiManager</tt>, <tt>osPiWriteIo</tt>, <tt>osPiReadIo</tt>, and <tt>osPiStartDma</tt>) to manage PI access. Be very careful when intermixing low-level (raw, unmanaged access) and high-level (managed access) PI functions. Without proper synchronization, this mix can cause an error in the PI because the PI can only support one IO operation at any one time. </p>
+
+<h3>See Also</h3>
+
+<p><a href="osPiRawStartDma.htm">osPiRawStartDma</a>, <a href="osSendMesg.htm">osSendMesg</a>, and <a href="osJamMesg.htm">osJamMesg</a></p>
+<H3>Revision History</H3>
+<P>
+1999/04/30  Changed format
+</P>
+
+</body>
+</html>

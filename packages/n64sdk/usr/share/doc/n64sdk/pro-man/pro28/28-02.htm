@@ -1,0 +1,365 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 28 - Flash ROM</title>
+<!-- Editor: PWC
+      Notes: Created from Word Doc-->
+</head>
+<body bgcolor=#ffffff>
+
+<h1>28.2 Flash Library</h1>
+
+The following functions are available for use with 1M Flash. 
+<hr>
+
+<h2><a name="01">28.2.1 Initialization Functions</a></h2>
+<font style="font-family: courier new, courier;">osFlashAllErase</font> - Deletes the entire area of Flash
+<h3>
+Syntax</h3>
+
+<font face="courier">
+#include &lt;ultra64.h&gt;<br>
+s32&nbsp; osFlashAllErase(void);
+</font>
+
+<h3>
+Description</h3>
+This is a function that deletes the entire data of 1M Flash.
+<p>For a return value, 0 is returned when sucessful and -1 when failed.
+As the entire area is deleted at one time, this function allows you to
+delete the entire area in high speed, rather than repeating the execution
+of <font face="courier">osFlashSectorErase</font>.
+<p>Timer wait is done inside of <font face="courier">osFlashAllErase</font>. Since timer management
+is done by VI manager, it is necessary to boot VI manager with <font face="courier">osCreateViManager</font>
+prior to the use of this function. It takes from several msec to
+several hundred msec to delete the entire area of data.
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a><hr>
+
+<h2><a name="02">28.2.2 Status Acquisition Function</a></h2>
+
+<p><b>Function Names</b><br>
+<font style="font-family: courier new, courier;">osFlashReadStatus</font>  - Acquires the Flash Status
+
+Syntax</h3>
+
+<font face=courier>#include &lt;ultra64.h&gt;<br>
+void&nbsp; osFlashReadStatus(u8 *flash_status);</font>
+
+<h3>
+Description</h3>
+This is a function that reads the status of 1M Flash.
+<p>It returns status to argument "flash_status." Normally, it is
+not necessary for a game application to use this function.
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a><hr>
+
+<h2><a name="03">28.2.3 ID Acquisition Function</a></h2>
+
+<p><b>Function Names</b><br>
+<font style="font-family: courier new, courier;">osFlashReadId</font>  -  Acquires the Flash ID
+
+<h3>
+Syntax</h3>
+
+<font face=courier>#include &lt;ultra64.h&gt;<br>
+void&nbsp; osFlashReadId(u32 *flash_type, u32 *flash_maker);</font>
+
+<h3>
+Description</h3>
+This is a function that reads 1M Flash ID.
+<p>Argument "flash_type" returns the specification of 1M Flash currently
+used, and flash_maker returns each manufacturer number and the manufacturer's version number
+of 1M Flash currently used. Normally, it is not necessary for a game
+application to use this function.
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a><hr>
+
+<h2><a name="04">28.2.4  Status Clear Function</a></h2>
+
+<p><b>Function Names</b><br>
+<font style="font-family: courier new, courier;">osFlashClearStatus</font>  -  Clears the Flash Status
+
+<h3>
+Syntax</h3>
+
+<font face=courier>#include &lt;ultra64.h&gt;<br>
+void&nbsp; osFlashClearStatus(void);</font>
+
+<h3>
+Description</h3>
+This is a function that clears the status of 1M Flash.
+<p>Normally, it is not necessary for a game application to use this function.
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a><hr>
+
+<h2><a name="05">28.2.5 Entire Region Erase Function</a></h2>
+
+<p><b>Function Names</b><br>
+<font style="font-family: courier new, courier;">osFlashAllErase</font>  -  Erases Entire Flash Region
+
+<h3>
+Syntax</h3>
+
+<font face="courier">
+#include &lt;ultra64.h&gt;<br>
+s32&nbsp; osFlashAllErase(void);
+</font>
+
+<h3>
+Description</h3>
+This is a function that deletes the entire data of 1M Flash.
+<p>For a return value, 0 is returned when sucessful and -1 when failed.
+As the entire area is deleted at one time, this function allows you to
+delete the entire area in high speed, rather than repeating the execution
+of <font face="courier">osFlashSectorErase</font>.
+<p>Timer wait is done inside of <font face="courier">osFlashAllErase</font>. Since timer management
+is done by VI manager, it is necessary to boot VI manager with <font face="courier">osCreateViManager</font>
+prior to the use of this function. It takes from several msec to
+several hundred msec to delete the entire area of data.
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a><hr>
+
+<h2><a name="06">28.2.6 Entire Region Erase Function (No Status Check)</a></h2>
+
+<p><b>Function Names</b><br>
+<font style="font-family: courier new, courier;">osFlashAllEraseThrough</font>  -  Erases the Entire Flash Region (No Status Check)
+
+<h3>
+Syntax</h3>
+
+<font face="courier">#include &lt;ultra64.h&gt;<br>
+void&nbsp; osFlashAllEraseThrough(void);</font>
+
+<h3>
+Description</h3>
+<p>This is a function that deletes the entire data of 1M Flash.
+<p>It is different from <font face="courier">osFlashAllErase</font> in not conducting status check
+when delete ends inside of <font face="courier">osFlashAllEraseThrough</font>.
+<p>The execution of <font face="courier">osFlashAllEraseThrough</font> is conducted immediately, however,
+it takes from several msec to several hundred msec to actually delete data.&nbsp;
+Determine whether or not deleting data is ended by executing <font face="courier">osFlashCheckEraseEnd</font>.
+<p>Do not execute other osFlash functions between <font face="courier">osFlashAllEraseThrough</font>
+and <font face="courier">osFlashCheckEraseEnd</font>. The status of Flash may
+be changed when other osFlash functions are executed prior to the execution
+of <font face="courier">osFlashCheckEraseEnd</font>.
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a><hr>
+
+<h2><a name="017">28.2.7 Sector Erase Function</a></h2>
+
+<p><b>Function Names</b><br>
+<font style="font-family: courier new, courier;">osFlashSectorErase</font>  -  Erases 1 Sector of Flash
+
+<h3>
+Syntax</h3>
+
+<font face=courier>#include &lt;ultra64.h&gt;<br>
+s32&nbsp; osFlashSectorErase(u32 page_num);</font>
+
+<h3>
+Description</h3>
+<p>This is a function that deletes the data of certain sectors of 1M Flash.
+<p>It specifies page number as an argument and deletes the sector which
+contains the specified page number.
+<p>The size of 1 sector is 128 pages (16K bytes), and each page of 0~0x7f,
+0x80~0xff, 0x100~0x17f... is considered to be 1 sector.
+<p>For return values, 0 is returned when delete is successful and -1 when
+failed.
+<p>Timer wait is operated in <font face="courier">osFlashSectorErase</font>. Since timer management
+is done by VI manager, it is necessary to boot VI manager with <font face="courier">osCreateViManager</font>
+before using this function. It takes from several msec to several
+hundred msec to delete data of 1 sector.
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a><hr>
+
+<h2><a name="08">28.2.8 Sector Erase Function (No Status Check)</a></h2>
+
+<p><b>Function Names</b><br>
+<font style="font-family: courier new, courier;">osFlashSectorEraseThrough</font>  - Sector Erase Function (No Status Check) 
+
+<p><b>Syntax</b><br>
+<font style="font-family: courier new, courier;">#include &lt;ultra64.h&gt;<br>
+void&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;osFlashSectorEraseThrough(u32 page_num);</font>
+
+<h3>
+Syntax</h3>
+
+<font face=courier>#include &lt;ultra64.h&gt;<br>
+void&nbsp; osFlashSectorEraseThrough(u32 page_num);</font>
+
+<h3>
+Description</h3>
+This is a function that deletes the data of certain sectors of 1M Flash.
+<p>It specifies page number as an argument and deletes the sector which
+contains the specified page number.
+<p>The size of 1 sector is 128 pages (16K bytes), and each page of 0~0x7f,
+0x80~0xff, 0x100~0x17f... is considered to be 1 sector.
+<p>The difference between this function and <font face="courier">osFlashSectorErase</font> is that
+it does not conduct status check when delete ends in <font face="courier">osFlashSectorEraseThrough</font>.
+<p>Although the execution of <font face="courier">osFlashSectorEraseThrough</font> is done immediately, it
+takes several msec to several hundred msec to actually delete data.
+<br>Whether or not deletion of data has ended is determined by executing <font face="courier">osFlashCheckEraseEnd</font>.
+<p>Do not execute other osFlash functions between <font face="courier">osFlashSectorEraseThrough</font>
+and <font face="courier">osFlashCheckEraseEnd</font>.
+<br>This is because the status of Flash may be changed when other osFlash
+functions are executed prior to the execution of <font face="courier">osFlashCheckEraseEnd</font>.
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a><hr>
+
+<h2><a name="09">28.2.9 Erasure Verification Function</a></h2>
+
+<p><b>Function Names</b><br>
+<font style="font-family: courier new, courier;">osFlashCheckEraseEnd</font>  -  Verifies Status after Flash Erasure 
+
+<h3>
+Syntax</h3>
+
+<font face=courier>#include &lt;ultra64.h&gt;<br>
+s32&nbsp; osFlashCheckEraseEnd(void);</font>
+
+<h3>
+Description</h3>
+This is a function that determines whether or not the execution of <font face="courier">osFlashAllEraseThrough</font>
+or <font face="courier">osFlashSectorEraseThrough</font> to 1M Flash has been sucessful.
+<p>As the return values for this function, <font face="courier">FLASH_STATUS_ERASE_BUSY</font> is returned
+when delete is being executed, <font face="courier">FLASH_STATUS_ERASE_OK</font> when delete is successful,
+and <font face="courier">FLASH_STATUS_ERASE_ERROR</font> when delete has failed.
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a><hr>
+
+<h2><a name="10">28.2.10 Buffer Write Function</a></h2>
+
+<p><b>Function Names</b><br>
+<font style="font-family: courier new, courier;">osFlashWriteBuffer</font>  -  Writes the Flash Buffer
+
+<h3>
+Syntax</h3>
+
+<font face=courier>#include &lt;ultra64.h&gt;<br>
+s32&nbsp; osFlashWriteBuffer(OSIoMesg *mb, s32 priority, void *dramAddr,&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; OSMesgQueue *mq);</font>
+
+<h3>
+Description</h3>
+This is a function that writes data into 1M Flash write buffer by DMA.
+<p>The arguments are Message request block (*mb), Request priority (priority),
+Buffer address (*dramAddr) and DMA end message queue (*mq) accordingly.
+<p>For return values, return -1 when PI manager is not executed.&nbsp;
+If PI manager is executed, return the status of either osSendMesg or osJamMesg.
+<p>The use method is basically in the form in accordance with
+<br><br>
+<font face="courier">s32 osPiStartDma(OSIoMesg *mb, s32 priority, s32 direction, u32 devAddr,
+<br>void *dramAddr, u32 size, OSMesgQueue *mq)</font>.
+<br>
+<br>The following are the points different from osPiStartDma:
+<p>There is no argument "direction" (because it is exclusively for write).
+<br>There is no argument "devAddr" (because the buffer address of 1M Flash
+are fixed).
+<br>There is no argument "size" (because the size to be read is fixed at
+128 bytes per page).
+<p>Follow the procedure listed below in order to write data in specific
+pages of 1M Flash:
+<p>(1) Delete data
+<br>(2) Transfer data from RDRAM to the write buffer in 1M Flash
+<br>(3) Transfer data from the write buffer to each page of 1M Flash
+<p>This function is used to operate (2) listed above.
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a><hr>
+
+<h2><a name="11">28.2.11 Page Write Function</a></h2>
+
+<p><b>Function Names</b><br>
+<font style="font-family: courier new, courier;">osFlashWriteArray</font>  -  Writes to Flash Page
+
+<h3>
+Syntax</h3>
+
+<font face=courier>#include &lt;ultra64.h&gt;<br>
+s32&nbsp; osFlashWriteArray(u32 page_num);</font>
+
+<h3>
+Description</h3>
+This is a function that writes data in each page of 1M Flash from 1M Flash
+write buffer.
+<p>It specifies page numbers as an argument.
+<p>For return values, 0 is returned when writing is successful and -1 when
+failed.
+<p>In order to write data in specific pages of 1M Flash, follow the procedure
+below:
+<p>(1) Delete data
+<br>(2) Transfer data from RDRAM to 1M Flash write buffer
+<br>(3) Transfer data from write buffer to each page of 1M Flash
+<p>This function is used to do the operation listed in (3).
+<p>Page 0x3fe and 0x3ff are reserved by Nintendo.&nbsp; Please refrain
+from using the pages.
+<p>Timer wait is operated in osFlashWriteArray.&nbsp; Since timer management
+is done by VI manager, it is necessary to boot VI manager with <font face="courier">osCreateViManager</font>
+before using this function.
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a><hr>
+
+<h2><a name="12">28.2.12 Page Read Function</a></h2>
+
+<p><b>Function Names</b><br>
+<font style="font-family: courier new, courier;">osFlashReadArray</font>  -  Reads from the Flash Page
+
+<h3>
+Syntax</h3>
+
+<font face=courier>#include &lt;ultra64.h&gt;<br>
+s32&nbsp; osFlashReadArray(OSIoMesg *mb, s32 priority, u32 page_num,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; void *dramAddr, u32 n_pages, OSMesgQueue *mq);</font>
+
+<h3>
+Description</h3>
+This is a function that read data written in 1M Flash.
+<p>The arguments are Message request block (*mb), Request priority (priority),
+The page number where reading starts (page_num), Buffer address to be read,
+Buffer address to be read (*dramAddr), the number of pages read (n_pages)
+and DMA end receiving message queue (*mq) accordingly.
+<p>For the return values, return -1 when PI manager is not executed, otherwise
+return the status of either osSendMesg or osJamMesg.
+<p>The use method is basically in the form that is in accordance with s32
+osPiStartDma(OSIoMesg *mb, s32 priority, s32 direction, u32 devAddr,void
+*dramAddr, u32 size, OSMesgQueue *mq).&nbsp; The following are the points
+which differ from osPiStartDma.
+<p>*There is no argument "direction" (because it is exclusively for read)
+<br>*There is a reading page number " n_pages" instead of the argument "size"
+<br>*Instead of the argument "devAddr," the page number where reading starts
+" page_num" is the argument.
+<p>When one execution of DMA does not fit in each 32K byte unit of page
+0x0~0xff, 0x100~0x1ff, 0x200~0x2ff and 0x300~0x3ff, DMA is divided
+multiple times and executed in the library.
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a><hr>
+
+<h2><a name="13">28.2.13 Flash Switching Function</a></h2>
+
+<p><b>Function Names</b><br>
+<font style="font-family: courier new, courier;">osFlashChange</font>  -  Switches When More than One Flash is Used
+
+<h3>
+Syntax</h3>
+
+<font face=courier>#include &lt;ultra64.h&gt;<br>
+void&nbsp;&nbsp;&nbsp; osFlashChange(u32 flash_num);</font>
+
+<h3>
+Description</h3>
+This is a function which switches the chips of 1M Flash used when using
+multiple 1M Flash ROMs.
+<p>Argument "flash_num" indicates the used Flash number.&nbsp; You can
+specify the number from 0 to 3.&nbsp; When using just one 1M Flash, specify&nbsp;0.
+<p>When using two 1M Flash ROMs, execute <font face="courier">osFlashChange(0)</font> to use the first
+1M Flash and <font face="courier">osFlashChange(1)</font> to use the second 1M Flash.
+<p>After switching the 1M Flash used, you can use each 1M Flash just as when
+one 1M Flash is used.
+<p>When using multiple 1M Flash ROMs, be sure to use the Flash ROMs of
+the same ID.
+<p>By switching multiple 1M Flash ROMs, it is possible to expand the recording
+area up to the maximum of 4M bits (by using four 1M Flash ROMs).
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a><hr>
+</body>
+</html>

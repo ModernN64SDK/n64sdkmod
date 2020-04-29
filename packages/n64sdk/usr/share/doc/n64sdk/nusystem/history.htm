@@ -1,0 +1,365 @@
+<HTML>
+<HEAD>
+<TITLE>NuSystem Revision History</TITLE>
+<link rel=stylesheet type="text/css" href="../mobile/allman.css">
+<!-- Editor's Notes: 9/9/1999 Ron Daring -->
+</HEAD>
+
+<BODY>
+
+<H1>Revision History</H1>
+<P>
+This document is also located under /nusys/src/nusys-2.06/nusys/history.
+</P>
+<HR>
+<P>Version 2.07</P>
+<P>
+*Fixed problems</P>
+<P>
+- Corrected the spelling error in NU_SC_TASK_LOADABLE.<BR>
+- In nuboot.c function, <tt>idle</tt>, a function pointer nuIdleFunc was regarded as a register value due to optimization of the compiler, therefore the registration of <tt>nuIdleFunc</tt> function from the application could not be validated.  This was fixed. </P>
+<P>
+<P>
+Version 2.06
+</P>
+<P>
+* Modified the Default Graphics Microcode
+</P>
+<P>
+- In the past, the F3DEX-related microcodes have been the default microcode.  Beginning with this version, F3DEX2 will be the default.  Therefore, "F3DEX_GBI_2" is defined in nusys.h. However, if F3DEX_GBI is already defined, F3DEX_GBI_2 is not defined.  When the F3DEX-related microcodes are used, please define F3DEX_GBI for the application code compile option (not necessary to change anything on NuSystem side).
+</P>
+<P>
+* Changes Regarding Microcode's FIFO Buffer
+</P>
+<P>
+- Changed so that the user can set the size and the location of the FIFO buffer for the graphics microcode. Added <TT>nuGfxSetUcodeFifo()</TT> for setting and changed <TT>nuGfInit()</TT> and <TT>nuGfxInitEX2()</TT>.
+</P>
+<P>
+* Additions and Changes to the Boot Code
+</P>
+<P>
+- Beginning with OS2.0K, the <TT>osInitialize()</TT> function becomes a macro that allows initialization processing for each development environment. As a result, object codes have been added to <TT>nuboot.c</TT> to include the initialization code for various development environments.  The added object codes include:
+</P>
+<P>
+for ROM
+</P>
+<P>
+<TT>nusys_rom.o</TT>
+</P>
+<P>
+for ROM debugging
+</P>
+<P>
+<TT>nusys.o nusys_ptn.o nusys_isv.o nusys_emu.o nusys_msp.o</TT>
+</P>
+<P>
+for debugging
+</P>
+<P>
+<TT>nusys_d.o nusys_ptn_d.o nusys_isv_d.o nusys_emu_d.o nusys_msp_d.o</TT>
+</P>
+<P>
+<TT>nusys.o and nusys_d.o</TT> perform automatical detection<BR>
+<TT>_FINALROM</TT> is defined in <TT>nusys_rom.o</TT><BR>
+<TT>ISV64</TT> is defined in <TT>nusys_isv.o</TT> and <TT>nusys_isv_d.o</TT><BR>
+<TT>PTN64</TT> is defined in <TT>nusys_ptn.o</TT> and <TT>nusys_ptn_d.o</TT><BR>
+<TT>MWN64</TT> is defined in <TT>nusys_msp.o</TT> and <TT>nusys_msp_d.o</TT>
+</P>
+<P>
+* Problems which were Fixed
+</P>
+<P>
+- Fixed a problem in the <TT>nuContMgrInit</TT> function, where the local variable would not be shifted when an error occurs, and the value would become incorrect.
+</P>
+<HR>
+<P>
+Version 2.05<BR>
+* Changed the Compile Environment<BR>
+ - Libraries are now created in the O2 (Irix6.3) environment, whereas until now they were created in the Indy (Irix5.3) environment.<BR>
+<BR>
+* Added Functions<BR>
+ - In order to provide an idea of how long a process is going to take, we added the <TT>nuDebPerfMarkSet</TT> function, which indicates the current position of a process on the performance meter.  (We know you've been wanting this for a long time.  Sorry it took so long.)<BR><br>
+Marks are displayed on <TT>nuDebTaskPerfBar0</TT> and <TT>nuDebTaskPerfBar1</TT>.  Note that the task bar for <TT>nuDebTaskPerfBar1</TT> does not indicate the total processing time, but rather the time from a retrace (i.e., it is the same as <TT>nuDebTaskPerfBar0</TT>).  The returned value is the duration in microseconds from the retrace.<BR>
+<BR>
+ - Added the <TT>nuDebTaskPerfIntervalSet</TT> function to set the time interval between measurements on the performance meter.  The performance meter should be easier to read if this value is set larger than 1.<BR>
+<BR>
+ - Added the PI transfer function <TT>nuPiReadRomOverlay</TT> for overlays.<BR>
+<BR>
+<BR>
+* Revisions<BR>
+ - Fixed the problems with the part of <TT>nusched.c</TT> that waits for the frame buffer to become free.<BR>
+<BR>
+ - Problem with the Rumble Pak Manager<br>
+     The member variables of the Rumble Pak control function <TT>nuContRmbCtl</TT> can be read from a number of threads.  These variables are read from the Rumble Pak manager, but they are also read from within the <TT>nuContRmbModeSet()</TT> and <TT>nuContRmbCheck()</TT> functions, which are called by other threads.  To deal with the problem, interrupts are now prohibited when the variables are called from these other functions.<BR>
+<BR>
+ - Problem with <TT>nuaumgrex.c</TT><BR>
+     There was a part in <TT>nuaumgrex.c</TT> where local variables were used without being initialized, and zero-divide exceptions were a possibility.<BR>
+<BR>
+ - Changed the size of <TT>nuYieldBuf</TT> to <TT>0xc10</TT>, increasing it by <TT>0x10</TT> in order to support HQV.<BR>
+<BR>
+ - Changed those external variable declarations of <TT>nusys.h</TT> that included the number of arrays so that they no longer include the number of arrays (excluded structure members). <BR>
+<BR>
+ - Changed the SI manager thread ID because it and the graphics task manager thread ID were overlapping.<BR>
+<BR>
+ - Previously, the debug console settings were changed so that, of the four windows, only window 0 would be displayed and the rest would be hidden as the default.  However, the changes to the initial values were confusing, so we put things back the way they were, and all four windows are now again displayed as the default.  Use the <TT>nuDebConWindowShow</TT> function if you want to hide windows 1 - 3.  This will cut down on wasteful CPU processing time.<BR>
+<BR>
+ - Changed the name of the thread structure of the <TT>nugfxthrea.c</TT> graphics thread from <TT>GfxThread</TT> to <TT>nuGfxThread</TT>, making it a global variable.<BR>
+<BR>
+ - <TT>nudebtaskperfbar0.c</TT> and <TT>nudebtaskperfbar0_ex2.c</TT> had the same content, as did <TT>nudebtaskperfbar1.c</TT> and <TT>nudebtaskperfbar1_ex2.c</TT>, the only difference in each case being whether <TT>F3DEX_GBI_2</TT> was defined or not.  This made maintenance troublesome, since it was necessary to make changes and corrections to two files.  For this reason, they were changed to be included. (Although we don't like including <TT>.c</TT> files)<BR>
+<BR>
+ - Fixed the incorrect usage of <TT>nuAuDebDmaCount</TT> when using the PI with <TT>nualsgi/nuaudma.c</TT>.<BR>
+<BR>
+ - With <TT>nualsgi/nuauseqplayerbankset.c</TT> the bank is set in both sequence player 0 and 1.  But when only one sequence player is being used, problems arise.  To deal with this, we changed it so a check is made to see whether the sequence players are initialized or not before the bank is set.<BR>
+<BR>
+ - Sneaked in the Version.  Please do not delete this if possible.<BR>
+<BR>
+<BR>
+Version 2.04<BR>
+* Revisions<BR>
+ - Fixed the place in <TT>nupireadrom.c</TT> where, when the PI function is used, sometimes the read size specification was not made.  However, we do not recommend using the PI function.<BR>
+<BR><br>
+Version 2.03<BR>
+* Revisions<BR>
+ - The same target global variables and static variables were mixed up in the <TT>nuaumgr.c</TT>, <TT>nuaumgrex.c</TT> and <TT>nuaumgrparams.c</TT> files.  This mess was cleaned up. (People forgot to recover files deleted with erroneous RCS commands)<BR>
+<BR>
+Version 2.02<BR>
+* Revisions<BR>
+ - Fixed a problem with the Controller read functions.  Corrected the problem in the message sending portion of the <TT>nuContDataReadStart</TT> function and the <TT>nuContDataRead</TT> function.<BR>
+<BR><br>
+Version 2.01<BR>
+* Revisions<BR>
+<BR>
+ - Fixed the bug when writing to SRAM.<BR>
+     There were cases when writing to the NuSystem SRAM, in which the cache was not written back to.  This has been corrected so that, the cache is disabled when the SRAM is read, and the cache is written back to when the SRAM is written to.<BR>
+<BR>
+ - Fixed the bug which produced noise when the reset button was held down.  Made changes so that a retrace message is not sent to the audio thread of the mus library, and so that the audio thread is stopped, 28 frames after a <TT>PreNMI</TT> event.<BR>
+<BR>
+ - Corrected spelling mistakes and made additions to <TT>nusys.h</TT>.  Corrected <TT>NU_RMON_THERAD_ID</TT> to read <TT>NU_RMON_THREAD_ID</TT>.  Also added a definition for <TT>NU_RMON_STACK_SIZE</TT>.<BR>
+<BR>
+ - Changed <TT>nudebconprintf.c</TT>.  There were incomplete segments in this file that caused warnings to appear when the file was compiled.  These incomplete segments have been removed.<BR>
+<BR>
+<BR>
+Version 2.00<BR>
+* Changes to the Scheduler<BR>
+<BR>
+ - Implemented measures to prevent loss of <TT>Pre-NMI</TT> message data:<br>
+Clicking on <TT>Pre-NMI</TT> messages with a certain timing may cause the second <TT>Pre-NMI</TT> message to be lost. In this case, <TT>Pre-NMI</TT> messages may not be processed and, in the worst case, the program may hang. This is improved in NuSystem Version 2.00 so that <TT>Pre-NMI</TT> messages received are recorded internally and, when a client that requires <TT>Pre-NMI</TT> messages is registered with the Scheduler, the client is sent <TT>Pre-NMI</TT> messages.<BR>
+<BR>
+ - Executes processing necessary with a <TT>Pre-NMI</TT>:<BR>
+     Modified so that following a <TT>Pre-NMI</TT> message and approximately 2 frames before the reset, the Y scale is set to 1.0, the screen is cleared by <TT>osViBlack(FALSE)</TT>, and <TT>osAfterPreNMI()</TT> is executed in the Scheduler. However, a check should always be performed to determine whether a hang will occur.<BR>
+<BR>
+ - Added the global variable <TT>nuScPreNMIFlag</TT>: <BR>
+     In this version, it is set to <TT>NU_SC_GET_PRENMI</TT> when a <TT>Pre-NMI</TT> message is received and to <TT>NU_SC_BEFORE_RESET</TT> 3 frames before the reset (3 frames before 0.5 sec from the <TT>Pre-NMI</TT>).<BR>
+<BR>
+ - Disabled RSP tasks immediately before a reset:<BR>
+     Modified so that when the global variable <TT>nuScPreNMIFlag</TT> is set to <TT>NU_SC_BEFORE_RESET</TT>, a task is not initiated by an RSP task message.  However, an RSP task termination message is returned so that the application does not hang.<BR>
+<BR>
+ - Support for single frame buffers:<BR>
+     A single frame buffer previously could not be used because when a graphics task started, processing halted until a frame buffer was free.  Consequently, the function <TT>nuScSetFrameBufferNum()</TT>, which specifies the number of frame buffers, was added.  When 1 is specified as the argument to this function, frame buffer status is not checked.  Specifying any argument other than 1 causes the program to function just as before.  The default<BR>
+     argument is 2.<BR>
+<BR>
+ -  Added a frame-rate acquisition function:<BR>
+     The function <TT>frameBufferNum</TT> was added to store the frame rate in the <TT>NUSched</TT> structure.  When the scheduler is initialized, the function <TT>osTvType</TT> is used to check whether the format is PAL or another format, and the value 50 or 60 is stored.  This value can be obtained with <TT>nuScGetFrameRate()</TT>.  However, automatic switching using <TT>osTvType</TT> is disabled, so automatic screen switching should not be performed.<BR>
+<BR>
+ - Added a function to change messages sent to the client:<BR>
+     The function <TT>nuScResetClientMesgType()</TT> was added to enable changes in the type of message sent to the client, which is specified in the argument to <TT>nuScAddClient()</TT>.<BR>
+<BR>
+<BR>
+* Audio Changes (<TT>nualsgi,nualsgi_n</TT>)<BR>
+<BR>
+ - Added an audio manager that uses AI events:<BR>
+     An audio manager was added that provides FIFO control using AI events.  (An AI event occurs when the register for the AI-DMA settings, which make up the FIFO data structure, goes from being full to not full.)  The audio manager uses AI events to switch the order of the FIFO queue. Thus, unlike the previous version which used only a retrace, this version makes it unnecessary to adjust the size of the synthesized sample. In addition, no noise occurs because the FIFO queue logically does not empty. Moreover, 2 buffers are sufficient for the synthesized sample data (previously 3 were needed).  However, the size of the synthesized sample data must be a multiple of 16 (184 for n_audio microcode).  Consequently, the timing of AI events varies with each frame, and deviates from the timing of the start of the audio tasks. This should be noted for programs that specify in the application the time free of RSP processing.(Although some degree of control is possible, it was not provided in the present version.) When using the audio manager, initialize it using <TT>nuAuInitEx()</TT> or <TT>nuAuMgrInitEx()</TT>.<BR>
+<BR>
+ - Improved the Audio Manager: <BR>
+     With the audio manager that used only a retrace, control resulted from determining the sample size used to set the FIFO queue for the frame after the next frame. The size was determined based on number of samples remaining in the queue. With this method, however, control was not reflected until 2 frames after current frame, preventing good control.  Thus, depending on the playback frequency, it was therefore necessary to regulate the number of remaining samples. This was modified so that the size of the synthesized samples is predicted using the number samples in next frame as well as the number of samples remaining in the queue. In addition, the control method was changed so that, while the previous unit of control was the number of samples in 1 frame, it became the number of samples in 1.25 frames.  <BR><br>
+
+     Previously, audio was created by setting FIFO, creating the audio commands, and starting the audio task, in that order.  However, in some cases the DMA transfer did not occur in time for the start of audio. The order was therefore changed to setting FIFO, starting the audio task, and creating the audio task.<BR>
+<BR>
+ - Decreased the amount of memory used:<BR>
+     Made changes so that the number of synthesized samples is calculated based on the playback frequency, retrace count, and frame rate.  This sample number is used in reserving heap memory. In addition, the size of an audio command was changed. The amount of memory used was also greatly reduced by modifying audio manager processing. <BR>
+<BR>
+<BR>
+ - Changed the PI-DMA processing that occurs with callback:<BR>
+     Previously, the DMA buffer areas were freed using the frame counter. This was changed so that a counter is provided for each area.  This is used to free that area. In addition, the number of frames stored was reduced from 2 to 1.  This slightly reduced the number of DMA buffers required.<BR>
+<BR>
+ - Added measures for debug tuning:<BR>
+     Modified to allow measurement of the size of the DMA buffer used, the number of DMA callbacks, the number of times PI-DMA is performed, and the maximum size of the command list. In addition, a flag indicates when the number of DMA buffers or that the command list buffer is insufficient, the DMA buffer is too small, or there are no samples remaining.<BR>
+<BR>
+ - Changed <TT>nuAuInit()</TT> and <TT>nuAuMgrInit()</TT>:<BR>
+     Modified so that <TT>nuAuInit()</TT> and <TT>nuAuMgrInit()</TT> return the size of the heap used. <BR>
+<BR>
+ - Added heap memory functions: <BR>
+     Added a function that acquires and initializes heap memory.  Also added was a function that obtains the size of used and free heap memory.<BR>
+<BR>
+ - Consolidated the source code in the audio and n_audio libraries:<BR>
+     Consolidated the microcode libraries for audio and n_audio, which were previously separate.<BR>
+<BR>
+ - Modified <TT>nualsgi_n.h</TT>: <BR>
+     Modified <TT>nualsgi_n.h</TT> to include only the N_AUDIO definition, <TT>nualsgi.h</TT>, and the n_audio microcode header.<BR>
+<BR>
+ - Modified to support PAL:<BR>
+     PAL support previously required recompiling the library. This was changed by adding a frame-rate variable to the Scheduler and using this variable to determine the video parameters. As a result, recompiling is now generally not required for PAL support.<BR>
+<BR>
+<BR>
+<BR>
+* Audio Changes (mus library)<BR>
+<BR>
+ - Support for mus library Version 3:
+     Beginning with Version 3, the mus library was modified to allow use of an external scheduler. This allowed mus and NuSystem to be separated and the mus library functions to be used directly.  Versions of the mus library other than <BR>
+     Version 3 can not be used.<BR>
+<BR>
+ - Allowed for multiple sequence players: <BR>
+     Beginning with mus library Version 3, multiple sequences (songs) can be played.  Thus, as in the nualsgi library, the number of sequence players was changed to two.  As a result, the sequence-related functions were modified.<BR>
+<BR>
+ - Changed type of <TT>nuAuStlInit()</TT> and <TT>nuAuStlMgrInit()</TT>:<tt>Modified <TT>nuAuStlInit()</TT> and <TT>nuAuStlMgrInit()</TT> to return the size of the used heap.<BR>
+<BR>
+ - Function changes due to changes in Version 3 of mus library: <BR>
+     Added <TT>nuAuStlPtrBankInit()</TT>, <TT>nuAuStlPtrBankSet()</TT>, <TT>nuAuStlSeqPlayerInit()</TT>, and <TT>nuAuStlSndPlayerDataSet()</TT>.<br>  Changed <TT>nuAuStlSeqPlayerDataSet()</TT> to <TT>nuAuStlSeqPlayerDataSet()</TT>.<BR>
+
+     Eliminated <TT>nuAuStlBankSet()</TT> and <TT>nuAuStlPlayerInit()</TT>.<BR>
+<BR>
+<BR>
+ - Added a heap memory function:<BR>
+     Added a function that can obtain the amount of heap memory used and available.<BR>
+<BR>
+ - Consolidated the source code in the audio and n_audio libraries:<BR>
+     Consolidated the libraries used for the audio and n_audio microcode, which were previously separate.<BR>
+<BR>
+ - Changed <TT>nualsgi_n.h</TT>:
+     Modified <TT>nualsgi_n.h</TT> to include only the N_AUDIO definition, <TT>nualsgi.h</TT>, and the n_audio microcode header.<BR>
+<BR>
+<BR>
+* Graphics Changes<BR>
+<BR>
+ - Changed the variable <TT>nuGfxDisplay</TT>:<BR>
+     Previously when the variable <TT>nuGfxDisplay</TT> was set to <TT>NU_GFX_DISPLAY_ON</TT> in <TT>nuGfxDisplayOn()</TT>, <TT>osViBlack(FALSE)</TT> was used in <TT>nuGfxTaskMgr()</TT> for each frame to turn the screen display on. This was changed so that the flag <TT> NU_GFX_DISPLAY_ON_TRIGGER</TT> is set and, after <TT>osViBlack(FALSE)</TT> is called, <TT>NU_GFX_DISPLAY_ON</TT> is stored in <TT>uGfxDisplay</TT>. This allows <TT>osViBlack(FALSE)</TT> to be called only once after <TT>nuGfxDisplayOn()</TT>.<BR>
+<BR>
+ - Changed <TT>nuGfxSetCfb()</TT>:<BR>
+     Modified <TT>nuGfxSetCfb()</TT> so that it registers the number of frame buffers, allowing the Scheduler to handle single frame buffers. In addition, the pointer array of the frame buffers to be registered is checked, and if all the pointers have same address, the number of frame buffers is set to 1.<BR>
+<BR>
+ - Support for XBUS microcode and self-loading:<BR>
+     Provided support for XBUS microcode.  Because of the Scheduler, XBUS microcode could actually be used even with the previous NuSystem.  However, because the necessary values for the flags of the <TT>OSTask</TT> structure could not be specified internally, special tasks and self-loading were precluded.  Thus, the following values for the <TT>nuGfxTaskStart()</TT> flag were added.  More than one of these values can be specified at once using a logical OR condition.<BR>
+<BR>
+<TT>NU_SC_NORDP</TT>:<br>   
+	Either the RDP is not used or a wait for messages from the RDP is not performed. Usually specified when only RSP microcode is used.<BR>
+	
+<TT>NU_SC_UCODE_XBUS</TT>:  Specified when BUS microcode is used<BR>
+<TT>NU_SC_TASK_YIELDED</TT>:  Equivalent to <TT>OS_TASK_YIELDED</TT>.<BR>
+<TT>NU_SC_TASK_DP_WAIT</TT>:  Equivalent to <TT>OS_TASK_DP_WAIT</TT>.<BR>
+<TT>NU_SC_TASK_LODABLE</TT>:  Equivalent to <TT>OS_TASK_LOADABLE</TT>. <BR>
+Specified when the UCODE self-loading feature is used.<BR>
+<TT>NU_SC_TASK_SP_ONLY</TT>:  Equivalent to <TT>OS_TASK_SP_ONLY</TT>.<BR>
+<BR>
+* PI Manager<BR>
+<BR>
+ - <TT>nuPiReadRom()</TT><BR>
+Modified so that when data are transferred from Game Pak by PI-DMA, they are transferred in 1-block units, each 16,384 bytes in size. This change was made because transferring a large amount of data by PI-DMA at one time disables the transfer of audio data by PI-DMA, and noise occurs in the audio.
+<BR>
+<BR>
+<BR>
+* SI Manager<BR>
+<BR>
+ - Modified internal processing:<BR>
+     Previously, in each thread registered with the SI manager, the manager for each device was called, and the messages sent were compared with a switch statement. However, the possibility emerged that the types of devices connected to the SI could increase in number and place heavy burden on this processing.  Processing was therefore changed so that a major number is assigned to each device manager, and a table of function pointers is registered in the SI manager for each device manager.  Messages to a device manager are sent to the SI manager in the form major number + minor number.  The SI manager calls the function corresponding to the minor number in the pointer table corresponding to the major number.  This greatly reduces the number of comparison operations, lightening the processing load on the SI manager.  Because these modifications involve major changes in the flow of processing, caution must be exercised when changing SI devices.<BR>
+<BR>
+ - Modified the SI manager registration functions:<BR>
+     The changes in internal processing were accompanied by changes to the SI manager registration functions <TT>nuSiCallBackAdd()</TT> and <TT>nuSiCallBackRemove()</TT>.  Note that the number of parameters in <TT>nuSiCallBackAdd()</TT> were decreased.<BR>
+<BR>
+ - Added functions that send messages to the SI manager:<BR>
+     The changes to the SI manager were accompanied by standardization of the format of messages sent to the SI manager and the introduction of the special-purpose functions <TT>nuSiSendMesg()</TT> (synchronous) and <TT>nuSiSendMesgNW()</TT> (asynchronous). The arguments to these functions are pointers that indicate the message number and the location of the data sent and received. If the SI manager is customized, these functions should be used to send it messages.<BR>
+<BR>
+ - Added functions to stop and restart the SI manager:<BR>
+     Added the function <TT>nuSiMgrStop()</TT>, which stops the SI manager, and <TT>nuSiMgrRestart()</TT>, which enables it to be restarted. During the time that the SI manager is stopped by <TT>nuSiMgrStop()</TT>, the user application can use <TT>nuSiMesgQ</TT>, which is associated with SI events. The SI manager does not receive retrace messages while it is stopped.<BR>
+<BR>
+ - Changed <TT>nuContPakOpen()</TT>:<BR>
+     <TT>osPfsInitPak()</TT> had internally checked whether a Controller Pak was inserted and, if not, checked for a Rumble Pak.  However, with subsequent OS changes, <TT>nuContPakRepairId()</TT> became incapable of normal processing when the data in the ID area of an inserted Controller Pak were destroyed. This problem was fixed.  As a result, <TT>nuContPakOpen()</TT> was changed so that it does not check for a Rumble Pak.<BR>
+<BR>
+ -  Added <TT>nuContRmbStop()</TT>:<BR>
+     Added the function <TT>nuContRmbStop()</TT>, which stops the Rumble Pak from vibrating. <BR>
+<BR>
+ - Added support for voice recognition system: <BR>
+     Added support for voice recognition system and added a voice recognition system manager.<BR>
+<BR>
+<BR>
+* Debug Console<BR>
+ - Support for reversed characters:<BR>
+     Reversed characters were added to the character attributes of the debug console.  To use this attribute, specify <TT>NU_DEB_CON_ATTR_REVERSE</TT>. <BR>
+<BR>
+<BR>
+Version 1.20<BR>
+Supported the N64 GB Pak:<BR>
+     Added the N64 GB Pak Manager and control functions.<BR>
+<BR>
+Fixed Rumble Pak Manager problems:<BR>
+     Fixed a bug in the Rumble Pak Manager that caused the program to hang when a <TT>Pre-NMI</TT> occurred.<BR>
+<BR>
+Improved the character font of the debug console:<BR>
+     Changed the font used in debugging.  Also improved the display method so that characters are no longer destroyed due to a problem resulting from coverage.<BR>
+<BR>
+Added a character output function for the debug console:<BR>
+     Added the function <TT>nuDebConPrintf()</TT>, although it is not yet complete.  Floating-point display is not yet supported.<BR>
+<BR>
+Modified Controller Pak functions:<BR>
+     Modified the Controller Pak functions so that they return errors.<BR>
+<BR>
+Supported F3DEX2:<BR>
+     Added the F3DEX2 graphics initialization function <TT>nuGfxInitEX2()</TT>.<BR>
+
+     Added <TT>nuDebConDispEX2()</TT> to the debug console and <TT>nuDebTaskPerfBar0EX2()</TT>, <TT>nuDebTaskPerfBar1EX2()</TT> to the performance meter.  Also changed the header file so that when <TT>F3DEX_GBI_2</TT> is defined, both the debug console and performance meter automatically use the F3DEX2 functions.<BR>
+<BR>
+<BR>
+Provided SRAM support for the PI functions:<BR>
+     Added the functions <TT>nuPiInitSram</TT> and <TT>nuPiReadWritSram</TT>.<BR>
+<BR>
+<BR>
+<BR>
+Version 1.11<BR>
+Corrected previous omission to compile the <TT>nuDebConWindowShow</TT> function.  Corrected previous omission to include <TT>nuDebConWindowShow</TT> in <TT>Makefile</TT>.<BR>
+<BR>
+Version 1.10<BR>
+Support for EPI<BR>
+Support for Z-Sort microcode<BR>
+<TT>nusys.h</TT><BR>
+Added <TT>NU_SC_NORDP</TT><BR>
+<TT>nusched.c</TT><BR>
+- Changed the <TT>nuScExecuteGraphics</TT> function so it does not wait for RDP to end when <TT>NU_SC_NORDP</TT>.<BR>
+- Made change so RDP end time is not measured when <TT>NU_SC_NORDP</TT>.<BR>
+
+<TT>nugfxtaskmgr.c</TT><BR>
+- <TT>n</TT> the <TT>nuGfxTaskMgr</TT> function, changed the <b>nuGfxSwapCfbFunc</b> argument from framebuffer to the <TT>NuScTask</TT> structure.<BR>
+
+- Changed the <tt>nuGfxTaskEndFunc</tt> argument to the NuScTask structure. <BR>
+
+<TT>nugfxswapcfb.c</TT>
+- Since the <tt>nuGfxSwapCfbFunc</tt> argument was changed, also changed it<BR>
+       so that the framebuffer address is gotten from the gfxTask structure.<BR>
+<BR>
+Changed the Controller Manager: <BR>
+     Divided the Controller Manager into separate SI Manager and Controller Manager parts.  Now the Controller Manager, like the Controller Pak Manager and the Rumble Pak Manager, is called back by the SI Manager.<BR>
+<BR>
+Changed the <TT>nuDebConClear</TT> function:<BR>
+     Made change so that when the <TT>NuDebConClear</TT> function is called, the text display returns to its original point.<BR>
+<BR>
+Support for EEPROM<BR>
+Added the EEPROM Manager<BR>
+<BR>
+Support for high-resolution debug console.<BR>
+<BR>
+Support for high-resolution performance meter<BR>
+<BR>
+Improved the performance meter:<BR>
+Added an RDP internal counter bar to the performance meter <TT>nuDebTaskPerf1()</TT>.<BR>
+<BR>
+Deleted <TT>nuContPakFileReSize</TT> and <TT>nuContPakFileReSizeJis</TT><BR>
+<BR>
+Corrected problems with the Rumble Pak Manager.<BR>
+<BR>
+Changed <TT>nuContDataGet</TT> and <TT>nuContDataGetAll</TT> from macros to functions. <BR>
+<BR>
+Used semaphores for exclusive control of the copy part of the Controller data of the <TT>nuContDataGet</TT>, <TT>nuContDataGetAll</TT>, <TT>nuContDataGetEx</TT> and <TT>nuContDataGetExAll</TT> functions.<BR>
+<BR>
+<BR>
+
+</P>
+</BODY>
+</HTML>

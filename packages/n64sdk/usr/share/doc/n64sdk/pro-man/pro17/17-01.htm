@@ -1,0 +1,53 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 17 - Audio Library</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. -->
+</head>
+
+<H1>17.1 Generating Audio Output</H1>
+
+<p>The basic process for generating, and playing audio can be summed up by the following steps.</p>
+<OL>
+<LI>
+Create and initialize the necessary resources. (Typically, an audio heap, a synthesizer, and a player) <BR><BR></LI>
+
+<LI>
+Repeatedly make calls to <A HREF="../../n64man/al/alAudioFrame.htm">alAudioFrame</A> to generate the audio task lists.<BR><BR></LI>
+
+<LI>
+Execute these audio task lists on the RSP.<BR><BR></LI>
+
+<LI>
+Set the output DAC to point to the audio output, with a call to <A HREF="../../n64man/os/osAiSetNextBuffer.htm">osAiSetNextBuffer</A><BR><BR></LI>
+</OL>
+
+
+<p>The creation and initialization of the necessary resources is somewhat dependent on your applications needs, but typically you will need to take the following steps. </p>
+
+<OL>
+<LI>
+Create an audio heap with a call to <A HREF="../../n64man/al/alHeapInit.htm">alHeapInit</A><BR><BR></LI>
+
+<LI>
+Set the hardware output frequency with a call to OsalSetFrequency<BR><BR></LI>
+
+<LI>
+Create a synthesizer with a call to <A HREF="../../n64man/al/alInit.htm">alInit()</A>. (<A HREF="../../n64man/al/alInit.htm">alInit</A> will require that you have a callback routine to initialize the audio DMA structures)<BR><BR></LI>
+
+<LI>
+Create <A target="keywords" HREF="../../keywords/index/data/system.htm#message queue">message queue</a> for receiving signals that allow you to time your audio processing. <BR><BR></LI>
+
+<LI>
+Create a player, (such as a <a href="../../keywords/index/data/audio.htm#sound player" target="keywords">sound player</a> or <a href="../../keywords/index/data/audio.htm#sequence player" target="keywords">sequence player</a>) to sign into the synthesizer.<BR><BR></LI>
+
+<LI>
+Initialize the resources assigned for each player that you have created. <BR><BR></LI>
+</OL>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR>
+</BODY>
+</HTML>

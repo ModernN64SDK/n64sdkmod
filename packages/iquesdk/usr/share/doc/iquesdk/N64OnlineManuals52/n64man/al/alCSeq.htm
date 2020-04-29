@@ -1,0 +1,66 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<link rel=stylesheet type="text/css" HREF="../N64man.css">
+<!--
+Editors Notes:
+  JLR made formating edits.
+  PWC- updated formatting
+  MAP- added links, updated format
+-->
+
+<title>alCSeq</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<h1>alCSeq </h1>
+
+<p><i>Is the Nintendo 64 Compressed MIDI sequence routine</i></p>
+
+<h3>Syntax</h3>
+<p>
+<blockquote>
+    <pre>#include &lt;libaudio.h&gt;     /* <a href="../../header/libaudio.htm">libaudio.h</a> */
+void alCSeqNew(ALCSeq *seq, u8 *ptr);
+void alCSeqNext(ALCSeq *seq, ALEvent *evt);
+s32 alCSeqGetTicks(ALCSeq *seq);
+f32 alCSeqTicksToSec(ALCSeq *seq, s32 ticks, u32 tempo);
+u32 alCSeqSecToTicks(ALCSeq *seq, f32 sec, u32 tempo);
+void alCSeqNewMarker(ALCSeq *seq, ALCSeqMarker *m, u32 ticks);
+void alCSeqSetLoc(ALCSeq *seq, ALCSeqMarker *marker);
+void alCSeqGetLoc(ALCSeq *seq, ALCSeqMarker *marker);</pre>
+</blockquote>
+</p>
+<p>The Nintendo 64 Audio Library supports supports playback of musical sequences that have been compressed with MIDI sequence file conversion tool <a href="../tool/midicomp.htm">midicomp</a>. The format of these files is detailed in the AudioFormats document.</p>
+
+<p>To use a Compressed MIDI sequence in your game, you must first initialize a runtime <tt>ALCSeq</tt> structure to represent it. This is accomplished with a call to <a href="alCSeqNew.htm">alCSeqNew</a>.</p>
+
+<p>After initializing the sequence structure, you can perform sequence operations. Typically, you will also create and initialize a Compressed MIDI Sequence Player to play the sequence for you.</p>
+
+<p>The <a href="alCSeqNextEvent.htm">alCSeqNextEvent</a> function call returns the next MIDI event from the sequence's current location. Usually, you will not call the <tt>alCSeqNextEvent</tt> function directly because it is called for you by the Sequence Player during sequence playback.
+</p>
+
+<p>The <a href="alCSeqGetTicks.htm">alCSeqGetTicks</a> function returns the current sequence location measured in ticks. The functions <a href="alCSeqTicksToSec.htm">alCSeqTicksToSec</a> and <a href="alCSeqSecToTicks.htm">alCSeqSecToTicks</a> convert between time formats. The "ticks" format is in units of time relative to the MIDI clock at the resolution specified in the MIDI sequence header. However, because this calculation is done with a specific tempo, it will not be accurate if the sequence includes tempo changes. 
+</p>
+
+<p>A call to <a href="alCSeqNewMarker.htm">alCSeqNewMarker</a> initializes a marker to the location specified in ticks. A call to <a href="alCSeqGetLoc.htm">alCSeqGetLoc</a> initializes a marker with the current location. This marker can then be used with the <a href="alCSeqGetLoc.htm">alCSeqSetLoc</a> function to jump to the location specified by the marker.
+</p>
+
+<h3>See Also</h3>
+
+<p><a href="alCSeqNew.htm">alCSeqNew</a>, <a
+href="alCSeqNextEvent.htm">alCSeqNextEvent</a>, <a
+href="alCSeqGetTicks.htm">alCSeqGetTicks</a>, <a
+href="alCSeqTicksToSec.htm">alCSeqTicksToSec</a>, <a
+href="alCSeqSecToTicks.htm">alCSeqSecToTicks</a>, <a
+href="alCSeqNewMarker.htm">alCSeqNewMarker</a>, <a
+href="alCSeqSetLoc.htm">alCSeqSetLoc</a>, and <a
+href="alCSeqGetLoc.htm">alCSeqGetLoc</a></p>
+
+<h3>Revision History</h3>
+<p>1999/04/30  Changed Format</p>
+<br><br>
+
+</body>
+</html>

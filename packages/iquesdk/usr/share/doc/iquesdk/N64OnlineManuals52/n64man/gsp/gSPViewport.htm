@@ -1,0 +1,69 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.>
+<TITLE>gSPViewport</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>gSPViewport [Macro]</FONT></H1>
+
+<p><b>Function</b></font></p>
+
+<p>gSPViewport</p>
+<P>
+<i>Sets the viewport area</i>
+</P>
+<p><b>Syntax</b></font></p>
+<p>
+<PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gbi.htm">gbi.h</A> */
+gSPViewport(Gfx *gdl, Vp *v)
+gsSPViewport(         Vp *v)</CODE></PRE></p>
+
+<p><b>Arguments</b></font></p>
+<p>
+<DL>
+  <DT><B>gdl</B>
+  <DD>the display list pointer. 
+  <DT><B>v</B>
+  <DD>the segment address to the viewport structure "Vp".
+  <DT><B>vscale</B>
+  <DD>the scale applied to the normalized homogeneous coordinates after 4x4 projection transformation. 
+  <DT><B>vtrans</B>
+  <DD>the offset added to the scaled value. 
+</DL></p>
+<p><b>Description</b></font></p>
+<P>
+Sets the viewport area. The viewport structure elements have a 2-bit fraction required for scaling to sub-pixel positions. This can be used to handle the fraction values in the viewport. 
+</P>
+<P>
+<B>vscale</B>, <B>vtrans</B> are the screen coordinates. The array indices 0, 1, 2 correspond to x, y, z, while array index 3 is used for the alignment. 
+</P>
+<P>
+The viewport is the area the image occupies on the screen. For details, see Section 1-3-4, "The View Coordinate System" in Step 3 of the N64 Introductory Manual. 
+</P>
+<p><b>Note</b></font></p>
+<P>
+The Vp structure is shown below: 
+</P>
+<PRE><CODE>typedef struct {
+        short vscale[4];	/* Scale, 14.2 */
+        short vtrans[4];	/* Transformation, 14.2 */
+} Vp_t;
+typedef union {
+        Vp_t vp;
+        long long int force_structure_alignment;
+} Vp;</CODE></PRE></p>
+
+<p><b>See Also</b></font></p>
+<P>
+<A HREF="../gdp/gDPSetScissor.htm">gDPSetScissor</A>
+</P>
+<p><b>Revision History</b></font></p>
+<P>
+02/01/99  Entirely revised.
+</P>
+</BODY>
+</HTML>

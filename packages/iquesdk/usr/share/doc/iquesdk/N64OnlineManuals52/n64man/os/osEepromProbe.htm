@@ -1,0 +1,55 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.
+MAP- updated format>
+<TITLE>osEepromProbe</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+<font style="font-size: 12pt"><b>osEepromProbe</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<P>
+<i>Requests the status of EEPROM, and returns 1 if EEPROM exists, 0 if it does not</i>
+</P>
+
+<H3>Syntax</H3>
+<p><PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/os.htm">os.h</A> */
+s32 osEepromProbe(OSMesgQueue *mq);</CODE></PRE></p>
+
+<H3>Description</H3>
+<P>
+<tt>osEepromProbe</tt> checks to see if EEPROM is correctly loaded in an N64 Game Pak. If EEPROM is correctly loaded, this function returns the type of EEPROM. The return values are:
+</P>
+<p>
+<TABLE>
+  <TR><TD>0x00</TD><TD>... no EEPROM is loaded</TD></TR>
+  <TR><TD>0x01 (EEPROM_TYPE_4K)</TD><TD>... SIZE=4K bit <u><xxx>(a 4K-EEPROM is present)</XXX></u></TD></TR>
+  <TR><TD>0x02 (EEPROM_TYPE_16K)</TD><TD>... SIZE=16K bit <u><xxx>(a 16K-EEPROM is present)</XXX></u></TD></TR>
+</TABLE>
+</p>
+<P>
+mq is the initialized message queue associated with OS_EVENT_SI events.  For details, see the <a href="osSetEventMesg.htm">osSetEventMesg</a>function in the <i>N64 Online Function Reference Manual</i>.  Since mq is used inside the function to wait for messages, the application does not need to use mq to wait for an end-of-function message.
+</P>
+<P>
+Note that you must always call <a href="osContInit.htm">osContInit</a> to initialize low-level synchronization before you call <tt>osEepromProbe</tt>.<BR>
+</P>
+<P>
+Whenever an application uses EEPROM, you must use this function (<tt>osEepromProbe</tt>) to ensure that EEPROM is correctly loaded.
+</P>
+<P>
+If you find that EEPROM is not correctly loaded, Nintendo recommends that the game be terminated for security reasons.
+</P>
+
+<H3>See Also</H3>
+<P>
+<A HREF="osContInit.htm">osContInit</A>, <A HREF="osEepromRead.htm">osEepromRead</A>, <A HREF="osEepromWrite.htm">osEepromWrite</A>, <A HREF="osEepromLongRead.htm">osEepromLongRead</A>, <A HREF="osEepromLongWrite.htm">osEepromLongWrite</A>, and <A HREF="osSetEventMesg.htm">osSetEventMesg</A>
+</P>
+<H3>Revision History</H3>
+<P>
+1999/02/01  Revised entirely<br>
+1999/04/30  Changed format
+</P>
+</BODY>
+</HTML>

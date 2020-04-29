@@ -1,0 +1,915 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>MultiFileSystem Simple Manual</title>
+</head>
+<font face="arial" size="-1">
+<body bgcolor="#FFFFFF">
+
+<font size="3"><strong>MultiFileSystem Simple Manual</strong></font> 
+
+<hr>
+
+<b><a name="01"></a>1. Introduction</b>
+
+<p>The NINTENDO64 Disk Drive (hereafter, referred to as the 64DD) has a relatively large rewritable area (hereafter, referred to as the RAM area) with a maximum size of approximately 38M bytes.</P>
+
+<p>However, as you may have learned from reading the 64DD Programming Manual, the 64DD libraries provide only a means of accessing media in terms of physical units.  Although this does not present a significant problem for the read area (hereafter, referred to as the ROM area), it is a major problem for the RAM area.</P>
+
+<p>To actually access the RAM area to store or sort data efficiently or retrieve required data, file management must be performed logically in a manner the user can easily understand. A file system provides the user with a convenient means of organizing and accessing data.</p>
+
+<p>From this perspective, a file system is essential for the RAM area.  Therefore, the MultiFileSystem (MFS) has been prepared as the recommended file system by Nintendo.  Using the MFS enables the standard 64DD RAM area to be accessed for the mutual use of data.</p>
+
+<p>If, on the other hand, you do not want to allow access from other software that supports MFS, the MFS can be protected (through software) so that it can be used as a closed file system.</p>
+
+<p>Moreover, if data in the ROM area is also managed in terms of file units as the physical units, it can be managed efficiently in an easy-to-understand manner.  And since libraries are provided, the effort required for writing disk control code in programs can be significantly reduced.</p>
+
+<p>Nintendo plans to use the MFS in all its 64DD-compatible software.</p>
+
+<p>Although MFS is the recommended format, you can, of course, create and use your own original file system.  A special-purpose format is certainly better from the viewpoint of speed or recording efficiency.  An original file system is also probably safer from a data-concealment viewpoint.  You should carefully consider both of these factors when selecting a file system.</p>
+
+<p><a href="readme_index.htm"><img
+src="../../gif/index.gif" border="0"
+width="65" height="17"></a></p>
+
+<hr>
+
+<b><a name="02"></a>2. Overview of MultiFileSystem Specifications</b>
+<P>
+<b> 1. Areas on disk</b>
+
+<p>As shown in Figure 2.1, the MFS manages files separately in the ROM area and the RAM area of the disk.  Each of these areas has a header area.  This "header area" contains disk information and information to manage the files that are stored in the data area.  The "data area" contains the actual file contents.
+The RAM area has a copy of the RAM area header so that the header can be repaired if it becomes corrupted.  If an error 23 (an error for which error correction cannot be performed) or a header area checksum error occurs, the header can be repaired to some degree by moving header information from the copy area.</p>
+
+<font face="courier" size="2">
+<pre>
+         --+-----+==================================+------- LBA 0
+           |     |                                  |    
+           |     |                                  |    
+           |     |            ROM data area         |  
+        ROM area |                                  |
+           |     |                                  |    
+           |     +----------------------------------+------- RAM START LBA - m
+           |     |           ROM header area        |  m (Varies according to
+           |     |                                  |     the number of files)
+         --+-----+==================================+------- RAM START LBA
+           |     |                                  |    (Varies according to
+           |     |                                  |     DiskType)
+           |     |           RAM header area        |  3 Block
+           |     |                                  |    
+           |     +----------------------------------+------- RAM START LBA + 3
+           |     |                                  |    
+        RAM area |       RAM header area copy       |  3 Block
+           |     |                                  |    
+           |     +----------------------------------+------- RAM START LBA + 6
+           |     |                                  |    
+           |     |                                  |    
+           |     |            RAM data area         |  n Block
+           |     |                                  |    
+           |     |                                  |    
+         --+-----+==================================+------- RAM END LBA
+                        Figure 2.1  Block Diagram        (LBA 4291)</pre>
+</font>
+
+<b>2. File handling</b>
+
+<p>With the MultiFileSystem, file management is performed using files and directories in the same way as in UNIX and DOS.  Names can be assigned to files or directories, and management can be performed according to these names.  However, from a processing standpoint, it is more efficient to distinguish files according to numbers.  Therefore, internally, each file or directory has a unique number, and management is performed by using this number.  This number is called the "directory ID."</p>
+
+<p>For example, if there is a file named multi and a directory named akari under the root directory, the tree structure would be as follows according to file names.</P>
+
+<dl>
+    <dd><font face="courier" size="2"><pre>'/'-+--'akari'-+--
+    |
+    +--'multi'</pre></font>
+    </dd>
+</dl>
+
+<p>Here, '/' represents the root directory.
+When this structure is represented using directory IDs, it appears as follows.</p>
+
+<dl>
+    <dd><font face="courier" size="2"><pre>0 -+-- 1 -+--
+   |
+   +-- 2</pre></font>
+    </dd>
+</dl>
+
+<p>The directory ID of the root directory is always 0 and the directory name is '/'.</p>
+
+<b> 3. File attributes</b>
+
+<p>Files and directories have the following kinds of information:</p>
+
+<ol>
+<li>File name 
+<br>This is the name of the file or directory.  It can be specified using ASCII or shift JIS code, and its size is 20 ASCII characters.</p>
+
+<li>File type
+<br>This is specified using five ASCII characters.  It cannot be specified for a directory.</p>
+
+<li>Attribute
+<br>This is a property of the file or directory.  The following attributes can be specified:</p>
+</ol>
+<table border="1" cellpadding="3" cellspacing="3">
+    <tr>
+        <td><font face="arial" size="-1"><strong>"Write protected"</strong> </td>
+        <td><font face="arial" size="-1">File or directory cannot be written to, deleted, or renamed. </td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1"><strong>"Read protected"</strong> </td>
+        <td><font face="arial" size="-1">File or directory only accessible if the company code
+                    and game code are equal to the specified codes. </td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1"><strong>"Hidden file"</strong> </td>
+        <td><font face="arial" size="-1">File not visible to the user.  The process of actually
+                    hiding the file must be performed by the application. </td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1"><strong>"Encode"</strong> </td>
+        <td><font face="arial" size="-1">Encoded file.  (* Unsupported) </td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1"><strong>"Copy limited"</strong> </td>
+        <td><font face="arial" size="-1">Limits the number of copies that can be made to the value
+                    specified by the copy count. </td>
+    </tr>
+</table>
+
+<p> 
+<ol start="4">
+<li>Company code and game code
+<br>This is the company code and game code issued by Nintendo.</p>
+
+<p> 
+<li>File size
+<br>This is the size of the file.  Since file management is performed in terms of block units, the size reserved on disk is larger than the file size.</p>
+
+<P>
+<li>Copy count
+<br>This is the number of times a copy can be made.  It is decremented each time a copy is made, and when the copy count is 0, the file or directory cannot be copied.  However, this operation must be performed by the application.</p>
+
+<p> 
+<li>Update counter
+<br>This is 0 when the file or directory is created and is incremented whenever some change is made.  The maximum value to which the update counter can be incremented is 255, at which point is stops.  In addition to when data is written to a file, the update counter is also incremented when attributes or the name is changed.  The update counter of the parent directory is also incremented at the same time.</p>
+
+<p>
+<li>Date
+<br>This is the last date that the file or directory was changed.</p>
+
+<p>
+<li>Parent directory<br>
+This is the directory ID of the directory one level higher in which some the files and directories belong.  Files and directories are affected by the attribute of the one-level-higher directory in which they belong.  For example, if the attribute of the directory to which a given file belongs is write protected, data cannot be written to that file.</p>
+</ol>
+
+<P>
+<b>4. Limit on number of files that can be recorded</b>
+
+<p>MFS has a table of files and directories in the header area.  Although this is advantageous from an access-speed perspective, there is an upper limit to the total number of files and directories that can be recorded because the number of blocks in the header area is fixed.  Also, because the block size of the header area differs according to the disk type, the total number of files and directories that can be recorded also varies according to the disk type.</p>
+
+<p>Table 2.1 shows the total number of directories and files that can be recorded.</p>
+
+<table border="1" cellpadding="3" cellspacing="3">
+    <tr>
+        <td align="center"><font face="arial" size="-1">Disk type</td>
+        <td align="center"><font face="arial" size="-1">Number of files</td>
+    </tr>
+    <tr>
+        <td align="center"><font face="arial" size="-1">0</td>
+        <td align="center"><font face="arial" size="-1">899</td>
+    </tr>
+    <tr>
+        <td align="center"><font face="arial" size="-1">1</td>
+        <td align="center"><font face="arial" size="-1">814</td>
+    </tr>
+    <tr>
+        <td align="center"><font face="arial" size="-1">2</td>
+        <td align="center"><font face="arial" size="-1">729</td>
+    </tr>
+    <tr>
+        <td align="center"><font face="arial" size="-1">3</td>
+        <td align="center"><font face="arial" size="-1">644</td>
+    </tr>
+    <tr>
+        <td align="center"><font face="arial" size="-1">4</td>
+        <td align="center"><font face="arial" size="-1">559</td>
+    </tr>
+    <tr>
+        <td align="center"><font face="arial" size="-1">5</td>
+        <td align="center"><font face="arial" size="-1">474</td>
+    </tr>
+    <tr>
+        <td align="center"><font face="arial" size="-1">6</td>
+        <td align="center"><font face="arial" size="-1">-</td>
+    </tr>
+</table>
+
+<P>
+<b>5. Pathname restrictions</b>
+
+<p>Since the following characters have special meanings, they cannot be used in file names or directory names.</p>
+
+<p><strong>'/' &nbsp;Directory delimiter</strong></p>
+
+<p><strong>'.' &nbsp;Extension delimiter</strong></p>
+
+<p><strong>':' &nbsp;Drive delimiter</strong></p>
+
+<p>Also, the maximum length of a pathname is 127 characters.</p>
+
+<P>
+<b>6. Disk attributes</b>
+
+<p>Attribute information is saved for each individual disk.  The attributes are saved separately in the RAM area and the ROM area.</p>
+
+<p>
+<ol>
+<li>Volume name
+<br>The name of the volume can be specified using ASCII or shift JIS code, and its size is 20 ASCII characters</p>
+
+<P>
+<li>Attribute
+<br>The following attributes can be specified:</p>
+</ol>
+
+<dl>
+    <dd>"Volume write protected" </dd>
+    <dd>Writing from another game is prohibited.
+      Data can be written to the disk only when the company code and game code specified in the library match the company code and game code that are written in the system ID area of the disk.</dd>
+    <dt>&nbsp; </dt>
+    <dd>"Volume read protected"</dd>
+    <dd>Reading from another game is prohibited.
+      Data can be read from the disk only when the company code and game code specified in the library match the company code and game code that are written in the system ID area of the disk.</dd>
+    <dt>&nbsp; </dt>
+    <dd>"Write protected"</dd>
+    <dd>Writing from all games is prohibited.</dd>
+</dl>
+
+<p>
+<ol start="3">
+<li>Destination code
+<br>This specifies the destination.</p>
+
+<p>
+<li>Update counter
+<br>The update counter is incremented when file, directory, or disk information has been changed in some way.  Therefore, it can be used, for example, to check whether the disk contents have been changed illegally, or as a random number seed.  The update counter is a 16-bit unsigned positive number.  It is incremented starting from 0x0000, and is returned to 0x0000 when it reaches 0xFFFF.</p>
+
+<p>
+<li>Date
+<br>This is the volume date.  Normally, it is the date that the volume was formatted.</p>
+</ol>
+
+<p><a href="readme_index.htm"><img
+src="../../gif/index.gif" border="0"
+width="65" height="17"></a></p>
+
+<hr>
+
+<P>
+<b><a name="03"></a>3. The MultiFileSystem Library</b>
+
+<p>The MultiFileSystem Library is a special-purpose library for the handling of MFS disks.  It can be broadly divided into the following six types of functions:</p>
+
+<ol>
+    <li>Disk manipulation functions</dd>
+    <li>Low-level directory manipulation functions</dd>
+    <li>Low-level input/output operation functions</dd>
+    <li>High-level directory manipulation functions</dd>
+    <li>High-level input/output operation functions</dd>
+    <li>Support functions</dd>
+</ol>
+
+<P>
+<ul>
+<li>The low-level functions use the directory ID for file and directory specifications.</p>
+<li>Leo functions are used for disk access.</p>
+<li>The high-level functions enable specifications using a path + file name.</p>
+<li>The high-level library uses the low-level library for disk access.</ul>
+
+<p>These libraries are related hierarchically as follows:</p>
+
+<table border="0" cellpadding="3">
+    <tr>
+        <td align="right" width="200" bgcolor="#F1F3A3"><font face="arial" size="-1">Application</td>
+        <td width="40" bgcolor="#F1F3A3"> </td>
+    </tr>
+    <tr>
+        <td align="right" width="200" bgcolor="#DEFAD8"><font face="arial" size="-1">MFS high-level library</td>
+        <td width="40" bgcolor="#DEFAD8"> </td>
+    </tr>
+    <tr>
+        <td align="right" width="200" bgcolor="#B8F3AB"><font face="arial" size="-1">MFS low-level library</td>
+        <td width="40" bgcolor="#B8F3AB"> </td>
+    </tr>
+    <tr>
+        <td align="right" width="200" bgcolor="#CBCEF8"><font face="arial" size="-1">Leo library</td>
+        <td width="40" bgcolor="#CBCEF8"> </td>
+    </tr>
+    <tr>
+        <td align="right" width="200" bgcolor="#939AF0"><font
+        color="#000000"><font face="arial" size="-1">64 Disk Drive (Hardware)</font></td>
+        <td width="40" bgcolor="#939AF0"> </td>
+    </tr>
+</table>
+
+<p>For explanations of these functions, refer to the Function Manual (mfsfuncman.euc or mfsfuncman.sjis).</p>
+
+<p>Details concerning the handling of files and directories can be found in books about DOS or UNIX programming.  Since anyone having programming experience can use files and directories in exactly the same way, an explanation is omitted here.</p>
+
+<p>This package contains the following files:</p>
+
+<table border="1" cellpadding="3" cellspacing="3">
+    <tr>
+        <td><font face="arial" size="-1">mfs.h</td>
+        <td><font face="arial" size="-1">Include file</td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">libmfs.a</td>
+        <td><font face="arial" size="-1">MultiFileSystem library for ROM * </td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">libmfs_d.a</td>
+        <td><font face="arial" size="-1">MultiFileSystem library for debugging * </td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">readme.euc</td>
+        <td><font face="arial" size="-1">This file (euc code)</td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">readme.sjis</td>
+        <td><font face="arial" size="-1">This file (Shift-jis code)</td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">mfsfuncman.euc</td>
+        <td><font face="arial" size="-1">Function manual (euc code)</td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">mfsfuncman.sjis</td>
+        <td><font face="arial" size="-1">Function manual (Shift-jis code)</td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">history.euc</td>
+        <td><font face="arial" size="-1">Modification history (euc code)</td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">history.sjis</td>
+        <td><font face="arial" size="-1">Modification history (Shift-jis code)</td>
+    </tr>
+</table>
+
+<p>* The GNU-gcc library files are libgmfs.a and libgmfs_d.a.</p>
+
+<p>Use these files by including mfs.h and linking libmfs.a or libmfs_d.a.</p>
+
+<p><a href="readme_index.htm"><img
+src="../../gif/index.gif" border="0"
+width="65" height="17"></a></p>
+
+<hr>
+
+<b><a name="04"></a>4. How to use the MultiFileSystem Library's high-level library</b>
+
+<p>
+<ol>
+<li>Handling files with the high-level library
+<br>
+The high-level library can handle the file system for both the ROM area and the RAM area of the disk.  However, the ROM and RAM areas are independent in the file system, and if they are not logically separated, not only will access efficiency drop, but problems also will occur concerning file management.
+Therefore, the MFS Library handles the ROM and RAM areas logically as separate drives.  The drive assignments for the ROM and RAM area are as follows:</p>
+
+<dl>
+    <dd><strong>ROM area A drive<br>
+        RAM area B drive</strong></dd>
+</dl>
+
+<p>Unlike the low-level library, the high-level library can specify file names and directories using a full path.  A full path consists of a drive name, pathname, file name, and extension.  The drive name and pathname are separated by ':'.  Directory names are separated by '/'.  The file name and extension are separated by '.'.  (Example:  A:/big/sports/sosa/homer.text)</p>
+
+<p>However, the files to be accessed often are collected in a single directory, and it is inconvenient to have to specify the drive name and path name every single time.  Therefore, the MFS Library enables the current drive and current directory to be set.  If the drive name or path name is not specified, then the current drive or current directory is used.  Currently, relative paths are not supported.</p>
+
+<p> 
+<li>Library initialization
+<br>The first step is to initialize the overall library.  There are initialization functions for starting up a Game Pak and for staring up a disk.  Game Pak initialization differs according to whether the game is Japan-oriented or US-oriented.  The three types of initialization functions are show below:</p>
+
+<table border="1" cellpadding="3" cellspacing="3">
+    <tr>
+        <td><font face="arial" size="-1">mfsHInitDiskBoot()</td>
+        <td><font face="arial" size="-1">Disk boot</td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">mfsHInitCasBootJP()</td>
+        <td><font face="arial" size="-1">Game Pak boot (for Japan)</td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">mfsHInitCasBootUS()</td>
+        <td><font face="arial" size="-1">Game Pak booting (for US)</td>
+    </tr>
+</table>
+
+<p>These functions first initialize the lower-level Leo library.
+If an MFS_ERR_DEVICE error occurs, the Leo*CreateManager() return value is returned.</p>
+
+<p>
+<li>File access
+<br>To access a file, first open the file and obtain a file handle by using mfsHFopen().  The file handle is the pointer to the structure that contains information required to read from or write to the file.</p>
+
+<p>When mfsHFopen() is used to open a file, the file access method can be specified:</p>
+
+<table border="1" cellpadding="3" cellspacing="3">
+    <tr>
+        <td><font face="arial" size="-1">MFS_OPEN_READ</td>
+        <td><font face="arial" size="-1">Open for reading</td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">MFS_OPEN_WRITE</td>
+        <td><font face="arial" size="-1">Open for writing</td>
+    </tr>
+</table>
+
+<p>Either or both of these can be specified.  When MFS_OPEN_WRITE is specified, either of the following can be specified:</p>
+
+<table border="1" cellpadding="3" cellspacing="3">
+    <tr>
+        <td><font face="arial" size="-1">MFS_OPEN_UPDATE</td>
+        <td><font face="arial" size="-1">Open in overwrite (update) mode</td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">MFS_OPEN_APPEND</td>
+        <td><font face="arial" size="-1">Open in append mode</td>
+    </tr>
+</table>
+
+<p>The following also can be specified:</p>
+
+<table border="1" cellpadding="3" cellspscing="3">
+    <tr>
+        <td><font face="arial" size="-1">MFS_OPEN_CREATE</td>
+        <td><font face="arial" size="-1">Create file if it does not already exist.</td>
+    </tr>
+</table>
+
+<p>To read a file, use mfsHFread().  To write to a file, use mfsHFwrite().</p>
+
+<p>When file access is finished, use the mfsHFclose() function to release the file handle.</p>
+
+<p>
+<li>File search
+<br>To find a file or directory in a given directory, use the following functions:</p>
+
+<table border="1" cellpadding="3" cellspacing="3">
+    <tr>
+        <td><font face="arial" size="-1">mfsHFindFirst()</td>
+        <td><font face="arial" size="-1">First find</td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">mfsHFindNext()</td>
+        <td><font face="arial" size="-1">Next find</td>
+    </tr>
+</table>
+
+<p>A file search looks to see whether or not an attribute or a specified file exists.  If the file is found, MFS_ERR_NO is returned, and the information is stored in the specified MfsFfblk structure.</p>
+
+<p>Specify the search-target file by using a character string that consists of a drive, path, and a file name.  A wild card character (? or *) can be specified only in the file name portion.</p>
+
+<p>If the file is not found, MFS_ERR_SEARCHEND is returned.</p>
+</ol>
+
+<p><a href="readme_index.htm"><img
+src="../../gif/index.gif" border="0"
+width="65" height="17"></a></p>
+
+<hr>
+<P>
+<b><a name="05"></a>5. How to use the MultiFileSystem Library's Low-Level Library</b>
+
+<p>The low-level library has a group of functions for the ROM area and a group of functions for the RAM area.  The library for the ROM area contains functions having names that begin with mfsRom*.  The library for the RAM area contains functions having names that begin with mfsRam*.</p>
+
+<p>If a function from the ROM area library and a function from the RAM area library have the identical name following the mfsRom*/mfsRam* portion, then they have the same functionality.  However, since data cannot be written to the ROM area, the ROM area library has no functions related to writing.</p>
+
+<p>In the explanations below, a function that exists for both the ROM area and the RAM area is expressed as mfsR?m.</p>
+
+<p>
+<ol>
+<li>Library initialization
+<br>First, initialize the library.  The initialization function differs according to whether Disk booting, ROM booting (Japan-oriented) or ROM booting (US-oriented) is to be used.  In addition, you can select whether only ROM is to be used, only RAM is to be used, or both are to be used.  Within these functions, Leo*CreateManager() is called and leo manager is initialized.  The six initialization functions are shown below:</p>
+
+<table border="1" cellpadding="3" cellspacing="3">
+    <tr>
+        <td><font face="arial" size="-1">mfsInitDiskRom()</td>
+        <td><font face="arial" size="-1">Disk booting, ROM area</td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">mfsInitDiskRam()</td>
+        <td><font face="arial" size="-1">Disk booting, RAM area</td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">mfsInitDiskRomRam()</td>
+        <td><font face="arial" size="-1">Disk booting, ROM and RAM areas</td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">mfsInitCasRom()</td>
+        <td><font face="arial" size="-1">Game Pak booting, ROM area</td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">mfsInitCasRam()</td>
+        <td><font face="arial" size="-1">Game Pak booting, RAM area</td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">mfsInitCasRomRam()</td>
+        <td><font face="arial" size="-1">Game Pak booting, ROM and RAM areas</td>
+    </tr>
+</table>
+
+<p>The reason why these functions are separated in such detail for the ROM and RAM areas is that 19,720 bytes are reserved internally as a buffer for the ROM area, and 48,960 bytes are reserved internally as a buffer for the RAM area.  If either of these libraries is unnecessary, the corresponding buffer will not be linked.</p>
+
+<p>
+<li>Disk access procedure
+<br>To access a disk, first call a media check function to check whether or not a disk is inserted and whether or not that disk has been MFS formatted.</p>
+
+<dl>
+    <dd>mfsR?mMediaCheck()</dd>
+</dl>
+
+<p>If the return value of this function is MFS_ERR_NO, the disk is an MFS-formatted disk.  The header area is read into the buffer, and files can be accessed.
+If the return value is MFS_ERR_NOHEADER, the disk cannot be accessed since it is not an MFS-formatted disk.  Also, if no medium has been loaded, then MFS_ERR_DEVICE is returned and LEO_ERROR_MEDIUM_NOT_PRESENT is entered in mfsError.</p>
+
+<p>Next, obtain the directory ID for the file or directory you want to access.  For the parent directory of the root directory, this is MFS_DIRID_ROOTUP.</p>
+
+<table border="1" cellpadding="3" cellspacing="3">
+    <tr>
+        <td><font face="arial" size="-1">mfsR?mGetDirID();</td>
+        <td><font face="arial" size="-1">Obtains directory ID of directory</td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">mfsR?mGetFileID();</td>
+        <td><font face="arial" size="-1">Obtains directory ID of file</td>
+    </tr>
+</table>
+
+<p>To obtain the files or directories that belong to a given directory, use the following functions:</p>
+
+<table border="1" cellpadding="3" cellspacing="3">
+    <tr>
+        <td><font face="arial" size="-1">mfsR?mGetDirListFirst();</td>
+        <td><font face="arial" size="-1">First find</td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">mfsR?mGetDirListNext();</td>
+        <td><font face="arial" size="-1">Next find</td>
+    </tr>
+</table>
+
+<p>To create a file or directory, specify the directory in which it is to belong by using the directory ID.  For the root directory, this is MFS_DIRID_ROOT.</p>
+
+<table border="1" cellpadding="3" cellspacing="3">
+    <tr>
+        <td><font face="arial" size="-1">mfsRamMakeDir();</td>
+        <td><font face="arial" size="-1">Creates a directory in the specified directory</td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">mfsRamCreateFile();</td>
+        <td><font face="arial" size="-1">Creates a file in the specified directory</td>
+    </tr>
+</table>
+
+<p>To read or write a file, use the following functions:</p>
+
+<table border="1" cellpadding="3" cellspacing="3">
+    <tr>
+        <td><font face="arial" size="-1">mfsR?mReadFile();</td>
+        <td><font face="arial" size="-1">Reads a file</td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">mfsRamWriteFile();</td>
+        <td><font face="arial" size="-1">Writes a file</td>
+    </tr>
+</table>
+
+<p>With the exception of file writing functions, the low-level library functions perform file or directory operations in the buffer within the MFS Library.  Therefore, when a series of operations is completed, the buffer contents must be written to disk.  This is done with the following function:</p>
+
+<table border="1" cellpadding="3" cellspacing="3">
+    <tr>
+        <td><font face="arial" size="-1">mfsRamFlash();</td>
+        <td><font face="arial" size="-1">Writes header information</td>
+    </tr>
+</table>
+
+<p>However, if the information within the buffer has not been changed, nothing is written to the disk.</p>
+
+<p>
+<li>Disk protection
+<br>An MFS-formatted disk can be write-protected or volume-protected.  If the disk is write protected, data can be read from the disk but no data can be written to the disk.  If it is volume protected, data can be read or written only when the company code and game code are matched.</p>
+
+<table border="1" cellpadding="3" cellspacing="3">
+    <tr>
+        <td><font face="arial" size="-1">mfsR?mGetVolumeAttr();</td>
+        <td><font face="arial" size="-1">Obtains RAM area attribute</td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">mfsRamSetVolumeAttr();</td>
+        <td><font face="arial" size="-1">Sets RAM area attribute</td>
+    </tr>
+</table>
+</ol>
+
+
+<p><a href="readme_index.htm"><img
+src="../../gif/index.gif" border="0"
+width="65" height="17"></a></p>
+<hr>
+
+<b><a name="06"></a>6. Errors</b>
+
+<p>When the MFS library return value is negative, an error has occured.  Therefore, when the return value is negative, you should check the type of error and perform error processing.</p>
+
+<p>Errors can be broadly divided into two types: errors returned by the Leo library, and errors returned by the MFS library.</p>
+
+<p>Errors returned by the Leo library are device level errors.  Various measures have been devised to improve the reliability of media for the 64DD, and numerous kinds of errors are returned by the Leo library.  Therefore, error processing is rather complicated.  However, if errors are divided into fatal errors, recoverable errors, and warnings, then error processing can be performed relatively easily.</p>
+
+<p>The errors returned by the MFS library can be divided into device errors like Leo library errors (MFS_ERR_DEVICE), and file system errors.</p>
+
+<p>Please incorporate error processing that is sensibly classified in this way.</p>
+
+<p>The MFS library has the following types of errors:</p>
+
+<table border="1" cellpadding="3" cellspacing="3">
+    <tr>
+        <td><font face="arial" size="-1">MFS_ERR_NO</td>
+        <td><font face="arial" size="-1">0</td>
+        <td><font face="arial" size="-1">Normal termination</td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">MFS_ERR_ARG</td>
+        <td><font face="arial" size="-1">-1</td>
+        <td><font face="arial" size="-1">Argument error</td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">MFS_ERR_DEVICE</td>
+        <td><font face="arial" size="-1">-2</td>
+        <td><font face="arial" size="-1">Device error</td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">MFS_ERR_NOINIT</td>
+        <td><font face="arial" size="-1">-3</td>
+        <td><font face="arial" size="-1">Uninitialized library error</td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">MFS_ERR_NAME</td>
+        <td><font face="arial" size="-1">-4</td>
+        <td><font face="arial" size="-1">File name error</td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">MFS_ERR_NOTFOUND</td>
+        <td><font face="arial" size="-1">-5</td>
+        <td><font face="arial" size="-1">File or directory not found</td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">MFS_ERR_FULL</td>
+        <td><font face="arial" size="-1">-6</td>
+        <td><font face="arial" size="-1">Disk full</td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">MFS_ERR_FILEEXIST</td>
+        <td><font face="arial" size="-1">-7</td>
+        <td><font face="arial" size="-1">File(directory) with same name exists</td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">MFS_ERR_PROTECT</td>
+        <td><font face="arial" size="-1">-8</td>
+        <td><font face="arial" size="-1">Write protected</td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">MFS_ERR_REFUSE</td>
+        <td><font face="arial" size="-1">-9</td>
+        <td><font face="arial" size="-1">Illegal operation</td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">MFS_ERR_HEADER</td>
+        <td><font face="arial" size="-1">-10</td>
+        <td><font face="arial" size="-1">Header area is corrupted</td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">MFS_ERR_SEARCHEND</td>
+        <td><font face="arial" size="-1">-13</td>
+        <td><font face="arial" size="-1">End of file search</td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">MFS_ERR_FATAL</td>
+        <td><font face="arial" size="-1">-14</td>
+        <td><font face="arial" size="-1">Fatal error</td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">MFS_ERR_LENGTH</td>
+        <td><font face="arial" size="-1">-16</td>
+        <td><font face="arial" size="-1">Insufficient buffer for storing characters</td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">MFS_ERR_NOTMFSDISK</td>
+        <td><font face="arial" size="-1">-17</td>
+        <td><font face="arial" size="-1">Not an MFS disk</td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">MFS_ERR_DISKCHANGE</td>
+        <td><font face="arial" size="-1">-18</td>
+        <td><font face="arial" size="-1">Medium was exchanged</td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">MFS_ERR_VERSION</td>
+        <td><font face="arial" size="-1">-19</td>
+        <td><font face="arial" size="-1">Unsupported version</td>
+    </tr>
+</table>
+
+<p>These errors are explained below.  Check the error number and perform error processing .</p>
+
+<table border="1" cellpadding="3" cellspacing="3">
+    <tr>
+        <td><strong><font face="arial" size="-1">MFS_ERR_NO</strong></td>
+        <td><font face="arial" size="-1">Normal termination<br>
+        The function terminated normally.</td>
+    </tr>
+    <tr>
+        <td><strong><font face="arial" size="-1">MFS_ERR_ARG</strong></td>
+        <td><font face="arial" size="-1">Argument error<br>
+        There is a problem in the arguments assigned for the function.</td>
+    </tr>
+    <tr>
+        <td><strong><font face="arial" size="-1">MFS_ERR_DEVICE</strong></td>
+        <td><font face="arial" size="-1">Device error<br>
+        An error occurred in an internally called Leo function.
+			Check the global variable mfsError.</td>
+    </tr>
+    <tr>
+        <td><strong><font face="arial" size="-1">MFS_ERR_NOINIT</strong></td>
+        <td><font face="arial" size="-1">Uninitialized error<br>
+        High-level functions have not been initialized.  Call the
+                  mfsHInit* function to initialize the library.</td>
+    </tr>
+    <tr>
+        <td><strong><font face="arial" size="-1">MFS_ERR_NAME</strong></td>
+        <td><font face="arial" size="-1">File name error<br>
+        The file name contains a character that cannot be used.</td>
+    </tr>
+    <tr>
+        <td><strong><font face="arial" size="-1">MFS_ERR_NOTFOUND</strong></td>
+        <td><font face="arial" size="-1">File or directory not found<br>
+        The specified file or directory does not exist.  This error
+                  will also occurs when the file or directory is read-protected.</td>
+    </tr>
+    <tr>
+        <td><strong><font face="arial" size="-1">MFS_ERR_FULL</strong></td>
+        <td><font face="arial" size="-1">Disk full<br>
+        The disk has no free space or the directory entries are full.</td>
+    </tr>
+    <tr>
+        <td><strong><font face="arial" size="-1">MFS_ERR_FILEEXIST</strong></td>
+        <td><font face="arial" size="-1">There is a file (directory) with same name<br>
+        A file or directory with the same name already exists.</td>
+    </tr>
+    <tr>
+        <td><strong><font face="arial" size="-1">MFS_ERR_PROTECT</strong></td>
+        <td><font face="arial" size="-1">Write protected<br>
+        Either the file or directory attribute is write-protected,
+                  or the parent directory attribute is write-protected, 
+                  or the volume attribute is write-protected.</td>
+    </tr>
+    <tr>
+        <td><strong><font face="arial" size="-1">MFS_ERR_REFUSE</strong></td>
+        <td><font face="arial" size="-1">Illegal operation<br>
+        This error occurs when an attempt is made using a high-level
+                  function to write to the ROM area or to delete or change a
+                  file or directory.</td>
+    </tr>
+    <tr>
+        <td><strong><font face="arial" size="-1">MFS_ERR_HEADER</strong></td>
+        <td><font face="arial" size="-1">Header area is corrupted<br>
+        The header area of the RAM area is corrupted.  Try
+                  using mfsRamRepairHeader to repair the header area.</td>
+    </tr>
+    <tr>
+        <td><strong><font face="arial" size="-1">MFS_ERR_SEARCHEND</strong></td>
+        <td><font face="arial" size="-1">End of file search<br>
+        This error is returned at the completion of a file
+                  search performed using mfsHFindFirst, mfsHFindNext,
+                  mfsR*mGetDirListFirst, or mfsR*mGetDirListNext.</td>
+    </tr>
+    <tr>
+        <td><strong><font face="arial" size="-1">MFS_ERR_FATAL</strong></td>
+        <td><font face="arial" size="-1">Fatal error<br>
+        An attempt was made to perform an operation using a file
+                  handler that has not been opened by a high-level function.</td>
+    </tr>
+    <tr>
+        <td><strong><font face="arial" size="-1">MFS_ERR_LENGTH</strong></td>
+        <td><font face="arial" size="-1">Buffer insufficient for storing characters<br>
+        This error is returned when the pathname length is longer than
+                  the length specified by mfsHGetCwd.</td>
+    </tr>
+    <tr>
+        <td><strong><font face="arial" size="-1">MFS_ERR_NOTMFSDISK</strong></td>
+        <td><font face="arial" size="-1">Not an MFS disk<br>
+        The disk is not an MFS-format disk.</td>
+    </tr>
+    <tr>
+        <td><strong><font face="arial" size="-1">MFS_ERR_DISKCHANGE</strong></td>
+        <td><font face="arial" size="-1">Medium was exchanged<br>
+        The medium was exchanged.  For a high-level function, close
+                     the file handler and then open it again.  For a low-level 
+                     function, begin processing by obtaining the disk ID again.</td>
+    </tr>
+    <tr>
+        <td><strong><font face="arial" size="-1">MFS_ERR_VERSION</strong></td>
+        <td><font face="arial" size="-1">Unsupported version<br>
+        The medium has been MFS-formatted, but the version is 
+                  different so it cannot be handled.</td>
+    </tr>
+</table>
+
+<p><a href="readme_index.htm"><img
+src="../../gif/index.gif" border="0"
+width="65" height="17"></a></p>
+
+<hr>
+
+<b><a name="07"></a>7. Access using LBA</b>
+
+<p>The following lower level functions are provided:</p>
+
+<dl>
+    <dd>mfsReadLBA(u);</dd>
+    <dd>mfsWriteLBA();</dd>
+    <dd>mfsReadDiskID();</dd>
+    <dd>mfsRezero();</dd>
+    <dd>mfsSeekLBA();</dd>
+</dl>
+
+<p>These functions make the asynchronous Leo functions somewhat easier to deal with.  They can be used directly from an application to access ROM.</p>
+
+<p><a href="readme_index.htm"><img
+src="../../gif/index.gif" border="0"
+width="65" height="17"></a></p>
+
+<hr>
+<b><a name="08"></a>8. Exclusive control</b>
+
+<p>With MFS, you can register callback functions to be called before an asynchronous Leo function is called and after a Leo function operation is completed to enable exclusive PI control when accessing the 64DD disk, accessing DD-ROM, or accessing a Game Pak.</p>
+
+<p>If exclusive control functions that use the message mechanism are registered here, exclusive control can be implemented relatively easily.</p>
+
+<p>Callback function registration functions:</p>
+
+<table border="1" cellpadding="3" cellspacing="3">
+    <tr>
+        <td><font face="arial" size="-1">mfsSetLeoBusyFunc()</td>
+        <td><font face="arial" size="-1">Function called before calling a Leo function</td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">mfsSetLeoReadyFunc()</td>
+        <td><font face="arial" size="-1">Function called after a Leo function call</td>
+    </tr>
+</table>
+<P>
+
+<b>Example</b>
+<P>
+<font face="courier" size="2">
+<pre>OSMesgQueue piSemaphoreQ;
+OSMesg piSemaphoreBufv
+
+ /* Lock the PI */ 
+
+ void lockPi(void)
+{
+osRecvMesg(&amp;piSemaphoreQ, NULL, OS_MESG_BLOCK);
+} 
+
+ /* Unlock the PI */ 
+
+ void unlockPi(void)
+{
+osSendMesg(&amp;piSemaphoreQ, NULL, OS_MESG_BLOCK);
+}
+
+ /* Initialize and set exclusive control mechanism */ 
+
+ void initLock(void)
+{
+	osCreateMesgQueue(&amp;piSemaphoreQ, &amp;piSemaphoreBuf, 1);
+	osSendMesg(&amp;piSemaphoreQ, NULL, OS_MESG_BLOCK);
+	mfsSetLeoBusyFunc(lockPi);
+	mfsSetLeoReadyFunc(unlockPi);
+}</pre></font>
+
+<p><a href="readme_index.htm"><img
+src="../../gif/index.gif" border="0"
+width="65" height="17"></a></p>
+
+<hr>
+
+<b><a name="09"></a>9. Requests, impressions, questions, reports of problems, and support</b>
+
+<p>Although Ver1.0 has been designated the first official version, please post any requests, impressions, questions, or reports of problems to the NOA Engineering Developer Tools Support Group at: <a  href="http://www.noa-engineering.com">http://www.noa-engineering.com.</a></p>
+
+<p><a href="readme_index.htm"><img
+src="../../gif/index.gif" border="0"
+width="65" height="17"></a></p>
+</body>
+</html>

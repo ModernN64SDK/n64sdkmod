@@ -1,0 +1,287 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>2.3</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font face="arial" size="-1">
+<p>
+<strong>2.3 Modifying onetri (Read from a disk) </strong>
+
+
+<p>In the preceding example using polyline, there was no input or output to disk once the game was started.  This section shows an example of simple output from disk using the sample program onetri after the game is started.  The original version of onetri reads the static segment from the Game Pak ROM after the game is started, so the program is modified to read this from disk.  The meaning of $(WORK) is the same as in the previous section.
+</p>
+
+<p><strong>1.  Copy polyline to $(WORK).</strong>
+<P>
+
+<table border="1" cellpadding="3" cellspacing="3" width="100%">
+  <tr>
+    <td valign="top" width="350"><font face="arial" size="-1">[NW] <p>% cp -r /usr/src/PR/demos/onetri $(WORK) </td>
+    <td width="350"><font face="arial" size="-1">[PC] <p>Use a tool such as Explorer to copy ultra\usr\src\PR\demos\onetri to $(WORK)
+    </td>
+  </tr>
+</table>
+
+<p><strong>2. Switch to that directory.
+</strong>
+<P>
+
+<table border="1" cellpadding="3" cellspacing="3" width="100%">
+  <tr>
+    <td valign="top" width="350"><font face="arial" size="-1">[NW] <p>% cd $(WORK)/onetri </td>
+    <td width="350"><font face="arial" size="-1">[PC] <p>Open an MS-DOS window, and enter
+    </p>
+    <p>C&gt;cd $(WORK)\onetri </td>
+  </tr>
+</table>
+
+<p><strong>3. Open an editor and modify Makefile as shown below.</strong>
+<P>
+<table border="1" width="100%">
+  <tr>
+    <td valign="top" width="290"><font face="arial" size="-1">[NW]</font> <pre><font face="courier">.......... </pre>
+    <pre><font face="courier">LDFLAGS = ... -L$(ROOT)/usr/lib </pre>
+    <pre>		lultra_d ... </pre>
+    <pre>.......... </pre>
+    <pre>$(MAKEROM) -r rom spec </pre>
+    <pre>.......... </pre>
+    </td>
+    <td valign="top" width="290"><font face="arial" size="-1">[PC]</font> <pre>.......... </pre>
+    <pre><font face="courier">LDFLAGS = ... -L$(LIB) </pre>
+    <pre>		-lgultra_d ... </pre>
+    <pre>.......... </pre>
+    <pre>$(MAKEROM) -r rom spec </pre>
+    <pre>.......... </pre></font>
+    </td>
+  </tr>
+  <tr>
+    <td width="290"><font face="arial" size="-1">(modified) </td>
+    <td width="290"><font face="arial" size="-1">(modified) </td>
+  </tr>
+  <tr>
+    <td valign="top" width="290"><font face="courier"><pre>.......... </pre>
+    <pre>LDFLAGS = ... -L$(ROOT)/usr/lib </pre>
+    <pre>		<font color="#FF0000">-lleo_d</font> -lultra_d.. </pre>
+    <pre>.......... </pre>
+    <pre><font face="courier" color="#FF0000">/usr/sbin/<a href="../../n64man/64dd/64ddtool/makedisk.htm">makedisk</a> -t 0</font> -r rom spec </pre>
+    <pre>.......... </pre>
+    </td>
+    <td width="290"><pre>.......... </pre>
+    <pre><font face="courier">LDFLAGS = ... -L$(LIB) </pre>
+    <pre>		<font color="#FF0000">-lleo_d -lgultra_d ... </pre>
+    <pre>.......... </pre>
+    <pre>$(MAKEROM) <font color="#FF0000">-DD64 -t 0</font> -r rom spec </pre>
+    <pre>.......... </pre></font>
+    </td>
+  </tr>
+</table>
+
+<font face="arial" size="-1">
+<p>As noted in the previous section, -t 0 specifies a disk type of 0. For details, please see section <a href="../dd11/11-05.htm">"11.5 Disk Types (ROM and RAM areas) </a>." </p>
+
+<p>LDFLAGS are flags passed to the linker.  -lleo.d means to link libleo_d.a. Details are presented in <a href="../dd07/index.htm">"Chapter 7, Library Functions</a>."
+
+
+<p><strong>4.  Modify spec as shown below.
+</strong>
+<P>
+
+<table border="1" width="100%">
+  <tr>
+    <td><Before modification, both NW and PC> <pre>......... </pre>
+    <pre>beginseg </pre>
+    <pre>	name &quot;static&quot; </pre>
+    <pre>	flags OBJECT </pre>
+    <pre>	number STATIC_SEGMENT </pre>
+    <pre>	include &quot;static.o&quot; </pre>
+    <pre>endseg </pre>
+    <pre>.........</pre>
+    </td>
+  </tr>
+</table>
+
+<table border="1" width="100%">
+  <tr>
+    <td><After modification, both NW and PC> <pre>......... </pre>
+    <pre>beginseg </pre>
+    <pre>	name &quot;static&quot; </pre>
+    <pre>	<font color="#FF0000">lba 20 </font></pre>
+    <pre>	flags OBJECT </pre>
+    <pre>	number STATIC_SEGMENT </pre>
+    <pre>	include &quot;static.o&quot; </pre>
+    <pre>endseg </pre>
+    <pre>.........</pre>
+    </td>
+  </tr>
+</table>
+
+<p>lba 20 means to save the segment (in this case, the static segment) to the location beginning at LBA 20.  The smallest access unit of the 64DD is called a "block," and these blocks are numbered consecutively from 0 to 4291.  This number is called the Logical Block Address (LBA).  The program uses this number to access the disk.  For a detailed description of the LBA, please see <a href="../dd11/index.htm">"Chapter 11, 64DD Hardware Specifications</a>."
+</p>
+
+<p> <strong>5.  Modify onetri.c.</strong> 
+
+<p>The section to modify is that where the static segment is loaded behind the code segment.</p>
+
+<p><Before modification, both NW and PC></p>
+
+<table border="1" width="100%">
+<tr><td><font face="courier">
+<pre>#include &lt;ultra64.h&gt;
+#include &lt;PR/ramrom.h&gt;  /* needed for argument passing into the app */
+#include &lt;assert.h&gt;
+
+#include &quot;onetri.h&quot;
+.........
+
+static void
+mainproc(void *arg)
+{
+OSTask		*tlistp;
+Dynamic		*dynamicp;
+char		*staticSegment;
+.........
+/*
+ * Stick the static segment right after the code/data segment
+ */
+staticSegment = _codeSegmentEnd;<font
+color="#FF0000">
+osPiStartDma(&amp;dmaIOMessageBuf, OS_MESG_PRI_NORMAL, OS_READ,
+              (u32)_staticSegmentRomStart, staticSegment,
+              (u32)_staticSegmentRomEnd - 
+                 (u32)_staticSegmentRomStart,
+               &amp;dmaMessageQ);</font>
+    
+/*
+ * Wait for DMA to finish
+ */
+    (void)osRecvMesg(&amp;dmaMessageQ, NULL, OS_MESG_BLOCK);
+    
+........
+}
+</pre></font></td></tr></table>
+
+<p>
+
+<p>Make additions and changes to this section as shown on the following page.
+<p><Both NW and PC></p>
+
+<table border="1" width="100%"><tr><td><font face="courier">
+<pre>
+#include &lt;ultra64.h&gt;
+#include &lt;PR/ramrom.h&gt;  /* needed for argument passing into the app */
+#include &lt;assert.h&gt;
+<font color="#FF0000">
+#include &lt;PR/leo.h&gt;				 	      <--added</font>	
+
+#include &quot;onetri.h&quot;
+<font color="#FF0000">
+#if __GNUC__ /* { */
+extern short int _staticSegmentDiskStart,_staticSegmentDiskEnd;
+#else/* }{ */                                                  <--added	
+extern char       _staticSegmentDiskStart[],_staticSegmentDiskEnd[];
+#endif /* } */</font>
+.........
+<font
+color="#FF0000">
+#define NUM_LEO_MESGS   8			         	<--added
+static  OSMesg  LeoMessages[NUM_LEO_MESGS];
+</font>
+.........
+
+static void
+mainproc(void *arg)
+{
+OSTask		*tlistp;
+Dynamic		*dynamicp;
+char		*staticSegment;
+<font
+color="#FF0000">LEOCmd		cmdBlock;				        <--added</font>    
+.........
+
+/*
+ * Create leo manager
+ */<font
+color="#FF0000">
+LeoCreateLeoManager((OSPri)OS_PRIORITY_LEOMGR - 1,
+                                                                <---added	
+                       (OSPri)OS_PRIORITY_LEOMGR,
+                        LeoMessages, NUM_LEO_MESGS);
+</font>
+/*
+ * Stick the static segment right after the code/data segment
+ */
+staticSegment = _codeSegmentEnd;<font
+color="#FF0000">
+LeoReadWrite(&amp;cmdBlock, OS_READ,
+             (u32)_staticSegmentDiskStart, staticSegment,
+             (u32)_staticSegmentDiskEnd -	                 <--changed
+               (u32)_staticSegmentDiskStart,
+              &amp;dmaMessageQ);</font>
+    
+/*
+ * Wait for DMA to finish
+ */
+(void)osRecvMesg(&amp;dmaMessageQ, NULL, OS_MESG_BLOCK);
+    
+........
+}
+</pre></font>
+    </td>
+  </tr>
+</table>
+
+<p><a href="../../n64man/64dd/LeoReadWrite.htm">LeoReadWrite( )</a>is a disk-access function.  It corresponds exactly to osPiStartDma( ), which is used when accessing the Game Pak ROM. <a href="../../n64man/64dd/LeoCreateLeoManager.htm">LeoCreateLeoManager( )</a> is a function for starting the manager leo manager, which enables <a href="../../n64man/64dd/LeoReadWrite.htm">LeoReadWrite( )</a>to be used.  For more information on these functions, please see <a href="../dd07/index.htm">"Chapter 7, Library Functions</a>."
+
+<p><strong>6.  After making these changes, compile the program.</strong>
+<P>
+
+<table border="1" width="100%" cellpadding="3" cellspacing="3">
+  <tr>
+    <td width="290" valign="top"><font face="arial" size="-1">[NW] <p>% make </td>
+    <td valign="top" width="290"><font face="arial" size="-1">[PC] <p>C&gt;make </td>
+  </tr>
+</table>
+
+<p><strong>7.  Start Partner</strong>
+<P>
+<table border="1" width="100%" cellpadding="3" cellspacing="3">
+  <tr>
+    <td valign="top" width="290"><font face="arial" size="-1">[NW] <p>% ptn64 </td>
+    <td valign="top" width="290"><font face="arial" size="-1">[PC] <p>Double-click on the Partner N64 PC icon.
+    </td>
+  </tr>
+</table>
+
+<p>The following are commands entered in the Partner command box.
+</p>
+
+<p><strong>8.  Write the program to disk.</strong>
+<P>
+Write the program to disk, load the debugging information, and start the IPL.  The IPL loads the game program.</strong>
+<P>
+<table border="1" width="100%" cellpadding="3" cellspacing="3">
+  <tr>
+    <td valign="top" width="290"><FONT FACE="ARIAL" SIZE="-1">[NW] <p>&gt; l onetri </td>
+    <td valign="top" width="290"><font face="arial" size="-1">[PC] <p>&gt; l onetri.out (.out can be omitted)</td>
+  </tr>
+</table>
+
+<p><strong>9.  Run the game "onetri."</strong>
+
+
+<p>[ NW and PC ] </p>
+
+<p>&gt;g</p>
+
+
+<p>
+<strong>Note:</strong> <font face="arial" size="-1">In the example above, static.c is read as a single segment after the game is started.  If it is read successfully, this is displayed on the screen.  However, this configuration is inadequate because it provides no means of displaying an error message if the static seqment is not read successfully.  This type of configuration was provided as an example of a simple read from disk.  With actual games, however, please be sure to include error display functions and display list in the boot segment (See <ahref="../dd12/12-00.htm#02">Section 12.2, After the IPL starts the game, disk access is prohibited until the first screen (e.g. title screen)</a>]. Moreover, the IPL loads only the boot segment and cannot be configured to load multiple segments.
+
+
+<p><a href="index.htm"><img src="../../gif/index.gif" border="0" width="65" height="17"></a></p>
+
+<hr>
+</body>
+</html>

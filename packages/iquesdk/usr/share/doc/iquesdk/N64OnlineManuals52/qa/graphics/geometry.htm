@@ -1,0 +1,739 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN"
+PWC 2/21/00>
+<HTML>
+<HEAD><link rel=stylesheet type="text/css" href="../style.css">
+<TITLE>3D Calculations</TITLE>
+</HEAD>
+
+<BODY>
+<a name=index></a>
+<IMG src="../../gif/n64_logo2.gif" height="21" width="136">
+
+<h3><FONT color="#FF8000">Q&A</FONT>- 3D Calculations</h3>
+
+
+<TABLE border="0">
+  <TR>
+    <TD align="center" valign="top" width="40"><A href="geometry.htm#01"><b>QA1</b></a></td>
+    <TD valign="top">Why does the system hang when you exceed a certain drawing area?</td></td>
+  <TR>
+    <TD align="center" valign="top"><A href="geometry.htm#02"><b>QA2</b></a></td>
+    <TD valign="top">Is changing coordinates with the CPU and Z sorting the only way?
+</td></td>
+  <TR>
+    <TD align="center" valign="top" width="40"><A href="geometry.htm#03"><b>QA3</b></a></td>
+    <TD valign="top">About normalization of normal vector.</td></td>
+  <TR>
+    <TD align="center" valign="top"><A href="geometry.htm#04"><b>QA4</b></a></td>
+    <TD valign="top">How do you calculate screen coordinates from 3D space coordinates?</td></td>
+  <TR>
+    <TD align="center" valign="top" width="40"><A href="geometry.htm#05"><b>QA5</b></a></td>
+    <TD valign="top">What's the meaning of the guLookAt() parameters xUp, yUp and zUp?</td></td>
+  <TR>
+    <TD align="center" valign="top"><A href="geometry.htm#06"><b>QA6</b></a></td>
+    <TD valign="top">How do you get the distance (Z value) to a point in the 3D coordinate system from the display?</td></td>
+  <TR>
+    <TD align="center" valign="top" width="40"><A href="geometry.htm#07"><b>QA7</b></a></td>
+    <TD valign="top">How do you compare the pitch, yaw and roll values from the matrix?</td></td>
+  <TR>
+    <TD align="center" valign="top"><A href="geometry.htm#08"><b>QA8</b></a></td>
+    <TD valign="top">Can you use the Z-buffer when using rectangle?</td></td>
+  <TR>
+    <TD align="center" valign="top" width="40"><A href="geometry.htm#09"><b>QA9</b></a></td>
+    <TD valign="top">How do you calculate the value of "Z" passed to gDPSetPrimDepth? </td></td>
+  <TR>
+    <TD align="center" valign="top"><A href="geometry.htm#10"><b>QA10</b></a></td>
+    <TD valign="top">Textures and matrices are in the frame buffer bank, but the coordinates are out of display order.</td></td>
+  <TR>
+    <TD align="center" valign="top" width="40"><A href="geometry.htm#11"><b>QA11</b></a></td>
+    <TD valign="top">Attaching shadows to characters.</td></td>
+  <TR>
+    <TD align="center" valign="top"><A href="geometry.htm#12"><b>QA12</b></a></td>
+    <TD valign="top">I get strange results when I use G_MTX_MUL with the RSP to obtain the area.</td></td>
+  <TR>
+    <TD align="center" valign="top" width="40"><A href="geometry.htm#13"><b>QA13</b></a></td>
+    <TD valign="top">Collision detection in Mario 64.</td></td>
+  <TR>
+    <TD align="center" valign="top"><B><A href="geometry.htm#14">QA14</A></B></TD>
+    <TD valign="top">To change the order of the r, p, and h operators in gu commands...</TD></TR>
+  <TR>
+    <TD align="center" valign="top"><A href="geometry.htm#15"><B>QA15</B></A></TD>
+    <TD valign="top">About the general size of far...</TR>
+</TABLE>
+
+
+<HR>
+<P>
+<A name="01"><FONT color="#FF0000"><b>Q1</b></FONT></A>
+<b> Currently, as the number of polygons and/or rectangles being rendered increases, once the surface area being rendered exceeds a set amount, the application hangs up.  What causes this?
+</b>
+
+<P>
+<FONT   color="#008000"><b>A1</b></FONT> It is not hanging because the rendered area is increasing.  It is probably due to some other cause.  When rendering rectangles, they must not protrude from the screen.  Calculate them in the CPU so that they are handled within the screen.  In addition, check to see if the display buffer or stacks haven't overflowed. 
+
+<P align="right">
+<A href="geometry.htm#index">top</A>
+
+<HR>
+<P>
+<A name="02"><FONT  color="#FF0000"><b>Q2</b></FONT></A><b> When I do a Z-sort on polygons in three-dimensional processing, when I perform coordinate conversion with the CPU other than using Z-sort, I can't get it to do anything but a Z-sort.  Why?
+</b>
+
+<P>
+<FONT   color="#008000"><b>A2</b></FONT> This will be possible using the Z-sort microcode scheduled for release 10/9/1997, but this will not change the fact that sorting with the CPU is indispensable.  In addition, while this theoretically is so with the current microcode, there is definitely a way to simplify coordinate conversion.  Refer to the Tuning Guide in the manual for sorting and culling procedures. 
+
+<P align="right">
+<A href="geometry.htm#index">top</A>
+
+<HR>
+<P>
+<A name="03"><FONT   color="#FF0000"><b>Q3</b></FONT></A><b> According to the Programming Manual, the normal vector must be normalized to a length of 127, but doesn't +/-127 for any element of a vector actually express +/-1.0?  Or does +/-128 express +/11.0, but since +128 can't be expressed, is it necessary to performing clipping to the +127 limit?  In the latter case, can -128 not be specified as well? </b>
+
+<P>
+<FONT   color="#008000"><b>A3</b></FONT> The latter is the case.  The length 128 is 1 internally.  However, a vector of (1,0,0), (0,1,0), (0,0,1) cannot be normalized to a length of 128 (each element is 8 bits, without a sign).  Normally, the vector would be normalized to a length of 128, and these 3 exceptions would be normalized to a length of 127, but it is actually enough to normalize all lengths to 127.  There is not that big a difference between it and 128. 
+
+<P align="right">
+<A href="geometry.htm#index">top</A>
+
+<HR>
+<P>
+<A name="04"><FONT  color="#FF0000"><b>Q4</b></FONT></A><b> How do I calculate screen coordinates from three-dimensional spatial coordinates? </b>
+
+<P>
+<FONT   color="#008000"><b>A4</b></FONT> There currently is no such macro.  Consequently, we can only request that you construct your own macro, but since there are several ways of thinking about this, we have compiled the following.  Please refer to it. 
+
+<P>
+<B>Calculating from a Matrix</B>
+
+<P>
+Where the target coordinates are (x0,y0,z0), the 4x4 matrix of movement (including rotation, scaling, etc.) at those world coordinates is [model_mtx], and the 4x4 viewing matrix is [lookat_mtx], these can be converted to a point-of-view coordinate system, in which the point of view is the origin, by calculating (0x,0y,0z)x[model_mtx]x[lookat_mtx].  
+
+<P>
+If this is thought of in a Y-Z plane like that below, it can simply be expressed as a triangular ratio. 
+
+<P>
+<IMG src="img/gfx22.gif" height="320" width="418">
+
+<P>
+Here, the coordinates (x,y,z) after the conversion of (x0,y0,z0), where the origin is the point of view, are considered as coordinates (y,z) projected onto the Y-Z plane.  In this case, (height,z), whose z values are the same as these coordinates relative to the Z axis direction, which the depth axis, is actually the top edge of the screen.  In addition, the position at which y=0 is the mid-point which vertically divides the screen.  When 
+
+<BLOCKQUOTE>
+
+<PRE>
+|(height, z)| = L
+</pre>
+</BLOCKQUOTE>
+<P>
+because 
+
+<BLOCKQUOTE>
+
+<PRE>
+|(height, z)| - cos(fovy/2) = z
+</pre>
+</BLOCKQUOTE>
+<P>
+then 
+
+<BLOCKQUOTE>
+
+<PRE>
+L = z / cos(fovy/2)
+</pre>
+</BLOCKQUOTE>
+<P>
+Consequently, 
+
+<BLOCKQUOTE>
+
+<PRE>
+height = L - sin(fovy/2) = z - sin(fovy/2) / cos(fovy/2)
+</pre>
+</BLOCKQUOTE>
+<P>
+is true. 
+
+<P>
+Consequently, since the position sY in the screen coordinates relative to (y,z) is
+
+<BLOCKQUOTE>
+
+<PRE>
+120 : sY = height : y
+</pre>
+</BLOCKQUOTE>
+<P>
+this 
+
+<BLOCKQUOTE>
+
+<PRE>
+sY = 120 x y / height
+</pre>
+</BLOCKQUOTE>
+<P>
+becomes true. 
+
+<P>
+Finally, when adjusted to a coordinate system in which the upper-left corner of the screen is the origin, 
+
+<BLOCKQUOTE>
+
+<PRE>
+sY = -sY + 120
+</pre>
+</BLOCKQUOTE>
+<P>
+ultimately becomes the necessary screen coordinate value for Y. 
+
+<P>
+The value for X can similarly be found. 
+
+<P>
+<B>Calculating from the Planar Equation</B>
+
+<P>
+Consider the following figure. 
+
+<P>
+<IMG src="img/gfx22_2.gif" height="320" width="640">
+
+<P>
+In the figure, the vector c=(cx,cy,cz) is the camera position, the 3D coordinate that you wish to find is x1=(x1,y1,z1), and the vector a=(ax,ay,az) is the ray of a vector from the POV in the viewing direction, which intersects the plane containing the coordinate x1.  In addition, since guLookAt or guLookAtF is used to obtain the various vectors - vector Look=(lookX,lookY,lookZ) (the unit direction vector from the POV to the main POV), Up=(upX,upY,upZ) (the unit vector indicating the up direction in the display), and Right=(rightX,rightY,rightZ) (the unit vector indicating the right direction in the display) - they can be utilized to find the coordinate as follows. 
+
+<P>
+First the intersection (ax,ay,az) is found.  When the planar equation is utilized, the above plane is 
+
+<BLOCKQUOTE>
+
+<PRE>
+lookX*x + lookY*y + lookZ*z + d = 0
+</pre>
+</BLOCKQUOTE>
+<P>
+Since this plane contains x1 = (x1, y1, z1), 
+
+<BLOCKQUOTE>
+
+<PRE>
+d =  |(lookX*x1 + lookY*y1 + lookZ*z1)
+</pre>
+</BLOCKQUOTE>
+<P>
+is true. 
+
+<P>
+Therefore, by substituting from the linear equation 
+
+<BLOCKQUOTE>
+
+<PRE>
+x = lookX*t + cx, y = lookY*t + cy, z = lookZ*t + cz
+</pre>
+</BLOCKQUOTE>
+<P>
+into the planar equation 
+
+<BLOCKQUOTE>
+
+<PRE>
+lookX*(lookX*t + cx) 
+        + lookY*(lookY*t + cy) 
+        + lookZ*(lookZ*t + cz) + d = 0
+</pre>
+</BLOCKQUOTE>
+<P>
+the distance t between this plane and the POV becomes 
+
+<BLOCKQUOTE>
+
+<PRE>
+t = lookX*cx + lookY*cy + lookZ*cz + d
+</pre>
+</BLOCKQUOTE>
+
+<P>
+In addition, in order to consider what part of the aforementioned plane is the midpoint of the highest line of the screen in the display, where len is the distance from the POV to this part, 
+
+<BLOCKQUOTE>
+
+<PRE>
+len*cos(fovy/2) = t
+</pre>
+</BLOCKQUOTE>
+
+becomes true, and therefore, the distance height from the main POV to that point becomes
+
+<BLOCKQUOTE>
+<PRE>
+height = len*sin(fovy/2) = t*sin(fovy/2) / cos(fovy/2)
+</pre>
+</BLOCKQUOTE>
+<P>
+This length is actually 120 dots on the display. The vertical position sy of vector x1 in the display can be found using the vectors a and Up, which were found previously.  Where the vector x2=x1-a, because the Up vector is a vector moving upwards in the display, 
+
+<BLOCKQUOTE>
+
+<PRE>
+sy = |x2|*(x2 &geometry.htm#183; Up) / (|x2|*|Up|) = x2 &geometry.htm#183; Up
+</pre>
+</BLOCKQUOTE>
+<P>
+is true. 
+
+<P>
+When the position SY on the screen is calculated using the sy found here, 
+
+<BLOCKQUOTE>
+
+<PRE>
+160 : SY = height : sy
+</pre>
+</BLOCKQUOTE>
+<P>
+therefore
+
+<BLOCKQUOTE>
+
+<PRE>
+SY = 160*sy/height
+</pre>
+</BLOCKQUOTE>
+<P>
+is true. 
+
+<P>
+The coordinates on the screen can then be calculated by converting this into a normal screen coordinate as in (1), and then performing the same operation for the x direction. 
+
+<P align="right">
+<A href="geometry.htm#index">top</A>
+
+<HR>
+<P>
+<A name="05"></A><b><FONT  color="#FF0000">Q5</FONT> What is the significance of the parameters xUp, yUp, and zUp for <A href="../../n64man/gu/guLookAt.htm">guLookAt()</A>?</b>
+
+<P>
+<FONT  color="#008000"><b>A5</b></FONT> The Up vector of <A href="../../n64man/gu/guLookAt.htm">guLookAt()</A> is the parameter for specifying which direction will be up in the display. 
+
+<P align="right">
+<A href="geometry.htm#index">top</A>
+
+<HR>
+<P>
+<A name="06"><FONT   color="#FF0000"><b>Q6</b></FONT></A><b> How do I find the distance (Z value) from the display to a point in the three-dimensional coordinate system?</b>
+
+<P>
+<FONT   color="#008000"><b>A6</b></FONT> There are 3 ways of calculating this, as listed below. 
+
+<P>
+<B>Calculating Using a Matrix</B>
+
+<P>
+First, where a0 is the vector before moving the three-dimensional coordinates, Tr is the matrix for movement, and View0 is the viewing matrix found with <A href="../../n64man/gu/guLookAt.htm">guLookAt</A> or <A href="../../n64man/gu/guLookAtF.htm">guLookAtF</A>, the vector coordinate a1 in the POV coordinate system, where the point of view is the origin, is 
+
+<BLOCKQUOTE>
+
+<PRE>
+a1 = Tr*View0*a0
+</pre>
+</BLOCKQUOTE>
+<P>
+Consequently, where a1=(ax1,ay1,az1), az1 is the distance from the point of view. 
+
+<P>
+<B>Calculating from the Planar Equation</B>
+
+<P>
+First, let the vector after movement of the three-dimensional coordinates be b=(bx,by,bz).  Then, where View1 is the 4x4 floating point matrix resulting from using guMtxL2F to convert the matrix found with guLookAtF or the matrix found with guLookAt, and float View1_mtx[4][4] is the structure thereof, the vector (Lookx,Looky,Lookz) obtained from 
+
+<BLOCKQUOTE>
+
+<PRE>
+Lookx = View1_mtx[0][2]
+Looky = View1_mtx[1][2]
+Lookz = View1_mtx[2][2]
+</pre>
+</BLOCKQUOTE>
+<P>
+is the unit direction matrix from the point of view to the main point of view.  Since the planar equation that makes this direction vector a ray vector is given by 
+
+<BLOCKQUOTE>
+
+<PRE>
+Lookx*x + Looky*y + Lookz*z + d = 0
+</pre>
+</BLOCKQUOTE>
+<P>
+when the vector b is substituted into this, 
+
+<BLOCKQUOTE>
+
+<PRE>
+d =  |(Lookx*bx + Looky*by + Lookz*bz)
+</pre>
+</BLOCKQUOTE>
+<P>
+becomes true.  
+
+<P>
+Where the POV coordinate is c=(cx,cy,cz), and the distance from the POV to the plane is len, by substituting this into the above planar equation, 
+
+<BLOCKQUOTE>
+
+<PRE>
+Lookx*(Lookx*len + cx) 
+        + Looky*(Looky*len + cy) 
+        + Lookz*(Lookz*len + cz) + d = 0
+</pre>
+</BLOCKQUOTE>
+<P>
+becomes true, and when this is solved, 
+
+<BLOCKQUOTE>
+
+<PRE>
+len = Lookx*(bx |cx) + Looky*(by |cy) + Lookz*(bz |cz)
+</pre>
+</BLOCKQUOTE>
+<P>
+becomes true. 
+
+<P>
+<B>Considered with a Vector</B>
+
+<P>
+Consider the following figure.  Here, b=(bx,by,bz) are the three-dimensional coordinates after movement, c=(cx,cy,cz) are the coordinates of the camera, and look=(Lookx,Looky,Lookz) is the unit direction vector from the POV to the main POV found in A-(2).  In addition, |b-c|=L and the angle between the vectors b-c and look is <img align=absmiddle src="../../gif/theta-1.gif">. 
+
+<P>
+<IMG src="img/gfx27.gif" height="320" width="365">
+
+<P>
+In the above figure, the distance to be found Depth is 
+
+<BLOCKQUOTE>
+
+<PRE>
+Depth   = L*cos<img align=absmiddle src="../../gif/theta-1.gif">
+        = |b |c|*((b |c)&geometry.htm#183;look)/(|b |c|*|look|)
+        = (b |c)&geometry.htm#183;look
+        = (bx |cx)*Lookx + (by |cy)*Looky + (bz |cz)*Lookz
+</pre>
+</BLOCKQUOTE>
+<P>
+which is the same as the results in "Calculating using the Planar Equation." 
+
+<P>
+Try these for reference. 
+
+<P align="right">
+<A href="geometry.htm#index">top</A>
+
+<HR>
+<P>
+<A name="07"><FONT  color="#FF0000"><b>Q7</b></FONT></A><b> After I've calculated the point-of-view matrix using </b>
+
+<BLOCKQUOTE>
+
+<PRE>
+<A href="../../n64man/gu/guLookAt.htm">guLookAt</A>(Mtx m, ...);
+</pre>
+</BLOCKQUOTE>
+<P>
+<b>I would like to check the values for pitch, yaw, and roll from that matrix.  How should I calculate these values?</b>
+
+<P>
+<FONT   color="#008000"><b>A7</b></FONT>    First, the <A href="../../n64man/gu/guLookAtF.htm">guLookAtF()</A> source file, located in the /usr/src/PR/libultra/gu directory, is shown below. 
+
+<BLOCKQUOTE>
+
+<PRE>
+/**************************************************************************
+ *                                                                        *
+ *               Copyright (C) 1994, Silicon Graphics, Inc.               *
+ *                                                                        *
+ *  These coded instructions, statements, and computer programs  contain  *
+ *  unpublished  proprietary  information of Silicon Graphics, Inc., and  *
+ *  are protected by Federal copyright law.  They  may  not be disclosed  *
+ *  to  third  parties  or copied or duplicated in any form, in whole or  *
+ *  in part, without the prior written consent of Silicon Graphics, Inc.  *
+ *                                                                        *
+ **************************************************************************/
+
+geometry.htm#include &quot;guint.h&quot;
+
+void guLookAtF(float mf[4][4], float xEye, float yEye, float zEye,
+               float xAt,  float yAt,  float zAt,
+               float xUp,  float yUp,  float zUp)
+{
+        float   len, xLook, yLook, zLook, xRight, yRight, zRight;
+
+        guMtxIdentF(mf);
+
+        xLook = xAt - xEye;
+        yLook = yAt - yEye;
+        zLook = zAt - zEye;
+
+        /* Negate because positive Z is behind us: */
+        len = -1.0 / sqrtf (xLook*xLook + yLook*yLook + zLook*zLook);
+        xLook *= len;
+        yLook *= len;
+        zLook *= len;
+
+        /* Right = Up x Look */
+
+        xRight = yUp * zLook - zUp * yLook;
+        yRight = zUp * xLook - xUp * zLook;
+        zRight = xUp * yLook - yUp * xLook;
+        len = 1.0 / sqrtf (xRight*xRight + yRight*yRight + zRight*zRight);
+        xRight *= len;
+        yRight *= len;
+        zRight *= len;
+
+        /* Up = Look x Right */
+
+        xUp = yLook * zRight - zLook * yRight;
+        yUp = zLook * xRight - xLook * zRight;
+        zUp = xLook * yRight - yLook * xRight;
+        len = 1.0 / sqrtf (xUp*xUp + yUp*yUp + zUp*zUp);
+        xUp *= len;
+        yUp *= len;
+        zUp *= len;
+
+        mf[0][0] = xRight;
+        mf[1][0] = yRight;
+        mf[2][0] = zRight;
+        mf[3][0] = -(xEye * xRight + yEye * yRight + zEye * zRight);
+
+        mf[0][1] = xUp;
+        mf[1][1] = yUp;
+        mf[2][1] = zUp;
+        mf[3][1] = -(xEye * xUp + yEye * yUp + zEye * zUp);
+
+        mf[0][2] = xLook;
+        mf[1][2] = yLook;
+        mf[2][2] = zLook;
+        mf[3][2] = -(xEye * xLook + yEye * yLook + zEye * zLook);
+
+        mf[0][3] = 0;
+        mf[1][3] = 0;
+        mf[2][3] = 0;
+        mf[3][3] = 1;
+}
+
+void guLookAt (Mtx *m, float xEye, float yEye, float zEye,
+               float xAt,  float yAt,  float zAt,
+               float xUp,  float yUp,  float zUp)
+{
+        Matrix  mf;
+
+        guLookAtF(mf, xEye, yEye, zEye, xAt, yAt, zAt, xUp, yUp, zUp);
+
+        guMtxF2L(mf, m);
+}
+</pre>
+</BLOCKQUOTE>
+<P>
+Looking at the above source code, you can see the following. 
+
+<P>
+First, where the eye position is Eye=(xEye,yEye,zEye), the main point of view is At=(xAt,yAt,zAt), and the up direction is Up=(xUp,yUp,zUp), perform processing in the following order. 
+
+<P>
+Find the unit direction vector Look=(xLook, yLook, zLook) from the eye position to the main POV.
+
+<P>
+Find the unit vector Right=(xRight, yRight, zRight) toward the right from the POV. 
+
+<P>
+Find the unit vector Up=(xUp, yUp, zUp) upward from the POV. 
+
+<P>
+Substitute these into the lookatf matrix mf[4][4]. 
+
+<P>
+This completes the processing.  This, then, is the pitch, yaw, and roll of the lookat matrix in your question, but there are currently no macros to directly obtain these values.  Therefore, since mf[3][0], mf[3][1], and mf[3][2] are the elements relative to parallel movement in the matrix, if these are set to 0 and only those elements pertaining to rotation are considered, the following rotation matrix is derived. 
+
+<BLOCKQUOTE>
+
+<PRE>
+ | xRight xUp   XLook 0 |
+ | yRight yUp   yLook 0 |
+ | zRight zUp   zLook 0 |
+ | 0      0     0     0 |
+</pre>
+</BLOCKQUOTE>
+<P>
+For example, consider the pitch, yaw, and roll acting in this matrix relative to the vector of the up direction [0,1,0], right direction [1,0,0], and forward direction [0,0,1] of the basic unit vector in an orthogonal coordinate system.  The rotational angle <img src="../../gif/alpha.gif"> from a vector [0,yLook,zLook] in which the forward direction [0,0,1] and the vector which rotates around it [xLook,yLook,zLook] are projected onto the Y-Z plane, can be found for the pitch.  Therefore, 
+
+<BLOCKQUOTE>
+
+<PRE>
+ cos<img src="../../gif/alpha.gif"> = [0, 0, 1]*[0, yLook, zLook]/sqrt(yLook^2+zLook^2)
+        = zLook/sqrt(yLook^2+zLook^2)
+ sin<img src="../../gif/alpha.gif">  = |[0, 0, 1]x[0, yLook, zLook]|/sqrt(yLook^2+zLook^2)
+        = |[yLook, 0, 0]|/sqrt(yLook^2+zLook^2)
+        = |yLook|/sqrt(yLook^2+zLook^2)
+</pre>
+</BLOCKQUOTE>
+<P>
+is true.  Since N64 does not provide any functions to calculate arc sin or arc cos, subsequent calculations must be accomplished by some other means, such as with tables or approximation equations. 
+
+<P>
+The yaw and roll can similarly be found by projecting them onto respective planes and calculating the angles from the respective basic unit vectors using the scalar product and vector product of the vector.  (However, since |AxB|=|A||B|sin<img src="../../gif/alpha.gif"> for the vector product, this must be considered for both cases in which -1=<sin <0 and 0=<sin =<1...)
+
+<P>
+Since the above calculations are performed on the desk top, thoroughly test the various methods to find which is most efficient at finding the various values. 
+
+<P align="right">
+<A href="geometry.htm#index">top</A>
+
+<HR>
+<P>
+<A name="08"><FONT  color="#FF0000"><b>Q8</b></FONT></A><b> Can the Z-buffer be used when rectangles are used? </b>
+
+<P>
+<FONT  color="#008000"><b>A8</b></FONT> The blender has a function called <A href="../../n64man/gdp/gDPSetPrimDepth.htm">gDPSetPrimDepth</A>Using this makes it possible to use the Z-buffer. 
+
+<P align="right">
+<A href="geometry.htm#index">top</A>
+
+<HR>
+<P>
+<A name="09"><FONT   color="#FF0000"><b>Q9</b></FONT></A><b> I'd like to use gDPSetPrimDepth when using the Z-buffer for a primitive, such as a rectangle, etc., but I don't seem to be able to calculate the Z value which is supposed to be given here.  How do I do this? </b>
+
+<P>
+<FONT  color="#008000"><b>A9</b></FONT> The method for calculating the Depth value is given below.  This makes it possible to link a rectangle to the 3D field and to display it using the Z-buffer. 
+
+<P>
+<ol>
+<li>Prepare the "coordinates (x,y,z)" where the target rectangle is to be displayed<P>
+<li>Create a 4x4 matrix multiplication function<P>
+<li>Multiply the viewing conversion matrix calculated from guLookAt() by (x,y,z,1)<p>
+<li>Multiply The resulting coordinates by the projection conversion output from guPerspective()<p>
+<li>Calculate "z2/w2*0x3fe0+0x3fe0" from the resulting coordinates (x2,y2,z2,w2)<p>
+<li>Substitute that value in SetPrimDepth
+</ol>
+<P>
+This method has worked pretty well up until now.  Typical source code...
+<blockquote>
+<Pre>
+MtxXFML4(&dynamicp->viewing,x,y,z,1.0,&x1,&y1,&z1,&w1);
+MtxXFML4(&dynamicp->projection,x,y,z,w,&x2,&y2,&z2,&w2);
+screenZ = z2 / w2 *0x3fe0 + 0x3fe0;
+gDPDepthSource(glistp++,G_ZS_PRIM);
+gDPSetPrimDepth(glistp++,screenZ,0);
+:
+:
+/* Render here */
+:
+:
+void MtxXFML4(Mtx *m, float x, float y, float z, float w,float *ox, float
+*oy, float *oz, float *ow)
+{
+float mf[4][4];
+guMtxL2F(mf, m);
+*ox = mf[0][0]*x + mf[1][0]*y + mf[2][0]*z + mf[3][0];
+*oy = mf[0][1]*x + mf[1][1]*y + mf[2][1]*z + mf[3][1];
+*oz = mf[0][2]*x + mf[1][2]*y + mf[2][2]*z + mf[3][2];
+*ow = mf[0][3]*x + mf[1][3]*y + mf[2][3]*z + mf[3][3];
+}
+</pre></blockquote>
+
+<P align="right">
+<A href="geometry.htm#index">top</A>
+
+<HR>
+<P>
+<A name="10"><FONT  color="#FF0000"><b>Q10</b></FONT></A><b> I've put textures and matrices into banks in the frame buffer, but, depending on the display order, the coordinates ge messed up.</b>
+
+<P>
+<FONT  color="#008000"><b>A10</b></FONT> The textures and matrices must be aligned to the address.  The coordinates are probably getting messed up because you are forgetting this processing. 
+
+<P align="right">
+<A href="geometry.htm#index">top</A>
+
+<HR>
+<P>
+<A name="11"><FONT  color="#FF0000"><b>Q11</b></FONT></A><b> How do I attach a scene to a character (Is there a good method other than that in the sample program)?</b>
+
+<P>
+<FONT  color="#008000"><b>A11</b></FONT> It is also possible to create the polygons of a scene by actually calculating them in the CPU.  However, this isn't really a method that works well for games (from the standpoints of calculation processing speed and the number of polygons).  The only the method that occurs to me now is in the tea pot demo. 
+
+<P align="right">
+<A href="geometry.htm#index">top</A>
+
+<HR>
+<P>
+<A name="12"><FONT  color="#FF0000"><b>Q12</b></FONT></A><b> It seems that the rows and columns of the matrix are substituted compared with mathematical model, but the display matrix for one model is determined by applying <A href="../../n64man/gu/guTranslate.htm"> guTranslate </A>, <A href="../../n64man/gu/guRotateRPY.htm"> guRotateRPY</A>, and <A href="../../n64man/gu/guScale.htm"> guScale </A> in order, using the gu library. However, when I try to create that parent-child relationship, find the local display matrix for that model, and get the product, and send the results calculated by the CPU using <A href="../../n64man/gu/guMtxCatL.htm"> guMtxCatL </A> to the RCP, the model is displayed just fine, but I can't get as good results on the RSP side when I find the product using G_MTX_UL.  When kind of matrix product is produced on the RSP side?  Can I not perform this process on the RSP side?</b>
+
+<P>
+<FONT   color="#008000"><b>A12</b></FONT> Matrix multiplication can be performed on the RSP side. 
+
+<P>
+The most probable reason that you can't get good calculation results on the RSP is probably that the matrix (multiplicand and multiplier) on which you are basing your calculations is not shared with other calculation parameters.  These matrices are not common variables, but reserve individual dedicated variable areas and must be saved in RDRAM while the RSP is processing. 
+
+<P>
+Next, since the associative law holds for matrix multiplication, it is possible that the parent and child matrices are each separately calculated, and then being applied as parent and child.  However, since the commutative law generally does not apply, the results will be odd if the multiplier and multiplicand are reversed and processed. 
+
+<P>
+Regardless of how the rows and columns of a mathematical matrix are defined, the matrix is viewed differently if the column (row) index of M[A][B] is defined as A(B) and when it is defined as B(A).  Now, the whole number component and decimal component for each element of a matrix defined with Mtx is stored separately.  However, this should pose no problem as long as calculations are done using the library. 
+
+<P align="right">
+<A href="geometry.htm#index">top</A>
+
+<HR>
+<P>
+<A name="13"><FONT  color="#FF0000"><b>Q13</b></FONT></A><b> What about the collision criteria in Mario 64?</b>
+
+<P>
+<FONT   color="#008000"><b>A13</b></FONT> The criteria data for collisions with other shapes in Mario 64 are kept separate from the display lists for displaying the other shapes.  In addition to polygon vertices, these collision criteria data also have planar equation parameters, which planar equations are used mathematically to find the current height.  In addition, the collision criteria data are created by converting the output from commercially available modeling tools with a conversion program. 
+
+<P align="right">
+<A href="geometry.htm#index">top</A>
+
+<HR>
+<P>
+<B><A name="14"><FONT   color="#FF0000"><b>Q14</b></FONT></A> If I wish to change the operation order (rotation order) of rpy(rhp) in guRotateRPU[F] or guPosition[F], etc., which method is most efficient and quickest?</B>
+
+<P>
+<FONT   color="#008000"><b>A14</b></FONT> The method of getting the source of guRotateRPU to change simply by changing the order of the operators is probably best.  There are probably other methods which are more efficient and faster.  Since the source codes for gu functions are open to the public, make upgrades there.  The source codes can be found in  /usr/src/PR/libsrc/libultra/gu/.
+
+<P align="right">
+<A href="geometry.htm#index">top</A>
+
+<HR>
+<P>
+<B><A name="15"><FONT   color="#FF0000"><b>Q15</b></FONT></A> guPerspectiveWhat normally is an appropriate value for far as specified by guPerspective?</B>
+
+<P>
+<FONT   color="#008000"><b>A15</b></FONT> To give examples using Nintendo titles...
+
+<P>
+F-ZEROX<br>
+near:16<br>
+far:8192
+
+<P>
+Mario 64 <br>
+near:100 <br>
+far:12800~5000
+
+<P>
+Mario Cart 64 <br>
+near:1~10<br>
+far:1500(Choco Mountain)~ 7000(Karakara Desert)
+
+<P>
+Wave Race 64 <br>
+near:10 <br>
+far:16138
+
+<P>
+As for near, make fine adjustments by making near smaller when the camera comes in close.
+
+<P align="right">
+<A href="geometry.htm#index">top</A>
+
+<HR>
+</BODY>
+</HTML>

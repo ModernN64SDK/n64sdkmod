@@ -1,0 +1,248 @@
+<HTML>
+<HEAD>
+<TITLE>Chapter 3 Binary Format</TITLE>
+</HEAD>
+<BODY LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff">
+
+<font face="arial" size="-1">
+<b><font size="3">Chapter 3 Binary Format</b></font>
+<HR>
+
+<b>3-19 LightList</b>
+<P>
+<u>1. LightList Area</u>
+<p>
+The LightList area is where light-related scene data is stored. Up to eight Light nodes can be defined in one scene. In addition, one Ambient Light and seven Diffuse Lights (or Positional Lights) can be stored in one Light node.<p>
+The LightList area is mapped as follows.
+
+<p>
+<table border="1" cellpadding="3" cellspacing="3">
+<tr>
+<th rowspan="9"><font face="arial" size="-1">
+LightListHeader
+</th>
+<td>
+u32
+</td>
+<td><font face="arial" size="-1">
+light_list_tag
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+light_list_header_size
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+light_list_size
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+light_num
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+nintendo_extension_block_size
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+user_extension_block_size
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+light_num_byte(0)
+</td>
+</tr>
+<tr>
+<td colspan="2"><font face="arial" size="-1">
+<center>
+...
+</center>
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+light_num_byte(light_num - 1)
+</td>
+</tr>
+
+<tr>
+<th rowspan="5"><font face="arial" size="-1">
+</th>
+<td colspan="2"><font face="arial" size="-1">
+<center>
+Light(0)
+</center>
+</td>
+</tr>
+<tr>
+<td colspan="2"><font face="arial" size="-1">
+<center>
+...
+</center>
+</td>
+</tr>
+<tr>
+<td colspan="2"><font face="arial" size="-1">
+<center>
+Light(light_num_byte)
+</center>
+</td>
+</tr>
+<tr>
+<td colspan="2"><font face="arial" size="-1">
+<center>
+NintendoExtensionBlock
+</center>
+</td>
+</tr>
+<tr>
+<td colspan="2"><font face="arial" size="-1">
+<center>
+UserExtensionBlock
+</center>
+</td></tr>
+</table>
+
+<p>
+Figure: LightList Area Memory Map
+
+<p>
+<table border="1" cellpadding="3" cellspacing="3">
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 light_list_tag
+</td>
+<td>
+<font face="arial" size="-1">
+Tag indicating LightList. Set the following.
+<pre><font face="courier" size="2"><b>TAG_LIGHT_LIST&#9;0x000f0000</b></pre>
+</font>
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 light_list_header_size
+</td>
+<td>
+<font face="arial" size="-1">
+Size of LightListHeader
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 light_list_size
+</td>
+<td>
+<font face="arial" size="-1">
+Size of LightList
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 light_num
+</td>
+<td>
+<font face="arial" size="-1">
+Number of Light in LightList
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 nintendo_extension_block_size
+</td>
+<td>
+<font face="arial" size="-1">
+Nintendo extension block size
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 user_extensino_block_size
+</td>
+<td>
+<font face="arial" size="-1">
+User extension block size
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 light_num_byte
+</td>
+<td>
+<font face="arial" size="-1">
+Number of bytes corresponding to Light
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+<a href="./seg19-2.htm">Light</a>
+</td>
+<td>
+<font face="arial" size="-1">
+Actual Light data. One Ambient Light and up to 8 Diffuse Lights (or Positional Lights) can be stored in one Light area.
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+NintendoExtensionBlock
+</td>
+<td>
+<font face="arial" size="-1">
+Nintendo extension block
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+UserExtensionBlock
+</td>
+<td>
+<font face="arial" size="-1">
+User extension block
+</td>
+</tr>
+</table>
+
+
+<p>
+
+
+<hr>
+
+<p align="right"><a href="../index.htm">
+<img src="../../../gif/index.gif"
+border="0" width="65" height="17"></a>
+&nbsp; <a href="./seg19-2.htm">
+<img src="../../../gif/next.gif"
+border="0" width="65" height="17"></a></p>
+
+</body>
+</html>
+
+

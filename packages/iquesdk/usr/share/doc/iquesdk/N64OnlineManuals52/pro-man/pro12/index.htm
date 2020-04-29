@@ -1,0 +1,87 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 12 - RDP Programming</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. -->
+</head>
+
+<h1>Chapter 12 - RDP Programming</h1>
+
+<p>The Reality Display Processor (RDP) <a href="../../keywords/index/data/graphics.htm#rasterize" target="keywords">rasterizes</a> triangles and rectangles, and produces high-quality, Silicon Graphics style pixels that are textured, <a href="../../keywords/index/data/graphics.htm#anti-aliasing" target="keywords">antialiased</a>, and <a href="../../keywords/index/data/graphics.htm#Z buffer" target="keywords">Z-buffered</a>.  The RDP has four main configurations where all the individual blocks work together to generate pixels.  These main configurations are called "cycle types," because they indicate how many pixels are generated per cycle.  <a href="#t12-01">Table  12-1</a> lists peak performance of each cycle type. Keep in mind that these peak numbers are typically realized on large rectangle primitives.  Triangles have variable short and long <a href="../../keywords/index/data/graphics.htm#span" target="keywords">spans</a> and these numbers degrade rapidly. </p>
+
+<table border=1 align="center">
+  <caption><a name="t12-01"><strong>Table  12-1 Cycle Types</strong></a></caption>
+  <tr><th>Type</th><th>Performance</th></tr>
+  <tr><td>FILL</td><td>4 16 bit pixels/cycle <br>
+      2 32 bit pixels/cycle</td></tr>
+  <tr><td>COPY</td><td>4 pixels/cycle</td></tr>
+  <tr><td>1CYCLE</td><td>1 pixel/cycle</td></tr>
+  <tr><td>2CYCLE</td><td>1 pixel/2 cycles</td></tr>
+</table>
+
+<p><strong>Note:</strong>  These are theoretical peak performances. In reality, due to the memory <a href="../../keywords/index/data/system.htm#latency" target="keywords">latency</a> and buffering overhead, actual performance numbers are lower. </p>
+
+<hr>
+<a name="index"></a>
+<dl>
+  <dt><a href="12-01.htm">12.1 Overview</a>
+  <dd><a href="12-01.htm#01">12.1.1 RDP Pipeline Blocks</a><br>
+      <a href="12-01.htm#02">12.1.2 One-Cycle-per-Pixel Mode </a><br>
+      <a href="12-01.htm#03">12.1.3 Two-Cycles-per-Pixel Mode</a><br>
+      <a href="12-01.htm#04">12.1.4 Fill Mode</a><br>
+      <a href="12-01.htm#05">12.1.5 Copy Mode</a><br>
+</dl>
+<dl>
+  <dt><a href="12-02.htm">12.2 RDP Global State</a>
+  <dd><a href="12-02.htm#01">12.2.1 Cycle Type </a><br>
+      <a href="12-02.htm#02">12.2.2 Synchronization</a><br>
+      <a href="12-02.htm#03">12.2.3 Span Buffer Coherency</a><br>
+</dl>
+<dl>
+  <dt><a href="12-03.htm">12.3 RS - Rasterizer</a>
+  <dd><a href="12-03.htm#01">12.3.1 Scissoring</a>
+</dl>
+<dl>
+  <dt><a href="12-04.htm">12.4 TX - Texture Engine</a>
+  <dd><a href="12-04.htm#01">12.4.1 Texture Tiles</a><br>
+      <a href="12-04.htm#02">12.4.2 Multiple Tile Textures </a><br>
+      <a href="12-04.htm#03">12.4.3 Texture Image Types and Format </a><br>
+      <a href="12-04.htm#04">12.4.4 Texture Loading</a><br>
+      <a href="12-04.htm#05">12.4.5 Color-Indexed Textures</a><br>
+      <a href="12-04.htm#06">12.4.6 Texture-Sampling Modes </a><br>
+      <a href="12-04.htm#07">12.4.7 Synchronization</a><br>
+</dl>
+<dl>
+  <dt><a href="12-05.htm">12.5 TF - Texture Filter</a>
+  <dd><a href="12-05.htm#01">12.5.1 Filter Types</a><br>
+      <a href="12-05.htm#02">12.5.2 Color Space Conversion</a><br>
+</dl>
+<dl>
+  <dt><a href="12-06.htm">12.6 CC - Color Combiner</a>
+  <dd><a href="12-06.htm#01">12.6.1 Color and Alpha Combiner Inputs Sources</a><br>
+      <a href="12-06.htm#02">12.6.2 CC Internal Color Registers</a><br>
+      <a href="12-06.htm#03">12.6.3 One-Cycle Mode</a><br>
+      <a href="12-06.htm#04">12.6.4 Two-Cycle Mode</a><br>
+      <a href="12-06.htm#05">12.6.5 Custom Modes</a><br>
+      <a href="12-06.htm#06">12.6.6 Chroma Key</a><br>
+</dl>
+<dl>
+  <dt><a href="12-07.htm">12.7 BL - Blender</a>
+  <dd><a href="12-07.htm#01">12.7.1 Surface Types</a><br>
+      <a href="12-07.htm#02">12.7.2 Antialiasing Modes</a><br>
+      <a href="12-07.htm#03">12.7.3 BL Internal Color Registers</a><br>
+      <a href="12-07.htm#04">12.7.4 Alpha Compare</a><br>
+      <a href="12-07.htm#05">12.7.5 Using Fog</a><br>
+      <a href="12-07.htm#06">12.7.6 Depth Source</a><br>
+</dl>
+<dl>
+  <dt><a href="12-08.htm">12.8 MI - Memory Interface</a>
+  <dd><a href="12-08.htm#01">12.8.1 Image Location and Format</a><br>
+      <a href="12-08.htm#02">12.8.2 Fill Color</a><br>
+      <a href="12-08.htm#03">12.8.3 Dithering</a><br>
+</dl>
+
+
+<hr>
+</body> </html>

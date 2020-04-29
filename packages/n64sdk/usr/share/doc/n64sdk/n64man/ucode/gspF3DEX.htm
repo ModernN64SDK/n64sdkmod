@@ -1,0 +1,144 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<!--
+Editors Notes:
+  PWC- updated formatting
+-->
+<TITLE>F3DEX microcode man manual</TITLE>
+</HEAD>
+
+<BODY bgcolor="#FFFFFF">
+</hmtl>
+<P>
+<IMG src="f3dex.gif" height="64" width="128">
+</P>
+<H1>gspF3DEX</H1>
+<H2>Function</H2>
+<P>
+gspF3DEX.fifo, gspF3DEX.NoN.fifo, gspF3DLX.fifo, gspF3DLX.NoN.fifo,
+gspF3DLX.Rej.fifo, gspF3DLP.Rej.fifo, gspL3DEX.fifo
+</P>
+<P>
+<i>-> New microcodes</i>
+</P>
+<H2>Description</H2>
+<DL>
+  <DT><STRONG>gspF3DEX.fifo.o, gspF3DEX.NoN.fifo.o: </STRONG>
+  <DD>These are extended versions of the <A href="gspFast3D.htm">Fast3D microcode</A> with the vertex cache size increased to 32 and 2Triangles instruction implemented. Also the number of DL links has been increased from 10 to 18.</dd>
+  <dd>gspF3DEX.fifo.o is a version with Near Clip. gspF3DEX.NoN.fifo.o is a version without Near Clip.
+</DL>
+<DL>
+  <DT><STRONG>gspF3DLX.fifo.o, gspF3DLX.NoN.fifo.o: </STRONG>
+  <DD>To improve processing speed, this version simplifies the subpixel calculation from that in the F3DEX microcode. Therefore, little wrinkles may appear when using textures.
+  <DD>GBI for F3DLX is compatible with F3DEX. F3DLX can control clipping ON/OFF for an additional functionality.
+ When the clipping is off, performance improves a little.
+For details, see NewFunctions.jp.
+  <DD>gspF3DLX.fifo.o is a version with Near Clip. gspF3DLX.NoN.fifo.o is a version without Near Clip.
+</DL>
+<DL>
+  <DT><STRONG>gspF3DLX.Rej.fifo.o, gspF3DLP.Rej.fifo.o: </STRONG>
+  <DD>For this microcode, the clipping processing in the general microcode is removed. Instead, reject processing is included.
+  <DD>n rejection processing, the only triangles drawn are those for which all three vertexes are inside a certain area of the screen. This area is slightly wider than the screen. Even if just one vertex is outside the area, the triangle is not drawn. 
+  <DD>This area is called the "reject box." The reject box varies depending on the size of the TV screen. For X and Y, when the screen size is 320 x 240, the reject box is twice as big as the screen at beginning as shown in the following drawing:
+  <DD>The area can be changed by calling <A href="../gsp/gSPClipRatio.htm">g*SPClipRatio</A>. A value can be selected from FRUSTRATIO_2 to FRUSTRATIO_6.
+  <DD>For the Z direction (depth of screen), a reject box can be done with the far plane, but not with the near plane.
+  <DD>
+<PRE>
+      -160                         480
+    -120 +--------------------------+
+         |                          | ___Reject box when
+         |      0           320     |/   FRUSTRATIO_2
+         |    0 +------------+      |
+         |      |            |      |
+         |      |            |      |
+         |      |   screen   |      |
+         |      |            |      |
+         |      |            |      |
+         |   240+------------+      |
+         |                          |
+         |                          |
+     360 +--------------------------+
+</PRE>
+  <DD>If you draw a big triangle and want part of it to appear on the screen, but one vertex of the triangle is out of the reject box, the triangle will not be drawn because of reject processing. In this case, you need to divide the big triangle into several small triangles so that an unnatural "missing polygon" can be avoided.
+  <DD>In F3DLX.Rej and F3DLP.Rej, the processing speed of the gSP2Triangles command has been improved by using reject processing. Therefore, when creating the display list (DL), please use <A href="../gsp/gSP2Triangles.htm">g*SP2Triangles</A> whenever possible.
+  <DD>
+The gspF3DLX.Rej.fifo.o microcode object file is a version with texture perspective correction.  The gspF3DLP.Rej.fifo.o microcode object file is a version without texture perspective correction.  F3DLP.Rej is slightly faster than F3DLX.Rej. The processing performance of the SP is improved, but because there are no changes in DP itself, DP often is not fast enough in parallel with SP. In such cases, consideration must be given to setting the <A href="../gdp/gDPSetRenderMode.htm">render mode</A> to a mode such as RA mode (G_RM_RA_ZB_OPA_SURF).  The rejection processing microcode does not support G_CULL_BOTH. 
+  <DD>The rejection processing microcode does not support <A href="../gsp/gSPSetGeometryMode.htm">gSPSetGeometryMode</A>. 
+</DL>
+<DL>
+  <DT><STRONG>gspL3DEX.fifo.o:</STRONG>
+  <DD>This is a modified version of the <A href="gspLine3D.htm">Line3D</A> microcode adapted to a cache size of 32. It allows <A href="../gsp/gSP1Triangle.htm">1Triangle</A>, <A href="../gsp/gSP2Triangles.htm">2Triangles</A>, and <A href="../gsp/gSP1Quadrangle.htm">1Quadrangle</A> of F3DEX microcodes to be displayed using wireframes.
+</DL>
+<H2>Header file</H2>
+<BLOCKQUOTE>
+
+<PRE>
+headers-2.0e/*.h is the header file for U64 Dev 2.0e 
+headers-2.0f/*.h is the header file for U64 Dev 2.0f 
+headers-2.0g/*.h is the header file for U64 Dev 2.0g
+</PRE>
+</BLOCKQUOTE>
+<P>
+Please use this after moving the file which corresponds to your development environment to /usr/include/PR. 
+</P>
+<H2>GBI Compatibility Issues</H2>
+<P>
+There is no compatibility on a binary level between the GBI (graphics binary interface) of this F3DEX microcode series and the previous <A href="gspFast3D.htm">Fast3D microcode</A>.
+</P>
+<P>
+However, the differences between them can be eliminated by using gbi.h. Even though they use the same DL, a suitable GBI for each can be specified by using the compile option.
+</P>
+<P>
+That is, by defining the keyword &quot;F3DEX_GBI&quot; before including the gbi.h file, an appropriate GBI will be output.
+</P>
+<P>
+For example, when the DL is written in the static_ex.c file, please add #define F3DEX_GBI before including ultra64.h as shown here: 
+</P>
+<BLOCKQUOTE>
+
+<PRE>
+static_ex.c:
+
+        |
+        |#define  F3DEX_GBI
+        |#include &lt;ultra64.h&gt;
+        |
+</PRE>
+</BLOCKQUOTE>
+<P>
+All the microcodes F3DEX, F3DLX, F3DLX.Rej, and F3DLP.Rej are compatible at the GBI binary level. Therefore, the DL can be shared. However, even the same commands process differently because of things such as the reject processing described previously, so the same graphics may not be drawn even when using the same DL. 
+</P>
+<H2>OS Patch Installation</H2>
+<P>
+There are patches of the OS for <A href="../gsp/gSPLoadUcode.htm">g*SPLoadUcode</A> in the os_patches directory. Please use the following procedure to install a patch: 
+</P>
+<BLOCKQUOTE>
+
+<PRE>
+% cd os_patches
+% make
+</PRE>
+</BLOCKQUOTE>
+<P>
+By doing this, the patched libraries (libultra.a, libultra_rom.a, and libultra_d.a) are created in the os_patches directory. Please move them to /usr/lib before using them. 
+</P>
+<P>
+The functions added and changed in F3DEX(.NoN), F3DLX(.NoN), F3DLX.Rej, F3DLP.Rej, L3DEX
+</P>
+<UL>
+  <LI><A href="../gsp/gSPVertex.htm">gSPVertex</A>
+  <LI><A href="../gsp/gSP2Triangles.htm">gSP2Triangles</A>
+  <LI><A href="../gsp/gSP1Quadrangle.htm">gSP1Quadrangle</A>
+  <LI><A href="../gsp/gSPSetGeometryMode.htm">gSPSetGeometryMode</A>
+  <LI><A href="../gsp/gSPCullDisplayList.htm">gSPCullDisplayList</A>
+  <LI><A href="../gsp/gSPClipRatio.htm">gSPClipRatio</A>
+  <LI><A href="../gsp/gSPModifyVertex.htm">gSPModifVertex</A>
+  <LI><A href="../gsp/gSPBranchLessZ.htm">gSPBranchLessZ</A>
+  <LI><A href="../gsp/gSPBranchLessZrg.htm">gSPBranchLessZrg</A>
+  <LI><A href="../gsp/gSPLoadUcode.htm">gSPLoadUcode</A>
+  <LI><A href="../gsp/gSPLoadUcodeL.htm">gSPLoadUcodeL</A>
+</UL>
+</BODY>
+</HTML>

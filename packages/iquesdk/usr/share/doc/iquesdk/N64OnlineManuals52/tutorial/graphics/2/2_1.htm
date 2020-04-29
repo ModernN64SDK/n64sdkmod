@@ -1,0 +1,47 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Graphics-CHAPTER 2  Adding Color to a Model</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/22/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<font style="font-size:16pt"><B>CHAPTER 2  ADDING COLOR TO A MODEL</B></FONT>
+<br><br>
+<HR SIZE=3 NOSHADE>
+<P>
+ In the previous chapter, we explained how the RSP performs geometry calculations and how those computational processes are described in a program.  The RSP basics were pretty much covered in that chapter, so from here on we will shift focus to the processes managed by the RDP.   Providing you here with a general explanation of the RDP would be a very lengthy undertaking, so instead we will unravel it a little at a time by covering a different theme in each chapter.<br><br>
+
+     In this chapter, we will give you a rudimentary understanding of the RDP while explaining how color is added to a model.  We will also bring up the topic of the RSP geometry mode, which was passed over in Chapter 1.  Please make sure you understand the topics handled here, because they will form the basis for your understanding of the operation of things like the Texture Unit, Combiner and Blender, which are touched on in subsequent chapters.
+</P>
+<font style="font-size:12pt"><B>2.1  Various Ways of Adding Color</B></FONT>
+<br>
+<P>
+In the graphics field, the term "shading" is generally used to refer to the coloring of a model.  "shade" refers to shadows, so rather than "coloring", "adding shades" is a more accurate term.<br><br>
+     Out in the real world, it is very rare to find an object that appears to have the exact same coloring over its entire surface.  In most cases, parts of the object will be lighter and parts will be darker, due to the different positions and brightness of light sources in the vicinity.   Also, if there is some obstruction in the path of a light source, this will cast a shadow on part of the surface of the object.<br><br>
+     For these reasons, in the graphics world you cannot achieve realistic images if you simply fill the triangle surfaces with single colors.  Practically all graphics processing systems color surfaces with appropriate gradations in order to express shading.  This all explains why coloring a model is sometimes called shading (regardless of whether shade is expressed).<br><br>
+
+     Moving beyond this general discussion, terms that are specific to the N64 will be explained next.
+     In the N64 world, if you exclude textures, then there are three broad ways to color a model.  
+     The first way is to set the "primitive color" for a drawn primitive and color the entire primitive with that color.  For example, say you have set the primitive color to yellow, and then you define a triangle using the gSP1Triangle command.  When this is done, the entire surface of the triangle will be painted yellow.  The actual process is not as simple as implied here, since you also need to set a number of other parameters (explained in later sections), but thinking of the general process in this way is fine.  However, please remember that in the N64 world, this coloring method is not called shading.<br><br>
+     The second way to add color is with a rendering method based on the "vertex color," as was used for the sample in the previous chapter.  As you will recall, the vertex color was set in the last four elements of the Vtx union.<br><br>
+     The third and final way color is to use shading to express how light illuminates the model, taking into consideration the position and direction of light sources and the direction of the model.  This is called "lighting." <br><br>
+
+     With the N64, the two coloring methods based on vertex color and lighting are collectively referred to as "shading."
+     Furthermore, shading is divided into two kinds of methods called "flat shading" and "smooth shading."
+</P>
+<P>
+<br>
+<br>
+<IMG SRC="image03.gif" WIDTH="298" HEIGHT="168">
+</P>
+<P>
+<B>Figure 2-1  Flat Shading and Smooth Shading</B>
+</P>
+<P>
+We explain each of these methods of adding color to a model in the ensuing three sections.  However, we only give a fragmentary explanation in each section, so read all the way through to sections "2.6, Geometry Mode" and "2.7, Combine Mode and Render Mode."
+</P>
+</BODY>
+</HTML>

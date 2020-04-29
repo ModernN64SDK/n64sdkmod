@@ -1,0 +1,110 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Author's Comments: MAP created file 9/28/99>
+<title>LeoCJCreateLeoManager</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>LeoCJCreateLeoManager</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p>LeoCreateLeoManager,
+LeoCJCreateLeoManager,
+LeoCACreateLeoManager </p>
+
+<p><i>Creates Leo Manager</i></p>
+
+<h3>Syntax</h3>
+
+<pre><p>
+#include &lt;PR/leo.h&gt;     /* <A HREF="../../header/leo.htm">leo.h</A> */</p></pre>
+<p>(Disk startup game)
+<pre>s32 LeoCreateLeoManager(OSPri cmdPri, OSPri intPri, 
+OSMesg *cmdBuf, s32 cmdMsgCnt);</pre></p>
+<p>
+(Game Pak game for Japan)
+<pre>s32 LeoCJCreateLeoManager(OSPri cmdPri, OSPri intPri, 
+OSMesg *cmdBuf, s32 cmdMsgCnt);</pre></p>
+<p>
+(Game Pak game for United States)
+<pre>s32 LeoCACreateLeoManager(OSPri cmdPri, OSPri intPri, 
+OSMesg *cmdBuf, s32 cmdMsgCnt);</pre></p>
+
+<h3>Description</h3>
+
+<p><b>Note:</b> None of the N64 Disk Drive-related instructions involve ROM DMA (including DMA to ROM in the drive). In fact, the instructions are designed  on the assumption that ROM DMA will not be carried out. Please refer to "Section 12: Prohibitions and Cautions" in the N64 Disk Drive Programming Manual to learn more about this. </p>
+
+<p>They create and start the device driver called Leo Manager, which must be started up before any other N64 Disk Drive-related function is called. Leo Manager comprises two Leo Manager system threads: the command thread and the interrupt thread. The command thread accepts and executes commands coming from the application side, while the interrupt thread performs internal interrupt handling. The priority level of these two functions on the call side are specified with cmdPri and intPri, respectively.  For the convenience of internal processing, please specify intPri as OS_PRIORITY_LEOMGR (defined with <A HREF="../../header/leo.htm">leo.h</A>, giving it the same priority level as PI Manager) and specify cmdPri with a slightly lower priority level.</p>
+
+<p>Call <a href="LeoCreateLeoManager.htm">LeoCreateLeoManager</a> to initialize disk startup games. Call <tt>LeoC*CreateLeoManager</tt>to initialize Game Paks. Use <tt>LeoCJCreateLeoManager</tt> for Japanese Game Paks and <a href="LeoCACreateLeoManager.htm">LeoCACreateLeoManager</a> for American Game Paks. (Functions for other countries will be released later.)
+A "disk startup game" is a game that can make use of disks only; they cannot be used in combination with a Game Pak while a "game pak startup game" can allow disk access from Game Pak. For more details, see the "7.7 Disk Startup and Game Pak Startup" section in the N64 Disk Drive Programming Manual.</p>
+
+<p>The <b>cmdBuf</b> and <b>cmdMsgCnt</b> arguments specify the buffer pointer and the size of Leo Manager's received command queue. The received command queue is used when the following functions are executed: 
+</p>
+<p>
+<blockquote>
+    <p><a href="LeoReadWrite.htm">LeoReadWrite</a><br>
+    <a href="LeoSeek.htm">LeoSeek</a><br>
+    <a href="LeoSpdlMotor.htm">LeoSpdlMotor</a><br>
+    <a href="LeoTestUnitReady.htm">LeoTestUnitReady</a><br>
+    <a href="LeoReadDiskID.htm">LeoReadDiskID</a><br>
+    <a href="LeoReadRTC.htm">LeoReadRTC</a><br>
+    <a href="LeoReadRTC.htm">LeoSetRTC</a><br>
+    <a href="LeoModeSelectAsync.htm">LeoModeSelectAsync</a><br>
+    </p>
+</blockquote>
+</p>
+<p>When more of these commands than the size specified in <b>cmdMsgCnt</b> are issued together, LEO_ERROR_QUE_FULL is returned and processing stops proceeding normally, so you need to make sure you secure enough room.
+</p>
+
+<p>Note: After using <tt>Leo*CreateLeoManager</tt> to create Leo Manager, immediately call the <tt>LeoReadDiskID</tt>) function to determine (in the case of a disk startup game) whether the disk inserted at the time is equivalent to the disk in the IPL, or (in the case of a Game Pak game) whether the ID has been read and stored in RDRAM. For more information, see the "Error-Handling Sequences" section of the N64 Disk Drive Programming Manual.
+</p>
+
+<p>You can clear the commands held in the received command queue by calling the <a href="LeoClearQueue.htm"> LeoClearQueue</a> function. Cleared commands are returned as a LEO_COMMAND_TERMINATED error.<br>
+</p>
+
+<p>The following values are returned from <tt>Leo*CreateLeoManager</tt> functions:
+</p>
+
+<p><b>LEO_ERROR_GOOD</b> </p>
+
+<blockquote>
+    <p>Normal termination<br>
+    </p>
+</blockquote>
+
+<p><b>LEO_ERROR_DEVICE_COMMUNICATION_FAILURE</b> </p>
+
+<blockquote>
+    <p>There is a problem communicating with N64 Disk Drive. The primary cause is a loose connector.
+    <br>
+    </p>
+</blockquote>
+
+<h3>See Also</h3>
+
+<p><a href="LeoReadWrite.htm">LeoReadWrite</a>, <a
+href="LeoReadDiskID.htm">LeoReadDiskID</a>, <a
+href="LeoSpdlMotor.htm">LeoSpdlMotor</a>, <a
+href="LeoSeek.htm">LeoSeek</a>, 
+<a href="LeoByteToLBA.htm">LeoByteToLBA</a>, <a
+href="LeoLBAToByte.htm">LeoLBAToByte</a>, <a
+href="LeoReset.htm">LeoReset</a>, <a
+href="LeoResetClear.htm">LeoResetClear</a>, 
+<a href="LeoGetKAdr.htm">LeoGetKAdr</a>, <a
+href="LeoGetAAdr.htm">LeoGetAAdr</a>, <a
+href="LeoGetAAdr2.htm">LeoGetAAdr2</a>, <a
+href="LeoModeSelectAsync.htm">LeoModeSelectAsync</a>,
+<a href="LeoTestUnitReady.htm">LeoTestUnitReady</a>, <a
+href="LeoRezero.htm">LeoRezero</a>, <a
+href="LeoClearQueue.htm">LeoClearQueue</a>, <a
+href="LeoReadCapacity.htm">LeoReadCapacity</a>, and 
+<a href="LeoInquiry.htm">LeoInquiry</a>
+</p>
+<h3>Revision History</h3>
+<p>04/30/1999  Changed Format</p>
+<br><br>
+
+</body>
+</html>

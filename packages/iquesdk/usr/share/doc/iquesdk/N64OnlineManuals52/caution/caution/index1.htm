@@ -1,0 +1,72 @@
+<html>
+
+	<head>
+            <link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+		<!-- Edited by Ron Daring on 2/17/2000. -->
+		<title>Program Start-up</title>
+		<base target="contents">
+	</head>
+
+		<font size="3" face="arial"><b><a name="p1"></a>1. Program Start-up</b></font>
+		<p>1-1 <a href="#1-1">Register and Memory Initialization (Required)</a><br>
+		1-2 <a href="#1-2">Program Power-on Delay (Recommended)</a><br>
+		1-3 <a href="#1-3">Initialization of the TLB (Required)</a><br>
+		1-4 <a href="#1-4">ROM Access Speed in the Game Pak(Required)</a>
+		<p>
+		<hr>
+		<font size="3" face="arial"><b><a name="1-1"></a>1-1 Register and Memory Initialization (Required)</b></font>
+		<p><b>Description</b>
+		<p>When booting the application program, the content of main memory and CPU internal registers, except for the boot segment, is undefined.
+		<p><b>Reasons</b>
+		<p>The general purpose registers of the CPU and FPU, CP0 register, TLB, and most of the main memory area are not automatically initialized by the N64 OS.
+		<p><b>Reference</b>
+		<p><b>Remarks</b>
+		<p>Since the initial value of these registers and memory can not be classified and determined by production lot, this is not checked in lot check. When using a Partner-N64 development system, the power to the Control Deck is still active even when Reset is applied. Therefore, the contents of registers and memory remain at the value stored before reset was executed. For this reason, a failure to perform initialization steps can be easily overlooked by the programmer.
+		<div align="right">
+			<p><a href="#p1"><img src="../../gif/index.gif" height="17" width="65" border="0"></a>
+		</div>
+		<p>
+		<hr>
+		<font size="3" face="arial"><b><a name="1-2"></a>1-2 Program Power-on Delay (Recommended)</b></font>
+		<p><b>Description</b>
+		<p>It is recommended that the period between power-on and screen display is kept to less than 2 seconds.
+		<p><b>Reasons</b>
+		<p>If the period is much longer than 2 seconds, the user may think that their Control Deck or Game Pak is defective.
+		<p><b>Reference</b>
+		<p><b>Remarks</b>
+		<p>NOA recommends that only the minimum necessary processes, such as EEPROM initialization, be executed before displaying something on the screen. Other processes should be executed after something is displayed, such as a game title, company logo, or copyright information.
+		<div align="right">
+			<p><a href="#p1"><img src="../../gif/index.gif" height="17" width="65" border="0"></a>
+		</div>
+		<p>
+		<hr>
+		<font size="3" face="arial"><b><a name="1-3"></a>1-3 Initialization of the TLB (Required)</b></font>
+		<p><b>Description</b>
+		<p>The TLB must be initialized with the osUnmapTLBAll() function before it is used.
+		<p><b><b>Reasons</b></b>
+		<p>The contents of the TLB are undefined, as described in <a href="#1-1">Programming Caution 1-1</a>, above. Furthermore, it is necessary to initialize all 32 TLB entries in order to use one TLB entry. If the TLB is not initialized with osUnmapTLBAll(), it may not operate properly when it is used.
+		<p><b><b>Reference</b></b>
+		<p><b>Remarks</b>
+		<p>The TLB will not be initialized when you call the osInitialize() function. Therefore, please initialize the TLB with the osUnmapTLBAll() function (not the osInitialize() function) before using the TLB.
+		<div align="right">
+			<p><a href="#p1"><img src="../../gif/index.gif" height="17" width="65" border="0"></a>
+		</div>
+		<p>
+		<hr>
+		<font size="3" face="arial"><b><a name="1-4"></a>1-4 ROM Access Speed in the Game Pak (Required)</b></font>
+		<p><b>Description</b>
+		<p>Do not change the access speed to the ROM in the Game Pak.
+		<p><b>Reasons</b>
+		<p>The access speed of ROMs in mass-produced Game Paks (the length of time until the ROM outputs data over the AD16 bus) differs depending on the ROM manufacturer, capacity and manufacturing inconsistencies. The access speed also differs depending on the development board that uses the flash memory. If the access speed to the ROM is changed, a bug might occur with a specific ROM.
+		<p><b>Reference</b>
+		<p><b>Remarks</b>
+		<p>In the N64, after setting the access speed to the ROM with the appropriate value, load the application program to the RAM and execute. Please use this access speed to access the ROM in the application. In particular, please access by passing the handler, obtained using the osCartRomInit() function, to the osEpi functions.
+		<div align="right">
+			<p><a href="#p1"><img src="../../gif/index.gif" height="17" width="65" border="0"></a>
+		</div>
+		<p>
+		<hr>
+		
+	</body>
+
+</html>

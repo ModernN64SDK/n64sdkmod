@@ -1,0 +1,1269 @@
+<html>
+
+
+<!..
+-- CHANGE START --
+1998/10/07
+
+Change all "softimage scale" to "unique scale"
+
+-- CHANGE END --
+..>
+
+<HEAD>
+<TITLE>AnimNode</TITLE>
+</HEAD>
+<BODY LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff">
+
+<font face="arial" size="-1">
+<b><font size="3">12. AnimNode</font></b>
+<HR>
+
+<P>
+<b>(1) AnimGroup</b>
+<p>
+
+<blockquote>
+The following data will be added into AnimNode. 
+<p>
+
+<table border="1" width="600">
+
+<tr>
+<th rowspan="12">
+<font face="arial" size="-1">AnimGroupHeader</font>
+</th>
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">anim_group_tag</font>
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">this_anim_group_index</font>
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">anim_group_header_size</font>
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">anim_group_size</font>
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">anim_name_index</font>
+
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">anim_type</font>
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">frame_rate</font>
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">anim_num</font>
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">anim_loop</font>
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">anim_rot_mtx_order</font>
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">nintendo_extension_block_size</font>
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">user_extension_block_size</font>
+</td>
+</tr>
+<tr>
+<th rowspan="3">
+</th>
+<td colspan="2">
+<center>
+<font face="arial" size="-1">Anim(0)</font>
+</center>
+</td>
+</tr>
+
+
+<tr>
+<td colspan="2">
+<center>
+<font face="arial" size="-1">...</font>
+</center>
+</td>
+</tr>
+<tr>
+<td colspan="2">
+<center>
+<font face="arial" size="-1">Anim(anim_num - 1)</font>
+</center>
+</td>
+</tr>
+<tr bgcolor="ffc0c0">
+<th rowspan="62">
+<font face="arial" size="-1">NintendoExtensionBlock</font>
+</th>
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">use_animation_channel</font>
+</td>
+</tr>
+<tr bgcolor="ffc0c0">
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">rotate_axis_num</font>
+</td>
+</tr>
+<tr bgcolor="ffc0c0">
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">rotate_x_num</font>
+</td>
+</tr>
+<tr bgcolor="ffc0c0">
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">rotate_y_num</font>
+</td>
+</tr>
+<tr bgcolor="ffc0c0">
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">rotate_z_num</font>
+</td>
+</tr>
+<tr bgcolor="ffc0c0">
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">orientation_xy_num</font>
+</td>
+</tr>
+<tr bgcolor="ffc0c0">
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">translation_num</font>
+</td>
+</tr>
+<tr bgcolor="ffc0c0">
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">unique_scale_num</font>
+</td>
+</tr>
+<tr bgcolor="ffc0c0">
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">classical_scale_num</font>
+</td>
+</tr>
+
+<tr bgcolor="ffc0c0">
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">kind_of_orientation_constraint_node</font>
+</td>
+</tr>
+
+<tr bgcolor="ffc0c0">
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">orientation_constraint_node</font>
+</td>
+</tr>
+
+<tr bgcolor="ffc0c0">
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">kind_of_direction_constraint_node</font>
+</td>
+</tr>
+
+<tr bgcolor="ffc0c0">
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">direction_constraint_node</font>
+</td>
+</tr>
+
+
+<tr bgcolor="ffc0c0">
+<td >
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">kind_of_upvector_constraint_node</font>
+</td>
+</tr>
+
+<tr bgcolor="ffc0c0">
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">upvector_constraint_node</font>
+</td>
+</tr>
+
+<tr bgcolor="ffc0c0">
+<td >
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">kind_of_preferred_axis_constraint_node</font>
+</td>
+</tr>
+
+<tr bgcolor="ffc0c0">
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">preferred_axis_constraint_node</font>
+</td>
+</tr>
+
+
+<tr bgcolor="ffc0c0">
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">kind_of_position_constraint_node</font>
+</td>
+</tr>
+
+<tr bgcolor="ffc0c0">
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">position_constraint_node</font>
+</td>
+</tr>
+
+<tr bgcolor="ffc0c0">
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">kind_of_unique_scale_constraint_node</font>
+</td>
+</tr>
+
+<tr bgcolor="ffc0c0">
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">unique_scale_constraint_node</font>
+</td>
+</tr>
+
+<tr bgcolor="ffc0c0">
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">kind_of_classical_scale_constraint_node</font>
+</td>
+</tr>
+
+<tr bgcolor="ffc0c0">
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">classical_scale_constraint_node</font>
+</td>
+</tr>
+
+<tr bgcolor="ffc0c0">
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">external_orientation_constraint_file_name_index</font>
+</td>
+</tr>
+
+<tr bgcolor="ffc0c0">
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">external_orientation_constraint_obj_name_index</font>
+</td>
+</tr>
+
+<tr bgcolor="ffc0c0">
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">external_direction_constraint_file_name_index</font>
+<td>
+</tr>
+
+<tr bgcolor="ffc0c0">
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">external_direction_consrtaint_obj_name_index</font>
+<td>
+</tr>
+
+<tr bgcolor="ffc0c0">
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">external_upvector_constraint_file_name_index</font>
+<td>
+</tr>
+
+<tr bgcolor="ffc0c0">
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">external_upvector_constraint_obj_name_index</font>
+<td>
+</tr>
+
+<tr bgcolor="ffc0c0">
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">external_perferred_axis_constraint_file_name_index</font>
+<td>
+</tr>
+
+<tr bgcolor="ffc0c0">
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">external_preferred_axis_constraint_obj_name_index</font>
+<td>
+</tr>
+
+<tr bgcolor="ffc0c0">
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">external_position_constraint_file_name_index</font>
+<td>
+</tr>
+
+<tr bgcolor="ffc0c0">
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">external_position_constraint_obj_name_index</font>
+<td>
+</tr>
+
+<tr bgcolor="ffc0c0">
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">external_unique_scale_constraint_file_name_index</font>
+<td>
+</tr>
+
+<tr bgcolor="ffc0c0">
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">external_unique_scale_constraint_obj_name_index</font>
+<td>
+</tr>
+
+<tr bgcolor="ffc0c0">
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">external_classical_scale_constraint_file_name_index</font>
+<td>
+</tr>
+
+<tr bgcolor="ffc0c0">
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">external_classical_scale_constraint_obj_name_index</font>
+<td>
+</tr>
+
+
+<tr bgcolor="ffc0c0">
+<td colspan="2">
+<center>
+<font face="arial" size="-1">RotateAxis(0)</font>
+</center>
+</td>
+</tr>
+<tr bgcolor="ffc0c0">
+<td colspan="2">
+<center>
+<font face="arial" size="-1">...</font>
+</center>
+</td>
+</tr>
+<tr bgcolor="ffc0c0">
+<td colspan="2">
+<center>
+<font face="arial" size="-1">RotateAxis(rotate_axis_num - 1)</font>
+</center>
+</td>
+</tr>
+<tr bgcolor="ffc0c0">
+<td colspan="2">
+<center>
+<font face="arial" size="-1">RotateX(0)</font>
+</center>
+</td>
+</tr>
+<tr bgcolor="ffc0c0">
+<td colspan="2">
+<center>
+<font face="arial" size="-1">...</font>
+</center>
+</td>
+</tr>
+<tr bgcolor="ffc0c0">
+<td colspan="2">
+<center>
+<font face="arial" size="-1">RotateX(rotate_x_num - 1)</font>
+</center>
+</td>
+</tr>
+<tr bgcolor="ffc0c0">
+<td colspan="2">
+<center>
+RotateY(0)
+</center>
+</td>
+</tr>
+<tr bgcolor="ffc0c0">
+<td colspan="2">
+<center>
+<font face="arial" size="-1">...</font>
+</center>
+</td>
+</tr>
+<tr bgcolor="ffc0c0">
+<td colspan="2">
+<center>
+<font face="arial" size="-1">RotateY(rotate_y_num - 1)</font>
+</center>
+</td>
+</tr>
+<tr bgcolor="ffc0c0">
+<td colspan="2">
+<center>
+<font face="arial" size="-1">RotateZ(0)</font>
+</center>
+</td>
+</tr>
+<tr bgcolor="ffc0c0">
+<td colspan="2">
+<center>
+<font face="arial" size="-1">...</font>
+</center>
+</td>
+</tr>
+<tr bgcolor="ffc0c0">
+<td colspan="2">
+<center>
+<font face="arial" size="-1">RotateZ(rotate_z_num - 1)</font>
+</center>
+</td>
+</tr>
+<tr bgcolor="ffc0c0">
+<td colspan="2">
+<center>
+<font face="arial" size="-1">OrientationXY(0)</font>
+</center>
+</td>
+</tr>
+<tr bgcolor="ffc0c0">
+<td colspan="2">
+<center>
+<font face="arial" size="-1">...</font>
+</center>
+</td>
+</tr>
+<tr bgcolor="ffc0c0">
+<td colspan="2">
+<center>
+<font face="arial" size="-1">OrientationXY(orientation_xy_num - 1)</font>
+</center>
+</td>
+</tr>
+
+<tr bgcolor="ffc0c0">
+<td colspan="2">
+<center>
+<font face="arial" size="-1">Translation(0)</font>
+</center>
+</td>
+</tr>
+<tr bgcolor="ffc0c0">
+<td colspan="2">
+<center>
+<font face="arial" size="-1">...</font>
+</center>
+</td>
+</tr>
+<tr bgcolor="ffc0c0">
+<td colspan="2">
+<center>
+<font face="arial" size="-1">Translation(tiranslation_num - 1)</font>
+</center>
+</td>
+</tr>
+
+
+<tr bgcolor="ffc0c0">
+<td colspan="2">
+<center>
+<font face="arial" size="-1">UniqueScale(0)</font>
+</center>
+</td>
+</tr>
+<tr bgcolor="ffc0c0">
+<td colspan="2">
+<center>
+<font face="arial" size="-1">...</font>
+</center>
+</td>
+</tr>
+<tr bgcolor="ffc0c0">
+<td colspan="2">
+<center>
+<font face="arial" size="-1">UniqueScale(unique_scale_num - 1)</font>
+</center>
+</td>
+</tr>
+
+
+<tr bgcolor="ffc0c0">
+<td colspan="2">
+<center>
+<font face="arial" size="-1">ClassicalScale(0)</font>
+</center>
+</td>
+</tr>
+<tr bgcolor="ffc0c0">
+<td colspan="2">
+<center>
+<font face="arial" size="-1">...</font>
+</center>
+</td>
+</tr>
+<tr bgcolor="ffc0c0">
+<td colspan="2">
+<center>
+<font face="arial" size="-1">ClassicalScale(classical_scale_num - 1)</font>
+</center>
+</td>
+</tr>
+
+<tr bgcolor="ffc0c0">
+<td colspan="2">
+<center>
+<font face="arial" size="-1">--- other extension data ---</font>
+</center>
+</td>
+</tr>
+
+
+<tr>
+<th rowspan="1">
+</th>
+<td colspan="2">
+<center>
+<font face="arial" size="-1">UserExtensionBlock</font>
+</center>
+</td>
+</tr>
+</table>
+<p>
+<a href="./anim_J.htm">Go to the description (Japanese)</a>
+<p>
+<a href="./anim_E.htm">Go to the description (English)</a>
+<p>
+</blockquote>
+
+<b>(2) RotateAxis</b>
+<blockquote>
+
+<table border width="300" bgcolor="ffc0c0">
+<tr>
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">interpolation_type</font>
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">key</font>
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">float</font>
+</td>
+<td>
+<font face="arial" size="-1">axis_x</font>
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">float</font>
+</td>
+<td>
+<font face="arial" size="-1">axis_y</font>
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">float</font>
+</td>
+<td>
+<font face="arial" size="-1">axis_z</font>
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">float</font>
+</td>
+<td>
+<font face="arial" size="-1">rotation_angle</font>
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">float</font>
+</td>
+<td>
+<font face="arial" size="-1">differential_axis_x</font>
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">float</font>
+</td>
+<td>
+<font face="arial" size="-1">differential_axis_y</font>
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">float</font>
+</td>
+<td>
+<font face="arial" size="-1">differential_axis_z</font>
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">float</font>
+</td>
+<td>
+<font face="arial" size="-1">differential_rotation_angle</font>
+</td>
+</tr>
+</table>
+
+<p>
+<a href="./anim_J.htm">Go to the description (Japanese)</a>
+<p>
+<a href="./anim_E.htm">Go to the description (English)</a>
+<p>
+</blockquote>
+
+<b>(3) RotateX</b>
+<blockquote>
+<table border width="300" bgcolor="ffc0c0">
+<tr>
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">interpolation_type</font>
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">key</font>
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">float</font>
+</td>
+<td>
+<font face="arial" size="-1">rotate_angle</font>
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">float</font>
+</td>
+<td>
+<font face="arial" size="-1">differential_rotate_angle</font>
+</td>
+</tr>
+</table>
+<p>
+<a href="./anim_J.htm">Go to the description (Japanese)</a>
+<p>
+<a href="./anim_E.htm">Go to the description (English)</a>
+<p>
+</blockquote>
+
+<b>(4) RotateY</b>
+
+<blockquote>
+<table border width="300" bgcolor="ffc0c0">
+<tr>
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">interpolation_type</font>
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">key</font>
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">float</font>
+</td>
+<td>
+<font face="arial" size="-1">rotate_angle</font>
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">float</font>
+</td>
+<td>
+<font face="arial" size="-1">differential_rotate_angle</font>
+</td>
+</tr>
+</table>
+<p>
+<a href="./anim_J.htm">Go to the description (Japanese)</a>
+<p>
+<a href="./anim_E.htm">Go to the description (English)</a>
+<p>
+</blockquote>
+
+<b>(5) RotateZ</b>
+
+<blockquote>
+<table border width="300" bgcolor="ffc0c0">
+<tr>
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">interpolation_type</font>
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">key</font>
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">float</font>
+</td>
+<td>
+<font face="arial" size="-1">rotate_angle</font>
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">float</font>
+</td>
+<td>
+<font face="arial" size="-1">differential_rotate_angle</font>
+</td>
+</tr>
+</table>
+<p>
+<a href="./anim_J.htm">Go to the description (Japanese)</a>
+<p>
+<a href="./anim_E.htm">Go to the description (English)</a>
+<p>
+</blockquote>
+
+<b>(6) OrientationXY</b>
+<blockquote>
+
+<table border width="300" bgcolor="ffc0c0">
+<tr>
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">interpolation_type</font>
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">key</font>
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">float</font>
+</td>
+<td>
+<font face="arial" size="-1">x_axis_x</font>
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">float</font>
+</td>
+<td>
+<font face="arial" size="-1">x_axis_y</font>
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">float</font>
+</td>
+<td>
+<font face="arial" size="-1">x_axis_z</font>
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">float</font>
+</td>
+<td>
+<font face="arial" size="-1">y_axis_x</font>
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">float</font>
+</td>
+<td>
+<font face="arial" size="-1">y_axis_y</font>
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">float</font>
+</td>
+<td>
+<font face="arial" size="-1">y_axis_z</font>
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">float</font>
+</td>
+<td>
+<font face="arial" size="-1">differential_x_axis_x</font>
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">float</font>
+</td>
+<td>
+<font face="arial" size="-1">differential_x_axis_y</font>
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">float</font>
+</td>
+<td>
+<font face="arial" size="-1">differential_x_axis_z</font>
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">float</font>
+</td>
+<td>
+<font face="arial" size="-1">differential_y_axis_x</font>
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">float</font>
+</td>
+<td>
+<font face="arial" size="-1">differential_y_axis_y</font>
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">float</font>
+</td>
+<td>
+<font face="arial" size="-1">differential_y_axis_z</font>
+</td>
+</tr>
+</table>
+<p>
+<a href="./anim_J.htm">Go to the description (Japanese)</a>
+<p>
+<a href="./anim_E.htm">Go to the description (English)</a>
+<p>
+</blockquote>
+
+<b>(7) Translation</b>
+<blockquote>
+
+<table border width="300" bgcolor="ffc0c0">
+<tr>
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">interpolation_type</font>
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">key</font>
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">float</font>
+</td>
+<td>
+<font face="arial" size="-1">translate_x</font>
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">float</font>
+</td>
+<td>
+<font face="arial" size="-1">translate_y</font>
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">float</font>
+</td>
+<td>
+<font face="arial" size="-1">translate_z</font>
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">float</font>
+</td>
+<td>
+<font face="arial" size="-1">differential_translate_x</font>
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">float</font>
+</td>
+<td>
+<font face="arial" size="-1">differential_translate_y</font>
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">float</font>
+</td>
+<td>
+<font face="arial" size="-1">differential_translate_z</font>
+</td>
+</tr>
+</table>
+<p>
+<a href="./anim_J.htm">Go to the description (Japanese)</a>
+<p>
+<a href="./anim_E.htm">Go to the description (English)</a>
+<p>
+</blockquote>
+
+
+<b>(8) UniqueScale</b>
+<blockquote>
+
+<table border width="300" bgcolor="ffc0c0">
+<tr>
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">interpolation_type</font>
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">key</font>
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">float</font>
+</td>
+<td>
+<font face="arial" size="-1">scale_x</font>
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">float</font>
+</td>
+<td>
+<font face="arial" size="-1">scale_y</font>
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">float</font>
+</td>
+<td>
+<font face="arial" size="-1">scale_z</font>
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">float</font>
+</td>
+<td>
+<font face="arial" size="-1">differential_scale_x</font>
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">float</font>
+</td>
+<td>
+<font face="arial" size="-1">differential_scale_y</font>
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">float</font>
+</td>
+<td>
+<font face="arial" size="-1">differential_scale_z</font>
+</td>
+</tr>
+</table>
+<p>
+<a href="./anim_J.htm">Go to the description (Japanese)</a>
+<p>
+<a href="./anim_E.htm">Go to the description (English)</a>
+<p>
+</blockquote>
+
+<b>(9) ClassicalScale</b>
+<blockquote>
+
+<table border width="300" bgcolor="ffc0c0">
+<tr>
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">interpolation_type</font>
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">key</font>
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">float</font>
+</td>
+<td>
+<font face="arial" size="-1">scale_x</font>
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">float</font>
+</td>
+<td>
+<font face="arial" size="-1">scale_y</font>
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">float</font>
+</td>
+<td>
+<font face="arial" size="-1">scale_z</font>
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">float</font>
+</td>
+<td>
+<font face="arial" size="-1">differential_scale_x</font>
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">float</font>
+</td>
+<td>
+<font face="arial" size="-1">differential_scale_y</font>
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">float</font>
+</td>
+<td>
+<font face="arial" size="-1">differential_scale_z</font>
+</td>
+</tr>
+</table>
+
+<p>
+<a href="./anim_J.htm">Go to the description (Japanese)</a>
+<p>
+<a href="./anim_E.htm">Go to the description (English)</a>
+<p>
+
+</blockquote>
+
+<hr>
+
+</body>
+</html>

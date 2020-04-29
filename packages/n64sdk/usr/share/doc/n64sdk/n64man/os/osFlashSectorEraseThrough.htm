@@ -1,0 +1,42 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <title>osFlashSectorEraseThrough</title>
+</head>
+<body bgcolor="#FFFFFF">
+<font face="arial" size="-1">
+<h1>
+osFlashSectorEraseThrough <font size=+0> [Function]</font></h1>
+<font color="#FF0000">Deletes 1 sector of Flash (No status check)</font>
+<h3>
+Syntax</h3>
+
+<font face=courier>#include &lt;ultra64.h&gt;<br> 
+void&nbsp; osFlashSectorEraseThrough(u32 page_num);</font> 
+ 
+<h3> 
+Description</h3> 
+This is a function that deletes the data of certain sectors of 1M Flash. 
+<p>It specifies page number as an argument and deletes the sector which 
+contains the specified page number. 
+<p>The size of 1 sector is 128 pages (16K bytes), and each page of 0~0x7f, 
+0x80~0xff, 0x100~0x17f... is considered to be 1 sector. 
+<p>The difference between this function and <font face="courier">osFlashSectorErase</font> is that 
+it does not conduct status check when delete ends in <font face="courier">osFlashSectorEraseThrough</font>. 
+<p>Although the execution of <font face="courier">osFlashSectorEraseThrough</font> 
+ is done immediately, it 
+takes several msec to several hundred msec to actually delete data. 
+<br>Whether or not deletion of data has ended is determined by executing <font face="courier">osFlashCheckEraseEnd</font>. 
+<p>Do not execute other osFlash functions between <font face="courier">osFlashSectorEraseThrough</font> 
+and <font face="courier">osFlashCheckEraseEnd</font>. 
+<br>This is because the status of Flash may be changed when other osFlash 
+functions are executed prior to the execution of <font face="courier">osFlashCheckEraseEnd</font>. 
+<h3> 
+Reference</h3> 
+[<a href="osFlashSectorErase.htm">osFlashSectorErase</a>] [<a href="osFlashCheckEraseEnd.htm">osFlashCheckEraseEnd</a>] 
+ 
+<h3> 
+Revision History</h3> 
+07/07/2000&nbsp; This function was added. 
+</body> 
+</html> 

@@ -1,0 +1,137 @@
+<HTML>
+<HEAD>
+<TITLE>Chapter 3 Binary Format</TITLE>
+</HEAD>
+<BODY LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff">
+
+<font face="arial" size="-1">
+<b><font size="3">Chapter 3 Binary Format</b></font>
+<HR>
+<b>3-22. NameList</b>
+
+<P>
+<u>Name Area</u>
+<p>
+The Name area stores the actual node Name. The Name area is mapped as follows. 
+
+<p>
+<table border="1" celpladding="3" cellspacing="3">
+
+<tr>
+<th rowspan="4"><font face="arial" size="-1">
+NameHeader
+</th>
+<td ><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+name_tag
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+this_name_index
+</td>
+</tr>
+<tr>
+<td ><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+name_header_size
+</td>
+</tr>
+<tr>
+<td ><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+name_size
+</td>
+</tr>
+<tr>
+<th rowspan="1"><font face="arial" size="-1">
+</th>
+<td colspan="2"><font face="arial" size="-1">
+<center>
+node_name
+</td>
+</tr>
+</table>
+
+<p>
+Figure: Name Area Memory Map
+
+<p>
+<table border="1" cellpadding="3" cellspacing="3">
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 name_tag
+</td>
+<td>
+<font face="arial" size="-1">
+Tag indicating Name. Set the following tag.
+<pre><font face="courier" size="2"><b>TAG_NAME&#9;0x00110100</b></pre></font>
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 this_name_index
+</td>
+<td>
+<font face="arial" size="-1">
+Index number of this Name
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 name_header_size
+</td>
+<td>
+<font face="arial" size="-1">
+Size of this NameHeader
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 name_size
+</td>
+<td>
+<font face="arial" size="-1">
+Size of this Name
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+node_name
+</td>
+<td>
+<font face="arial" size="-1">
+Node name. Use ASCII characters (*)
+</td>
+</tr>
+</table>
+
+<P>
+The node name is entered as ASCII text. Permissible ASCII characters are 0x21 (!) through 0x7e (~), in ASCII code.
+<p>
+If the number of characters is not a multiple of 4 bytes, embed NULL to make the number of characters a multiple of 4 bytes. If the character string count is a multiple of 4 bytes, there is no need to insert NULL. 
+
+<p>
+
+<hr>
+
+<p align="right"><a href="../index.htm">
+<img src="../../../gif/index.gif"
+border="0" width="65" height="17"></a>
+&nbsp; <a href="../chapt4/seg1.htm">
+<img src="../../../gif/next.gif"
+border="0" width="65" height="17"></a></p>
+
+</body>
+</html>
+
+

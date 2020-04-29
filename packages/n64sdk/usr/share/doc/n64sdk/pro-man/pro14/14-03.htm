@@ -1,0 +1,134 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 14 - Texture Rectangles (Hardware Sprites)</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. -->
+</head>
+
+<h1>14.3 Texture Types</h1>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="01"><h2>14.3.1 Intensity (I) Textures</h2></a>
+
+<p>Intensity textures are useful because they are quite compact and should be used in cases where a large number of colors is not necessary. For example, a 4-bit I texture can be as large as 128x64 <a href="../../keywords/index/data/graphics.htm#texel" target="keywords">texels</a>. Normally, the user would like the primitive to have some specific color, and the I texture should modulate that color. For example, to create a tree you could use two I textures, one for the brown trunk and one for the green treetop. You can use one of the many register colors in the color combiner to define the primitive color. In Example 14-19 we use primitive color to define the colors of the trunk and treetop. </p>
+
+<dl>
+  <dt><a name="e14-19"><strong>Example 14-19  Intensity Texture Modulating Primitive Color</strong></a>
+  <dd><blockquote><pre>
+<a href="../../n64man/gdp/gDPSetCombineMode.htm">gsDPSetCombineMode</a>(G_CC_MODULATEI_PRIM,G_CC_MODULATEI_PRIM),
+<a href="../../n64man/gdp/gDPSetPrimColor.htm">gsDPSetPrimColor</a>(0,0,205,51,51,255),        /* brown */
+<a href="../../n64man/gdp/gDPLoadTextureTile_4b.htm">gsDPLoadTextureTile_4b</a>(trunk,G_IM_FMT_I,16,40,
+        0,0,15,39,
+        0,
+        G_TX_MIRROR,G_TX_CLAMP,
+        4,G_TX_NOMASK,
+        G_TX_NOLOD,G_TX_NOLOD),
+<a href="../../n64man/gsp/gSPTextureRectangle.htm">gsSPTextureRectangle</a>(50&lt;&lt;2,100&lt;&lt;2,82&lt;&lt;2,140&lt;&lt;2,
+        G_TX_RENDERTILE,
+        0,0,
+        1&lt;&lt;10,1&lt;&lt;10),
+<a href="../../n64man/gdp/gDPSetPrimColor.htm">gsDPSetPrimColor</a>(0,0,0,139,0,255),                        /* green */
+<a href="../../n64man/gdp/gDPLoadTextureTile_4b.htm">gsDPLoadTextureTile_4b</a>(treetop,G_IM_FMT_I,32,32,
+        0,0,15,39,
+        0,
+        G_TX_MIRROR,G_TX_CLAMP,
+        5,G_TX_NOMASK,
+        G_TX_NOLOD,G_TX_NOLOD),
+<a href="../../n64man/gsp/gSPTextureRectangle.htm">gsSPTextureRectangle</a>(44&lt;&lt;2,68&lt;&lt;2,108&lt;&lt;2,100&lt;&lt;2,
+        G_TX_RENDERTILE,
+        0,0,
+        1&lt;&lt;10,1&lt;&lt;10),
+      </pre></blockquote>
+</dl>
+
+<p>By interpolating between two different colors using the intensity as the parameter, it is possible to achieve two-color textures. The combine mode G_CC_BLENDPEDECALA interpolates between primitive color and environment color using an I texture. For this combine mode, when the texture is 0 the pixel will be environment color, when the texel is all ones, the pixel will be primitive color. Example 14-20 assumes an I texture has already been loaded into TMEM. </p>
+
+<dl>
+  <dt><a name="e14-20"><strong>Example 14-20  Two-Color Texture</strong></a>
+  <dd><blockquote><pre>
+        gsDPSetCombineMode(G_CC_BLENDPEDECALA,G_CC_BLENDPEDECALA),
+        gsDPSetPrimColor(0,0,205,51,51,255,/* brown */
+        gsDPSetEnvColor(0,0,0,200,0,255),/* green */
+        gsSPTextureRectangle(50&lt;&lt;2,100&lt;&lt;2,82&lt;&lt;2,140&lt;&lt;2,
+                G_TX_RENDERTILE,
+                0,0,
+                1&lt;&lt;10,1&lt;&lt;10),
+      </pre></blockquote>
+</dl>
+
+<p>Since for intensity textures the texel value is also copied onto the alpha channel, you can achieve transparency using an intensity texture. For example, if you define a 4-bit texture of some text to have an intensity of 0xf for the character portions and specify a value of 0 for the rest of the portion, and then perform <a href="../../keywords/index/data/graphics.htm#rendering" target="keywords">rendering</a> using the combine mode G_CC_BLENDPEDECALA and the render mode G_RM_TEX_EDGE, the text will have the primitive color and the rest of the portion will be transparent elsewhere. 
+
+
+
+Note that if the edges of the text are filtered to give smooth edges, then the text will have an <a href="../../keywords/index/data/graphics.htm#intensity ramp" target="keywords">intensity ramp</a> at the edges. If you use an <a href="../../keywords/index/data/graphics.htm#anti-aliasing" target="keywords">antialiased</a> render mode, such as G_RM_AA_TEX_EDGE, then the text will look smoother than if a 1-bit alpha texture like 4-bit IA or 16-bit RGBA were used. </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="02"><h2>14.3.2 Intensity Alpha (IA) Textures</h2></a>
+
+<p>This texture type defines an intensity (I) channel and a separate alpha channel (A). This type is convenient where the transparency of the texture must be defined separately from the intensity. The sizes include 4-bit (3 bits of I and 1 bit of A), 8-bit (4 bits of I and 4 bits of A), 16-bit (8 bits of I and 8 bits of A). Keep in mind when using 1-bit alphas that the pixel will be either written or not, depending on the alpha bit. Therefore, the transparency channel is not antialiased (the texture filter cannot &QUOT;create data&QUOT; to smooth the edge). Scaling a 1-bit alpha texture can result in blocky-looking outlines. </p>
+
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="03"><h2>14.3.3 Color (RGBA) Textures</h2></a>
+
+<p>There are two sizes of RGBA textures: 16-bit (5 bits R, 5 bits G, 5 bits B, 1 bit A), and 32-bit (8 bits R, 8 bits G, 8 bits B, 8 bits A). While 16-bit RGBA textures are popular because they are easy to create and model with, they have the disadvantage of only a 1-bit alpha channel. This can be overcome in certain cases, as discussed in <a href="14-03.htm#05">Section 14.3.5 &QUOT;Combining Types&QUOT;</a> below. </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="04"><h2>14.3.4 Color Index (CI) Textures</h2></a>
+
+<p>Color index textures come in two sizes, 8-bit and 4-bit. When using color index textures only half the TMEM is used for textures (2KBytes). The other half is used to store the lookup table (TLUT) that converts the index texel into either 16-bit RGBA or 16-bit IA
+types. It is also possible to copy 8-bit <a href="../../keywords/index/data/graphics.htm#CI" target="keywords">CI</a> textures directly to an 8-bit framebuffer as discussed in Section &QUOT;14.6 Color Index Frame Buffer&QUOT;. </p>
+
+<p>4-bit CI textures must select one of 16 possible palettes. Each palette has 16 entries. The <a href="../../n64man/gdp/gDPLoadTLUT_pal16.htm">g*DPLoadTLUT_pal16</a> can be used to load an individual palette. The palette to use is defined in the tile descriptor (normally you would define the palette in the <a href="../../n64man/gdp/gDPLoadTexture.htm">g*DPLoadTexture*</a> command), so different tiles can select different palettes. </p>
+
+<p>You can use a 4-bit CI texture to provide more alpha bits than is possible with the 4-bit IA type, because the <a href="../../keywords/index/data/graphics.htm#TLUT" target="keywords">TLUT</a> can hold 16-bit IA values. Therefore, you could look up 16 levels of alpha with a 4-bit CI sprite as compared to 1 level for a 4-bit IA <a href="../../keywords/index/data/graphics.htm#sprite" target="keywords">sprite</a>. </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="05"><h2>14.3.5 Combining Types</h2></a>
+
+<p>As mentioned previously, 16-bit RGBA textures have only a 1-bit alpha channel. If you want to have a smoothly antialiased texture edge using the 16-bit RGBA type, you must combine two types of texture. Example 14-21 shows how a separate alpha texture with a 4-bit I type is combined with a 16-bit RGBA type to get smoother edges on a sprite. </p>
+
+<dl>
+  <dt><a name="e14-21"><strong>Example 14-21  Interpolate Between Two Tiles</strong></a>
+  <dd><blockquote><pre>
+#define MULTIBIT_ALPHA  0,0,0,TEXEL0,0,0,0,TEXEL1
+<a href="../../n64man/gdp/gDPSetCycleType.htm">gsDPSetCycleType</a>(G_CYC_2CYCLE),
+<a href="../../n64man/gdp/gDPSetTextureLOD.htm">gsDPSetTextureLOD</a>(G_TL_TILE),
+<a href="../../n64man/gdp/gDPSetCombineMode.htm">gsDPSetCombineMode</a>(MULTIBIT_ALPHA,G_CC_PASS2),
+<a href="../../n64man/gdp/gDPSetRenderMode.htm">gsDPSetRenderMode</a>(G_RM_AA_TEX_EDGE,G_RM_AA_TEX_EDGE2),
+/* load color part of texture */
+gsDPLoadMultiTile(color,
+        0,                /* TMEM address in 64-bit words */
+        G_TX_RENDERTILE,        /* tile */
+        G_IM_FMT_RGBA,G_IM_SIZ_16b,
+        32,32,
+        0,0,31,31,
+        0,
+        G_TX_NOMIRROR, G_TX_NOMIRROR,
+        G_TX_NOMASK, G_TX_NOMASK,
+        G_TX_NOLOD, G_TX_NOLOD),
+/* load alpha part of texture */
+gsDPLoadMultiTile_4b(alpha,
+        256,        /* TMEM address in 64-bit words */
+        G_TX_RENDERTILE+1, /* tile */
+        G_IM_FMT_I,
+        32,32,
+        0,0,31,31,
+        0,
+        G_TX_NOMIRROR,G_TX_NOMIRROR,
+        G_TX_NOMASK,G_TX_NOMASK,
+        G_TX_NOLOD,G_TX_NOLOD),
+<a href="../../n64man/gsp/gSPTextureRectangle.htm">gsSPTextureRectangle</a>(glistp++,
+        50&lt;&lt;2,50&lt;&lt;2,82&lt;&lt;2,82&lt;&lt;2,
+        G_TX_RENDERTILE,
+        0,0,
+        1&lt;&lt;10,1&lt;&lt;10);
+      </pre></blockquote>
+</dl>
+
+<p>The idea here is that in two-cycle mode we get two texel values, one from the 16-bit RGBA texture and one from the 4-bit I texture. In the color combiner, we program the alpha combiner to use the 4-bit I texture (the 1-bit A of the RGBA texture is not used). In the color combiner, we select the RGB texture as the color source. Since we are using both cycles for this trick, it is not possible to use  <a href="../../keywords/index/data/graphics.htm#MIP map" target="keywords">MIP mapping</a> or other two-cycle modes simultaneously. Note that you could use an 8-bit I texture for the alpha channel if you need more alpha resolution. </p>
+
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+</body> </html>

@@ -1,0 +1,91 @@
+<!..
+-- ADD START --
+1998//
+..>
+
+<html>
+<HEAD>
+<TITLE>Unique Scale</TITLE>
+</HEAD>
+<BODY LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff">
+
+<font face="arial" size="-1">
+<b><font size="3">Appendix #3 - Unique Scale</font></b>
+<HR>
+<blockquote>
+
+Unique Scale is a scale that can be realized on certain CG tools.  NIFF2.0 differentiates Unique Scale from the normal scaling procedure of Classical Scale.  The special features of Unique Scale are described below.<p>
+Consider the creation of an animation where an object is attached to the IK chain, like in the figure below.
+<p>
+<center>
+<img src="./img/default_scale.jpg">
+<p>
+<b>
+Figure: Object attached to IK
+</b>
+<p>
+</center>
+Normally, when an object is attached to the IK chain in this way, if the Chain Root is scaled, the objects in that object's hierarchy are also scaled and the geometry becomes deformed, as shown in the figure below.<p>
+<center>
+<img src="./img/classical_scale.jpg">
+<p>
+<b>
+Figure: Scaling the Chain Root using Classical Scale
+</b>
+<p>
+</center>
+However, with Unique Scale, the scale given to the Chain Root is passed over as-is to the child object for scaling.  In this case, the geometry is not deformed.
+<p>
+<center>
+<img src="./img/unique_scale.jpg">
+<p>
+<b>
+Figure: Scaling the Chain Root using Unique Scale
+</b>
+<p>
+</center>
+The same process can be done with the FK System.  Let us compare the two scaling methods for a hierarchy of three objects, as shown in the figure below.<p>
+
+<center>
+<img src="./img/default_scale_hrc.jpg">
+<p>
+<b>
+Figure: Hierarchy of objects
+</b>
+</center>
+
+<p>
+In the above object hierarchy, the object at each level is scaled relative to the root object and the X axis, without any rotation.  With Classical Scale, each object is scaled in a global X axis direction, so the geometry is deformed, as shown in the figure below.<p>
+
+<center>
+<img src="./img/classical_scale_hrc.jpg">
+<p>
+<b>
+Figure: Scaling Root object with Classical Scale
+</b>
+</center>
+
+<p>
+However, when Unique Scale is used, each child object is scaled in the same way relative to the local X axis, so the geometry does not become deformed.
+<p>
+
+<center>
+<img src="./img/unique_scale_hrc.jpg">
+<p>
+<b>
+Figure: Scaling Root object with Unique Scale
+</b>
+</center>
+
+<p>
+NIFF2.0 has separate UniqueScale and ClassicalScale data areas, and either type of scaling can be specified for use.  Actual separation of data for use is carried out on the N64 by the runtime software, so please create separate data areas for output corresponding to the scales used with the CG tool.
+</blockquote>
+
+<hr>
+
+</body>
+</html>
+
+<!..
+-- ADD END --
+..>

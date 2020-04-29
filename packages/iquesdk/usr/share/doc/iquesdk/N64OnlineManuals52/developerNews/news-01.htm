@@ -1,0 +1,114 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<TITLE>Developers News 1.1</TITLE>
+</HEAD>
+
+<BODY bgcolor="#FFFFFF">
+<font face="arial" size="-1">
+
+<HR>
+<H1 align="center"><IMG src="gif/devnews.gif" height="44" width="453">1.1</H1>
+<P>
+
+Bug information and programming guides for the N64 will be periodically released.  All information that will become unnecessary with software (library, etc.) and hardware upgrades used in development will be noted together.  Please utilize this information after confirming that the information concerns your specific upgrade. 
+</P>
+<p>
+<b><A name="top"></A>Contents:</b>
+
+<ol>
+<li>Tip: <A href="#p1">16b RGBA Textures with more than 1-Bit Alphas</A>
+<li>Tip: <A href="#p6">Gamma Correction</A>
+</ol>
+
+<p align="right">February 23, 1996
+</P>
+<HR>
+
+<A name="p1"></A>1. Tip: 16b RGBA Textures with more than 1-Bit Alphas
+<P>
+The 16 bit RGBA texture type is often used to texture sprites and billboards because this is the only type that allows a large number of colors. Unfortunately, this type only has one bit of alpha (which means you can't prefilter texture edges), and can lead to pixelated texture edges. 
+</P>
+<P>
+One way to get more bits of alpha (in order to create smoother outlines) is to use two tiles. The first tile describes the RGB color of the texture, while the second tile describes the alpha channel of the texture. Render the texture in two-cycle mode. In the color combiner, select T0 as the source and in the alpha combiner select T1 as the source. </P>
+<P>
+A code fragment indicates how to set the combine modes and load the textures: 
+</P>
+<BLOCKQUOTE>
+
+<font face="courier" size="2">
+<PRE>
+#define MULTIBIT_ALPHA 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL1
+
+...
+
+/* use special combine mode */
+
+<A href="../n64man/gdp/gDPSetCombineMode.htm">gsDPSetCombineMode</A>(MULTIBIT_ALPHA, G_CC_PASS2),
+
+...
+
+/*
+ * Load alpha texture at Tmem = 256, notice I use a different load 
+ * macro that allows specifying Tmem address.
+ */
+
+_gsDPLoadTextureBlock_4b(I4molecule, 256, G_IM_FMT_I,
+                32, 32, 0,
+                G_TX_WRAP, G_TX_WRAP,
+                5, 5, G_TX_NOLOD, G_TX_NOLOD),
+
+/*
+ * Load color texture starting at Tmem=0
+ */
+
+<A href="../n64man/gdp/gDPLoadTextureBlock.htm">gsDPLoadTextureBlock</A>(RGBA16molecule, G_IM_FMT_RGBA, G_IM_SIZ_16b,
+                32, 32, 0,
+                G_TX_WRAP, G_TX_WRAP,
+                5, 5, G_TX_NOLOD, G_TX_NOLOD),
+
+/*
+ * Since normal load macros use tile 0 for render, I need to set 
+ * tile 1 manually to point at alpha texture.
+ */
+
+<A href="../n64man/gdp/gDPSetTile.htm">gsDPSetTile</A>(G_IM_FMT_I, G_IM_SIZ_4b, 2, 256, 1,
+                0,
+                G_TX_WRAP,5,  G_TX_NOLOD,
+                G_TX_WRAP,5,  G_TX_NOLOD),
+
+<A href="../n64man/gdp/gDPSetTileSize.htm">gsDPSetTileSize</A>( 1, 0, 0, 31 &lt;&lt; 2, 31 &lt;&lt; 2),
+...
+/* make sure in two-cycle mode */
+<A href="../n64man/gdp/gDPSetCycleType.htm">
+gsDPSetCycleType</A>(G_CYC_2CYCLE),
+</PRE>
+</font>
+
+</BLOCKQUOTE>
+<P align="right">
+<A href="#top"><IMG src="../gif/index.gif" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<P>
+<A name="p6"></A><b>2. Tip: Gamma Correction</b>
+</P>
+<P>
+Super NES and Super Famicom do not have gamma correction hardware but the Nintendo 64 does. Some developers have indicated that the colors look washed out on the N64 with gamma correction turned on. 
+
+</P>
+<P>
+If you are currently writing games for Super NES or Super Famicom (or any machine that does not have gamma correction), your production path is likely to be setup to compensate for the lack of gamma correction hardware. In other words, you are probably picking pre-gamma corrected colors. If you use this same production path and turn Ultra 64 gamma correction on, you will get the wash out effect because you would have gamma corrected twice. 
+
+</P>
+<P>
+To undo the first gamma correction, square and shift down by 8 each color component (assuming 8 bit color) or rework your path to exclude the gamma correction stop, leaving gamma correction to the hardware. 
+
+</P>
+<P align="right">
+<A href="#top"><IMG src="../gif/index.gif" height="17" width="65" border="0"></A>
+</P>
+<HR>
+</font>
+</BODY>
+</HTML>

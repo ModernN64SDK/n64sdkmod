@@ -1,0 +1,229 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<!--
+Editors Notes:
+  PWC- updated formatting
+  JLR-- Did reformating
+  MAP- updated format
+-->
+<TITLE>makerom</TITLE>
+</HEAD>
+
+<BODY bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>makerom</b></font><font style="font-size: 9pt"><b> (tool command)</b></font>
+<P>
+<i>Creates a ROM Game Pak image and associated ELF object files
+</i>
+</P>
+<H3>Syntax</H3>
+<p>
+<PRE><CODE>makerom [-D name[=def]] [-I dir] [-U name] [-d] [-m] [-o]
+        [-b bootstrap filename] [-h header filename]
+        [-s romsize] [-f filldata]
+        [-p pif2 bootstrap filename] [-r romfile] specfile
+</CODE></PRE>
+<H3>Description</H3>
+<P>
+makerom creates a ROM image suitable for downloading into the Game Pak ROM by the <A href="gload.htm">gload</A> tool. makerom takes as input the specification file (specfile) that describes the organization of object and raw data files into segments. Then makerom invokes a link editor to resolve all undefined references, perform relocations, and create ELF object files for the Nintendo 64 debugger, <A href="gvd.htm">gvd</A>.
+</P>
+<P>
+The makerom tool forcefully loads the first 8K bytes with the default bootstrap, pif bootstrap, and header files, unless you override these built-in defaults with command line options. 
+</P>
+<P>
+Command line options recognized by makerom are the following.
+</P>
+<DL>
+  <DT><STRONG>-D name[=def]</STRONG>
+  <DD>Is passed to cpp for use during its invocation. <BR>
+<BR>
+  <DT><STRONG>-I directory</STRONG>
+  <DD>Is passed to cpp for use during its invocation.<BR>
+<BR>
+  <DT><STRONG>-U name</STRONG>
+  <DD>Is passed to cpp for use during its invocation.<BR>
+<BR>
+  <DT><STRONG>-d</STRONG>
+  <DD>Gives a verbose account of all the actions that makerom takes, leaving temporary files created that are normally deleted. <BR>
+<BR>
+  <DT><STRONG>-m</STRONG>
+  <DD>Prints a link editor map to standard output for diagnostic purposes. <BR>
+<BR>
+  <DT><STRONG>-o</STRONG>
+  <DD>Disables checking of overlapping sections. By default, segments with direct-mapped CPU addresses are checked to ensure that the underlying physical memory mappings do not conflict. <BR>
+<BR>
+  <DT><STRONG>-b &lt;bootstrap filename&gt;</STRONG>
+  <DD>Overrides the default filename &quot;/usr/lib/PR/Boot&quot;. This file must be in COFF format, and is loaded as 1K bytes into the ramrom memory. <BR>
+<BR>
+  <DT><STRONG>-h &lt;header filename&gt;</STRONG>
+  <DD>Overrides the default ROM header filename &quot;/usr/lib/PR/romheader&quot;. This file is in ASCII format, and each character is converted to hex and loaded in sequence, starting at the beginning of ramrom memory. Currently only 32 bytes are used. <BR>
+<BR>
+  <DT><STRONG>-s &lt;romsize (Mbits)&gt;</STRONG>
+  <DD>Creates a ROM image with the specified size. This option is required for making the real Game Pak. <BR>
+<BR>
+  <DT><STRONG>-f &lt;filldata (0x0 - 0xff)&gt;</STRONG>
+  <DD>Sets the fill pattern for &quot;holes&quot; within a ROM image. The argument filldata is a one-byte hexadecimal constant. Use this option when you create a ROM image using the -s option.<BR>
+<BR>
+  <DT><STRONG>-p &lt;pif bootstrap file&gt;</STRONG>
+  <DD>Overrides the pif bootstrap filename &quot;/usr/lib/PR/pif2Boot&quot;. This file must be in COFF format. It is loaded as 4K bytes into the ramrom memory. <BR>
+<BR>
+  <DT><STRONG>-r</STRONG>
+  <DD>Provides an alternate ROM image file; the default is 'rom'.<BR>
+<BR>
+  <DT><STRONG>-B 0</STRONG>
+  <DD>An option that concerns only games supported by 64DD. Using this option creates a startup game. For information on startup games, please see Section 15.1, "Restarting," in the N64 Disk Drive Programming Manual. <BR>
+<BR>
+</DL>
+<P>
+The makerom tool searches in three places for the bootstrap, pif bootstrap, and ROM header files in this order: First, $(ROOT)/&lt;filename&gt;, next $(WORKAREA)/&lt;filename&gt;, and last /&lt;filename&gt;. The ROOT and WORKAREA shell environment variables are used internally by SGI machine. The makerom tool's use of these variables allow our internal developers to use sw modules created within their personal development source directories, even if the same modules are installed on the development system upon which they are running their new code. If these variables are not set, you must supply the full pathname for these files to overwrite the existing default structure in makerom.
+</P>
+<P>
+The spec file is preprocessed with the C language preprocessor (cpp) so that header files may be used for consistency with source and #defines may be used for clarity. Following describes the syntax of the specification file.
+</P>
+<BLOCKQUOTE>
+
+<PRE>
+&lt;specFile&gt;      :&lt;segmentList&gt; &lt;waveList&gt;
+
+&lt;segmentList&gt;   :&lt;segment&gt;
+                |&lt;segmentList&gt; &lt;segment&gt;
+
+&lt;segment&gt;       :beginseg &lt;segStmtList&gt; endseg
+
+&lt;segStmtList&gt;   :&lt;segStatement&gt;
+                |&lt;segStmtList&gt; &lt;segStatement&gt;
+
+&lt;segStatement&gt;  :name &lt;segmentName&gt;
+                |address &lt;constant&gt;
+                |after &lt;segmentName&gt;
+                |after max[&lt;segmentName&gt;,&lt;segmentName&gt;]
+                |after min[&lt;segmentName&gt;,&lt;segmentName&gt;]
+                |include &lt;filename&gt;
+                |maxsize &lt;constant&gt;
+                |align &lt;constant&gt;
+                |flags &lt;flagList&gt;
+                |number &lt;constant&gt;
+                |entry &lt;symbol&gt;
+                |stack &lt;stackValue&gt;
+
+&lt;flagList&gt;      :&lt;flag&gt;
+                |&lt;flagList&gt; &lt;flag&gt;
+
+&lt;flag&gt;          :BOOT
+                |OBJECT
+                |RAW
+
+&lt;stackValue&gt;    :&lt;constant&gt;
+                |&lt;symbol&gt;
+                |&lt;symbol&gt; + &lt;constant&gt;
+
+&lt;waveList&gt;      :&lt;wave&gt;
+                |&lt;waveList&gt; &lt;wave&gt;
+
+&lt;wave&gt;          :beginwave &lt;waveStmtList&gt; endwave
+
+&lt;waveStmtList&gt;  :&lt;waveStatement&gt;
+                |&lt;waveStmtList&gt; &lt;waveStatement&gt;
+
+&lt;waveStatement&gt; :name &lt;waveName&gt;
+                |include &lt;segmentName&gt;
+</PRE>
+</BLOCKQUOTE>
+<P>
+The &quot;name&quot; statement when used in the segment definition provides makerom with a string that it associates with the segment. It uses this for two reasons: to associate the segment with &quot;waves&quot; described below and to create some predefined symbols that may be referenced by code segments. These symbols should be declared as an &quot;extern&quot; to avoid their interpretation as gp-relative data. The symbols, and their meaning are as follow.
+</P>
+<DL>
+  <DT><STRONG>_`name'SegmentStart</STRONG>
+  <DD>is the beginning virtual or segment address of the segment <BR>
+<BR>
+  <DT><STRONG>_`name'SegmentEnd</STRONG>
+  <DD>is the ending virtual or segment address of the segment plus one<BR>
+<BR>
+  <DT><STRONG>_`name'SegmentTextStart</STRONG>
+  <DD>if any program text (instructions) are present, this is the starting address of the text <BR>
+<BR>
+  <DT><STRONG>_`name'SegmentTextEnd</STRONG>
+  <DD>if any program text (instructions) are present, this is the ending address of the text plus one <BR>
+<BR>
+  <DT><STRONG>_`name'SegmentDataStart</STRONG>
+  <DD>if any initialized program data is present, this is the starting address of this section <BR>
+<BR>
+  <DT><STRONG>_`name'SegmentDataEnd</STRONG>
+  <DD>if any initialized program data is present, this is the ending address of this section plus one <BR>
+<BR>
+  <DT><STRONG>_`name'SegmentBssStart</STRONG>
+  <DD>if any uninitialized program data is present, this is the starting address of this section <BR>
+<BR>
+  <DT><STRONG>_`name'SegmentBssEnd</STRONG>
+  <DD>if any uninitialized program data is present, this is the ending address of this section plus one <BR>
+<BR>
+  <DT><STRONG>_`name'SegmentRomStart</STRONG>
+  <DD>is the beginning ROM address of the segment <BR>
+<BR>
+  <DT><STRONG>_`name'SegmentRomEnd</STRONG>
+  <DD>is the ending ROM address of the segment plus one <BR>
+</DL>
+<P>
+The &quot;flags&quot; statement provides some specific information about the segment. Segments flagged as &quot;object&quot; are composed of nonshared ELF relocatables. The type &quot;raw&quot; consists of uninterpreted data. The segment flagged as the &quot;boot&quot; segment is of special significance. It must be the first segment in the specification file, and it is linked at a fixed address. The &quot;entry&quot; statement gives the symbol that will be jumped to immediately after the rom image is loaded by gload. The &quot;stack&quot; segment specifies the beginning stack address of the boot code. It may either be a constant virtual address, or optionally, a program segment symbol name plus an offset. The later form is often useful since stacks grow backwards (towards smaller addresses) as procedures are invoked.
+</P>
+<P>
+The &quot;address&quot;, &quot;number&quot;, and &quot;after&quot; statements are ways of indicating the beginning virtual address of an OBJECT segment. The &quot;address&quot; statements are primarily intended for segments that will be executed by the CPU, whereas segments numbered by the &quot;number&quot; segment are primarily intended to be accessed by the RSP. The &quot;after&quot; keyword can place a segment directly after the address range of another segment; this can be useful for preventing fragments in the address space while easily accommodating changes in segment sizes.
+</P>
+<P>
+Each of one or more &quot;include&quot; statements of a segment definition specifies files that comprise the segment. If the segment has been flagged with &quot;object&quot;, the specified file should be a nonshared ELF relocatable. Any types of files can be specified for &quot;raw&quot;.
+</P>
+<P>
+The &quot;maxsize&quot; statement can be used to specify the maximum size of a segment in bytes.</P>
+<P>
+The &quot;align&quot; statement can be used to align a segment to a given number of bytes. By default, segments are aligned to 16 byte (128 bits) boundaries.</P>
+<P>
+It is necessary to define multiple &quot;waves&quot; statements for specification files. Each wave definition results in a different ELF object file being created. Multiple waves may be used as desired to controll totally different scenes or perhaps appropriate when different address spaces are necessary due to the memory layouts.
+</P>
+
+<P>
+The &quot;name&quot; statement of a wave definition will be used as the file name of the resulting ELF object file that corresponds to the wave. The defined segment specified by &quot;include&quot;' statement in the wave definition is included in the wave. The inclusion of the a segment into a wave makes its symbols available to all other segments of the wave.
+</P>
+<h3>Example</h3>
+<P>
+The following spec file describes an application with two segments: a boot program segment and a static data segment. A single ELF object file named &quot;rotate&quot; is created. 
+</P>
+<BLOCKQUOTE>
+
+<PRE>
+beginseg
+        name &quot;program&quot;
+        flags BOOT OBJECT
+        entry mainproc
+        stack mainThreadStack + 0x1000
+        include &quot;rotate.o&quot;
+endseg
+
+beginseg
+        name &quot;static&quot;
+        flags OBJECT
+        number 1
+        include &quot;square.o&quot;
+endseg
+
+beginwave
+        name &quot;rotate&quot;
+        include &quot;program&quot;
+        include &quot;static&quot;
+endwave
+</PRE>
+</BLOCKQUOTE>
+<h3>See Also</h3>
+<P>
+<A href="gload.htm">gload</A>, <A href="gvd.htm">gvd</A>
+</P>
+
+<H3>Revision History</H3>
+<P>
+1999/01/21  Removed -C option, and added -B 0 option
+<br>
+1999/04/30  Changed Format
+<br><br>
+
+</BODY>
+</HTML>

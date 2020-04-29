@@ -1,0 +1,47 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+
+<HTML>
+<HEAD>
+<META name="GENERATOR" content="IBM HomePage Builder 2000 V4.0.6  for Windows">
+<TITLE>Developers News 2.0</TITLE>
+</HEAD>
+
+<BODY bgcolor="#FFFFFF">
+<font face="arial" size="-1">
+<HR>
+<P align="center">
+<FONT size="6"><STRONG><IMG src="gif/devnews.gif" height="44" width="453">2.1</STRONG></FONT>
+</P>
+<HR>
+<H1 align="center">Notification on 16K EEPROM</H1>
+<P>A problem with 16K EEPROM used for N64 cartridges was found.</P>
+<P>Please read the following carefully if you will make titles using 16K EEPROM or if you are planning to manufacture old titles repeatedly that use 16K EEPROM.</P>
+<HR>
+<H2>1. Problem outline</H2>
+<P>16K EEPROM manufactured by SHARP and ROHM was being used for mass production.   When 16K EEPROM manufactured by ROHM was used, data contents were destroyed if it was accessed by a certain procedure.</P>
+<P>In the case of chips manufactured by SHARP, this problem did not occur.  However, a large number of 16K EEPROM by ROHM will be going to be used for future mass production.  Thus, it is necessary to test if this problem will be found with chips by ROHM.</P>
+<HR>
+<H2>2. Access procedure in which the problem occurs</H2>
+<P>If a block address with same LSB (least significant bit) as the one to write is read immediately before writing to it, 0xFF is written in the first one byte of the next block if the block address to write has an even number; and in the first one byte of the previous block if an odd number.</P>
+<HR>
+<H2>3. Countermeasures</H2>
+<P>By using this library OS2.0L, this problem can be avoided.  In case it is impossible to use OS2.0L, you can avoid this problem by doing one of the following.</P>
+<P>Just before writing into a block address, place a dummy reading of another block address with an opposite LSB. (For example, the one with inverted block address of the one to write in)<BR>
+*When writing, write two blocks at a time starting with the even number block.</P>
+<P>This problem occurs only when write process is performed after read process is performed.  Therefore, with a program in which all the block addresses in EEPROM are read at first, and then only write process is performed after that, there is no need to worry about writing afterward if you are careful with write process first.</P>
+<HR>
+<H2>4. Model numbers for chip</H2>
+<P>It is possible to distinguish from model numbers printed on chips whether the chip being used is manufactured by ROHM or not.</P>
+<P>ROHM BK16D 9851 XXX XXX (XXX means lot number)<BR>
+SHARP BK16D SH XXXX X, BK16DA SH XXXX
+X</P>
+<P>If you don't have chips manufactured by ROHM at hand when testing operation of 16K EEPROM, contact <a href=mailto:support@noa.com>support@noa.com</a>.
+<P>When OS2.0L cannot be used, be sure to confirm operation using EEPROM manufactured by ROHM. 
+
+<HR>
+<H2>5. Repeat manufacturing</H2>
+<P>As for repeat manufacturing of old titles which use 16K EEPROM, please confirm the method of access to EEPROM and the operation using a chip manufactured by ROHM.</P>
+<P>We appreciate your consideration with regard to the above. </P>
+<HR>
+</BODY>
+</HTML>

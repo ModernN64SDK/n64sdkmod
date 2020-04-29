@@ -1,0 +1,66 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.>
+<TITLE>guMtxCatL</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>guMtxCatL<FONT size="+0"> [Function]</FONT></H1>
+
+<p><h3>Function</h3></p>
+
+<p>guMtxCatL</p>
+<P>
+<i>Multiplies matrices (fixed point)</i>
+</P>
+<H3>Syntax</H3>
+<p>
+<PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gu.htm">gu.h</A> */
+void guMtxCatL(Mtx *m, Mtx *n, Mtx *res);</CODE></PRE></p>
+
+<H3>Arguments</H3>
+<p><DL>
+  <DT><B>m</B>
+  <DD>Pointer to first matrix
+  <DT><B>n</B>
+  <DD>Pointer to second pointer
+  <DT><B>res</B>
+  <DD>Pointer to matrix resulting from the computation (<B>m</B> x <B>n</B>)
+</DL></p>
+<H3>Returned value</H3>
+<P>
+None.
+</P>
+<H3>Description</H3>
+<P>
+Executes a multiplication of the two matrices (<B>m</B>, <B>n</B>) and returns the result  to the structure indicated by <B>res</B>.  This function provides a useful way to process matrices on the host CPU.  Floating point can be handled with the <A HREF="guMtxCatF.htm">guMtxCatF</A> function.
+</P>
+<P>
+For details, see 1-5-2 "Matrix Multiplication" in Step 3 of the Kantan Manual. For an explanation of the fixed-point format, see <A HREF="../gsp/gSPMatrix.htm">gSPMatrix</A>.
+</P>
+<H3>Comment</H3>
+<P>
+It is alright for the resulting matrix <B>res</B> to comprise just one of the input matrices <B>m</B> or <B>n</B>.
+</P>
+<P>
+The Mtx structure looks like this:
+<PRE><CODE>typedef long  Mtx_t[4][4];
+typedef union {
+     Mtx_t          m;
+     long long int  force_structure_alignment;
+} Mtx;
+</CODE></PRE>
+</P>
+<H3>See also</H3>
+<P>
+<A HREF="../gsp/gSPMatrix.htm">gSPMatrix</A>, <A HREF="guMtxCatF.htm">guMtxCatF</A>
+</P>
+<H3>Revision history</H3>
+<P>
+03/01/99  Completely rewritten.
+</P>
+</BODY>
+</HTML>

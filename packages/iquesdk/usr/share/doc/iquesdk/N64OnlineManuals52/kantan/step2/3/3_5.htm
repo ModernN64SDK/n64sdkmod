@@ -1,0 +1,167 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!--
+Editors Notes:
+  PWC- updated formatting
+-->
+<title>STEP2 [A Guide to the N64 Programming] - Chapter 3 N64 Audio Architecture and Samples</title>
+<base target="keywords">
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<font style="font-size:12pt"><b>3-5 Method of Audio Playback Process</b></font><br>
+<br>
+<br>
+<b>3-5-1 Playing Back Audio Step by Step</b><br>
+<img src="img00009.gif"><br>
+The audio playback is provided by the following procedure:<br>
+<br><ol>
+<li>Create the audio heap.</li>
+<li>Set the hardware output frequency.</li>
+<li>Create a synthesizer.</li>
+<li>Create a <a href="../../../keywords/index/data/system.htm#message queue" target="keywords">message queue</a> for receiving the signal that adjusts the timing of the audio process. </li>
+<li>Create players (<a href="../../../keywords/index/data/audio.htm#sound player"target="keywords">sound player</a>, <a href="../../../keywords/index/data/audio.htm#sequence player" target="keywords">sequence player</a>, etc.) to be added to the synthesizer.</li>
+<li>Initialize the <a href="../../../keywords/index/data/system.htm#resource" target="keywords">resources</a> allocated to each player.</li>
+<li>Create the audio command list.</li>
+<li>In RSP, execute the audio task based on the audio command list.</li>
+<li>Set the audio DAC.</li></ol>
+<br>
+<br>
+<br>
+<b>3-5-2 Setting Up the Synthesizer Step by Step</b><br>
+<img src="img00010.gif"><br>
+Before playing back the audio, you first need to set the synthesizer by following this procedure:<br>
+<br>
+<b>1. Initialize the audio heap</b><br>
+For each audio library function, N64 allocates required memory dynamically from the memory area called the audio heap. Therefore, to use the audio library, you must first initialize the audio heap area by using the <a href="../../../n64man/al/alHeapInit.htm">alHeapInit</a> function.<br>
+<br>
+<b>2. Set the hardware playback rate</b><br>
+To set the hardware <a href="../../../keywords/index/data/audio.htm#playback rate" target="keywords">playback rate</a>, use the <a href="../../../n64man/os/osAiSetFrequency.htm">osAiSetFrequency</a> function.<br>
+<br>
+<b>3. Set up the synthesizer driver configuration structure</b><br>
+Before creating the synthesizer, set the parameters such as maxUpdates, in the synthesizer driver configuration structure.<br>
+<br>
+<b>4. Create the synthesizer</b><br>
+Use the <a
+href="../../../n64man/al/alInit.htm">alInit</a> function to create the synthesizer.<br>
+<br>
+<b>5. Set up the <a href="../../../keywords/index/data/audio.htm#DMA call back" target="keywords">DMA call back</a> routine</b><br>
+As the occasion demands, to transfer the waveform data in ROM to RDRAM, you must set up the DMA callback routine brought up from the synthesizer driver. To do this, you need to set the pointer to the DMA initialization routine in the synthesizer driver's configuration structure. This DMA initialization routine is brought up once for each <a href="../../../keywords/index/data/audio.htm#physical voice">physical voice</a>; it initializes the DMA buffer the first time and is set to return the pointer (ALDMAproc) to the function called up when the waveform data actually becomes necessary. ALDMAproc receives the address, length, and state pointer of the required data and returns the pointer to the <a href="../../../keywords/index/data/system.htm#buffer" target="keywords">buffer</a>, storing its data as the return value. Nintendo uses this method in order to give you, the programmer, more freedom. This way, you can customize the algorithm by choosing to externally place either the cache process or the resident process. <br>
+<br>
+<br>
+<br>
+<b>3-5-3 Playing Back Sound Effects Step by Step</b><br>
+<img src="img00011.gif"><br>
+<a href="../../../keywords/index/data/audio.htm#sound effect" target="keywords">Sound effects</a> are played back by using a sound player which is a client of the synthesizer. To playback a sound effect, use this procedure:<br>
+<br>
+<b>1. Accept the audio bank from ROM</b><br>
+To play the sound, you need to first use DMA to transfer the control file of the wave table to RDRAM. The following is a typical procedure you can use to complete the DMA transfer of the audio <a href="../../../keywords/index/data/audio.htm#bank" target="keywords">bank</a>.
+
+<ul>
+<li>Create the PI Manager by using the <a href="../../../n64man/os/osCreatePiManager.htm">osCreatePiManager</a> function. (In the actual game program, you create the PI Manager in the main program, so there is no need to recreate it here. On the audio side it is only being used.)</li>
+<li>Create the message queue to verify the end of the DMA transfer by using the <a href="../../../n64man/os/osCreateMesgQueue.htm">osCreateMesgQueue</a> function. </li>
+<li>Reserve the <a href="../../../keywords/index/data/system.htm#heap" target="keywords">heap</a> area for the audio bank by using the <a href="../../../n64man/al/alHeapAlloc.htm">alHeapAlloc</a> function.</li><br>
+<br><b>*The first three steps are required only with the first setting. </b><br><br>
+<li>Before the DMA transfer, provide for the write back of the CPU cache by using the <a href="../../../n64man/os/osWritebackDCache.htm">osWritebackDCache</a> or <a href="../../../n64man/os/osWritebackDCacheAll.htm">osWritebackDCacheAll</a> function.</li>
+<li>Initiate the DMA transfer by using the <a href="../../../n64man/os/osPiStartDma.htm">osPiStartDma</a> function.</li>
+<li>Verify the end of the DMA transfer by using the <a href="../../../n64man/os/osRecvMesg.htm">osRecvMesg</a> function.</li>
+</ul>
+
+<b>2. Activate the sound player</b><br>
+Use the <a href="../../../n64man/al/alSndpNew.htm">alSndpNew</a> function to activate the sound player. This also automatically registers the client player in the synthesizer driver. <br>
+<br>
+<b>3. Initialize the audio bank</b><br>
+Use the <a href="../../../n64man/al/alBnkfNew.htm">alBnkfNew</a> function to initialize the audio bank used to playback the sound effect. Here, "initialize", actually means, "convert from the offset to the pointer" and "convert from the offset to the address."<br>
+<br>
+<b>4. Allocate resources to the sound</b><br>
+Allocate the sound to the player by using the <a href="../../../n64man/al/alSndpAllocate.htm">alSndpAllocate</a> function.<br>
+<br>
+<b>5. Choose the sound</b><br>
+Before setting the <a href="../../../keywords/index/data/audio.htm#pan">pan</a>, <a href="../../../keywords/index/data/audio.htm#volume"
+target="keywords">volume</a>, and so on, you need to choose the sound by using the <a href="../../../n64man/al/alSndpSetSound.htm">alSndpSetSound</a> function. <br>
+<br>
+<b>6. Playback the sound</b><br>
+Use the <a href="../../../n64man/al/alSndpPlay.htm">alSndpPlay</a> function to playback the sound.<br>
+<br>
+<b>7. Stop the sound</b><br>
+Use the <a href="../../../n64man/al/alSndpStop.htm">alSndpStop</a> function to stop the sound.<br>
+<br>
+<b>8. Delete the sound player</b><br>
+If you no longer need the sound player, delete the client from the synthesizer driver by using the <a href="../../../n64man/al/alSndpDelete.htm">alSndpDelete</a> function. <br>
+<br>
+<br>
+<br>
+<b>3-5-4 Playing Back Sequences Step by Step</b><br>
+<img src="img00012.gif"><br>
+
+   To playback MIDI sequences, you need to use a sequence player which is a client of the synthesizer.  Use the audio library, and follow these steps: <br>
+<br>
+<b>1. Accept the audio bank from ROM</b><br>
+This is the same method as for the playback of sound effects.<br>
+<br>
+<b>2. Accept the MIDI sequence from ROM</b><br>
+Before playing back a <a href="../../../keywords/index/data/audio.htm#MIDI"
+target="keywords">MIDI</a> sequence, you need to use DMA to transfer the sequence from ROM to RDRAM, which you can do by using the following typical procedure: (In addition, the PI Manager and message queue for the DMA transfer should be already created.)
+
+<ul>
+<li>Read the first four bytes of the sbk file header. The first two bytes hold the version and the next two bytes hold the number of the sequence.  To do this step, you need to first reserve the header area by using the <a
+href="../../../n64man/al/alHeapAlloc.htm">alHeapAlloc</a> function. Then use DMA to transfer the first four bytes.</li>
+<li>Use DMA to transfer the entire header including the ALSeqData structure which holds the sequence number.</li>
+<li>Initialize the sequence <a href="../../../keywords/index/data/audio.htm#bank file" target="keywords">bank file</a> by using the alSeqFileNew function.</li>
+<li>Use DMA to transfer the required MIDI sequence information stored in ALSeqData structure.</li></ul>
+
+<b>3. Activate the sequence player</b><br>
+Use the <a href="../../../n64man/al/alSeqpNew.htm">alSeqpNew</a> function (for a <a href="../../../keywords/index/data/audio.htm#Type0, Type1 MIDI"target="keywords">Type0</a> MIDI file) or the <a href="../../../n64man/al/alCSPNew.htm">alCSPNew</a> function (for a <a href="../../../keywords/index/data/audio.htm#compressed MIDI" target="keywords">compressed MIDI</a> file) to activate the appropriate sequence player.<br>
+<br>
+<b>4. Initialize the sequence structure</b><br>
+The sequence structure stores the sequence data information needed to playback the MIDI sequence. Use the <a href="../../../n64man/al/alSeqNew.htm">alSeqNew</a> function (for a Type 0 MIDI file) or the <a href="../../../n64man/al/alCSeqNew.htm">alCSeqNew</a> function (for a compressed MIDI file) to initialize the structure. <br>
+<br>
+<b>5. Set up the sequence in the player</b><br>
+To set up the sequence in the player, use the <a href="../../../n64man/al/alSeqpSetSeq.htm">alSeqpSetSeq </a> function (for a Type 0 MIDI file) or the <a href="../../../n64man/al/alCSPSetSeq.htm">alCSPSetSeq</a> function (for a compressed MIDI file).<br>
+<br>
+<b>6. Initialize the audio bank</b><br>
+This method is the same as the one for the playback of sound effects.<br>
+<br>
+<b>7. Set up the audio bank</b><br>
+Specify the <a href="../../../keywords/index/data/audio.htm#instrument" target="keywords">instrument</a> bank to be used by the sequence player by using the <a
+href="../../../n64man/al/alSeqpSetBank.htm">alSeqpSetBank</a> function (for a Type 0 MIDI file) or the <a href="../../../n64man/al/alCSPSetBank.htm">alCSPSetBank</a> function (for a compressed MIDI file).<br>
+<br>
+<b>8. Play the sequence</b><br>
+To initiate the sequence playback, use the <a href="../../../n64man/al/alSeqpPlay.htm">alSeqpPlay</a> function (for a Type 0 MIDI file) or the <a href="../../../n64man/al/alCSPPlay.htm">alCSPPlay</a> function (for a compressed MIDI file).<br>
+<br>
+<b>9. Stop playing the sequence</b><br>
+To stop playing the sequence, use the <a href="../../../n64man/al/alSeqpStop.htm">alSeqpStop</a> function (for a Type 0 MIDI file) or the <a href="../../../n64man/al/alCSPStop.htm">alCSPStop</a> function (for a compressed MIDI file).<br>
+<br>
+<b>10. Delete the sequence player</b><br>
+When a sequence player becomes unnecessary, delete it as a client of the synthesizer driver by using the <a href="../../../n64man/al/alSeqpDelete.htm">alSeqpDelete</a> function (for a Type 0 MIDI file) or the <a href="../../../n64man/al/alCSPDelete.htm">alCSPDelete</a> function (for a compressed MIDI file). <br>
+<br>
+<br>
+<br>
+<b>3-5-5 Executing Audio Tasks Step by Step</b><br>
+<img src="img00013.gif"><br>
+<b>1. Ensure that the audio buffers are ready</b><br> 
+An audio process generally reserves three audio buffer areas in RDRAM. It also reserves two buffers for the audio command list so that one buffer is always ready to be played. This double buffering helps to prevent sound from pausing by never having to wait for an audio process.<br>
+<br>
+<b>2. Synchronize the retrace and RSP events</b><br>
+To execute an audio task, N64 game programmers usually prepare two message queues -- one to post the VI retrace, and the other to post the completion of the RSP task.  Set up the former by using the <a
+href="../../../n64man/os/osViSetEvent.htm">osViSetEvent</a> function, and set up the latter by using the <a
+href="../../../n64man/os/osSetEventMesg.htm">osSetEventMesg</a> function. Store the <a
+href="../../../keywords/index/data/audio.htm#event" target="keywords">event</a> type in OS_EVENT_SP. The VI retrace event is essential to ensure that each audio process is executed for each frame.<br>
+<br>
+<b>3. Regulation of the sample to ensure compatibility with the frame size</b><br>
+To avoid clicking sounds in the music, you need to regulate the processing sample number to ensure that it is compatible with the situation. To do this, use IO_READ (AL_LEN_REG) or the <a href="../../../n64man/os/osAiGetLength.htm">osAiGetLength</a> function. This detects the sample number remaining in the audio buffer without using it, and it regulates the sample so that the newly processing  sample number is compatible with the available space and can have a little more room.  Because the sample number having room or not varies depending on the program or sound, you need to regulate it by continually caculating the actual amount remaining.<br>
+<br>
+<b>4. Create the audio command list</b><br>
+To create the audio command list, use the <a href="../../../n64man/al/alAudioFrame.htm">alAudioFrame</a> function.<br>
+<br>
+<b>5. Execute the audio task</b><br>
+To have the RSP execute the audio task based on the audio command list and create the waveform data in the audio buffer, use the <a href="../../../n64man/os/osSpTaskStart.htm">osSpTaskStart</a> function. <br>
+<br>
+<b>6. Set up the audio DAC</b><br>
+Use DMA to transfer the audio to the audio DAC by using the <a href="../../../n64man/os/osAiSetNextBuffer.htm">osAiSetNextBuffer</a> function. </p>
+</body>
+</html>

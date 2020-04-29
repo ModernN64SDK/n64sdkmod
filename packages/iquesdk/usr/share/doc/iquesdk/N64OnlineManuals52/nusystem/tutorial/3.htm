@@ -1,0 +1,348 @@
+<HTML>
+<HEAD>
+<TITLE>NuSystem Tutorial</TITLE>
+</HEAD>
+
+<BODY bgcolor="#FFFFFF">
+<font face="arial" size="-1">
+
+<P>
+<FONT size="3"><b>3 Getting Started</b></FONT>
+<p>
+In this section we introduce a simple program that outputs a square shape to the screen.</p>
+
+<p>The source is located in the nu0 directory below the nusys/sample.</p>
+
+<p>Please copy this source to your working directory, then make (compile), load, and execute with the development system. </p>
+
+<p>(To learn about using development tools, please refer to the <a
+href="../../kantan/step2/index.htm" target="index">N64 Introductory Manual, Step 2, Sections 5-7</a>.)</p>
+
+<p><b>Caution:</b>  If you do not have the latest N64 OS PATCH distributed by Nintendo then "make" can generate errors and may not run as expected.</p>
+
+<p align="right"><a href="index.htm"><img
+src="../../gif/index.gif" border="0" width="65" height="17"></a></p>
+
+<hr>
+
+<b><a name="1">3.1 Main Routine</a></b>
+
+<p>The source for the main routine (main.c) is very simple, as shown below:</p>
+
+<blockquote>
+<font face="courier" size="2">
+    <pre>void mainproc(void)
+{
+  /*  initialize graphics  */
+  nuGfxInit();
+
+  /* register callback function  */
+  nuGfxFuncSet((NUGfxFunc)stage00);
+  /*  turn display on*/
+  nuGfxDisplayOn();
+
+  while(1)
+    ;
+}
+
+void stage00(int pendingGfx)
+{
+  /* peform display process if no RCP task is being processed */
+  if(pendingGfx &lt; 1)
+    makeDL00();
+}</pre>
+</font>
+</blockquote>
+
+<p>Functions and types are specified in NuSystem using names starting with nu or NU.</p>
+
+<p>The NuSystem program starts from the mainproc function. </p>
+
+<p>First nuGfxInit() is called to initialize the graphics.</p>
+
+<p>Then nuGfxFuncSet() registers the callback function. </p>
+
+<p>Based on this entry, the function specified by the argument (in this case stage00) will be executed every time there is a retrace (vertical synchronization).</p>
+
+<p>Next nuGfxDisplayOn() turns the display on.</p>
+
+<p>In this sample, the callback function is not re-registered so it enters an infinite loop.</p>
+
+<p>"stage00()," where the callback function is registered, receives "the number of graphic tasks processing or waiting for processing" as an argument from NuSystem. </p>
+
+<p>After it has been confirmed from this value that there are no tasks being processed, the makeDL00() function is called to perform the display process.</p>
+
+<p align="right"><a href="index.htm"><img
+src="../../gif/index.gif" border="0" width="65" height="17"></a></p>
+
+<hr>
+
+<b><a name="2">3.2 Graphics Routine</a></b>
+
+<p>The source code for makeDL00() is located in the first half of stage00.c.</p>
+<p>This routine creates a display list and activates a graphics task.</p>
+
+<blockquote>
+<font face="courier" size="2">
+   <pre>void makeDL00(void)
+{
+  /*  specify display list buffer */
+  glistp = gfx_glist;
+
+  /*  initialize RCP*/
+  gfxRCPInit();
+
+  /*  clear frame buffer and Z buffer */
+  gfxClearCfb();
+
+  /* set projection/modeling matrix */
+  guOrtho(&amp;gfx_dynamic.projection,
+	  -(float)SCREEN_WD/2.0F, (float)SCREEN_WD/2.0F,
+	  -(float)SCREEN_HT/2.0F, (float)SCREEN_HT/2.0F,
+	  1.0F, 10.0F, 1.0F);
+  guRotate(&amp;gfx_dynamic.modeling, 0.0F, 0.0F, 0.0F, 1.0F);
+
+  /* draw square */
+  shadetri(&amp;gfx_dynamic);
+
+  /* end construction of display list */
+  gDPFullSync(glistp++);
+  gSPEndDisplayList(glistp++);
+
+  /* check if it fits in the array */
+  assert(glistp - gfx_glist &lt; GFX_GLIST_LEN);
+
+  /* activate RSP task, and swap display buffer at task end */
+  nuGfxTaskStart(gfx_glist,
+		 (s32)(glistp - gfx_glist) * sizeof (Gfx),
+		 NU_GFX_UCODE_F3DEX , NU_SC_SWAPBUFFER);
+}</pre>
+</font>
+</blockquote>
+
+<p>"makeDL00" begins with specification of the display list buffer. </p>
+
+<p>"glistp," which is the pointer to the display list, then indicates the location of the display list buffer for the next GBI command write. </p>
+
+<p>(This variable is used as a global variable so it can be referenced from outside of this source file.)</p>
+
+<p>"gxfRCPInit()" and gfxClearCfb() are functions defined by graphic.c that initialize the RCP and create the display list to clear and set the frame buffer. They are not NuSystem functions, but they are regularly used in the sample software employed here.</p>
+
+<p>Next the projection matrix and modeling matrix are set in gfx_dynamic, which is the structure variable containing the various matrix data. Once that is done, the function is called to make the display list for drawing the square.</p>
+
+<p>This is the end of the graphic display, so a termination of the display list is indicated, a GBI command is written, and creation of the display list is ended.</p>
+
+<p>"assert" is a typical C language check function.</p>
+
+<p> If the conditions of assert are not met, a message is displayed on the host computer. It checks to see whether a GBI command has been written that is outside the bounds of the array.</p>
+
+<p>In the final step, the NuSystem function nuGfxTaskStart() is called and the RSP task activated.</p>
+
+<p>Arguments specify the header address of the DL (display list) array and its byte length, the names of the usable microcode, and a flag regarding whether or not to swap the frame buffer at the end of the drawing process.</p>
+
+<p><b>Note:</b>  The nuGfxTaskStart function does not activate the task directly. Rather, it simply passes the task structure to a NuSystem thread. That thread activates graphic tasks in the order in which the requests were received. Since a task will not start until the previous task has been completed, a major process could end up with unprocessed tasks.</p>
+
+<p>When that happens, an argument in the callback function passes the number of
+unprocessed tasks.</p>
+
+<p>"shadetri()" in the latter half of stage00.c contains no code that is dependent on NuSystem.</p>
+
+<blockquote>
+<font face="courier" size="2">
+    <pre>/* vertex coordinates  */
+static Vtx shade_vtx[] =  {
+        {        -64,  64, -5, 0, 0, 0, 0, 0xff, 0, 0xff	},
+        {         64,  64, -5, 0, 0, 0, 0, 0, 0, 0xff	},
+        {         64, -64, -5, 0, 0, 0, 0, 0, 0xff, 0xff	},
+        {        -64, -64, -5, 0, 0, 0, 0xff, 0, 0, 0xff	},
+};
+
+/* draw square */
+void shadetri(Dynamic* dynamicp)
+{
+  gSPMatrix(glistp++,OS_K0_TO_PHYSICAL(&amp;(dynamicp-&gt;projection)),
+		G_MTX_PROJECTION|G_MTX_LOAD|G_MTX_NOPUSH);
+  gSPMatrix(glistp++,OS_K0_TO_PHYSICAL(&amp;(dynamicp-&gt;modeling)),
+		G_MTX_MODELVIEW|G_MTX_LOAD|G_MTX_NOPUSH);
+
+  gSPVertex(glistp++,&amp;(shade_vtx[0]),4, 0);
+
+  gDPPipeSync(glistp++);
+  gDPSetCycleType(glistp++,G_CYC_1CYCLE);
+  gDPSetRenderMode(glistp++,G_RM_AA_OPA_SURF, G_RM_AA_OPA_SURF2);
+  gSPClearGeometryMode(glistp++,0xFFFFFFFF);
+  gSPSetGeometryMode(glistp++,G_SHADE| G_SHADING_SMOOTH);
+
+  gSP2Triangles(glistp++,0,1,2,0,0,2,3,0);
+}</pre>
+</font>
+</blockquote>
+
+<p>"shade_vtx[]" is the vertex data, while the shadetri argument "dynamicp" is the pointer to the various matrix data.</p>
+
+<p>The functions in shadetri() are all N64OS graphics functions. This manual does not contain explanations of each function, so for details please refer to the NuSystem Function Reference.
+</p>
+
+<p align="right"><a href="index.htm"><img
+src="../../gif/index.gif" border="0" width="65" height="17"></a></p>
+
+<hr>
+
+<b><a name="3">3.3 Memory Map</a></b>
+
+<p>In Nintendo 64 the locations of the frame buffer, Z buffer, and audio heap buffer are variable. In NuSystem, the following default memory locations are set by the functions which initialize the graphics and audio:</p>
+
+<table border="1">
+    <tr>
+        <td><font face="arial" size="-1">Z buffer</font></td>
+        <td><font face="arial" size="-1">80000400-80025BFF</font></td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">Audio heap</font></td>
+        <td><font face="arial" size="-1">8030F800-8038F7FF (512 Kbyte)</font></td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">Frame buffer</font></td>
+        <td><font face="arial" size="-1">8038F800-803FFFFF(0G_IM_SIZ_16b mode: 3 buffers)</font></td>
+    </tr>
+</table>
+
+<p>For this reason the 0x2E9C00 bytes from 80025C00-8030F7FF is the region which the user can use.</p>
+
+<p>You can reference the frame buffer address for drawing and the Z buffer address using the NuSystem global variables nuGfxCfb_ptr and nuGfxZBuffer. </p>
+
+<p>(The nuGfxCfb_ptr address is swapped every time a frame is drawn, but the nuGfxZBuffer value does not change after the initial setting.)</p>
+
+<p>In the samples in this tutorial, the graphic.c function gfxClearCfb() is used to clear the RCP settings of the frame buffer address and the Z buffer address. </p>
+
+<p>gThe Z buffer address is specified with the gDPSetDepthImage() function and the frame buffer address is specified with the
+gDPSetColorImage() function.</p>
+
+<p>For details of each function, please refer to the function reference manual.</p>
+
+<blockquote>
+<font face="courier" size="2">
+    <pre>void gfxClearCfb(void)
+{
+  /* clear Z buffer  */
+  gDPSetDepthImage(glistp++, OS_K0_TO_PHYSICAL(nuGfxZBuffer));
+  gDPSetCycleType(glistp++, G_CYC_FILL);
+  gDPSetColorImage(glistp++, G_IM_FMT_RGBA, G_IM_SIZ_16b,SCREEN_WD,
+		   OS_K0_TO_PHYSICAL(nuGfxZBuffer));
+  gDPSetFillColor(glistp++,(GPACK_ZDZ(G_MAXFBZ,0) &lt;&lt; 16 |
+			       GPACK_ZDZ(G_MAXFBZ,0)));
+  gDPFillRectangle(glistp++, 0, 0, SCREEN_WD-1, SCREEN_HT-1);
+  gDPPipeSync(glistp++);
+  
+    /*  clear frame buffer */
+  gDPSetColorImage(glistp++, G_IM_FMT_RGBA, G_IM_SIZ_16b, SCREEN_WD,
+		   osVirtualToPhysical(nuGfxCfb_ptr));
+  gDPSetFillColor(glistp++, (GPACK_RGBA5551(0, 0, 0, 1) &lt;&lt; 16 | 
+				GPACK_RGBA5551(0, 0, 0, 1)));
+  gDPFillRectangle(glistp++, 0, 0, SCREEN_WD-1, SCREEN_HT-1);
+  gDPPipeSync(glistp++);
+}</pre>
+</font>
+</blockquote>
+
+<p align="right"><a href="index.htm"><img
+src="../../gif/index.gif" border="0" width="65" height="17"></a></p>
+
+<hr>
+
+<b><a name="4">3.4 The spec File</a></b>
+
+<p>The spec file given below is the script file used in these samples to specify the ROM image.</p>
+
+<blockquote>
+<font face="courier" size="2">
+    <pre>#include &lt;nusys.h&gt;
+
+beginseg
+	name	&quot;code&quot;
+	flags	BOOT OBJECT
+	entry 	nuBoot
+	address NU_SPEC_BOOT_ADDR
+	stack   NU_SPEC_BOOT_STACK
+	include &quot;codesegment.o&quot;
+	include &quot;$(ROOT)/usr/lib/PR/rspboot.o&quot;
+	include &quot;$(ROOT)/usr/lib/PR/gspF3DEX.fifo.o&quot;
+	include &quot;$(ROOT)/usr/lib/PR/gspL3DEX.fifo.o&quot;
+	include &quot;$(ROOT)/usr/lib/PR/gspF3DEX.NoN.fifo.o&quot;
+	include &quot;$(ROOT)/usr/lib/PR/gspF3DLX.fifo.o&quot;
+	include &quot;$(ROOT)/usr/lib/PR/gspF3DLX.NoN.fifo.o&quot;
+	include &quot;$(ROOT)/usr/lib/PR/gspF3DLX.Rej.fifo.o&quot;
+	include &quot;$(ROOT)/usr/lib/PR/gspF3DLP.Rej.fifo.o&quot;
+	include &quot;$(ROOT)/usr/lib/PR/gspS2DEX.fifo.o&quot;
+	include &quot;$(ROOT)/usr/lib/PR/gspS2DEX.fifo_d.o&quot;
+endseg
+
+beginwave
+	name	&quot;nu0&quot;
+	include	&quot;code&quot;
+endwave</pre>
+</font>
+</blockquote>
+
+<p>The default setting specifies the loading of all of the graphics microcode. This is a bit wasteful, but at first please use the code segment setting the way it is. </p>
+
+<p>Refer to INSIDE NuSystem to learn the procedure for linking to just the microcode that will be used.</p>
+
+<p><b>Note:</b>  This spec file is for use with F3DEX microcode.  If you want to use F3DEX2, you must edit the makefile to use spec2, which is under each sample directory. </p>
+
+<p align="right"><a href="index.htm"><img
+src="../../gif/index.gif" border="0" width="65" height="17"></a></p>
+
+<hr>
+
+<b><a name="5">3.5 makefile</a></b>
+
+<p>For makefile the user must specify the nusys include file and library file passes. </p>
+<p>The header is named nusys.h, and the libraries are named
+libnusys.a (for ROM use) and libnusys_d.a (for debugging).</p>
+
+<p>Below we list the NuSystem related portion of the makefile:</p>
+
+<p><b>(makefile for SGI)</b></p>
+<blockquote>
+<font face="courier" size="2">
+    <pre>N64KITDIR    = /usr/local/n64kit
+NUSYSINCDIR  = $(N64KITDIR)/nusys/include
+NUSYSLIBDIR  = $(N64KITDIR)/nusys/lib
+
+CODEOBJECTS =	$(CODEFILES:.c=.o)  $(NUSYSLIBDIR)/nusys.o
+
+LCDEFS =	-DF3DEX_GBI_2
+
+LCINCS =	-I $(NUSYSINCDIR)
+
+LDFLAGS =	$(MKDEPOPT) -nostdlib -L$(ROOT)/usr/lib -L$(NUSYSLIBDIR) -lnusys_d -lultra_d</pre>
+</font>
+</blockquote>
+
+<p><b>(makefile for PC)</b></p>
+
+<blockquote>
+<font face="courier" size="2">
+    <pre>N64KITDIR    = c:\nintendo\n64kit
+NUSYSINCDIR  = $(N64KITDIR)/nusys/include
+NUSYSLIBDIR  = $(N64KITDIR)/nusys/lib
+
+CODEOBJECTS =	$(CODEFILES:.c=.o)  $(NUSYSLIBDIR)/nusys.o
+
+LCDEFS =	-DF3DEX_GBI_2
+
+LCINCS =	-I $(NUSYSINCDIR)
+
+LDFLAGS =	$(MKDEPOPT) -L$(ROOT)/usr/lib  -L$(NUSYSLIBDIR)  -lnusys_d -lgultra_d  -L$(GCCDIR)/mipse/lib -lkmc</pre>
+</font>
+</blockquote>
+
+<p>The NuSystem boot object nusys.o must be linked to the code object. "nusys.o" is also in the library pass.</p>
+
+<p align="right"><a href="index.htm"><img
+src="../../gif/index.gif" border="0" width="65" height="17"></a></p>
+
+<hr>
+</body>
+</html>

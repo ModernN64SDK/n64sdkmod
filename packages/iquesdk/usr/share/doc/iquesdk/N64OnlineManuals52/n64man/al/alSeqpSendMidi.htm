@@ -1,0 +1,69 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<link rel=stylesheet type="text/css" HREF="../N64man.css">
+<!--
+Editors Notes:
+  PWC- updated formatting
+JLR -- Did reformating
+MAP- added links, updated format
+-->
+<title>alSeqpSendMidi</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>alSeqpSendMidi</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p>alSeqpSendMidi, n_alSeqpSendMidi<br><p><i>
+Sends the given MIDI message to the sequence player</i>
+
+<h3>Syntax</h3>
+
+<blockquote>
+  <pre>#include &lt;libaudio.h&gt;     /* <a href="../../header/libaudio.htm">libaudio.h</a> */
+void alSeqpSendMidi(    ALSeqPlayer *seqp, long ticks, u8 status, u8 byte1, u8 byte2);</pre>
+  <pre>#include &lt;n_libaudio.h&gt;     /* <a href="../../header/n_libaudio.htm">n_libaudio.h</a> */
+void n_alSeqpSendMidi(N_ALSeqPlayer *seqp, s32 ticks,  u8 status, u8 byte1, u8 byte2);</pre>
+</blockquote>
+
+<h3>Arguments</h3>
+
+<dl>
+  <dt><strong>seqp</strong></dt>
+  <dd>Pointer to sequence player <br>
+    <br>
+  </dd>
+  <dt><strong>ticks</strong></dt>
+  <dd>Time offset, in MIDI clock ticks, when the MIDI event is to occur <br>
+    <br>
+  </dd>
+  <dt><strong>status</strong></dt>
+  <dd>Message's MIDI status byte <br>
+    <br>
+  </dd>
+  <dt><strong>byte1</strong></dt>
+  <dd>The first byte in the message<br>
+    <br>
+  </dd>
+  <dt><strong>byte2</strong></dt>
+  <dd>The second byte in the message (if required)<br>
+    <br>
+  </dd>
+</dl>
+
+<h3>Description</h3>
+
+<p><tt>alSeqpSendMidi</tt> sends a MIDI message to the sequence player. You can use it to trigger notes, not in the sequence. For instance, it adds controller information in real time or changes the performance of a sequence. You can also use it as an alternative to the following function calls such as <a href="alSeqpSetChlProgram.htm">alSeqpSetChlProgram</a>, <a href="alSeqpSetChlVol.htm">alSeqpSetChlVol</a>, <a href="alSeqpSetChlPan.htm">alSeqpSetChlPan</a>, and <a href="alSeqpSetChlFXMix.htm">alSeqpSetChlFXMix</a>.</p>
+
+<p>Only channel voice messages are supported. See the MIDI 1.0 specification or any other relating documents for more information.</p>
+
+<p>ticks contains the time offset, in MIDI clock ticks, when the MIDI event is to occur. The status byte contains the message type in the high nibble and the channel number in the low nibble. The next bytes are the MIDI data, which is determined by the message type. </p>
+
+<p>For details on n_audio library, see "Chapter 28: n_audio library" in the N64 Programming Manual.</p>
+<h3>Revision History</h3>
+<p>1999/04/30  Changed Format</p>
+<br><br>
+
+</body>
+</html>

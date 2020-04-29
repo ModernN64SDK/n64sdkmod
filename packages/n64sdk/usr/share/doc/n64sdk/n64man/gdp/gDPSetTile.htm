@@ -1,0 +1,357 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.
+Revision History
+02/01/99 Entirely revised 
+03/31/99 Changed the order of the arguments in "arguments" section. Modified explanation and example. 
+  PWC- updated formatting
+-->
+<TITLE>gDPSetTile</TITLE>
+</HEAD>
+
+<BODY bgcolor="#FFFFFF">
+
+<H1>gDPSetTile [Macro]</H1>
+
+<p><b>Function</p></b>
+
+<p>gDPSetTile [Macro]</p>
+<P>
+<i>Sets tile descriptor parameters</i>
+</P>
+<p><b>Syntax</p></b>
+
+<p><PRE>#include &lt;ultra64.h&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /* <A href="../../header/gbi.htm">gbi.h</A> */
+gDPSetTile(
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Gfx *gdl,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; u32 fmt,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; u32 siz,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; u32 line,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; u32 tmem,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; u32 tile,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; u32 palette,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; u32 cmt,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; u32 maskt,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; u32 shiftt,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; u32 cms,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; u32 masks,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; u32 shifts )
+gsDPSetTile(
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; u32 fmt,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; u32 siz,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; u32 line,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; u32 tmem,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; u32 tile,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; u32 palette,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; u32 cmt,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; u32 maskt,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; u32 shiftt,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; u32 cms,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; u32 masks,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; u32 shifts )</PRE></p>
+
+<p><b>Arguments</p></b>
+<p><DL>
+  <DT><B>gdl</B></dt>
+  <DD>Display list pointer</DD>
+  <DT><B>fmt</B></dt>
+  <DD>Texture image format:</dd>
+  <DD><B>G_IM_FMT_RGBA</B> (RGBA format)</dd>
+  <DD><B>G_IM_FMT_YUV</B> (YUV format)</dd>
+  <DD><B>G_IM_FMT_CI</B> (CI format)</dd>
+  <DD><B>G_IM_FMT_IA</B> (IA format)</dd>
+  <DD><B>G_IM_FMT_I</B> (I format)</dd>
+  <DD>&nbsp;</dd>
+  <DT><B>siz</B></dt>
+  <DD>Pixel component size:</dd>
+  <DD><B>G_IM_SIZ_4b</B> (4 bits/texel)</dd>
+  <DD><B>G_IM_SIZ_8b</B> (8 bits/texel)</dd>
+  <DD><B>G_IM_SIZ_16b</B> (16 bits/texel)</dd>
+  <DD><B>G_IM_SIZ_32b</B> (32 bits/texel)</dd>
+  <DD>&nbsp;</dd>
+  <DT><B>line</B></dt>
+  <DD>The size of one row (s axis) of the texture tile (9-bit precision, 0~511)</dd>
+  <DD>&nbsp;</dd>
+  <DT><B>tmem</B></dt>
+  <DD>Address of texture tile origin (9-bit precision, 0~511)</dd>
+  <DD>&nbsp;</dd>
+  <DT><B>tile</B></dt>
+  <DD>Index of tile descriptors for which parameters are being set (3-bit precision, 0~7)</dd>
+  <DD>&nbsp;</dd>
+  <DT><B>palette</B></dt>
+  <DD>Position of palette for 4-bit color index texture (4-bit precision, 0~15) </dd>
+  <DD>&nbsp;</dd>
+  <DT><B>cmt</B></dt>
+  <DD>t-axis mirror, wrap and clamp flags </dd>
+  <DD><B>G_TX_MIRROR</B> (enable mirror operations) </dd>
+  <DD><B>G_TX_NOMIRROR</B> (disable mirror operations) </dd>
+  <DD><B>G_TX_WRAP</B> (enable wrap operations)</dd>
+  <DD><B>G_TX_CLAMP</B> (enable clamp operations)</dd>
+  <DD>&nbsp;</dd>
+  <DT><B>maskt</B></dt>
+  <DD>t-axis mask (4-bit precision, 0~15)</dd>
+  <DD><B>G_TX_NOMASK</B> (do not mask, 0)</dd>
+  <DD><B>numeric value n</B> (mask, 1~15) </dd>
+  <DD>&nbsp;</dd>
+  <DT><B>shiftt</B></dt>
+  <DD>t-coordinate shift value (for low-level detail texture, 4-bit precision, 0~15)</dd>
+  <DD><B>G_TX_NOLOD</B> (do not shift, 0) </dd>
+  <DD><B>numeric value n</B> (shift, 1~15) </dd>
+  <DD>&nbsp;</dd>
+  <DT><B>cms</B></dt>
+  <DD>s-axis mirror, wrap and clamp flags </dd>
+  <DD><B>G_TX_MIRROR</B> (enable mirror operations)</dd>
+  <DD><B>G_TX_NOMIRROR</B> (disable mirror operations)</dd> 
+  <DD><B>G_TX_WRAP</B> (enable wrap operations) </dd>
+  <DD><B>G_TX_CLAMP</B> (enable clamp operations) </dd>
+  <DD>&nbsp;</dd>
+  <DT><B>masks</B></dt>
+  <DD>s-axis mask (4-bit precision, 0~15)</dd>
+  <DD><B>G_TX_NOMASK</B> (do not mask, 0) </dd>
+  <DD><B>numeric value n</B> (mask, 1~15)</dd>
+  <DD>&nbsp;</dd>
+  <DT><B>shifts</B></dt>
+  <DD>t-coordinate shift value (for low-level detail texture, 4-bit precision, 0~15)</dd>
+  <DD><B>G_TX_NOLOD</B> (do not shift, 0) </dd>
+  <DD><B>numeric value n</B> (shift, 1~15) </dd>
+</DL></p>
+<p><b>Description</b></p>
+<P>
+Sets texture tile information. This function is used in multi-tile texture modes such as MIP-mapping, detail and sharpen. Think of the 8 tile descriptors as TMEM addresses describing each texture tile. Multiple tile descriptors can specify the same texture tile in TMEM. Each tile descriptor has a sequence of parameters which together describe the texture memory region. 
+</P>
+<P>
+To set a multi-tile mode, load a number of texture tiles by using any gDPLoadTexture* macro. Each texture tile is described by a tile descriptor which indicates the location in TMEM with its parameters (arguments). For example, a texture tile MIP-map pyramid is loaded by using the gDPLoadTextureBlock* macro or several gDPLoadTextureTile* macros. The minimum descriptor number, which indicates the highest level (largest map), and the maximum descriptor number, which indicates the lowest level (smallest map), are described by consecutive tile descriptors. The indexing of these tiles is controlled by the cycle type (see <A href="gDPSetCycleType.htm">gDPSetCycleType</A>), the maximum number of primitive tiles and MIP-map levels (see <A href="../gsp/gSPTexture.htm">gSPTexture</A>), the detail mode (see <A href="gDPSetTextureDetail.htm">gDPSetTextureDetail</A>), and whether LOD is on or off (see <A href="gDPSetTextureLOD.htm">gDPSetTextureLOD</A>). (For information about primitive tiles, see Section 13.7.2 "LOD Disabled" in the N64 Programming Manual. 
+</P>
+<P>
+To perform MIP mapping, the RDP must be in 2-cycle mode with LOD enabled. The index within a texture tile is based on the texel/pixel ratio calculated by the RDP for each pixel. Filtering into a MIP-map level is controlled by <A href="gDPSetTextureFilter.htm">gDPSetTextureFilter</A>. Interpolation between two MIP-map levels is controlled by setting the color combiner (CC) to the appropriate mode (see <A href="gDPSetCombineMode.htm">gDPSetCombineMode</A>). In detail texture mode, the texture tile used to add detail in accordance with the magnification is specified with a primitive tile. The degree to which the detail texture is blended with the original texture is controlled by the LOD limit parameter set by <A href="gDPSetPrimColor.htm">gDPSetPrimColor</A> (see gDPSet*Color). 
+</P>
+<DL><p>
+  <DT>Regarding the <B>fmt</B> argument:</p>
+</DL><p>
+<DL>
+  <DT><B>G_IM_FMT_RGBA</B></dt>
+  <DD>Each texel comprises four elements of information: RGB (red, green, blue) and alpha (opacity). </dd>
+  <DT><B>G_IM_FMT_YUV</B></dt>
+  <DD>Each texel comprises a Y (intensity) component and a UV (color difference) component. </dd>
+  <DT><B>G_IM_FMT_CI</B></dt>
+  <DD>Each texel is comprised of index information specifying palette data.</dd>
+  <DT><B>G_IM_FMT_IA</B></dt>
+  <DD>Each texel is comprised of I (intensity) information and alpha information. </dd>
+  <DT><B>G_IM_FMT_I</B></dt>
+  <DD>Each texel is a texture with only I information. Since this is extremely compact, it is useful when only a few colors are being used. </dd>
+  <DT>&nbsp;</dt>
+  <DT>You can choose from among 10 different texture image formats. The table shows the valid combinations of format and size. Select the format that best suits the texture compression method and type. </dt>
+</DL>
+<br>
+<TABLE border="1" cellspacing="0" cellpadding="4">
+  <TR>
+    <TD rowspan="2" colspan="2">&nbsp;</TD>
+    <TD nowrap colspan="4" align="center"><B>G_IM_SIZ_</B>(Size)</TD></TR>
+  <TR>
+    <TD nowrap align="center"><B>4b</B></TD>
+    <TD nowrap align="center"><B>8b</B></TD>
+    <TD nowrap align="center"><B>16b</B></TD>
+    <TD nowrap align="center"><B>32b</B></TD></TR>
+  <TR>
+    <TD nowrap rowspan="5" align="center"><B>G_IM_FMT_</B><BR>
+(Format)</TD>
+    <TD nowrap align="center"><B>RGBA</B></TD>
+    <TD nowrap align="center">&nbsp;</TD>
+    <TD nowrap align="center">&nbsp;</TD>
+    <TD nowrap align="center">X<BR>
+(5/5/5/1)</TD>
+    <TD nowrap align="center">X<BR>
+(8/8/8/8)</TD></TR>
+  <TR>
+    <TD nowrap align="center"><B>YUV</B></TD>
+    <TD nowrap align="center">&nbsp;</TD>
+    <TD nowrap align="center">&nbsp;</TD>
+    <TD nowrap align="center">X</TD>
+    <TD nowrap align="center">&nbsp;<BR>
+</TD></TR>
+  <TR>
+    <TD nowrap align="center"><B>CI</B></TD>
+    <TD nowrap align="center">X</TD>
+    <TD nowrap align="center">X</TD>
+    <TD nowrap align="center">&nbsp;</TD>
+    <TD nowrap align="center">&nbsp;<BR>
+</TD></TR>
+  <TR>
+    <TD nowrap align="center"><B>IA</B></TD>
+    <TD nowrap align="center">X<BR>
+(3/1)</TD>
+    <TD nowrap align="center">X<BR>
+(4/4)</TD>
+    <TD nowrap align="center">X<BR>
+(8/8)</TD>
+    <TD nowrap align="center">&nbsp;</TD></TR>
+  <TR>
+    <TD nowrap align="center"><B>I</B></TD>
+    <TD nowrap align="center">X</TD>
+    <TD nowrap align="center">X</TD>
+    <TD nowrap align="center">&nbsp;</TD>
+    <TD nowrap align="center">&nbsp;<BR>
+</TD></TR>
+</TABLE>
+</p>
+<DL>
+  <DT>Regarding the <B>tmem</B> argument</DT>
+  <DD>Indicates the tile offset position. </dd>
+<p>
+  <DT>Regarding the <B>palette</B> argument</dt>
+  <DD>This 8-bit index, which specifies an address in the high-half of TMEM, is comprised of the 4MSB (high-order 4-bit) palette position and the 4LSB (low-order 4-bit) color index.</dd>
+<p>
+<DT>Regarding the <B>cms</B> and <B>cmt</B> arguments</DT>
+  <DD>Multiple specifications can be made with a bit sum of the following flags:</dd>
+</DL>
+<DL>
+  <DT><B>G_TX_MIRROR</B></DT>
+  <DD>Enables mirroring. Mirror textures can be used for textures with axial symmetry, like a tree. Symmetric textures are an effective way to reduce texture volume. </dd>
+  <DT><B>G_TX_NOMIRROR</B></DT>
+  <DD>Disables mirroring.</dd>
+  <DT><B>G_TX_WRAP</B></DT>
+  <DD>Enables wrapping. A wrapped texture repeats a texel. The wrapping cycle can be specified by a mask. </dd>
+  <DT><B>G_TX_CLAMP</B></DT>
+  <DD>Enables clamping. A clamped texture repeats the edge texel color when sampling outside of the texture map. Clamping is performed at the boundary of the texture tile. </dd>
+</DL>
+<DL>
+<p>
+<DT>Regarding the <B>masks</B> and <B>maskt</B> arguments</dt>
+</DL>
+<DL>
+  <DT><B>G_TX_NOMASK</B>(0)</DT>
+  <DD>No mask is used. </dd>
+  <DT><B>numeric value n</B> (1~15)</DT>
+  <DD>Specifies the wrap position with the value of n. The low-order n bits of the s,t texel coordinates are used for texture sampling. </dd>
+  <DT>&nbsp;</DT>
+  <DT>Texture sampling utilizes the low-order n bits of the s,t texture coordinates. You would set to 5 to wrap a texture with a boundary of 32x32 (2<SUP>5</SUP> X 2<SUP>5</SUP>). Set to 0 to perform clamping. </DT>
+</DL>
+<DL>
+<p>
+<DT>Regarding the <B>shifts</B> and <B>shiftt</B> arguments</DT>
+</DL>
+<DL>
+  <DT><B>G_TX_NOLOD</B>(0)</DT>
+  <DD>No shifting is performed. </dd>
+  <DT><B>numeric value n</B> (1~15)</DT>
+  <DD>Shifts the s,t texel coordinate by n bits. This enables the sampling of low-level LOD maps and detail textures. </dd>
+  <DT>&nbsp;</DT>
+  <DT>The values specified by <B>shifts</B> and <B>shiftt</B> (the shift parameter values) represent the amount by which the s,t coordinates are shifted to the left or to the right. This is used for the MIP-mapping, detail, and sharp mode settings. The values 0~10 are interpreted as right shifts, and the values 11~15 are interpreted as left shifts (see the table below). The value 11 corresponds to (<<5), 12 corresponds to (<<4), ..., and 15 corresponds to (<<1).</dt>
+  <DT>&nbsp;</DT>
+</DL>
+<TABLE border="1" cellspacing="0" cellpadding="4">
+  <TR>
+    <TD nowrap align="center">Shift parameter value</TD>
+    <TD nowrap align="center">Shift amount</TD></TR>
+  <TR>
+    <TD nowrap align="center">0</TD>
+    <TD nowrap align="center">No shift</TD></TR>
+  <TR>
+    <TD nowrap align="center">1</TD>
+    <TD nowrap align="center">&gt;&gt; 1</TD></TR>
+  <TR>
+    <TD nowrap align="center">2</TD>
+    <TD nowrap align="center">&gt;&gt; 2</TD></TR>
+  <TR>
+    <TD nowrap colspan="2" align="center">...</TD></TR>
+  <TR>
+    <TD nowrap align="center">9</TD>
+    <TD nowrap align="center">&gt;&gt; 9</TD></TR>
+  <TR>
+    <TD nowrap align="center">10</TD>
+    <TD nowrap align="center">&gt;&gt; 10</TD></TR>
+  <TR>
+    <TD nowrap align="center">11</TD>
+    <TD nowrap align="center">&lt;&lt; 5</TD></TR>
+  <TR>
+    <TD nowrap align="center">12</TD>
+    <TD nowrap align="center">&lt;&lt; 4</TD></TR>
+  <TR>
+    <TD nowrap align="center">13</TD>
+    <TD nowrap align="center">&lt;&lt; 3</TD></TR>
+  <TR>
+    <TD nowrap align="center">14</TD>
+    <TD nowrap align="center">&lt;&lt; 2</TD></TR>
+  <TR>
+    <TD nowrap align="center">15</TD>
+    <TD nowrap align="center">&lt;&lt; 1</TD></TR>
+</TABLE>
+
+<DL>
+<p>
+<DT>For details about each argument, see Section 13.4 "Tile Attributes" in the N64 Programming Manual. Also, for information about using this macro, see Section 13.5 "Tile Descriptor Loading." </dt>
+  <DT>&nbsp;</dt>
+  <DT>About MIP map</dt>
+</DL>
+<DL>
+  <DT>When MIP map is used, all textures for each level will altogether be considered one image with the width as the following example says(The minimum value for width will be different for each texture tile, depending upon its pixel component size because TMEM needs to take 64 bit alignment.) and the height 1, and <A href="gDPLoadTextureBlock.htm">gDPLoadTextureBlock</A> or <A href="gDPLoadTextureBlock_4b.htm">gDPLoadTextureBlock_4b</A> will be used to load.</dt>
+  <DT>For example, when MIP map level is 5, the size of a texture of level 5 is 32x32, and the size of pixel component is 16 bits, it would look as shown below.</dt>
+  <DT>&nbsp;</dt>
+  <DT>32*32 + 16*16 + 8*8 + 4*4 + <B><U>2*4</U></B> + <B><U>1*4</U></B> =
+1372</dt>
+  <DT>&nbsp;</dt>
+  <DT>&nbsp;</dt>
+  <DT>Set  <B>tile</B> to level +1, <B>masks</B>/<B>maskt</B> to the maximum level(5 in this case) - level, and <B>shifts</B>/<B>shiftt</B> to the same values as the level, and use gDPSetTile and <A href="gDPSetTileSize.htm">gDPSetTileSize</A> to set tiles for each level.</dt></p>
+</DL>
+<p><b>Note</b></p>
+<P>
+Since each row of the texture tile occupies contiguous TMEM (64-bit) words, the row end is extended to achieve TMEM word alignment. Also note that operation is not currently guaranteed for G_IM_FMT_YUV (YUV format). 
+</P>
+<p><b>Example</b></p>
+<PRE>
+&nbsp; gsDPPipeSync( ),
+/* Set detail texture */
+&nbsp; gsDPSetTextureDetail(G_TD_CLAMP),
+/* Set to 2 cycle mode */
+&nbsp; gsDPSetCycleType(G_CYC_2CYCLE),
+/* Enable LOD texture */
+&nbsp; gsDPSetTextureLOD(G_TL_LOD),
+/* Set scale = 0.5, MIP map level 2, primitive tile 0 and texture on */
+&nbsp; gsSPTexture(0x8000, 0x8000, 1, 0, G_ON),
+/* Set rendering mode */
+&nbsp; gsDPSetRenderMode(G_RM_PASS, G_RM_AA_ZB_OPA_SURF2),
+/* Set color combiner mode */
+&nbsp; gsDPSetCombineMode(G_CC_TRILERP, G_CC_PASS2),
+&nbsp; gsDPSetPrimColor(0, 0, 255, 255, 255, 255),
+/* Set texture region (Sets image width 1 and changes it later) */
+&nbsp; gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, RGBA16sand32x32),
+/* Set G_TX_LOADTILE as tile to read texture image */
+&nbsp; <B>gsDPSetTile</B>(G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0 , 0 , 5 ,G_TX_NOLOD, 0, 5, G_TX_NOLOD),&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp; gsDPLoadSync( ),
+/* Load a texture image to tile G_TX_LOADTILE */
+&nbsp; gsDPLoadBlock(G_TX_LOADTILE, 0, 0, 1344, 0),
+&nbsp; gsDPTileSync( ),
+/* Set tile 0 */
+&nbsp; <B>gsDPSetTile</B>(G_IM_FMT_RGBA, G_IM_SIZ_16b, 8, 0,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0, 0, 0, 5, 0, 0, 5, 0),
+&nbsp; gsDPSetTileSize(0, 0, 0,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (32-1) &lt;&lt; G_TEXTURE_IMAGE_FRAC,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (32-1) &lt;&lt; G_TEXTURE_IMAGE_FRAC),
+/* Set tile 1 */
+&nbsp; <B>gsDPSetTile</B>(G_IM_FMT_RGBA, G_IM_SIZ_16b, 4, 0,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1, 0, 0, 4, 1, 0, 4, 1),
+&nbsp; gsDPSetTileSize(1, 0, 0,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (16-1) &lt;&lt; G_TEXTURE_IMAGE_FRAC,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (16-1) &lt;&lt; G_TEXTURE_IMAGE_FRAC),
+/* Set tile 2 */
+&nbsp; <B>gsDPSetTile</B>(G_IM_FMT_RGBA, G_IM_SIZ_16b, 2, 0,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2, 0, 0, 3, 2, 0, 3, 2),
+&nbsp; gsDPSetTileSize(2, 0, 0,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (8-1) &lt;&lt; G_TEXTURE_IMAGE_FRAC,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (8-1) &lt;&lt; G_TEXTURE_IMAGE_FRAC),
+</PRE>
+
+<p><b>See Also</b></p>
+<P>
+<A href="gDPSetBlendColor.htm">gDPSetBlendColor</A>, <A href="gDPSetEnvColor.htm">gDPSetEnvColor</A>, <A href="gDPSetFillColor.htm">gDPSetFillColor</A>, <A href="gDPSetFogColor.htm">gDPSetFogColor</A>, <A href="gDPSetPrimColor.htm">gDPSetPrimColor</A>, <A href="gDPSetTextureDetail.htm">gDPSetTextureDetail</A>, <A href="gDPSetTextureFilter.htm">gDPSetTextureFilter</A>, <A href="gDPSetTextureLOD.htm">gDPSetTextureLOD</A>, <A href="gDPSetTextureLUT.htm">gDPSetTextureLUT</A>, <A href="gDPSetTexturePersp.htm">gDPSetTexturePersp</A>, and <A href="../gsp/gSPTexture.htm">gSPTexture</A>
+</P>
+<p><b>Revision History</b></p>
+<P>
+02/01/99 Completely rewritten.<br>
+03/31/99	Changed Syntax and Argument sections so the argument order matches the prototype in gbi.h.  Also modified the Description and Example.
+</P>
+</BODY>
+</HTML>

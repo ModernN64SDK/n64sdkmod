@@ -1,0 +1,59 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>05-03</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font face="arial" size="-1">
+<p><strong>5.3 Debugging During Development</strong>
+
+
+<p>As was noted in <a href="../dd04/index.htm">Chapter 4</a>, DDROM is built into the commercial version of 64DD but not into the development version beause IPL in the DDROM cannot be used against the developement version.  Instead, an external IPLROM Pak is provided with the development version.  The same data are loaded on the IPLROM Pak as on the DDROM in the commercial version.  Using this Pak by inserting it into one of the sockets of the DCC board enables font and wave data in the DDROM to be accessed in exactly the same manner as with the commercial version.  This special IPL is located in the following directory in the file named ipl4rom. </p>
+
+<table border="1">
+    <tr>
+        <td><font face="arial" size="-1">/usr/lib/PR</td>
+        <td><font face="arial" size="-1">NW</td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">ultra\usr\lib\PR </td>
+        <td><font face="arial" size="-1">PC ver.1.07 or later version</td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">(Directory in which Partner was installed.)</td>
+        <td><font face="arial" size="-1">PC ver.1.06 or previous version</td>
+    </tr>
+</table>
+
+<p>As is implied by the fact that it is transferred to emulation ROM for use, the special development IPL is placed at the usual address of the ROM cartridge.  Although this differs from the address where DDROM is located, this has no effect on development. (See<a href="../dd04/index.htm"> Chapter 4.</a>).  It is font and wave data for which special consideration is required.  To access these data in the same manner as data in the built-in DDROM of the commercial drive, the IPL cassette in the N64DD development system must be used as shown in <a href="#fig1"> Figure 1</a>.  The board of this IPL ROM cassette contains the same data as in the built-in DDROM of the commercial drive. </p>
+
+<p>
+<strong>Note: </strong> Unless the developer has special reasons for not doing so, this board should used in the configuration shown in<a
+href="#fig1"> Figure 1</a>.  In addition, it should be used with the EPI functions, and the handler obtained by <a href="../../n64man/64dd/osDriveRomInit.htm">osDriveRomInit().</a>
+
+<p><strong><Disk Startup></strong></p>
+
+<p>The types of configurations shown in Fig. 1 of the next page should be used during program development and debugging on the N64.  In the latter case, the special development IPL should be written to the flash cassette for use.  During program development, executing the resetdd command in the Partner Command window automatically transfers the development IPL to emulation ROM and executes it. </p>
+
+<p><strong><Game Pak Startup></strong></p>
+
+<p>As with disk startup, a configuration such as that shown in <a href="#fig1">Figure 1</a> should be used.   When debugging on the N64, the portion of the game on cartridge should be written to the flash cassette.  During program development, the portion on cartridge should be transferred to emulation ROM for use. </p>
+
+<p><a name="fig1"><image 1></a></p>
+
+<p><img
+src="f05-02.gif">
+
+<p>Finally, the following figure compares how the commercial system and the development system handle wave and font data. </p>
+
+<p><a name="fig2"></a>
+
+<p><img src="f05-03.gif"></p>
+
+<p><a href="index.htm"><img src="../../gif/index.gif" border="0"
+width="65" height="17"></a></p>
+
+<hr>
+</body>
+</html>

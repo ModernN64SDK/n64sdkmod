@@ -1,0 +1,133 @@
+<HTML>
+<HEAD>
+<TITLE>nuDebConDisp & nuDebConDispEX2</TITLE>
+<link rel=stylesheet type="text/css" href="../../../n64man/n64man.css">
+<!-- Editor's Notes: 9/7/1999 Ron Daring -->
+</HEAD>
+
+<BODY bgcolor="#FFFFFF">
+
+
+<P>
+<FONT size="5"><b><IMG src="../nusystem2.gif" height="30" width="176">Function</b></FONT>
+
+<HR>
+<P>
+<FONT size="3"><b>nuDebConDisp<br>nuDebConDispEX2</b></FONT>
+<p>
+<HR>
+<P>
+<b>Syntax</b>
+<font face="courier" size="2">
+<pre>
+void nuDebConDisp(u32 flag)
+void nuDebConDispEX2(u32 flag)</pre>
+</font>
+
+<p><b>Arguments</b>
+<font face="courier" size="2">
+<pre><!--  -->
+<B>flag</B>      determines whether or not to swap frame buffer when the task is completed 
+<B>NU_SC_SWAPBUFFER</B>     Swap frame buffer 
+<B>NU_SC_NOSWAPBUFFER</B>   Do not swap frame buffer<!--  --></pre>
+</font>
+
+<p><b>Return Value</b>
+<font face="courier" size="2">
+<pre>None</pre>
+</font>
+
+<p><b>Description</b>
+
+<p><i>Displays the console window</i> 
+
+<p>Displays the console output on the screen. All ASCII characters can be output.
+
+<p>This function internally creates a display list and starts the graphics task.
+
+<p><TT>flag</TT> is the frame buffer swap flag passed to the argument of the <TT>nuGfxTaskStart</TT> function.
+
+<p>NuSystem can display up to four console windows. The settings that can be made for the console window include the window display position, window size, show/hide the window, and scroll on/off. The character attributes that can be set are the color and blink on/off.
+
+<P><!--  -->All 4 console windows are supposed to be displayed in the initial state. However, CPU power is required to some extent, to display console windows. Therefore, we recommend that you use the <TT>nuDebConWindowShow</TT> function to set windows that are not used to a non-display condition.<!--  -->
+
+<p>The functions for these various settings are shown below.
+<p>
+
+<table border="1" bgcolor="#F1F3A3">
+    <tr>
+        <td bgcolor="#B8F3AB"><font face="arial" size="-1">Function Name</font></td>
+        <td bgcolor="#B8F3AB"><font face="arial" size="-1">Function</font></td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">nuDebConWindowSet</font></td>
+        <td><font face="arial" size="-1">Set window position and size</font></td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">nuDebConWindowPos</font></td>
+        <td><font face="arial" size="-1">Set window position</font></td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">nuDebConWindowSize</font></td>
+        <td><font face="arial" size="-1">Set window size</font></td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">nuDebConWindowShow</font></td>
+        <td><font face="arial" size="-1">Show/hide window</font></td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">nuDebConScroll</font></td>
+        <td><font face="arial" size="-1">Scroll on/off</font></td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">nuDebConTextColor</font></td>
+        <td><font face="arial" size="-1">Change text color</font></td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">nuDebConTextAttr</font></td>
+        <td><font face="arial" size="-1">Set text attributes</font></td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">nuDebConTextPos</font></td>
+        <td><font face="arial" size="-1">Text display position</font></td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">nuDebConClear</font></td>
+        <td><font face="arial" size="-1">Clear the console window</font></td>
+    </tr>
+</table>
+
+<p>These functions can also be used with the release-use library.
+
+
+<p>Please note that when the <TT>nuGfxInit</TT> function is not used, then the 0th microcode in the microcode structure array defined by the <TT>nuGfxSetUcode</TT> function is used.  High resolution has been supported since version 1.1. 
+
+<p><!--  -->Beginning with Version 2.06, F3DEX_GBI_2 is defined by nusys.h. Therefore, <TT>nuDebConDispEX2</TT> is usually used. If F3DEX microcode is used, define F3DEX_GBI before nusys.h.<!--  -->
+
+<p><b>See Also</b>
+<p><a href="../graphics/nuGfxInit.htm">nuGfxInit</a>, <a
+href="../graphics/nuGfxTaskStart.htm">nuGfxTaskStart</a>, <a
+href="../graphics/nuGfxSetUcode.htm">nuGfxSetUcode</a>, <a
+href="nuDebConWindowSet.htm">nuDebConWindowSet</a>, <a
+href="nuDebConWindowPos.htm">nuDebConWindowPos</a>,
+	<a href="nuDebConWindowSize.htm">nuDebConWindowSize</a>, <a
+href="nuDebConWindowShow.htm">nuDebConWindowShow</a>, <a
+href="nuDebConScroll.htm">nuDebConScroll</a>, <a
+href="nuDebConTextColor.htm">nuDebConTextColor</a>, <a
+href="nuDebConTextAttr.htm">nuDebConTextAttr</a>, and 
+	<a href="nuDebConClear.htm">nuDebConClear</a>
+
+<p>
+<hr>
+<P><b><!--  -->Revision History</b>
+<P>
+<!--  -->6/15/99  Added text regarding a change of display setting for the console window's initial state<br>
+8/4/99 Deleted description of Ver1.2 and added description of Ver2.06<!--  -->
+
+<p>
+<hr>
+
+<p align="right"><a href="index.htm"><img src="../index.gif" border="0"
+width="65" height="17"></a>
+</body>
+</html>

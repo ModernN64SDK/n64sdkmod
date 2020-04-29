@@ -1,0 +1,50 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.>
+<TITLE>gSPPerspNormalize</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>gSPPerspNormalize [Macro]</H1>
+
+<p><b>Function</b></font></p>
+
+<p>gSPPerspNormalize</p>
+<P>
+<i>Normalizes the perspective projection</i>
+</P>
+<p><b>Syntax</b></font></p>
+<p>
+<PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gbi.htm">gbi.h</A> */
+gSPPerspNormalize(Gfx *gdl, u16 scale)
+gsSPPerspNormalize(         u16 scale)</CODE></PRE></p>
+
+<p><b>Arguments</b></font></p>
+<p>
+<DL>
+  <DT><B>gdl</B>
+  <DD>the pointer to the display list. 
+  <DT><B>scale</B>
+  <DD>the scale value (.16) for normalizing the perspective projection matrix. 
+</DL></p>
+<p><b>Description</b></font></p>
+<P>
+Normalizes the perspective projection. The scale value (<B>scale</B>) is used to scale down the transformed w-coordinate value before dividing it out to calculate the screen coordinates (in which case the screen coordinates are scaled in the same proportion). The purpose of this scaling process is to maximize the precision of divisions (restricted to inside the RSP geometry engine). For details, see Section 11.3, "Matrix State," in the N64 Online Programming Manual and Part 3, "Coordinate transformation and matrix" in the N64 Kantan Manual. 
+</P>
+<p><b>Note</b></font></p>
+<P>
+Calling <A HREF="../gu/guPerspective.htm">guPerspective</A> returns a suitable approximate value for the scale value. This rough estimate normalizes w = 1.0 (between the near plane and far plane). This approximate value is used in almost all cases. 
+</P>
+<p><b>See Also</b></font></p>
+<P>
+<A HREF="../gu/guPerspective.htm">guPerspective</A>
+</P>
+<p><b>Revision History</b></font></p>
+<P>
+02/01/99  Entirely revised.
+</P>
+</BODY>
+</HTML>

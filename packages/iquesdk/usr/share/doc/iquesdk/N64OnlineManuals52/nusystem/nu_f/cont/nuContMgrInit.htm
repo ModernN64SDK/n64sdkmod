@@ -1,0 +1,63 @@
+<HTML>
+<HEAD>
+<TITLE>nuContMgrInit</TITLE>
+</HEAD>
+
+<BODY bgcolor="#FFFFFF">
+<font face="arial" size="-1">
+
+<P>
+<FONT size="5"><b><IMG src="../nusystem2.gif" height="30" width="176">Function</b></FONT>
+
+<HR>
+<P>
+<FONT size="3"><b>nuContMgrInit</b></FONT>
+<p>
+<HR>
+<P>
+<b>Syntax</b>
+<font face="courier" size="2">
+<pre>u8  nuContMgrInit(void)</pre>
+</font>
+
+<b>Arguments</b>
+<font face="courier" size="2">
+<pre>None</pre>
+</font>
+
+<b>Return Value</b>
+<font face="courier" size="2">
+<pre>Bit pattern of the connected Controller</pre>
+</font>
+
+<b>Description</b>
+
+<p><i>Initilializes and registers the Controller Manager</i>
+
+<p>Initializes the Controller Manager and registers it in the SI Manager. If the Controller Manager needs to be removed from the SI Manager, please use the nuContMgrRemove function to remove it.  Once the Controller Manager is removed, the Controller needs to be initialized and the Controller Manager needs to be started.  The return value is a bit pattern of the connected Controller.
+
+<font face="courier" size="2">
+<pre>                     7   6   5   4   3   2   1   0   bit
+		 -------------------------------
+Bit pattern	| - | - | - | - | 4 | 3 | 2 | 1 |
+		 -------------------------------
+	*Bit is 1 if the Controller is connected.</pre>
+</font>
+
+<p>If you want to execute some function after the Controller data has been read, you can register that function as a callback function in the Controller Manager.  The registration is made with the nuContReadFuncSet function and removed with the nuContReadFuncRemove function.
+
+<p>Since this function is called by the nuContInit function, in most cases this function does not need to be called.
+
+<p><b>See Also</b>
+<p><a href="nuSiMgrInit.htm">nuSiMgrInit</a>, <a
+href="nuContInit.htm">nuContInit</a>, <a
+href="nuContReadFuncSet.htm">nuContReadFuncSet</a>, and <a
+href="nuContReadFuncRemove.htm">nuContReadFuncRemove</a>
+
+<p>
+<hr>
+
+<p align="right"><a href="index.htm"><img src="../index.gif" border="0"
+width="65" height="17"></a>
+</body>
+</html>

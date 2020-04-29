@@ -1,0 +1,206 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 20 - Using the Audio Tools</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. -->
+</head>
+
+<H1>
+20.5 MIDI Files</H1>
+
+<p>Sequences can be stored in the game in one of two ways. Either as <a href="../../keywords/index/data/audio.htm#Type0, Type1 MIDI" target="keywords">MIDI file Type 0</a>, or in a <a href="../../keywords/index/data/audio.htm#compressed MIDI" target="keywords">compressed MIDI</a> file format. To use MIDI Type 0, save the file as either a Type 0 or Type 1 MIDI file, and then use <A HREF="../../n64man/tool/midicvt.htm">midicvt</A>. To use the compressed sequence format, save the file as either a Type 0 or Type 1 MIDI file, and then use <A HREF="../../n64man/tool/midicomp.htm">midicomp</A>. </p>
+
+<P>The process for creating MIDI sequence <a href="../../keywords/index/data/audio.htm#bank file" target="keywords">bank files</a> is as follows:</p>
+<OL>
+<LI>
+Create the sequences and save them as MIDI files of either Type 0 or Type 1.<BR><BR></LI>
+
+<LI>
+Convert the sequences using either <A HREF="../../n64man/tool/midicvt.htm">midicvt</A> or <A HREF="../../n64man/tool/midicomp.htm">midicomp</A><BR><BR></LI>
+
+<LI>
+Compile the sequences using <A HREF="../../n64man/tool/sbc.htm">sbc</A>. <BR><BR></LI>
+</OL>
+
+<p>The following MIDI messages are supported by both file formats:</p>
+
+<UL>
+<LI>
+<a href="../../keywords/index/data/audio.htm#note on/note off" target="keywords">Note on</a><BR><BR></LI>
+
+<LI>
+Note off<BR><BR></LI>
+
+<LI>
+<a href="../../keywords/index/data/audio.htm#polyphonic key pressure" target="keywords">Polyphonic key pressure</a><BR><BR></LI>
+
+<LI>
+Midi Controllers:
+<BR>a. Controller 7: Channel volume
+<BR>b. Controller 10: Channel Pan
+<BR>c. Controller 64: Sustain
+<BR>d. Controller 91: FXMix <BR><BR></LI>
+<LI>
+Program Control changes 0-127<BR><BR></LI>
+
+<LI>
+Pitch Bend Change<BR><BR></LI>
+</UL>
+
+<p>In addition to the above MIDI messages, the <a href="../../keywords/index/data/audio.htm#MIDI" target="keywords">MIDI</a> file meta tempo event is supported. </p>
+
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="01"></A>
+<H2>
+20.5.1 Loops in the Sequence </H2>
+
+<p>The way loops are implemented in the two sequence formats are very different. If a game uses MIDI Type 0 format, the loops must be created by the programmer using audio library calls from within the game code. If the compressed sequence type is used, loops are inserted by the musician. This is done using midi controllers.</p>
+
+<P>The compressed sequence format supports looping within tracks. A track can have as many as 128 loops, which can be sequential or <a href="../../keywords/index/data/audio.htm#nest" target="keywords">nested</a>. Each loop is numbered, and must have a loop start and a loop end.  Optionally, it can have a loop count, that specifies the number of times the looped section should play. Loop counts are limited from 1 to 255. A loop count of zero, the default, will loop forever. 
+</p>
+
+<P>Although the format used in the compressed midi file is not detailed here, it should be noted that when a file is compressed, midi events are rearranged into tracks based on channel. All midi events for channel 1 are put in the first track, and all midi events for channel 2 are put in the second track, and so on.  This is particularly important when
+considering loops. If a loop is put in a track, all midi events from that channel will loop. </p>
+
+<P>To insert loops into a compressed midi sequence, you will need to insert extra controllers. These controllers serve as markers for the loop. A loop start is defined as a controller number 102.   A loop end is defined as a controller 103. Within a channel, each loop start and loop end pair must have a unique number between 0 and 127.  This number is what the loop start and loop end controller's value should be set to. A loop count between 0 and 127 is created with a controller 104, using values 0 to 127.   A loop count between 128 and 255 is created using controller 105, with values 0 to 127. (When a loop count controller 105 is encountered, the value is added to 128 to produce loop counts from 128 to 255.)</p>
+
+<P>As a simple example, consider the following sequence: </p>
+<BLOCKQUOTE>
+<TABLE BORDER=0 >
+<TR>
+<TD>loop 0 start</TD>
+<TD>(controller 102 with value 0)</TD>
+</TR>
+
+<TR>
+<TD>loop count of 6</TD>
+<TD>(controller 104 with value 6)</TD>
+</TR>
+
+<TR>
+<TD>loop 0 end</TD>
+<TD>(controller 103 with value 0)</TD>
+</TR>
+</TABLE>
+ </BLOCKQUOTE>
+
+<p>In this case the section between the loop start and the loop end will be played six times.</p>
+
+<P>It is important to understand that the loop count is not associated with a start and end pair. When a loop end is encountered, it uses the most recent loop count, even if there has already been a loop end for another loop. Consider the following sequence: </p>
+<BLOCKQUOTE> 
+<TABLE BORDER=0 >
+<TR>
+<TD>loop 0 start</TD>
+<TD>(controller 102 with value 0)</TD>
+</TR>
+
+<TR>
+<TD>loop count of 8</TD>
+<TD>(controller 104 with value 8)</TD>
+</TR>
+
+<TR>
+<TD>loop 0 end</TD>
+<TD>(controller 103 with value 0)</TD>
+</TR>
+
+<TR>
+<TD>loop 1 start</TD>
+<TD>(controller 102 with value 1)</TD>
+</TR>
+
+<TR>
+<TD>loop 1 end</TD>
+<TD>(controller 103 with value 1)</TD>
+</TR>
+</TABLE>
+ </BLOCKQUOTE>
+
+<p>In this case, the first loop (loop 0) will have a loop count of 8. The second loop (loop 1) will also have a loop count of 8, since once set, the loop count continues until changed. If there has never been a loop count in the sequence, the loop count is set at its default of 0, which is interpreted as loop forever. </p>
+
+<P><strong>Warning:</strong>  All loops must have a loop start and a loop end with at least one valid midi event in between. </p>
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="02"></A>
+<H2>
+20.5.2 Nesting Loops </H2>
+
+<p>In the compact sequence format it is easy to nest loops. Consider the following sequence: </p>
+
+<BLOCKQUOTE> 
+<TABLE BORDER=0 >
+<TR>
+<TD>loop 0 start</TD>
+<TD>(controller 102 with value 0)</TD>
+</TR>
+
+<TR>
+<TD>loop 1 start</TD>
+<TD>(controller 102 with value 1)</TD>
+</TR>
+
+<TR>
+<TD>loop count of 8</TD>
+<TD>(controller 104 with value 8)</TD>
+</TR>
+
+<TR>
+<TD>loop 1 end</TD>
+<TD>(controller 103 with value 1)</TD>
+</TR>
+
+<TR>
+<TD>loop 2 start</TD>
+<TD>(controller 102 with value 2)</TD>
+</TR>
+
+<TR>
+<TD>loop 2 end</TD>
+<TD>(controller 103 with value 2)</TD>
+</TR>
+
+<TR>
+<TD>loop 3 start</TD>
+<TD> (controller 102 with value 3)</TD>
+</TR>
+
+<TR>
+<TD>loop count of 4</TD>
+<TD>(controller 104 with value 4)</TD>
+</TR>
+
+<TR>
+<TD>loop 3 end</TD>
+<TD> (controller 103 with value 3)</TD>
+</TR>
+
+<TR>
+<TD>loop forever</TD>
+<TD>(controller 104 with value 0)</TD>
+</TR>
+
+<TR>
+<TD>loop 0 end</TD>
+<TD>(controller 103 with value 0)</TD>
+</TR>
+</TABLE>
+</BLOCKQUOTE>
+
+<p>In this case loop 1 will loop eight times, before the sequence proceeds to loop 2, which will also loop eight times. After that, loop 3 will loop 4 times, and then the entire sequence will loop infinitely.</p>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="03"></A>
+<H2>
+20.5.3 Putting Things Into Makefiles </H2>
+
+<p>In the developer's kit, there is a directory named viper that shows how files would be arranged to build a <a href="../../keywords/index/data/audio.htm#bank" target="keywords">bank</a> of music samples. The makefile in this directory shows examples of setting up rules for files, and dependencies in a logical order. When you start a project, you can use these files as a template. </p>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR>
+</BODY>
+</HTML>

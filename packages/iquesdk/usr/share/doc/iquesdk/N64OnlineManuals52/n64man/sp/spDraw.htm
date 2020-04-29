@@ -1,0 +1,65 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<!--
+Editors Notes:
+  PWC- updated formatting
+  MAP- added links, updated format
+--><TITLE>spDraw</TITLE>
+</HEAD>
+
+<BODY bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>spDraw</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p><i>
+Generates the display list that draws the sprite on the screen.</i>
+</P>
+
+<H3>Syntax</H3>
+
+<p>#include &lt;sp.h&gt;     /* <A HREF="../../header/sp.htm">sp.h</A> */<br>
+void spDraw(Sprite *sp)
+</P>
+
+<H3>Arguments</H3>
+<DL>
+  <DT><STRONG>*sp</STRONG>
+  <DD>Pointer to the sprite
+</DL>
+<H3>Description</H3>
+<P>
+This function constructs a display list starting at sp-&gt;next_dl that draws the sprite upon call into the frame buffer in the indicated way. 
+</P>
+<P>
+This display list is always terminated with a <A href="../gsp/gSPEndDisplayList.htm">gSPEndDispalyList</A> entry. If it reaches the end of the list, the sp-&gt;next_dl entry will be updated to point to the next entry.
+</P>
+<P>
+The pointer to the start of this display list is returned.
+</P>
+<P>
+At most, sp-&gt;ndisplist of display list entries are generated. 
+</P>
+<P>
+Set G_IM_SIZ_DD instead of G_IM_SIZ_4b for sp-&gt;bmsiz when using 64DD built-in font.
+</P>
+<H3>Comments</H3>
+<P>
+A source for the spDraw function is located in /usr/src/PR/libultra/sp for your reference.
+
+</P>
+<H3>See Also</H3>
+<P>
+<A href="../tool/mksprite.htm">mksprite</A><br><br>
+Chapter on Sprite in <i>N64 Programming Manual</i>
+</P>
+
+<p><b>Revision History</b></p>
+<P>
+1999/01/18  Added one sentence to the end of the Description.
+<br>
+1999/04/30  Changed Format</p>
+<br><br>
+
+</BODY>
+</HTML>

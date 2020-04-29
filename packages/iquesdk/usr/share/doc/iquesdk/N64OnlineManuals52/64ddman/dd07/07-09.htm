@@ -1,0 +1,104 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<title>07-09</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font face="arial" size="-1">
+<p> <strong>7.9 Write Interrupts</strong> 
+<hr>
+
+<p>Interrupting a write may destroy the contents of the block being written at the time of the interrupt.  A write interrupt occurs in the following cases.</p>
+
+<p>I. When the user ejects the disk during a write<br>
+II. When the user interrupts the power supply during a write<br>
+III. When the user pushes the reset button during a write</p>
+
+<p>(1) Case I. can be detected by the return of Error 49 (LEO_ERROR_EJECTED_ILLEGALLY_RESUME) from the write function.  In this case, the circumstances vary according to the subsequent actions of the user.  If the user reinserts the same disk, writing of the data that had been attempted to be saved should attempted again.  These data remain in the main memory (RDRAM) of the main N64 unit.  The flow of program processing in this case is as follows.</p>
+
+<table border="0" cellpadding="3">
+    <tr>
+        <td align="center" bgcolor="#CBCEF8"><font face="arial" size="-1">Error 49 detected</td>
+    </tr>
+    <tr>
+        <td align="center"><strong>«</strong></td>
+    </tr>
+    <tr>
+        <td align="center" bgcolor="#CBCEF8"><font face="arial" size="-1">Wait for disk insertion</td>
+    </tr>
+    <tr>
+        <td align="center"><strong>«</strong></td>
+    </tr>
+    <tr>
+        <td align="center" bgcolor="#CBCEF8"><font face="arial" size="-1">Check disk ID (same disk?)</td>
+    </tr>
+    <tr>
+        <td align="center"><strong>«</strong></td>
+    </tr>
+    <tr>
+       <td align="center" bgcolor="#CBCEF8"><font face="arial" size="-1">Try again to write the data for which saving had previously been attempted.</td>
+    </tr>
+</table>
+
+<p>The details of such processing are described in the section on write processing sequences in <a href="../dd10/index.htm">"Chapter 10, Error Handling Sequences."</a>  Please implement this processing according to the description provided in that section.</p>
+
+<p>Reattempting to write the same data in this manner can be performed only in case I. and only when the user reinserts the same disk. Other cases, such as when power is interrupted or the 64DD reset before the disk is reinserted, or when a different disk is inserted, are handled in the same way as II. and III.  For more on these cases, see section (2).</p>
+
+<p>(2) In cases II. and III., or in case I. under conditions other than that described in section (1) above, a write interrupt cannot be detected as long as that portion of the disk is not read.  Specifically, the occurrence of a write interrupt is indicated by either of the following.</p>
+
+<dl>
+    <dd>1. Error 23 (LEO_ERROR_UNRECOVERED_READ_ERROR) occurs<br>
+        2. No erros occur but data are destroyed</dd>
+</dl>
+
+<p>Particularly with 2., the only solutions are those such as creating a checksum in the game program.  Measures should be taken to detect such cases.
+</p>
+
+<p>As described in (1), the data can be rewritten.  However, the present case differs from case I. in that the data to be written has been lost.  Consequently, the initial value for the data to be saved must be provided.  This means that the user's save data will be lost, so the significance of this process should be described.    An example of the flow of processing in this case is given below.  (Please do not display the error number).</p>
+
+<table border="0" cellpadding="3">
+    <tr>
+        <td align="center" width="350" bgcolor="#CBCEF8"><font face="arial" size="-1">Display the message: "The previous data could not be properly saved.  ------ will be lost."
+        </td>
+        <td width="300"><font face="arial" size="-1">For ------- insert a name appropriate for that game, such as File 1 or Data 3.</td>
+    </tr>
+    <tr>
+        <td align="center" width="350"><strong> «</strong></td>
+        <td width="300"> </td>
+    </tr>
+    <tr>
+        <td align="center" width="350" bgcolor="#CBCEF8"><font face="arial" size="-1">Display the message, "Please press button A," and wait for the button to be pressed.</td>
+        <td width="300"> </td>
+    </tr>
+    <tr>
+        <td align="center" width="350"><strong> «</strong></td>
+        <td width="300"> </td>
+    </tr>
+    <tr>
+        <td align="center" width="350" bgcolor="#CBCEF8"><font face="arial" size="-1">Save the initial value in the save area.</td>
+        <td width="300"> </td>
+    </tr>
+</table>
+
+<p>The following items require particularly close attention.</p>
+
+<p>[Case 1]</p>
+
+<p>As mentioned above, a possible cause of Error 23 during reading of a RAM area is a write interrupt.  Because this is not a fatal error, the error number should never be displayed.  Although the data for which the save was attempted cannot be recovered, the disk can continue to be used by writing the initial data.   On the other hand, an occurrence of Error 23 while reading a ROM area is a fatal error (an error not permitted).  In this case, display the error number and ask the user to read the user's manual.  For more information, see the description of Error 23 in section 10.2:  Error Handling Sequences.
+</p>
+
+<p>[Case 2]</p>
+
+<p>Consideration should be given to the fact that in some cases data are destroyed although no error occurs.  To detect such cases, a measure such as a checksum should be implemented on the game side.  
+</p>
+
+<p>In the case described in (1), the data are recoverable, while in both cases described in (2), the data are destroyed and cannot be recovered.  Please note, however, that the disk itself has not been broken.  Methods like that described in section 12.12 can be used to protect the data.</p>
+
+<p><A href="index.htm#index"><img src="../../gif/index.gif" border="0"
+width="65" height="17"></a></p>
+
+<hr>
+</body>
+</html>

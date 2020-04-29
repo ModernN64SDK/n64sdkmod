@@ -1,0 +1,241 @@
+<HTML>
+<HEAD>
+<TITLE>Chapter 3 Binary Format</TITLE>
+</HEAD>
+<BODY LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff">
+
+<font face="arial" size="-1">
+<b><font size="3">Chapter 3 Binary Format</b></font>
+<HR>
+
+<b>3-11. TriList</b>
+<P>
+<u>1. TriList Area</u>
+<P>
+TriList is the list that contains triangle data. Triangles are constructed by referencing the vertex groups in VtxList. Mapping of TriList is as follows.
+
+<p>
+<table border="1" cellpadding="3" cellspacing="3">
+<tr>
+<th rowspan="9"><font face="arial" size="-1">
+TriListHeader
+</th>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+tri_list_tag
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+tri_list_header_size
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+tri_list_size
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+tri_group_num
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+nintendo_extension_block_size
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+user_extension_block_size
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+tri_group_num_byte(0)
+</td>
+</tr>
+<tr>
+<td colspan="2"><font face="arial" size="-1">
+<center>
+......
+</center>
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+tri_group_num_byte(tri_group_num - 1)
+</td>
+</tr>
+<tr>
+<th rowspan="5"><font face="arial" size="-1">
+
+</th>
+<td colspan="2"><font face="arial" size="-1">
+<center>
+TriGroup(0)
+</center>
+</td>
+</tr>
+<tr>
+<td colspan="2"><font face="arial" size="-1">
+<center>
+.......
+</center>
+</td>
+</tr>
+<tr>
+<td colspan="2"><font face="arial" size="-1">
+<center>
+TriGroup(tri_group_num - 1)
+</center>
+</td>
+</tr>
+<tr>
+<td colspan="2"><font face="arial" size="-1">
+<center>
+NintendoExtensionBloock
+</center>
+</td>
+</tr>
+<tr>
+<td colspan="2"><font face="arial" size="-1">
+<center>
+UserExtensionBlock
+</td></tr></table>
+</center>
+<p>
+Figure: TriList Area Memory Map
+
+<p>
+<table border="1" cellpadding="3" cellspacing="3">
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 tri_list_tag
+</td>
+<td>
+<font face="arial" size="-1">
+Tag indicating TriList. Set the following flag.
+<pre><font face="courier" size="2"><b>TAG_TRI_LIST&#9;0x00080000</b></pre></font>
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 tri_list_header_size
+</td>
+<td>
+<font face="arial" size="-1">
+Size of TriListHeader area
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 tri_list_size
+</td>
+<td>
+<font face="arial" size="-1">
+Size of TriList area
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 tri_group_num
+</td>
+<td>
+<font face="arial" size="-1">
+Total number of TriGroup in the TriList
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 nintendo_extension_block_size
+</td>
+<td>
+<font face="arial" size="-1">
+Nintendo extension block size
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 user_extension_block_size
+</td>
+<td>
+<font face="arial" size="-1">
+User extension block size
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 tri_group_num_byte
+</td>
+<td>
+<font face="arial" size="-1">
+Number of bytes corresponding to TriGroup
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+<a href="./seg11-2.htm">TriGroup</a>
+</td>
+<td>
+<font face="arial" size="-1">
+Triangle list per one shape
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+NintendoExtensionBlock
+</td>
+<td>
+<font face="arial" size="-1">
+Nintendo extension block
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+UserExtensionBlock
+</td>
+<td>
+<font face="arial" size="-1">
+UserExtensionBlock
+</td></tr></table>
+<p>
+
+
+
+<hr>
+
+<p align="right"><a href="../index.htm">
+<img src="../../../gif/index.gif"
+border="0" width="65" height="17"></a>
+&nbsp; <a href="./seg11-2.htm">
+<img src="../../../gif/next.gif"
+border="0" width="65" height="17"></a></p>
+
+</body>
+</html>
+
+

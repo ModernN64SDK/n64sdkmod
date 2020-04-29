@@ -1,0 +1,59 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Graphics-Chapter 4  The Color Combiner</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/22/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<font style="font-size:12pt"><B>4.3  Combine Mode</B></FONT>
+<br>
+<P>
+ Up until now, we have been using combine mode without giving a very detailed explanation.  All we have actually been doing is specifying the source color and source alpha for the coefficients a, b, c, d.<br><br>
+     There is a macro defined in &lt;gbi.h&gt; called gDPSetCombineLERP.  The contents of this macro are shown below:
+</P>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><FONT COLOR="#000080">
+<PRE><CODE>  #define gDPSetCombineLERP(pkt, a0, b0, c0, d0, Aa0, Ab0, Ac0, Ad0,      \
+                a1, b1, c1, d1, Aa1, Ab1, Ac1, Ad1)                       \
+  {                                                                       \
+          Gfx *_g = (Gfx *)(pkt);                                         \
+                                                                          \
+          _g-&gt;words.w0 =  _SHIFTL(G_SETCOMBINE, 24, 8) |                  \
+                          _SHIFTL(GCCc0w0(G_CCMUX_##a0, G_CCMUX_##c0,     \
+                                          G_ACMUX_##Aa0, G_ACMUX_##Ac0) | \
+                                  GCCc1w0(G_CCMUX_##a1, G_CCMUX_##c1),    \
+                                  0, 24);                                 \
+          _g-&gt;words.w1 =  (unsigned int)(GCCc0w1(G_CCMUX_##b0,            \
+                                                 G_CCMUX_##d0,            \
+                                                 G_ACMUX_##Ab0,           \
+                                                 G_ACMUX_##Ad0) |         \
+                                         GCCc1w1(G_CCMUX_##b1,            \
+                                                 G_ACMUX_##Aa1,           \
+                                                 G_ACMUX_##Ac1,           \
+                                                 G_CCMUX_##d1,            \
+                                                 G_ACMUX_##Ab1,           \
+                                                 G_ACMUX_##Ad1));         \
+  }</CODE></PRE>
+	</FONT></TD>
+</TR></TABLE>
+<P>
+ The gDPSetCombineLERP macro has many arguments, but all of the arguments besides <b>pkt</b> (the argument for the display list pointer) are there to specify source color and source alpha for the coefficients. <br><br> 
+
+     a0, b0, c0 and d0 are the cycle-1 source color & alpha, and they are used to perform the following calculation:
+</P>
+<P>
+  Output color  = (a0 - b0) * c0 + d0
+</P>
+<P>
+In the same way, Aa0, Ab0, Ac0 and Ad0 are the cycle-1 source alpha, and they are used to calculate the alpha value with the following equation:
+</P>
+<P>
+  Output alpha = (Aa0 - Ab0) * Ac0 + Ad0
+</P>
+<P>
+a1, b1, c1, d1, Aa1, Ab1, Ac1and Ad1 are the cycle-2 source color & alpha.  In one-cycle mode, the same combine mode must be set in both cycles. </P>
+</BODY>
+</HTML>

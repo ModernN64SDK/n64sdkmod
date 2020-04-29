@@ -1,0 +1,35 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 9 - Basic Memory Management</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. -->
+</head>
+
+<h1>9.9 Clearing Uninitialized Data (<A target="keywords" HREF="../../keywords/index/data/system.htm#Bss">BSS</a>) Section </h1>
+
+<p>Prior to loading a <A target="keywords" HREF="../../keywords/index/data/system.htm#segment">segment</A> into memory, the application must invalidate the corresponding cache lines. The <a href="../../n64man/tool/makerom.htm">makerom()</a> makes appropriate symbols available to the application that can be used to construct the arguments to the <a href="../../n64man/os/osInvalDCache.htm">osInvalDCache()</a> routines. Then the actual DMA from ROM to DRAM may be performed, as well as the clearing of the uninitialized data (BSS) section of the segment.   It is important that the clearing be performed before the BSS section can be used.   Again, <a href="../../n64man/tool/makerom.htm">makerom()</a> generated symbols may be used for the bzero() call. Following is some sample code that illustrates the process: </p>
+
+<blockquote>
+<pre>
+extern    char    _newSegmentRomStart[],_newSegmentRomEnd[];
+extern    char    _newSegmentStart[];
+extern    char    _newSegmentDataStart[],_newSegmentDataEnd[];
+extern    char    _newSegmentBssStart[],_newSegmentBssEnd[];
+
+<a href="../../n64man/os/osInvalDCache.htm">osInvalDCache</a>(_newSegmentDataStart,
+    _newSegmentDataEnd-_plainSegmentDataStart);
+<a href="../../n64man/os/osPiStartDma.htm">osPiStartDma</a>(&amp;dmaIOMessageBuf,OS_MESG_PRI_NORMAL,OS_READ,
+    (u32)_newSegmentRomStart,_newSegmentStart,
+    (u32)_newSegmentRomEnd - (u32)_newSegmentRomStart,
+        &amp;dmaMessageQ);
+
+bzero(_newSegmentBssStart,
+    _newSegmentBssEnd-_newSegmentBssStart);
+
+(void)<a href="../../n64man/os/osRecvMesg.htm">osRecvMesg</a>(&amp;dmaMessageQ,NULL,OS_MESG_BLOCK);
+</pre>
+</blockquote>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+</body> </html>

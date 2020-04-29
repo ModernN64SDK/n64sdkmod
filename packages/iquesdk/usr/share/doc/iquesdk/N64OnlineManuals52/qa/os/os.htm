@@ -1,0 +1,539 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN"
+PWC 2/21/00>
+<HTML>
+<HEAD><link rel=stylesheet type="text/css" href="gif/style.css">
+<TITLE>System</TITLE>
+</HEAD>
+
+<BODY>
+
+<P>
+<A name="index"></A>
+
+<IMG src="../../gif/n64_logo2.gif" height="21" width="136"> 
+<h3><FONT color="#FF8000">Q&A</font>- Other System Questions</h3>
+
+<P>
+<TABLE border="0">
+  <TR>
+    <TD valign="top" width="50"><A href="os.htm#01"><b><font face="arial">QA1</b></A></TD>
+    <TD><font face="arial">What is the difference between libgultra.a, libgultra_d.a, and libgultra_rom.a?</TD></TR>
+  <TR>
+    <TD valign="top" width="50"><font face="arial"><A href="os.htm#02"><b>QA2</b></A></TD>
+    <TD><font face="arial">Abnormal stop with mild...</TD></TR>
+  <TR>
+    <TD valign="top" width="50"><font face="arial"><A href="os.htm#03"><b>QA3</b></A></TD>
+    <TD><font face="arial">The PRENMI event crashes when booting </TD></TR>
+  <TR>
+    <TD valign="top" width="50"><font face="arial"><A href="os.htm#04"><b>QA4</b></A></TD>
+    <TD><font face="arial">How do I directly reference the data existing in the Static Segment?</TD></TR>
+  <TR>
+    <TD valign="top" width="50"><font face="arial"><A href="os.htm#05"><b>QA5</b></A></TD>
+    <TD><font face="arial">Looking at the CPU fault...</TD></TR>
+  <TR>
+    <TD valign="top" width="50"><font face="arial"><A href="os.htm#06"><b>QA6</b></A></TD>
+    <TD><font face="arial">How many record boundaries are there in the spec file?</TD></TR>
+  <TR>
+    <TD valign="top" width="50"><font face="arial"><A href="os.htm#07"><b>QA7</b></A></TD>
+    <TD><font face="arial">I need more detailed explanation for spec file.</TD></TR>
+  <TR>
+    <TD valign="top" width="50"><font face="arial"><A href="os.htm#08"><b><font face="arial">QA8</b></A></TD>
+    <TD><font face="arial">A lot of WARNINGS and FATAL errors occur when linking with ld.</TD></TR>
+  <TR>
+    <TD valign="top" width="50"><font face="arial"><A href="os.htm#09"><b>QA9</b></A></TD>
+    <TD><font face="arial">makemask core dumps if the file is a read-only file.</TD></TR>
+  <TR>
+    <TD valign="top" width="50"><font face="arial"><A href="os.htm#10"><b>QA10</b></A></TD>
+    <TD><font face="arial">Can't the standard C library functions be used?</TD></TR>
+  <TR>
+    <TD valign="top" width="50"><font face="arial"><A href="os.htm#11"><b>QA11</b></A></TD>
+    <TD><font face="arial">The error "cfe:error Make depend:No record locks available" occurs when I compile...</TD></TR>
+  <TR>
+    <TD valign="top" width="50"><font face="arial"><A href="os.htm#12"><b>QA12</b></A></TD>
+    <TD><font face="arial">The warning "dangerous relocation: GP relative relocation when GP not
+defined appears when mild is executed...</TD></TR>
+  <TR>
+    <TD valign="top" width="50"><font face="arial"><A href="os.htm#13"><b>QA13</b></A></TD>
+    <TD><font face="arial">The message "undefined reference to 'sins'" appears when linking</TD></TR>
+  <TR>
+    <TD valign="top" width="50"><font face="arial"><A href="os.htm#14"><b>QA14</b></A></TD>
+    <TD><font face="arial">What is the size of the executable files for exeGCC?</TD></TR>
+<TR>
+    <TD valign="top" width="50"><A href="os.htm#15"><b>QA15</b></A></TD>
+    <TD>How do I run osAfterPreNMI() with OS2.0H? (199909)</TD></TR>
+</TABLE>
+<HR>
+
+<P>
+<A name="01"><FONT  color="#FF0000"><b>Q1</b></FONT></A>
+<b> It says in the manual that there are 3 libraries, "libgultra.a," "libgultra_d.a," and "libgultra_rom.a," used for debugging, non-debugging, and master submission, respectively. What are the actual differences between these 3 libraries? </b>
+</P>
+<P>
+<FONT  color="#008000"><b>A1</b></FONT>     The differences in the compile options used when building each library are listed below. 
+</P>
+
+<PRE>
+  libgultra_d:   -D_DEBUG -g 
+  libgultra:     -DNDEBUG -O2 
+  libgultra_rom: -DNDEBUG -D_FINALROM -O2
+</PRE>
+<P>
+The _DEBUG option adds processing such as checking the argument range, etc. (osERROR is called when there is a problem in the argument).  Array overflow checks, etc. are used by assert, but assert is disabled when the NDEBUG option is used.  _FINALROM deletes segments which are not necessary in the final ROM, such as communication with the host computer, etc.  osSyncPrintf, and the like become null functions. 
+</P>
+<P align="right">
+<A href="os.htm#index">top</A>
+</P>
+<HR> 
+
+<P>
+<A name="02"><FONT color="#FF0000"><b>Q2</b></FONT></A><b> When mild is executed, the messages </b>
+ 
+<BLOCKQUOTE>
+<PRE>
+ bfd assertion fail elf.c:1638 
+ mild: ld execute fail 
+</PRE>
+</BLOCKQUOTE>
+<P><b>
+ appear, and the message  </b>
+</P>
+<BLOCKQUOTE>
+<PRE>
+---------------- 
+[This program has performed an illegal operation and has been forcibly terminated.]
+[Notify the manufacturer if you are unable to resolve the problem.]
+---------------- 
+</PRE>
+</BLOCKQUOTE>
+<P><b>
+is displayed.  When I then open [Details],</b>
+</P>
+<BLOCKQUOTE>
+
+<PRE>
+---------------- 
+EXEW32 STACK ERROR.
+---------------  
+</PRE>
+</BLOCKQUOTE>
+<P>
+<b>is displayed. </b>
+</P>
+<P>
+<b>The object file that configures the ROM image exceeds 400, 70% of which is mapped to the same address in RAM.</b>
+
+<P>
+<FONT color="#008000"><b>A2</b></FONT> An error will occur if the section which can be managed by the linker (ld) exceeds a maximum value of 512. 
+</P>
+<P>
+KMC kindly distributes ld.out, in which the maximum number of sections is 1024, through Nintendo (Bundled in the OS2.0j CD released March, 1999).  Those of you who use more than 512 sections should switch to ld.out.  
+</P>
+<P align="right">
+<A href="os.htm#index">top</A>
+</P>
+<HR>
+<P>
+<A name="03"><FONT color="#FF0000"><b>Q3</b></FONT></A>
+<b> I am doing PAL development, but when I do a series of resets, PRENMI events are dropped and PRENMI processing is not performed.  As a result the task is stopped and/or the Y scale is not initialized, causing the program to crash. </b>
+</P>
+<P>
+<FONT color="#008000"><b>A3</b></FONT> This problem is a bug in the N64 OS, and is corrected in OS2.0i, Patch 5.  However, there is still a possibility that the PRENMI will still be dropped as a result of how the scheduler was created.  
+</P>
+<P>
+The NuSystem 1.2 scheduler had this problem, but it was corrected in NuSystem 2.0 and later. 
+</P>
+<P>
+When the scheduler received a PRENMI message and performed processing to send the message to multiple other threads, if a PRENMI message was generated before the PRENMI message handler was registered in the scheduler, the scheduler would go into standby mode waiting for the next message without sending the current PRENMI message anywhere, ultimately not processing the PRENMI message. 
+</P>
+<P>
+If a PRENMI event occurred between the time that a reset was started and the PRENMI message handler was set in the scheduler, the PRENMI would be dropped. 
+</P>
+<P>
+In this kind of situation, prevent the PRENMI from being dropped by performing processing such as registering a flag that a PRENMI message has been received, then sending the PRENMI message when the PRENMI message handler has been registered.  Or register the PRENMI message handler at as early a stage as possible. 
+</P>
+<P align="right">
+<A href="os.htm#index">top</A>
+</P>
+<HR>
+<P>
+<A name="04"><FONT   color="#FF0000"><b>Q4</b></FONT></A>
+<b> How do I directly reference the data existing in the Static Segment?</b>
+</P>
+<P>
+<b>Example In static.c, </b>
+</P>
+<BLOCKQUOTE>
+
+<PRE>
+        Tri triData[]={
+        {0,0,1,2},
+        {0,2,3,4},
+}; 
+</PRE>
+</BLOCKQUOTE>
+<P><b>
+is declared, and, currently, if I want to read data in the code onetri.c as</b>
+</P>
+<BLOCKQUOTE>
+
+<PRE>
+       foo=triData[0].v[0]; 
+</PRE>
+</BLOCKQUOTE>
+<P>
+<b>I get all zeroes.  </b>
+ 
+<P>
+<FONT   color="#008000"><b>A4</b></FONT> The STATIC_SEGMENT declared in samples such as onetri, etc. is declared in the spec file declarations as 
+</P>
+<BLOCKQUOTE>
+
+<PRE>
+number STATIC_SEGMENT
+</PRE>
+</BLOCKQUOTE>
+<P>
+The number declaration segment exists only in ROM in its initial state. 
+</P>
+<P>
+This is transferred from ROM to DRAM in this portion of onetri.c around line 225
+</P>
+<BLOCKQUOTE>
+
+<PRE>
+/*
+*Stick the static segment right after the code/data segment
+*/
+staticSegment=codeSegmentEnd;
+<A href="../../n64man/os/osPiStartDma.htm">osPiStarDma</A>(&amp;dmaIOMessageBuf,OS_MESG_PRI_NORMAL,OS_READ,
+                (u32)_staticSegmentRomStart,staticSegment,
+                (u32)_staticSegmentRomEnd - (u32)_staticSegmentRomStart,
+                &amp;dmaMessageQ);
+/*
+*Wait for DMA to finish
+*/
+(void) <A href="../../n64man/os/osRecvMesg.htm">osRecvMesg</A>(&amp;dmaMessageQ,NULL,OS_MESG_BLOCK);
+</PRE>
+</BLOCKQUOTE>
+<P>
+Up until that point, it existed as address information, but it contained no data.  The reason for this is to enable the static data for the RSP to be (relocatably) read in as needed.  See the section of RSP addressing in the manual.  In this figure, SegID is STATIC_SEGMENT (=1, See onetri.h) in the above case, while Segment Offset is offset from the head of the name "static" segment in spec.  (When there are multiple number STATIC_SEGMENT segments in spec, the symbol in each one is the offset from the head of the respective segment.)  The Segment Base Address defined by SegID is 
+</P>
+<BLOCKQUOTE>
+
+<PRE>
+<A href="../../n64man/gsp/gSPSegment.htm">gSPSegment</A>(glistp++,STATIC_SEGMENT,OS_KO_TOPHYSICAL(staticSegment));
+</PRE>
+</BLOCKQUOTE>
+<P>
+in the vicinity of line 258 of onetri.c, and the DRAM head address previously read from ROM (the contents of the staticSegment variable) is specified by segID=1(STATIC_SEGMENT).  As shown in these materials, the RSP is SegID(Segment Base)+offset(=physical address), and the CPU is KOSEG (the virtual address from 0x80000000). In order to access the segment defined by number from the CPU, it is necessary to perform similar calculations and change the KOSEG virtual address from the RSP virtual address.  However, there is no such macro or routine (there is KOSEG, etc., but...) That is because the ability to set Segment Base is internal to the RSP (using (<A href="../../n64man/gsp/gSPSegment.htm">gSPSegment</A>). 
+ 
+<P>
+Try putting this at the head of the file,
+</P>
+<BLOCKQUOTE>
+
+<PRE>
+<A href="../../n64man/os/osSyncPrintf.htm">osSyncPrintf</A>(&quot;%x\n&quot;,&amp;triData);
+</PRE>
+</BLOCKQUOTE>
+<P>
+and check the address allotted to the symbol triData which can be seen from the CPU. 
+</P>
+<P align="right">
+<A href="os.htm#index">top</A>
+</P>
+<HR>
+<P>
+<A name="05"><FONT  color="#FF0000"><b>Q5</b></FONT></A>
+<b> I am using IRIX 5.3, but how should I view CPU faults? </b>
+
+<P>
+<b>The message displayed on the console when an exception error occurs is as follows.</b>
+
+
+<PRE>Fault in thread 6:
+
+epc 0x8002f98c
+cause 0x0000005c &lt;Watchpoint exception&gt;
+sr 0x0000ff03 &lt;IM8,IM7,IM6,IM5,IM4,IM3,IM2,IM1,KER,EXL,IE&gt;
+badvaddr 0x0004dc10
+</PRE>
+
+<P>
+<FONT color="#008000"><b>A5</b></FONT>
+ The message displayed on the console when an exception error occurs is as follows.
+
+<PRE>
+&gt;
+&gt;
+&gt;Fault in thread 6:
+&gt;
+&gt;epc 0x8002f98c <b>&lt;---- Pay attention to this address</b>
+&gt;cause 0x0000005c &lt;Watchpoint exception&gt;
+&gt;sr 0x0000ff03 &lt;IM8,IM7,IM6,IM5,IM4,IM3,IM2,IM1,KER,EXL,IE&gt;
+&gt;badvaddr 0x0004dc10
+</PRE>
+
+<ol><li>When a fault is output, pay attention to the "epc" address.
+ 
+<P>
+<b>Note:</b>  epc is the Exception Program Count register, and holds the virtual address at which execution of a command is restarted after an error has occurred.  This address corresponds to one of the following. 
+<P>
+<UL>
+  <LI>The virtual address of the command that caused the exception
+  <LI>If the command that caused the error exception is in a branch delay slot, the virtual address of the immediately preceding branch command or jump command
+</UL>
+<P>
+In other words, by paying attention to this address, you can pinpoint the command that caused the trouble. 
+</li>
+<li>
+In the INDY IRIX 5.3 environment, the following commands are valuable in finding the addresses of commands.
+<P>
+<b>List of Powerful Debugging Functions</b>
+
+
+<PRE>
+--------------------------------------------------------------------
+%gdis -S codesegment.o /* Outputs reverse-assembly data for the sourced
+                          program to the console.*/
+--------------------------------------------------------------------
+%gnm -Bvx simple /* Use this when you can't produce it with nm.  Outputs
+                    the command and the virtual address to the console.*/
+--------------------------------------------------------------------
+</PRE>
+<P>
+<b>Note:</b> Neither gdis nor gnm is displayed on the console in the "man" manual, but try finding them among the optional functions using dis and nm. 
+</li></ol>
+<P align="right">
+<A href="os.htm#index">top</A>
+</P>
+<HR>
+<P>
+<A name="06"><FONT color="#FF0000"><b>Q6</b></FONT></A>
+<b> What is the limit on the number of segments which can be registered in the spec file?</b>
+</P>
+<P>
+<FONT  color="#008000"><b>A6</b></FONT>     There are no limits on either makerom or mild from a programming standpoint. 
+ 
+<P>
+However, since there is a limit to the number of sections that can be linked by the linker (ld), which internally calls mild, that limit becomes a limit on the number of segments. 
+ 
+<P>
+The maximum number of sections that can be handled by the linker (ld) in exeGCC ver1.2 is 512.  KMC kindly distributes ld.out (in which the maximum number of sections is 1024) through Nintendo (Bundled in the OS2.0j CD released March, 1999).  If you are using more than 512 sections, you should switch to ld.out.  
+
+<P align="right">
+<A href="os.htm#index">top</A>
+
+<HR>
+<P>
+<A name="07"><FONT color="#FF0000"><b>Q7</b></FONT></A>
+<b> I would like a detailed explanation of the RAM specified by the flags in the spec file. </b>
+
+<P>
+<FONT color="#008000"><b>A7</b></FONT> See <A href="../spec/index.htm">Writing the Spec File</A>.
+</P>
+<P align="right">
+<A href="os.htm#index">top</A>
+</P>
+<HR>
+<P>
+<A name="08"><FONT  color="#FF0000"><b>Q8</b></FONT></A>
+<b> I am doing development in the IRIX 6.2 environment, but when I create codesegment.o, the following errors are generated by the ld (link editor), and I am unable to create ROM.</b>
+</P>
+<BLOCKQUOTE>
+<font face="courier" size="2">
+<PRE>
+ld: WARNING 86: section .rel.text of input file *****.o 
+not included as output. 
+ld: WARNING 86: section .rel.text of input file *****.o 
+not included as output.
+</PRE></font>
+</BLOCKQUOTE>
+<P>
+<b>After spitting out many WARNINGS, the following messages are displayed:</b>
+
+<BLOCKQUOTE>
+
+<PRE>
+ld: Giving up after printing 50 warnings.
+Use -wall to print all warnings. 
+ld: FATAL 87: input sections have not been specified
+for inclusion in a.out.
+This is typically due to omissions in the -elspec file.
+See error messages above.
+*** Error code 4
+</PRE>
+</BLOCKQUOTE>
+<P>
+<b>and the operation is terminated.  What should I do?</b>
+</P>
+<P>
+<FONT color="#008000"><b>A8</b></FONT> It seems that there is a restriction in the argument of ld.
+</P>
+<P>
+It seems that you should be able to use ld in two stages, without creating codesegment.o all at once from all of the objects, but by dividing them in half.  There is also the technique of using the general purpose segments as a library using ar. 
+</P>
+<P align="right">
+<A href="os.htm#index">top</A>
+</P>
+<HR>
+<P>
+<A name="09"><FONT   color="#FF0000"><b>Q9</b></FONT></A>
+<b> When makemask is encountered in a read-only file, makemask causes a core dump (Segmentation fault).  I have version 2.02.  The same symptom occurs in the PC version. </b>
+ 
+<P>
+<FONT color="#008000"><b>A9</b></FONT> makemask overwrites the actual ROM image file specified in the argument.  Since an error must be generated if a read-only file has been specified, a core dump is executed since an error check is not being performed.  If there is an upgrade for makemask in the future, we will correct this accordingly. 
+
+<P align="right">
+<A href="os.htm#index">top</A>
+</P>
+<HR>
+<P>
+<A name="10"><A name="10"><FONT   color="#FF0000"><b>Q10</font></b></A>
+<b> Can I use standard C library functions, such as memset and memcpy, etc.?</b>
+</P>
+<P>
+<FONT color="#008000"><b>A10</b></FONT> The standard C libraries are bundled in the "Nintendo 64 Developers Kit" CD-ROM released October 9, 1997.  
+
+<P>
+There is also a standard library in "CodeWarrior for N64," included in the Monegi SmartPak. 
+
+<P>
+Incidentally, <A href="../../n64man/etc/bcmp.htm">bcmp</A>, <A href="../../n64man/etc/bcopy.htm">bcopy</A>, <A href="../../n64man/etc/bzero.htm">bzero</A>, and <A href="../../n64man/etc/sprintf.htm">sprintf</A>, etc. are included in some N64 OS's.  If they are included, they generally are faster. 
+</P>
+<P align="right">
+<A href="os.htm#index">top</A>
+</P>
+<HR>
+<P>
+<A name="11"><FONT color="#FF0000"><b>Q11</b></FONT></A>
+<b> When I mount a different file system and run a compile, I get the following error </b>
+</P>
+<BLOCKQUOTE>
+
+<PRE>
+cfe:error Make depend:No record locks available 
+</PRE>
+</BLOCKQUOTE>
+<P>
+<b>and when I link, I get the error</b>
+</P>
+<BLOCKQUOTE>
+
+<PRE>
+Make depend: No record locks available***
+Error codel(bu21)
+</PRE>
+</BLOCKQUOTE>
+<P>
+<b>How should I handle this?</b>
+</P>
+<P>
+<FONT color="#008000"><b>A11</b></FONT> Since this is probably a problem with UNIX and with your communications settings, contact the manufacturer from whom you bought your equipment. 
+</P>
+<P align="right">
+<A href="os.htm#index">top</A>
+</P>
+<HR>
+<P>
+<A name="12"><FONT color="#FF0000"><b>Q12</b></FONT></A>
+<b> When mild is executed, the following warning message appears:</b>
+
+<PRE>
+dangerous relocation: GP relative relocation when GP not defined
+</PRE></font>
+<P>
+</P>
+<P>
+<FONT color="#008000"><b>A12</b></FONT> This message will appear if the compile option -G 0 is not specified.  Normally, this option must be included. 
+ 
+<P align="right">
+<A href="os.htm#index">top</A>
+</P>
+<HR>
+<P>
+<A name="13"><FONT color="#FF0000"><b>Q13</b></FONT></A>
+<b> I'm trying to use the N64 OS functions sins() and coss(), but the messages</b>
+
+<PRE>
+undefined reference to 'sins' 
+undefined reference to 'coss'
+</PRE>
+<P>
+<b>appear and I can't get a ROM image.  Is something required to use these?</b>
+</P>
+<P>
+<FONT   color="#008000"><b>A13</b></FONT>   You should be able to use sins() and coss() just like any other functions.<BR>
+</P>
+<P>
+When the program segment is divided into several objects and processing is performed so that the ROM image is created last with makerom(mild), the functions used by all of the other programs must be linked to the objects which are linked to the OS library.
+</P>
+<P>
+If this is not done, the above kind of undefined errors will occur.
+</P>
+<P>
+When you use the ld option -u, undefined symbols can be additionally linked to objects.  For instance, sins can be forcibly added to the linked objects by linking them using the following option. 
+<font face="courier" size="2">
+<PRE>
+-u sins -L$(LIB) -lgmus -lgultra_d -L$(GCCDIR)/mipse/lib -lkmc 
+</PRE></font> 
+
+<P align="right">
+<A href="os.htm#index">top</A>
+</P>
+<HR>
+<P>
+<A name="14"><FONT color="#FF0000"><b>Q14</b></FONT></A>
+<b> I am using exeGCC, but I'd like to know how large the executable file is. </b>
+</P>
+<P>
+<FONT color="#008000"><b>A14</b></FONT> If you enter size XXX.out, you will get the following output. 
+</P>
+<BLOCKQUOTE>
+
+<PRE>
+text data bss dec hex filename 
+149040 24 1103056 1252120 131b18 game.out
+</PRE>
+</BLOCKQUOTE>
+<P>
+</P>
+<BLOCKQUOTE>
+
+<PRE>
+text data bss   Size of each section (bytes)
+dec             Total number of sections
+hex             Hexadecimal expression thereof
+</PRE>
+</BLOCKQUOTE>
+<P>
+
+</P>
+<P align="right">
+<A href="os.htm#index">top</A>
+</P>
+<HR>
+<P>
+<A name="15"><FONT color="#FF0000"><b>Q15</b></FONT></A>
+<b>I am localizing software for sale in the US that was originally developed for use in Japan and when running it on the MPAL 64, pressing the reset button causes a hang up about 30% of the time. <br>
+When I looked at the Programming Cautions, it said that you need to execute an 
+<a href="../../n64man/os/osAfterPreNMI.htm">osAfterPreNMI()</a> after receiving a pre-NMI message, but because I am using the 2.0H library, there is no <a href="../../n64man/os/osAfterPreNMI.htm">osAfterPreNMI()</a>.<br>
+What should I do about this?
+</b>
+</P>
+<P>
+<FONT color="#008000"><b>A15</b></FONT>
+Include the following source code.
+</P>
+<pre>#include &lt;ultra64.h&gt;
+extern s32 __osSpSetPc(u32); 
+s32 osAfterPreNMI(void) 
+{ 
+    return(__osSpSetPc(0)); 
+}</pre>
+<P align="right">
+<A href="os.htm#index">top</A>
+</P>
+<HR>
+</BODY>
+</HTML>

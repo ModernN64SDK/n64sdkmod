@@ -1,0 +1,60 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<title>07-01</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font face="arial" size="-1">
+<p><b>7.1 Initialization Functions </b></p>
+<hr>
+
+<p>Before disk-related routines are executed, the leo manager device driver must be started.  The leo manager consists of two independent threads, a command thread and an interrupt thread.  As is shown below, the function used to start the leo manager varies depending on whether disk or Game Pak ROM startup is used (For information on disk and Game Pak startup, please see <a href="07-07.htm"> Section 7.7, "Disk Startup and Game Pak Startup."</a>
+<P>
+<table border="1">
+    <tr>
+        <td><font face="arial" size="-1"><strong>Initialization Functions
+        </strong>
+<p>#include&lt;PR/leo.h&gt;</p>
+        <p><strong>with disk startup</strong></p>
+        <p>s32 LeoCreateLeoManager(OSPri <font color="#008040">cmdPri</font>,
+        OSPri <font color="#008080">intPri</font>, OSMesg *<font
+        color="#008080">cmdBuf</font>, s32 <font color="#008080">cmdMsgCnt</font>);
+        </p>
+        <p><strong>with cassette startup, for Japan</strong></p>
+        <p>s32 LeoCJCreateLeoManager(OSPri <font color="#008080">cmdPri</font>,
+        OSPri <font color="#008080">intPri</font>, OSMesg *<font
+        color="#008080">cmdBuf</font>, s32 <font color="#008080">cmdMsgCnt</font>);
+        </p>
+        <p><strong>with Game Pak startup, for U.S.</strong></p>
+<P>s32 LeoCACreateLeoManager(OSPri <font color="#008080">cmdPri</font>,
+        OSPri <font color="#008080">intPri</font>, OSMesg *<font
+        color="#008080">cmdBuf</font>, s32 <font color="#008080">cmdMsgCnt</font>);<P>
+<P>
+<font face="arial" size="-1" color="#008080">cmdPri</font> M
+<br>command thread priority sequence
+<P>
+<font face="arial" size="-1" color="#008080">intPri </font>
+<br>interrupt thread priority sequence
+<P>
+<font face="arial" size="-1" color="#008080">cmdBuf</font>
+<br><font face="arial" size="-1">reserved memory area
+<P>
+<font face="arial" size="-1"color="#008080">cmdMsgCnt </font>
+<br>number of messages that command queue can store</tr></td></table>
+
+<p>(When there is no need to distinguish the above 3 functions, describe as <a href="../../n64man/64dd/LeoCreateLeoManager.htm">Leo*CreateLeoManager()</a>).   </p>
+
+<p><a href="../../n64man/64dd/LeoCreateLeoManager.htm">Leo*CreateLeoManager( )</a>starts the command thread with the priority sequence <font color="#008080">cmdPri</font> and the interrupt thread with the priority sequence <font color="#008080">intPri</font>.   <font color="#008080">cmdBuf</font> and <font color="#008080">cmdMsgCnt</font> specify the buffer and size, respectively, of the message queue called the command queue.  The command queue is a message queue that the 64DD functions use to notify the leo manager of commands.  If this queue becomes filled with messages, the subsequent command is not executed, and an error is returned.  Sufficiently large numbers must therefore be specified.  For <font color="#008080">cmdBuf</font>, reserve a memory area of sizeof(OSMesg)x <font color="#008080">cmdMsgCnt</font>, or 4 x <font color="#008080">cmdMsgCnt</font> bytes.
+</p>
+
+<p>When the manager is implemented, <a href="../../n64man/64dd/LeoCreateLeoManager.htm">Leo*CreateLeoManager( )</a> checks whether a drive is connected.  If it finds no drive, it returns a DEVICE_COMMUNICATION_FAILURE error.  Otherwise it returns a normal end (LEO_ERROR_GOOD).  The programmer must be sure to check the return value for an error.   For more information on error handling methods, please see <a href="../dd10/index.htm">"Chapter 1, Error-Handling sequences</a>."
+
+<p>Some consideration must be given to the handling of instances in which the reset button is pushed during Game Pak startup.  Pushing the reset button executes the initialization function again and resets 64DD.  When 64DD has been reset it enters a "reset state" in which a "POWERONRESET_DEVICERESET_OCCURRED" error occurs, regardless of which function is used.  The function that clears this state is <a href="../../n64man/64dd/LeoResetClear.htm">LeoResetClear( )</a>(please see <a href="07-05.htm#02">Section 7.5.2, "Clearing a Reset State."</a>)  If this function is run within approximately 200 ms of the start of the reset, it will fail to clear the reset state.  After this, <a href="../../n64man/64dd/LeoResetClear.htm">LeoResetClear( )</a> must actually be run to determine whether it successfully cleared the reset state.  If the function is run and the error code POWERONRESET_DEVICERESET_OCCURRED is returned, the <a href="../../n64man/64dd/LeoResetClear.htm">LeoResetClear( )</a> function must again be run for the next frame.  For more information, please see <a href="../dd10/index.htm">"Chapter 10, Error-Handling Sequences."</a> </p>
+
+<p><A href="index.htm#index"><img src="../../gif/index.gif" border="0"
+width="65" height="17"></a></p>
+<hr>
+</body>
+</html>

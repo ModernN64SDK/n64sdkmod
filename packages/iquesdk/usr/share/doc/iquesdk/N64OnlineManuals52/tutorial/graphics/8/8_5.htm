@@ -1,0 +1,42 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Graphics-Chapter 8  Advanced Rendering Techniques</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/23/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<font style="font-size:12pt"><B>8.5  Points to Note about Semi-transparent Fog</B></FONT>
+<br>
+<P>
+ Since Fog is a function realized in the Blender, it may seem at first glance that the process has no effect on the Combiner, but you need to be careful when vertex alphas are used in the Combiner.
+     An explanation using a concrete example will be done.  In the sample we just talked about (with  __FOG__ defined), the combine mode is set so that 
+</P>
+<P>
+  (1 - 0) * TEXEL0 + 0
+</P>
+<P>
+is output for the alpha value of the second cycle.
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=5><TR>
+	<TD NOWRAP COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE><B>List8-7</B>
+</TR><TR>
+	<TD NOWRAP BGCOLOR="666666" WIDTH="4" ALIGN=LEFT VALIGN=TOP><HR NOSHADE SIZE=0></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>
+<FONT COLOR="#000080"><PRE><CODE>  gDPSetCombineLERP(glistp++, SHADE,   0, TEXEL0,        0,
+                                  0,   0,      0,        0,
+                                  0,   0,      0, COMBINED,
+                                  1,   0, TEXEL0,        0);
+</CODE></PRE></FONT>
+	</TD>
+</TR></TABLE>
+<P>
+There is a reason why the shade alpha is not specified as the input alpha source in the same way as the color.  The reason is that when fog is applied, the Z value is written in the location of the vertex buffer's alpha by the RSP, so you cannot be certain of the value of the vertex alpha.  Consequently, when applying fog to a semi-transparent object, you need to be careful and not use the vertex alpha when rendering.<br><br>
+     Also, the fog parameters stored in the vertex alpha region are calculated inside the RSP when vertices are calculated.  Thus, when you change vertex colors with the gSPModifyVertex command, there is a chance that the calculated fog parameters will be affected in a negative way.  For this reason, when you are using the Fog function it is a good idea not to use the gSPModifyVertex command.
+<br><br>
+     When you define __FOG__ on line 26 of the gfx8.c sample program and also define __VERTEX_ALPHA__ on line 40, then fog is enabled and the combine mode is set to use vertex alphas.  This has been prepared strictly for learning purposes, and you should take care not to use this as a model when you put together actual N64 applications.
+</P>
+</BODY>
+</HTML>

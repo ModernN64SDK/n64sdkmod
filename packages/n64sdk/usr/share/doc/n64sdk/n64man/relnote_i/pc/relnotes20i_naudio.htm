@@ -1,0 +1,89 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../n64man.css">
+<title>2.0I PC Release Notes for naudio (12/15/98)</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check-->
+</head>
+
+<h1>2.0I PC Release Notes for naudio (12/15/98)</h1>
+
+<p><b>n_audio</b></p>
+
+<hr>
+
+<p>This directory contains a patch for using the n_audio microcode & library with OS2.0i.</p>
+
+<p>Changes were made because some bugs were found in the previous version of the n64kit patch.</p>
+
+<p><strong>*How to Install</strong></p>
+
+<p>First install OS 2.0i, then install this patch.</p>
+
+<p>When you execute n_audio_pc.exe contained together with this file, you are prompted for the installation destination.  Please enter the directory under which the development environment has been installed (the default is c:\ultra).</p>
+
+<p><strong>*How to Use</strong></p>
+
+<p>n_audio
+For details about how to use the n_audio library, please refer to Chapter 28 in the Programming Manual.</p>
+
+<p><strong>*New Demo Software:</strong></p>
+
+<p>playseq.naudio is the playseq sample program modified to support n_audio.</p>
+
+<p><strong>*Changes</strong></p>
+
+<p>Library name of N_AUDIO has been changed to libgn_audia.a from libn_audio.a. </p>
+
+<p>The following changes were made to the header file, n_libaudio.h.</p>
+
+<ol>
+<li>extern declaration related with n_audio micro code was included. Specifically, following two lines were added.
+
+<blockquote>
+<pre>extern long long int n_aspMainTextStart[], n_aspMainTextEnd[];
+extern long long int n_aspMainDataStart[], n_aspMainDataEnd[];</pre>
+</blockquote>
+
+<li>A declaration of the function n_alSynFreeFX() was added.  However, it is not implemented like SGI audio library.
+
+<li>A declaration of the function n_alSynSetFXtype() was deleted.  This is because the SGI audio library function alSynSetFXtype() which corresponds to this function does not exist, and also this function itself is incomplete.
+</ol>
+
+<p>Due to the above changes, the following changes were made to the header file, n_libaudio_s_to_n.h.</p>
+
+<ol>
+<li>A macro to convert the SGI audio library function alSynFreeFX() into n_audio library function n_alSynFreeFX() was added.
+
+<li>A macro to convert the SGI audio library function alSynSetFXtype() into n_audio library function n_alSynSetFXtype() was deleted.
+</ol>
+
+<p><strong>*Directory Structure</strong></p>
+
+<pre> +-&lt;usr&gt;
+     |
+     +-&lt;include&gt;
+     |  |
+     |  +-&lt;PR&gt;                 Header file
+     |
+     +-&lt;lib&gt;                   Library
+     |  |
+     |  +-&lt;PR&gt;                 Microcode
+     |
+     +-&lt;src&gt;
+        |
+        +-&lt;PR&gt;  
+           |
+           +-&lt;libsrc&gt;
+           |  |
+           |  +-&lt;libnaudio&gt;      Library source
+           |  
+           |
+           +-&lt;demoes&gt;
+              |
+              +-&lt;playseq.naudio&gt; Sample program
+                                 Sound data(including IC-compiled data)
+</pre>
+
+</body>
+</html>

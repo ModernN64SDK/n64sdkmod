@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.
+MAP- added links, updated format>
+<title>osGetIntMask</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>osGetIntMask</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p>osGetIntMask, osSetIntMask</p>
+
+<p><i>Gets/sets the enabled interrupt mask</i></p>
+
+<h3>Syntax</h3>
+<p>
+<blockquote>
+    <pre>#include &lt;ultra64.h&gt;     /* <A HREF="../../header/ultra64.htm">ultra64.h</A> */
+OSIntMask osGetIntMask(void);
+OSIntMask osSetIntMask(OSIntMask im);</pre>
+</blockquote>
+</p>
+<h3>Description</h3>
+
+<p>The <tt>osGetIntMask</tt> and <a href="osSetIntMask.htm">osSetIntMask</a> functions get and set enabled interrupt masks.  The <tt>osGetIntMask</tt> call returns the mask of currently enabled hardware interrupts, and the <tt>osSetIntMask</tt> call allows the application to enable and disable interrupts based on the provided mask. Following are the bits of the mask. The interrupt is enabled if the associated definition below is bitwise OR'ed into the final mask. </p>
+<p>
+<table border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td>OS_IM_SW1</td>
+        <td>: CPU software interrupt 1</td>
+    </tr>
+    <tr>
+        <td>OS_IM_SW2</td>
+        <td>: CPU software interrupt 2</td>
+    </tr>
+    <tr>
+        <td>OS_IM_CART</td>
+        <td>: Pak interrupt</td>
+    </tr>
+    <tr>
+        <td>OS_IM_PRENMI</td>
+        <td>: Pre-NMI interrupt</td>
+    </tr>
+    <tr>
+        <td>OS_IM_COUNTER</td>
+        <td>: CPU timer interrupt</td>
+    </tr>
+    <tr>
+        <td>OS_IM_SP</td>
+        <td>: RCP Signal Processor (SP) interrupt</td>
+    </tr>
+    <tr>
+        <td>OS_IM_SI</td>
+        <td>: RCP Serial Interface (SI) interrupt</td>
+    </tr>
+    <tr>
+        <td>OS_IM_AI</td>
+        <td>: RCP Audio Interface (AI) interrupt</td>
+    </tr>
+    <tr>
+        <td>OS_IM_VI</td>
+        <td>: RCP Video Interface (VI) interrupt</td>
+    </tr>
+    <tr>
+        <td>OS_IM_PI</td>
+        <td>: RCP Parallel Interface (PI) interrupt</td>
+    </tr>
+    <tr>
+        <td>OS_IM_DP</td>
+        <td>: RCP Display Processor (DP) interrupt</td>
+    </tr>
+    <tr>
+        <td>OS_IM_NONE</td>
+        <td>: No interrupts enabled</td>
+    </tr>
+    <tr>
+        <td>OS_IM_ALL</td>
+        <td>: All interrupts enabled</td>
+    </tr>
+</table></p>
+
+<p width="132">The interrupt mask is part of the thread context and is thus saved and restored as threads yield and regain the CPU. All interrupts are enabled for the thread at creation time by <a href="osCreateThread.htm">osCreateThread</a>. These routines are used sparingly by system threads and should not be needed by application threads. Instead, applications should exploit thread priorities for real time behavior and protection of critical regions. 
+</p>
+
+<h3>See Also</h3>
+
+<p><a href="osSetEventMesg.htm">osSetEventMesg</a></p>
+<h3>Revision History</h3>
+<p>1999/04/30  Changed Format</p>
+<br><br>
+
+</body>
+</html>

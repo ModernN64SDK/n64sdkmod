@@ -1,0 +1,55 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>mfsHResetRC</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font face="arial" size="-1">
+<b><font size="3">mfsHResetRC</b></font>
+
+<hr>
+
+<b>Syntax</b>
+<font face="courier" size="2">
+<pre>s32 mfsHResetRC(const u8* path)</pre></font>
+
+<p><strong>Arguments</strong>
+<dl>
+<dd>*path &nbsp; Pathname</dl></dd>
+
+<p><strong>Return value</strong>
+<dl>
+<dd>Error (when the value is negative)</dl></dd>
+
+<p><strong>Function</strong>
+<dl>
+<dd>Resets update counter value</dl></dd>
+
+<p><strong>Description</strong> 
+<P>
+This function sets the update counter value of the file or directory specified by path to 0.</p>
+<p>
+Immediately after a file or directory is created, the update counter is set to 0.
+Whenever data is written to a file or the attribute is changed, the update counter is incremented.  The maximum value is 255, and the value cannot be incremented above 255.
+The update counter of the directory one level up is incremented at the same time.
+The rewriting of a file by another drive can be detected by checking the update counter.</p>
+
+<p><strong>Main errors</strong></p>
+<P>
+<table border="0" cellpadding="3" cellspacing="3">
+<tr><td valign="top"><font face="arial" size="-1">MFS_ERR_NO</td>
+<td><font face="arial" size="-1">Normal termination</td></tr>
+<tr><td valign="top"><font face="arial" size="-1">MFS_ERR_PROTECT</td>
+<td><font face="arial" size="-1">Write protected
+<br>The file attribute is write protected, or the volume attribute is write protected, or the parent directory is write protected.</td></tr>
+<tr><td valign="top"><font face="arial" size="-1">MFS_ERR_NOTFOUND</td>
+<td><font face="arial" size="-1">File not found
+<br>The file was not found, or the directory was not found.</td></tr></table>
+		
+ 
+
+
+<hr>
+</body>
+</html>

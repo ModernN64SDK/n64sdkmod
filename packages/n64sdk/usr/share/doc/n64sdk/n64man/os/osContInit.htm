@@ -1,0 +1,166 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.
+  PWC- updated formatting
+  MAP- updated format
+-->
+<TITLE>osContInit</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+<font style="font-size: 12pt"><b>osContInit</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p><i>Initial Setting for SI Device Use</i></P>
+
+<H3>Syntax</H3>
+
+<p><PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/os.htm">os.h</A> */
+s32 osContInit(OSMesgQueue *mq, u8 *bitpattern, OSContStatus *status);</CODE></PRE></p>
+
+<H3>Description</H3>
+<P>
+The <tt>osContInit</tt> function initializes the SI settings and checks the status and type of SI device.
+</P>
+
+<P>
+This function must be called before you call any functions to be used for initialization that are unique to each SI device. By doing this, the system checks the connection status of the SI device. If the Plf is busy, the timer waits until it is available for use by the SI device. This is because PIf is used to establish connection between the game pack right after N64 launches. While it is in use, PIf cannot be used.
+</P>
+<P>
+The <tt>osContInit</tt> must be called before all the SI device functions are called. However, it should be called only once after the program launches or a reset is performed. It is not necessary to call this function more than twice. This function does nothing after the second call. Therefore, if the status and type of SI device need to be checked after the first <tt>osContInit</tt> call, please use the <a href="osContStartQuery.htm">osContStartQuery</a> function and <a href="osContGetQuery.htm">osContGetQuery</a> 
+</P>
+<P>
+The <tt>osContInit</tt> function returns to a bitmap pattern specified by bitpattern, the result of which controller port the direct SI device is connected to. There are two types of SI devices; one SI device can be identified as Direct Si device, which can be connected with the joybus or external joybus to establish direct connection with PIf. The other type of SI device can be identified  as Pack SI device, which is used to connect to the joyport of a controller. Bit 0, 1, 2, 3 of a bitpattern correspond to controller port 0, 1, 2, 3, respectively. The Direct SI device is inserted into the controller port 0 if the bit 0 of a bitpattern is set to 1. Also, the <tt>osContInit</tt> function examines the status of the joyport and returns the result to status when the Controller is connected. The area specifed by status must be large enough to hold the number of OSContStatus structures specified by MAXCONTROLLERS, which store the status for each device inserted into the controller port.
+</P>
+
+<PRE><CODE>typedef struct {
+       	u16	type;  	/* Controller type */
+        u8  	status;	/* Controller Pak status */
+       	u8    	errno;	/* Error from SI device */
+}OSContStatus;
+</CODE></PRE>
+
+<P>
+The message queue, mq, is the initialized message queue linked to OS_EVENT_SI. See the <a href="osSetEventMesg.htm">osSetEventMesg</a> function to learn how to create this link. Since "mq" is used inside the function to wait for messages, the application does not need to use "mq" to wait for an end-of-function message.
+</P>
+
+<P>
+0 is returned if initialization is successful, and -1 is returned if it fails to transfer data while SI is in use. It is rare for a -1 to be returned.
+</P>
+
+<P>
+One of the following bits is set to 1 to the value for status-&gt;type, depending on which kind of direct- SI device is inserted to the controller port. 0 is returned when no device is inserted in the controller port.
+</P>
+
+<DL>
+  <DT><B>CONT_ABSOLUTE </B>
+  <DD>This bit is set to 1 when a Standard Controller is connected to the N64 Control Deck.  The connected device is judged to be a Controller if the device has a built-in absolute value counter for counting the amount of movement of the control stick as an absolute value from the origin.  As of December 1998, this bit is only set when the Controller is attached.
+  <BR><BR>
+  <DT><B>CONT_RELATIVE</B>
+  <DD>This bit is set to 1 when the mouse is attached.  The connected device is judged to be a mouse if the device has a built-in relative counter for counting the amount of movement of the mouse from the current coordinates.  As of December 1998, this bit is only set when the mouse is attached.
+  <BR><BR>
+  <DT><B>CONT_JOYPORT</B>
+  <DD>This bit is set to 1 when a joyport is attached to the direct-type SI device that is connected to the Controller Port.  As of December 1998, the only SI device with a joyport is the Standard Controller.
+  <BR><BR>
+</DL>
+
+<P>
+Confirm which kind of direct-type SI device is connected to the Controller Port in the following way: 
+<ul>
+<li>If the status->type value masked with CONT_TYPE_MASK is equal to CONT_TYPE_NORMAL, then a Standard Controller is connected.  (When a Standard Controller is connected, the bits are set to 1 for both CONT_ABSOLUTE and CONT_JOYPORT in status->type.  CONT_TYPE_NORMAL includes the bits for both CONT_ABSOLUTE and CONT_JOYPORT.)  
+<P>
+<li>If the masked value is equal to CONT_TYPE_MOUSE, that means a mouse is connected.  
+<P>
+<li>If it is equal to CONT_TYPE_VOICE it means the Voice Recognition System is connected.
+</ul>
+</P>
+
+<P>
+If the direct-type SI device connected to the Controller Port is a Standard Controller, then the status of that joyport can be checked with status->status.  The lower bit in status->status is set to 1.  If nothing is inserted in either the Controller Port or the joyport connector, or if a direct-type SI device that is not a Controller is inserted, then 0 is returned.
+</P>
+<p>
+<DL>
+  <DT><B>CONT_CARD_ON</B>
+  <DD>This bit is set when a device has been inserted.
+  <BR><BR>
+  <DT><B>CONT_CARD_PULL</B>
+  <DD>This bit is set when the device has been removed. 
+  <BR><BR>
+</DL>
+</p>
+<P>
+An Error value is set to status-&gt;errno when the function fails to read the status value of SI device. 0 is returned if the function was successful. One of the follwing values is returned should an error occur.
+</P>
+<p>
+<DL>
+  <DT><B>CONT_NO_RESPONSE_ERROR</B>
+  <DD>There is no response from the Controller. The Controller is not inserted. 
+  <BR><BR>
+  <DT><B>CONT_OVERRUN_ERROR</B>
+  <DD>The controller sends data at a higher data transfer rate than the hardware can handle. In this case, you should ignore the data.
+  <BR><BR>
+</DL>
+</p>
+<P>
+When it is recognized that the Controller socket was not connected, or a communication error occurs in a controller port(bitpattern's bit is zero, or status-&gt;errno is not zero), the Controller's status type and status value become invalid. You need to make sure the Controller is connected properly by looking at the bit pattern first before examining the Controller type and status.<BR>
+</P>
+
+<P>
+Although it used to be performed in this function with OS 2.0e or previous versions, resetting a controller cannot be accomplished in this function with OS 2.0f or later. Normally it is not necessary to reset a controller, however it can be accomplished by using <a href="osContReset.htm">osContReset</a>
+</P>
+
+<P>
+The following sample shows how to use <tt>osContInit</tt> function within a program. The function checks each controller port to report which type of direct SI device is inserted.
+</P>
+
+<H3>Example</H3>
+
+<p><PRE><CODE>void
+mainproc(void)
+{
+  OSMesgQueue   intMesgQueue;
+  OSMesg        intMesgBuf[1];
+  OSContStatus  sdata[MAXCONTROLLERS];
+  u8            pattern;
+  int           i;
+
+  osCreateMesgQueue(&amp;intMesgQueue, intMesgBuf, 1);
+  osSetEventMesg(OS_EVENT_SI, &amp;intMesgQueue, NULL);
+  osContInit(&amp;intMesgQueue, &amp;pattern, &amp;sdata[0]);
+
+  for(i = 0; i &lt; MAXCONTROLLERS; i++){
+    if(((pattern &gt;&gt; i) &amp; 1) &amp;&amp; (sdata[i].errno == 0)){
+      if((sdata[i].type &amp; CONT_TYPE_MASK) == CONT_TYPE_NORMAL){
+        osSyncPrintf(&quot;Standard Controller\n&quot;);
+      }
+      else if((sdata[i].type &amp; CONT_TYPE_MASK) == CONT_TYPE_MOUSE){
+        osSyncPrintf(&quot;Mouse\n&quot;);
+      }
+      else if((sdata[i].type &amp; CONT_TYPE_MASK) == CONT_TYPE_VOICE){
+        osSyncPrintf(&quot;Voiced Recognition System\n&quot;);
+      }
+      else{
+        osSyncPrintf(&quot;Other Devices\n&quot;);
+      }
+    }else{
+      osSyncPrintf(&quot;Nothing is inserted in this port\n&quot;);
+    }
+  }
+}
+</CODE></PRE></p>
+
+<H3>See also</H3>
+<P>
+<A HREF="osContReset.htm">osContReset</A>, <A HREF="osContStartQuery.htm">osContStartQuery</A>, <A HREF="osContStartReadData.htm">osContStartReadData</A>, <A HREF="osContGetQuery.htm">osContGetQuery</A>, <A HREF="osContGetReadData.htm">osContGetReadData</A>, <A HREF="osContSetCh.htm">osContSetCh</A>, and <A HREF="osSetEventMesg.htm">osSetEventMesg</A>
+</P>
+
+<H3>Revision History</H3>
+<P>
+1999/02/01  Completely revised<br>
+1999/04/30  Changed format 
+
+</P>
+
+</BODY>
+</HTML>

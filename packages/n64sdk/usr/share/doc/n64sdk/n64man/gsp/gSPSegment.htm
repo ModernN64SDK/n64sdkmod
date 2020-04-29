@@ -1,0 +1,54 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.>
+<TITLE>gSPSegment</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>gSPSegment<FONT size="+0"> [Macro]</FONT></H1>
+
+<p><b>Function</b></font></p>
+
+<p>gSPSegment</p>
+<P>
+<i>Sets the segment register and the base address</i>
+</P>
+<p><b>Syntax</b></font></p>
+<p>
+<PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gbi.htm">gbi.h</A> */
+gSPSegment(Gfx *gdl, s32 seg, s32 base)
+gsSPSegment(         s32 seg, s32 base)</CODE></PRE></p>
+
+<p><b>Arguments</b></font></p>
+<p>
+<DL>
+  <DT><B>gdl</B>
+  <DD>the pointer to the graphics display list. 
+  <DT><B>seg</B>
+  <DD>the segment ID (0-15) 
+  <DT><B>base</B>
+  <DD>the base physical address 
+</DL></p>
+<p><b>Description</b></font></p>
+<P>
+Sets the base physical address of the segment. All pointers in the display list in the Reality Co-Processor (RCP) are segment addresses composed of a segment base and offset address. The actual addresses are calculated by the Reality Signal Processor (RSP) using the following translation: 
+</P>
+<P>
+  Physical address = Base address [Segment ID] + Offset
+</P>
+<P>
+For details, see Section 10.2, "Mixing CPU and SP Data," and Section 11.1.2, "Segmented Memory and the RSP Memory Map" in the N64 Programming Manual. 
+</P>
+<p><b>See Also</b></font></p>
+<P>
+<A HREF="../os/osVirtualToPhysical.htm">osVirtualToPhysical</A>
+</P>
+<p><b>Revision History</b></font></p>
+<P>
+02/01/99  Entirely revised.
+</P>
+</BODY>
+</HTML>

@@ -1,0 +1,67 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Author's Comments: MAP- created file>
+<title>n_alSynStartVoice</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>n_alSynStartVoice</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p>alSynStartVoice, n_alSynStartVoice</p>
+
+<p><i>Starts synthesizing audio samples with the specified voice</i></p>
+
+<h3>Syntax</h3>
+<p>
+<blockquote>
+  <pre>#include &lt;libaudio.h&gt;     /* <a href="../../header/libaudio.htm">libaudio.h</a> */
+     
+void alSynStartVoice(ALSynth *drvr, ALVoice *voice, ALWaveTable *table);</pre>
+  <pre>#include &lt;n_libaudio.h&gt;     /* <a href="../../header/n_libaudio.htm">n_libaudio.h</a> */
+ 
+void n_alSynStartVoice(           N_ALVoice *voice, ALWaveTable *table);</pre>
+</blockquote>
+</p>
+<h3>Arguments</h3>
+<p>
+<dl>
+  <dt><strong>drvr</strong></dt>
+  <dd>Pointer to the synthesizer driver<br>
+    <br>
+  </dd>
+  <dt><strong>voice</strong></dt>
+  <dd>Pointer to a voice structure<br>
+    <br>
+  </dd>
+  <dt><strong>table</strong></dt>
+  <dd>Pointer to a wavetable structure (Holds data regarding storage location of a sampling sound)<br>
+    <br>
+  </dd>
+</dl>
+</p>
+<h3>Description</h3>
+
+<p><a href="alSynStartVoice.htm">alSynStartVoice</a> begins generating entries into the command lists created by <a href="alAudioFrame.htm">alAudioFrame</a> to synthesize audio samples for the given voice from sample data in the wavetable pointed to by the table. Before calling this function, use the specified arguments to allocate the voice from the driver by calling <a href="alSynAllocVoice.htm">alSynAllocVoice</a>. </p>
+
+<p>The <a href="alSynAllocVoice.htm">alSynAllocVoice</a> function isn't always successful, so be sure to check the result before you call <tt>alSynStartVoice</tt>. Before starting a voice, the pitch, pan, fxmix, and volume should be set.
+</p>
+
+<p>When the voice is no longer sounding, <a href="alSynStopVoice.htm">alSynStopVoice</a> first, and then <a href="alSynFreeVoice.htm">alSynFreeVoice</a> may be called. </p>
+
+<p>For details on n_audio library, see "Chapter 28: n_audio library" in the N64 Programming Manual.</p>
+
+<h3>Note</h3>
+
+<p>When you are writing a custom player, this function (<tt>alSynStartVoice</tt>) should be called only from within an ALVoiceHandler. Also, do not set any of the voice's arguments (for example, don't call <tt>alSynSetVol</tt>) if the voice is in the stopped state unless the voice is started in the same audio frame. If you call a function to set a stopped voice's arguments and the voice is not started until one or more frames later, you'll get unexpected results. </p>
+
+<h3>See Also</h3>
+
+<p><a href="alSynAllocVoice.htm">alSynAllocVoice</a>, <a href="alSynStopVoice.htm">alSynStopVoice</a>, <a href="alSynFreeVoice.htm">alSynFreeVoice</a>, <a href="alSynSetPitch.htm">alSynSetPitch</a>, <a href="alSynSetPan.htm">alSynSetPan</a>, <a href="alSynSetVol.htm">alSynSetVol</a>, <a href="alSynSetFXMix.htm">alSynSetFXMix</a>, <a href="alSynStartVoiceParams.htm">alSynStartVoiceParams</a>, and <a href="alAudioFrame.htm">alAudioFrame</a></p>
+<h3>Revision History</h3>
+<p>1999/04/30  Changed Format</p>
+<br><br>
+
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<!--
+Editors Notes:
+  PWC- updated formatting
+  JLR-- Did reformating
+  MAP- updated format
+-->
+<title>listthreads</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>listthreads</b></font><font style="font-size: 9pt"><b> (tool command)</b></font>
+
+<i><p>Lists the threads currently running in the target system</i></p>
+
+<h3>Syntax</h3>
+
+<p>listthread process</p>
+
+<h3>Description</h3>
+
+<p>listthreads through <a href="dbgif.htm">dbgif</a>, it sends a message asking for the IDs of any threads currently running on the target system, and then it displays the result of the stdout command on standard output device. The process argument is not used in the Nintendo 64 system, but it is required by this command, which is also part of other debuggers. It must be a number, but any number will do, because the value is ignored by the target. The number 42 is generally used.
+</p>
+
+<p>Because this command is totally independent of the application running in the target, you can use this command to test communications between target and host. If you suspect there is a communications problem, it is often useful to run listthreads to see if the target is answering before you try to start the debugger. A message will be displayed if it is not possible to retrieve target information.
+</p>
+
+<p>Before executing this command, you must ensure that the dbgif program is running and that the <tt>METHOD</tt> environment variable is set to indicate if this is a request for the R4300 CPU or the co-processor (RCP). The value zero represents the CPU and the number one represents the RCP. In csh, this is accomplished by specifying: 
+</p>
+
+<blockquote>
+    <pre>setenv METHOD 0 </pre>
+</blockquote>
+<h3>Note</h3>
+
+<p>In the event of a communications failure, the program dumps core. If this happens, you must manually remove the core file.
+</p>
+
+<h3>See Also</h3>
+
+<p><a href="dbgif.htm">dbgif</a></p>
+
+<h3>Revision History</h3>
+<p>1999/04/30  Changed Format</p>
+<br><br>
+
+</body>
+</html>

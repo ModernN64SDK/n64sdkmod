@@ -1,0 +1,59 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<!--
+Editors Notes:
+  JLR made reformating and copy edits.
+  PWC- updated formatting
+-->
+
+<TITLE>gDPLoadTLUT_pal16 </TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>gDPLoadTLUT_pal16 [Macro]</H1>
+
+<h2>Function</h2>
+
+<P>gDPLoadTextureBlock<br><br><i>
+Loads palette for 4-bit color index textures</i></P>
+
+<p><b>Syntax</b></p>
+<p>
+<PRE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gbi.htm">gbi.h</A> */
+gDPLoadTLUT_pal16(Gfx *gdl, u32 pal, u32 dram)
+gsDPLoadTLUT_pal16(         u32 pal, u32 dram)
+</PRE></p>
+
+<p><b>Arguments</b></p>
+<p><DL>
+  <DT><B>gdl</B>
+  <DD>Display list pointer
+  <DT><B>pal</B>
+  <DD>Palette location (0~15)
+  <DT><B>dram</B>
+  <DD>Texture lookup table (TLUT) address (64-bit alignment)</DL></p>
+
+<p><b>Description</b></p>
+<P>
+Transfers a TLUT (<B>dram</B>) to the specified palette location (<B>pal</B>) in texture memory (TMEM).  TLUTs are located in the high half of TMEM (the upper 256 words).  Accordingly, color index textures are always loaded in the low half (the lower 256 words.)  TLUT can use either 16-bit RGBA type texels or 16-bit IA type texels.  The palette has 16 entries.  These are included in the high half of TMEM, with the location depending on the location of the palette.  The texel type is selected with g*DPSetTextureLUT.  For a more detailed explanation about this, see Section 12 "RDP Programming" and Section 13 "Texture Mapping" in the N64 Programming Manual.</P>
+
+<p><b>Note</b></p>
+<P>
+Addresses in TMEM are divided into a high half and a low half, as shown below: 
+</P>
+<P>
+<IMG SRC="gDPLoadTLUT00.gif">
+</P>
+<p><b>See Also</b></p>
+<P>
+<A HREF="gDPLoadTextureBlock.htm">gDPLoadTextureBlock</A>, <A HREF="gDPLoadTextureTile.htm">gDPLoadTextureTile</A>, <A HREF="gDPLoadTLUT_pal256.htm">gDPLoadTLUT_pal256</A>,  and <A HREF="gDPSetTextureLUT.htm">gDPSetTextureLUT</A>
+</P>
+
+<p><b>Revision History</p></b>
+<p>02/01/99&nbsp;&nbsp;&nbsp;Completely rewritten</p>
+
+</BODY>
+</HTML>

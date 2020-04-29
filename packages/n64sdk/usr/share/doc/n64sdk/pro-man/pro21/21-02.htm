@@ -1,0 +1,171 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 21 - Audio Memory Usage</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. -->
+</head>
+
+<H1>21.2 Optimizing Buffer Sizes</H1>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="01"></A>
+<H2>21.2.1 Audio DMA Buffers</H2>
+
+<p>The first area to try and optimize is the number of DMA buffers. These buffers are used by the audio synthesizer to store samples from the cartridge during creation of the output buffers. In the worst case scenario you will need four buffers for every voice you have
+allocated. However, in practice you need only a portion of that. The actual number of buffers you will need is very dependent on the sequences and <a href="../../keywords/index/data/audio.htm#sound effect" target="keywords">sound effects</a> played. To optimize this value, you will need to allocate sufficient buffers to keep from crashing, and then play your game for a while. At the end of each frame you should be calling a routine that frees DMA buffers that have become stale. In example programs this will be called __clearAudioDMA. In this routine, before discarding stale buffers, step through the list of used DMA buffers and count how many there are. If you keep track of the maximum value, you can report this at the end of game play, using your choice of debugging method. The following code is an example of how to perform this count. </p>
+
+<BLOCKQUOTE>
+<PRE>#ifdef AUD_MEM_PROF
+        ampDMAcount = 0;
+        dmaPtr = dmaState.firstUsed;
+        while(dmaPtr)
+        {
+                ampDMAcount++;
+                dmaPtr = (AMDMABuffer*)dmaPtr->node.next;
+        }
+        if(ampDMAcount > ampMaxDMABufs)
+                 ampMaxDMABufs = ampDMAcount;
+#endif</PRE>
+</BLOCKQUOTE>
+
+<p>Because the number of buffers used can be very few, even when playing the same BGM and sound effects, it is always a good idea to have a few more (2~3) buffers than you ever found yourself needing. </p>
+
+<P>In addition to the number of DMA buffers needed, it is helpful to know what is the maximum number of DMAs performed in any frame. This number will allow you to optimize the number of DMA message buffers you will need. Because the size of a message buffer is substantially
+less than the size of a DMA buffer, the result of this optimization is not much. However, it is easily performed since there is a variable that reports the number of DMAs done each frame. All you need to do is record its maximum value, checking it once a frame, and then report that value at the same time you report the number of DMA buffers used. </p>
+
+<P>Another place for optimization is the length of the DMA buffers. Longer buffers will require fewer buffers, and use fewer DMAs. Conversely, smaller buffers will require more buffers and more DMAs. Generally, the smaller buffers, even though more are required, will use memory more efficiently. However, the smaller buffer sizes will also generate more DMAs and for that reason are less efficient in terms of processing time. It is up to the developer to decide what trade off between memory usage and processing time to pick. Optimal buffer sizes are probably ones that will handle enough samples to process one frame of audio. Below, is a table that compares the same music played back with various buffer sizes. (All other factors were the same.) </p>
+<TABLE BORDER align="center">
+<CAPTION><A NAME="t21-01"></A><strong>Table 21-1 DMA Buffer Length</strong></CAPTION>
+
+<TR>
+<TH>DMABufLength</TH>
+
+<TH>MaxDMA/Frame</TH>
+
+<TH>MaxDMABuffers</TH>
+
+<TH>BufLen*MaxBuf</TH>
+</TR>
+
+<TR>
+<TD align="center">0x600</TD>
+
+<TD align="center">12</TD>
+
+<TD align="center">26</TD>
+
+<TD align="center">39936</TD>
+</TR>
+
+<TR>
+<TD align="center">0x500</TD>
+
+<TD align="center">12</TD>
+
+<TD align="center">30</TD>
+
+<TD align="center">38400</TD>
+</TR>
+
+<TR>
+<TD align="center">0x400</TD>
+
+<TD align="center">14</TD>
+
+<TD align="center">34</TD>
+
+<TD align="center">34816</TD>
+</TR>
+
+<TR>
+<TD align="center">0x300</TD>
+
+<TD align="center">16</TD>
+
+<TD align="center">38</TD>
+
+<TD align="center">29184</TD>
+</TR>
+
+<TR>
+<TD align="center">0x280</TD>
+
+<TD align="center">17</TD>
+
+<TD align="center">43</TD>
+
+<TD align="center">27520</TD>
+</TR>
+
+<TR>
+<TD align="center">0x200</TD>
+
+<TD align="center">22</TD>
+
+<TD align="center">50</TD>
+
+<TD align="center">25600</TD>
+</TR>
+</TABLE>
+
+<p>As can easily be seen, the amount of buffer space needed increases as the size of the buffers increase, even though fewer buffers are needed. However, at the same time, the number of DMAs decreases. In this case, probably the value of 0x500 is optimal, since it causes the least number of DMAs per frame in the worse case situation, but allows the memory allocated to buffers to be smaller than it would be with buffers of 0x600 size. </p>
+
+<P>Another constant that can be changed is FRAME_LAG. This value defines how long a DMA buffer will be kept after it has been used. If you continually use the same sample, that sample will be kept in memory, and will not need to be DMA-ed again. Higher FRAME_LAG values will lower the number of DMAs but will increase the number of DMA buffers needed. </p>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="02"></A>
+<H2>21.2.2 Command List Size</H2>
+
+<p>Like the number of DMA buffers, the command list size is dependent on the sequences and sound effects used by the game. To optimize the command list size, simply record the maximum value used, and check that value at the end of game play. Because this can vary, even when playing the same audio, it is wise to leave a little more than you ever needed. </p>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="03"></A>
+<H2>21.2.3 Output Buffer Size</H2>
+
+<p>The output buffer size is determined by the audio <a href="../../keywords/index/data/audio.htm#playback rate" target="keywords">playback rate</a> and the <A target="keywords" HREF="../../keywords/index/data/graphics.htm#frame rate" target="keywords">frame rate</a>. If you synch audio to the <A target="keywords" HREF="../../keywords/index/data/system.htm#vertical retrace">vertical retrace</A> you will need to have three audio output buffers. If you synch the audio to the audio completion interrupt, you will only need to have two output buffers. Example code is included in the example applications demonstrating calculating the size of the output buffers. </p>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="04"></A>
+<H2>21.2.4 Audio Thread Stack Size</H2>
+
+<p>The audio <A target="keywords" HREF="../../keywords/index/data/system.htm#thread">thread</A> stack size can be determined using the <A target="keywords" HREF="../../keywords/index/data/system.htm#stack">stack</a> tool, and optimized accordingly. </p>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="05"></A>
+<H2>21.2.5 Synthesizer Update Buffers and Sequencer Event Buffers</H2>
+
+<p>Synthesizer update buffers and sequencer event buffers are allocated from the audio heap when the synthesizer and <a href="../../keywords/index/data/audio.htm#sequencer" target="keywords">sequencer</a> are created. There is, at present, no way to efficiently optimize these values. However, because the size of each buffer is small, it is better to allocate buffer a bit more than necessary. </p>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="06"></A>
+<H2>21.2.6 The Audio Heap</H2>
+
+<p>Once all calls to alHeapAlloc have been completed, you can determine the amount of the heap that has been used by subtracting the <A target="keywords" HREF="../../keywords/index/data/system.htm#heap">heap</A>'s current value from the heap's base value. These values are part of the heap structure. </p>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="07"></A>
+<H2>21.2.7 The Sequence Buffer</H2>
+
+<p>The sequence buffer needs to be large enough to hold the largest sequence that will be used. 
+</p>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="08"></A>
+<H2>21.2.8 The Bank Control File Buffer</H2>
+
+<p>The bank control file buffer needs to be large enough to hold the bank control file. This is the &lt;bank&gt;.ctl file. </p>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR>
+</BODY>
+</HTML>

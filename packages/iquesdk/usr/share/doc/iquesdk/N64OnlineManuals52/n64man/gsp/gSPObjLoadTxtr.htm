@@ -1,0 +1,282 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.>
+<TITLE>gSPObjLoadTxtr</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>gSPObjLoadTxtr<FONT size="+0">  [Macro]</FONT></H1>
+
+<p><b>Function</b></font></p>
+
+<p>gSPObjLoadTxtr</p>
+<P>
+<i>Loads the texture loading parameters</i>
+</P>
+<p><b>Syntax</b></font></p>
+<p>
+<PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gs2dex.htm">gs2dex.h</A> */
+gSPObjLoadTxtr(Gfx *gdl, uObjTxtr *tx)
+gsSPObjLoadTxtr(         uObjTxtr *tx)</CODE></PRE></p>
+
+<p><b>Arguments</b></font></p>
+<p>
+<DL>
+  <DT><B>gdl</B>
+  <DD>the pointer to the display list. 
+  <DT><B>tx</B>
+  <DD>the pointer to the texture load data structure 
+</DL></p>
+<p><b>Description</b></font></p>
+<P>
+References the texture loading parameters maintained in three different structures and carries out the corresponding loading processes. 
+</P>
+<p><b>Note</b></font></p>
+<P>
+The uObjTxtr structures are shown below:
+</P>
+<P>
+<PRE><CODE>GS_PIX2TMEM(pix, siz)
+
+GS_TB_TSIZE(pix, siz)
+GS_TB_TLINE(pix, siz)
+
+typedef struct {
+  u32   type;   /* Structure identifier (G_OBJLT_TXTRBLOCK) */
+  u64   *image;	/* Texture source address in DRAM (8-byte alignment) */
+  u16   tmem;   /* TMEM word address where texture will be loaded (8-byte word) */
+  u16   tsize;  /* Texture size (specified by GS_TB_TSIZE) */
+  u16   tline;  /* Texture line width (specified by GS_TB_TLINE) */
+  u16   sid;    /* Status ID (multiple of 4: either 0, 4, 8, or 12) */
+  u32   flag;   /* Status flag */
+  u32   mask;   /* Status mask */
+} uObjTxtrBlock_t;     /* 24 bytes */
+
+GS_TT_TWIDTH(pix, siz)
+GS_TT_THEIGHT(pix, siz)
+
+typedef struct {
+  u32   type;   /* Structure identifier (G_OBJLT_TXTRTILE) */
+  u64   *image;	/* Texture source address in DRAM (8-byte alignment) */
+  u16   tmem;   /* TMEM word address where texture will be loaded (8-byte word) */
+  u16   twidth;	/* Texture width (specified by GS_TT_TWIDTH) */
+  u16   theight;/* Texture height (specified by GS_TT_THEIGHT)  */
+  u16   sid;    /* Status ID (multiple of 4: either 0, 4, 8, or 12) */
+  u32   flag;   /* Status flag */
+  u32   mask;   /* Status mask */
+} uObjTxtrTile_t;      /* 24 bytes */
+
+GS_PAL_HEAD(head)
+GS_PAL_NUM(num)
+
+typedef struct {
+  u32   type;   /* Structure identifier (G_OBJLT_TLUT) */
+  u64   *image; /* Texture source address in DRAM */
+  u16   phead;  /* Palette position at start of load (256~511) */
+  u16   pnum;   /* Number of palettes to load - 1 */
+  u16   zero;   /* Always assign 0 */
+  u16   sid;    /* Status ID (multiple of 4: either 0, 4, 8, or 12) */
+  u32   flag;   /* Status flag */
+  u32   mask;   /* Status mask */
+} uObjTxtrTLUT_t;      /* 24 bytes */
+
+typedef union {
+  uObjTxtrBlock_t      block;
+  uObjTxtrTile_t       tile;
+  uObjTxtrTLUT_t       tlut;
+  long long int        force_structure_alignment;
+} uObjTxtr;
+</CODE></PRE>
+</P>
+<P>
+<DL>
+The three structures described above (uObjTxtrBlock_t, uObjTxtrTile_t, uObjTxtrTLUT_t)  have the common elements <B>type</B>, <B>image</B>, <B>sid</B>, <B>flag</B>, and <B>mask</B>.
+  <DL>
+    <DT><B>type</B>
+      <DD><B>G_OBJLT_TXTRBLOCK</B> (uObjTxtrBlock_t structure) 
+      <DD>  Loads texture using LoadBlock. 
+      <DD><B>G_OBJLT_TXTRTILE</B> (uObjTxtrTile_t structure) 
+      <DD>  Loads texture using LoadTile. 
+      <DD><B>G_OBJLT_TLUT</B> (uObjTxtrTLUT_t structure) 
+      <DD>  Loads a TLUT. 
+    <DT><B>image</B>
+      <DD>Specifies the address of the texture or texture lookup table (TLUT) data in DRAM with 8-byte alignment. 
+    <DT><B>sid</B>, <B>flag</B>, <B>mask</B>
+      <DD>Evaluate so a texture that is already loaded will not be loaded again. If it is determined that the texture that is about to be loaded has already been loaded, that texture is not loaded and processing stops. The load decision method is described later. 
+  </DL>
+</DL>  
+</P>
+<P>
+<DL>
+The uObjTxtrBlock_t structure has the following elements in addition to the common elements described above:
+  <DL>
+    <DT><B>tmem</B>
+    <DD>Specifies the load destination TMEM address. Normally, this is used as the <B>imageAdrs</B> value in the uObjSprite structure. GS_PIX2TMEM is useful when this value is specified in pixel units. 
+    <DT><B>tsize</B>
+    <DD>Specifies the size of the texture to be loaded. To get this value from the texture size, specify the number of texels to be loaded (= texture width x height) (<B>pix</B>) and the size of one texel (<B>siz</B>) in GS_TB_TSIZE. 
+    <DT><B>tline</B>
+    <DD>Specifies the width of the texture to be loaded. To get this value from the texture width, specify the number of texels in the texture width (<B>pix</B>) and the size of one texel (<B>siz</B>) in GS_TB_TLINE 
+  </DL>
+</DL>
+</P>
+<P>
+<DL>
+The uObjTxtrTile_t structure has the following elements in addition to the common elements described above:
+  <DL>
+    <DT><B>tmem</B>
+    <DD>Specifies the load destination TMEM address. Normally, this is used as the <B>imageAdrs</B> value in the uObjSprite structure. GS_PIX2TMEM is useful when this value is specified in pixel units. 
+    <DT><B>twidth</B>
+    <DD>Specifies the width of the texture to be loaded. To get this value from the texture width, specify the texture width (<B>pix</B>) and the size of one texel (<B>siz</B>) in GS_TT_TWIDTH. 
+    <DT><B>theight</B>
+    <DD>Specifies the height of the texture to be loaded. To get this value from the texture height, specify the texture height (<B>pix</B>) and the size of one texel (<B>siz</B>) in GS_TT_THEIGHT. 
+  </DL>
+</DL>
+</P>
+<P>
+<DL>
+The uObjTxtrTLUT_t structure has the following elements in addition to the common elements described above:
+  <DL>
+    <DT><B>phead</B>
+    <DD>Specifies the load destination palette position. The palette position is the value obtained by adding 256 to the normal palette ID. Therefore, the value can be set in the range 256~511. Set this value using GS_PAL_HEAD. 
+    <DT><B>pnum</B>
+    <DD>Specifies the numeric value obtained by subtracting 1 from the number of palette colors to be loaded. Use GS_PAL_NUM to set this. 
+    <DT><B>zero</B>
+    <DD>Although this is not used by the uObjTxtrTLUT_t structure, enter 0 for compatibility with other structures. 
+  </DL>
+</DL>
+</P>
+<P>
+<DL>
+The macro arguments for changing units are as follows:
+  <DL>
+    <DT><B>pix</B>
+    <DD>When values are specified in pixel units, they are converted to TMEM address units. 
+    <DT><B>siz</B>
+    <DD>Specifies the size of one texel: 
+    <DD><B>G_IM_SIZ_4b</B> (4 bits/texel)
+    <DD><B>G_IM_SIZ_8b</B> (8 bits/texel)
+    <DD><B>G_IM_SIZ_16b</B> (16 bits/texel)
+    <DD><B>G_IM_SIZ_32b</B> (32 bits/texel)
+    <DT><B>head</B>
+    <DD>Specifies the load destination palette position. 
+    <DT><B>num</B>
+    <DD>Specifies the number of palette colors. 
+  </DL>
+</DL>
+</P>
+<P>
+* Concerning the method used to decide whether to load a texture: 
+</P>
+<P>
+For the RSP to completely handle the process of deciding whether or not a given texture already exists inside TMEM, the RSP must analyze the load destination area each time a texture is loaded. Spending time on this decision process is not efficient. Therefore, the S2DEX microcode does not have the RSP perform any analysis on the texture to be loaded. Instead, data related to the area in which the texture data structure is to be loaded is added in advance, and the loading decision is made by a simple calculation on this data. 
+</P>
+<P>
+For example, a simple loading decision could be made by writing the ID corresponding to the loaded texture in a status area within the RSP when data is loaded in TMEM, and then making a comparison with that ID the next time data is loaded in TMEM. The loading decision process implemented in S2DEX is based on an extension of this concept. By setting the two 32-bit values for flag and mask, the loading decision process can also support the subdivision of TMEM and partial loads.<BR>
+Four 32-bit variable Status areas have been prepared as the status region in the RSP. The Status region values are all 0 when the microcode is booted. Which Status value to use is determined by <B>sid</B>. The values that <B>sid</B> can take are {0, 4, 8, 12}. 
+</P>
+<P>
+This macro actually uses the following processes to decide whether or not a texture is to be loaded: 
+</P>
+<P>
+* Checks whether (Status[<B>sid</B>] &amp; <B>mask</B>) == <B>flag</B>.<BR>
+* If the result is true, decide that the texture has already been loaded and end the load process. <BR>
+* If the result is false, load the texture and update Status[<B>sid</B>] so <BR>
+<PRE><CODE>      Status[<B>sid</B>] = (Status[<B>sid</B>] &amp; ~<B>mask</B>) | (<B>flag</B> &amp; <B>mask</B>);</CODE></PRE>
+</P>
+<P>
+The simplest way of using <B>flag</B> is to assign -1 (<CODE>=0xffffffff</CODE>) to <B>mask</B> and the address of the texture source data (= <B>image</B> value) to <B>flag</B>. If no other texture data starts at the same address, this operates as a single texture cache. When (<B>flag</B> &amp; ~<B>mask</B>) != 0, the texture will always be loaded since the decision expression is always false . 
+</P>
+<P>
+When TMEM is managed by subdividing it into two parts, the Status[0] bits 31-16 are assigned to the first half of the TMEM area, the bits 15-0 are assigned to the second half, and a serial number is assigned to each texture. The value of <B>sid</B> is always zero.
+</P>
+<P>
+<TABLE BORDER="1" CELLSPACING="0" CELLPADDING="3">
+<TR>
+  <TD NOWRAP ALIGN="center" VALIGN="middle"> </TD>
+  <TD NOWRAP ALIGN="center" VALIGN="middle">Loading area</TD>
+  <TD NOWRAP ALIGN="center" VALIGN="middle"><B>flag</B></TD>
+  <TD NOWRAP ALIGN="center" VALIGN="middle"><B>mask</B></TD>
+</TR>
+<TR>
+  <TD NOWRAP ALIGN="left" VALIGN="middle">A: Texture 1</TD>
+  <TD NOWRAP ALIGN="right" VALIGN="middle">0~255  </TD>
+  <TD NOWRAP ALIGN="left" VALIGN="middle"><CODE>0x00010000</CODE></TD>
+  <TD NOWRAP ALIGN="left" VALIGN="middle"><CODE>0xffff0000</CODE></TD>
+</TR>
+<TR>
+  <TD NOWRAP ALIGN="left" VALIGN="middle">B: Texture 2</TD>
+  <TD NOWRAP ALIGN="right" VALIGN="middle">256~511  </TD>
+  <TD NOWRAP ALIGN="left" VALIGN="middle"><CODE>0x00000002</CODE></TD>
+  <TD NOWRAP ALIGN="left" VALIGN="middle"><CODE>0x0000ffff</CODE></TD>
+</TR>
+<TR>
+  <TD NOWRAP ALIGN="left" VALIGN="middle">C: Texture 3</TD>
+  <TD NOWRAP ALIGN="right" VALIGN="middle">0~511  </TD>
+  <TD NOWRAP ALIGN="left" VALIGN="middle"><CODE>0x00030003</CODE></TD>
+  <TD NOWRAP ALIGN="left" VALIGN="middle"><CODE>0xffffffff</CODE></TD>
+</TR>
+<TR>
+  <TD NOWRAP ALIGN="left" VALIGN="middle">D: Only second<BR>
+  half of texture 3</TD>
+  <TD NOWRAP ALIGN="right" VALIGN="middle">256~511  </TD>
+  <TD NOWRAP ALIGN="left" VALIGN="middle"><CODE>0x00000003</CODE></TD>
+  <TD NOWRAP ALIGN="left" VALIGN="middle"><CODE>0x0000ffff</CODE></TD>
+</TR>
+</TABLE>
+</P>
+<P>
+To give an example, consider that all of texture 3 is loaded by C. If the first half of TMEM is subsequently changed by loading by A, the texture 3 data will still remain in the second half of TMEM. If D now attempts to load only the second half of texture 3, no loading will actually be performed. S2DEX makes use of this status-based processing to make similar decisions for display list branching in <A HREF="gSPSelectDL.htm">gSPSelectDL</A> and <A HREF="gSPSelectBranchDL.htm">gSPSelectBranchDL</A>. 
+</P>
+<p><b>Example</b></font></p>
+<P>
+Sample settings for the three structures are shown below:
+<PRE><CODE> (1) Loading a RGBA16 texture with LoadBlock
+      uObjTxtr objTxtrBlock_RGBA16 = {
+        G_OBJLT_TXTRBLOCK,                /* type */
+        (u64 *)textureRGBA16,             /* image */
+        GS_PIX2TMEM(0,     G_IM_SIZ_16b), /* tmem */
+        GS_TB_TSIZE(32*32, G_IM_SIZ_16b), /* tsize */
+        GS_TB_TLINE(32,    G_IM_SIZ_16b), /* tline */
+        0,                                /* sid */
+        (u32)textureRGBA16,               /* flag */
+        -1                                /* mask */
+      };
+
+ (2)Loading a CI4 texture with LoadTile
+      uObjTxtr objTxtrTile_CI4 = {
+        G_OBJLT_TXTRTILE,                 /* type */
+        (u64 *)textureCI4,                /* image */
+        GS_PIX2TMEM  (0,    G_IM_SIZ_4b), /* tmem */
+        GS_TT_TWIDTH (32,   G_IM_SIZ_4b), /* twidth */
+        GS_TT_THEIGHT(32,   G_IM_SIZ_4b), /* theight */
+        0,                                /* sid */
+        (u32)textureCI4,                  /* flag */
+        -1                                /* mask */
+      };
+
+ (3) Loading a CI4 texture via a TLUT
+      uObjTxtr objTLUT_CI4 = {
+        G_OBJLT_TLUT,                     /* type */
+        (u64 *)textureCI4pal,             /* image */
+        GS_PAL_HEAD(0),                   /* phead */
+        GS_PAL_NUM(16),                   /* pnum */
+        0,                                /* zero */
+        0,                                /* sid */
+        (u32)textureCI4pal,               /* flag */
+        -1                                /* mask */
+      };
+</CODE></PRE>
+</P>
+<p><b>See Also</b></font></p>
+<P>
+<A HREF="gSPObjLoadTxRect.htm">gSPObjLoadTxRect</A>, <A HREF="gSPObjLoadTxRectR.htm">gSPObjLoadTxRectR</A>, and <A HREF="gSPObjLoadTxSprite.htm">gSPObjLoadTxSprite</A>
+</P>
+<p><b>Revision History</b></font></p>
+<P>
+02/01/99  Entirely revised.
+</P>
+</BODY>
+</HTML>

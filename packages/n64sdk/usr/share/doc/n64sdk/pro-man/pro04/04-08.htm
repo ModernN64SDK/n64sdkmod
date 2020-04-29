@@ -1,0 +1,34 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 4 - Runtime Software Architecture</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check.-->
+</head>
+
+<h1>4.8 GameShop Debugger</h1>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="01"><h2>4.8.1 Next Generation of WorkShop Debuggers</h2></a>
+
+<p>The GameShop debugger (<a href="../../n64man/tool/gvd.htm">gvd</a>) originiated from the Silicon Graphics WorkShop application development tools. It is a source level windowing debugger environment that enables debugging of both the CPU and RSP software. </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="02"><h2>4.8.2 Debugger Components </h2></a>
+
+<p>The debugger is actually composed of several different components shown in <a href="#f04-05">Figure 4-5</a>, below. </p>
+
+<p>There are two debugging paths.  The first path is a C source level windowing debugger, <a href="../../n64man/tool/gvd.htm">gvd</a>, which has most of the features of common multi-<A target="keywords" HREF="../../keywords/index/data/system.htm#thread">threaded</A> debuggers.  In this path the debugger sends a <A target="keywords" HREF="../../keywords/index/data/system.htm#message">message</a> to <a href="../../n64man/tool/dbgif.htm">dbgif</a> and <a href="../../n64man/tool/dbgif.htm">dbgif</a> passes the received message to the rmon debug thread through the Nintendo 64 <A target="keywords" HREF="../../keywords/index/data/system.htm#device driver">device driver</A> in IRIX.</p>
+
+<p>The second path is the popular printf traces within the application. <a href="../../n64man/tool/rmonPrintf.htm">rmonPrintf()</a> displays the messages in the shell that executed <a href="../../n64man/tool/dbgif.htm">dbgif</a>. </p>
+
+<dl>
+  <dt><a name="f04-05"><strong>Figure 4-5 Debugger Components </strong></a>
+  <dd><img alt="[Figure 4-5]" src="gif/f04-05.gif">
+</dl>
+
+<p>The rmon debugger thread is actually a high-priority thread in the game application and uses many operating system resources. Therefore, the GameShop debugger and <a href="../../n64man/tool/rmonPrintf.htm">rmonPrintf</a> function cannot be used to debug system-level code. </p>
+
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+</body> </html>

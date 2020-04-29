@@ -1,0 +1,72 @@
+<HTML>
+<HEAD>
+<TITLE>nuContDataReadStart</TITLE>
+</HEAD>
+
+<BODY bgcolor="#FFFFFF">
+<font face="arial" size="-1">
+
+<P>
+<FONT size="5"><b><IMG src="../nusystem2.gif" height="30" width="176">Function</b></FONT>
+
+<HR>
+<P>
+<FONT size="3"><b>nuContDataReadStart</b></FONT>
+<p>
+<HR>
+<P>
+<b>Syntax</b>
+<font face="courier" size="2">
+<pre>void nuContDataReadStart(void)</pre>
+</font>
+
+<b>Arguments</b>
+<font face="courier" size="2">
+<pre>None</pre>
+</font>
+
+<b>Return Value</b>
+<font face="courier" size="2">
+<pre>None</pre>
+</font>
+
+<b>Description</b>
+
+<p><i>Start reading the Controller data 
+</i>
+
+<p>Reads Controller data directly from the application.
+
+<p>The Controller data is automatically read by the Controller Manager at retrace time. But this function is used to read the data at any arbitrary time from the application.
+
+<p>The read is performed asynchronously, so it is returned immediately, unlike with the nuContDataRead function. The nuContDataReadWait function is used to wait for the read to be completed.  The read-in Controller data is obtained with nuContDataGet. To perform a synchronized read, use the nuContDataRead function.
+
+
+<p><b>Example</b>
+<font face="courier" size="2">
+<pre>
+OSContPad	padData[NU_CONT_MAXCONTROLLERS];
+
+/* Start to read the Controller data */
+nuContDataReadStart();
+	
+......
+	
+/* Wait for read to end */
+nuContDataReadWait();
+/* Get the data */
+nuContDataGetAll(padData);</pre>
+</font>
+
+<p><b>See Also</b>	
+<p><a href="nuContDataRead.htm">nuContDataRead</a>, <a
+href="nuContDataGet.htm">nuContDataGet</a>, and <a
+href="nuContDataReadWait.htm">nuContDataReadWait</a>
+
+<p>
+<hr>
+
+<p align="right"><a href="index.htm"><img src="../index.gif" border="0"
+width="65" height="17"></a>
+</body>
+</html>

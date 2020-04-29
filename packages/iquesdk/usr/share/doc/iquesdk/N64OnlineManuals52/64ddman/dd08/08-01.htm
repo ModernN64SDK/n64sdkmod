@@ -1,0 +1,74 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<title>08-01</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font face="arial" size="-1">
+<p><strong>8.1 Reading the RTC</strong></font></p>
+
+<hr>
+<table border="1">
+    <tr>
+        <td><font face="arial" size="-1"><strong>LeoReadRTC( )function
+        </strong><p><font face="Courier">#include
+        &lt;PR/leo.h&gt;<br>
+        </font></p>
+        <p><font face="Courier">s32 LeoReadRTC(LEOCmd *<u>cmdBlock</u>,
+        OSMesgQueue *<u>mq</u>);<br>
+        <br>
+        </font></p>
+        <p>Reads the  RTC time and stores it in <font face="Courier"><u>cmdBlock</u>-&gt;data.time</font>.
+        </p>
+        <p><font face="Courier"><u>cmdBlock</u>-&gt;data.time</font> is <font
+        face="Courier">LEODiskTime</font> structure. <br>
+        
+        <p><font face="Courier">typedef struct</font> </p>
+        <p><font face="Courier">{</font> </p>
+        <p><font face="Courier">u8 pad;</font> </p>
+        <p><font face="Courier">u8 yearhi; /* in BCD */</font> </p>
+        <p><font face="Courier">u8 yearlo; /* in BCD */</font> </p>
+        <p><font face="Courier">u8 month; /* in BCD */</font> </p>
+        <p><font face="Courier">u8 day; /* in BCD */</font> </p>
+        <p><font face="Courier">u8 hour; /* in BCD */</font> </p>
+        <p><font face="Courier">u8 minute; /* in BCD */</font> </p>
+        <p><font face="Courier">u8 second; /* in BCD */</font> </p>
+        <p>}<font face="Courier"> LEODiskTime;</font></p>
+        </td>
+    </tr>
+</table>
+
+<font face="arial" size="-1">
+<p>Please note that each element is a  BCD . 
+ 
+
+<p>The RTC retains only the last 2 digits of a year (yearlo) and cannot by itself return the first two digits (yearhi).  Thus, the LeoReadRTC function uses software methods to determine and return the yearhi values shown below in response to the yearlo value read from the RTC.</p>
+
+<table border="1" cellpadding="3" cellspacing="3">
+    <tr>
+        <td><font face="arial" size="-1">yearlo</td>
+        <td><font face="arial" size="-1">yearhi</td>
+    </tr>
+    <tr>
+        <td align="center"><font face="arial" size="-1">96 - 99</td>
+        <td align="center"><font face="arial" size="-1">19</td>
+    </tr>
+    <tr>
+        <td align="center"><font face="arial" size="-1">00 - 95</td>
+        <td align="center"><font face="arial" size="-1">20</td>
+    </tr>
+</table>
+
+<p>If the value of yearlo that is read from RTC is other value than the above mentioned values (21 - 95), the yearlo of RTC is changed to 96 inside the function automatically. </p>
+
+<p>For return values,  <font face="Courier"><u>cmdBlock,</u></font> and  <font face="Courier"><u>mq</u></font>,  please see <a
+href="../dd07/07-02.htm">Section 7.2, "Asynchronous Functions."</a>
+
+<p><a href="index.htm"><img src="../../gif/index.gif" border="0"
+width="65" height="17"></a></p>
+
+<hr>
+</body>
+</html>

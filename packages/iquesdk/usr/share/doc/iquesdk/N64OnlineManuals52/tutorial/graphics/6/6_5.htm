@@ -1,0 +1,46 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Graphics-Chapter 6   Rendering Mode and Anti-aliasing</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/23/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<font style="font-size:12pt"><B>6.5  Video Filter</B></FONT>
+<br>
+<P>
+ The gfx6.c sample program includes functions to make silhouette edge shapes and coverage values visible.  To try this, change undef to define on line 37.  When you do this, those places where the coverage value in the framebuffer is not 1 appear black, while everything else (where the coverage value = 1) is colored white.<br><br>
+     Of course, when anti-aliasing is turned off, the coverage value in the frame buffer remains the default maximum value, so everything becomes white.  Therefore, you need to confirm that line 27 is set to define.<br><br>
+     Run the sample program in this state, and at the point in time when blending is finished you will see black lines for the parts that have not been anti-aliased yet (based on the coverage values in the framebuffer after interior edge anti-aliasing has been completed).  This is the silhouette edge that is anti-aliased by the video filter.
+</P>
+<P>
+<br>	
+<IMG SRC="image21.gif">
+</P>
+<P>
+<B>Figure 6-6 Screen shots of gfx6.c sample program with __ANTI-ALIASING__ and __SHOW_COVERAGE__ defined.</B>
+</P>
+<P>
+The video filter performs anti-aliasing according to the following formula:
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=1><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>&nbsp;</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Output = coverage value * pixel color + (1 - coverage value) * background color</TD>
+</TR></TABLE>
+<P>
+The "pixel color" is the color of the framebuffer pixel that is now being anti-aliased.  The "background color" is the color most different from the "pixel color," as selected from among the 3x5 array of pixels neighboring the pixel that is now being anti-aliased.  This is used for smoothly blending the image.<br><br>
+
+     In addition to making the coverage value visible, we will try an experiment defining a rendering mode.  By defining __CVG_X_ALPHA__ on line 37 of gfx6.c, you add the CVG_X_ALPHA flag to the rendering mode.  (To learn about what other flags can be used, see Chapter 15 of the Programming Manual.)  When the CVG_X_ALPHA flag is specified, the coverage value and the alpha value are multiplied together, and the product is used for the coverage value and for the alpha value.  As a result, when the coverage value is made visible, not only the silhouette but also the interior of the polygon is colored black. 
+</P>
+<P>
+<br>
+<IMG SRC="image22.gif">
+</P>
+<P>
+<B>Figure 6-7 Screen shots of sample program gfx6.c when __ANTI-ALIASING__, __SHOW_COVERAGE__ and  __CVG_X_ALPHA__ are defined.
+</B>
+</P>
+</BODY>
+</HTML>

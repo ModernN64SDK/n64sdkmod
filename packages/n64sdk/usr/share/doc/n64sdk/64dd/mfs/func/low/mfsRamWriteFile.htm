@@ -1,0 +1,59 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>mfsRamWriteFile</title>
+</head>
+
+<body>
+
+<font face="arial" size="-1">
+<b><font size="3">mfsRamWriteFile</b></font>
+
+<hr>
+
+<strong>Syntax</strong>
+<font face="courier" size="2">
+<pre>s32 mfsRamWriteFile(MfsDirID dirID, void* buf, s32 offset,u32 len)</pre></font>
+
+<P>
+<b>Arguments</b>
+<dl>
+<dd>dirID	&nbsp; Directory ID of file
+<dd>*buf	&nbsp; Buffer in which data to be written is stored
+<dd>offset	&nbsp; Write starting position
+<dd>len	&nbsp; Size to be written
+</dl></dd>
+
+<P>
+<b>Return value</b>
+<dl>
+<dd>Size of data that was written (a negative value is an error)
+</dl></dd>
+
+<P>
+<b>Function</b>
+<dl><dd>Writes data to file</dl></dd>
+
+<P>
+<b>Description</b>
+<P>
+This function writes data to the file specified by dirID.
+If the address specified by buf is not at a 16-byte boundary, the speed will decrease somewhat because the data is written after being copied to an internal buffer.
+If the offset value is greater than the file size, an error will occur.
+
+<P>
+<b>Main errors</b>
+<P>
+<table border="0" cellpadding="3" cellspacing="3">
+<tr><td valign="top"><font face="arial" size="-1">MFS_ERR_NOTFOUND</td>
+<td><font face="arial" size="-1">Specified file not found</td></tr>
+<tr><td valign="top"><font face="arial" size="-1">MFS_ERR_DEVICE</td>
+<td><font face="arial" size="-1">Device error
+<br>An error occurred in an internally called Leo function.
+<br>Since a Leo function error is stored in the variable mfsError, check this variable to perform processing.</td></tr>	 
+<tr><td valign="top"><font face="arial" size="-1">MFS_ERR_PROTECT</td>
+<td><font face="arial" size="-1">Write protected
+<br>The file attribute is write protected, or the volume attribute is write protected, or the parent directory is write protected.</td></tr></table>
+
+</body>
+</html>

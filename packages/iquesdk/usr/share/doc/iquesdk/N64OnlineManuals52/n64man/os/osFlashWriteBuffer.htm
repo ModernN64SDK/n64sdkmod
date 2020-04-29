@@ -1,0 +1,49 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <title>osFlashWriteBuffer</title>
+</head>
+<body bgcolor="#FFFFFF">
+<font face="arial" size="-1">
+<h1>
+osFlashWriteBuffer <font size=+0> [Function]</font></h1>
+<font color="#FF0000">Writes into Flash buffer</font>
+<h3>
+Syntax</h3>
+
+<font face=courier>#include &lt;ultra64.h&gt;<br>
+s32&nbsp; osFlashWriteBuffer(OSIoMesg *mb, s32 priority, void *dramAddr,&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; OSMesgQueue *mq);</font>
+
+<h3>
+Description</h3>
+This is a function that writes data into 1M Flash write buffer by DMA.
+<p>The arguments are Message request block (*mb), Request priority (priority),
+Buffer address (*dramAddr) and DMA end message queue (*mq) accordingly.
+<p>For return values, return -1 when PI manager is not executed.&nbsp;
+If PI manager is executed, return the status of either osSendMesg or osJamMesg.
+<p>The use method is basically in the form in accordance with
+<br><br>
+<font face="courier">s32 osPiStartDma(OSIoMesg *mb, s32 priority, s32 direction, u32 devAddr,
+<br>void *dramAddr, u32 size, OSMesgQueue *mq)</font>.
+<br>
+<br>The following are the points different from osPiStartDma:
+<p>There is no argument "direction" (because it is exclusively for write).
+<br>There is no argument "devAddr" (because the buffer address of 1M Flash
+are fixed).
+<br>There is no argument "size" (because the size to be read is fixed at
+128 bytes per page).
+<p>Follow the procedure listed below in order to write data in specific
+pages of 1M Flash:
+<p>(1) Delete data
+<br>(2) Transfer data from RDRAM to the write buffer in 1M Flash
+<br>(3) Transfer data from the write buffer to each page of 1M Flash
+<p>This function is used to operate (2) listed above.
+<h3>
+Reference</h3>
+
+<h3>
+Revision History</h3>
+07/07/2000&nbsp; This function was added.
+</body>
+</html>

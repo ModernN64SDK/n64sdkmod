@@ -1,0 +1,30 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 20 - Using the Audio Tools</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. -->
+</head>
+
+<H1>20.3 Creating Samples </H1>
+
+<p>Creating samples for the Nintendo 64 is similar to creating samples for any sample player. However, there are several additional facts to keep in mind. </p>
+
+<P>To be recognized by the ADPCM tools, the samples should be stored as <a href="../../keywords/index/data/audio.htm#AIFF" target="keywords">AIFF</a> files, or uncompressed <a href="../../keywords/index/data/audio.htm#AIFC" target="keywords">AIFC</a>.</p>
+
+<P>Samples benefit from being <a href="../../keywords/index/data/audio.htm#sampling" target="keywords">sampled</a> at the same sample rate as the output playback sample rate. Because all samples are compressed with a variation of <a href="../../keywords/index/data/audio.htm#ADPCM" target="keywords">ADPCM</a>, when they are played back at rates significantly different from their <a href="../../keywords/index/data/audio.htm#sampling rate" target="keywords">sampled rate</a>, the noise can become rather obvious. </p>
+
+<P>As an example, if the output sample rate is set to 44100 Hz, but the sample is sampled at only 22050 Hz, then to playback the sample at its original <a href="../../keywords/index/data/audio.htm#pitch" target="keywords">pitch</a>, the sample converter must create (in this case, extend data temporarily to make up the space) two samples from each sample.  Worse, if the sample is to be played an octave below its original pitch, the sample converter must create four samples
+for each sample.  Because of the noise and distortion introduced from ADPCM, this will not be nearly as good quality as it would be if samples were recorded at 44100 Hz, or if the output playback rate were changed to 22050 Hz.  For this reason, you may want to resample all samples to match the output sample rate, before performing the ADPCM conversion.</p>
+
+<P>Samples may be looped at any location in the sample. Although many ADPCM systems require you to loop samples at specific boundaries (the Super Nintendo, for example, required that loop points be multiples of 16), the Nintendo 64 makes no such requirement.   If a sound is looped, it will loop as long as the sound is playing. When a looped sound's <a href="../../keywords/index/data/audio.htm#envelope" target="keywords">envelope</a> enters the release phase, then the sound will still continue to loop. </p>
+
+<P>All looped samples should last until the next multiple of 16, after the loop end.  (This is because the ADPCM <A target="keywords" HREF="../../keywords/index/data/system.htm#encoder">encoding</A> stores the samples in blocks of 16.) For this reason, it is prudent to leave at least 16 samples after the loop end, on any sample that loops.  As a nice feature, the ADPCM tools provided have an option that truncates any sample to the shortest viable length.</p>
+
+<P>In other words, when creating looped samples, find your loop points, and don't worry about the release portion of the sample.  If you want to truncate the sample, to keep samples on your hard disk smaller, be sure to always leave at least 16 samples after the loop end.  Then when you encode the samples, make sure you use the -t option, and the samples will be automatically truncated for you. </p>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR>
+</BODY>
+</HTML>

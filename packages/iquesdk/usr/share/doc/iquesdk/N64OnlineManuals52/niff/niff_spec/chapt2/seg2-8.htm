@@ -1,0 +1,71 @@
+<HTML>
+<HEAD>
+<TITLE>Chapter 2 Nodes</TITLE>
+</HEAD>
+<BODY LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff">
+
+<font face="arial" size="-1">
+<b><font size="3">Chapter 2 Nodes</b></font>
+<HR>
+
+<P>
+<b>2-2. Links to Nodes in NIFF</b>
+<P>
+
+<u>8. Handling of Collision in NIFF</u>
+<P>
+In NIFF,  you can set up collision data which will be used for a game.  Generally, calculating collision for each polygon does not allow real time handling in a game application.  So, a model is replaced with a simple shape and its collision is calculated, making a character look as if it is colliding.
+<p>
+For a game, there are some ways to simplify collision calculations.  We cannot support all of them, however, NIFF can have the data structure for some of the typical calculations.<p>
+First, let's look at collision regarding a terrain model.  Sorting all of terrain data for every game scene, and handling which polygon a character can collide with takes tremendous time. Nevertheless, these calculations will rarely be reflected directly on the screen making it a waste of time.
+<p>
+For NIFF data,  a complex terrain model is divided onto the X-Z plane once, as shown below, so the data structure allows us to calculate a collision detection on a polygon.<p>
+<p>
+<center>
+<img src="./coll_terr.gif">
+<p>
+Figure: Collision Data
+</center>
+<p>
+Next, let's consider collision data regarding an object.  In general, an object in a game is replaced with a simple model for collision detection at the time of collision detection, and is detected.  So, an object has collision data which is different from model data, and they are linked together.  Actually, both shape data and collision data are linked to an object as shown in the diagram below.
+<p>
+<center>
+<img src="./obj_coll.gif">
+<p>
+Figure: Shape Model and Collision Model
+</center>
+<p>
+When a cylindrical collision model is given to the whole object as shown above, the hierarchy link will be as follows:
+<p>
+<center>
+<img src="./fig_obj_coll.gif">
+<p>
+Figure: Hierarchy Link of an Object and Collision
+</center>
+<p>
+In NIFF, using data for a game application is considered, and replacing all collision models except terrain collision models with a simple object is assumed.  A column or a cube is placed evenly against the X-Z plane of global coordinates.  Therefore, when you want to process a collision detection for a whole arm in a fighting game for example, sometimes you cannot process it well just by replacing it with a simple model.
+<p>
+In NIFF, these matters are taken into consideration. It is possible to link several collision data to one object.  If you want to process a collision detection accurately for a long object with various angles such as an arm or a leg, you need to link collision data of several spheres for one object as shown below.  The centers of the spheres moves according to the animation data of the object, so you should be able to process the collision detection pretty accurately.<p>
+<p>
+<center>
+<img src="magaru_ude.gif">
+<p>
+Figure: Several Collisions are Linked to an Object
+</center>
+<p>
+
+<a href="../chapt3/seg1.htm"></a><p>
+&nbsp; <a href="../index.htm"></a>
+
+<hr>
+<p align="right"><a href="../index.htm">
+<img src="../../../gif/index.gif"
+border="0" width="65" height="17"></a>
+&nbsp; <a href="../chapt3/seg1.htm">
+<img src="../../../gif/next.gif"
+border="0" width="65" height="17"></a></p>
+
+</body>
+</html>
+
+

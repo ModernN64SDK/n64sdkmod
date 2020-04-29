@@ -1,0 +1,172 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<title>STEP3 [N64 3D Graphics] - Chapter 1 Basics of 3D Graphics</title>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park 7/9/1999 
+  PWC review 7/16/99-->
+</head>
+
+<body bgcolor="#FFFFFF">
+<base target="keywords">
+
+<p><font style="font-size:12pt"><b>1-2 3D Shape Specification</b></font><br>
+<br>
+<br>
+Next, the process of actual drawing when expressing a three-dimensional object on a computer by using triangles or quadrangles will be described. <br>
+<br>
+<br>
+<b>1-2-1 3D Shape Specification</b><br>
+<br>
+<br>
+Each three-dimensional shape is made up of a combination of the following three elements:
+<ol><li>Vertices (corners) </li>
+<li>Edges (lines) that connect vertices </li>
+<li>Planes (surfaces) surrounded by edges </li></ol>
+You can render any three-dimensional object on the computer by creating a detailed database of these three elements.<br>
+<br>
+<br>
+<br>
+<b>1-2-2 Using Vertices, Edges and Planes</b><br>
+<br>
+<br>
+Using vertices, edges, and planes to render three-dimensional models is more complex than it is to use them to render two-dimensional models. To render a cube in three-dimensions, you need information about 8 vertices, 12 edges, and 6 planes as shown here:
+
+                                                                                           </p>
+
+<table border="1" cellspacing="0">
+    <tr>
+        <td><img src="img00017.gif" width="347" height="133"> </td>
+    </tr>
+</table>
+
+<p><br>
+<b>Figure 1-2-1 Using Vertices, Edges and Planes</b><br>
+<br>
+<br>
+You have to be careful when connecting vertices. If you simply connect vertices to make edges, you may end up rendering an object different from the one you want, as shown here:</p>
+
+<table border="1" cellspacing="0">
+    <tr>
+        <td><img src="img00018.gif"> </td>
+    </tr>
+</table>
+
+<p><br>
+<b>Figure 1-2-2 Example of connecting between vertices</b><br>
+<br>
+<br>
+Also, for an object (<a
+href="../../../keywords/index/data/graphics.htm#surface"
+target="keywords">surface</a> mode) having planes, many three-dimensional processes have rules for creating these. The following three rules are representative of these.<br>
+<br>
+<br>
+<b># No Open Sides</b><br>
+<br>
+<img src="img00019.gif"><br>
+<br>
+<b>Figure 1-2-3 Rule One About Creating Planes</b><br>
+<br>
+<br>
+<b># No Dents</b><br>
+<br>
+<img src="img00020.gif"> <br>
+<b>Figure 1-2-4 Rule Two About Creating Planes</b><br>
+<br>
+<br>
+<b># No Twisting</b><br>
+ Vertices must be on the same plane, and edges must not intersect<br>
+<br>
+<img src="img00021.gif"> <br>
+<b>Figure 1-2-5 Rule Three About Creating Planes</b><br>
+<br>
+<br>
+If you create and draw planes that do not follow these three rules, you will not get the correct result.   Therefore, you need to be careful when creating planes.  <br>
+<br>
+<br>
+Rendering a model that has many planes takes a long time. Therefore, if you try to render a complex model in real-time, you may encounter problems. For real-time rendering, you have to pay close attention to the drawing rate. You need to decide how many surfaces (planes) your game can support. A model with few surfaces, like the cube on the right in the following illustration, requires a relatively "light" drawing process as compared to a model that has many surfaces, like the sphere on the left:</p>
+
+<table border="1" cellspacing="0">
+    <tr>
+        <td><img src="img00022.gif"> </td>
+    </tr>
+</table>
+
+<p><br>
+<b>Figure 1-2-6 Model with many surface and Model with few surface</b><br>
+<br>
+<br>
+To help solve this problem, there is a technique called "back face culling" which ensures that no unseen back surfaces are drawn. This reduces the number of planes to be drawn and thus lightens the amount of work required.</p>
+
+<table border="1" cellspacing="0">
+    <tr>
+        <td><img src="img00023.gif"> </td>
+    </tr>
+</table>
+
+<p><br>
+<b>Figure 1-2-7 Back Face Culling</b><br>
+<br>
+<br>
+The next problem is how we should judge the front and back of planes. Something obvious to a human being can be a difficult process for a computer. In general, computers judge the front and back by the order of edges created to connect vertices. In the N64 system, planes that are rendered by connecting vertices in a counter-clockwise manner become the front.</p>
+
+<table border="1" cellspacing="0">
+    <tr>
+        <td><img src="img00024.gif"> </td>
+    </tr>
+</table>
+
+<p><br>
+<b>Figure 1-2-8 The order of edges created by connecting vertices</b><br>
+<br>
+<br>
+You can distinguish front and back for the computer by using a normal vector. This technique will be explained later. It is important for the computer to recognize the front from the back so that it can improve the drawing rate by not doing the drawing calculations for the back side planes.<br>
+<br>
+<br>
+Pay attention to all the issues discussed here when creating your planes. Then combine the planes to complete a three-dimensional object as shown here:</p>
+
+<table border="1" cellspacing="0">
+    <tr>
+        <td><img src="img00025.gif"> </td>
+    </tr>
+</table>
+
+<p><br>
+<b>Figure 1-2-9 Combine planes and complete three-dimensional object</b><br>
+<br>
+<br>
+Use the following N64 functions to draw three-dimensional objects: <br>
+<br>
+<b> vertices->sides->surfaces</b><br>
+<br>
+</p>
+
+<table border="1" cellspacing="0" cellpadding="4">
+    <tr>
+        <td><b>Examples of N64 Functions to Draw 3D Shapes</b><br>
+        <br>
+          <a href="../../../n64man/gsp/gSPVertex.htm">
+        <b>gSPVertex</b></a>
+        <b>    (load the vertex data)</b><br>
+          <a href="../../../n64man/gsp/gSPModifyVertex.htm">
+        <b>gSPModifyVertex</b></a><b> (change the vertex data)</b><b><br>
+          </b><a href="../../../n64man/gsp/gSP1Triangle.htm"><b>gSP1Triangle</b></a>
+        <b>   (draw one triangle) </b><b><br>
+          </b><a href="../../../n64man/gsp/gSP2Triangles.htm"><b>gSP2Triangles</b></a>
+        <b>  (draw two triangles)</b><b><br>
+          </b><a
+        href="../../../n64man/gsp/gSPSetGeometryMode.htm">
+        <b>gSPSetGeometryMode</b></a><b> G_CULL_BACK</b><b><br>
+          </b><b>        (turn on back face culling)</b><b><br>
+          </b><a
+        href="../../../n64man/gsp/gSPClearGeometryMode.htm">
+        <b>gSPClearGeometryMode</b></a>
+        <b> G_CULL_BACK</b><b><br>
+          </b><b>        (turn off back face culling)</b><b><br>
+        </b></td>
+    </tr>
+</table>
+<br><br><br>
+</body>
+</html>

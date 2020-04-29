@@ -1,0 +1,82 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.>
+<TITLE>guS2DEmuBgRect1Cyc</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>guS2DEmuBgRect1Cyc<FONT size="+0"> Function</FONT></H1>
+
+<p><h3>Function</h3></p>
+
+<p>guS2DEmuBgRect1Cyc</p>
+
+<P><i>Emulates gSPBgRect1Cyc</i>
+</P>
+<p><h3>Syntax</h3></p>
+
+<p><PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gs2dex.htm">gs2dex.h</A> */
+void guS2DEmuBgRect1Cyc(Gfx **gdl, uObjBg *bg);</p></CODE></PRE>
+
+<H3>Arguments</H3>
+<p><DL>
+  <DT><B>dgl</B>
+  <DD>Pointer to the display list
+  <DT><B>bg</B>
+  <DD>Pointer to the uObjBg data structure
+</DL></p>
+<H3>Return Value</H3>
+<P>
+None.
+</P>
+<H3>Description</H3>
+<P>
+It renders a background (BG) image which can be scaled up and down.The call guS2DEmuBgRect1Cyc(&amp;<B>gdl</B>, <B>bg</B>) can be used in place of gSPBgRect1Cyc(<B>gdl</B>++, <B>bg</B>). This function's resulting GBI code can be used in both S2DEX and the F3DEX series microcode. Because of this, one microcode can be processed to display both a scaled scrolling BG screen and a 3D model at the same time. For details, see <A HREF="../gsp/gSPBgRect1Cyc.htm">gSPBgRect1Cyc</A>.
+</P>
+<H3>Note</H3>
+<P>
+To notify the main routine about a scissoring box setting and texture filter setting, you must call the <A HREF="guS2DEmuSetScissor.htm">guS2DEmuSetScissor</A> function before calling this function.
+</P>
+<H3>Comment</H3>
+<P>
+The uObjBg structure is shown below: 
+<PRE><CODE>typedef	struct {
+     u16  imageX;    /* x-coordinate of upper-left position of texture (u10.5) */
+     u16  imageW;    /* Texture width (u10.2)*/
+     s16  frameX;    /* x-coordinate of upper-left position of transfer destination frame (s10.2)*/
+     u16  frameW;    /* Transfer destination frame width (u10.2) */
+     u16  imageY;    /* y-coordinate of upper-left position of texture (u10.5) */ 
+     u16  imageH;    /* Texture height (u10.2) */
+     s16  frameY;    /* y-coordinate of upper-left position of transfer destination  frame (s10.2) */
+     u16  frameH;    /* Transfer destination frame height (u10.2) */
+     u64  *imagePtr; /* Address of texture source in DRAM */
+     u16  imageLoad; /* Method for loading the BG image texture */
+     u8   imageFmt;  /* Texel format G_IM_FMT_*  */
+     u8   imageSiz;  /* Texel size G_IM_SIZ_* */
+     u16  imagePal;  /* Position of palette */
+     u16  imageFlip; /* Image inversion on/off (horizontal direction only) */
+     u16  scaleW;    /* x-direction scale value (u5.10) */
+     u16  scaleH;    /* y-direction scale value (u5.10) */
+     s32  imageYorig;/* image drawing origin (s20.5) */
+     u8	padding[4];
+} uObjScaleBg_t;
+typedef union {
+     uObjBg_t       b;
+     uObjScaleBg_t  s;
+     long long int  force_structure_alignment;
+} uObjBg;
+</CODE></PRE>
+</P>
+<H3>See Also</H3>
+<P>
+<A HREF="guS2DEmuSetScissor.htm">guS2DEmuSetScissor</A>, <A HREF="../gsp/gSPBgRect1Cyc.htm">gSPBgRect1Cyc</A>
+</P>
+<H3>Revision History</H3>
+<P>
+03/01/99  Completely rewritten.
+</P>
+</BODY>
+</HTML>

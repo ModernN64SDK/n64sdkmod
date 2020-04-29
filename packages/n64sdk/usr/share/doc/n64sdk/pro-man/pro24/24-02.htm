@@ -1,0 +1,59 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 24 - Performance Tuning Guide</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. -->
+</head>
+
+<h1>24.2 Geometry Tuning (<a href="../../n64man/ucode/gspFast3D.htm">gspFast3D</a>-Precise Microcode)</h1>
+
+<p>The standard <a href="../../n64man/ucode/gspFast3D.htm">gspFast3D</a> <A target="keywords" HREF="../../keywords/index/data/system.htm#microcode">microcode</a> contains very precise <a href="../../keywords/index/data/graphics.htm#sub pixel" target="keywords">subpixel</a> x,y calculations for <a href="../../keywords/index/data/graphics.htm#anti-aliasing" target="keywords">antialiasing</a> and precise s,t calculations for large screen area textures. This precision is required for terrain or background <a href="../../keywords/index/data/graphics.htm#polygon" target="keywords">polygons</a> that are large. </p>
+
+<p>This microcode is full featured, including lighting, <a href="../../keywords/index/data/graphics.htm#clipping" target="keywords">clipping</a>, texture coordinate generation (<a href="../../keywords/index/data/graphics.htm#reflection mapping" target="keywords">reflection mapping</a>).</p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="01"><h2>24.2.1 Vertex Grouping</h2></a>
+
+<p>The geometry microcode has a local <a href="../../keywords/index/data/graphics.htm#vertex cache" target="keywords">vertex cache</a>. Loading a block of <a href="../../keywords/index/data/graphics.htm#vertex" target="keywords">verticies</a> can amortize the cost of per vertex calculations (transformation, lighting, texture coordinate computation).</p>
+
+<p>Careful organization of the database can minimize these calculations. In general, it is best to load the vertex cache with as many vertices as possible, then <a href="../../keywords/index/data/graphics.htm#rendering" target="keywords">render</a> all the geometry which uses those vertices. </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="02"><h2>24.2.2 Pre Lighting </h2></a>
+
+<p>For non-dynamic lighting effects, lighting computations can be calculated at model time, then rendered with simple <a href="../../keywords/index/data/graphics.htm#Gouraud shading" target="keywords">Gouraud shading</a>. </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="03"><h2>24.2.3 Clipping and Lighting </h2></a>
+
+<p>The <a href="../../n64man/ucode/gspFast3D.htm">gspFast3D</a> microcode does not have enough instruction space to hold lighting and clipping code. It swaps them in from the dram using a least recently used algorithm. Since lighting occurs during vertex load and clipping occurs during polygon drawing, there are natural blocks of work following each ucode load. Loading just a few vertices and then drawing a small number of triangles will cause the <a href="../../n64man/ucode/gspFast3D.htm">gspFast3D</a> microcode loading to "thrash" </p>
+
+<p><strong>Note:</strong>  We have not seen performance degradation due to this swap in any games.  Large block DMA transfers (such as microcode loads) are very efficient. </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="04"><h2>24.2.4 Kinds of Polygons </h2></a>
+
+<p>The cost of geometric processing in the RSP is listed below in the order of decreasing performance. </p>
+
+<ul>
+  <li><a href="../../keywords/index/data/graphics.htm#flat shading" target="keywords">Flat Shade</a> (using <a href="../../n64man/gdp/gDPSetPrimColor.htm">gDPSetPrimColor()</a> to select the color) 
+  <li>Gouraud Shade
+  <li>Gouraud Shade + <a href="../../keywords/index/data/graphics.htm#Z buffer" target="keywords">Z-buffer</a>
+  <li>Gouraud Shade + Texture
+  <li>Gouraud Shade + Z-buffer + Texturing
+</ul>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="05"><h2>24.2.5 Textures Instead of Geometry </h2></a>
+
+<p>When possible, use textures to represent complex geometry. The RCP is designed to draw high-quality textured primitives. Achieving complexity by using additional geometry will always be slower than using textures. </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="06"><h2>24.2.6 Geometric Level of Detail</h2></a>
+
+<p>When objects get far away or have rapid animation, you can render it with less <a href="../../keywords/index/data/graphics.htm#LOD" target="keywords">LOD</a> without noticeable loss of detail. </p>
+
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+</body> </html>

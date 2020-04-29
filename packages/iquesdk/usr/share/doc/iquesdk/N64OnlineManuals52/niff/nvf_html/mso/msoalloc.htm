@@ -1,0 +1,318 @@
+<HTML>
+<HEAD>
+<TITLE>msoalloc</TITLE>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../mobile/allman.css">
+<!-- Editor's Notes: 9/23/1999 Ron Daring -->
+</HEAD>
+  <BODY bgcolor="#FFFFFF">
+<h1>Function</h1>
+
+<hr>
+<a name="msoAllocatorEnableDebugMode">
+</A>
+<h1><a name="msoAllocatorEnableDebugMode">msoAllocatorEnableDebugMode</A></h1>
+<a name="msoAllocatorEnableDebugMode">
+</A>
+<p><a name="msoAllocatorEnableDebugMode"><i>Switches allocator to debug mode</i></A></p>
+<a name="msoAllocatorEnableDebugMode">
+</A>
+<H2><a name="msoAllocatorEnableDebugMode">Syntax</A></H2>
+<a name="msoAllocatorEnableDebugMode">
+</A>
+<blockquote><a name="msoAllocatorEnableDebugMode">
+    </A>
+<pre><a name="msoAllocatorEnableDebugMode">#include &lt;mso/Allocator.h&gt;
+void msoAllocatorEnableDebugMode( MsoAllocator *allocator_ptr,
+                                  const u32 enable )
+</A></pre></blockquote>
+<a name="msoAllocatorEnableDebugMode">
+</A>
+<H2><a name="msoAllocatorEnableDebugMode">Description</A></H2>
+<a name="msoAllocatorEnableDebugMode">
+  When enable == true, switches allocator to debug mode. <br>
+  When in the debug mode, at the same time the allocator acquires memory, it writes a debug cookie into 
+  the header of the memory acquired. 
+
+</A>
+<hr>
+
+<a name="msoAllocatorIsDebugMode">
+</A>
+<h1><a name="msoAllocatorIsDebugMode">msoAllocatorIsDebugMode</A></h1>
+<a name="msoAllocatorIsDebugMode">
+</A>
+<p><a name="msoAllocatorIsDebugMode"><i>Returns whether the allocator is operating in debug mode</i></A></p>
+<a name="msoAllocatorIsDebugMode">
+</A>
+<H2><a name="msoAllocatorIsDebugMode">Syntax</A></H2>
+<a name="msoAllocatorIsDebugMode">
+</A>
+<blockquote><a name="msoAllocatorIsDebugMode">
+    </A>
+<pre><a name="msoAllocatorIsDebugMode">#include &lt;mso/Allocator.h&gt;
+u32 msoAllocatorIsDebugMode( const MsoAllocator *allocator_ptr )
+</A></pre></blockquote>
+<a name="msoAllocatorIsDebugMode">
+</A>
+<H2><a name="msoAllocatorIsDebugMode">Description</A></H2>
+<a name="msoAllocatorIsDebugMode">
+  Returns whether the allocator is operating in debug mode
+
+</A>
+<hr>
+
+<a name="msoAllocatorSetDebugCookie">
+</A>
+<h1><a name="msoAllocatorSetDebugCookie">msoAllocatorSetDebugCookie</A></h1>
+<a name="msoAllocatorSetDebugCookie">
+</A>
+<p><a name="msoAllocatorSetDebugCookie"><i>Sets the debug cookie</i></A></p>
+<a name="msoAllocatorSetDebugCookie">
+</A>
+<H2><a name="msoAllocatorSetDebugCookie">Syntax</A></H2>
+<a name="msoAllocatorSetDebugCookie">
+</A>
+<blockquote><a name="msoAllocatorSetDebugCookie">
+    </A>
+<pre><a name="msoAllocatorSetDebugCookie">#include &lt;mso/Allocator.h&gt;
+void msoAllocatorSetDebugCookie( MsoAllocator *allocator_ptr,
+                                 const u32 debug_cookie )
+</A></pre></blockquote>
+<a name="msoAllocatorSetDebugCookie">
+</A>
+<H2><a name="msoAllocatorSetDebugCookie">Description</A></H2>
+<a name="msoAllocatorSetDebugCookie">
+  Sets the debug cookie
+
+</A>
+<hr>
+
+<a name="msoAllocatorGetDebugCookie">
+</A>
+<h1><a name="msoAllocatorGetDebugCookie">msoAllocatorGetDebugCookie</A></h1>
+<a name="msoAllocatorGetDebugCookie">
+</A>
+<p><a name="msoAllocatorGetDebugCookie"><i>Gets the debug cookie</i></A></p>
+<a name="msoAllocatorGetDebugCookie">
+</A>
+<H2><a name="msoAllocatorGetDebugCookie">Syntax</A></H2>
+<a name="msoAllocatorGetDebugCookie">
+</A>
+<blockquote><a name="msoAllocatorGetDebugCookie">
+    </A>
+<pre><a name="msoAllocatorGetDebugCookie">#include &lt;mso/Allocator.h&gt;
+u32 msoAllocatorGetDebugCookie( const MsoAllocator *allocator_ptr );
+</A></pre></blockquote>
+<a name="msoAllocatorGetDebugCookie">
+</A>
+<H2><a name="msoAllocatorGetDebugCookie">Description</A></H2>
+<a name="msoAllocatorGetDebugCookie">
+  Gets the debug cookie
+
+</A>
+<hr>
+
+<a name="msoAllocatorAllocate">
+</A>
+<h1><a name="msoAllocatorAllocate">msoAllocatorAllocate</A></h1>
+<a name="msoAllocatorAllocate">
+</A>
+<p><a name="msoAllocatorAllocate"><i>Gets</i> <TT>size</TT> <i>bytes of memory with an 8-byte boundary</i></A></p>
+<a name="msoAllocatorAllocate">
+</A>
+<H2><a name="msoAllocatorAllocate">Syntax</A></H2>
+<a name="msoAllocatorAllocate">
+</A>
+<blockquote><a name="msoAllocatorAllocate">
+    </A>
+<pre><a name="msoAllocatorAllocate">#include &lt;mso/Allocator.h&gt;
+void *msoAllocatorAllocate( MsoAllocator *allocator_ptr, const u32 size );
+</A></pre></blockquote>
+<a name="msoAllocatorAllocate">
+</A>
+<H2><a name="msoAllocatorAllocate">Description</A></H2>
+<a name="msoAllocatorAllocate">
+  Gets <TT>size</TT> bytes of memory with an 8-byte boundary
+
+</A>
+<hr>
+
+<a name="msoAllocatorAllocateAligned">
+</A>
+<h1><a name="msoAllocatorAllocateAligned">msoAllocatorAllocateAligned</A></h1>
+<a name="msoAllocatorAllocateAligned">
+</A>
+<p><a name="msoAllocatorAllocateAligned"><i>Gets</i> <TT>size</TT> <i>bytes of memory with the boundary specified by</i> <TT>align</TT></A></p>
+<a name="msoAllocatorAllocateAligned">
+</A>
+<H2><a name="msoAllocatorAllocateAligned">Syntax</A></H2>
+<a name="msoAllocatorAllocateAligned">
+</A>
+<blockquote><a name="msoAllocatorAllocateAligned">
+    </A>
+<pre><a name="msoAllocatorAllocateAligned">#include &lt;mso/Allocator.h&gt;
+void *msoAllocatorAllocateAligned( MsoAllocator *allocator_ptr,
+                                   const u32 size, const u16 align );
+</A></pre></blockquote>
+<a name="msoAllocatorAllocateAligned">
+</A>
+<H2><a name="msoAllocatorAllocateAligned">Description</A></H2>
+<a name="msoAllocatorAllocateAligned">
+  Gets <TT>size</TT> bytes of memory with the boundary specified by <TT>align</TT> 
+  <TT>align</TT> is an index expression and has a minimum value of 3 (8-byte boundary).
+
+</A>
+<hr>
+
+<a name="msoAllocatorFree">
+</A>
+<h1><a name="msoAllocatorFree">msoAllocatorFree</A></h1>
+<a name="msoAllocatorFree">
+</A>
+<p><a name="msoAllocatorFree"><i>Releases memory</i></A></p>
+<a name="msoAllocatorFree">
+</A>
+<H2><a name="msoAllocatorFree">Syntax</A></H2>
+<a name="msoAllocatorFree">
+</A>
+<blockquote><a name="msoAllocatorFree">
+    </A>
+<pre><a name="msoAllocatorFree">#include &lt;mso/Allocator.h&gt;
+void msoAllocatorFree( MsoAllocator *allocator_ptr, void *mem_ptr );
+</A></pre></blockquote>
+<a name="msoAllocatorFree">
+</A>
+<H2><a name="msoAllocatorFree">Description</A></H2>
+<a name="msoAllocatorFree">
+  Releases memory acquired by <TT>msoAllocatorAllocate( )</TT>, <TT>msoAllocatorAllocateAligned( )</TT>
+
+</A>
+<hr>
+
+<a name="msoSetDefaultAllocator">
+</A>
+<h1><a name="msoSetDefaultAllocator">msoSetDefaultAllocator</A></h1>
+<a name="msoSetDefaultAllocator">
+</A>
+<p><a name="msoSetDefaultAllocator"><i>Sets the default allocator</i></A></p>
+<a name="msoSetDefaultAllocator">
+</A>
+<H2><a name="msoSetDefaultAllocator">Syntax</A></H2>
+<a name="msoSetDefaultAllocator">
+</A>
+<blockquote><a name="msoSetDefaultAllocator">
+    </A>
+<pre><a name="msoSetDefaultAllocator">#include &lt;mso/Allocator.h&gt;
+void msoSetDefaultAllocator( MsoAllocator *allocator_ptr );
+</A></pre></blockquote>
+<a name="msoSetDefaultAllocator">
+</A>
+<H2><a name="msoSetDefaultAllocator">Description</A></H2>
+<a name="msoSetDefaultAllocator">
+  Sets the default allocator.  The default allocator is used by <TT>msoMalloc( )</TT>, <TT>msoNallocAligned( )</TT>, and
+  <TT>msoFree( )</TT>. 
+
+</A>
+<hr>
+
+<a name="msoGetDefaultAllocator">
+</A>
+<h1><a name="msoGetDefaultAllocator">msoGetDefaultAllocator</A></h1>
+<a name="msoGetDefaultAllocator">
+</A>
+<p><a name="msoGetDefaultAllocator"><i>Gets the default allocator</i></A></p>
+<a name="msoGetDefaultAllocator">
+</A>
+<H2><a name="msoGetDefaultAllocator">Syntax</A></H2>
+<a name="msoGetDefaultAllocator">
+</A>
+<blockquote><a name="msoGetDefaultAllocator">
+    </A>
+<pre><a name="msoGetDefaultAllocator">#include &lt;mso/Allocator.h&gt;
+MsoAllocator *msoGetDefaultAllocator( void );
+</A></pre></blockquote>
+<a name="msoGetDefaultAllocator">
+</A>
+<H2><a name="msoGetDefaultAllocator">Description</A></H2>
+<a name="msoGetDefaultAllocator">
+  Gets the default allocator
+
+</A>
+<hr>
+
+<a name="msoMalloc">
+</A>
+<h1><a name="msoMalloc">msoMalloc</A></h1>
+<a name="msoMalloc">
+</A>
+<p><a name="msoMalloc"><i>Acquires memory using the default allocator</i></A></p>
+<a name="msoMalloc">
+</A>
+<H2><a name="msoMalloc">Syntax</A></H2>
+<a name="msoMalloc">
+</A>
+<blockquote><a name="msoMalloc">
+    </A>
+<pre><a name="msoMalloc">#include &lt;mso/Allocator.h&gt;
+void *msoMalloc( const u32 size );
+</A></pre></blockquote>
+<a name="msoMalloc">
+</A>
+<H2><a name="msoMalloc">Description</A></H2>
+<a name="msoMalloc">
+  Acquires memory using the default allocator
+
+</A>
+<hr>
+
+<a name="msoMallocAligned">
+</A>
+<h1><a name="msoMallocAligned">msoMallocAligned</A></h1>
+<a name="msoMallocAligned">
+</A>
+<p><a name="msoMallocAligned"><i>Acquires memory using the default allocator</i></A></p>
+<a name="msoMallocAligned">
+</A>
+<H2><a name="msoMallocAligned">Syntax</A></H2>
+<a name="msoMallocAligned">
+</A>
+<blockquote><a name="msoMallocAligned">
+    </A>
+<pre><a name="msoMallocAligned">#include &lt;mso/Allocator.h&gt;
+void *msoMallocAligned( const u32 size, const u16 align );
+</A></pre></blockquote>
+<a name="msoMallocAligned">
+</A>
+<H2><a name="msoMallocAligned">Description</A></H2>
+<a name="msoMallocAligned">
+  Acquires memory using the default allocator<br>
+  The value of <TT>align</TT> is the same as for <TT>msoAllocatorAllocateAligned( )</TT>.
+
+</A>
+<hr>
+
+<a name="msoFree">
+</A>
+<h1><a name="msoFree">msoFree</A></h1>
+<a name="msoFree">
+</A>
+<p><a name="msoFree"><i>Releases memory using the default allocator</i></A></p>
+<a name="msoFree">
+</A>
+<H2><a name="msoFree">Syntax</A></H2>
+<a name="msoFree">
+</A>
+<blockquote><a name="msoFree">
+    </A>
+<pre><a name="msoFree">#include &lt;mso/Allocator.h&gt;
+void msoFree( void *mem_ptr );
+</A></pre></blockquote>
+<a name="msoFree">
+</A>
+<H2><a name="msoFree">Description</A></H2>
+<a name="msoFree">
+  Releases memory using the default allocator
+
+<br><br><br>
+  </A></BODY>
+</HTML>

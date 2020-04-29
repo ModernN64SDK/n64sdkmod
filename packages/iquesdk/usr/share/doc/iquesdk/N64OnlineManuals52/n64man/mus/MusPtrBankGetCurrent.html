@@ -1,0 +1,57 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../n64man.css">
+<title>MusPtrBankGetCurrent()</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check-->
+</head>
+
+<h1>MusPtrBankGetCurrent()</h1>
+
+<h2>Syntax</h2>
+
+<pre>
+void *MusPtrBankGetCurrent(void);
+</pre>
+
+<h2>Arguments</h2>
+
+<p>None</p>
+
+<h2>Description</h2>
+
+<p>It gets the address of the default sample bank.</p>
+
+<p>The default sample bank is used when the <a href="MusStartSong.html">MusStartSong()</a> or the <a href="MusStartSongFromMarker.html">MusStartSongFromMarker()</a> functions are used to start songs, if no sample bank override has been defined with the <a href="MusPtrBankSetSingle.html">MusPtrBankSetSingle()</a> function.</p>
+
+<p>The default sample bank is used when the <a href="MusStartEffect.html">MusStartEffect()</a> or the <a href="MusStartEffect2.html">MusStartEffect2()</a> function is used to start sound effects, if no sample bank override is defined.  The <a href="MusFxBankSetSingle.html">MusFxBankSetSingle()</a> function is used to specify the sound effect override for the sound effect that starts next.
+</p>
+
+<h2>Return Value</h2>
+
+<p>Sample bank address.</p>
+
+<h2>Example</h2>
+
+<pre>
+void StackSampleBank(void *sample_addr)
+{
+  sample_bank_stack[stack_ptr++]=MusPtrBankGetCurrent();
+  <a href="MusPtrBankSetCurrent.html">MusPtrBankSetCurrent</a>(sample_addr);
+}
+
+void UnStackSampleBank(void)
+{
+  <a href="MusPtrBankSetCurrent.html">MusPtrBankSetCurrent</a>(sample_bank_stack[--stack_ptr]);
+}
+</pre>
+
+<h2>See Also</h2>
+<p>
+<a href="MusPtrBankInitialize.html">MusPtrBankInitialize()</a>,
+<a href="MusPtrBankSetCurrent.html">MusPtrBankSetCurrent()</a>,
+<a href="MusPtrBankSetSingle.html">MusPtrBankSetSingle()</a>
+</p>
+
+</body>
+</html>

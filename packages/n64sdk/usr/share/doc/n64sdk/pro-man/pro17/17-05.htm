@@ -1,0 +1,111 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 17 - Audio Library</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. -->
+</head>
+
+<H1>17.5 Writing Your Own Player</H1>
+
+<p>A Player is an Audio Library software object that works through the Synthesis Driver to construct audio command lists. Both the <a href="../../keywords/index/data/audio.htm#sequence player" target="keywords">Sequence Player</a> and <a href="../../keywords/index/data/audio.htm#sound player" target="keywords">Sound player</a> are examples of Players. </p>
+
+<P>A Player operates by signing into the driver and then responding to driver <a href="../../keywords/index/data/audio.htm#callback" target="keywords">callback</a> with driver <A target="keywords" HREF="../../keywords/index/data/system.htm#API">API</A> calls, described in Section on synthesis driver. The initialization procedure and the callback routine are detailed below. </p>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="01"></A>
+<H2>
+17.5.1 Initializing the Player</H2>
+
+<p>In order for your player to receive driver callbacks and to use the synthesis driver voice functions, you must first add the player as a driver client. This is accomplished with the <A HREF="../../n64man/al/alSynAddPlayer.htm">alSynAddPlayer()</A> call, which takes two arguments: a reference to the synthesis driver, and a reference to the ALPlayer structure that represents the player to be added. A reference to the synthesis driver may be obtained from the Audio Library globals structure alGlobals. The ALPlayer structure contains a reference to the voice handler callback function and a pointer that the player can use. </p>
+<DL>
+<DT>
+<A NAME="e17-01"></A><strong>Example 17-1 Player Initialization</strong></DT>
+
+<BLOCKQUOTE>
+<PRE>typedef struct MyPlayer_s {
+        ALPlayer node;
+        /*
+         * include other player specific state here
+         */
+} MyPlayer;
+
+void playerNew(Myplayer *p)
+{
+        /*
+         * Initialize any player specific state here
+         */
+
+        /*
+         * Sign into the synthesis driver so that the next time
+         * <A HREF="../../n64man/al/alAudioFrame.htm">alAudioFrame</A> is called, it will call the
+         * __voiceHandler function.
+         */
+        p->node.next    = NULL;
+        p->node.handler = __voiceHandler;
+        p->node.clientData      = p;
+        <A HREF="../../n64man/al/alSynAddPlayer.htm">alSynAddPlayer</A>(&amp;alGlobals->drvr, &amp;p->node);
+}
+
+void playerDelete(MyPlayer *p)
+{
+        /*
+         * remove this player from the synthesis driver
+         */
+        <A HREF="../../n64man/al/alSynRemovePlayer.htm">alSynRemovePlayer</A>(&amp;alGlobals ->drvr, &amp;p->node);
+}
+</PRE>
+</BLOCKQUOTE>
+</DL>
+
+<p>In the previous example, you will notice that the player structure contains a reference to __voiceHandler. This field points to a callback procedure, of type ALVoiceHandler, which the driver calls in the process of building the audio command list. </p>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="02"></A>
+<H2>
+17.5.2 Implementing a Voice Handler</H2>
+
+<p>When your application calls <A HREF="../../n64man/al/alAudioFrame.htm">alAudioFrame()</A>, the driver iterates through its list of players, calling the player's voice handler functions at the appropriate offset (which translates to time) in the command list. </p>
+
+<P>Typically, the player maintains a time-based list of events which the voice handler parses and translates into driver calls. The voice handler contributes to the construction of the command list by making driver voice calls. </p>
+
+<P><strong>Note:</strong>  Driver voice calls can be made only from within the voice handler function. </p>
+
+<P>The voice handler returns the time, in microseconds, for the next callback. </p>
+<DL>
+<DT>
+<A NAME="e17-02"></A><strong>Example 17-2 The Voice Handler</strong></DT>
+
+<BLOCKQUOTE>
+<PRE>ALMicroTime __voiceHandler(void *node)
+{
+      MyPlayer  *p = (MyPlayer *)node;
+      /*
+       * You can now make calls to the following synthesis
+       * driver voice functions
+       *
+       *        <A HREF="../../n64man/al/alSynAllocVoice.htm">alSynAllocVoice()</A>
+       *        <A HREF="../../n64man/al/alSynFreeVoice.htm">alSynFreeVoice()</A>
+       *        <A HREF="../../n64man/al/alSynStartVoice.htm">alSynStartVoice()</A>
+       *        <A HREF="../../n64man/al/alSynStopVoice.htm">alSynStopVoice()</A>
+       *        <A HREF="../../n64man/al/alSynSetVol.htm">alSynSetVol()</A>
+       *        <A HREF="../../n64man/al/alSynSetPitch.htm">alSynSetPitch()</A>
+       *        <A HREF="../../n64man/al/alSynSetPan.htm">alSynSetPan()</A>
+       *        <A HREF="../../n64man/al/alSynSetFXMix.htm">alSynSetFXMix()</A>
+       *        <A HREF="../../n64man/al/alSynSetPriority.htm">alSynSetPriority()</A>
+       *        <A HREF="../../n64man/al/alSynGetPriority.htm">alSynGetPriority()</A>
+       *        <A HREF="../../n64man/al/alSynSetFXParam.htm">alSynSetFXParam()</A>
+       */
+      return 1000;   /* call back in 1 millisecond */
+}
+</PRE>
+</BLOCKQUOTE>
+</DL>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR>
+</BODY>
+</HTML>

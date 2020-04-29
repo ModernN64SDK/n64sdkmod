@@ -1,0 +1,339 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>Auxiliary Data State Saving</title>
+</head>
+<body>
+<h2 align="center">Auxiliary Game State Saving API</h2>
+<br>
+<div align="center">$Revision: 1.7 $<br>
+$Date: 2004/12/01 23:07:59 $<br>
+</div>
+<br>
+The following API is provided to support traveling data for Animal
+Forest. Games using these state saving functions must first call <span
+ style="font-weight: bold; font-family: monospace;">osBbAuxDataInit()</span>.
+&nbsp;Here is sample code that should be executed in a real thread (not
+the
+boot thread) after the PI manager thread has been started:<br>
+<blockquote><b style="font-family: monospace;">#include
+&lt;ultra64.h&gt;<br>
+#include &lt;os_bb.h&gt;<br>
+#include &lt;os_bbfs.h&gt;<br>
+#include &lt;os_bbexec.h&gt;</b><br>
+  <b style="font-family: monospace;"> <br>
+char auxbuf[32768] __attribute__((aligned(16)));<br>
+osBbAuxDataInit(auxbuf, sizeof(auxbuf));<br>
+  </b></blockquote>
+The buffer passed to <small><span style="font-weight: bold;">osBbAuxDataInit</span></small>
+must be a least 32K bytes in size and must be aligned on a cache-line
+boundary (16 bytes).&nbsp; Once the call has been made, the buffer
+should not be used by the application for any other purpose.&nbsp; If
+the cartridge is removed and any cartridge (even the same one) is
+reinserted after <small><span style="font-weight: bold;">osBbAuxDataInit</span></small>
+has been called, subsequent calls to any of the functions in the
+Auxiliary Game State Saving API will fail until <small><span
+ style="font-weight: bold;">osBbAuxDataInit</span></small> has been
+called again.&nbsp; This is necessary to initialize the file system
+data structures associated with the cartridge.&nbsp; Note that the same
+buffer should be used on all calls to <small><span
+ style="font-weight: bold;">osBbAuxDataInit.</span></small><br>
+<h3>Game State API Changes </h3>
+A function is provided for a game to commit the game state in memory to
+the BBCard. For a game to use this function, the game must be published
+with access to the BBCard and the ability to sign a file (the game also
+must be linked with <i>libcrypto.a</i>). &nbsp; Even though this
+function
+is not part of the Auxiliary Data set of functions, <span
+ style="font-family: monospace; font-weight: bold;">osBbAuxDataInit</span>
+has to be called before this function can be used.<br>
+<br>
+<span style="font-family: monospace;"> /* </span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;"> &nbsp;* Commits the state to the
+BBCard
+from within a Game.<br>
+&nbsp;* NOTE: osBbAuxDataInit must be called before this function can
+be
+used. </span><br style="font-family: monospace;">
+<span style="font-family: monospace;"> &nbsp;* Returns 0 if successful,
+&lt;0
+if unsuccessful. </span><br style="font-family: monospace;">
+<span style="font-family: monospace;"> &nbsp;*/ </span><br
+ style="font-family: monospace;">
+<b style="font-family: monospace;">s32 osBbGameCommitState()</b><span
+ style="font-family: monospace;">;</span><br>
+<br>
+After this call returns, any game state saved using the iQue Player's
+emulation
+of N64 Game Paks (Flash, EEPROM or SRAM) or Controller Paks will be
+written
+to a file on the iQue cartridge.
+<h3>Auxiliary&nbsp;Game Data API</h3>
+The traveling data will be saved as unsigned auxiliary data that is
+separate from the main game data. Each game can theoretically have up
+to 16 32K auxiliary
+data, although the actual number of auxiliary data files that can be
+created
+by any one game is limited by the metadata<span
+ style="font-style: italic;"></span> to four. The auxiliary data for
+each
+game will be identified by the content ID of that game, and the
+traveling
+data can be shared only between players for a game of the same content
+ID.
+So if 2 iQue Players and cards have different versions of the same
+game,
+the cids will be different and they will not be able to share the
+traveling
+data. The auxiliary data will be stored in the file cid.u0x where x is
+the
+state ID (0 to f). All game state files will be renamed with the new
+cid
+when the game version is updated. The API functions are described
+below.
+&nbsp;Note that they will use the same error return codes as the
+cartridge
+file system API (see<i> os_bbfs.h</i>). Each function will access the
+BBCard
+directly. &nbsp;In order to use them, the game must be published with
+rights
+to access the card. <br>
+<br>
+NOTE: To determine the cid of the game, these functions uses
+information
+set up by the viewer. If the information is not found (perhaps due
+to an older version of the viewer), these functions will return <span
+ style="font-family: monospace; font-weight: bold;">BBFS_ERR_STATE</span>.<br>
+<br>
+<pre>/*<br> * Initializes the card for auxiliary game data.  Must be called each<br> * time a new card is inserted, before any other auxiliary game data <br> * functions or osBbGameCommitState can be used.<br> * Parameters:<br> *  buf - Buffer for internal state. Must be 16 byte aligned.<br> *        NOTE: buf should not be reused by the calling application<br> *              for any other purpose<br> *  len - Length of the buffer, must be at least 32KB.<br> * Returns: 0 if successful, &lt;0 if unsuccessful<br> */<span
+ style="font-weight: bold; font-family: monospace;"><br>s32 osBbAuxDataInit(void* buf, u32 len);</span><br
+ style="font-weight: bold; font-family: monospace;"></pre>
+<span style="font-family: monospace;"> /* </span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;"> &nbsp;* Saves the auxiliary data
+to
+the card. If a file with the </span><br style="font-family: monospace;">
+<span style="font-family: monospace;"> &nbsp;* specifed id already
+exists,
+that file will be overwritten. </span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;"> &nbsp;* NOTE: skExit() should be
+called after all auxiliary data </span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;"> &nbsp;* has been saved to force
+a
+save to card of the main game state. </span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp;* Parameters: </span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;"> &nbsp;* buf - Data to write
+(must
+be 16 byte aligned)</span><br style="font-family: monospace;">
+<span style="font-family: monospace;"> &nbsp;* len - Length of the
+buffer,
+must be a multiple of 16K and &lt;= 32K </span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;"> &nbsp;* id - Aux Data ID (0-15)</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;"> &nbsp;* Returns: number of bytes
+saved
+if successful, </span><br style="font-family: monospace;">
+<span style="font-family: monospace;"> &nbsp;<span
+ style="font-family: monospace;">* &nbsp;&lt; 0 (see error codes
+below) if unsuccessfu</span><br style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp;</span></span><span
+ style="font-family: monospace;">* &nbsp; &nbsp; &nbsp;<span
+ style="font-weight: bold;">BBFS_ERR_STATE_LIMIT</span> is returned if
+id
+is valid but <br>
+&nbsp;* &nbsp; &nbsp; &nbsp;is &gt;= number of auxiliary data files
+specified
+in the metadata</span><br style="font-family: monospace;">
+<span style="font-family: monospace;"><span
+ style="font-family: monospace;"> &nbsp;</span>*/ </span><br
+ style="font-family: monospace;">
+<b style="font-family: monospace;">s32 osBbAuxDataSave(u8 id, void*
+buf,
+u32 len)</b><span style="font-family: monospace;">;</span><br
+ style="font-family: monospace;">
+<br style="font-family: monospace;">
+<span style="font-family: monospace;"> /* </span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;"> &nbsp;* Loads the auxiliary data
+from
+the card </span><br style="font-family: monospace;">
+<span style="font-family: monospace;"> &nbsp;* Parameters: </span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;"> &nbsp;* buf - Buffer to receive
+the
+data (must be 16 byte aligned)</span><br style="font-family: monospace;">
+<span style="font-family: monospace;"> &nbsp;* len - Length of the
+buffer,
+must be a multiple of 16K</span><br style="font-family: monospace;">
+<span style="font-family: monospace;"> &nbsp;* id - Aux Data ID (0-15)</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;"> &nbsp;* Returns: number of bytes
+read
+if successful, &lt;0 if unsuccessful </span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;"> &nbsp;*/ </span><br
+ style="font-family: monospace;">
+<b style="font-family: monospace;">s32 osBbAuxDataLoad(u8 id, void*
+buf,
+u32 len)</b><span style="font-family: monospace;">;</span><br
+ style="font-family: monospace;">
+<br style="font-family: monospace;">
+<span style="font-family: monospace;"> /* </span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;"> &nbsp;* Remove the auxiliary
+data from the card </span><br style="font-family: monospace;">
+<span style="font-family: monospace;"> &nbsp;* Parameters: </span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;"> &nbsp;* id - Aux Data ID (0-15)</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;"> &nbsp;* Returns: 0 if
+successful, &lt;0 if unsuccessful</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;"> &nbsp;*/ </span><br
+ style="font-family: monospace;">
+<b style="font-family: monospace;">s32 osBbAuxDataDelete(u8 id)</b><span
+ style="font-family: monospace;">; </span><br
+ style="font-family: monospace;">
+<br style="font-family: monospace;">
+<span style="font-family: monospace;"> /*</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;"> &nbsp;* Provides the size of the
+auxiliary
+data</span><br style="font-family: monospace;">
+<span style="font-family: monospace;"> &nbsp;* Parameters:</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;"> &nbsp;* id - Aux Data ID (0-15)</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;"> &nbsp;* Returns: size of user
+data
+if successful, &lt;0 if unsuccessful</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;"> &nbsp;*/ </span><br
+ style="font-family: monospace;">
+<b style="font-family: monospace;">s32 osBbAuxDataSize(u8 id)</b><span
+ style="font-family: monospace;">;</span><br
+ style="font-family: monospace;">
+<br style="font-family: monospace;">
+<span style="font-family: monospace;"> /* </span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;"> &nbsp;* Provides a list of
+auxiliary
+data ids on the card for the game </span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;"> &nbsp;* Parameters:</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;"> &nbsp;* ids - Buffer to receive
+the
+ids</span><br style="font-family: monospace;">
+<span style="font-family: monospace;"> &nbsp;* Returns: # of ids if
+successful,
+&lt;0 if unsuccessful</span><br style="font-family: monospace;">
+<span style="font-family: monospace;"> &nbsp;*/</span><br
+ style="font-family: monospace;">
+<b style="font-family: monospace;">s32 osBbAuxDataIds(u8 ids[16])</b><span
+ style="font-family: monospace;">; </span><br>
+<br>
+<i><b>Error codes</b></i><br>
+<br>
+These functions will return the following error codes to indicate
+failures:
+<br>
+<br>
+<span style="font-family: monospace; font-weight: bold;"> #define
+BBFS_ERR_NO_CARD&nbsp;&nbsp;&nbsp;
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;(-1) &nbsp; /* card not present */ </span><br
+ style="font-family: monospace; font-weight: bold;">
+<span style="font-family: monospace; font-weight: bold;"> #define
+BBFS_ERR_FAIL
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; (-2) &nbsp; /*
+operation
+failed */ </span><br style="font-family: monospace; font-weight: bold;">
+<span style="font-family: monospace; font-weight: bold;"> #define
+BBFS_ERR_INVALID &nbsp;
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; (-3) &nbsp; /* invalid parameters */</span><br
+ style="font-family: monospace; font-weight: bold;">
+<span style="font-family: monospace; font-weight: bold;"> #define
+BBFS_ERR_CHANGED
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; (-4) &nbsp; /* card changed
+*/ </span><br style="font-family: monospace; font-weight: bold;">
+<span style="font-family: monospace; font-weight: bold;"> #define
+BBFS_ERR_UNINIT &nbsp;
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;(-5) &nbsp; /* fs
+uninitialized
+*/ </span><br style="font-family: monospace; font-weight: bold;">
+<span style="font-family: monospace; font-weight: bold;"> #define
+BBFS_ERR_EXISTS &nbsp;
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;(-6) &nbsp; /* file exists */ </span><br
+ style="font-family: monospace; font-weight: bold;">
+<span style="font-family: monospace; font-weight: bold;"> #define
+BBFS_ERR_SPACE &nbsp;
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; (-7) &nbsp; /* no space */ </span><br
+ style="font-family: monospace; font-weight: bold;">
+<span style="font-family: monospace; font-weight: bold;"> #define
+BBFS_ERR_ENTRY
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; (-8) &nbsp; /* no
+entry
+*/ </span><br style="font-family: monospace; font-weight: bold;">
+<span style="font-family: monospace; font-weight: bold;"> #define
+BBFS_ERR_STATE &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; (-9)
+&nbsp; /* invalid
+state */</span><br style="font-family: monospace; font-weight: bold;">
+<span style="font-family: monospace; font-weight: bold;">#define
+BBFS_ERR_STATE_LIMIT
+&nbsp; &nbsp; &nbsp; &nbsp; (-10) &nbsp;/* id over state limit */ </span><br
+ style="font-weight: bold;">
+<h3>Usage Notes</h3>
+<ul>
+  <li>If a game uses any of the Auxiliary Data APIs, then the ROM file
+must
+be processed with the <i>rommd</i> command to add metadata about how
+many
+Auxiliary Data files (from 0 to 4) it can create. &nbsp;For instance,
+to
+allow a game to create 4 auxiliary data files, use "<span
+ style="font-style: italic;">r</span><span style="font-style: italic;">ommd
+-u4 &lt;romfile&gt;</span>". &nbsp;The game can then save 4 auxiliary
+data
+files with ids from 0 to 3. &nbsp; If the game attempts to save an
+auxiliary
+data file with an id that is larger than 3, <b
+ style="font-family: monospace;">osBbAuxDataSave </b>will return <span
+ style="font-family: monospace; font-weight: bold;">BBFS_ERR_STATE_LIMIT</span>.</li>
+  <li>Games that use <b style="font-family: monospace;">osBbGameCommitState</b>
+must be linked with <i>libcrypto.a</i>.</li>
+  <li>The buffers used to save and load auxiliary data must be
+cache-line
+aligned (16 byte boundary). &nbsp;In C this can be done by attaching "<span
+ style="font-family: monospace;">__attribute__ ((aligned (16)))</span>"
+to
+the data declaration.</li>
+  <li>The Game State and Auxiliary Data functions cannot be used
+concurrently
+with cartridge (PI) DMA. &nbsp;For instance, background audio loops
+that
+make accesses to the cartridge (i.e. the audio not preloaded into
+memory)
+need to be quiesced before the Game State or Auxiliary Data functions
+can
+be used. &nbsp;<br>
+  </li>
+  <li><span style="font-weight: bold; font-family: monospace;">osBbAuxDataInit</span>
+must be called again if the card is changed.&nbsp; All Auxiliary Data
+API functions will return the error code <small><span
+ style="font-weight: bold;">BBFS_ERR_CHANGED</span></small> in this
+case.&nbsp; This will happen even if the same card is reinserted.&nbsp;
+The same buffer should be used for all calls to <small><span
+ style="font-weight: bold;">osBbAuxDataInit.</span></small><br>
+  </li>
+</ul>
+<br>
+<br>
+<br>
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: 
+  JLR made reformating and copy edits.
+  PWC- updated formatting
+  MAP- added link, updated format
+-->
+<title>gdSPDefLights</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>gdSPDefLights</b></font><font style="font-size: 9pt"><b> (macro)</font>
+
+<p><i>Loads parameters defining the lights into light structures</i></p>
+
+<p><b>Syntax</b></p>
+<p>
+<blockquote>
+    <pre>#include &quot;gbi.h&quot;     /* <A HREF="../../header/gbi.htm">gbi.h</A> */
+typedef struct {
+        Ambient a;
+        Light l[M];
+} LightsM;
+
+LightsM gdSPDefLightsM(
+        signed char ar, signed char ag, signed char ab,
+        signed char d1r, signed char d1g, signed char d1b,
+        signed char n1x, signed char n1y, signed char n1z,
+
+        ...
+
+        signed char dMr, signed char dMg, signed char dMb,
+        signed char nMx, signed char nMy, signed char nMz)</pre>
+</blockquote>
+</p>
+<p><b>Arguments</b></p>
+<p>
+<dl>
+    <dt><strong>ar, ag, ab</strong></dt>
+    <dd>red, green, blue components of ambient light color.<br>
+        <br>
+        </dd>
+    <dt><strong>d1r, d1g, d1b</strong></dt>
+    <dd>red, green, blue components of first diffuse light color. <br>
+        <br>
+        </dd>
+    <dt><strong>n1x, n1y, n1z</strong></dt>
+    <dd>x, y, z components of the first diffuse litght direction.<br>
+        <br>
+        </dd>
+    <dt><strong>dMr, dMg, dMb</strong></dt>
+    <dd>red, green, blue components of Mth diffuse light color. <br>
+        <br>
+        </dd>
+    <dt><strong>nMx, nMy, nMz</strong></dt>
+    <dd> x, y, z components of Mth diffuse light direction. <br>
+        <br>
+        </dd>
+</dl>
+</p>
+<p><b>Description</b></p>
+
+<p>gdSPDefLights <i>M</i> loads parameters defining the lights into light structures. The diffuse light direction coordinates specify the direction from the origin to the diffuse light. The macro name is actually gdSPDefLightsM where the letter M represents the number of diffuse lights in the scene. In the macro and in the structure (LightsM), M must be an actual integer in the range of 0 to 7.</p>
+
+<p>For example, with three diffuse lights, the command is gdSPDefLights3, and the corresponding structure is Lights3. In this case, arguments for colors of the ambient light and both colors and directions of 3 diffuse lights must be supplied. When M is 0, only the arguments for colors of the ambient light need be supplied. </p>
+
+<p><b>Example</b></p>
+
+<p>The following code defines an ambient and a diffuse light in a variable named &quot;lite&quot;. The ambient color is a very dark gray, while the diffuse color is a bright red. As this example shows, the diffuse light direction vector does not need to be normalized. If the scale of the model view matrix is S and the magnitude of the light direction is L then try to keep 1 &lt; L*S &lt; 23040.</p>
+<p>
+<blockquote>
+    <pre>Lights1 lite = gdSPDefLights1(
+        0x05, 0x05, 0x05,        /* amb col */
+        0xc0, 0x00, 0x00,        /* col 1 */
+        13, 25, 30);             /* dir 1 */</pre>
+</blockquote>
+</p>
+<p>The variable (&quot;lite&quot; in this example) may be used in the <a href="../gsp/gSPSetLightsM.htm">gSPSetLights<i>M</i></a> macro or the <a href="../gsp/gSPLight.htm">gSPLight</a> macro to set the lighting state of the RSP.</p>
+
+<p><b>See Also</b></p>
+
+<p><a href="../gsp/gSPSetLightsM.htm">gSPSetLights<i>M</i></a></p>
+<H3>Revision History</H3>
+<P>
+1999/04/30 Changed Format
+</P>
+<br><br>
+
+</body>
+</html>

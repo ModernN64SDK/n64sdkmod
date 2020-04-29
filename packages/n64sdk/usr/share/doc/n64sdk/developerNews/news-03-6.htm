@@ -1,0 +1,75 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<META name="GENERATOR" content="IBM HomePage Builder V3.0.7  for Windows">
+<TITLE>Developers News 1.3</TITLE>
+</HEAD>
+
+<BODY bgcolor="#FFFFFF">
+
+<H3>(6)Caution on programming for PAL region (mainly Europe)</H3>
+<H4>Note on converting NTSC version into PAL version for audio.</H4>
+<P>
+Whether Nintendo 64 is a NTSC version or PAL version will be determined by receiving certain information from PIf when the OS is booted. If the OS determined Nintendo64 to be NTSC version, audio DAC rate will be set for the crystal for video is frequency for NTSC version when the audio output frequency is set.
+</P>
+<P>
+The audio converted from NTSC version into PAL version works correctly with OS version 2.0F, however, if the OS version is 2.0E or earlier, the settings for NTSC described above will be automatically applied. Please add the following two lines properly into the application code when creating audio for PAL version.
+</P>
+<BLOCKQUOTE>
+
+<PRE>
+extern int osViClock;
+osViClock = VI_PAL_CLOCK;
+</PRE>
+</BLOCKQUOTE>
+<P>
+Please execute this before setting audio output frequency (call <A href="../n64man/os/osAiSetFrequency.htm">osAiSetFrequency</A>).
+</P>
+<P>
+Also, the PIf called PIf for development is embedded to the emulator board on INDY, and it is only for NTSC. Consequently, it is necessary to set the OS for NTSC use. If an adjusted emulator board (DAC and crystal for video are switched) for PAL use is used to have the OS set the accurate DAC rate, please assign VI_PAL_CLOCK to osViClock as for version 2.0E or earlier.
+</P>
+<H4>Conversion from programs for NTSC to PAL version</H4>
+<P>
+<EM>ver.0.91</EM>
+</P>
+<P>
+<U>Aspect correction of screen</U>
+</P>
+<P>
+PAL has more visible lines compared to NTSC. Therefore, the screen is compressed in the vertical direction if images for NTSC are used without changing the aspect of the screen. There are work arounds to avoid this problem as follow.
+</P>
+<DL>
+  <DT>(1)For 3D game
+  <DD>This problem could be avoided by changing the perspective aspect in the camera's settings.
+</DL>
+<DL>
+  <DT>(2)For 2D game
+  <DD>This problem could be avoided by changing the VI settings because it cannot change the camera's settings.
+</DL>
+<P>
+Aspect correction of the screen can be performed using <A href="../n64man/os/osViSetYScale.htm">osViSetYScale</A>. Change vStart or origin parameters to correct the over all screen to upper direction. These parameters vary according to the screen mode and screen design, so use appropriate values for each game. It is necessary to change the table value for the proper VI mode in order to change vStart or origin parameters.
+</P>
+<P>
+If the screen settings are performed as described below, osViModeTable[] needs to be changed.
+</P>
+<BLOCKQUOTE>
+
+<PRE>
+<A href="../n64man/os/osViSetMode.htm">osViSetMode</A>(&amp;osViModeTable[OS_VI_NTSC_LAN1]); 
+</PRE>
+</BLOCKQUOTE>
+<P>
+Also, if it is performed as described below, it is necessary to change the individual values such as osViModeNtscLpn1.
+</P>
+<BLOCKQUOTE>
+
+<PRE>
+<A href="../n64man/os/osViSetMode.htm">osViSetMode</A>(&amp;osViModeNtscLan1); 
+</PRE>
+</BLOCKQUOTE>
+<P align="right">
+<A href="news-03.htm"><IMG src="../gif/index.gif" height="17" width="65" border="0"></A>
+</P>
+<HR>
+</BODY>
+</HTML>

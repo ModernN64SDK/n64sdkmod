@@ -1,0 +1,114 @@
+<HTML>
+<HEAD>
+<TITLE>NVF Scene Graph</TITLE>
+</HEAD>
+<BODY LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff">
+<a name="top">
+<font face="arial" size="-1">
+<b><font size="3">NVF Scene Graph</b></font>
+<HR>
+
+<P>
+<b>Introduction</b>
+
+<P>
+This document touches on the basic mechanism of the scene graph provided by the mhc library.  Basically, the mhc library is not really able to do coordinate conversions and display objects simply by supplying a basic scene graph structure.  However, if nodes with various functions are created based on this structure, it is possible to organically link them to one another.  The creation of said nodes is not covered by this document, but the msn library is a library for providing nodes which are defined by NVF. 
+
+<P>
+<b>Node</b>
+<P>
+The basic unit of the NVF hierarchical structure is the node.  There are various types of nodes, each with a different role.</P>
+<P ALIGN="CENTER"><IMG SRC="nvfhier1.gif" WIDTH=508 HEIGHT=175></P>
+
+<P>
+NVF doesn't have any nodes that integrate the coordinate conversion and shape data, and material and texture, etc., but each of these is expressed by an individual node.  
+<P>
+
+<b>Coordinate Conversion Node</b>
+<P>
+The elements of NVF coordinate conversion are listed below.
+
+<P>
+
+<UL>
+<LI>Translation (parallel movement)
+<P>
+<LI>Rotation
+<P>
+<LI>Classic Scale
+<P>
+<LI>SOFTIMAGE Format Scale</UL>
+
+
+
+<P>
+There is no node in NVF that sets all of these at once, where most nodes can only change a single element.  For instance, the traditional SOFTIMAGE NULL node is expressed as follows. 
+</P>
+
+<P ALIGN="CENTER"><IMG SRC="nvfhier2.gif" WIDTH=284 HEIGHT=202></P>
+
+<P>
+<b>Object Display Nodes</b>
+<P>
+Nodes which handle objects include Shape, Geometry, Material, Texture, TextureImage, TextureLut, etc. 
+</P>
+
+<P ALIGN="CENTER"><IMG SRC="nvfhier3.gif" WIDTH=499 HEIGHT=180></P>
+
+<P>
+Shape ties together Texture, Geometry, and Material, and sets the blender mode, etc.  Information regarding the shape of the object is held by Geometry node.
+
+<P>
+<b>Reusing Nodes</b>
+<P>
+You can reuse nodes to conserve memory space in cases where the same data are repeatedly used.  When nodes are reused, a hierarchical structure is created in which a single node will have multiple parents, as shown below. 
+</P>
+
+<P ALIGN="CENTER"><IMG SRC="nvfhier4.gif" WIDTH=417 HEIGHT=145></P>
+
+<P>
+In this example, ShapeA and ShapeB share the same texture. 
+
+<P>
+<b>Module</b>
+<P>
+A module comprises a single hierarchical structure.  A module primarily is made from numerous nodes and an entire module can be loaded from an NVF file. 
+
+<P>
+<b>Scene</b>
+<P>
+A scene integrates multiple modules, making it possible to evaluate them.  There are two module evaluation methods, listed below. 
+
+<P>
+<OL>
+<LI>Normal Mode
+<p>
+In Normal mode, only module[0] is evaluated.  Consequently, when other modules are displayed, module[0] must have ModuleNode in its hierarchical structure. 
+<P>
+Complex scene graphs can be constructed in this mode.
+
+<P>
+<LI>Flat Mode</LI></P>
+<P>
+In this mode, all modules are evaluated.  While complex scene graphs cannot be handled, but objects can be easily handled in this mode. </ol>
+
+<P>
+<b>Accessing Nodes</b>
+<P>
+Applications must access nodes and control fields in order to accomplish object movement and animation playback, etc.  However, since coordinate conversion data can be set in the modules in Flat mode, nodes do not need to be accessed for object movement in this mode.  In addition, since nodes are rarely accessed when the mgk library is used, this explanation can be ignored. 
+<P>
+There are fields in the nodes which can, and nodes which cannot, be controlled by the application or animation.  Nodes are accessed by the following procedure. 
+
+<P>
+<OL>
+<LI>Get the pointer to the node. 
+<P>
+<LI>Get the pointer to the field. 
+<P>
+<LI>Read and write values using the pointer to the field. </OL>
+
+
+<P>
+Since field addresses do not change from the time a module is loaded until it is discarded, operations 1. and 2. can performed immediately after the module has been loaded, and it is possible to keep only the pointer to the field.  In actual use, functions which specify the name of the node and acquire its pointer are not that fast.  
+</BODY>
+</HTML>

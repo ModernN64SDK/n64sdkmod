@@ -1,0 +1,57 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../n64man.css">
+<title>MusFxBankSetSingle()</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check-->
+</head>
+
+<h1>MusFxBankSetSingle()</h1>
+
+<h2>Syntax</h2>
+
+<pre>void MusFxBankSetSingle(void *ifxbank);</pre>
+
+<h2>Arguments</h2>
+
+<dl>
+  <dt><b>ifxbank</b>
+  <dd>the address of an initialized sound effect bank
+</dl>
+
+<h2>Description</h2>
+
+<p>It sets the sound effect bank override. If the override is set to NULL, then it is disabled. The sound effect bank override is cleared when the <a href="MusStartEffect.html">MusStartEffect()</a> or the <a href="MusStartEffect2.html">MusStartEffect2()</a> function is called.</p>
+
+<p>The default sound effect bank is used when the <a href="MusStartEffect.html">MusStartEffect()</a> or the <a href="MusStartEffect2.html">MusStartEffect2()</a> function is used to start sound effects, if no sound effect bank override has been defined. The MusFxBankSetSingle() function can be used to define a sound effect bank override for the next sound effect started.</p>
+
+<p>The ifxbank must contain the address of a sound effect bank initialized with the <a href="MusFxBankInitialize.html">MusFxBankInitialize()</a> function.</p>
+
+<h2>Return Value</h2>
+
+<p>None</p>
+
+<h2>Example</h2>
+
+<pre>musHandle AudioStartEffect(void *fxbank, int number)
+{
+  musHandle handle;
+
+  if (number&gt;=<a href="MusFxBankNumberOfEffects.html">MusFxBankNumberOfEffects</a>(fxbank))
+    return (0); /* failure! */
+  MusFxBankSetSingle(fxbank);
+  handle = <a href="MusStartEffect.html">MusStartEffect</a>(number);
+  return (handle);
+}
+</pre>
+
+<h2>See Also</h2>
+<p>
+<a href="MusFxBankInitialize.html">MusFxBankInitialize()</a>,
+<a href="MusFxBankSetCurrent.html">MusFxBankSetCurrent()</a>,
+<a href="MusStartEffect.html">MusStartEffect()</a>,
+<a href="MusStartEffect2.html">MusStartEffect2()</a>
+</p>
+
+</body>
+</html>

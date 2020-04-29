@@ -1,0 +1,58 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Graphics-Chapter 3  Simple Texture Mapping</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/22/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<font style="font-size:12pt"><B>3.6  Texture Filter</B></FONT>
+<br>
+<P>
+   In the RDP, the output from the Texture Engine is sent to the unit called the Texture Filter for filtering, after which it is passed to the Color Combiner.
+     In the Texture Filter, filtering is performed in association with texel sampling to enlarge or reduce the texture.
+</P>
+<P>
+ Use the gDPSetTextureFilter command to select a sampling filter method:
+
+</P>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP COLSPAN=2>gDPSetTextureFilter(Gfx *gdl, u32 type)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;type</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>The texture sampling mode</TD>
+</TR></TABLE>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;G_TF_POINT</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Point sampling</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP> (Enlarge single texels.  Enlarged texels look like blocks)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;G_TF_AVERAGE</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;Box average</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP> (Averaged, so smoother than point sampling)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;G_TF_BILERP</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Bilinear</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>(Approximate bilinear interpolating 3 pixels)</TD>
+</TR></TABLE>
+<P>
+Usually you achieve the best results using bilinear interpolation, but this may not always be the case, depending on the orderliness of the texture and the scale at which the texture is being displayed.  For actual games, you will also need to preprocess the texture data based on a thorough understanding of the topics covered in Chapters 12 and 13 of the Programming Manual.
+</P>
+</BODY>
+</HTML>

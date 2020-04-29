@@ -1,0 +1,199 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 26 - SI Devices</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. 
+             MAP- 10/25/99 edited content, updated format-->
+</head>
+
+<H1>26.4 Rumble Pak</H1>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H2><A name="01"></A>26.4.1 What is the Rumble Pak?</H2>
+<P>
+The Rumble Pak is a peripheral device that, when connected to the Controller, can send vibrations to the game player.  This chapter provides a description of the Rumble Pak.   
+</P>
+<P>
+The Rumble Pak offers only two levels of control: motor on and motor off.  Three types of processing are necessary to control the Rumble Pak motor: "Rumble Pak Initialization," "Start Rumble Pak," and "Stop Rumble Pak."   
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H2><A name="02"></A>26.4.2 Basic Use of the Rumble Pak </H2>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H3><A name="02-01"></A>26.4.2.1 Make Initial Settings to Use the SI Device</H3>
+<P>
+The first thing you need to do is make the initial settings to use the SI device, then check whether a pak-type SI device is connected to the Controller. To do this, call the <tt>osContInit</tt> function to perform the initial settings, then call the <tt>osContStartQuery</tt>, and <tt>osContGetQuery</tt> functions to check for a pak-type device. 
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H3><A name="02-02"></A>26.4.2.2 Initialize the Rumble Pak</H3>
+<P>
+Once it is confirmed that the Controller is properly connected, the Rumble Pak inserted into that Controller must be initialized. 
+</P>
+<P>
+The function for initializing the Rumble Pak is <tt>osMotorInit</tt>.  At this time, the function's return value must be checked to determine whether the Rumble Pak is properly inserted.  When the error code is 0, the Rumble Pak is properly inserted.  When the error code is PFS_ERR_NOPACK, nothing is inserted into the Controller.  When it is PFS_ERR_DEVICE, a device other than the Rumble Pak is inserted into the Controller.  The return of another error code indicates that the Controller or Rumble Pak connection is bad or, in the absence of such a problem, that the Controller or Rumble Pak is damaged.  
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H3><A name="02-03"></A>26.4.2.3 Starting and Stopping the Rumble Pak Motor</H3>
+<P>
+To start the Rumble Pak motor, the function <tt>osMotorStart</tt> is called. If the return value is 0, the motor was successfully started, and there are no problems.   If the return value is not 0, the motor cannot be started for reasons such as an error in communication with PIF.  In this case, please issue the call <tt>osMotorStart</tt>, again. 
+</P>
+<P>
+To stop a running Rumble Pak, call the function <tt>osMotorStop</tt>. The return values for this function are the same as those for <tt>osMotorStart</tt>. 
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H2><A name="03"></A>26.4.3 The Sample Program </H2>
+<P>
+A sample program for checking the operation of the Rumble Pak is available in /usr/src/PR/demos/motortest. This program is operated as follows: Press the A Button of the Controller to turn the motor ON.  To turn the motor OFF press the B Button of the Controller.  With the Z Button depressed, the strength of the vibration changes in response to the degree that the Control Stick is pushed, in any direction. 
+</P>
+<P>
+There is no support for removal and insertion of the Rumble Pak during operation.  Once the Rumble Pak is removed, the motor will not start again if the Rumble Pak is reinserted and the A button is pressed, and the error message will not be displayed. 
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H2><A name="04"></A>26.4.4 Rumble Pak Function Specifications</H2>
+<P>
+Following is an explanation of the library functions used to handle the Rumble Pak in an N64 program. These functions include: 
+</P>
+<UL>
+  <LI>Initializing the Rumble Pak 
+  <LI>Starting the Rumble Pak 
+  <LI>Stopping the Rumble Pak 
+</UL>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H3><A name="04-01"></A>26.4.4.1 Initializing the Rumble Pak</H3>
+<P>
+<B>Function</B>
+</P>
+<P>
+<tt>osMotorInit</tt>
+</P>
+<p><i>Initializing the Rumble Pak</i></p>
+<P>
+<B>Syntax </B>
+</P>
+<pre>
+#include &lt;ultra64.h&gt;
+s32 osMotorInit(OSMesgQueue *mq, OSPfs *pfs, int controller_no);
+</pre>
+<P>
+<B>Description</B>
+</P>
+<P>
+The <tt>osMotorInit</tt> function initializes the Rumble Pak motor. After initializing overall SI devices with the <tt>osContInit</tt> function, please initialize the Rumble Pak using the <tt>osMotorInit</tt> function.  If SI devices are used, call the <tt>osContInit</tt> function once at the beginning before calling the <tt>osMotorInit</tt> function because SI requires its own initialization to be used.
+</P>
+<P>
+The controller_no specifies the controller port number(0~3). This function is for the Rumble Pak which is inserted into the controller port specified by the controller_no.
+</P>
+<P>
+To control the Rumble Pak, use pfs, the OSPfs structure.  The <tt>osMotorInit</tt> function initializes this pfs.  The message queue, mq is initialized relating to OS_EVENT_SI. See <A href="../../n64man/os/osSetEventMesg.htm">osSetEventMesg()</A> in the N64 Function Reference Manual regarding usage.  Because mq is used for waiting for a message within the function, there is no need to wait for a message using mq in an application after exiting the function.
+</P>
+<P>
+The return value is an error code.  If the function ends normally, the return value is 0.  The error codes returned by this function are: 
+</P>
+<P>
+<B>PFS_ERR_NOPACK</B>
+</P>
+<P>
+Nothing is inserted in the specified Controller.
+</P>
+<P>
+<B>PFS_ERR_DEVICE</B>
+</P>
+<P>
+A device other than the Rumble Pak has been inserted into the Controller.
+</P>
+<P>
+<B>PFS_ERR_CONTRFAIL</B>
+</P>
+<P>
+A failure in the transmission of data to the Controller is indicated. Either the Controller is improperly connected, or the Rumble Pak or Controller connector is damaged. 
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H3><A name="04-02"></A>26.4.4.2 Starting/Stopping the Rumble Pak 
+</H3>
+<P>
+<B>Function</B>
+</P>
+<P>
+<tt>osMotorStart</tt>, <tt>osMotorStop</tt>
+</P>
+<p><i>Starting/Stopping the Rumble Pak</i></p>
+<P>
+<B>Syntax</B>
+</P>
+<pre>
+#include &lt;ultra64.h&gt;
+s32 <tt>osMotorStart</tt>(OSPfs *pfs);
+s32 <tt>osMotorStop</tt>(OSPfs *pfs);
+</pre>
+<P>
+<B>Description</B>
+</P>
+<P>
+The <tt>osMotorStart</tt> function start the Rumble Pak.   Its argument is the OSPfs structure pointed to by pfs.  Please use the pfs structure which is already initialized by the <tt>osMotorInit</tt> function.  By calling this function, the motor operates.
+</P>
+<P>
+Internally, it simply sends data to the Rumble Pak.  For increased processing speed, it does not perform processes such as Rumble Pak status checking.  Consequently, when the Rumble Pak is removed and reinserted, the motor cannot be operated without again calling <tt>osMotorInit</tt>.  Of course, <tt>osMotorStart</tt> also uses the serial interface (SI) and performs message waiting internally, which you should consider when calling it. <SUP><A href="#kome13">*13</A></SUP>
+</P>
+<P>
+The return value is an error code. If the function ends normally, the return value is 0.  If the error code PFS_ERR_CONTRFAIL is returned, communication has failed, and the motor cannot be operated.  Although the chance of a transmission error is small, this error code must be checked to confirm whether the motor is actually operating. 
+</P>
+<P>
+The <tt>osMotorStop</tt> function stops the motor. Its argument is the OSPfs structure pointed to by pfs.  By calling this function the motor stops.  Internally, it sends the command data to stop the motor.
+</P>
+<P>
+<A name="kome13"></A>*13  See Q3 in <A href="#05">Section 26.4.5 "Notes Regarding the Rumble Pak Functions (Q&A Format)"</A>.
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H2><A name="05"></A>26.4.5 Notes Regarding the Rumble Pak Functions (Q&A Format)</H2>
+<P>
+<B>Q1)  I'd like to change the vibration strength.</B>
+</P>
+<P>
+A1)  Keeping the motor continuously running or turning it off are the only two ways to control the motor. Due to this reason, to produce a suitable vibration strength, the application program must repeatedly turn the Rumble Pak ON and OFF in appropriate cycles.  For a specific example, please refer to the sample program provided in the Nintendo 64 Software Library.
+</P>
+<P>
+<B>Q2)  The Rumble Pak does not work properly when it is removed and re-inserted during a game.</B>
+</P>
+<P>
+A2) If the Rumble Pak is removed and re-inserted by the user during a game, <tt>osMotorInit</tt> must be called again, before the Rumble Pak motor can be started.   However, frequent calls to <tt>osMotorInit</tt> may cause a decline in the performance of the Rumble Pak.  Therefore, to encourage caution on the part of the user, please include a note in the Instruction Booklet or display a warning on the screen such as: "Please do not remove the Rumble Pak during a game." 
+</P>
+<P>
+<B>Q3) Data from the Controller is not being read properly.</B>
+</P>
+<P>
+A3) Is the  Rumble Pak function called between <tt>osContStartReadData</tt> and <tt>osContGetReadData</tt>?  When another thread is accessing SI, calls to Rumble Pak functions can result in strange behavior.  If Rumble Pak functions are used with Controller read, some type of exclusion processing is required. 
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+</BODY>
+</HTML>

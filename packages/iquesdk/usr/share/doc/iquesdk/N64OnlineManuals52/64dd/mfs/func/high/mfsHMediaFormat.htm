@@ -1,0 +1,90 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>mfsHMediaFormat</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font face="arial" size="-1">
+<b><font size="3">mfsHMediaFormat</b></font>
+
+<hr>
+<p>
+<b>Syntax</b>
+<font face="courier" size="2">
+<pre>s32 mfsHMediaFormat(s32 drive, s32 mode, u8* name, u8 attr)</pre></font>
+
+<p><strong>Arguments</strong></p>
+<dl>
+<dd>drive	&nbsp; Name of drive to be formatted ('A' or 'B')
+<dd>mode	&nbsp; Format mode
+<dd>*name	&nbsp; Volume name
+<dd>attr	&nbsp; Volume attribute</dl></dd>
+
+<p><strong>Return value</strong>
+<dl>
+<dd>Error</dl></dd>
+
+<p><strong>Function</strong> 
+<dl>
+<dd>Formats medium</dl></dd>
+
+<p><strong>Description</strong> 
+<P>This function formats the medium to MFS format.  The portion of the medium that can be formatted is the RAM area on a disk for which the disk ID's RAM area use is 1. Also, a disk having disk type 6 cannot be formatted.</p>
+
+<p>The following format modes can be specified for mode.
+<P>
+<table border="0" cellpadding="3" cellspacing="3">
+<tr><td valign="top"><font face="arial" size="-1">MFS_FORMAT_NORMAL</td>
+<td><font face="arial" size="-1">0</td>
+<td><font face="arial" size="-1">Normal format</td></tr>
+<tr><td valign="top"><font face="arial" size="-1">MFS_FORMAT_FORCE</td>
+<td><font face="arial" size="-1">1</td>
+<td><font face="arial" size="-1">Forced format</td></tr></table>
+
+<p>When MFS_FORMAT_NORMAL is specified, a check is performed to determine whether or not the disk is an MFS-format disk.  If it is an MFS-format disk, the volume attribute is checked.
+<P>  
+If the volume attribute indicates that the disk is protected, the disk cannot be formatted.
+When MFS_FORMAT_FORCE is specified, the disk is formatted without checking whether or not it is an MFS-format disk and checking its attribute.</p>
+
+<p>A volume name character string not exceeding 20 bytes is specified for name.</p>
+
+<p>The following volume attributes can be specified for attr.
+<P>
+<table border="0" cellpadding="3" cellspacing="3">
+<tr><td valign="top"><font face="arial" size="-1">MFS_VOLUME_ATTR_VPROTECT</td>
+<td><font face="arial" size="-1">0x40</td>
+<td><font face="arial" size="-1">Volume protected</td></tr>
+<tr><td valign="top"><font face="arial" size="-1">MFS_VOLUME_ATTR_WPROTECT</td>
+<td><font face="arial" size="-1">0x80</td>
+<td><font face="arial" size="-1">Write protected</td></tr></table>
+
+
+<p>When the MFS_VOLUME_ATTR_VPROTECT_WRITE bit is 1, it indicates that the disk is write protected from other games.
+The disk can be written to only when the company code and game code specified by the mfsHInit*Boot() or mfsSetGameCode() function match the company code and game code written in the system ID area of the disk.</p>
+
+<p>When the MFS_VOLUME_ATTR_VPROTECT_READ bit is 1, it indicates that the disk is read protected from other games.
+The disk can be read from only when the company code and game code specified by the mfsHInit*Boot() or mfsSetGameCode() function match the company code and game code written in the system ID area of the disk.</p>
+
+<p>When MFS_VOLUME_ATTR_WPROTECT is specified, the disk is write protected from all games.</p>
+
+<p><strong>Main errors:</strong></p>
+<P>
+<table border="0" cellpadding="3" cellspacing="3">
+<tr><td valign="top"><font face="arial" size="-1">MFS_ERR_NO</td>
+<td><font face="arial" size="-1">Normal termination</td></tr>
+<tr><td valign="top"><font face="arial" size="-1">MFS_ERR_NOTMFSDISK</td>
+<td><font face="arial" size="-1">Not an MFS-format disk
+<br>The disk ID's disk use is not 1.</td></tr>
+<tr><td valign="top"><font face="arial" size="-1">MFS_ERR_VERSION</td>
+<td><font face="arial" size="-1">Different version MFS-format disk
+<br>The version is an unsupported version.</td></tr>
+<tr><td valign="top"><font face="arial" size="-1">MFS_ERR_PROTECT</td>
+<td><font face="arial" size="-1">Write protected disk
+<br>The volume attribute is write protected.  No error occurs in the case of MFS_FORMAT_FORCE.
+MFS_ERR_REFUSE An attempt was made to format a non-RAM area</td></tr></table>
+	 
+			
+<hr>
+</body>
+</html>

@@ -1,0 +1,351 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 11 - RSP Graphics Programming</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. -->
+</head>
+
+<h1>11.7 Vertex Lighting State </h1>
+
+<p>The RCP graphics pipeline provides a number of sophisticated real-time lighting effects, including <a href="../../keywords/index/data/graphics.htm#ambient light" target="keywords">ambient lighting</a> (uniform), <a href="../../keywords/index/data/graphics.htm#diffuse light" target="keywords">diffuse lights</a> (directional), <a href="../../keywords/index/data/graphics.htm#specular highlight" target="keywords">specular highlights</a>, fog, and automatic texture coordinate generation (fog is discussed in its own section later).    To achieve these effects and perform the lighting operations, the following steps must be carried out: </p>
+
+<ol>
+  <li>Reference the <a href="../../n64man/ucode/gspFast3D.htm">gspFast3D</a> <A target="keywords" HREF="../../keywords/index/data/system.htm#microcode">microcode</a> in the "spec" file. 
+  <li>Replace colors with normal components in the vertices of objects to be <a href="../../keywords/index/data/graphics.htm#rendering" target="keywords">rendered</a>. 
+  <li>Define light structures with the parameters of the directional and ambient lights and send them to the RCP. 
+  <li>Modify the state of the RCP to "turn on" lighting. 
+  <li>Define a <a href="../../keywords/index/data/graphics.htm#texture map" target="keywords">texture map</a> of the shape of the specular highlights to be used and describe them to the RCP. 
+  <li>Define structures with the parameters of specular highlights and send them to the RCP. 
+  <li>Render the objects.
+</ol>
+
+<p>Steps 1, 2, 3, 4, and 7 are required for diffuse and ambient lighting. All steps are required for specular lighting. These steps are described in further detail below. </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="01"><h2>11.7.1 RSP Microcode</h2></a>
+<p>Lighting requires the <a href="../../n64man/ucode/gspFast3D.htm">gspFast3D</a> or <a href="../../n64man/ucode/gspFast3D.htm">gspF3DNoN</a> microcode.  This microcode must be referenced in the "spec" file when the ROM image is created.  The part of the microcode that performs the lighting calculations is not normally resident, but is brought in through an <A target="keywords" HREF="../../keywords/index/data/system.htm#overlay">overlay</A> when lighting calls are made.  This has performance implications for rendering scenes with some objects lighted and others colored statically.   Moreover, the lighting overlay overwrites the <a href="../../keywords/index/data/graphics.htm#clipping" target="keywords">clipping</a> microcode, so to achieve highest
+performance, it is best to minimize or avoid completely clipped objects in lighted scenes. </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="02"><h2>11.7.2 Normal Vector Normalization </h2></a>
+
+<p>To light an object, the vertices which make up the object must have normals instead of colors specified.  The normal consists of 3 signed 8-bit numbers representing the x, y, and z components of the normal.  Each component ranges in value from -128 to +127.  The x component goes in the position of the red color of the vertex, the y into the green, and the z into the blue.  Alpha remains unchanged.  The normal vector must be normalized.  This means that square_root(x*x + y*y + z*z)== 127.  To normalize the normal (x,y,z) determine d=127/square_root(x*x + y*y + z*z). Then form XN=x*d; YN=y*d; ZN=z*d. The normalized normal vector is (XN,YN,ZN).  (The libultra/gu square_root function is sqrtf().)</p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="03"><h2>11.7.3 Ambient and Directional Lighting </h2></a>
+
+<p>Lighting helps achieve the effect of depth by altering the way objects appear as they change their orientation.  The RSP microcode supports up to 7 directional lights and 1 ambient light in a scene.  Each directional light has a direction and a color.   Ambient lights have color only.  Regardless of the orientation of the object and the viewer, each
+directional light will continue to shine in the same direction (relative to the "world"  until the light direction is changed. In addition, one ambient light provides uniform illumination. Shadows are not explicitly supported.</p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="03-01"><h3>11.7.3.1 Important Note on Matrix Manipulation</h3></a>
+
+<p>It is important, when lighting, that the projection matrix and the viewing matrix (i.e., <a href="../../keywords/index/data/graphics.htm#matrix" target="keywords">matrices</a> which describe the view into the world coordinate system) be placed on the projection matrix <A target="keywords" HREF="../../keywords/index/data/system.htm#stack">stack</A>(G_MTX_PROJECTION), while matrices used to describe the position and orientation of objects within the world coordinate system are placed on the modeling matrix stack (G_MTX_MODELVIEW). </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="03-02"><h3>11.7.3.2 Light Structure Definition </h3></a>
+
+<p>Lighting information is passed to the RSP in light structures.  Since the number of diffuse lights can vary from 0 to 7, there are 8 macros used to define lights: <a href="../../n64man/gdsp/gdSPDefLights.htm">gdSPDefLights0</a>, <a href="../../n64man/gdsp/gdSPDefLights.htm">gdSPDefLights1</a>, <a href="../../n64man/gdsp/gdSPDefLights.htm">gdSPDefLights2</a>, ... , <a href="../../n64man/gdsp/gdSPDefLights.htm">gdSPDefLights7</a>.  The number which is the last character in the macro signifies the number of diffuse lights in the scene.  Correspondingly, the number of diffuse lights to be rendered determines which macro to use in defining the light structure.  There is always one ambient light. </p>
+
+<p>To define a light structure use <a href="../../n64man/gdsp/gdSPDefLights.htm">gdSPDefLights#</a> where # is the number of diffuse lights to be turned on. For example, for 3 lights define the light structure as follows:</p>
+
+<blockquote><pre>
+Lights    3light_structure1=<a href="../../n64man/gdsp/gdSPDefLights.htm">gdSPDefLights3</a>(
+        ambient_red,ambient_green,ambient_blue,
+        light1red,light1green,light1blue,light1x,light1y,light1z,
+        light2red,light2green,light2blue,light2x,light2y,light2z,
+        light3red,light3green,light3blue,light3x,light3y,light3z)
+</pre></blockquote>
+
+<p>This will define a structure called light_structure1 with an ambient light and 3 directional lights.  The variables with red, green, blue suffixes represent the color of the light and take on values ranging from 0 to 255.  The variables with the x, y, z suffixes represent the direction of the light and take on a range from -128 to +127.  The light direction
+does not need to be normalized.  The convention is that the light direction points toward the light.  This means the light direction indicates the direction TO the light and NOT the direction that the light is shining.   Note the direction the light is shining is the negative of the light direction.   For example if the light is coming from the upper left of the
+world, the direction might be x=-80, y=80, z=0.   If this diffuse light is green, and the ambient light is red, this structure would be defined by: </p>
+
+<blockquote><pre>
+Lights1 my_light=<a href="../../n64man/gdsp/gdSPDefLights.htm">gdSPDefLights1</a>(
+        255,0,0        /* ambient color red */
+        0,255,0,-80,-80,0)    /* green light from the upper left */
+</pre></blockquote>
+
+<p>To avoid any ambient light, make the ambient light black (0,0,0). To include only ambient light, and no diffuse directional light, use <a href="../../n64man/gdsp/gdSPDefLights.htm">gdSPDefLights0</a>: </p>
+
+<blockquote><pre>
+Lights0 my_ambient_only_light=<a href="../../n64man/gdsp/gdSPDefLights.htm">gdSPDefLights0</a>(0,0,255)
+/* blue ambient light */
+</pre></blockquote>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="03-03"><h3>11.7.3.3 Note on Light Direction </h3></a>
+
+<p>The light direction does not need to be normalized.  However, there are some problems that can arise from using light directions with magnitudes that are too large or too small.  The Light direction is multiplied times the Modelview Matrix.  If the Modelview matrix has a scale associated with it then the light direction might overflow or underflow.  If the Modelview matrix has a scale S associated with it and the magnitude of the light direction is L then you should ensure that 
+</p>
+
+<blockquote><pre>
+1 &lt; L*S &lt; 23040
+</pre></blockquote>
+
+<p>in order to keep the light working consistently. If L*S is too big then the normalization of the lights will overflow and you will get lights that are too bright.  If L*S is too small then the normalization will underflow and you will get lights that are too dim.   Note the number 23040 comes from the formula: (L/128)*S &LT; sqrt(32768) because the result of
+the matrix multiply of L (which is a s.7 number, thus the /128) times the matrix (thus S, the scale of the matrix, which is an s15.16 matrix) must produce a number which can be squared (thus the square root) to produce a number which is s.15 (up to 32768).</p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="03-04"><h3>11.7.3.4 Lighting State Set Up </h3></a>
+
+<p>To activate a set of lights in a <a href="../../keywords/index/data/graphics.htm#display list" target="keywords">display list</a> use the macros: <a href="../../n64man/gsp/gSPSetLightsM.htm">gsSPSetLights0</a>, <a href="../../n64man/gsp/gSPSetLightsM.htm">gsSPSetLights1</a>,<a href="../../n64man/gsp/gSPSetLightsM.htm">gsSPSetLights2</a>, ... , <a href="../../n64man/gsp/gSPSetLightsM.htm">gsSPSetLights7</a>. For example, the following macros would activate the lights defined in the examples above: </p>
+
+<blockquote><pre>
+<a href="../../n64man/gsp/gSPSetLightsM.htm">gsSPSetLights3</a>(light_structure1), or
+<a href="../../n64man/gsp/gSPSetLightsM.htm">gsSPSetLights1</a>(my_light), or
+<a href="../../n64man/gsp/gSPSetLightsM.htm">gsSPSetLights0</a>(my_ambient_only_light)
+</pre></blockquote>
+
+<p>in a static display list.  (To activate the lights in a display list dynamically the corresponding <a href="../../n64man/gsp/gSPSetLightsM.htm">gSPSetLights#</a> macros would be used.)  Once lights are activated, they will remain on until the next set of lights is activated.  This implies that setting up a new structure of lights overwrites the old structure of lights in the RSP. </p>
+<p>To turn on the lighting computation so that the lights can take effect, the lighting mode bit needs to be turned on. This is accomplished using the macro: </p>
+
+<blockquote><pre>
+<a href="../../n64man/gsp/gSPSetGeometryMode.htm">gsSPSetGeometryMode</a>(G_LIGHTING)
+</pre></blockquote>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="03-05"><h3>11.7.3.5 Object Rendering </h3></a>
+
+<p>Objects are rendered by issuing geometric primitive commands (see Primitives section).  The objects drawn will use lighted colors instead of vertex colors.  This means any <a href="../../keywords/index/data/graphics.htm#color combiner mode" target="keywords">color combiner mode</a> will use lighted colors in the combination operation in a manner exactly analogous to vertex color use in non-lighted rendering.  Note that lighting is performed at <a href="../../keywords/index/data/graphics.htm#vertex" target="keywords">vertex</a> processing time.  Therefore it is important that lighting state be established prior to <a href="../../n64man/gsp/gSPVertex.htm">gSPVertex</a> and <a href="../../n64man/gsp/gSPVertex.htm">gsSPVertex</a> commands describing vertices in a lit
+<A target="keywords" HREF="../../keywords/index/data/graphics.htm#primitive" target="keywords">primitive</a>.  Lighting state established between a <a href="../../n64man/gsp/gSPVertex.htm">gSPVertex</a> command and a <a href="../../n64man/gsp/gSP1Triangle.htm">gSP1Triangle</a> command will have no effect on that triangle. </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="03-06"><h3>11.7.3.6 Note on Material Properties</h3></a>
+
+<p><a href="../../keywords/index/data/graphics.htm#material properties" target="keywords">Material properties</a> are not explicitly supported.   Instead <a href="../../keywords/index/data/graphics.htm#material" target="keywords">material</a> colors and light colors have been combined in the Light structure.  To obtain the correct light color in a particular situation, multiply the color of the material times the color of the light for each light source and use the result as the light's color.  Since colors range from 0 to 255, the result will have to be normalized by dividing by 255 in order to obtain a resulting light color in the 0 to 255 range. In other words, if your material color is (mr, mg, mb) and your light is (lr,lg,lb), then the light color you would use would be (mr*lr/255, mg*lg/255, mb*lb/255).  For example to light a purple object (color=255,0,255) with yellow ambient light (color=255,255,0) and cyan directional light (color=0,255,255) you could use:   </p>
+
+<blockquote><pre>
+Lights1 material1_light = <a href="../../n64man/gdsp/gdSPDefLights.htm">gdSPDefLights1</a>(
+        255,0,0            /* ambient color red = purple * yellow */
+        0,0,255,-80,-80,0)    /* blue directional light = purple * cyan */
+</pre></blockquote>
+
+
+<p>If you then want to change the material color (i.e., to light an object of different color) you can define a 2nd Light structure with different light colors but the same directions and send it to the RCP after the first object's vertices and before the second objects vertices.  For example to light a second object which is yellow (color=255,255,0) with
+the same yellow and cyan light as above you could use: </p>
+
+<blockquote><pre>
+Lights1 material2_light = <a href="../../n64man/gdsp/gdSPDefLights.htm">gdSPDefLights1</a>(
+        255,255,0    /* ambient color yellow = yellow * yellow */
+        0,255,0,-80,-80,0)/* green directional light = yellow * cyan */
+</pre></blockquote>
+
+<p><strong>Note:</strong>The <a href="../../n64man/gsp/gSPSetLightsM.htm">gsSPSetLights#</a> macros incur a certain <A target="keywords" HREF="../../keywords/index/data/system.htm#overhead">overhead</A> when they are called in order to recalculate the new position of the light.   If the colors of the lights are being altered but the directions will remain the same you can use the <a href="../../n64man/gsp/gSPLight.htm">gSPLight</a> macro to send the new light structure after the 1st primitives vertex command and before the second primitive's.  Note that the directional lights are always referred to as lights 1-N (where N is the number of directional lights in the scene) and the ambient light is always referred to as light N+1. For the example above, the entire sequence would look like:</p>
+
+<blockquote><pre>
+<a href="../../n64man/gsp/gSPSetGeometryMode.htm">gsSPSetGeometryMode</a>(G_LIGHTING),
+<a href="../../n64man/gsp/gSPSetLightsM.htm">gsSPSetLights3</a>(material1_light),
+<a href="../../n64man/gsp/gSPVertex.htm">gsSPVertex</a>(*/ define vertices for object 1 */);
+    /* render object 1 */
+<a href="../../n64man/gsp/gSPLight.htm">gsSPLight</a>(&amp;material2_light,1[0],LIGHT_1),
+<a href="../../n64man/gsp/gSPLight.htm">gsSPLight</a>(&amp;material2_light.a,LIGHT_2),
+<a href="../../n64man/gsp/gSPVertex.htm">gsSPVertex</a>(/* define vertices for object 2 */);
+    /* render object 2 */
+</pre></blockquote>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="04"><h2>11.7.4 Specular Highlights</h2></a>
+
+<p>A specular highlight is the bright spot that shiny objects exhibit when the viewing direction lines up properly with a highly directional light source.  It is caused by the light from the light source being directly reflected into the eye of the observer.  A specular highlight appears on a shiny object wherever the normal of the object bisects the angle
+between the direction of the light and the direction of the eye.  The <a href="../../n64man/ucode/gspFast3D.htm">gspFast3D</a> microcode can support zero, one, or two specular highlights on an object.   If there are more than 2 lights in a scene, an impressive specular highlight effect can still be achieved by choosing the two most important lights and rendering the highlights from them.  Specular highlights use <a href="../../keywords/index/data/graphics.htm#texture mapping" target="keywords">texture mapping</a> so specular highlights cannot usually be used with texture <A target="keywords" HREF="../../keywords/index/data/system.htm#map">mapped</a> <a href="../../keywords/index/data/graphics.htm#surface" target="keywords">surfaces</a>.  Specular highlighting when combined with diffuse lighting can produce very realistic looking surfaces.  While specular highlighting is not required to be on when diffuse lighting is on, diffuse lighting must be on when specular lighting is on.   However, the specular highlights do not necessarily have to correspond to the diffuse lights at all. </p>
+<p>A specular highlight is basically a reflection of a light source.  To render it on the RCP requires a texture map of an image of the light.  The specular highlight from most lights can be represented by a round dot with an exponential or gaussian function representing the intensity distribution.  If the scene contains highlights from other, oddly shaped
+lights such as fluorescent tubes or glowing swords, the difficulty in rendering is no greater provided a texture map of the highlight can be obtained.  The center of the image of the light should be in the center of the texture map and the texture map must be a power of 2 in width and height. In general shinier objects reflect smaller, sharper highlights.  A dull object might have a large white dot for a specular highlight whether it is lit by a glowing sphere or a flaming sword.  A shiny metallic object would reflect the sword as a picture of the sword and the texture map used for highlighting different types of objects can portray this difference.  Note that many objects, such as human skin and cloth, which reflect specular highlights to some extent, often can benefit more from a regular texture map (i.e., hair on the body or a pattern on the cloth.   Since these materials are not shiny the texture mapping ability may be better spent on a conventional texture map. </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="04-01"><h3>11.7.4.1 Specular Highlight Structure Definition </h3></a>
+
+<p>Specular lighting information is passed to the RSP in structures, analogous to the diffuse light case.  The utility <A target="keywords" HREF="../../keywords/index/data/system.htm#procedure">procedure</a> <a href="../../n64man/gu/guLookAtHilite.htm">guLookAtHilite</a> fills in the elements of 2 structures, Hilite and LookAt, for use in highlighting.  To accomplish this, the two structures must be part of the dynamic <A target="keywords" HREF="../../keywords/index/data/system.htm#segment">segment</A>, declared as: </p>
+
+<blockquote><pre>
+Hilite    hilite;
+LookAt    lookat;
+</pre></blockquote>
+
+<p>and <a href="../../n64man/gu/guLookAtHilite.htm">guLookAtHilite</a> must be called for each object in the following manner: </p>
+
+<blockquote><pre>
+<a href="../../n64man/gu/guLookAtHilite.htm">guLookAtHilite</a>(&amp;view_matrix,&amp;lookat,&amp;hilite,
+        Eyex,Eyey,Eyez,
+        Objectx,Obejcty,Objectz,
+        Upx,Upy,Upz,
+        light1x, light1y, light1z,
+        light2x, light2y, light2z,
+        tex_width, tex_height);
+</pre></blockquote>
+
+<p>where the arguments in common with <a href="../../n64man/gu/guLookAt.htm">guLookAt</a> have the same meaning.  Objectx, Objecty, and Objectz are the world coordinates of the center of the object.  light1x, light1y, and light1z are the direction of the light which is reflected in the 1st highlight (should be the same as the direction specified in the <a href="../../n64man/gdsp/gdSPDefLights.htm">gdSPDefLights#</a> macro).  light2x, light2y, and light2z are the direction of the light which causes the second highlight (if you are only using one highlight these may be zero).  tex_width and tex_height are the size of the texture to be used for the highlight and must be powers of 2. </p>
+
+<p>The information in the LookAt structure is sent to the RSP with the LookAt macro:</p>
+
+<blockquote><pre>
+<a href="../../n64man/gsp/gSPLookAt.htm">gsSPLookAt</a>(&amp;lookat)
+</pre></blockquote>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="04-02"><h3>11.7.4.2 Texture Loading </h3></a>
+
+<p>The texture for the highlights must be loaded with <a href="../../n64man/gdp/gDPLoadTextureBlock.htm">gsDPLoadTextureBlock</a> or similar loadblock command.  For example, the following call loads a tex_width by tex_height 4-bit intensity texture: </p>
+
+<blockquote><pre>
+<a href="../../n64man/gdp/gDPLoadTextureBlock_4b.htm">gsDPLoadTextureBlock_4b</a>(hilight_texture,G_IM_FMT_I,
+            tex_width,tex_height,0,
+            G_TX_WRAP|G_TX_NOMIRROR,
+            G_TX_WRAP|G_TX_NOMIRROR,
+            tex_width_power2,tex_height_power2,
+            G_TX_NOLOD,G_TX_NOLOD),
+</pre></blockquote>
+
+<p>where tex_width_power2, tex_height_power2 are the logarithms to the base 2 of the texture width and height. Note that wrapping must be turned on, and the texture sizes must be a power of 2 for proper operation.  The texture loadblock macro sets a texture tile with the parameters necessary for rendering one texture, and thereby one of the specular highlights.  Setting a second texture tile with the parameters for rendering a second specular highlight can be done by loading another texture, but generally the same texture can be used for both highlights.  Instead, setting up a second tile if the specular highlights are sharing one texture map can be accomplished with a set tile call.  The example following assumes the same 4 bit intensity texture as used for the first highlight:  </p>
+
+<blockquote><pre>
+<a href="../../n64man/gdp/gDPSetTile.htm">gsDPSetTile</a>(G_IM_FMT_I,G_IM_SIZ_4b,
+        ((tex_width/2)+7)&gt;&gt;3,
+        0,G_TX_RENDERTILE+1,0,
+        G_TX_WRAP|G_TX_NOMIRROR,
+        tex_width_power2,G_TX_NOLOD,
+        G_TX_WRAP|G_TX_NOMIRROR,
+        tex_height_power2,G_TX_NOLOD),
+</pre></blockquote>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="04-03"><h3>11.7.4.3 Texture Coordinate Transformations </h3></a>
+
+<p>Specular highlighting utilizes the projection of the vertex normals in the x and y directions in screen space to derive the s and t indices respectively for referencing the texture.  The normals must be normalized as described above. The normal projections are scaled to obtain the actual s and t values for the reference.  The scaling is applied in
+the RSP.  It maps the negative most projection of a unit normal, or -1, into zero. It maps the positive most projection, or +1, into a scale value passed in through the <a href="../../n64man/gsp/gSPTexture.htm">gsSPTexture</a> command.  Suppose the maximum texture s, t coordinates are tex_s_max and tex_t_max.  The following command sets the scale, so that a normal project of +1 in the x direction in screen space will be mapped with the <a href="../../keywords/index/data/graphics.htm#texel" target="keywords">texel</a> with s coordinate tex_s_max:   </p>
+
+<blockquote><pre>
+<a href="../../n64man/gsp/gSPTexture.htm">gsSPTexture</a>((tex_s_max)&lt;&lt;6,(tex_t_amx)&lt;&lt;6,0,
+        G_TX_RENDERTILE,G_ON),
+</pre></blockquote>
+
+<p>The left shift of argument by 6 bits is done to account for the S10.5 16-bit internal representation of the texture coordinates (see Texture State below) and a multiplication by one-half in the microcode.</p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="04-04"><h3>11.7.4.4 Highlight Position Description </h3></a>
+
+<p>After the texture is loaded, the highlight position information must be sent to the RSP.  This information is contained in the Hilite structure, and is sent to the RSP with the following macros: </p>
+
+<blockquote><pre>
+<a href="../../n64man/gdp/gDPSetHilite1Tile.htm">gsDPSetHilite1Tile</a>(G_TX_RENDERTILE,&amp;hilite,tex_width,tex_height),
+<a href="../../n64man/gdp/gDPSetHilite2Tile.htm">gsDPSetHilite2Tile</a>(G_TX_RENDERTILE+1,&amp;hilite,tex_width,tex_height),
+</pre></blockquote>
+
+<p>where both highlights share the same texture. </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="04-05"><h3>11.7.4.5 Lighting State Set Up </h3></a>
+
+<p>Specular highlighting requires the lighting and texture generation mode bits to be turned on using the macro.  To do this call: </p>
+
+<blockquote><pre>
+<a href="../../n64man/gsp/gSPSetGeometryMode.htm">gsSPSetGeometryMode</a>(G_LIGHTING|G_TEXTURE_GEN)
+</pre></blockquote>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="04-06"><h3>11.7.4.6 Object Rendering </h3></a>
+
+<p>As with diffuse lighting, objects are rendered by issuing geometric primitive commands (see Primitives section).  For two specular highlights, the 2 cycle mode can be used, with a cycle devoted to each highlight.  In addition, since each highlight can have a different color, two registers are needed to hold the colors for combining.  The Primitive
+Color register holds the first highlight's color and the Environment register holds the second highlight's color. As an example, the following calls:</p>
+
+<blockquote><pre>
+<a href="../../n64man/gdp/gDPSetCycleType.htm">gsDPSetCycleType</a>(G_CYC_2CYCLE),
+<a href="../../n64man/gdp/gDPSetEnvColor.htm">gsDPSetEnvColor</a>(0,255,255,255),        /* cyan */
+<a href="../../n64man/gdp/gDPSetPrimColor.htm">gsDPSetPrimColor</a>(0,0,255,255,0,255),    /* yellow */
+<a href="../../n64man/gdp/gDPSetRenderMode.htm">gsDPSetRenderMode</a>(G_RM_PASS,G_RM_AA_ZB_OPA_SURF2),
+<a href="../../n64man/gdp/gDPSetCombineMode.htm">gsDPSetCombineMode</a>(G_CC_HILITERGBA,G_CC_HILITERGBA2),
+</pre></blockquote>
+
+<p>set up rendering of a cyan and an yellow highlight in opaque <a href="../../keywords/index/data/graphics.htm#Z buffer" target="keywords">Z-buffered</a> antialiased mode.  Note that for most materials the highlight color is the same as the light's color, in contrast to the diffuse light case where the resultant color is often affected by the color of the object it is striking (although metallic objects like gold and brass usually have
+material-colored highlights).  </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="05"><h2>11.7.5 Reflection Mapping </h2></a>
+
+<p><a href="../../keywords/index/data/graphics.htm#reflection mapping" target="keywords">Reflection mapping</a> maps a texture onto an object using the normals of the object to specify where on the object the texture will be mapped.  If this texture is an image of the surroundings of the object, then this rendering will make the object appear to reflect its surroundings.  This effect simulates the rendering of objects made of chrome or having a highly reflecting, mirror-like surface.  </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="05-01"><h3>11.7.5.1 Structure Definition</h3></a>
+
+<p>As with diffuse and specular lighting, information for reflection mapping is passed to the RSP in a structure.  The utility procedure <a href="../../n64man/gu/guLookAtReflect.htm">guLookAtReflect</a> fills in the elements of a LookAt structure for use in reflection mapping. To accomplish this, the structure must be part of the dynamic segment, declared as  </p>
+
+<blockquote><pre>
+LookAt  lookat;
+</pre></blockquote>
+
+<p>and <a href="../../n64man/gu/guLookAtReflect.htm">guLookAtReflect</a> must be called for each object in the following manner: </p>
+
+<blockquote><pre>
+<a href="../../n64man/gu/guLookAtReflect.htm">guLookAtReflect</a>(&amp;view_away_matrix,&amp;lookat,
+        Eyex,Eyey,Eyez,
+        Objectx,Objecty,Objectz,
+        Upx,Upy,Upz);
+</pre></blockquote>
+
+<p>where the arguments in common with <a href="../../n64man/gu/guLookAt.htm">guLookAt</a> have the same meaning.</p>
+
+<p>The LookAt structure contains information about the orientation of the object relative to the viewing direction. This information is sent to the RSP with the LookAt macro.  Objectx, Objecty, and Objectz are the world coordinates of the center of the object. </p>
+
+<blockquote><pre>
+<a href="../../n64man/gsp/gSPLookAt.htm">gsSPLookAt</a>(&amp;lookat)
+</pre></blockquote>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="05-02"><h3>11.7.5.2 Texture Loading</h3></a>
+
+<p>The texture for reflection mapping must be loaded with a loadblock command such as <a href="../../n64man/gdp/gDPLoadTextureBlock.htm">gsDPLoadTextureBlock</a>, described in the example above.  As in the specular highlighting case, wrapping must be turned on, and the texture sizes must be a power of 2 for proper operation.
+</p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="05-03"><h3>11.7.5.3 Texture Coordinate Transformations </h3></a>
+
+<p>Reflection mapping utilizes the projection of the vertex normals in the x and y directions in screen space to derive the s and t indices respectively for referencing the texture.  The normals must be normalized as described above.  The normal projections are scaled to obtain the actual s and t values for the reference.  The scaling is applied in the RSP.  It maps the negative most projection of a unit normal, or -1, into zero.   It maps the positive most projection, or +1, into a scale value passed in through the <a href="../../n64man/gsp/gSPTexture.htm">gsSPTexture</a> command.  Suppose the maximum texture s, t coordinates are tex_s_max and tex_t_max.  The following command sets the scale, so that a normal project of +1 in the x direction in screen space will be mapped with the texel with s coordinate tex_s_max: </p>
+
+<blockquote><pre>
+<a href="../../n64man/gsp/gSPTexture.htm">gsSPTexture</a>((tex_s_max)&lt;&lt;6,(tex_t_max)&lt;&lt;6,0,G_TX_RENDERTILE,G_ON),</pre></blockquote>
+
+<p>The left shift of argument by 5 bits is done to account for the S10.5 16-bit internal representation of the texture coordinates (see Texture State below) after a multiplication by one-half in the microcode.  </p>
+
+<p>The texture coordinate transformation depends on the geometry mode of the RSP. Two modes are supported, regular and linear. </p>
+
+<p>The first mode (regular) derives the texture coordinates from the x and y projection values, multiplied by the above mentioned scale.   In this mode the S coordinate represents the x component in world coordinates of the direction from the object to the point which should be reflected.  The T coordinate represents the Y component. This means that your texture map should represent the following mapping: </p>
+
+<ol>
+  <li>The center of the texture map is what is directly behind you.
+  <li>The circle inscribed in the texture map boundaries is what is directly in front of you. 
+  <li>The circle with a radius of 0.707 times the radius of the circle in 2) are the objects directly to your left, right, up, down, etc.
+  <li>Other points map respectively.
+</ol>
+
+<p>The second mode (linear) derives the texture coordinates from the inverse cosine of the x and y projection values, multiplied by the scale.   In this mode the S coordinate is the angle of the direction of the reflected vector in the XZ plane.  The T coordinate is the angle of the direction in the YZ plane.  This mode is useful because you can use a
+panoramic picture of the horizon for your texture map.  The center of the texture map should be the horizon directly behind you.  The extremes of the texture map to the left and right should be the horizon in the direction which is directly in front of you.  The top of the panoramic texture map should be a constant sky color, and the bottom a
+constant ground color.  When the viewing angle changes it is a simple matter to adjust the S position of the texture map so that the new "directly behind" position is the new center of the texture map.  </p>
+
+<p>Reflection mapping requires the lighting and texture generation mode bits to be turned on. The first mode (regular) is set using the macro </p>
+
+<blockquote><pre>
+<a href="../../n64man/gsp/gSPSetGeometryMode.htm">gsSPSetGeometryMode</a>(G_LIGHTING|G_TEXTURE_GEN)
+</pre></blockquote>
+
+<p>while the second mode (linear) is set with </p>
+
+<blockquote><pre>
+<a href="../../n64man/gsp/gSPSetGeometryMode.htm">gsSPSetGeometryMode</a>(G_LIGHTING|G_TEXTURE_GEN|G_TEXTURE_GEN_LINEAR)</pre></blockquote>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="05-04"><h3>11.7.5.4 Compatibility with Specular Highlighting </h3></a>
+
+<p>Reflection mapping uses texture mapping so it cannot be used with objects which are otherwise texture mapped.  However, reflection mapping can be used in conjunction with one specular highlight.  This is analogous to rendering two specular highlights, and utilizes the 2 cycle mode.  The specular highlight texture is set for a second tile and accessed in the second cycle.  Alternatively, specular highlights can be combined with reflection mapping by incorporating the specular highlights (as bright dots) into the reflection map texture wherever the lights are located.  This technique permits an unlimited number of specular highlights. </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="05-05"><h3>11.7.5.5 Environment Mapping </h3></a>
+
+<p>Reflection mapping provides a simple means for carrying out <a href="../../keywords/index/data/graphics.htm#environment mapping" target="keywords">environment mapping</a>.  The texture map needs to be an image of the environment as seen from the "viewpoint" of the reflecting object.  The main difficulty with this procedure is, of course, generating a suitably realistic texture map. </p>
+
+<p>One simple, yet effective, way to generate an environment map is to first render the scene as viewed by the object. Render all the objects in the scene using a viewing matrix obtained from a <a href="../../n64man/gu/guLookAt.htm">guLookAt</a> call where the Eyex, Eyey, Eyez are at the center of the object and Atx, Aty, Atz are at the eye point.  Render this scene into a 16 bit, 32 pixel x 32 pixel frame buffer which is not part of the main frame buffer.   Then re-render the entire scene into the main frame buffer using the previously rendered 32x32 pixel texture map as an environment map for the reflective object. Larger texture maps can be used by playing with tiling.  This is not a mathematically perfect way to generate an environment map, but it is relatively cheap, and very effective.  Try using different <a href="../../keywords/index/data/graphics.htm#aperture angle" target="keywords">aperture angles</a> in the perspective call while rendering the texture map and turning G_TEXTURE_GEN_LINEAR on or off to tweak the effect.</p>
+
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+</body> </html>

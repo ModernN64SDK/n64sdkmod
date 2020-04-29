@@ -1,0 +1,58 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.>
+<TITLE>guMtxL2F</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>guMtxL2F<FONT size="+0"> [Function]</FONT></H1>
+
+<p><h3>Function</h3></p>
+
+<p>guMtxL2F</p>
+<P>
+<i>Converts a matrix from fixed point to floating point </i>
+</P>
+<H3>Syntax</H3>
+<p>
+<PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gu.htm">gu.h</A> */
+void guMtxL2F(float mf[4][4], Mtx *m);</CODE></PRE></p>
+
+<H3>Arguments</H3>
+<p><DL>
+  <DT><B>mf</B>
+  <DD>Resulting 4x4 floating-point matrix
+  <DT><B>m</B>
+  <DD>Pointer to 4x4 fixed-point matrix
+</DL></p>
+<H3>Returned value</H3>
+<P>
+None.
+</P>
+<H3>Description</H3>
+<P>
+Converts the the 4x4 fixed-point matrix <B>m</B> into the floating-point matrix <B>mf</B>.  This function provides a useful way to process matrices on the host CPU. For a detailed explanation about the fixed-point format see <A HREF="../gsp/gSPMatrix.htm">gSPMatrix</A>.  The opposite conversion from floating point to fixed point is handled with the <A HREF="guMtxF2L.htm">guMtxF2L</A> function.
+</P>
+<H3>Note</H3>
+<P>
+The Mtx structure looks like this:
+<PRE><CODE>typedef long  Mtx_t[4][4];
+typedef union {
+     Mtx_t          m;
+     long long int  force_structure_alignment;
+} Mtx;
+</CODE></PRE>
+</P>
+<H3>See also</H3>
+<P>
+<A HREF="../gsp/gSPMatrix.htm">gSPMatrix</A>, <A HREF="guMtxF2L.htm">guMtxF2L</A>
+</P>
+<H3>Revision history</H3>
+<P>
+03/01/99  Completely rewritten.
+</P>
+</BODY>
+</HTML>

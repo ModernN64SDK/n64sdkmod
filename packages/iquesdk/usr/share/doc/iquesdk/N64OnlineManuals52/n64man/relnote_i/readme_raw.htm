@@ -1,0 +1,68 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<!--
+Editors Notes:
+  PWC- updated formatting
+-->
+<TITLE>Internalizing the Pi/EPi Raw functions(1998/10/21)</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H2><B> Internalizing the Pi/EPi Raw functions(1998/10/21)</B></H2>
+<HR>
+<P>
+<B>1. The Former Problem - before patch4(980828)</B>
+</P>
+<P>
+When a Pi/Epi Raw function (osPiRawReadIo, osPiRawWriteIo, oEPiRawReadIo, oEPiRawWriteIo, osPiRawStartDma and osEPiRawStartDma) is interrupted during execution, the process is moved to another thread.  But when Pi is accessed by that thread, the wrong data can be read if Pi is in the Busy state. 
+</P>
+<P>
+<B>2. The Present Correction - after patch5(981021)</B>
+</P>
+<P>
+This problem does not occur for non-Raw functions, namely osPiReadIo, osPiWriteIo, oEPiReadIo, oEPiWriteIo, osPiStartDma and osEPiStartDma.
+</P>
+<P>
+This patch prevents the problem from occurring by making all Pi/Epi Raw functions internal functions which, as a rule, are not used in the game.
+</P>
+<P>
+Accordingly, the Raw functions have been renamed as follows: 
+</P>
+<P>
+ osPiRawReadIo -&gt;__osPiRawReadIo<BR>
+ osPiRawWriteIo -&gt;__osPiRawWriteIo<BR>
+ oEPiRawReadIo -&gt;__oEPiRawReadIo<BR>
+ oEPiRawWriteIo -&gt;__oEPiRawWriteIo<BR>
+ osPiRawStartDma -&gt;__osPiRawStartDma<BR>
+ osEPiRawStartDma -&gt;__osEPiRawStartDma
+</P>
+<P>
+If you have used these Raw functions in the past, please as a rule use them henceforth as non-Raw functions.
+</P>
+<P>
+<B>3. Using the Raw Functions</B>
+</P>
+<P>
+If, for some reason, you need to use the Raw functions, this can be done by performing the following extern declarations. 
+</P>
+<P>
+However, because of the problem explained above, you need to be careful when using them.  Please employ some method such as accessing Pi only from a specific thread in the game.
+</P>
+<P>
+ extern s32 __osPiRawWriteIo(u32, u32);<BR>
+ extern s32 __osPiRawReadIo(u32, u32 *);<BR>
+ extern s32 __osEPiRawWriteIo(OSPiHandle *, u32 , u32);<BR>
+ extern s32 __osEPiRawReadIo(OSPiHandle *, u32 , u32 *);<BR>
+ extern s32 __osPiRawStartDma(s32, u32, void *, u32);<BR>
+ extern s32 __osEPiRawStartDma(OSPiHandle *, s32 , u32 ,<BR>
+ void *, u32 );
+</P>
+<HR>
+<P>
+This document is installed under usr/src/PR/doc/patches/.
+</P>
+</BODY>
+</HTML>

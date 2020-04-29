@@ -1,0 +1,26 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 14 - Texture Rectangles (Hardware Sprites)</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. -->
+</head>
+
+<h1>14.7 Z buffering Texture Rectangles</h1>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="01"><h2>14.7.1 Primitive Z</h2></a>
+
+<p>The texture rectangle has no Z value associated with it directly, however you can use the primitive Z register (<a href="../../n64man/gdp/gDPSetPrimDepth.htm">g*DPSetPrimDepth()</a>). To force the <a href="../../keywords/index/data/graphics.htm#Z buffer" target="keywords">Z buffer</a> logic to use primitive Z rather than pixel Z, you must use the following command: </p>
+
+<blockquote><pre>
+<a href="../../n64man/gdp/gDPSetDepthSource.htm">gsDPSetDepthSource</a>(G_ZS_PRIM)
+</pre></blockquote>
+
+<p>You must also use a RenderMode that enables Z buffering, such as G_RM_ZB_OPA_SURF. To Z buffer <a href="../../keywords/index/data/graphics.htm#sprite" target="keywords">sprite</a>, you would have to insert a <a href="../../n64man/gdp/gDPSetPrimDepth.htm">g*DPSetPrimDepth()</a> command before the rectangle command of each sprite. Because the primitive Z is explicitly buffered in the pipeline, it is not necessary to insert pipe sync commands before setting the register. </p>
+
+<p>Note that Z buffering can only be used in 1 and 2-cycle mode. In copy and fill mode, you should use the RenderMode G_RM_NOOP to effectively disable Z buffering and put the pipeline logic in a safe state. </p>
+
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+</body> </html>

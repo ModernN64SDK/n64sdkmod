@@ -1,0 +1,68 @@
+<NIFF Style>
+
+OPA_SURF    ->	Opaque Surface
+OPA_INTER   ->	Opaque Interpenetration
+OPA_DECAL   ->	Opaque Decal
+TEX_EDGE    ->	Texture Edge
+XLU_SURF    ->	Transparent Surface
+XLU_INTER   ->	Transparent Interpenetration
+XLU_DECAL   ->	Transparent Decal
+
+<N64 Style>
+
+In the document of NIFF1.0, we describe the flag setting render mode.
+But this may be hard to use, especially for designers.
+So we changed N64 type render mode definition.
+Please set the following name and new n64 style bit.
+These names are "#define" macro name in /usr/include/PR/gbi.h, they are 
+usually used by N64 programmers.
+
+- obj_render_type0 -
+
+31          22 21                         0
+[     0x4     |       render_macro        ]
+
+render_macro  bit     name
+
+OPA_SURF      0x100   Opaque Surface
+XLU_SURF      0x101   Transparent Surface
+OPA_DECAL     0x102   Opaque Decal(Only zbuffer using)
+XLU_DECAL     0x103   Transparent Decal(Only zbuffer using)
+OPA_INTER     0x104   Opaque Interpenetration(Only Anti-alias and zbuffer using)
+XLU_INTER     0x105   Transparent Interpenetration(Only Anti-aliasing and zbuffer using)
+TEX_EDGE      0x106   Texture Edge(Without Point sampling and zbuffer using)
+TEX_INTER     0x107   Texture Interpenetration(Only Anti-aliasing and zbuffer using)
+SUB_SURF      0x108   Subcutaneous Surface(Only Anti-aliasing)
+PCL_SURF      0x109   Particle Surface
+OPA_TERR      0x10a   Opaque Terrain(Only Anti-aliasing)
+TEX_TERR      0x10b   Texture Terrain(Only Anti-aliasing)
+SUB_TERR      0x10c   Subcutaneous Terrain(Only Anti-aliasing)
+CLD_SURF      0x10d   Cloud Surface(Only Point sampling)
+OVL_SURF      0x10e   Overlay Surface(Only Point sampling and zbuffer using)
+ADD	      0x10f   Add pixel color onto memory color
+NOOP	      0x110   Noop
+PASS	      0x111   Pass
+FOG_SHADE_A   0x112   Shading Fog
+FOG_PRIM_A    0x113   Primitive Fog
+
+- obj_render_type1 -
+
+render_macro  bit     name
+
+OPA_SURF      0x200   Opaque Surface
+XLU_SURF      0x201   Transparent Surface
+OPA_DECAL     0x202   Opaque Decal(Only zbuffer using)
+XLU_DECAL     0x203   Transparent Decal(Only zbuffer using)
+OPA_INTER     0x204   Opaque Interpenetration(Only Anti-alias and zbuffer using)
+XLU_INTER     0x205   Transparent Interpenetration(Only Anti-aliasing and zbuffer using)
+TEX_EDGE      0x206   Texture Edge(Without Point sampling and zbuffer using)
+TEX_INTER     0x207   Texture Interpenetration(Only Anti-aliasing and zbuffer using)
+SUB_SURF      0x208   Subcutaneous Surface(Only Anti-aliasing)
+PCL_SURF      0x209   Particle Surface
+OPA_TERR      0x20a   Opaque Terrain(Only Anti-aliasing)
+TEX_TERR      0x20b   Texture Terrain(Only Anti-aliasing)
+SUB_TERR      0x20c   Subcutaneous Terrain(Only Anti-aliasing)
+CLD_SURF      0x20d   Cloud Surface(Only Point sampling)
+OVL_SURF      0x20e   Overlay Surface(Only Point sampling and zbuffer using)
+ADD	      0x20f   Add pixel color onto memory color
+NOOP	      0x210   Noop

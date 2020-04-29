@@ -1,0 +1,59 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<link rel=stylesheet type="text/css" HREF="../N64man.css">
+<!--
+Editors Notes:
+  JLR made formating edits.
+  PWC- updated formatting
+  MAP- added links, updated format
+-->
+
+<title>alBnkfNew</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<font style="font-size: 12pt"><b>alBnkfNew</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p><i>Initializes a bank file for use on Nintendo 64</i></p>
+
+<h3>Syntax</h3>
+<p>
+<blockquote>
+    <pre>#include &lt;libaudio.h&gt;     /* <a href="../../header/libaudio.htm">libaudio.h</a> */
+void alBnkfNew(ALBankFile *ctl, u8 *tbl);</pre>
+</blockquote>
+</p>
+<h3>Arguments</h3>
+<p>
+<dl>
+    <dt><strong>bank</strong></dt>
+    <dd>Pointer to the control (.ctl) data <br>
+        <br>
+        </dd>
+    <dt><strong>tbl</strong></dt>
+    <dd>Pointer to the wavetable (.tbl) data<br>
+        </p>
+        </dd>
+</dl>
+
+<h3>Description</h3>
+
+<p>The instrument compiler ic creates two files, the control (.ctl) file and the wavetable (.tbl) file. The control file contains instrument performance information and the wavetable file contains the actual wavetable data.</p>
+
+<p>The control file format specifies that references to bank data be stored as offsets from the beginning of the control file. To improve runtime performance, the offsets are converted to virtual addresses by <tt>alBnkfNew</tt>.</p>
+
+<p>Typically, the control file is loaded into DRAM before the wavetable file. The wavetable file is usually large. To save DRAM space, the wavetable is stored in ROM and samples are DMA'd to DRAM, as necessary. If your wavetable file is small, you can optionally load it into DRAM, which will minimize the number of DMA requests processed during sequence playback.
+</p>
+
+<h3>See Also</h3>
+
+<p><a href="../tool/ic.htm">ic</a>, <a
+href="alSeqpSetBank.htm">alSeqpSetBank</a></p>
+
+<h3>Revision History</h3>
+<p>1999/04/30  Changed Format</p>
+<br><br>
+</body>
+</html>

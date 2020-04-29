@@ -1,0 +1,83 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Graphics-Chapter 5 Semi-Transparent Objects & the Alpha Value</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/23/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<font style="font-size:12pt"><B>5.4  Running the Sample Program</B></FONT>
+<br>
+<P>
+Now that we have covered the most important points regarding the display of semi-transparent objects, we will look at the gfx5.c sample program source for concrete examples.<br><br>
+
+     First compile and run gfx5.c without making any changes.  The intensity texture "circle"  was also used in gfx4.c.  Here in gfx5.c, the intensity of this texture is used for the alpha value in order to display a semi-transparent cube.
+</P>
+<P>
+<IMG SRC="image14.gif" WIDTH="457" HEIGHT="118">
+</P>
+<P>
+<B>Figure 5-3  Screen shots from gfx5.c sample program</B>
+</P>
+<P>
+In this example, the combine mode is set as follows:
+
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=5><TR>
+	<TD NOWRAP COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE><B>List 5-1</B>
+</TR><TR>
+	<TD NOWRAP BGCOLOR="666666" WIDTH="4" ALIGN=LEFT VALIGN=TOP><HR NOSHADE SIZE=0></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>
+<FONT COLOR="#000080"><PRE><CODE>  /*
+   *  The shade color is multiplied by the texture intensity and output 
+   *  by the Combiner for the color, while the texture alpha (the intensity
+   *  becomes the color) is output by the Combiner for the alpha.
+   */
+  gDPSetCombineLERP(glistp++, SHADE,      0, TEXEL0,      0,
+                                  0,      0,      0, TEXEL0,
+                              SHADE,      0, TEXEL0,      0,
+                                  0,      0,      0, TEXEL0);</CODE></PRE></FONT>
+	</TD>
+</TR></TABLE>
+<P>
+As you can see from looking at the source, the mode is set so the product of the shade color multiplied by the texel color is output for the color, and the texel alpha is output for the alpha value.   (Because this is an intensity texture, the intensity becomes the alpha value).
+<br><br>
+     As mentioned earlier, the rendering mode is changed to G_RM_XLU_SURF and G_RM_XLU_SURF2.  When operating in 1-Cycle mode, you need to specify for the second cycle's rendering mode the rendering mode of the first cycle with "2" attached.  
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=5><TR>
+	<TD NOWRAP COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE><B>List 5-2</B></FONT>
+</TR><TR>
+	<TD NOWRAP BGCOLOR="666666" WIDTH="4" ALIGN=LEFT VALIGN=TOP><HR NOSHADE SIZE=0></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>
+<FONT COLOR="#000080"><PRE><CODE>  /* Set rendering mode (semi-transparent) */
+  gDPSetRenderMode(glistp++, G_RM_XLU_SURF, G_RM_XLU_SURF2);</CODE></PRE></FONT>
+	</TD>
+</TR></TABLE>
+<P>
+  Next try running gfx5.c after changing "undef" to "define" on line 28.  When this is done, mapping is performed in the same way, but using a color texture in RGBA16 format instead of an intensity texture.  For this, the combine mode is set so that both the color and the alpha of the texel are output as is.
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=5><TR>
+	<TD NOWRAP COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE><B>List 5-3</B>
+</TR><TR>
+	<TD NOWRAP BGCOLOR="666666" WIDTH="4" ALIGN=LEFT VALIGN=TOP><HR NOSHADE SIZE=0></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>
+<FONT COLOR="#000080"><PRE><CODE>  /* Texel color and alpha are output as is from the Combiner  */
+  gDPSetCombineLERP(glistp++, 0, 0, 0, TEXEL0,
+                              0, 0, 0, TEXEL0,
+                              0, 0, 0, TEXEL0,
+                              0, 0, 0, TEXEL0);</CODE></PRE></FONT>
+	</TD>
+</TR></TABLE>
+<P>
+ In RGBA16 format, the alpha value of the texture is expressed by 1bit, so there is a clear demarcation between completely transparent places and completely opaque places.  In other words, a 1bit alpha value is input to the Combiner as 0 or scaled up to 256.
+</P>
+<P>
+<IMG SRC="image15.gif" WIDTH="457" HEIGHT="118">
+</P>
+<P>
+<B>Figure 5-4  Screen shot from sample program gfx5.c when  __COLOR__ is defined</B>
+</P>
+</BODY>
+</HTML>

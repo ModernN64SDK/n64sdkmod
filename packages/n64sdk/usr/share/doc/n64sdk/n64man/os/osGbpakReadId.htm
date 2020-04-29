@@ -1,0 +1,68 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<html>
+
+	<head>
+		<link rel="STYLESHEET" type="text/css" href="../N64man.css">
+		<!-- Editor's Notes: JLR made reformating and copy edits.
+                    MAP- added links, updated format -->
+		<title>osGbpakReadId</title>
+	</head>
+
+	<body bgcolor="white">
+		<font style="font-size: 12pt"><b>osGbpakReadId</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+		<p><i>Reads the Game Boy Game Pak Registration Area </i></p>
+		<h3>Syntax</h3>
+		<pre>#include &lt;ultra64.h&gt;     /* <a href="../../header/ultra64.htm">ultra64.h</a> */
+s32 osGbpakReadId(OSPfs *pfs, u8 *id, u8 *status);</pre>
+		<h3>Description</h3>
+		<p>The <tt>osGbpakReadId</tt> function reads the data in the registration area (0x100 ~ 0x14f) of the Game Boy Game Pak ROM and checks the data to confirm that the Game Boy Game Pak can be accessed correctly.</p>
+		<p>This function should always be called after N64 Transfer Pak is initialized and before reading or writing data. The function uses <a href="osGbpakGetStatus.htm">osGbpakGetStatus</a> to check the status of the N64 Transfer Pak and <a href="osGbpakPower.htm">osGbpakPower</a> to turn on the power. Thus, it is not necessary to call these functions.</p>
+		<p>The OSpfs structure pfs is the N64 Transfer Pak control structure. It must first be initialized by <a href="osGbpakInit.htm">osGbpakInit</a>.</p>
+		<p>Registration data in ROM are stored in the OSGbpakId structure *id. The elements of the OSGbpakId structure are as follows. For more information, see references such as Submitting Game Boy Master ROM.</p>
+		<pre>typedef struct {
+  u16	fixed1;             /* Fixed data (0x00, 0xc3) */
+  u16	start_address;      /* Program start address */
+  u8	nintendo_chr[0x30]; /* &quot;Nintendo&quot; character data */
+  u8	game_title[16];     /* Game title */
+  u16	company_code;       /* Company code */
+  u8	body_code;          /* Body code */
+  u8	cart_type;          /* Game pak type */ <b>(see note below)</b>
+  u8	rom_size;           /* ROM size */
+  u8	ram_size;           /* RAM size */
+  u8	country_code;       /* country code */
+  u8	fixed_data;         /* fixed data(0x33) */
+  u8	version;            /* Mask ROM version number */
+  u8	isum;               /* Complement check */
+  u16	sum;                /* Sum check */
+} OSGbpakId;</pre>
+		<p><b>Note: Please refer to the <i>Game Boy Programming Manual,</i> Chapter 8 &quot;Game Boy Memory Controllers&quot; for additional information.</b></p>
+		<p>The N64 Transfer Pak status is returned to *status. Please refer to <tt>osGbpakGetStatus</tt> function for more detail for status.</p>
+		<p>The following processes are performed internally in <tt>osGbpakReadId</tt> function.</p>
+		<p>First, the N64 Transfer Pak status is examined and the value is returned to status. Next, the status is checked, and if things are normal, then power is turned ON to the Game Boy Game Pak.<br>
+		The function then checks whether the Game Boy Game Pak data are read normally. It reads the registration area data and checks whether the &quot;Nintendo&quot; character data area and the complement check are correct. When proper reading of the data is confirmed, the registration data in ROM are stored in *id. If there is an error in reading, the PFS_ERR_CONTRFAIL error is returned.</p>
+		<p>After this function is called, the inserted Game Boy Game Pak should always be confirmed to be one supported by the application. This should usually be checked by examining both the manufacturer code (company_code) and the game title (game_title). This is necessary because developers can give a game any name they desire, so more than one game may have the same game title. Note that the Game Boy Game Paks that were first sold did not contain a manufacturer code.</p>
+		<p>Return value is an error code. If the function terminates normally, a value of 0 is returned. If an error occurs, one of the following error codes is returned:</p>
+		<p><b>PFS_ERR_NOPACK</b></p>
+		<blockquote>
+			<p>Nothing is inserted in the specified Controller.</p>
+		</blockquote>
+		<p><b>PFS_ERR_DEVICE</b></p>
+		<blockquote>
+			<p>A device other than the N64 Transfer Pak is inserted in the Controller.</p>
+		</blockquote>
+		<p><b>PFS_ERR_CONTRFAIL</b></p>
+		<blockquote>
+			<p>The Controller may not be connected correctly, or there may be some problem with the N64 Transfer Pak or the Controller connector.<br>
+			If this error is issued, display a message such as the following to the screen: The Game Boy Game Pak connection is abnormal. Please turn off power to the N64 Control Deck and refer to the N64 Transfer Pak User's Manual.</p>
+		</blockquote>
+		<p><b>PFS_ERR_NO_GBCART</b></p>
+		<blockquote>
+			<p>No Game Boy Game Pak is inserted in the N64 Transfer Pak.</p>
+		</blockquote>
+		<h3>See Also</h3>
+		<p><a href="osGbpakInit.htm">osGbpakInit</a>, <a href="osGbpakGetStatus.htm">osGbpakGetStatus</a>, <a href="osGbpakPower.htm">osGbpakPower</a>, <a href="osGbpakReadWrite.htm">osGbpakReadWrite</a>, <a href="osGbpakReadId.htm">osGbpakReadId</a>, and <a href="osGbpakCheckConnector.htm">osGbpakCheckConnector</a></p>
+		<h3>Revision History</h3>
+		<p>1999/04/30 Changed format
+	</body>
+
+</html>

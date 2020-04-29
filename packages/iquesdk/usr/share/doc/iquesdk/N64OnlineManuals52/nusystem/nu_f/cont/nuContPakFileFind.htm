@@ -1,0 +1,70 @@
+<HTML>
+<HEAD>
+<TITLE>nuContPakFileFind (Macro)</TITLE>
+</HEAD>
+
+<BODY bgcolor="#FFFFFF">
+<font face="arial" size="-1">
+
+<P>
+<FONT size="5"><b><IMG src="../nusystem2.gif" height="30" width="176">Function</b></FONT>
+
+<HR>
+<P>
+<FONT size="3"><b>nuContPakFileFind</b> (Macro)</FONT>
+
+<HR>
+<P>
+<b>Syntax</b>
+<font face="courier" size="2">
+<pre>void nuContPakFileFind(NUContPakFile *file, u8 *noteName, u8 *extName)</pre>
+</font>
+
+<b>Arguments</b>
+<font face="courier" size="2">
+<pre>
+*file        Controller Pak structure
+*noteName    game note name (N64 font code 16 bytes)
+*extName     note extension (N64 font code 1 byte)</pre>
+</font>
+
+<b>Return Value</b>
+<font face="courier" size="2">
+<pre>None</pre>
+</font>
+
+<b>Description</b>
+
+<p><i>Searches for game note</i>
+
+<p>Searches to see whether the specified game note is in the Controller Pak. If the game note is found, then the note number is returned to file.file_no. If the note is not found, then PFS_INVALID is returned to file.error. 
+
+
+<p>For "file," the device must be opened by the nuContPakOpen function.
+
+<p>Before this function is called, the company code and game code must be registered by the nuContPakCodeSet function. 
+
+<p>noteName is the name of the game note in 16 bytes of N64 font code. If the game note name is not a full 16 bytes, assign 0x00 to the unused area.
+
+<p>extName specifies the extension for use of multiple notes. The size is 4 bytes, but only 1 byte is usable, and it is normally 0x00. Additional notes
+get assigned 0x1A~0x33 (N64 font code 'A'~'Z'). 
+
+
+<p>The value returned by the osPfsFileFind function is stored in file.error. 
+
+
+<p>This function is a macro for the nuContPakFileOpen function. 
+
+<p><b>See Also</b>	
+<p><a href="nuContPakOpen.htm">nuContPakOpen</a>, <a
+href="nuContPakFileOpen.htm">nuContPakFileOpen</a>, <a
+href="nuContPakFileOpenJis.htm">nuContPakFileOpenJis</a>, and <a
+href="nuContPakFileFindJis.htm">nuContPakFileFindJis</a>
+
+<p>
+<hr>
+
+<p align="right"><a href="index.htm"><img src="../index.gif" border="0"
+width="65" height="17"></a>
+</body>
+</html>

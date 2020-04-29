@@ -1,0 +1,244 @@
+<HTML>
+<HEAD>
+<TITLE>Chapter 3 Binary Format</TITLE>
+</HEAD>
+<BODY LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff">
+
+<font face="arial" size="-1">
+<b><font size="3">Chapter 3 Binary Format</b></font>
+<HR>
+
+<b>3-6 Shape List</b>
+<P>
+<u>1. ShapeList Area</u>
+<P>
+ShapeList describes parameters concerning shape data. ShapeList is mapped as follows. 
+
+<p>
+<table border="1" cellpadding="3" cellspacing="3">
+<tr>
+<th rowspan="9"><font face="arial" size="-1">
+ShapeListHeader
+</center>
+</th>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+shape_list_tag
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+shape_list_header_size
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+shape_list_size
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+shape_num
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+nintendo_extension_block_size
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+user_extension_block_size
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+shape_num_byte(0)
+</td>
+</tr>
+<tr>
+<td colspan="2"><font face="arial" size="-1">
+<center>
+...
+</center>
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+shape_num_byte(shape_num - 1)
+</td>
+</tr>
+<tr>
+<th rowspan="5"><font face="arial" size="-1">
+<center>
+
+</center>
+</th>
+<td colspan="2"><font face="arial" size="-1">
+<center>
+Shape(0)
+</center>
+</td>
+</tr>
+<tr>
+<td colspan="2"><font face="arial" size="-1">
+<center>
+...
+</center>
+</td>
+</tr>
+<tr>
+<td colspan="2"><font face="arial" size="-1">
+<center>
+Shape(shape_num - 1)
+</center>
+</td>
+</tr>
+<tr>
+<td colspan="2"><font face="arial" size="-1">
+<center>
+NintendoExtensionBlock
+</center>
+</td>
+</tr>
+<tr>
+<td colspan="2"><font face="arial" size="-1">
+<center>
+UserExtensionBlock
+</td>
+</tr>
+</table>
+<p>
+
+Figure: ShapeList Area Memory Map
+
+<p>
+<table border width="600">
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 shape_list_tag
+</td>
+<td>
+<font size=3><font face="arial" size="-1">
+Tag indicating ShapeList. Set the following flag. 
+<pre><font face="courier" size="2"><b>TAG_SHAPE_LIST&#9;0x00030000</b></pre></font>
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 shape_list_header_size
+</td>
+<td>
+<font face="arial" size="-1">
+Size of ShapeListHeader
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 shape_list_size
+</td>
+<td>
+<font face="arial" size="-1">
+Size of ShapeList
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 shape_num
+</td>
+<td>
+<font face="arial" size="-1">
+Number of shapes in ShapeList. In the case where the number of shape_num is equal to the number of SHAPE_NUM, shape_num_byte and shape would be equal to SHAPE_NUM.
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 nintendo_extension_block_size
+</td>
+<td>
+<font face="arial" size="-1">
+Nintendo extension block size
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 user_extension_block_size
+</td>
+<td>
+<font face="arial" size="-1">
+User extension block size
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 shape_num_byte
+</td>
+<td>
+<font face="arial" size="-1">
+Number of bytes corresponding to Shape
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+<a href="./seg6-2.htm">Shape</a>
+</td>
+<td>
+<font face="arial" size="-1">
+Area for one shape data
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+NintendoExtensionBlock
+</td>
+<td>
+<font face="arial" size="-1">
+Nintendo extension block
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+UserExtensionBlock
+</td>
+<td>
+<font face="arial" size="-1">
+User extension block
+</td></tr></table>
+<p>
+
+<hr>
+<p align="right"><a href="../index.htm">
+<img src="../../../gif/index.gif"
+border="0" width="65" height="17"></a>
+&nbsp; <a href="./seg6-2.htm">
+<img src="../../../gif/next.gif"
+border="0" width="65" height="17"></a></p>
+
+
+</body>
+</html>
+
+

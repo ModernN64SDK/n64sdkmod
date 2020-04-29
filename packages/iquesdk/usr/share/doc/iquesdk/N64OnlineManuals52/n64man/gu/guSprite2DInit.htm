@@ -1,0 +1,184 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.>
+<TITLE>guSprite2DInit</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>guSprite2DInit<FONT size="+0"> [Function]</FONT></H1>
+
+<p><h3>Function</h3></p>
+
+<p>guSprite2DInit</p>
+<P>
+<i>Initializes a sprite data structure</i>
+</P>
+<H3>Syntax</H3>
+<p>
+<PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gu.htm">gu.h</A> */
+void guSprite2DInit(
+        uSprite *SpritePointer,
+        void     *SourceImagePointer,
+        void     *TlutPointer,
+        int      Stride,
+        int      SubImageWidth,
+        int      SubImageHeight,
+        int      SourceImageType,
+        int      SourceImageBitSize,
+        int      SourceImageOffsetS,
+        int      SourceImageOffsetT);</CODE></PRE></p>
+
+<H3>Arguments</H3>
+<p><DL>
+  <DT><B>SpritePointer</B>
+  <DD>Pointer to the resulting uSprite structure
+  <DD>
+  <DT><B>SourceImagePointer</B>
+  <DD>Pointer to the texture image base
+  <DD>
+  <DT><B>TlutPointer</B>
+  <DD>Pointer to color index
+  <DD>
+  <DT><B>Stride</B>
+  <DD>Base image texel width
+  <DD>
+  <DT><B>SubImageWidth</B>
+  <DD>Displayed image texel width
+  <DD>
+  <DT><B>SubImageHeight</B>
+  <DD>Displayed image texel height
+  <DD>
+  <DT><B>SourceImageType</B>
+  <DD>Texture image format
+  <DD><B>G_IM_FMT_RGBA</B> (RGBA format)
+  <DD><B>G_IM_FMT_YUV</B> (YUV format)
+  <DD><B>G_IM_FMT_CI</B> (CI format)
+  <DD><B>G_IM_FMT_IA</B> (IA format)
+  <DD><B>G_IM_FMT_I</B> (I format)
+  <DD>
+  <DT><B>SourceImageBitSize</B>
+  <DD>Pixel component size
+  <DD><B>G_IM_SIZ_4b</B> (4 bits per texel)
+  <DD><B>G_IM_SIZ_8b</B> (8 bits per texel)
+  <DD><B>G_IM_SIZ_16b</B> (16 bits per texel)
+  <DD><B>G_IM_SIZ_32b</B> (32 bits per texel)
+  <DD>
+  <DT><B>SourceImageOffsetS</B>
+  <DD>Offset from origin of base image to texel column
+  <DD>
+  <DT><B>SourceImageOffsetT</B>
+  <DD>Offset from origin of base image to texel row
+</DL></p>
+
+<H3>Returned value</H3>
+<P>
+None.
+</P>
+<H3>Description</H3>
+<P>
+Initializes the Sprite structure according to the specified arguments for use with the sprite microcode.
+<DL>
+  <DT>Regarding the <B>TlutPointer</B> argument:
+  <DD>Set to NULL if not using CI images.
+  <DD>
+  <DT>Regarding the <B>SourceImageType</B> argument:
+    <DL>
+    <DT><B>G_IM_FMT_RGBA</B>
+    <DD>Each texel comprises four elements of information: RGB (red, green, blue) and alpha (opacity).
+    <DT><B>G_IM_FMT_YUV</B>
+    <DD>Each texel comprises a Y (intensity) component and a UV (color difference) component.
+    <DT><B>G_IM_FMT_CI</B>
+    <DD>Each texel is comprised of index information specifying palette data.
+    <DT><B>G_IM_FMT_IA</B>
+    <DD>Each texel is comprised of I (intensity) information and alpha information.
+    <DT><B>G_IM_FMT_I</B>
+    <DD>Each texel is a texture with only I information. Since this is extremely compact, it is useful when only a few colors are being used.
+    <DT>
+    <DT>The texture image format can be selected from among 10 types. Refer to the following table for valid combinations of format and size and select the most suitable format for the texture compression method and type.
+    <DT>
+    <DT>
+<TABLE BORDER="1" CELLSPACING="0" CELLPADDING="3">
+<TR>
+<TD COLSPAN=2 ROWSPAN=2></TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle" COLSPAN=4><B>G_IM_SIZ_</B> (Size)</TD>
+</TR><TR>
+<TD NOWRAP ALIGN="center" VALIGN="middle"><B>4b</B></TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle"><B>8b</B></TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle"><B>16b</B></TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle"><B>32b</B></TD>
+</TR><TR>
+<TD NOWRAP ALIGN="center" VALIGN="middle" ROWSPAN=5><B>G_IM_FMT_<BR></B> (Format)</TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle"><B>RGBA</B></TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">--</TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">--   </TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">X<BR>(5/5/5/1)</TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">X<BR>(8/8/8/8)</TD>
+</TR><TR>
+<TD NOWRAP ALIGN="center" VALIGN="middle"><B>YUV</B></TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">--</TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">--   </TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">X</TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">--</TD>
+</TR><TR>
+<TD NOWRAP ALIGN="center" VALIGN="middle"><B>CI</B></TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">X</TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">X</TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">--   </TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">--</TD>
+</TR><TR>
+<TD NOWRAP ALIGN="center" VALIGN="middle"><B>IA</B></TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">X<BR>(3/1)</TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">X<BR>(4/4)</TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">X<BR>(8/8)</TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">--   </TD>
+</TR><TR>
+<TD NOWRAP ALIGN="center" VALIGN="middle"><B>I</B></TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">X</TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">X</TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">--</TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">--</TD>
+</TR>
+</TABLE>
+  </DL>
+  <DT>Regarding the <B>SourceImageOffsetS</B>, <B>SourceImageOffsetT</B> arguments:
+  <DD>These specify the staring position of the rectangular region displaying texels in the base image. 
+</DL>
+</P>
+<H3>Note</H3>
+<P>
+We currently cannot guarantee operation of G_IM_FMT_YUV (YUV format).  At the present time, this function is only useful for simply copying each argument into the appropriate location of the specified <B>SpritePointer</B>.  Instead of using this function, you can directly initialize the sprite structure.
+</P>
+<H3>Comment</H3>
+<P>
+The uSprite structure looks like this:
+<PRE><CODE>typedef struct {
+     void   *SourceImagePointer;
+     void   *TlutPointer;
+     short  Stride;
+     short  SubImageWidth;
+     short  SubImageHeight;
+     char   SourceImageType;
+     char   SourceImageBitSize;
+     short  SourceImageOffsetS;
+     short  SourceImageOffsetT;
+     char   dummy[4]; 
+} uSprite_t;
+typedef union {
+     uSprite_t      s;
+     long long int  force_structure_alignment[3];
+} uSprite;
+</CODE></PRE>
+</P>
+<H3>See Also</H3>
+<P>
+<A HREF="../gsp/gSPSprite2DBase.htm">gSPSprite2DBase</A>, <A HREF="../gsp/gSPSprite2DDraw.htm">gSPSprite2DDraw</A>, and <A HREF="../gsp/gSPSprite2DScaleFlip.htm">gSPSprite2DScaleFlip</A>
+</P>
+<H3>Revision History</H3>
+<P>
+03/01/99  Completely rewritten.
+</P>
+</BODY>
+</HTML>

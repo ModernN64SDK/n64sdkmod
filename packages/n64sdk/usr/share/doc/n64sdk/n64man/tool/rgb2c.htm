@@ -1,0 +1,231 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<!--
+Editors Notes:
+  PWC- updated formatting
+  JLR-- Did reformating
+  MAP- updated format
+-->
+<title>rgb2c</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>rgb2c</b></font><font style="font-size: 9pt"><b> (tool command)</b></font>
+
+<p><i>Converts an .rgb file to a C data structure</p></i>
+
+<h3>Syntax</h3>
+
+<pre>rgb2c [-m name][-f fmt][-o output][-s bits][-t citype]
+        [-l r,g,b][-h r,g,b][-F][-P]
+        [-Q][-S smask][-X][-b][-r] infile.rgb</pre>
+
+<h3>Description</h3>
+
+<p>rgb2c reads an SGI RGB image file and generates a C data structure to standard output. The input image can have from 1 to 4 planes: A 1-plane input file is assumed to be intensity only. A 2-plane input file is assumed to be intensity/alpha. A 3-plane input file is treated as RGB. A 4-plane input file is treated as RGBA.</p>
+
+<p>The currently supported output formats are: Intensity (4/8 bit), Intensity/Alpha (4/8/16 bit), and RGBA (16/32 bit). Any other specified combination of type and bit size is mapped to one of these three choices. </p>
+
+<p>Command Line Options</p>
+
+<dl>
+    <dt><strong>-m name</strong></dt>
+    <dd>Is the name of the C data structure. The default value is &quot;texture&quot;.<br>
+        <br>
+        </dd>
+    <dt><strong>-f fmt</strong></dt>
+    <dd>Specifies the format of the output. Choices are I, IA, or RGBA. <br>
+        <br>
+        </dd>
+    <dt><strong>-o output</strong></dt>
+    <dd>Specifies the format of output text. Choices are C for .c output, MIP for mip-mapped .c output, MIPSUPPLIED for mip-mapped .c output with the different levels supplied, or RAW for raw ASCII format. When you use MIPSUPPLIED, name the texture files name0.rgb, name1.rgb, name2.rgb, and so on where name0.rgb is the top level image and each successive image is exactly half the size (in x and y) of the preceding one. <br>
+        <br>
+        </dd>
+    <dt><strong>-s bits</strong></dt>
+    <dd>Specifies the bit size of the output data. Choices are 4, 8, 16, or 32. <br>
+        <br>
+        </dd>
+    <dt><strong>-t citype</strong></dt>
+    <dd>Specifies the type of color index. (C: color, I: intensity)<br>
+        <br>
+        </dd>
+    <dt><strong>-l r,g,b</strong></dt>
+    <dd>Specifies the low colors for interpolation. It defaults to 0, 0, 0. <br>
+        <br>
+        </dd>
+    <dt><strong>-h r,g,b</strong></dt>
+    <dd>Specifies the high colors for interpolation. It defaults to 255, 255, 255. <br>
+        <br>
+        </dd>
+    <dt><strong>-F</strong></dt>
+    <dd>Flips the image vertically. <br>
+        <br>
+        </dd>
+    <dt><strong>-P</strong></dt>
+    <dd>Toggles padding of texel rows for use with <a href="../gdp/gDPLoadBlock.htm">gDPLoadBlock</a>. The default is padding on. <br>
+        <br>
+        </dd>
+    <dt><strong>-Q</strong></dt>
+    <dd>Quadricates (replicates each entry four times) the lookup table that is output for CI type textures. Use this option when loading TLUTs using the load_block command (as is done for version 1 of the hardware). <br>
+        <br>
+        </dd>
+    <dt><strong>-S smask</strong></dt>
+    <dd>Swaps 32-bit words on odd lines, toggling bit smask in texels. <br>
+        <br>
+        </dd>
+    <dt><strong>-X</strong></dt>
+    <dd>Adds extra padding to make all declared objects a multiple of 32 bytes long. <br>
+        <br>
+        </dd>
+    <dt><strong>-b</strong></dt>
+    <dd>Toggles shifting each tile by 0.5. This is necessary when MIP map levels are supplied (output type MIPSUPPLIED), when the shift has been performed, and when the lower levels were filtered. Ususlly you don't need to use this option. <br>
+        <br>
+        </dd>
+    <dt><strong>-r</strong></dt>
+    <dd>Excludes the raw data. This can be used when the output type is MIP or MIPSUPPLIED to avoid including extraneous data that will eat memory space. Do not use this option with C output. <br>
+        <br>
+        </dd>
+</dl>
+
+
+<h3>Comment</h3>
+
+<p><strong>rgb format</strong></p>
+
+<p>There are two rgb formats; one is a format called VERBATIM that uses raw data instead of using compressed data, the other one is RLE (Run Length Encoding) which compresses data to store them. Both formats comprise of the identical file format which has long words of 512 length in its header followed by the data.</p>
+
+<p>The header is defined as an IMAGE structure in 4Dgifts/iristools/include/image.h. Each element is described below.</p>
+
+<dl>
+    <dt><strong>unsigned short imagic</strong></dt>
+    <dd>Checks if the high and low byte order of a word data is correct, and is the ID indicating the format used in IRIS.<br>
+        <br>
+        </dd>
+    <dt><strong>unsigned short type</strong></dt>
+    <dd>Indicates the format of rgb file (number of bytes per pixel (1 or 2)) such as VERBATIM(1), VERBATIM(2), RLE(1), or RLE(2).<br>
+        <br>
+        </dd>
+    <dt><strong>unsinged short dim</strong></dt>
+    <dd>Indicates the dimension (1~3) of data where 1 represents one dimensional with x data, 2 represents two dimensional with x and y data, and 3 represents 3 dimensional with x, y, and z data.<br>
+        <br>
+        </dd>
+    <dt><strong>unsigned short xsize</strong></dt>
+    <dd>The pixel size of x on screen.<br>
+        <br>
+        </dd>
+    <dt><strong>unsigned short ysize</strong></dt>
+    <dd>The pixel size of y on screen.<br>
+        <br>
+        </dd>
+    <dt><strong>unsigned short zsize</strong></dt>
+    <dd>Number of colors used. 3 for rgb. 1 for blak and white.<br>
+        <br>
+        </dd>
+    <dt><strong>unsigned long min</strong></dt>
+    <dd>The minimum value for all data.<br>
+        <br>
+        </dd>
+    <dt><strong>unsigned long max</strong></dt>
+    <dd>The maximam value for all data.<br>
+        <br>
+        </dd>
+    <dt><strong>unsigned long wastebyte</strong></dt>
+    <dd>0 for VERBATIM. Number of bytes already written as the data for RLE.<br>
+        <br>
+        </dd>
+    <dt><strong>char name[80]</strong></dt>
+    <dd>Name of data (use isetname to change)<br>
+        <br>
+        </dd>
+    <dt><strong>long colormap</strong></dt>
+    <dd>Source color information that includes CM-NOMAL, CM-DITHERED, CM-SCREEN, and CM-COLORMAP.<br>
+        <br>
+        </dd>
+    <dt><strong>long file</strong></dt>
+    <dd>File descriptor for opening and creating a data file (temporary area).<br>
+        <br>
+        </dd>
+    <dt><strong>unsigned short flags</strong></dt>
+    <dd>File protection flag<br>
+        <br>
+        </dd>
+    <dt><strong>short dorev</strong></dt>
+    <dd>0 or 1. 1 indicates that a dat falls on the word boundary and the high and low bytes have been switched. This swaps the high and low byte order when they are handled.
+<br>
+        <br>
+        </dd>
+    <dt><strong>short x</strong></dt>
+    <dd>Area reserved to store the size of x (temporary area).<br>
+        <br>
+        </dd>
+    <dt><strong>short y</strong></dt>
+    <dd>Area reserved to store the size of y (temporary area).<br>
+        <br>
+        </dd>
+    <dt><strong>short z</strong></dt>
+    <dd>Area reserved to store the size of z (temporary area).<br>
+        <br>
+        </dd>
+    <dt><strong>short cnt</strong></dt>
+    <dd>It is used for file byte count (temporary area).<br>
+        <br>
+        </dd>
+    <dt><strong>unsigned short *ptr</strong></dt>
+    <dd>0<br>
+        <br>
+        </dd>
+    <dt><strong>unsigned short *base</strong></dt>
+    <dd>Pointer to a buffer to get flushed out and written to a file when the process completes (temporary area).<br>
+        <br>
+        </dd>
+    <dt><strong>unsigned short *tmpbuf</strong></dt>
+    <dd>Pointer used to change the format of a variable (temporary area).<br>
+        <br>
+        </dd>
+    <dt><strong>unsigned long offset</strong></dt>
+    <dd>Offset from the beginning of the file to the end of the header (512L).<br>
+        <br>
+        </dd>
+    <dt><strong>unsigned long rleend</strong></dt>
+    <dd>Number of bytes from the begining of the processed data to its end when reading/writing data is performed for RLE.<br>
+        <br>
+        </dd>
+    <dt><strong>unsigned long *rowstart</strong></dt>
+    <dd>Pointer to the table indicating the number of bytes from the beginning of the data to the beginning of each line of the data provided as a table right after the Header.<br>
+        <br>
+        </dd>
+    <dt><strong>long *rowsize</strong></dt>
+    <dd>Pointer to the table indicating the size in bytes of each line of data provided as a table after the rowstart table.<br>
+        <br>
+        </dd>
+</dl>
+
+<p>These are elements of the header. Image data comes after the header. For VERBATIM, the data is put as follows.</p>
+
+<p>Rs from the all lines come first, then Gs, and finally Bs.</p>
+
+<p>Compression format is used for RLE. Therefore, the byte counts (rowstart) to the beginning of each line and each size (rowsize) are placed right after the header ends. Just as VERBATIM, the order of color index takes Rs for all the lines, then Gs, and Bs followed by the compressed data.</p>
+
+<p>RLE follows the rules for compression described below. 
+If the same data continue up to 3 or more consecutive bytes, (number of data) followed by (data contents) are described. If the same data continue to less than 3 consecutive bytes or different data continue, it is described as (128 + number of data) followed by (data x), (data y)...., and (data z). For instance, the data will be compressed for the following data.</p>
+
+<blockquote>
+    <pre>AAAABCDEEEFGGGHH</pre>
+    <pre>will be compressed as</pre>
+    <pre>4A 131BCD 3E 129F 3G 130HH</pre>
+</blockquote>
+
+<p>rgba format is similar to the rgb format exept a is added to the rgba format.</p>
+<h3>See Also</h3>
+
+<p><a href="flt2c.htm">flt2c</a></p>
+
+<h3>Revision History</h3>
+<p>1999/04/30  Changed Format</p>
+<br><br>
+
+</body>
+</html>

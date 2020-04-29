@@ -1,0 +1,219 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../N64man.css">
+<Author's Comments: JLR made formating edits.
+MAP updated format 9/28/99>
+<TITLE>makedisk</TITLE>
+</HEAD>
+
+<BODY bgcolor="#FFFFFF">
+
+<P>
+<font style="font-size: 12pt"><b>makedisk</b></font><font style="font-size: 9pt"><b> (tool command)</b></font>
+
+<P><i>Creates N64 Disk Drive images and related ELF object files</i></P>
+<P>
+<P><B>Syntax</B></font></p>
+</P>
+<pre><code>makedisk [-D name[=def]] [-I dir] [-U name] [-d] [-m] [-o]
+[-b bootstrap filename] [-h header filename] [-s romsize] 
+[-f filldata][-t type][-i idfile] [-p pif2 bootstrap filename] 
+[-r romfile] [-S scriptfile][-R diskfile] [-B (0|1)] specfile </code></pre>
+<P>
+<P><B>Description</B></font></p>
+<P>
+makedisk is used in place of <A href="../../tool/makerom.htm">makerom</A> when creating disk games. The meanings of the options are as follows:
+<p>
+<DL>
+<DT><B>-t type</B>
+<DD>Specifies the disk type.</DL>
+
+<DL>
+<DT><B>-i idfile</B>
+<DD>Specifies the ID file. When this option is specified, makedisk outputs gwrite (mentioned later) so that the first 32 bytes of idfile are written to the disk as the ID.
+</DL>
+<DL>
+ <DT><B>-B 0</B>
+  <DD>Creates a so-called "activating" game. 
+</DL>
+<DL>
+  <DT><B>-B 1</B>
+  <DD>Creates a so-called "activated" game. For details about activating and activated games, see Chapter 15.1 "Reboot" in the 64DD Programming Manual. 
+</DL>
+<DL>
+  <DT><B>-R name</B>
+  <DD>Specifies the file name of the disk image. The default name is "disk." If you want to change the ROM image file name, please use the -r option. For details about disk images and ROM images, see "1. media specification" below. 
+</DL>
+<DL>
+  <DT><B>-S name</B>
+  <DD>Specifies the name of the batch file for writing the disk image to the disk. The default name is "gwrite."
+</DL></p>
+<P>
+The other options are the same as for makedisk.
+</P>
+<HR>
+<P>
+Below, we explain functions unique to makedisk. For descriptions of other functions, please read the document ion on makerom. See the N64 Disk Drive Programming Manual to learn about terminology specific to N64 Disk Drive. 
+</P>
+<H3>1. media specification</H3>
+<P>
+The media specification specifies the media for each segment in the spec file, defining whether that segment is stored on the disk or in the game pak. 
+</P>
+<P>
+A segment specified as
+</P>
+<BLOCKQUOTE>
+media CART
+</BLOCKQUOTE>
+<P>
+is stored in the game pak, while a segment specified as
+</P>
+<BLOCKQUOTE>
+media DISK
+</BLOCKQUOTE>
+<P>
+is stored on the disk. When no media is specified, it is assumed that that segment is stored on the disk.
+</P>
+<P>
+Segments with the game-pak specification are packaged by default in the file with the name "rom." That file is called the "ROM image." The name "rom" can be changed using the -r option. In the same way, segments with the disk specification are packaged by default in the file with the name "disk." That file is called the "disk image." The name "disk" can be changed using the -R option. 
+</P>
+<P>
+If all segments are specified in the game pak, then makedisk operates just like makerom. That is, you can use makedisk to package the game as a game-pak game. If all segments are specified on the disk, or if nothing is specified for any of the segments, then the game is packaged as a disk-boot game. If some segments are specified on the game pack and the rest are specified on the disk, then the game is packaged as a disk game that boots from a game pak. In this last case, the boot segment must be located on the game pak side. 
+</P>
+<H3>2. lba specification</H3>
+<P>
+The lba specification specifies the LBA on the disk where each segment in the spec file is stored. 
+</P>
+<P>
+Below is an example of how the lba specification is used: 
+</P>
+<TABLE width="70%" border="2" cellpadding="10" border>
+  <TR>
+    <TD><FONT size="3" face="Courier">..... beginseg name &quot;road&quot;
+lba 100 flags OBJECT number TEXTURE_SEGMENT include &quot;road.o&quot;
+endseg .....</FONT></TD></TR>
+</TABLE>
+
+<P>
+The lba specification only specifies segments stored on the disk. A "segment stored on the disk" is a segment of non-zero size in the ROM image. For example, segments from the color frame buffer and the Z buffer are only maintained in RDRAM and no space is secured in ROM. So if this type of segment is specified with <FONT face="Courier">lba</FONT> an error is returned. Conversely, an error arises if a ROM image segment of non-zero size is not specified with <FONT face="Courier">lba</FONT>. 
+</P>
+<P>
+The <FONT face="Courier">lba</FONT> specification specifies which LBA to write the segment to on the disk. The format can be any of the following:
+</P>
+<P>
+<FONT face="Courier">lba</FONT> (number)
+</P>
+<BLOCKQUOTE>
+
+<P>
+Writes the segment beginning from the LBA number specified by (number).
+</P>
+</BLOCKQUOTE>
+<P>
+<FONT face="Courier">lba RAMSTART</FONT> [+ (number)]
+</P>
+<BLOCKQUOTE>
+
+<P>
+Writes the segment beginning from the LBA number expressed by the start of the disk's RAM region + (number). The LBA number for the start of the RAM region differs depending on the disk type, so this notation is convenient to use. For details about RAM regions and disk types, please refer to "Section 11: Explanation of the 64DD Hardware Specifications" in the N64 Disk Drive Programming Manual. Make sure to put one space on either side of the &quot;+&quot;. </P>
+</BLOCKQUOTE>
+<P>
+<FONT face="Courier">lba after </FONT>(segment name)
+</P>
+<BLOCKQUOTE>
+
+<P>
+Locates the segment after the segment specified by (segment name). (For example, if the syntax reads <FONT face="Courier">lba after code</FONT> and 'code' is a segment using LBA 0 to LBA 100, then the segment in question is located from LBA 101.) The segment specified with (segment name) must be defined in advance.
+</P>
+</BLOCKQUOTE>
+<P>
+<FONT face="Courier">lba NONE</FONT>
+</P>
+<BLOCKQUOTE>
+
+<P>
+lba NONE The segment is not located anywhere on the disk. 
+</P>
+</BLOCKQUOTE>
+<H3>3. Batch file gwrite</H3>
+<P>
+gwrite is the batch file created by makedisk in order to write a game to a disk. The default name of this batch file is "gwrite" but you can change the name using the -S option.
+</P>
+<P>
+It can be executed using the &quot;&lt;&quot; instruction in the PARTNER command window. 
+</P>
+<P>
+&gt;&lt;gwrite
+</P>
+<P>
+(The &quot;&lt;&quot; instruction is the instruction for executing commands written in the specified file.) 
+</P>
+<H3>4. Disk-use symbols</H3>
+<P>
+makedisk outputs a number of symbols so that it is possible on the program side to find out which block in a disk a given segment is stored.
+</P>
+<P>
+For example, to learn the LBA for where the texture segment is stored on the disk, write 
+</P>
+<BLOCKQUOTE>
+extern char _textureSegmentRomStart[],_textureSegmentRomEnd[] 
+</BLOCKQUOTE>
+<P>
+into the program, and makedisk will resolve the symbols. These will be displayed respectively as "texture segment starting LBA" and "texture segment ending LBA
++ 1".
+</P>
+<H3>5. Segment mapping</H3>
+<P>
+makedisk outputs the information of which segments are located where on the disk as standard error output. The format is shown below:
+</P>
+<PRE>
+
+                DISK IMAGE MAP
+
+    Segment     Size(bytes)     Lba usage      Occupied(bytes)  Rest(bytes)
+    code          341216      18(   0 -   17)     354960          13744
+    dummy         742544      46(1418 - 1463)     750720           8176
+    dummy2        223600      none
+    -----------------------------------------------------------------------
+    total        1307360      64 blocks                           21920<BR>
+
+
+</PRE>
+<P>
+From the left, the columns indicate the segment name, the segment size, the number of blocks used (none is a segment with the "lba NONE" specification; the numbers inside the parentheses indicate which LBAs are used), and the volume taken up by the used blocks (the byte size of the area occupied by the segment). The column at the far right indicates the free area (calculated as Occupied - Size). 
+
+</P>
+<P>
+In the above example, the segment "code" has a size of 341216 bytes and is using the 18 blocks from LBA 0 - 17. Since the size of this 18-block area is 354960bytes, LBA17 has 13744 bytes of free space (The whole area of LBA0 - 16 is used).
+</P>
+<P>
+<P><B>Note</B></font></p>
+</P>
+<P>
+makedisk does not have romAlign, which specifies the alignment of storage addresses in a ROM image.
+</P>
+<P>
+In Partner, the l command does not work well if there is no file named "rom" in the current directory. Thus, when you create a disk-boot game with makedisk, please use the -R option to change the name of the disk image file to "rom" (i.e., -R rom). 
+</P>
+<P>
+In Partner, the l command switches between operating for use with a disk or for use with a game pak depending on whether or not a file named "gwrite" resides in the current directory. Accordingly, it is best not to change the name of gwrite with the -S option when creating disk-boot games. Conversely, you should use the -S option and change the name of gwrite when creating games that use both game paks and disks. 
+</P>
+<P>
+<P><B>See also</B></font></p>
+<P>
+[<A href="../../tool/makerom.htm">makerom</A>]
+</P>
+<P><B>Revision History</B></font></p>
+</P>
+<P>10/27/98 Corrected the misprint in "3. Generating disk-use symbols" to read DiskStart[],DiskEnd[] instead of RomStart[],RomEnd[] 
+</P>
+<P>01/21/99 Deleted the -C
+</P>
+<P>01/22/99 Made major changes to the explanation in 1. - 5. Added "Notes".
+</P>
+<p>04/30/1999  Changed Format</p>
+<br><br>
+
+</BODY>
+</HTML>

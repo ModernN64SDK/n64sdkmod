@@ -1,0 +1,1159 @@
+<Html>
+<title>
+EnvelopeNode
+</title>
+<body bgcolor="ffffff">
+
+<h1>
+<font color="ff0000">
+<i>
+Nintendo Confidential
+</i>
+</font>
+</h1>
+<hr size="3">
+
+
+<h2>
+15. EnvelopeList
+
+</h2>
+<hr size="3">
+<h3>
+<a name="ENVELOPE_LIST">
+(1) EnvelopeList
+</h3>
+<blockquote>
+
+
+<table border width="600">
+
+<tr>
+<td nowrap>
+u32 envelope_list_tag
+</td>
+<td>
+EnvelopeListを示すタグを記述します。下記のタグを設定してください。
+<pre>
+<b>
+TAG_ENVELOPE_LIST       0x00220000
+</b>
+</pre>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 envelope_list_header_size
+</td>
+<td>
+EnvelopeListHeaderのバイト数を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 envelope_list_size
+</td>
+<td>
+EnvelopeListのバイト数を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 envelope_num
+</td>
+<td>
+Envelope数を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 envelope_size
+</td>
+<td>
+Envelopeのバイト数を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+Envelope
+</td>
+<td>
+Envelopeエリアです。
+</td>
+</tr>
+
+
+
+
+
+</table>
+
+<p>
+<a href="./appendix/envelope_system_J.htm">
+Appendix ... about Envelope System
+</a>
+
+<p>
+<a href="./envelope_C.htm#ENVELOPE_LIST">
+Go to the data chunk
+</a>
+<p>
+<a href="./index.htm">
+Go back to the index
+</a>
+
+
+</blockquote>
+
+<h3>
+<a name="ENVELOPE">
+(2) Envelope
+</h3>
+
+<blockquote>
+
+
+<table border width="600">
+
+<tr>
+<td nowrap>
+u32 envelope_tag
+</td>
+<td>
+Envelopeを示すタグを記述します。下記のタグを設定してください。
+<pre>
+<b>
+TAG_ENVELOPE            0x00220100
+</b>
+</pre>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 this_envelope_index
+</td>
+<td>
+Envelopeのインデックス番号を記述します。
+</td>
+</tr>
+
+<!..
+-- DELETE START --
+1998/09/30
+
+<tr
+<td nowrap
+u32 envelope_header_size
+</td
+<td
+EnvelopeHeaderのバイト数を記述します。
+</td
+</tr
+
+-- DELETE END --
+..>
+
+<tr>
+<td nowrap>
+u32 envelope_size
+</td>
+<td>
+Envelopeのバイト数を記述します。
+</td>
+</tr>
+
+<tr>
+<td  nowrap>
+u32 envelope_name_index
+</td>
+<td>
+Envelope名をNameList内のインデックス番号で指定します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 envelope_type
+</td>
+<td>
+0x0
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 full_weighted_part_num
+</td>
+<td>
+FullweightedPart数を記述します。
+</td>
+</tr>
+
+<tr>
+<td  nowrap>
+u32 weighted_part_num
+</td>
+<td>
+WeightedPart数を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 morph_part_num
+</td>
+<td>
+MorphPart数を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 envelope_tri_num
+</td>
+<td>
+EnvelopeTri数を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+FullWeightedPart
+</td>
+<td>
+Envelope内でWeightがすべて100%の頂点の集合をFullWeightPartとします。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+WeightedPart
+</td>
+<td>
+通常のEnvelopeで表される頂点の集合をWeightedPartとします。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+MorphPart
+</td>
+<td>
+Envelope内で一軸周りの回転にのみ影響を受ける頂点の集合をMorphPartとします。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+EnvelopeTri
+</td>
+<td>
+Envelope内のいずれかのパートに属する頂点を使用した1ポリゴンを表します。
+</td>
+</tr>
+
+
+
+
+</table>
+
+<p>
+<a href="./appendix/envelope_system_J.htm">
+Appendix ... about Envelope System
+</a>
+
+<p>
+<a href="./envelope_C.htm#ENVELOPE">
+Go to the data chunk
+</a>
+<p>
+<a href="./index.htm">
+Go back to the index
+</a>
+
+</blockquote>
+
+<h3>
+<a name="FULL_WEIGHTED_PART">
+(3) FullWeightedPart
+</h3>
+<blockquote>
+
+
+<table border width="600">
+
+<tr>
+<td nowrap>
+u32 full_weighted_part_tag
+</td>
+<td>
+FullWeightedPartを示すタグを記述します。下記のタグを指定してください。
+<pre>
+<b>
+TAG_FULL_WEIGHTED_PART  0x00220110
+</b>
+</pre>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 this_full_weighted_part_index
+</td>
+<td>
+このEnvelope内でのFullWeightedPartのインデックス番号を記述します。
+</td>
+</tr>
+
+<tr>
+<td  nowrap>
+u32 full_weighted_part_size
+</td>
+<td>
+FullWeightedPartのバイト数を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 full_weighted_part_name_index
+</td>
+<td>
+このFullWeightedPart名をNameList内のインデックス番号で記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 kind_of_transform_node_full
+</td>
+<td>
+パートが影響を受けるノードの種類を下記のタグで記述します。
+<pre>
+<b>
+TAG_OBJ_LIST            0x00020000
+TAG_CHAIN_ROOT_LIST     0x00240000
+TAG_JOINT_LIST          0x00250000
+TAG_EFFECTOR_LIST       0x00260000
+</b>
+</pre>
+外部参照する場合は0xffffffffを記述してください。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 transform_node_index_full
+</td>
+<td>
+パートが影響を受けるノードのインデックス番号を記述します。<p>
+外部参照する場合は0xffffffffを記述してください。
+</td>
+</tr>
+
+
+<tr>
+<td nowrap>
+u32 external_transform_obj_file_name_index
+</td>
+<td>
+FullWeightedPartが影響を受けるObjを外部ファイル参照する場合、そのファイル名をExternalNameListのインデックス番号で記述します。<p>
+ファイル名はディレクトリ名などを含まない形で記述してください。<p>
+外部参照しない場合は0xffffffffを記述してください。
+</td>
+</tr>
+
+
+<tr>
+<td nowrap>
+u32 external_transform_obj_name_index
+</td>
+<td>
+FullWeightedPartが影響を受けるObjを外部ファイル参照する場合、そのObj名をExternalNameList内のインデックス番号で記述します。<p>
+外部参照しない場合は0xffffffffを記述してください。
+</td>
+</tr>
+
+
+
+<tr>
+<td nowrap>
+u32 full_weighted_vtx_group_index
+</td>
+<td>
+このパート内の頂点座標を指定するVtxGroupのインデックス番号を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 full_weighted_vtx_nv_group_index
+</td>
+<td>
+このパート内の頂点の法線ベクトルを指定するVtxNvGroupのインデックス番号を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 full_weighted_tri_nv_group_index
+</td>
+<td>
+このパート内のポリゴンの法線ベクトルを指定するTriNvGroupのインデックス番号を記述します。
+</td>
+</tr>
+
+
+<tr>
+<td nowrap>
+u32 full_weighted_vtx_color_group_index
+</td>
+<td>
+このパート内の頂点カラーを指定するVtxColorGroupのインデックス番号を記述します。
+</td>
+</tr>
+
+
+<tr>
+<td nowrap>
+u32 full_weighted_tri_color_group_index
+</td>
+<td>
+このパート内のポリゴンのカラーを指定するTriNvGroupのインデックス番号を記述します。
+</td>
+</tr>
+
+
+<tr>
+<td nowrap>
+u32 full_weighted_st_group_index
+</td>
+<td>
+このパート内の頂点のST値を指定するStGroupのインデックス番号を記述します。
+</td>
+</tr>
+
+
+</table>
+
+
+
+<p>
+<a href="./appendix/envelope_system_J.htm">
+Appendix ... about Envelope System
+</a>
+
+<p>
+<a href="./envelope_C.htm#FULL_WEIGHTED_PART">
+Go to the data chunk
+</a>
+<p>
+<a href="./index.htm">
+Go back to the index
+</a>
+
+</blockquote>
+
+
+<h3>
+<a name="WEIGHTED_PART">
+(4) WeightedPart
+</h3>
+
+<blockquote>
+
+
+
+<table border width="600">
+
+
+<tr>
+<td nowrap>
+u32 weighted_part_tag
+</td>
+<td>
+WeightedPartを示すタグを記述します。下記のタグを指定してください。
+<pre>
+<b>
+TAG_WEIGHTED_PART       0x00220120
+</b>
+</pre>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 this_weighted_part_index
+</td>
+<td>
+このWeightedPartのインデックス番号を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 weighted_part_size
+</td>
+<td>
+WeightedPartのバイト数を記述します。
+</td>
+</tr>
+
+<tr>
+<td>
+u32 weighted_part_name_index
+</td>
+<td>
+WeightedPart名をNameList内のインデックス番号で記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 affected_node_num
+</td>
+<td>
+このPart内の頂点に影響を与えるノード数を記述します。
+</td>
+</tr>
+
+
+
+<tr>
+<td nowrap>
+u32 weight_st_group_index
+</td>
+<td>
+このパートの頂点を示すStGroupのインデックス番号を記述します。
+</td>
+</tr>
+
+
+<tr>
+<td nowrap>
+u32 external_affected_obj_num
+</td>
+<td>
+外部ファイル参照するWeightedPartが影響を受けるObj数を記述します。
+</td>
+</tr>
+
+
+<tr>
+<td nowrap>
+u32 kind_of_affected_node
+</td>
+<td>
+このPart内の頂点に影響を与えるノードの種類を下記のタグで記述します。
+<pre>
+<b>
+TAG_OBJ_LIST            0x00020000
+TAG_CHAIN_ROOT_LIST     0x00240000
+TAG_JOINT_LIST          0x00250000
+TAG_EFFECTOR_LIST       0x00260000
+</b>
+</pre>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 affected_node_index
+</td>
+<td>
+このPart内の頂点に影響を与えるノードのインデックス番号を記述します。
+</td>
+</tr>
+
+
+<tr>
+<td nowrap>
+u32 external_affected_obj_file_name_index
+</td>
+<td>
+このWeightedPartが影響を受けるObjを外部ファイル参照する場合、そのファイル名をExternalNameListのインデックス番号で示します。<p>
+ファイル名はディレクトリ名などを含まない形で記述してください。<p>
+外部ファイル参照しない場合(external_affected_obj_num = 0)はこのフィールドは記述されません。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 external_affected_obj_name_index
+</td>
+<td>
+このWeitedPartが影響を受けるObjを外部ファイル参照する場合、そのObj名をExternalNameList内のインデックス番号で記述します。<p>
+外部ファイル参照しない場合(external_affected_obj_num = 0)はこのフィールドは記述されません。
+</td>
+</tr>
+
+
+<tr>
+<td nowrap>
+u32 weight_group_index
+</td>
+<td>
+それぞれの頂点がノードから受ける影響のweight値を示すWeightGroupのインデックス番号を記述します。<p>
+なお、対応する頂点について各WeightGroup内でのインデックスが同じになるようにweight値を格納してください。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 weight_vtx_group_index
+</td>
+<td>
+このパートの頂点を示すVtxGroupのインデックス番号を記述します。<p>
+なお、対応する頂点について各VtxGroup内でのインデックスが同じになるようにvertex
+を格納してください。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 weight_vtx_nv_group_index
+</td>
+<td>
+このパートの頂点を示すVtxNvGroupのインデックス番号を記述します。<p>
+なお、対応する頂点について各VtxNvGroup内でのインデックスが同じになるようにvertex normalを格納してください。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 weight_tri_nv_group_index
+</td>
+<td>
+このパートの頂点を示すTriNvGroupのインデックス番号を記述します。<p>
+なお、対応するtriangleについて各TriNvGroup内でのインデックスが同じになるようにtriangle normalを格納してください。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 weight_vtx_color_group_index
+</td>
+<td>
+このパートの頂点を示すVtxColorGroupのインデックス番号を記述します。<p>
+なお、対応する頂点について各VtxColorGroup内でのインデックスが同じになるようにvertex colorを格納してください。
+</td>
+</tr>
+
+
+<tr>
+<td nowrap>
+u32 weight_tri_color_group_index
+</td>
+<td>
+このパートの頂点を示すTriNvGroupのインデックス番号を記述します。<p>
+なお、対応するtriangleについて各TriColorGroup内でのインデックスが同じになるようにtriangle colorを格納してください。
+</td>
+</tr>
+
+
+</table>
+
+
+<p>
+<a href="./appendix/envelope_system_J.htm">
+Appendix ... about Envelope System
+</a>
+
+<p>
+<a href="./envelope_C.htm#WEIGHTED_PART">
+Go to the data chunk
+</a>
+<p>
+<a href="./index.htm">
+Go back to the index
+</a>
+
+</blockquote>
+
+<h3>
+<a name="MORPH_PART">
+(5) MorphPart
+</h3>
+
+<blockquote>
+
+
+
+<table border width="600">
+
+<tr>
+<td nowrap>
+u32 morph_part_tag
+</td>
+<td>
+MorphPartを示すタグを記述します。下記のタグを指定してください。
+<pre>
+<b>
+TAG_MORPH_PART          0x00220130
+</b>
+</pre>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 this_morph_part_index
+</td>
+<td>
+このMorphPartのインデックス番号を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 morph_part_size
+</td>
+<td>
+MorphPartのバイト数を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 morph_part_name_index
+</td>
+<td>
+MorphPart名をNameList内のインデックス番号で記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 kind_of_node0<br>
+u32 kind_of_node1
+</td>
+<td>
+このパートが影響を受けるノードの種類を下記のタグで記述します。
+<pre>
+<b>
+TAG_OBJ_LIST            0x00020000
+TAG_JOINT_LIST          0x00250000
+</b>
+</pre>
+外部参照する場合は0xffffffffを記述してください。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 node_index0<br>
+u32 node_index1
+</td>
+<td>
+このパートが影響を受けるノードのインデックス番号を記述します。<p>
+外部参照する場合は0xffffffffを記述してください。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 external_obj0_file_name_index<br>
+u32 external_obj1_file_name_index
+</td>
+<td>
+このMorphPartが影響を受けるObjを外部ファイル参照する場合、そのファイル名をExternalNameListのインデックス番号で指定します。<p>
+ファイル名はディレクトリ名などを含まない形で記述してください。<p>
+外部ファイル参照しない場合は0xffffffffを指定してください。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 external_obj0_name_index<br>
+u32 external_obj1_name_index
+</td>
+<td>
+このMorphPartが影響を受けているObjを外部ファイル参照する場合、そのObj名をExternalNameList内のインデックス番号で記述します。<p>
+外部ファイル参照しない場合は 0xffffffffを指定してください。
+</td>
+</tr>
+
+
+<tr>
+<td nowrap>
+u32 morph_st_group_index
+</td>
+<td>
+このパートで指定するStGroupのインデックス番号をテーブルに応じて記述します。
+</td>
+</tr>
+
+
+<tr>
+<td nowrap>
+u32 table_num
+</td>
+<td>
+このパートは２つのノードの間の角度を指定された数で分割して、それをテーブルとして頂点が影響を受けます。その分割数を記述します。9, 17, 33, 65のうちのいずれかを記述してください。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 morph_vtx_group_index
+</td>
+<td>
+このパートで指定するVtxGroupのインデックス番号をテーブルに応じて記述します。<p>
+なお、VtxGroup中の値はnode_index0で示されたノードに対する座標値です。
+</td>
+</tr>
+<tr>
+<td nowrap>
+u32 morph_vtx_nv_group_index
+</td>
+<td>
+このパートで指定するVtxNvGroupのインデックス番号をテーブルに応じて記述します。<p>
+なお、VtxNvGroup中の値はnode_index0で示されたノードに対する法線ベクトルの値です。
+</td>
+</tr>
+<tr>
+<td nowrap>
+u32 morph_tri_nv_group_index
+</td>
+<td>
+このパートで指定するTriNvGroupのインデックス番号をテーブルに応じて記述します。<p>
+なお、TriNvGroup中の値はnode_index0で示されたノードに対する法線ベクトルの値です。
+</td>
+</tr>
+<tr>
+<td nowrap>
+u32 morph_vtx_color_group_index
+</td>
+<td>
+このパートで指定するVtxColorGroupのインデックス番号をテーブルに応じて記述します。
+</td>
+</tr>
+
+
+
+
+
+<tr>
+<td nowrap>
+u32 morph_tri_color_group_index
+</td>
+<td>
+このパートで指定するTriColorGroupのインデックス番号をテーブルに応じて記述します。
+</td>
+</tr>
+
+</table>
+
+<p>
+<a href="./appendix/envelope_system_J.htm">
+Appendix ... about Envelope System
+</a>
+
+<p>
+<a href="./envelope_C.htm#MORPH_PART">
+Go to the data chunk
+</a>
+<p>
+<a href="./index.htm">
+Go back to the index
+</a>
+
+</blockquote>
+
+
+<h3>
+<a name="ENVELOPE_TRI">
+(6) EnvelopeTri
+</h3>
+
+<blockquote>
+
+
+<table border width="600">
+
+<tr>
+<td nowrap>
+u32 envelope_tri_tag
+</td>
+<td>
+EnvelopeTriを示すタグを記述します。下記のタグを設定してください。
+<pre>
+<b>
+TAG_ENVELOPE_TRI       0x00220180
+</b>
+</pre>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 this_envelope_tri_index
+</td>
+<td>
+EnvelopeTriのインデックス番号を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 envelope_tri_size
+</td>
+<td>
+EnvelopeTriのバイト数を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 kind_of_envelope_for_tri
+</td>
+<td>
+tri_nv_index, tri_color_indexに使用されるエンベロープのパートの種類を下記のタグで記述します。
+<pre>
+<b>
+TAG_FULL_WEIGHTED_PART  0x00220110
+TAG_WEIGHTED_PART       0x00220120
+TAG_MORPH_PART          0x00220130
+</b>
+</pre>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 envelope_part_index_for_tri
+</td>
+<td>
+tri_nv_index, tri_color_indexに使用されるエンベロープのパートのインデックス番号を記述します。
+</td>
+</tr>
+
+<!..
+-- DELETE START --
+1998/09/30
+
+<tr
+<td nowrap
+u32 envelope_tri_size
+</td
+<td
+EnvelopeTriのバイト数を記述します。
+</td
+</tr
+
+-- DELETE END --
+..>
+
+<tr>
+<td nowrap>
+u32 tri_nv_index
+</td>
+<td>
+このtriangleの法線ベクトルのインデックス番号を記述します。<p>
+なお、CGツール上で四角形以上のpolygonを自動分割する場合、生成された各トライアングルに関して同じインデックスを示すようにデータを出力してください。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 tri_color_index
+</td>
+<td>
+このtriangleのカラーを指定します。<p>
+なお、CGツール上で四角形以上のpolygonを自動分割する場合、生成された各トライアングルに関して同じインデックスを示すようにデータを出力してください。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 weight_index_tri
+</td>
+<td>
+このtriangleがWeightedPartの時に、そのweight値を示すWeightGroup内のインデックス番号で記述します。<p>
+このtriangleがWeightedPartで無い場合は、0xffffffffを記述してください。<p>
+なお、CGツール上で四角形以上のpolygonを自動分割する場合、生成された各トライアングルに関して同じインデックスを示すようにデータを出力してください。
+</td>
+</tr>
+
+
+<tr>
+<td nowrap>
+EnvelopeVtx
+</td>
+<td>
+EnvelopeVtxエリアです。このtriangleを構成するVtxを記述します。
+</td>
+</tr>
+
+</table>
+
+<p>
+<a href="./appendix/envelope_system_J.htm">
+Appendix ... about Envelope System
+</a>
+
+<p>
+<a href="./envelope_C.htm#ENVELOPE_TRI">
+Go to the data chunk
+</a>
+<p>
+<a href="./index.htm">
+Go back to the index
+</a>
+
+</blockquote>
+
+<h3>
+<a name="ENVELOPE_VTX">
+(7) EnvelopeVtx
+</h3>
+
+<blockquote>
+
+
+<table border width="600">
+
+<tr>
+
+<!..
+-- DELETE START --
+1998/09/30
+
+<td nowrap
+u32 kind_of_envelope
+</td
+
+-- DELETE END --
+..>
+
+<!..
+-- ADD START --
+1998/09/30
+..>
+
+<td nowrap>
+u32 kind_of_envelope_part
+</td>
+
+<!..
+-- ADD END --
+..>
+
+<td>
+この頂点のエンベロープの種類を下記のタグで記述します。
+<pre>
+<b>
+TAG_FULL_WEIGHTED_PART  0x00220110
+TAG_WEIGHTED_PART       0x00220120
+TAG_MORPH_PART          0x00220130
+</b>
+</pre>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 envelope_part_index
+</td>
+<td>
+エンベロープパートのインデックス番号を記述します。
+
+<!..
+-- ADD START --
+1998/09/30
+..>
+
+<p>
+エンベロープパートとは、Envelope中で頂点のウェイトのかけ方によってパート分けされたFullWeightdPart、WeightedPart、MorphPartを示します。
+
+<!..
+-- ADD END --
+..>
+
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 vtx_index
+</td>
+<td>
+頂点のインデックス番号を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 st_index
+</td>
+<td>
+頂点のST値のインデックス番号を記述します。
+</td>
+</tr>
+
+
+<tr>
+<td nowrap>
+u32 vtx_nv_index
+</td>
+<td>
+頂点の法線ベクトルのインデックス番号を記述します。<p>
+vtx_indexと同一になるように出力してください。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 vtx_color_index
+</td>
+<td>
+頂点カラーのインデックス番号を記述します。<p>
+</td>
+</tr>
+
+
+<tr>
+<td nowrap>
+u32 weight_index
+</td>
+<td>
+この頂点がWeightedPartの時に、そのweight値を示すWeightGroup内のインデックス番号で記述します。<p>
+この頂点がWeightedPartで無い場合は、0xffffffffを記述してください。
+</td>
+</tr>
+
+</table>
+
+
+
+
+<p>
+<a href="./appendix/envelope_system_J.htm">
+Appendix ... about Envelope System
+</a>
+
+<p>
+<a href="./envelope_C.htm#ENVELOPE_VTX">
+Go to the data chunk
+</a>
+<p>
+<a href="./index.htm">
+Go back to the index
+</a>
+
+</blockquote>
+
+<hr>
+<i>
+Copyright 1998,1999 NINTENDO Co.,Ltd. All rights reserved.<br>
+Copyright 1998,1999 MONEGI CORPORATION All rights reserved.
+</i>
+
+</body>
+</html>

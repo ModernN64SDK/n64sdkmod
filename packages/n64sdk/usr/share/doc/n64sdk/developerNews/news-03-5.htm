@@ -1,0 +1,141 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<META name="GENERATOR" content="IBM HomePage Builder V3.0.7  for Windows">
+<TITLE>Developers News 1.3</TITLE>
+</HEAD>
+
+<BODY bgcolor="#FFFFFF">
+
+<H3>(5)NINTENDO64 Audio Turning Guide</H3>
+<H4>Speed Upgrades</H4>
+<P>
+Please optimize CPU to minimize the RSP task list. 
+</P>
+<P>
+<U>Step 0. Basics</U>
+</P>
+<DL>
+  <DT>A. educe pitch conversion as much as possible.
+  <DD> = Although no one method is preferred over another, where necessary, convert in a manner that will change the pitch slowly. 
+</DL>
+<DL>
+  <DT>B. Improve cache effectiveness by increasing the size of the DMA buffer.
+  <DD> = Reducing the number of revolutions in a large DMA is decidedly more effective than using numerous smaller DMAs. 
+</DL>
+<DL>
+  <DT>C. he effects should not be too elaborate
+  <DD> = (e.g., echo filter processing, reverb).
+</DL>
+<P>
+<U>Step 1. Using SGI sound and sequence players</U>
+</P>
+<DL>
+  <DT>A. Do not use pitch bends very often, and do not use them close together. </DL>
+<DL>
+  <DT>B. Do not use detailed fade-ins and fade-outs. 
+</DL>
+<DL>
+  <DT>C. Do not sound a continuous string of short musical tones.
+  <DD> = These three (A~C) involve numerous pitch and volume conversions that require many task lists and lengthy RSP processing. 
+</DL>
+<DL>
+  <DT>D. Make the release time as short as possible.
+  <DD> = This pertains to B. above. A short release time is preferred to avoid wasting physical voices.
+</DL>
+<DL>
+  <DT>E. o not create the percussion installment using a key map. 
+  <DD> = Searching for waveform data allocated in the map takes too much time. 
+</DL>
+<P>
+<U>Step 2. Using customized players</U>
+</P>
+<P>
+Creating Synthesizer Drivers 
+</P>
+<DL>
+  <DT>A. Do not rewrite unchanged parameters.
+  <DD> = This will reduce calculation time. However, enough additional RAM is necessary. 
+</DL>
+<DL>
+  <DT>B.Synchronize the timing of parameter changes
+  <DD> = This shortens the task lists.
+</DL>
+<P>
+C. Make the callback intervals uniform. (Sacrifice the time base.) 
+</P>
+<DL>
+  <DT>D. Select a value that does not cause variance in the number of a player's callback revolutions during 1 frame.
+  <DD> = Perform C and D to avoid detailed processing during a short time. 
+</DL>
+<DL>
+  <DT>E. To the greatest extent possible, execute voice management yourself.
+  <DD> = Make the CPU, not the driver, execute voice allocation from virtual to physical voices. 
+</DL>
+<P>
+<U>Step 3. Acceleration through coordinated operation with graphics</U>
+</P>
+<DL>
+  <DT>A. By using a RDRAM FIFO buffered microcode, the RSP wait time is used more effectively.
+  <DD> = Usually, the RSP processing time is shorter than the RDP processing time. 
+</DL>
+<DL>
+  <DT>B. Create Audio using 2 frames. 
+  <DD> =  If there are 30 game frames per second or less, audio processing time is reduced by doubling all of the buffers.
+</DL>
+<H4>Required RAM upgrades</H4>
+<P>
+<U>Step 1. Make reductions to current state</U>
+</P>
+<DL>
+  <DT>A. Reduce the waveform cache (DMA buffer) to its minimum.
+  <DD> = This reduces CPU speed. 
+</DL>
+<DL>
+  <DT>B. Reduce the number of ADPCM prediction factors.
+  <DD> = Do this when using the <A href="../n64man/tool/tabledesign.htm">tabledesign</A> tool.
+</DL>
+<DL>
+  <DT>C. Handle the data (bank and sequence) in seperate heaps, and minimize the amount of resident data.
+  <DD>= Frequent data switching is necessary.
+</DL>
+<P>
+<U>Step 2. When creating player types yourself</U>
+</P>
+<DL>
+  <DT>A. Customize bank file formats.
+  <DD> = As long as the ALWave Table structure exists in the synthesizer driver, any format will do. 
+</DL>
+<DL>
+  <DT>B. Customize the sequence format.
+  <DD> = Compressing the SGI compact sequence player format is best.
+</DL>
+<DL>
+  <DT>C. Convert two players' functions into one. 
+  <DD> = Separate sound and sequence players are not necessary. 
+
+</DL>
+<P>
+<U>Step 3. Selecting optimum sampling rate</U>
+</P>
+<P>
+The maximum number of samples to process for RSP is 160 samples. If the command list doesn't split during the process, the command list can be shortened with the sampling rate of below a multiple of 160.
+</P>
+<P>
+For instance, it would look like this the process is split into 3 sub frames.
+</P>
+<BLOCKQUOTE>
+
+<PRE>
+160[Samples] x 3[subframes] x 60[frames] = 28800[Hz] 
+</PRE>
+</BLOCKQUOTE>
+<P>
+So, the command list could be shortened if you select 27Khz. However, only it is necessary to create a original player and adjust the interval for callback.
+</P>
+<P align="right">
+<A href="news-03.htm"><IMG src="../gif/index.gif" height="17" width="65" border="0"></A>
+</P>
+<HR>
+</BODY>
+</HTML>

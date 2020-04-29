@@ -1,0 +1,83 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Graphics-CHAPTER 1  The Basics of N64 Graphics-Introduction to RSP</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/22/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<font style="font-size:12pt"><B>1.3  Passing the Transformation Matrix to the RSP</B></FONT>
+<br>
+<P>
+ Once the transformation matrix has been created as described above, you need to send it to the RSP.  To do this you use the gSPMatrix command.<br><br>
+     The gSPMatrix command takes not only the pointer to the matrix you want to pass to the RSP, but also the type of the transformation matrix, and the flag that specifies operations to the matrix stack.   For the flag, do a bitwise OR of the following constants:
+</P>
+<TABLE BORDER=0><TR><TD> </TD><TD>
+	<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=2><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE>G_MTX_MODELVIEW</TD>
+	<TD ROWSPAN=6> </TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE>Load the model view transformation matrix</TD>
+	</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE>G_MTX_PROJECTION</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE>Load the projection transformation matrix</TD>
+	</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE>G_MTX_LOAD</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE>Load matrix to top of the matrix stack</TD></TR><TR><TD NOWRAP ALIGN=LEFT VALIGN=TOP>G_MTX_MUL</TD>
+ <TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE>Multiply matrix to top of the matrix stack<BR>(The result becomes the new top of the stack)
+</TD>
+	</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE>G_MTX_PUSH</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE>Push matrix to stack before matrix operation</TD>
+	</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE>G_MTX_NOPUSH</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE>Do not push matrix to stack before matrix operation</TD>
+	</TR></TABLE>
+</TD></TR>
+</TABLE>
+<P>
+When vertices are loaded, the RSP transforms the vertex coordinates and normal vectors.  Those vectors are transformed based on the transformation matrix that is set at the time, so you should set the matrix before loading the vertices.
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=5><TR>
+<TD NOWRAP COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE><B>List 1-2</B></TD>
+</TR><TR>
+<TD NOWRAP BGCOLOR="666666" WIDTH="4" ALIGN=LEFT VALIGN=TOP><HR NOSHADE SIZE=0></TD>
+<TD NOWRAP ALIGN=LEFT VALIGN=TOP><FONT COLOR="#000080"><PRE><CODE>  /* Specify a projection transformation matrix  */
+  gSPMatrix(glistp++,
+            &amp;projection,
+            G_MTX_PROJECTION |
+            G_MTX_LOAD |
+            G_MTX_NOPUSH);
+  /* Specify a model transformation matrix  */
+  gSPMatrix(glistp++,
+            &amp;modeling,
+            G_MTX_MODELVIEW |
+            G_MTX_LOAD |
+            G_MTX_NOPUSH);
+  /* Scaling of homogeneous coordinates  */
+  gSPPerspNormalize(glistp++, &amp;perspNorm);
+</CODE></PRE></FONT>
+</TD>
+</TR></TABLE>
+<P>
+ There are three other points you need to be aware of in relation to the gSPMatrix command.  These are explained below:
+</P>
+<P>
+<B>1. The pointer to the matrix is a segment address</B><BR>
+As described in Chapters 9 and 10 of the Programming Manual, the address passed to the RSP is an RSP segment address.  However, in the samples in this Graphics tutorial, the first command in the display list is: <br><br>
+
+   gSPSegment(glistp++, 0, 0);<br><br>
+
+thus, there is no problem even when a KSEG0 virtual address is passed as is to the RSP.  See Chapters 9 and 10 of the Programming Manual to learn more about these kinds of memory management topics.
+</P>
+<P>
+<B>2. Cache writeback is performed</B><BR>
+   The RSP cannot directly read/write the contents of RDRAM, so data is transferred using DMA.  As noted in the Programming Manual (for example, in Section 3.6.2 Data Cache), there is the chance of invalid data being transferred if the data stored in data cache is DMA transferred without writing back to RDRAM.
+</P>
+<P>
+<B>3. The matrix has fixed-point format</B><BR>
+When handling a floating-point format matrix, you must remember to convert it into fixed point format before passing it to gSPMatrix.
+</P>
+</BODY>
+</HTML>

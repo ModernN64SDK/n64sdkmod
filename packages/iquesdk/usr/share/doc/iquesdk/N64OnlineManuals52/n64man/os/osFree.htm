@@ -1,0 +1,78 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.
+MAP- added links, updated format>
+<title>osFree</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>osFree</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p>osCreateRegion, osMalloc, osFree, osGetRegionBufCount,
+osGetRegionBufSize</p>
+
+<p><i>Provides arbitrary region memory allocation routines</i></p>
+
+<h3>Syntax</h3>
+<p>
+<blockquote>
+    <pre>#include &lt;ultra64.h&gt;     /* <A HREF="../../header/ultra64.htm">ultra64.h</A> */
+void *osCreateRegion(void *startAddress, u32 length, u32 bufferSize, u32 alignSize);
+void *osMalloc(void *region);
+void osFree(void *region, void *addr);
+long osGetRegionBufCount(void *region);
+long osGetRegionBufSize(void *region);</pre>
+</blockquote>
+</p>
+<h3>Description</h3>
+
+<p>These routines provide an easy and fast way to allocate and free fixed-size buffers from an arbitrary memory area. A region is a user-defined, physically contiguous block of memory. You can create any number of memory regions at run-time by calling <a href="osCreateRegion.htm">osCreateRegion</a>. You must supply a block of memory large enough for the specific buffer size, including a certain overhead for the control structure.</p>
+
+<p>This memory allocation scheme takes a small portion at the beginning of the input memory area to use as the region control header. The rest of the region is organized simply as a pool of equal-sized buffers. The buffer size is aligned to the number of bytes defined in the <b>alignSize</b> argument.</p>
+
+<p>Upon creation, each region is given a unique region identifier. You can use this id to reference the region. Since the id is actually the address of the control header for the region, any reference leads directly to it, without any searching.</p>
+
+<p>Two easy calls, <a href="osMalloc.htm">osMalloc</a> and osFree, provide fast, dynamic allocation and de-allocation of buffers. No searching is needed - osMalloc takes the buffer at the head of the region's free list, and osFree puts the buffer back at the head of the free list.</p>
+
+<p>The <tt>osCreateRegion</tt> routine creates a region from a given contiguous memory area starting at the address specified by the <b>startAddress</b> argument and extending for the number of bytes specified by the <b>length</b> argument.. This region is initialized to contain buffers of at least the size in bytes specified by the <b>bufferSize</b> argument. The <b>alignSize</b> argument specifies the number of bytes (including 2, 4, 8, and 16 bytes) used for aligning the buffer address and size. These values are defined in <A HREF="../../header/region.htm">region.h</A> as OS_RG_ALIGN_2B, OS_RG_ALIGN_4B, OS_RG_ALIGN_8B, and OS_RG_ALIGN_16B, respectively. If alignSize is 0, then the default value ( (OS_RG_ALIGN_DEFAULT) that is 8 bytes (64 bits) is used.</p>
+
+<p>The <tt>osCreateRegion</tt> function returns an opaque pointer to where the region starts. This pointer is used as a unique region identifier in other region routines.</p>
+
+<p>osMalloc returns a pointer to a buffer from the region that is aligned according to the byte boundary specified by the <tt>osCreateRegion</tt> function's <b>alignSize</b> argument. The buffer size is defined when <tt>osCreateRegion</tt> routine is called.</p>
+
+<p>The <b>addr</b> argument in osFree is the pointer to a buffer previously allocated by osMalloc. The osFree routine returns this buffer to the region's free list after it performs a check on the buffer address. </p>
+
+<p>The <a href="osGetRegionBufCount.htm">osGetRegionBufCount</a> function returns the total number of buffers created for the region. The <a href="osGetRegionBufSize.htm">osGetRegionBufSize</a> function returns the size (in bytes) allocated for each buffer in the region.</p>
+
+<h3>Note</h3>
+
+<p>Currently, a region can have up to a maximum of 32,768 buffers. Upon initialization, the region's starting address is automatically aligned to the boundary specified by the <b>alignSize</b> argument. Its buffer size (in bytes) is rounded up to be alignSize aligned.</p>
+
+<p>You need to be extremely careful that you do not create multiple regions pointing to the same memory address. This will cause unexpected behavior because this scheme does not perform any memory check during region creation. </p>
+
+<h3>Features</h3>
+
+<p><tt>osCreateRegion</tt> returns a NULL pointer if one of the following conditions is encountered:</p>
+
+<ol>
+    <li>The start address is NULL </li>
+    <li>The length or buffer size is less than 0 </li>
+    <li>The buffer size is greater than the actual length remaining for storing data.</li>
+</ol>
+
+<p>osMalloc also returns a NULL if there is no available free buffer in the region.
+
+<h3>See Also</h3>
+<p><A HREF="osCreateRegion.htm">osCreateRegion</A>, 
+<A HREF="osGetRegionBufCount.htm">osGetRegionBufCount</A>, and 
+<A HREF="osGetRegionBufSize.htm">osGetRegionBufSize</A>
+<H3>Revision History</H3>
+<P>
+1999/04/30  Changed Format
+</P>
+
+</p>
+</body>
+</html>

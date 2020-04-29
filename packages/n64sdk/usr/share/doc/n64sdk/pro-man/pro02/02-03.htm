@@ -1,0 +1,30 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 2 - Software Development Troubleshooting</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check.
+　　　　　　 MAP- 10/28/99 edited content, updated format-->
+</head>
+
+<h1>2.3 Audio </h1>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="01"><h2>2.3.1 Alignment Issues</h2></a>
+
+<p>The audio system shares several data structures between the N64 CPU and the RCP.  In order to avoid alignment problems, any buffer used by both the N64 CPU and the RCP should be allocated using the <a href="../../n64man/al/alHeapAlloc.htm">alHeapAlloc()</a> routine.  This will generate buffers with 16 byte alignment, avoiding all alignment issues as well as cache tearing issues. 
+</p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="02"><h2>2.3.2 Size and Number of Buffers </h2></a>
+
+<p>A common error is to run out of buffers, particularly DMA buffers.  Because the number of buffers needed is largely dependent on the music and sound effects used, it is not
+possible to provide guidelines. As music and sound effect complexity increases, the number of buffers needed will increase. </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="03"><h2>2.3.3 Audio Pops and Clicks </h2></a>
+
+<p>To avoid audio pops and clicks, all samples should start with at least one value of zero.  Upon receiving a pre-nmi <A target="keywords" HREF="../../keywords/index/data/system.htm#message">message</a> it is important that the audio fade to zero output, or on consecutive <A target="keywords" HREF="../../keywords/index/data/system.htm#boot">boot</A> ups, there is a potential for a pop.   If audio does not run at a high enough priority, the audio may not be generated before the previous buffer has completed. If this occurs there will be a period where no samples are played. This will usually generate a clear pop. </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+</body> </html>

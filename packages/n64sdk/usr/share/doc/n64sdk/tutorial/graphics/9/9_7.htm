@@ -1,0 +1,73 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Graphics-Chapter 9  Advanced Texture Mapping</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/22/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<font style="font-size:12pt"><B>9.7  Variations on Mipmapping</B></FONT>
+<br>
+<P>
+As mentioned in the previous section, mipmapping can prevent the jagged edges that can result when rendering the polygon small.   However, when displaying the polygon large, you still need to enlarge the highest-resolution texture for rendering.  To draw this enlarged texture more sharply, two modes are available: Sharp mode and Detail mode.
+</P>
+<p>
+<B>9.7.1  Sharp Mode</B>
+<P>
+ Sharp mode is easy to use: simply set the G_TD_SHARPEN constant in the gDPSetTextureDetail command.  In Sharp mode, when the texture is enlarged, an extrapolation is made based on the two highest-resolution mipmap textures so the texture is displayed with a more natural-looking edge.
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=5><TR>
+	<TD NOWRAP COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE><B>List 9-11</B>
+</TR><TR>
+	<TD NOWRAP BGCOLOR="666666" WIDTH="4" ALIGN=LEFT VALIGN=TOP><HR NOSHADE SIZE=0></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>
+<FONT COLOR="#000080"><PRE><CODE>    /* Use Sharp mode  */
+    gDPSetTextureDetail(glistp++, G_TD_SHARPEN);</CODE></PRE></FONT>
+	</TD>
+</TR></TABLE>
+<BR>
+<p>
+<B>9.7.2  Detail Mode</B>
+<P>
+Detail mode differs from Sharp mode in that you need a separate kind of texture called a detail texture.  Typically, you use a texture that displays the pattern in finer detail for the detail texture, but in the gfx9lod.c sample program, an image that is completely unrelated to the mipmap texture is used as the detail texture.  As a result, when the cube model approaches near to the viewpoint, you can clearly see how the detail texture has been blended. 
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=5><TR>
+	<TD NOWRAP COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE><B>List 9-12</B>
+</TR><TR>
+	<TD NOWRAP BGCOLOR="666666" WIDTH="4" ALIGN=LEFT VALIGN=TOP><HR NOSHADE SIZE=0></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>
+	<FONT COLOR="#000080"><PRE><CODE>    /* When using a detail texture, set that texture to Tile0  */
+    gSPTexture(glistp++, 0x8000, 0x8000,
+                 5,                        /* Mipmap level  */
+                 G_TX_RENDERTILE,          /* Tile number of detail texture  */
+                 G_ON);
+    /* (Parts have been omitted) */
+    /* Use detail texture */
+    gDPSetTextureDetail(glistp++, G_TD_DETAIL);
+    /* Load detail texture  */
+    gDPLoadTextureTile(glistp++,
+                       circle,
+                       G_IM_FMT_I,
+                       G_IM_SIZ_8b,
+                       32, 32,
+                       0, 0,
+                       31, 31,
+                       0,
+                       G_TX_WRAP, G_TX_WRAP,
+                       5, 5,
+                       15, 14);   /* &lt;&lt; 1 and &lt;&lt; 2 */</CODE></PRE></FONT>
+	</TD>
+</TR></TABLE>
+<P>
+The detail texture is loaded one tile in front of the highest-resolution mipmap texture.  In the gfx9lod.c sample program, since the highest-resolution mipmap texture is placed in the (G_TX_RENDERTILE + 1) tile, the detail texture is stored in G_TX_RENDERTILE.
+</P>
+<P>
+<IMG SRC="image31.gif" WIDTH="166" HEIGHT="127">
+</P>
+<P>
+<B>Figure 9-4  Screen shot of gfx9lod.c sample program with __DETAIL__ defined.</B>
+</P>
+</BODY>
+</HTML>

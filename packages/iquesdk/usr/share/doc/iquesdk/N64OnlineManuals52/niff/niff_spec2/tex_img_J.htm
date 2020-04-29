@@ -1,0 +1,87 @@
+<html>
+<title>
+TexImgNode
+</title>
+<body bgcolor="ffffff">
+
+<h1>
+<font color="ff0000">
+<i>
+Nintendo Confidential
+</i>
+</font>
+</h1>
+<hr size="3">
+
+<h2>
+11. TexImgNode
+
+</h2>
+
+<hr size="3">
+
+<h3>
+(1) TexImg
+</h3>
+
+<blockquote>
+
+
+<table border width="600">
+<tr>
+<td nowrap>
+u32 mipmap_max_level
+</td>
+<td>
+MipMapを使用する場合、TexImgDataエリアにMipMapイメージを格納します。<p>
+その場合の最大レベル数を記述します。<p>
+MipMapを使用しない場合は下記のフラグを記述してください。
+<pre>
+<b>
+NIFF2_NO_MIPMAP&#9;0x00000000
+</b>
+</pre>
+尚、MipMapレベルの最大値は下記のフラグによって規定されています。それ以上のレベル数はN64上で再生不可能です。
+<pre>
+<b>
+NIFF2_MIPMAP_MAX_LEVEL_MAX&#9;0x00000007
+</b>
+</pre>
+また、mipmap_max_level値はTexNode -> mipmap_level値以上に設定する必要があります。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 mipmap_img_offset
+</td>
+<td>
+TexImgDataエリアに格納されているMipMapイメージの各レベルのオフセットをバイト数で記述します。MipMapを使用する場合、そのレベル数のテクスチャイメージをTexImgDataエリアにレベル0から順に格納していきます。<p>
+なお、mipmap_img_offset(0)はレベル1のmipmapイメージへのオフセット値とします。レベル0のオフセットは常に0ですので、データを格納する領域は有りません。<p>
+MipMapを使用しない場合はこのフィールドは記述されません。
+</td>
+</tr>
+
+</table>
+
+
+<p>
+<a href="./tex_img_C.htm">
+Go to the data chunk
+</a>
+<p>
+<a href="./index.htm">
+Go back to the index
+</a>
+
+
+</blockquote>
+
+<hr>
+<i>
+Copyright 1998,1999 NINTENDO Co.,Ltd. All rights reserved.<br>
+Copyright 1998,1999 MONEGI CORPORATION All rights reserved.
+</i>
+
+</body>
+</html>

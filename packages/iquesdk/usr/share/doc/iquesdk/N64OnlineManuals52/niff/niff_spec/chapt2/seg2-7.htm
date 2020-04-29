@@ -1,0 +1,67 @@
+<HTML>
+<HEAD>
+<TITLE>Chapter 2 Nodes</TITLE>
+</HEAD>
+<BODY LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff">
+
+<font face="arial" size="-1">
+<b><font size="3">Chapter 2 Nodes</b></font>
+<HR>
+
+<P>
+<b>2-2. Links to Nodes in NIFF</b>
+<P>
+
+
+<u>7. Handling of a Camera in NIFF</u>
+<P>
+With a game application,  the camera must be handled in a much different way from the camera in a movie.  In games,  a camera is influenced by the user's input directly and indirectly, and does the animation.  And, some games require the camera to have collision detection.   NIFF makes this possible by specifying the camera position, a focal point, and a Y direction vector specified by indicating an object.  Consider the following camera:
+<p>
+<center>
+<img src="./running_man.gif">
+<p>
+Figure: A Camera Following an Object
+</center>
+<p>
+In this case, if Man_Object runs on the land and the camera follows it,  the camera is following Man_Object a little bit behind.  So, NULL_Obj0 and NULL_Obj1 are made as follows:
+<p>
+<center>
+<img src="./following_null.gif">
+<p>
+Figure: NULL Object Following an Object
+</center>
+<p>
+And, links are made toward NULL_Obj0, NULL_Obj1, and Man_Object as follows:
+<p>
+<center>
+<img src="./fig_cam_link.gif">
+<p>
+Figure: Links From a Camera
+</center>
+<p>
+In this manner,  when defining an image point (camera position), a focal point, and an up direction, a parameter for changing a camera viewing is set by specifying and linking some object or NULL objects.
+<p>
+If used this method,  it is possible to represent a static camera by linking to a static object, and if you want to represent a camera which follows some object, you can do so by linking to the object. Also, it is possible to represent an independent camera motion by linking the motion to NULL object and linking a camera to the NULL object.<p>
+In other words,  as for representing a camera position, a focal point, and an up direction,  it is possible by linking to some object as shown below.<p>
+<center>
+<img src="./cam_to_obj.gif">
+<p>
+Figure: Links to Objects From a Camera
+</center>
+<p>
+
+
+<hr>
+<p align="right"><a href="../index.htm">
+<img src="../../../gif/index.gif"
+border="0" width="65" height="17"></a>
+&nbsp; <a href="./seg2-8.htm">
+
+<img src="../../../gif/next.gif"
+border="0" width="65" height="17"></a></p>
+
+
+</body>
+</html>
+
+

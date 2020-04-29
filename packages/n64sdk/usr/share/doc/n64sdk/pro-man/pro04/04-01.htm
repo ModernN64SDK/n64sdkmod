@@ -1,0 +1,26 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 4 - Runtime Software Architecture</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check.-->
+</head>
+
+<h1>4.1 Resource Access and Resource Management</h1>
+
+<p>The Nintendo 64 game machine is made up of a variety of resources. These resources include the CPU, memory, memory bus bandwidth, IO devices, the RSP, the RDP, and peripheral devices. The software is designed to provide raw access to all of the resources.  The software layer basically translates logical functions and arguments into exact
+hardware register settings. 
+</p>
+
+<p>Management of most resources is left up to the game developer.  Resources such as processor access and memory usage are too precious to waste by using some general management algorithm that is not tailored to a particular game's requirements.  The only management layers provided are the audio playback and I/O device access. </p>
+
+<p>The audio playback mechanism is fairly consistent from game to game.  Only the sounds themselves are different.  Therefore, a general tool <a href="../../keywords/index/data/audio.htm#streaming" target="keywords">to stream</a> audio playback is useful.  The I/O devices can be managed to provide simultaneous multiple access contexts for different <A target="keywords" HREF="../../keywords/index/data/system.htm#thread">threads</A>.  For example, streaming audio data and <A target="keywords" HREF="../../keywords/index/data/system.htm#paging">paging</a> in graphics database
+might require sharing access to the ROM. </p>
+
+<dl>
+  <dt><a name="f04-01"><strong>Figure 4-1 Application Resources</strong></a>
+  <dd><img src="gif/f04-01.gif" alt="[Figure 4-1]">
+</dl>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+</body> </html>

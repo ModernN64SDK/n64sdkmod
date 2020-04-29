@@ -1,0 +1,57 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!--
+Editors Notes:
+  PWC- updated formatting
+-->
+<title>STEP2 [Introduction to N64 Programming] - Chapter 2 N64 Graphics Processing</title>
+<base target="keywords">
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<p><font style="font-size:12pt; font-weight:bold">2-8 3D Geometry Calculations</font><br>
+<br>
+<br>
+Geometry calculations, which mainly calculate coordinate transformations, play a leading role in the 3D process. These calculations are explained in detail in the STEP 3 [N64 Audio Architecture and Samples]<br>
+<br>
+<br>
+<b>2-8-1 Matrix</b><br>
+<br>
+<br>
+A <a
+href="../../../keywords/index/data/graphics.htm#matrix" target="keywords">matrix</a> (two-dimensional array) forms the core of the coordinate transformation process. It is used to convert from one coordinate system to another, and is specified in this manner: <br>
+<br>
+ <pre>float mf[4][4];</pre>
+<br>
+This matrix consists of 16 elements (4 lines by 4 columns), so it can hold all the modulation elements of the coordinate translation, rotation, projection, and scaling at the same time. The <a href="../../../keywords/index/data/graphics.htm#geometry" target="keywords">geometry</a> calculations that use these matrices would take a long time if they were calculated by the CPU, so when N64 needs to do a geometry calculation, the RCP takes over.  The RCP does the actual calculation and processes the coordinate transformation much more quickly than the CPU could.  After completing the calculations, the RCP puts the result back into the <a href="../../../keywords/index/data/graphics.htm#display list" target="keywords">display list</a>  for use by the CPU. <br>
+<br>
+<br>
+<br>
+<b>2-8-2 Coordinate System</b><br>
+<br>
+<br>
+The 3D rendering process ultimately loops through the coordinate transformation process several times to process the two-dimensional coordinate system of the frame buffer image.  N64 uses the following three coordinate systems:<br>
+<ul>
+<b><li>Local Coordinate System</li><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../../../gif/downarrow.gif" align="absmiddle"> A. Model View Matrix<br>
+<li>World Coordinate System</li><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../../../gif/downarrow.gif" align="absmiddle"> B. Projection Matrix<br>
+<li>Frame Buffer Coordinate System</li> </b></ul>
+<p>
+The coordinate data is converted in order from the beginning.  Two transformation matrices are used. The local to world coordinate transformation uses a model view matrix (A), and the world to frame buffer coordinate transformation uses a projection matrix (B). <br>
+<br>
+<br>
+The following are the contents of the transformation matrices:<br>
+<ol>
+<b><li type="A">Model View Matrix</li></b><br>
+A model view matrix defines where to place the model (the object to be displayed) in the world coordinate system.  The matrix storage holds 10 columns of the matrix-<a href="../../../keywords/index/data/system.htm#stack" target="keywords">stack</a>.
+Note: The depth of the matrix stack varies depending on which <a href="../../../keywords/index/data/system.htm#microcode" target="keywords">microcode</a> is being used. <br><br>
+<b><li type="A">Projection Matrix</li></b><br>
+A projection matrix defines how each object placed in the world coordinate system is actually reflected in the frame buffer. The RCP has a "state" area where it stores the model view matrix and the projection matrix. The RCP is continually updated during the analysis of the display list, and it performs the vertex calculations.  As the RCP completes these operations, the CPU constructs the display list.
+</ol></p>
+</body>
+</html>

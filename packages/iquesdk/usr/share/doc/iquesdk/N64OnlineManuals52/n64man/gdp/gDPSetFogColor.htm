@@ -1,0 +1,62 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<link rel=stylesheet type="text/css" HREF="../N64man.css">
+<!--
+Editors Notes:
+  JLR made reformating and copy edits.
+  PWC- updated formatting
+-->
+
+<TITLE>gDPSetFogColor</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>gDPSetFogColor Function [Macro]</H1>
+<h2>Function</h2>
+<p>gDPSetFogColor<br><br><i>
+Sets the fog color</i></P>
+
+<p><b>Syntax</p></b>
+<p>
+<PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gbi.htm">gbi.h</A> */
+gDPSetFogColor(Gfx *gdl, u32 r, u32 g, u32 b, u32 a)
+gsDPSetFogColor(         u32 r, u32 g, u32 b, u32 a)</CODE></PRE>
+</p>
+<p><b>Arguments</p></b>
+<p><DL>
+  <DT><B>gdl</B>
+  <DD>Display list pointer.
+  <DT><B>r</B>
+  <DD>Red component of RGBA color (8-bit precision, 0~255).
+  <DT><B>g</B>
+  <DD>Green component of RGBA color (8-bit precision, 0~255).
+  <DT><B>b</B>
+  <DD>Blue component of RGBA color (8-bit precision, 0~255).
+  <DT><B>a</B>
+  <DD>Alpha component of RGBA color (8-bit precision, 0~255).
+</DL></p>
+<p><b>Description</b></p>
+<P>
+Sets the RDP's fog color.  The fog color is a general-use color register in the blender (BL).
+For details, see Section 12.7.3 "BL Internal Color Registers" in the N64 Programming Manual.
+</P>
+<p><b>Note</b></p>
+<P>
+In order to do fog, you must generate fog attenuation coefficients in the alpha channel of the RSP graphics microcode.  For details, see <A HREF="../gsp/gSPSetGeometryMode.htm">gSPSetGeometryMode</A>, g*SPFogPosition.
+</P>
+<P>
+N64 processes fog by Gouraud-shading the fog attenuation coefficients in the alpha channel.  At that time, the BL adjusts the attenuation of the pipeline pixel colors to the surrounding fog color.  Because the RDP's alpha channel is being used for Gouraud shading of the fog attenuation coefficient, normal alpha values cannot be Gouraud shaded at that time.  In other words, you cannot change the transparency inside single triangles when you are using fog.
+</P>
+<P>
+You can give single triangles constant transact by using <A HREF="gDPSetBlendColor.htm">gDPSetBlendColor</A> to set the BL.  If you Gouraud-shade the fog attenuation coefficient over a size larger than the screen pixel size, you get unrealistic-looking fog.  This is because fog attenuates exponentially, and not linearly.  You can correct this by dividing up the large geometry into straightline sections in order to calculate the exponential attenuation.</P>
+<P>
+For details, see Sections 11.8 "Vertex Fog State," 12.7.5 "Using Fog," and  15.5.2 "Fog" in the N64 Programming Manual.
+</P>
+<p><b>See Also</b></p>
+<P>
+<A HREF="gDPFillRectangle.htm">gDPFillRectangle</A>, <A HREF="gDPSetAlphaCompare.htm">gDPSetAlphaCompare</A>, <A HREF="gDPSetCombineMode.htm">gDPSetCombineMode</A>, <A HREF="gDPSetCycleType.htm">gDPSetCycleType</A>, <A HREF="gDPSetRenderMode.htm">gDPSetRenderMode</A>, <A HREF="../gsp/gSPFogPosition.htm">gSPFogPosition</A>, and <A HREF="../gsp/gSPSetGeometryMode.htm">gSPSetGeometryMode</A>
+</P>
+</BODY>
+</HTML>

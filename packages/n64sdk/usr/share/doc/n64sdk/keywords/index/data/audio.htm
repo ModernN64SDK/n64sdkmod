@@ -1,0 +1,705 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!--
+Editors Notes:
+  PWC- updated formatting
+-->
+<title></title>
+</head>
+<body>
+
+<p><a name="ABI command"><b>ABI command</b></a><br>A command interpreted and executed by the microcode (audio microcode)
+for waveform synthesis. It is used to create waveform synthesis drivers.</p>
+
+<p><a name="acoustic instrument"><b>acoustic instrument
+</b></a><br></p>
+
+<p><a name="adaptable clustering algorithm"><b>adaptable clustering algorithm</b></a><br>One of the design methods for code books used by ADPCM. --> <a href="#ADPCM">ADPCM</a>, <a href="#ADPCM encoder">ADPCM encoder</a>, <a href="../../../n64man/tool/tabledesign.htm" target="contents">tabledesign</a></p>
+
+<p><a name="ADPCM"><b>ADPCM</b></a><br>
+The abbreviation of "Adaptive Pulse Code Modulation". A method of compressing
+sampling data which encodes the value difference between the actual sampling
+value and the anticipated next sampling value derived from the past sampling
+value. This method will enable the amount of data compressed to the quarter
+of the size.</p>
+
+<p><a name="ADPCM compression"><b>ADPCM compression</b></a><br>To converts AIFF file into AIFC file. --> <a href="#ADPCM encoder">ADPCM encoder</a> </p>
+
+<p><a name="ADPCM decoder"><b>ADPCM decoder</b></a><br>A tool that converts a AIFC file into a AIFF file. --> <a href="../../../n64man/tool/vadpcm_dec.htm" target="contents">vadpcm_dec</a></p>
+
+<p><a name="ADPCM decoder state information"><b>ADPCM decoder state information</b></a><br>Internal status of the ADPCM decoder.--> <a href="../../../n64man/tool/vadpcm_dec.htm"target="contents">vadpcm_dec</a></p>
+
+<p><a name="ADPCM decompressor"><b>ADPCM decompressor
+</b></a><br>One of the sound processing modules which converts a monaural ADPCM compression (approximately 4:1) wave table to a monaural 16-bit straight format.  One of the elements that comprise a physical voice. --> <a href="#physical voice">physical voice</a></p>
+
+<p><a name="ADPCM encoder"><b>ADPCM encoder</b></a><br>A tool that converts a AIFF file into a AIFC file. --> <a href="../../../n64man/tool/vadpcm_enc.htm" target="contents">vadpcm_enc</a></p>
+
+<p><a name="ADPCM format"><b>ADPCM format</b></a><br>A file format(AIFC file) to save data in ADPCM format. --> <a href="#AIFC">AIFC</a>, <a href="../../../n64man/tool/vadpcm_enc.htm" target="contents">vadpcm_enc</a>, <a href="../../../n64man/tool/vadpcm_dec.htm" target="contents">vadpcm_dec</a></p>
+
+<p><a name="ADSR"><b>ADSR </b></a><br>
+Indicating Attack time, Decay time, Sustain level, and Release time, this is one of the envelope structures. <br><img src="../gif/adsr.gif" width="381" height="142"> </p>
+
+<p><a name="ADSR envelope"><b>ADSR envelope</b></a><br> --> <a href="#ADSR">ADSR</a></p>
+
+<p><a name="AIFC"><b>AIFC </b></a><br>
+AIFC adds information about the correlation to compression CODEC to
+the basic AIFF.</p>
+
+<p><a name="AIFF"><b>AIFF </b></a><br>
+A format of sound data.</p>
+
+<p><a name="AIFF-C"><b>AIFF-C </b></a><br> --> <a href="#AIFC">AIFC</a></p>
+
+<p><a name="API call"><b>API call</b></a><br>
+To call API. --> <a href="system.htm#API">API</a></p>
+
+<p><a name="asset"><b>asset</b></a><br></p>
+
+<p><a name="attack"><b>attack</b></a><br> --> <a href="#ADSR">ADSR</a></p>
+
+<p><a name="attack time"><b>attack time</b></a><br> --> <a href="#ADSR">ADSR</a></p>
+
+<p><a name="audio bank tool"><b>audio bank tool
+</b></a><br></p>
+
+<p><a name="audio command list"><b>audio command list
+</b></a><br>Created by the synthesizer driver.  The application will create a task based on the audio command list, and then hand the task which has been created overt to the audio synthesizer microcode. </p>
+
+<p><a name="audio DAC"><b>audio DAC</b></a><br>
+D/A converter for audio use that converts digital audio data(PCM) into analog wave form.</p>
+
+<p><a name="audio DMA"><b>audio DMA</b></a><br>
+DMA for audio use.</p>
+
+<p><a name="audio DMA buffer"><b>audio DMA buffer</b></a><br>DMA buffer for audio use.</p>
+
+<p><a name="audio heap"><b>audio heap</b></a><br>
+Area used for each function in audio library to dynamically allocate
+memory. Needs to be initialized before you use audio library.</p>
+
+<p><a name="audio information"><b>audio information</b></a><br></p>
+
+<p><a name="audio task list"><b>audio task list
+</b></a><br>Task list for audio.</p>
+
+<p><a name="audio synthesizer microcode"><b>audio synthesizer microcode</b></a><br>A microcode which processes tasks received from the application and synthesizes L/R stereo 16-bit sample data. </p>
+
+<p><a name="audio thread stack size"><b>audio thread stack size</b></a><br> Stack size of audio thread.</p>
+
+<p><a name="bank"><b>bank</b></a><br>
+--> <a href="#bank structure">bank structure</a></p>
+
+<p><a name="bank file"><b>bank file</b></a><br>
+A bank files is defined as a file which collectively contains a .tbl file in which ADPCM-compressed wave table data are stored, a .ctl file in which control data, such as key map, envelope, gain, etc. for a wave table are stored, and a .sym file in which symbol data for the bank file are stored. --> <a href="#instrument compiler(ic)">instrument compiler(ic)</a></p>
+
+<p><a name="bank structure"><b>bank structure</b></a><br>Sounds with a hierarchical structure like that shown below comprise elements consisting of the envelope, the key map, and the wave table, several sounds combine to comprise an instrument, and several instruments combine to comprise a bank.  <br><img src="../gif/bkstruct.gif" width="172" height="249"> </p>
+
+<p><a name="bend range"><b>bend range</b></a><br>
+</p>
+
+<p><a name="BGM event"><b>BGM event</b></a><br>
+One of the MIDI events.  For details, see &quot;Standard MIDI 
+Files 1.0,&quot; jointly issued with the MIDI Manufacturers Association.</p>
+
+<p><a name="big room"><b>big room</b></a><br>
+An effect to make sound as if the sound were made in a big room.</p>
+
+<p><a name="boost"><b>boost</b></a><br></p>
+
+<p><a name="callback"><b>callback</b></a><br>
+--> <a href="#DMA call back">DMA call back</a></p>
+
+<p><a name="callback function"><b>callback function</b></a><br></p>
+
+<p><a name="callback routine"><b>callback routine
+</b></a><br> --> <a href="#callback function">callback function</a></p>
+
+<p><a name="cent"><b>cent</b></a><br>
+1/100 of a semi-tone.  One octave is 1200 cents. </p>
+
+<p><a name="channel parameter"><b>channel parameter
+</b></a><br></p>
+
+<p><a name="channel priority"><b>channel priority
+</b></a><br></p>
+
+<p><a name="chorus"><b>chorus</b></a><br>
+Adds fullness to a note by mixing delayed notes with a single note to create the effect of a chorus of voices. </p>
+
+<p><a name="chorus depth"><b>chorus depth </b></a><br>A parameter for effect. Modulation amplitude where delay line output
+occurs. --> <a href="../../../pro-man/pro17/17-04.htm" target="contents">Programming manual 17.4</a></p>
+
+<p><a name="chorus/flange format"><b>chorus/flange format</b></a><br>The chorus effect and flange effect produced by combining sounds. -->  Chorus, Flange</p>
+
+<p><a name="chorus rate"><b>chorus rate </b></a><br>A parameter for effect. Modulation frequency where delay line output
+occurs. --> <a href="../../../pro-man/pro17/17-04.htm" target="contents">Programming manual 17.4</a></p>
+
+<p><a name="chunk"><b>chunk</b></a><br>
+In the case of AIFF data, for example, in addition to "sample data," "loop data," "channel data," "creator data," "tool resume data," etc. are included in the file, each existing as an independent block.  These various blocks are referred to as "chunks."  4 bytes of ID and 4 bytes of chunk size data are always at the head of each chunk, and the application refers to these so that it can extract only the information that it needs from the file.</p>
+
+<p><a name="click"><b>click</b></a><br>
+click sound</p>
+
+<p><a name="click noise"><b>click noise</b></a><br>A noise. --> <a href="#click">click</a></p>
+
+<p><a name="client list"><b>client list
+</b></a><br>A list of players registered in synthesize driver. --> <a
+href="#synthesize driver">synthesize driver</a></p>
+
+<p><a name="clock tick unit"><b>clock tick unit
+</b></a><br> --> <a href="#tick">tick</a></p>
+
+<p><a name="code book"><b>code book</b></a><br>
+List of predictive coefficients used to optimize sound quality when doing ADPCM compression. --> <a href="#ADPCM">ADPCM</a>, <a href="#predictive coefficient">predictive coefficient</a></p>
+
+<p><a name="code book chunk"><b>code book chunk
+</b></a><br></p>
+
+<p><a name="code book data array"><b>code book data array
+</b></a><br></p>
+
+<p><a name="comb effect"><b>comb effect</b></a><br> --> <a href="#comb filter">comb filter</a></p>
+
+<p><a name="comb filter"><b>comb filter</b></a><br>One type of effect. </p>
+
+<p><a name="command list"><b>command list</b></a><br>--> <a href="#audio command list">audio command list</a> </p>
+
+<p><a name="command list buffer"><b>command list buffer
+</b></a><br>Buffer to save ABI commands that would be executed every audio frame.</p>
+
+<p><a name="compressed MIDI"><b>compressed MIDI</b></a><br>A N64-specific MIDI format which compresses the standard MIDI format.  Played back using the compact sequence player. </p>
+
+<p><a name="compressed MIDI sequence"><b>compressed MIDI sequence</b></a><br>A compressed MIDI sequence.  <a href="#compressed MIDI">compressed MIDI</a>, <a href="#sequence">sequence</a></p>
+
+<p><a name="compact sequence format"><b>compact sequence format</b></a><br> --> <a href="#AIFC">AIFC</a></p>
+
+<p><a name="compact sequence player"><b>compact sequence player </b></a><br> --><a href="#sequence player">sequence player</a> </p>
+<p><a name="container"><b>container</b></a><br>
+</p>
+
+<p><a name="control data"><b>control data </b></a><br></p>
+
+<p><a name="control information"><b>control information</b></a><br></p>
+
+<p><a name="DC normalization"><b>DC normalization</b></a><br>The abbreviation of "Discrete Cosine normalize". By doing the orthogonal transform (discrete cosine transformation) of input signals, this process
+splits the signal into the direct current and alternating current components
+and takes out the direct current component. You can do the discrete cosine
+transformation and reverse-transformation in real-time by using DSP.</p>
+
+<p><a name="decay time"><b>decay time</b></a><br> --> <a href="#ADSR">ADSR</a></p>
+
+<p><a name="delay line"><b>delay line</b></a><br>
+A mechanism that is used to perform sound effects such as sound frequency
+modulation and amplitude modulation to realize echo and flange sound effect.</p>
+<p><a name="delay memory"><b>delay memory</b></a><br></p>
+
+<p><a name="delay time"><b>delay time</b></a><br>
+See decay time. --> <a href="#decay time">decay time</a></p>
+
+<p><a name="delta time"><b>delta time</b></a><br>
+A period of time between two events represented in tick units.</p>
+
+<p><a name="de-tune"><b>de-tune</b></a><br>
+To slightly shift the sound frequency.</p>
+
+<p><a name="DMA call back"><b>DMA call back</b></a><br>It uses DMA to transfer the waveform data from ROM to RAM as necessary.
+By using this method, you avoid keeping unnecessary data in RAM, so the
+amount of RAM required for audio is reduced</p>
+
+<p><a name="driver configuration structure"><b>driver configuration structure </b></a><br>The structure used when initializing the synthesizer driver.  The upper limits for the number of voices and the number of events are written here, and when the structure's pointer is handed over to the driver by allnit, the driver performs the internal settings while reading these values.  This is so that these values will be registered without writing all of the arguments out for allnit. </p>
+
+<p><a name="dry"><b>dry</b></a><br>
+A sound effect that ranges from 0 (a completely dry sound) to 127 (a
+completely wet sound).</p>
+
+<p><a name="echo"><b>echo</b></a><br>
+A phenomenon or the sound where the sound traveling from a voice source
+reflects against walls and produces a sound delayed from the sound that
+reaches directly.</p>
+
+<p><a name="echo effect"><b>echo effect</b></a><br> --> <a href="#echo">echo</a></p>
+
+<p><a name="effect"><b>effect</b></a><br>
+Processes an encoded sound to create a sound which is different from the original sound.  Examples are vibrato, tremolo, and echo, etc. </p>
+
+<p><a name="effect bus"><b>effect bus</b></a><br>
+</p>
+
+<p><a name="effect mix"><b>effect mix</b></a><br>
+Specify the wet/dry mix. --> <a href="#wet">wet</a></p>
+
+<p><a name="effect primitive"><b>effect primitive
+</b></a><br></p>
+
+<p><a name="effect unit"><b>effect unit</b></a><br></p>
+
+<p><a name="end of track event"><b>end of track event
+</b></a><br>One of the MIDI meta-events.  Generated when all of the notes in a track have been played over their respective continuous periods. </p>
+
+<p><a name="envelope"><b>envelope</b></a><br>
+The information that defines a volume which changes as time proceeds.
+The n64 audio library uses the ADSR envelope.</p>
+
+<p><a name="envelope asset"><b>envelope asset
+</b></a><br>Assets pertaining to an envelope. --> <a href="#envelope">envelope</a>, <a href="#asset">asset</a></p>
+
+<p><a name="envelope object"><b>envelope object</b></a><br>An envelope of ADSR --> <a href="#ADSR">ADSR</a>, <a href="#envelope">envelope</a></p>
+
+<p><a name="envelope parameter"><b>envelope parameter
+</b></a><br>An envelope of ADSR that is defined in ALSound structure. --> <a href="#ADSR">ADSR</a>, <a href="#envelope">envelope</a></p>
+
+<p><a name="event"><b>event</b></a><br>
+Defined sound change that occurs as time progresses: note on, note
+off, and control change.</p>
+
+<p><a name="event list"><b>event list</b></a><br>
+A list of event. --> <a href="#event">event</a></p>
+
+<p><a name="external MIDI device"><b>external MIDI device</b></a><br></p>
+
+<p><a name="fade out"><b>fade out</b></a><br>
+Gradually decreasing the sound. </p>
+
+<p><a name="fbcoef"><b>fbcoef</b></a><br>
+A parameter for effect: feedback coefficient. --> <a href="../../../pro-man/pro17/17-04.htm" target="contents">Programming manual 17.4</a></p>
+
+<p><a name="ffcoef"><b>ffcoef</b></a><br>
+A parameter for effect: feed forward coefficient. --> <a href="../../../pro-man/pro17/17-04.htm" target="contents">Programming manual 17.4</a></p>
+
+<p><a name="flange"><b>flange</b></a><br>
+An sound effect where a copy of the original sound is slightly delayed
+and then added to the original sound to exaggerate the frequency component.<br>
+<img src="../gif/frange.gif" width="256" height="72"> </p>
+
+<p><a name="FX TYPE"><b>FX TYPE </b></a><br>
+Information on types of effect used such as none, small room, big room,
+echo, flange, chorus, and custom.</p>
+
+<p><a name="gain"><b>gain </b></a><br>
+A parameter for effect: Output gain from effect bus. --> <a href="../../../pro-man/pro17/17-04.htm" target="contents">Programming manual 17.4</a></p>
+
+<p><a name="gain information"><b>gain information</b></a><br> --> <a href="#gain">gain</a></p>
+
+<p><a name="gain unit"><b>gain unit</b></a><br>
+Unit which applies the volume envelope and pan value and mixes output and sends it to the master bus and the effect bus at the gain specified by the wet/dry parameter for the voice. --> <a href="#physical voice">physical voice</a></p>
+
+<p><a name="gain value"><b>gain value</b></a><br>
+Expresses the ratio of the change in the output signal relative to the change in the input signal in dB. </p>
+
+<p><a name="Gardner format"><b>Gardner format</b></a><br>One of the methods of notating an effect. --> <a href="#effect">effect</a></p>
+
+<p><a name="General MIDI 1.0 specification"><b>General MIDI 1.0 specification</b></a><br>The most general of the MIDI file formats.  There are two formats:  Type 0 and Type 1.  For details, see &quot;Standard MIDI Files 1.0,&quot; jointly issued with the MIDI Manufacturers' Association.</p>
+<p><a name="General MIDI bank"><b>General MIDI bank</b></a><br>Bank for replaying General MIDI on the N64.  Included in the development software, it can be used freely by the licensee. </p>
+
+<p><a name="half step"><b>half step</b></a><br>
+Half note.</p>
+
+<p><a name="instrument"><b>instrument
+</b></a><br> A musical instrument. In N64 audio library, this refers to the complete package of audio attributes including the sound, envelope, key map or pan. and so on.</p>
+
+<p><a name="instrument asset"><b>instrument asset
+</b></a><br>An asset for the instrument. Parameters such as volume, pan and bend range can be specified. --> <a href="#instrument">instrument</a>, <a
+href="#asset">asset</a></p>
+
+<p><a name="instrument bank"><b>instrument bank</b></a><br></p>
+
+<p><a name="instrument chunk"><b>instrument chunk
+</b></a><br></p>
+
+<p><a name="instrument compiler"><b>instrument compiler
+</b></a><br> --> <a href="#instrument compiler(ic)">instrument compiler(ic)</a></p>
+
+<p><a name="instrument compiler(ic)"><b>instrument compiler(ic) </b></a><br>A tool that generates bank files (waveform data files .tbl and control files .ctl) out of some compressed AIFC sound data.</p>
+
+<p><a name="instrument object"><b>instrument object
+</b></a><br>An object that is used to specify the entire volume and pan for the  instrument and a list of sound that consists the instrument.</p>
+
+<p><a name="key base"><b>key base</b></a><br>
+Defines the MIDI note number which corresponds with the sound played back at a reference pitch.  Without preparing sounds for all of the keys, a pitch shift is performed from the difference between the specific key and the key base to produce the sound of the specified key. </p>
+
+<p><a name="KeyBase"><b>KeyBase </b></a><br> --> <a href="#key base">key base</a></p>
+
+<p><a name="key off"><b>key off</b></a><br>
+Note off. --> <a href="#note on/note off">note on/note off</a></p>
+
+<p><a name="key map"><b>key map</b></a><br>
+Defines to which voice range and which velocity a target sound corresponds.  By combining this kind of data with a sound, the appropriate sound is selected according to the scale and the velocity. </p>
+
+<p><a name="key map entry"><b>key map entry</b></a><br>For more about keymap. --> <a href="#key map">keymap</a></p>
+
+<p><a name="key map object"><b>key map object
+</b></a><br> An object that specifies the number of keys that MIDI velocity and the sound would cover.</p>
+
+<p><a name="key mapping"><b>key mapping</b></a><br>To key map --> <a href="#key map">key map</a></p>
+
+<p><a name="key map structure"><b>key map structure</b></a><br>A structure that contains the information about velocity, key range, key base, and detune.</p>
+
+<p><a name="key number"><b>key number</b></a><br> --> <a href="#note number">note number</a></p>
+
+<p><a name="length"><b>length </b></a><br>
+A parameter for effect that specifies the length of delay memory effect
+uses. The value must be a multiple of 8 bytes.</p>
+
+<p><a name="LFO"><b>LFO </b></a><br>
+An oscillator that generates audio frequency wave. --> <a href="#oscillator">oscillator</a></p>
+
+<p><a name="loop end sub-type"><b>loop end sub-type
+</b></a><br>Data expressing the end of a loop in compressed MIDI. --> <a
+href="#compressed MIDI">compressed MIDI</a>, <a href="#meta status byte">metastatus byte</a></p>
+
+<p><a name="low frequency oscillator - LFO"><b>low frequency oscillator- LFO </b></a><br> --> <a href="#LFO">LFO</a></p>
+
+<p><a name="low-pass filter"><b>low-pass filter</b></a><br>One type of filter.  Cuts the high-frequency component of a signal while allowing the low-frequency component to pass. </p>
+
+<p><a name="lpfilt coef"><b>lpfilt coef </b></a><br>One of the effect parameters.  Coefficient for the single-pole low-pass filter
+</p>
+
+<p><a name="magnitude value"><b>magnitude value</b></a><br>Volume </p>
+
+<p><a name="mapping method"><b>mapping method</b></a><br>A method of mapping sound to key maps. --> <a href="#key map">key map</a>, <a href="#key base">key base</a>, <a href="#velocity">velocity</a></p>
+
+<p><a name="marker"><b>marker</b></a><br>
+--> <a href="#sequence position marker">sequence position marker</a></p>
+
+<p><a name="memory demand"><b>memory demand</b></a><br>The amount of memory required. </p>
+
+<p><a name="meta event"><b>meta event</b></a><br>
+Midi doesn't include this event, but you can define it. It has tempo or end-of-track information.</p>
+
+<p><a name="meta status"><b>meta status</b></a><br>--> <a href="#meta status byte">meta status byte</a> </p>
+
+<p><a name="meta status byte"><b>meta status byte </b></a><br>Data which identifies something as a meta-event.  The head of a meta-event always starts from 0xFF.<a href="#compressed MIDI">compressed MIDI</a></p>
+
+<p><a name="middle C"><b>middle C</b></a><br>
+he center C4 (MIDI note number 60).</p>
+
+<p><a name="MIDI"><b>MIDI </b></a><br>
+A standard protocol for the interchange of musical information such
+as sound volume and length between synthesizers, sequencers, and computers.
+</p>
+
+<p><a name="MIDI channel"><b>MIDI channel</b></a><br></p>
+
+<p><a name="MIDI channel"><b>MIDI channel</b></a><br></p>
+
+<p><a name="MIDI clock"><b>MIDI clock</b></a><br>
+</p>
+
+<p><a name="MIDI clock tick count"><b>MIDI clock tick count</b></a><br></p>
+
+<p><a name="MIDI clock time"><b>MIDI clock time</b></a><br>A timing used to control MIDI equipment.</p>
+
+<p><a name="MIDI controller"><b>MIDI controller</b></a><br>One of the MIDI messages.  Message to specify an effect for a specific note.  For details, see &quot;Standard MIDI Files 1.0,&quot; jointly issued with the MIDI Manufacturers' Association.</p>
+
+<p><a name="MIDI daemon"><b>MIDI daemon</b></a><br>A tool used to perform MIDI data real time in N64.</p>
+
+<p><a name="MIDI event"><b>MIDI event</b></a><br> --><a href="#event">event</a></p>
+
+<p><a name="MIDI message"><b>MIDI message</b></a><br></p>
+
+<p><a name="MIDI note number"><b>MIDI note number</b></a><br>One of the MIDI messages.  Message to specify the height of a specific note.  For details, see &quot;Standard MIDI Files 1.0,&quot; jointly issued with the MIDI Manufacturers' Association.</p>
+
+<p><a name="MIDI Note Off message"><b>MIDI Note Off message</b></a><br>One of the MIDI messages.  Message to stop a specific note.  For details, see &quot;Standard MIDI Files 1.0,&quot; jointly issued with the MIDI Manufacturers' Association.</p>
+
+<p><a name="MIDI Note On message"><b>MIDI Note On message
+</b></a><br>One of the MIDI messages.  Message to play a specific note.  For details, see &quot;Standard MIDI Files 1.0,&quot; jointly issued with the MIDI Manufacturers' Association.</p>
+
+<p><a name="MIDI playback"><b>MIDI playback</b></a><br>Performs processing, such as reading and playing (standard) MIDI data with the processor.  Refers to playback and sequence. </p>
+
+<p><a name="MIDI sequence"><b>MIDI sequence</b></a><br>Sequential messages for MIDI. --> <a href="#sequence">sequence</a></p>
+
+<p><a name="MIDI sequencer"><b>MIDI sequencer</b></a><br>A sequencer that performs input/output of MIDI files. -->  <a href="#sequencer">sequencer</a></p>
+
+<p><a name="mixing"><b>mixing</b></a><br>
+To mix several independent notes.</p>
+
+<p><a name="modulation depth"><b>modulation depth</b></a><br>The degree of the modulation rate pitch change. --> <a href="#modulation rate">modulation rate</a></p>
+
+<p><a name="modulation rate"><b>modulation rate</b></a><br>The delay time from the input sound.<br>
+<img src="../gif/rate.gif" width="248" height="72"></p>
+
+<p><a name="musical chorusing"><b>musical chorusing
+</b></a><br> --> <a href="#chorus">chorus</a></p>
+
+<p><a name="N64 device driver"><b>N64 device driver
+</b></a><br>A device driver that connects IRIX with N64 emulator board. /dev/n64.</p>
+
+<p><a name="nest"><b>nest</b></a><br>
+To nest smaller block of data into bigger block of data.</p>
+
+<p><a name="note number"><b>note number</b></a><br>Numbers to represent musical scale that goes from 1 to 128 with 60 being the midpoint.<br><img src="../gif/notenum.gif" width="312" height="88"></p>
+
+<p><a name="note on/note off"><b>note on/note off
+</b></a><br>MIDI commands used to start sound(note on) and stop sound(note off). Usually they must be paired for use.</p>
+
+<p><a name="note on velocity"><b>note on velocity
+</b></a><br> --> <a href="#velocity">velocity</a></p>
+
+<p><a name="offset"><b>offset</b></a><br>
+The value added to or subtracted from a certain reference value. </p>
+
+<p><a name="offset array"><b>offset array</b></a><br></p>
+
+<p><a name="oscillator"><b>oscillator</b></a><br>
+Refers to the oscillator. </p>
+
+<p><a name="output buffer"><b>output buffer</b></a><br></p>
+
+<p><a name="output gain"><b>output gain</b></a><br> --> <a href="#gain">gain</a></p>
+
+<p><a name="output rate"><b>output rate</b></a><br> --> <a href="#playback rate">playback rate</a></p>
+
+<p><a name="pan"><b>pan</b></a><br>
+The orientation information of the sound. It indicates where the sound
+is coming from (right to left).</p>
+
+<p><a name="pan controller"><b>pan controller</b></a><br>In the MIDI standard, this refers to the mechanism, or its control number, that changes the stereo pan pot of a sound.  The control number for the pan is 10. </p>
+
+<p><a name="pan information"><b>pan information</b></a><br> --> <a href="#pan">pan</a></p>
+
+<p><a name="pan location"><b>pan location</b></a><br>--> <a href="#pan">pan</a></p>
+
+<p><a name="percussion instrument"><b>percussion instrument</b></a><br></p>
+
+<p><a name="physical voice"><b>physical voice</b></a><br>The voice that actually provides the wave form synthesis. It corresponds
+to the sound process module that consists of the ADPCM decompressor, the
+pitch shifter, and the gain unit. --> <a href="#virtual voice">virtual voice</a></p>
+
+<p><a name="pitch"><b>pitch</b></a><br>
+This refers to the height (vocal range) of a sound according to its frequency.  Physically speaking, it refers to the frequency. </p>
+
+<p><a name="pitch bend"><b>pitch bend</b></a><br>
+To make the pitch continually go up and down to produce an effect similar
+to the choking effect of a guitar.</p>
+
+<p><a name="pitch bend change"><b>pitch bend change
+</b></a><br>A message for MIDI. --> <a href="#pitch bend">pitch bend</a>, <a href="#MIDI message">MIDI message</a></p></p>
+
+<p><a name="pitch shifter"><b>pitch shifter</b></a><br>A unit which re-samples the ADPCM output data and converts it to a desired pitch. --> <a href="#physical voice">physical voice</a></p>
+
+<p><a name="playback rate"><b>playback rate</b></a><br>The number of samples per second produced by the synthesizer.</p>
+
+<p><a name="playback volume"><b>playback volume</b></a><br>The volume during playback. --> <a href="#volume">volume</a>. </p>
+
+<p><a name="polyphonic key pressure"><b>polyphonic key pressure </b></a><br> Information that provides an individual sound effect for a specific note when several notes are played at the same time.</p>
+
+<p><a name="pop noise"><b>pop noise</b></a><br>
+One type of noise.  A "pop" sound.</p>
+
+<p><a name="predictive coefficient"><b>predictive coefficient</b></a><br>With ADPCM compression, you estimate the current sampling value from the past sampling value and encode the difference between its estimated value and the actual value.&nbsp; This predictive coefficient is then used
+to search to search for the estimated value.</p>
+
+<p><a name="prefix"><b>prefix</b></a><br>
+File names followed by extensions such as '.ctl', '.tbl', and '.sym'
+when compiling with ic.</p>
+
+<p><a name="primitive functions"><b>primitive functions</b></a><br></p>
+
+<p><a name="program control change"><b>program control change </b></a><br></p>
+
+<p><a name="program number"><b>program number
+</b></a><br>The number in the MIDI sequence that identifies each instrument. This number is used for program change in MIDI sequence.</p>
+
+<p><a name="real time editing"><b>real time editing</b></a><br>One method of input to the sequencer.  An instrument is actually played and its signal is input.</p>
+
+<p><a name="redundancy mode"><b>redundancy mode</b></a><br>The mode in which debug data are displayed, such as whether to always perform operation.  Set as an option when running ic or the MIDI Demon.  Single pole (one pole). </p>
+
+<p><a name="release"><b>release</b></a><br> --> <a href="#ADSR">ADSR</a></p>
+
+<p><a name="release time"><b>release time</b></a><br> --> <a href="#ADSR">ADSR</a></p>
+
+<p><a name="release volume"><b>release volume
+</b></a><br> --> <a href="#ADSR">ADSR</a></p>
+
+<p><a name="resample"><b>resample</b></a><br>
+To resample by shifting the pitch. It is used to convert the ADPCM
+output data to an arbitrary pitch. It is also called the pitch shift process.
+</p>
+
+<p><a name="reverb format"><b>reverb format</b></a><br>Reverb effect that is created by reflecting sound.</p>
+
+<p><a name="root pitch"><b>root pitch</b></a><br>
+The pitch of the note that forms the foundation of a chord. </p>
+
+<p><a name="sample bank file"><b>sample bank file
+</b></a><br> --> <a href="#bank file">bank file</a></p>
+
+<p><a name="sample data"><b>sample data</b></a><br>Each single sample data.--> <a href="#sampling">sampling</a></p>
+
+<p><a name="sample offset"><b>sample offset
+</b></a><br></p>
+
+<p><a name="sample rate specification"><b>sample rate specification</b></a><br></p>
+
+<p><a name="sampling"><b>sampling</b></a><br>
+To extract the signal size from the continuous analog signals at each
+suitable time interval.</p>
+
+<p><a name="sampling rate"><b>sampling rate
+</b></a><br>The number of sampels per second. The higher the sampling rate, the better the quality of the sound would be, but the more memory would be
+required.</p>
+
+<p><a name="sbc"><b>sbc </b></a><br>
+Tool for creating a sequence bank file from several sequence files. </p>
+
+<p><a name="semi tone"><b>semi tone</b></a><br>
+A half tone.</p>
+
+<p><a name="sequence"><b>sequence</b></a><br>
+Data lined in certain order.</p>
+
+<p><a name="sequence bank compiler - sbc"><b>sequence bank compiler - sbc </b></a><br> --> <a href="#sbc">sbc</a></p>
+
+<p><a name="sequence buffer"><b>sequence buffer
+</b></a><br>Buffer used to hold sequence used during game play.</p>
+
+<p><a name="sequence marker"><b>sequence marker</b></a><br></p>
+
+<p><a name="sequence player"><b>sequence player
+</b></a><br>The sequence player has two types, the MIDI sequence file player of Type 0 and the compressed MIDI sequence player. These players have the same
+functions except for the compression format and the loop process. While
+the MIDI sequence player of Type 0 can provide the loop process from outside,
+the compressed MIDI sequence player must have the loop point embedded in the
+sequence.</p>
+
+<p><a name="sequence position marker"><b>sequence position marker</b></a><br>A marker used to mark at a given position in the Type0 sequence data and set such information as playback time and a loop point.</p>
+
+<p><a name="sequence volume"><b>sequence volume
+</b></a><br></p>
+
+<p><a name="sequencer"><b>sequencer</b></a><br>
+A software or mechanism used to sequentially control continuous data.</p>
+
+<p><a name="sequencer event buffer"><b>sequencer event buffer</b></a><br>When a note is turned ON/OFF in the sequencer, or the volume, pitch, FXMIX, etc. are changed, or when a parameter has been changed by an external function (alSeqp...), it is stored in the event buffer as an "event" in order to convey the result thereof to the synthesizer driver in the form of a command.  The voice handler subsequently reads the event buffer and converts it into a synthesizer driver command (alSyn...).  This is so that such events are not converted to synthesizer commands one-at-a-time until there is a parameter that does not change.  It could also be said to be a program which recognizes the command cache. </p>
+
+<p><a name="single pole"><b>single pole</b></a><br>Primary (one pole). </p>
+
+<p><a name="small room"><b>small room</b></a><br>
+An effect to make sound as if the sound were made in a small room.</p>
+
+<p><a name="sound"><b>sound</b></a><br></p>
+
+<p><a name="sound asset"><b>sound asset</b></a><br>Assett pertaining to a sound.  Referred to by the instrument asset. --> <a href="#sound">sound</a>, <a href="#asset">asset</a></p>
+
+<p><a name="sound bank"><b>sound bank</b></a><br>
+</p>
+
+<p><a name="sound effect"><b>sound effect
+</b></a><br>Effects and music which are added to heighten the atmosphere associated with the game's video, etc. </p>
+
+<p><a name="sound loop structure"><b>sound loop structure </b></a><br></p>
+
+<p><a name="sound object"><b>sound object
+</b></a><br>Expressed by the ALSound structure. </p>
+
+<p><a name="sound player"><b>sound player
+</b></a><br>A player to play single sound effect and streaming audio. Sound in ADPCM compressed and 16-bit decompressed formats can be played.</p>
+
+<p><a name="sound structure"><b>sound structure</b></a><br></p>
+
+<p><a name="standard drum kit"><b>standard drum kit
+</b></a><br>Generally indicates a group of drum voices which complies with the standard MIDI format.  Drum voices which are used often commonly are made into sets. </p>
+
+<p><a name="standard MIDI"><b>standard MIDI</b></a><br> --> <a href="#General MIDI 1.0 specification">General MIDI 1.0 specification</a></p>
+
+<p><a name="standard MIDI file"><b>standard MIDI file
+</b></a><br> --> <a href="#General MIDI 1.0 specification">General MIDI 1.0 specification</a></p>
+
+<p><a name="standard MIDI file 1.0 specification"><b>standard MIDI file 1.0 specification </b></a><br> --> <a href="#General MIDI 1.0 specification">General MIDI 1.0 specification</a></p>
+
+<p><a name="stereo pan"><b>stereo pan </b></a><br> --> <a href="#pan">pan</a></p>
+
+<p><a name="streaming"><b>streaming</b></a><br>
+To make a constant amount of sound data flow all the time in the real-time
+process.</p>
+
+<p><a name="subtype byte"><b>subtype byte</b></a><br>The byte that stores the information that defines types of MIDI event.</p>
+
+<p><a name="sustain"><b>sustain</b></a><br> --> <a href="#ADSR">ADSR</a></p>
+
+<p><a name="sustain level"><b>sustain level
+</b></a><br> --> <a href="#ADSR">ADSR</a></p>
+
+<p><a name="switchable ADPCM algorithm"><b>switchable ADPCM algorithm</b></a><br>One type of ADPCM algorithm. --> <a href="#ADPCM">ADPCM</a> </p>
+
+<p><a name="synthesize"><b>synthesize</b></a><br>
+To synthesize wave forms.</p>
+
+<p><a name="synthesize driver"><b>synthesize driver
+</b></a><br>A driver to synthesize wave forms.</p>
+
+<p><a name="synthesizer update buffer"><b>synthesizer update buffer</b></a><br></p>
+
+<p><a name="synthesizer voice"><b>synthesizer voice
+</b></a><br></p>
+
+<p><a name="tag"><b>tag</b></a><br>
+Additional information to recognize data.</p>
+
+<p><a name="tap value"><b>tap value</b></a><br>
+Coefficients(gain) for each effect that is output ,and it is output from delay line.<br><img src="../gif/tapvalue.gif" width="325" height="108"> </p>
+
+<p><a name="tempo event"><b>tempo event</b></a><br>An event to change tempo in compressed MIDI. --> <a href="#meta event">meta event</a></p>
+
+<p><a name="tick"><b>tick</b></a><br>
+Unit of time related to the MIDI clock at a resolution specified in the MIDI sequencer header. </p>
+
+<p><a name="total delay length"><b>total delay length </b></a><br> --> <a href="#length">length</a></p>
+
+<p><a name="tremolo"><b>tremolo</b></a><br>
+A process that applies low frequency modulation to the sound quantity
+to make it alternate between large and small.</p>
+
+<p><a name="tuning"><b>tuning</b></a><br>
+To adjust playback rate so that it's played at desired pitch. --> <a
+href="#resample">resample</a></p>
+
+<p><a name="Type0, Type1 MIDI"><b>Type0, Type1 MIDI </b></a><br>MIDI sequence formats, wherein Type 1 MIDI files are used by general MIDI sequencers.  Since the sequence data which can be handled by the N64 audio library are Type 0 MIDI files, data must be converted to a Type 0 MIDI file using midicvt.</p>
+
+<p><a name="type information"><b>type information</b></a><br></p>
+
+<p><a name="unit pitch"><b>unit pitch</b></a><br>
+The original pitch of a sound used in the key map. <a href="#pitch">pitch</a></p>
+
+<p><a name="velocity"><b>velocity</b></a><br>
+The rate to strike the keyboards. Usually, this information indicates
+the sound level.</p>
+
+<p><a name="velocity value"><b>velocity value</b></a><br> --> <a href="#velocity">velocity</a></p>
+
+<p><a name="velocity zone"><b>velocity zone</b></a><br>The corresponding velocity range in a key map --> <a href="#key map">key map</a></p>
+
+<p><a name="vibrato"><b>vibrato</b></a><br>
+It makes the sound frequency (pitch) go up and down by the low frequency
+modulation.</p>
+
+<p><a name="virtual voice"><b>virtual voice</b></a><br>Expressed by the ALVoice structure for ease of use by the player. To
+play a sound, a player's virtual voice must be allocated to the sound.
+Virtual voices with higher priority are allocated to the physical voice.
+-> <a href="#physical voice">physical voice</a> <br>
+<img src="../gif/vvoice.gif" width="220" height="152"></p>
+
+<p><a name="voice"><b>voice</b></a><br></p>
+
+<p><a name="voice handler functions"><b>voice handler functions</b></a><br>
+The program which provides the parameters and/or commands for a "voice" (sound generating channel) within the synthesizer driver by means of voice function calls.  This can also be thought of as voice handler functions = sound or sequence player, but one could also think of it as "an intermediary routine that converts player playback data into voice function calls for the driver."</p>
+
+<p><a name="voice steal"><b>voice steal
+</b></a><br>Virtual voice with low priority that was once assigned to physical voice but was taken over by other virtual voice with higher priority.</p>
+
+<p><a name="volume"><b>volume</b></a><br>
+The loudness of a sound.</p>
+
+<p><a name="wave table"><b>wave table</b></a><br>
+Raw sound data compressed in ADPCM.</p>
+
+<p><a name="wet"><b>wet</b></a><br>
+A sound effect that ranges from 0 (completely dry sound) to 127 (a
+completely wet sound).</p>
+
+
+</body>
+</html>

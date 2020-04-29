@@ -1,0 +1,157 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.
+  PWC- updated formatting
+  MAP- added links, updated format
+-->
+<TITLE>osContGetReadData</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+<font style="font-size: 12pt"><b>osContGetReadData</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<P>osContStartReadData, osContGetReadData</p>
+
+<p><i>Obtains data from Controller</i></P>
+
+<H3>Syntax</H3>
+<p>
+<PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/os.htm">os.h</A> */
+s32 osContStartReadData(OSMesgQueue *mq);
+void osContGetReadData(OSContPad *pad);</CODE></PRE></p>
+
+<H3>Description</H3>
+<P>
+The <a href="osContStartReadData.htm">osContStartReadData</a> function issues a read data command to obtain the current positon of 3D stick and button settings from Controller. The <tt>osContGetReadData</tt> function returns these data to the location pointed to by the <B>pad</B> argument. You can obtain such information that A button of Controller is pressed down or that how much 3D stick is tilted. These two functions must be paired to use.
+</P>
+<P>
+The message queue pointed to by the <B>mq</B> argument must be an initialized message queue associated with the OS_EVENT_SI event. Please see the <a href="osSetEventMesg.htm">osSetEventMesg()</a> function in the <i>N64 Online Function Reference Manual,</i> for details on how to create this association. 
+</P>
+<P>
+The <tt>osContStartReadData</tt> function is called only to issue read command, and the message for completed data reading is returned to the message queue mq. Therefore, the <tt>osContGetReadData</tt> function should be called to obtain data after the <tt>osContStartReadData</tt> function is called, and <a href="osRecvMesg.htm">osRecvMesg</a> receives a message indicating data reading is completed. The <tt>osContStartReadData</tt> function takes around 2 milliseconds to complete its data reading and for <tt>osRecvMesg</tt> to receive a final message. Other processes such as re-drawing the screen can be performed while you are waiting.
+</P>
+<P>
+You must supply a block of memory large enough for MAXCONTROLLERS structures of type OSContStatus. If the osContSetCh function (please see <a href="osContSetCh.htm">osContSetCh</a>) sets the number of direct-type SI devices accessed at a value less than the MAXCONTROLLERS number, then the area secured can be smaller than the MAXCONTROLLERS number, provided more devices are not added later.
+</P>
+
+<PRE><CODE>typedef struct {
+    u16 button;     /* Controller button data */
+    s8  stick_x;    /* Control stick's X coordinate position*/
+    s8  stick_y;    /* Control stick's Y coordinate position*/
+    u8  errno;      /* Error values returned from the Controller */
+} OSContPad;
+</CODE></PRE>
+
+<P>
+The Control Stick's coordinate positions stick_x and stick_y are signed characters with a range from -128 to 127.  However, for the actual program we recommend using values within the ranges shown below:
+</P>
+
+<UL>
+  <LI>Left/right X axis	+/- 61
+  <LI>Up/down Y axis	+/- 63
+  <LI>X axis incline	+/- 45
+  <LI>Y axis incline	+/- 47
+</UL>
+
+<P>
+button and the following static variables are ANDed to check which mouse button has been clicked. For instance, button is ANDed with START_BUTTON to check if the bit is ON in order to check if the start button has been clicked.
+</P>
+
+<ul>
+<li>START_BUTTON is the start button
+<p>
+<li>A_BUTTON is the A Button
+<p>
+<li>B_BUTTON is the B Button
+<p>
+<li>U_CBUTTONS is the C Button Up
+<p>
+<li>D_CBUTTONS is the C Button Down
+<p>
+<li>L_C_BUTTONS is the C Button Left
+<P>
+<li>R_CBUTTONS is the C Button Right
+<p>
+<li>U_JPAD is the Control Stick Up
+<p>
+<li>D_JPAD is the Control Stick Down
+<p>
+<li>L_JPAD is the Control Stick Left
+<p>
+<li>R_JPAD is the Control Stick Right
+<p>
+<li>Z_TRIG is the Z Button
+<p>
+<li>L_TRIG is the L Button</td></tr>
+<P>
+<li>R_TRIG is the R Button
+</ul>
+
+<P>
+If an error occurs when reading data from Controller, the following error numbers are returned to errno of OSContPad structure. If it is successful, 0 is returned.
+</P>
+<p>
+<DL>
+  <DT><B>CONT_NO_RESPONSE_ERROR</B>
+  <DD>The controller does not respond. The controller is not inserted.
+  <BR><BR>
+  <DT><B>CONT_OVERRUN_ERROR</B>
+  <DD>The controller sends data at a higher data transfer rate than the hardware can handle. In this case, you should ignore the data.
+  <BR><BR>
+</DL>
+</p>
+<H3>Example</H3>
+<p>
+<PRE><CODE>void	mainproc(void)
+{
+  OSMesgQueue     intMesgQueue;
+  OSMesg          intMesgBuf[1];
+  OSContStatus    sdata[MAXCONTROLLERS];
+  OSContPad       rdata[MAXCONTROLLERS];
+  u8              pattern;
+  int             i;
+  int             cont_exist = 0;
+
+  osCreateMesgQueue(&amp;intMesgQueue, intMesgBuf, 1);
+  osSetEventMesg(OS_EVENT_SI, &amp;intMesgQueue, NULL);
+  osContInit(&amp;intMesgQueue, &amp;pattern, &amp;sdata[0]);
+
+  /* Confirm if controller is inserted */
+  for(i = 0; i &lt; MAXCONTROLLERS; i++){
+    if(((pattern &gt;&gt; i) &amp; 1) &amp;&amp; (sdata[i].errno == 0)){
+     if((sdata[i].type &amp; CONT_TYPE_MASK) == CONT_TYPE_NORMAL){
+        osSyncPrintf(&quot;controller is inserted in port %d\n&quot;,i);
+        cont_exist = 1;
+      }
+    }
+  }
+
+  /* if controller is inserted */
+  if(cont_exist){
+    /* start reading controller data */
+     osContStartReadData(&amp;intMesgQueue);
+              %
+              %
+    /* Confirm the end of reading */
+    osRecvMesg(&amp;intMesgQueue, NULL, OS_MESG_BLOCK);
+    /* get controller data */
+    osContGetReadData(&amp;rdata[0]);
+  }
+}
+</CODE></PRE>
+</p>
+<H3>See also</H3>
+<P>
+<A HREF="osContInit.htm">osContInit</A>, <A HREF="osContReset.htm">osContReset</A>, <A HREF="osContStartQuery.htm">osContStartQuery</A>, <A HREF="osContSetCh.htm">osContSetCh</A>, <A HREF="osSetEventMesg.htm">osSetEventMesg</A>, and <A HREF="osRecvMesg.htm">osRecvMesg</A>
+</P>
+
+<H3>Revision History</H3>
+<P>
+1999/02/01 Completely revised.<br>
+1999/04/30 Changed format
+</P>
+
+</BODY>
+</HTML>

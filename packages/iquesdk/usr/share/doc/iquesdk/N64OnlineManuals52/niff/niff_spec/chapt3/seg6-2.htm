@@ -1,0 +1,297 @@
+<HTML>
+<HEAD>
+<TITLE>Chapter 3 Binary Format</TITLE>
+</HEAD>
+<BODY LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff">
+
+<font face="arial" size="-1">
+<b><font size="3">Chapter 3 Binary Format</b></font>
+<HR>
+
+<b>3-6 Shape List</b>
+<P>
+<u>2. Shape Area</u>
+<P>
+The Shape area describes data regarding a shape. Mapping for this area is as follows. 
+<p>
+<table border="1" cellpadding="3" cellspacing="3">
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+shape_tag
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+this_shape_index
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+shape_size
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+shape_name_index
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+shape_type
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+shape_tri_link
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+shape_mat_link
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+shape_part_num
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+nintendo_extension_block_size
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+user_extension_block_size
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+shape_part_link(0)
+</td>
+</tr>
+<tr>
+<td colspan="2"><font face="arial" size="-1">
+<center>
+...
+</center>
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+shape_part_link(shape_part_num - 1)
+</td>
+</tr>
+<tr>
+<td colspan="2"><font face="arial" size="-1">
+<center>
+NintendoExtensionBlock
+</center>
+</td>
+</tr>
+<tr>
+<td colspan="2"><font face="arial" size="-1">
+<center>
+UserExtensionBlock
+</td></tr></table>
+<p>
+
+Figure: Shape Area Memory Map
+
+<p>
+<table border="1" cellpadding="3" cellspacing="3">
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 shape_tag
+</td>
+<td>
+<font face="arial" size="-1">
+Tag indicating Shape. Set the following flag. 
+<pre><font face="courier" size="2"><b>TAG_SHAPE&#9;0x00030100</b></pre></font>
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 this_shape_index
+</td>
+<td>
+<font face="arial" size="-1">
+Index number of this Shape
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 shape_size
+</td>
+<td>
+<font face="arial" size="-1">
+Size of this Shape
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 shape_name_index
+</td>
+<td>
+<font face="arial" size="-1">
+Index number of shape name in NameList
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+<a href="../chapt5/seg1.htm#SHAPE_TYPE">u32 shape_type</a>
+</td>
+<td>
+<font face="arial" size="-1">
+Type of Shape. Currently, the following flags are defined.
+<pre><font face="courier" size="2"><b>SHAPE_TYPE_CLEAR&#9;0x00000000
+SHAPE_TYPE_AA&#9;&#9;0x00000001
+SHAPE_TYPE_RA&#9;&#9;0x00000002
+SHAPE_TYPE_ZB&#9;&#9;0x00000004
+SHAPE_TYPE_CULL_BACK&#9;0x00000010
+SHAPE_TYPE_CULL_FRONT&#9;0x00000020
+SHAPE_TYPE_CULL_BOTH&#9;0x00000030</b></pre></font>
+<P>
+SHAPE_TYPE_CLEAR clears Shape type. <p>
+SHAPE_TYPE_AA performs anti-alias process. <p>
+SHAPE_TYPE_RA performs reduced alias process. <p>
+SHAPE_TYPE_ZB performs z-buffer process. <p>
+SHAPE_TYPE_CULL_BACK performs back-face culling. <p>
+SHAPE_TYPE_CULL_FRONT performs front-face culling. <p>
+SHAPE_TYPE_CULL_BOTH performs culling. <p>
+SHAPE_TYPE_AA and SHAPE_TYPE_RA cannot be specified both at the same time. Also, when specifying SHAPE_TYPE_CULL_*, only one of the above (BACK, FRONT and BOTH) can be specified. 
+<p>
+When shape data is put through the anti-alias, z buffer and back-face culling processes, set flag as below.<p>
+<pre><font face="courier" size="2"><b>SHAPE_TYPE_AA | SHAPE_TYPE_ZB | SHAPE_TYPE_CULL_BACK</b></pre></font>
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 shape_tri_link
+</td>
+<td>
+<font face="arial" size="-1">
+Index number of TriGroup in TriList
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+<a href="../chapt5/seg1.htm#SHAPE_MAT_LINK">u32 shape_mat_link</a>
+</td>
+<td>
+<font face="arial" size="-1">
+Index number of MatList<p>
+If Mat is not linked, set the following flag. 
+<pre><font face="courier" size="2"><b>SHAPE_MAT_LINK&#9;0xffffffff</b></pre>
+</font>
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+<a href="../chapt5/seg1.htm#SHAPE_PART_NUM">u32 shape_part_num</a>
+</td>
+<td>
+<font face="arial" size="-1">
+Number of Parts contained in Shape <p>
+Set the following flag if the Part node is not linked. 
+<pre><font face="courier" size="2"><b>SHAPE_NOPART&#9;0x00000000</b></pre></font>
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 nintendo_extension_block_size
+</td>
+<td>
+<font face="arial" size="-1">
+Nintendo extension block size
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 user_extension_block_size
+</td>
+<td>
+<font face="arial" size="-1">
+User extension block size
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 shape_part_link
+</td>
+<td>
+<font face="arial" size="-1">
+Index number of PartList <p>
+If shape_part_num = SHAPE_NOPART, this field is ignored.
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+NintendoExtensionBlock
+</td>
+<td>
+<font face="arial" size="-1">
+Nintendo extension block
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+UserExtensionBlock
+</td>
+<td>
+<font face="arial" size="-1">
+User extension block
+</td></tr></table>
+<p>
+
+
+<hr>
+
+<p align="right"><a href="../index.htm">
+<img src="../../../gif/index.gif"
+border="0" width="65" height="17"></a>
+&nbsp; <a href="./seg7.htm">
+<img src="../../../gif/next.gif"
+border="0" width="65" height="17"></a></p>
+
+
+</body>
+</html>
+
+

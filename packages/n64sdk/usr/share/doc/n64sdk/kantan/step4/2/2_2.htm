@@ -1,0 +1,58 @@
+<HTML>
+<HEAD>
+<TITLE>STEP4 [What is 64DD?] - Chapter 2 Summary of the 64DD Disk</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park 7/15/1999
+reviewed PWC 7/16/99 -->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+
+<font style="font-size:12pt"><B>2-2 64DD On-Board ROM</B></FONT><BR>
+<BR>
+<BR>
+The commercial version of the 64DD (the consumer-use drive) contains built-in mask ROM. This mask ROM is called DDROM. <BR>
+<BR>
+DDROM contains the following data:
+<ul>
+ <B><Li>IPL</li> </B>
+ <B><li>Font data</li> </B>
+ <B><li>Wave data</li> </B>
+</ul>
+<IMG SRC="img00006.gif" border=1><P>
+<br><br>
+<B>Figure 2-2-1 DDROM Map</B><BR>
+<BR><br>
+The development-use 64DD does not have built-in DDROM, but font data and wave data are supplied on the IPL ROM Cartridge. The IPL program is used to transfer special development IPL to the emulation ROM and to write to the N64 Flash ROM cartridge. In addition, when emulating the 64DD on the hard disk, DDROM can be used when there is no IPL ROM cartridge since the 64DD emulation application supports DDROM. This font data and wave data is not compatible with the 64DD.  You can use this data when the 64DD is connected to N64.<BR>
+<BR>
+<BR>
+<BR>
+<B>2-2-1 IPL</b><BR>
+<BR>
+<BR>
+IPL is the program for booting a game from the 64DD disk. This program executes when power is supplied to the N64 Control Deck if a Game Pak has not been inserted in the Control Deck. The main roles of the IPL program are listed below:<BR>
+<ul>
+ <li><B>Checks for expanded memory </B></li>
+ <li><B>Displays a message prompting the user to insert a disk </B></li>
+ <li><B>Displays and sets the clock </B></li>
+ <li><B>Boots a game after a disk is inserted </B></li>
+ <li><B>Stores the ID of the booted disk to RDRAM </B></li>
+</ul>
+<BR>
+<li>All these processes must be performed on the application side when a ROM cartridge is inserted in the N64 since the N64 is started with a non-IPL ROM cartridge.</li>
+<BR>
+<BR>
+<BR>
+<B>2-2-2 Font Data</B><BR>
+<BR>
+<BR>
+Font data for both alphabetic characters and kanji characters(equivalent to JIS,First Standard) is prepared in DDROM for displaying error messages. Three functions are available to help determine which address each font starts from (For more details, see [<b>64DD Programming Manual</b>]). The start address 0x000A_0000 for font data in DDROM is defined as DDROM_FONT_START in the header file leo.h. <BR>
+<BR>
+<BR>
+<BR>
+<B>2-2-3 Wave Data</B><BR>
+<BR>
+<BR>
+Both 32KHzADPCM and 16KHzADPCM compression format data (.aifc) is available as waveform data for sounds. (For more details, see [<b>64DD Programming Manual</b>]). The start address 0x0014_0000 for wave data in DDROM is defined as DDROM_WAVETABLE_START in the header file leo.h.
+<br><br><br> 
+</BODY>
+</HTML>

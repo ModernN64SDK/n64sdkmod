@@ -1,0 +1,223 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN"
+Editor notes: MAP added revisions  9/30/99
+PWC 2/23/00-->
+<HTML>
+<HEAD><link rel="stylesheet" type="text/css" href="../style.css">
+<TITLE>PARTNER N64</TITLE>
+</HEAD>
+
+<BODY>
+
+<A name="index"></A>
+<IMG src="../../gif/n64_logo2.gif" height="21" width="136">
+<h3><FONT color="#FF8000">Q&A</FONT> - PARTNER N64</h3>
+
+
+<P>
+<TABLE border="0">
+  <TR>
+    <TD valign="top" width="50"><A href="partner.htm#01"><b>QA1</b></A></TD>
+    <TD>How do I use an EEPROM?(199810)</TD>
+  </TR>
+  <TR>
+    <TD valign="top" width="50"><A href="partner.htm#02"><b>QA2</b></A></TD>
+    <TD>How do I develop software for PAL with the PARTNER N64?(199811)</TD>
+  </TR>
+<TR>
+    <TD valign="top" width="50"><A href="partner.htm#03"><b>QA3</b></A></TD>
+    <TD>What is "overhead" in the map output for ld in exeGCC?(199905)
+      </TD>
+  </TR>
+<TR>
+      <TD><A href="partner.htm#04"><b>QA4</b></A></TD>
+      <TD>Can "after max" be used for mild? (199906)</TD>
+    </TR>
+    <TR>
+      <TD><A href="partner.htm#05"><b>QA5</b></A></TD>
+      <TD>I do not need to describe wave for mild? (199906)</TD>
+    </TR>
+    <TR>
+      <TD><A href="partner.htm#06"><b>QA6</b></A></TD>
+      <TD>How can I use the object file for various purposes? (199906)</TD>
+    </TR>
+    <TR>
+      <TD><A href="partner.htm#07"><b>QA7</b></A></TD>
+      <TD>How can I prevent osSyncPrintf from hanging up with the actual hardware with 2.0K? (199910)</TD>
+    </TR>
+<TR>
+    <TD><A href="#08"><b>QA8</b></A></TD>
+    <TD>Where is greset located?(200003) <IMG src="../../gif/new52.gif" height="12" width="33"></TD></TR>
+  <TR>
+    <TD><A href="#09"><b>QA9</b></A></TD>
+    <TD>Performance is worsened due to the compiler option.(200002) <IMG src="../../gif/new52.gif" height="12" width="33"></TD></TR>
+</TABLE>
+
+<HR>
+
+<P>
+<A name="01"><FONT  color="#FF0000"><b>Q1</b></FONT></A>
+<b> I currently use the PARTNER N64 for development. If I use an EEPROM, what other hardware is necessary besides PARTNER? </b>
+
+
+<P>
+<FONT  color="#008000"><b>A1</b></FONT>
+ You must purchase an EEPROM chip.  These come in either 4K or 16K models. 
+
+<P>
+When you open the PARTNER cartridge you will find an 8-pin socket.  Insert the EEPROM chip there.
+
+<P>
+To purchase EEPROM chips, please contact NOA at the following numbers.
+
+<P>
+<b>NOA Parts Department</b> 
+ 
+Phone: (800) 531-4048 &nbsp;&nbsp;&nbsp; FAX: (800) 447-8362. 
+<P>
+
+<b>International Orders</b>
+
+Phone: (425) 861-2038 &nbsp;&nbsp;&nbsp; FAX: (800) 558-7100
+ 
+
+
+<P align="right">
+<A href="partner.htm#index"><IMG src="../../gif/index.gif" height="17" width="65" border="0"></A>
+
+
+<HR>
+
+<P>
+<A name="02"><FONT  color="#FF0000"><b>Q2</b></FONT></A>
+<b> Are any modifications to the PARTNER necessary when developing PAL version software with  PARTNER N64? </b>
+
+
+<P>
+<FONT   color="#008000"><b>A2</b></FONT>
+ Please refer to the "Software Submissions Checklist" included in the <a href="../../info/index.htm">"N64 Software Submission Requirements</a>" document.  
+<P>
+For PAL requirements, please refer to the  <a href="../../info/pal/palindex.htm">"PAL Software Submission Requirements"</a> in the same document.
+
+<P align="right">
+<A href="partner.htm#index"><IMG src="../../gif/index.gif" height="17" width="65" border="0"></A>
+
+
+<HR>
+
+<P>
+<A name="03"><FONT color="#FF0000"><b>Q3</b></FONT></A>
+<b> I currently check the map file that is output by the linker in order to decrease the ROM size, but the word "overhead" appears after the object name, as shown below.  What is this "overhead?"  Is some kind of waste being created in the ROM image?</b>
+</P>
+<P>
+<b>from c:\Ultra/usr/lib/PR/gspF3DEX2.Rej.fifo.o(.text)<BR>
+.text 8003cf80 1190 1190 2**4 elf32-bigmips c:\Ultra/usr/lib/PR/gspF3DEX2.Rej.fifo.o(overhead
+4056 bytes)<BR>
+8003cf80 gspF3DEX2_Rej_fifoTextStart<BR>
+8003e110 gspF3DEX2_Rej_fifoTextEnd</b>
+</P>
+<P>
+<FONT color="#008000"><b>A3</b></FONT>The word "overhead," as it appears in the MAP that to which you refer is not overhead in the target ROM program, but refers to overhead in the memory inside the PC.  Therefore, it has no significance as information for decreasing the ROM size.<!--  --> 
+</P>
+<P align="right">
+<A href="#index"><IMG src="../../gif/index.gif" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<P>
+<A name="04"><FONT color="#FF0000"><b>Q4</b></FONT></A>
+<b>I have a question regarding how to place OBJECT for mild.</b>
+</P>
+<P>
+<b>I would like to place one OBJECT after more than 2 segments. I think it is possible to specify it by &quot;after max&quot; , &quot;after min&quot; for makerom; however these cannot be used for mild.  To place it by specifying ADDRESS directly is the only way for mild?</b>
+</P>
+<P>
+<FONT color="#008000"><b>A4</b></FONT> As you pointed out, mild does not have &quot;after max&quot; function.  
+</P>
+<P>
+Other than using ADDRESS, you can only check the output of the section address for mild, find the largest segment address, and place it using &quot;after&quot; (segment name). 
+</P>
+<P align="right">
+<A href="#index"><IMG src="../../gif/index.gif" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<P>
+<A name="05"><FONT color="#FF0000"><b>Q5</b></FONT></A>
+<b>It seems that wave is not used for mild.  Do I not need to describe it? </b>
+</P>
+<P>
+<FONT color="#008000"><b>A5</b></FONT> The description of wave is not used for mild.
+</P>
+<P>
+Still, writing down the placement of segment as above may be helpful for future references.
+</P>
+<P align="right">
+<A href="#index"><IMG src="../../gif/index.gif" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<P>
+<A name="06"><FONT color="#FF0000"><b>Q6</b></FONT></A>
+<b>I made a ROM image by placing the same object file to more than one segment for mild; however, it does not work properly.</b>
+</P>
+<P>
+<FONT color="#008000"><b>A6</b></FONT> For mild, if more than one segment has the same object, segments other than the one used first do not accept codes. 
+</P>
+<P>
+Even if they accept codes, the ROM will be used wastefully because the object will be taken up by the ROM image repeatedly.
+</P>
+<P>
+Memory efficiency would improve if the object is divided into segments and loaded when the overlay has common portions.
+</P>
+<P align="right">
+<A href="#index"><IMG src="../../gif/index.gif" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<P>
+<A name="07"><FONT color="#FF0000"><b>Q7</b></FONT></A>
+<b>With 2.0K, when I burned ROM made with libultra.a and started the cartridge with the actual hardware, the program hung up when <tt>osSyncPrintf</tt> was executed.<BR>
+There was no problem with 2.0J+libultra_rom.a+is_debug.c.  Can you do something about it?<BR>
+Is 2.0K+libultra_rom.a+is_debug.c possible as before?</b>
+</P>
+<P>
+<FONT color="#008000"><b>A7</b></FONT> If you define ISV64 when compiling, you can use it.<BR>
+2.0K+libultra_rom.a+is_debug.c is possible.
+</P>
+<P align="right">
+<A href="#index"><IMG src="../../gif/index.gif" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<P>
+<A name="08"><FONT color="#FF0000"><b>Q8</b></FONT></A>
+<b>I cannot find the sample, greset, which is mentioned in the programming manual, in demos.  Where is it?
+</b>
+</P>
+<P>
+<FONT color="#008000"><b>A8</b></FONT> Because this is a sample for the emulator board for SGI INDY, it is not included in the OS for PC.  
+As the emulator board does not have anything similar to a Reset Button, it is necessary to execute the greset command to simulate pressing the Reset Button.   
+</P>
+<P align="right">
+<A href="#index"><IMG src="../../gif/index.gif" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<P>
+<A name="09"><FONT color="#FF0000"><b>Q9</b></FONT></A>
+<b>If &quot;-g&quot; option is used for exegcc, performance is clearly worse. Depending on whether the &quot;-g&quot; option is used or not, do codes created change?  For the optimization option, &quot;-03&quot; is used.</b>
+</P>
+<P>
+<FONT color="#008000"><b>A9</b></FONT> If -g is used, the codes created will change slightly even with the same optimization option. If -g is used, optimization which make source debuggin impossible (e.g., an extended slot is no longer used) will not be carried out. Therefore, it should be faster and the size should be smaller without -g.   
+<P>
+However, since N64 CPU uses a direct mapping method of cache, performance changes very much with a slight change of code locations. As described above, if -g is used, the object size will change and cache hits may increase accidentally, and the final speed might increase.  (Refer to the R4300 manual for the direct mapping method.)
+ 
+</P>
+<P>
+Since there is no tool to judge the optimal code location, you need to go through a trial and error process when seeking optimization.  
+</P>
+<P>
+For example, you might want to try &quot;-02&quot; and &quot;-03&quot; (without &quot;-g&quot; for both) with object unit to compare execute speed and code size. 
+  
+</P>
+<P align="right">
+<A href="partner.htm#index"><IMG src="../../gif/index.gif" height="17" width="65" border="0"></A>
+
+<HR>
+
+</BODY>
+</HTML>

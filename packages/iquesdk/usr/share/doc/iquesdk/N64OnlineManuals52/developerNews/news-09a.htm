@@ -1,0 +1,81 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<META name="GENERATOR" content="IBM HomePage Builder V3.0.7  for Windows">
+<TITLE>Developers News 1.9</TITLE>
+</HEAD>
+
+<BODY bgcolor="#FFFFFF">
+
+<HR>
+<P align="center">
+<FONT size="6"><STRONG><IMG src="gif/devnews.gif" height="44" width="453">1.9</STRONG></FONT>
+</P>
+<P align="left">
+<B>* Bug information and programming guides for the N64 will hereafter be periodically sent out. </B>
+</P>
+<P>
+<B>All information that will become unnecessary with software (library, etc.) and hardware upgrades used in development will be noted together.  Please utilize this information after confirming that the information concerns your specific upgrade. 
+</B>
+</P>
+<HR>
+<H2>osPfsInitPak() Specification Changes</H2>
+<P>
+<B>1. Patch_4 (and earlier) Issues</B>
+</P>
+<P>
+  With the past (Patch_4 / shipped August 28, 1998) osPfsInitPak() function and osPfsRepairId() function, a PFS_ERR_ID_FATAL error would be returned when a RumblePak or the like was inserted.  However, this PFS_ERR_ID_FATAL error was also generated in cases other than when a RumblePak or the like was inserted in which the contents of the ID area of the controller pack were destroyed.
+</P>
+<P>
+  Because of this, under the current circumstances, it was not confirmed which cause was at fault when a PFS_ERR_ID_FATAL error was generated, making the programming procedure extremely unclear and making for a very confusing situation for the game player.
+</P>
+<P>
+<B>2. Patch_5 Corrections</B>
+</P>
+<P>
+With Patch_5, the osPfsInitPak() function and the osPfsRepairId() function now returns a PFS_ERR_DEVICE error rather than a PFS_ERR_ID_FATAL error, when a peripheral device other than the Controller Pak (i.e., Rumble Pak or 64 Game Boy Pak) is inserted.</P>
+<P>
+Internally, a read/write test is performed using a safe area in the Controller Pak RAM . If there is a failure during the read/write test, then it is assumed that there is no RAM and a PFS_ERR_DEVICE error is returned. 
+</P>
+<P>
+<B>3. Procedure for Identifying Multiple Types of Peripheral Devices</B>
+</P>
+<P>
+With the above noted changes, the procedure for identifying a specific peripheral device when multiple devices are used, (for example, when an application uses a Controller Pak and a Rumble Pak) is as follows. 
+</P>
+<PRE>
+<CODE>
+
+                  osMotorInit()
+                       |
+                       |
+          +------------+------------+
+          | ret = 0    | ret = PFS_ERR_DEVICE
+          |            |
+          |            |
+      Rumble Pak   osPfsInitPak()
+                       |
+                       |
+          +------------+------------------------+
+          |ret = 0     | ret = PFS_ERR_DEVICE   | ret = PFS_ERR_ID_FATAL
+          |            |                        |
+          |            |                        |
+     Controller   Other Device          Since ID area has been destroyed,
+        Pak      (64GB Pak etc)          after user confirmation, repair
+                                                    with osPfsRepairId()
+</CODE>
+</PRE>
+<P>
+<B>4. Precautions</B>
+</P>
+<P>
+When using multiple peripheral devices, please be sure to call the osPfsRepairId() function immediately after executing osPfsInitPak(). Please note that even if osPfsInitPak() was called initially, the ID cannot be repaired once the initialization function for another peripheral device, such as the osMotorInit() function, has been called.</P>
+<P>
+This is true not only for the osPfsRepairId() function, but for other pfs functions as well. A PFS_ERR_INVALID error will be generated when this kind of call is performed. This happens because the contents of the osPfs structure is overwritten with Rumble Pak information when osMotorInit()is called. To avoid this error, call the osPfsInitPak() function again if a pfs function is to be called after osMotorInit has been called.
+</P>
+<P>
+[NOTE] Initialization can be completed without initializing each device separately by having an osPfs structure for each type of device and using one for each of the various device functions. However, this method should not be used because there may be situations in which unexpected operations are performed. Please be sure to call the corresponding initialization function each time a device is changed. 
+</P>
+<HR>
+</BODY>
+</HTML>

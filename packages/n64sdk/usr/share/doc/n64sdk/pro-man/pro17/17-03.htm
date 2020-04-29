@@ -1,0 +1,414 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 17 - Audio Library</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. -->
+</head>
+
+<H1>17.3 Sequenced Sound Playback</H1>
+<p>You will be concerned with three issues when using sequenced sound on the Nintendo 64:</p>
+<UL>
+<LI>
+representing the sequence data<BR><BR></LI>
+
+<LI>
+representing the <a href="../../keywords/index/data/audio.htm#instrument" target="keywords">instruments</a> or sounds that make up the sequence<BR><BR></LI>
+
+<LI>
+controlling the sequence playback<BR><BR></LI>
+</UL>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="01"></A>
+<H2>
+17.3.1 Representing the Sequence</H2>
+
+<p>The Audio Library supports two different <a href="../../keywords/index/data/audio.htm#sequence player" target="keywords">sequence players</a>. The first sequence player uses <a href="../../keywords/index/data/audio.htm#Type0, Type1 MIDI" target="keywords">Type
+0 MIDI</a> sequences. Sequences are represented at runtime with the ALSeq structure. This structure encapsulates sequence data that conforms to the Standard MIDI Files 1.0 specification for Type 0 MIDI files. The Type 0 MIDI file format contains a time-ordered MIDI message that specifies music events. It is described in detail in the &QUOT;Standard MIDI Files 1.0&QUOT; specification published by the MIDI manufacturers association. </p>
+
+<P>The second sequence player uses a compressed format of sequence data unique to the Nintendo 64. This format is detailed in <a href="../pro19/index.htm">Chapter 19 &QUOT;Audio File Formats&QUOT;</a>. Sequences are represented at runtime with the ALCSeq structure. Besides differences in the format of the data, the <a href="../../keywords/index/data/audio.htm#compressed MIDI" target="keywords">compressed MIDI</a> sequence player handles loops in a different fashion and does not support markers. </p>
+
+<P>To use a Type 0 MIDI sequence in your game, you must first initialize an ALSeq structure with <A HREF="../../n64man/al/alSeqNew.htm">alSeqNew()</A>. To use the compressed MIDI sequence player, you first initialize an ALCSeq structure with <A HREF="../../n64man/al/alCSeqNew.htm">alCSeqNew()</A>. After initializing the structure, you can perform sequence operations. </p>
+
+<P>The <A HREF="../../n64man/al/alSeqNextEvent.htm">alSeqNextEvent()</A> call returns the MIDI event at a specified location in the sequence. (Normally, this function is called by a sequence player that users do not need to call.) The <A HREF="../../n64man/al/alSeqNewMarker.htm">alSeqNewMarker()</A> call creates a sequence position marker that can be used in conjunction with the Type 0 Sequence Player to set playback time and loop points. The convenience functions <A HREF="../../n64man/al/alSeqTicksToSec.htm">alSeqTicksToSec()</A> and <A HREF="../../n64man/al/alSeqSecToTicks.htm">alSeqSecToTicks()</A> convert between seconds and MIDI clock ticks. </p>
+
+<P><strong>Note:</strong>  Normally, you will not call <A HREF="../../n64man/al/alSeqNextEvent.htm">alSeqNextEvent()</A> directly, because it is called by the Sequence Player during sequence playback. </p>
+
+<P>The sequence calls are described in detail in the reference (man) pages. Brief descriptions are given in the Table 17-2. </p>
+<TABLE BORDER >
+<CAPTION><A NAME="t17-02"></A><strong>Table 17-2 Sequence Functions</strong></CAPTION>
+
+<TR>
+<TH>Type 0 MIDI
+<BR>Sequence Player</TH>
+
+<TH>Compact MIDI
+<BR>Sequence Player</TH>
+
+<TH>Function</TH>
+</TR>
+
+<TR>
+<TD><A HREF="../../n64man/al/alSeqNew.htm">alSeqNew</A></TD>
+
+<TD><A HREF="../../n64man/al/alCSeqNew.htm">alCSeqNew</A></TD>
+
+<TD>Initializes the sequence control structure.</TD>
+</TR>
+
+<TR>
+<TD><A HREF="../../n64man/al/alSeqNextEvent.htm">alSeqNextEvent</A></TD>
+
+<TD><A HREF="../../n64man/al/alCSeqNextEvent.htm">alCSeqNextEvent</A></TD>
+
+<TD>Returns the next MIDI event from the sequence.</TD>
+</TR>
+
+<TR>
+<TD><A HREF="../../n64man/al/alSeqNewMarker.htm">alSeqNewMarker</A></TD>
+
+<TD><A HREF="../../n64man/al/alCSeqNewMarker.htm">alCSeqNewMarker</A></TD>
+
+<TD>Initializes a marker for a given event time.</TD>
+</TR>
+
+<TR>
+<TD><A HREF="../../n64man/al/alSeqGetLoc.htm">alSeqGetLoc</A></TD>
+
+<TD><A HREF="../../n64man/al/alCSeqGetLoc.htm">alCSeqGetLoc</A></TD>
+
+<TD>Sets a marker to the sequence's current location.</TD>
+</TR>
+
+<TR>
+<TD><A HREF="../../n64man/al/alSeqSetLoc.htm">alSeqSetLoc</A></TD>
+
+<TD><A HREF="../../n64man/al/alCSeqSetLoc.htm">alCSeqSetLoc</A></TD>
+
+<TD>Sets the sequence to the location specified by the marker.</TD>
+</TR>
+
+<TR>
+<TD><A HREF="../../n64man/al/alSeqTicksToSec.htm">alSeqTicksToSec</A></TD>
+
+<TD><A HREF="../../n64man/al/alCSeqTicksToSec.htm">alCSeqTicksToSec</A></TD>
+
+<TD>Converts a time value from <a href="../../keywords/index/data/audio.htm#MIDI clock time" target="keywords">MIDI clock time</a> to microseconds.</TD>
+</TR>
+
+<TR>
+<TD><A HREF="../../n64man/al/alSeqSecToTicks.htm">alSeqSecToTicks</A></TD>
+
+<TD><A HREF="../../n64man/al/alCSeqSecToTicks.htm">alCSeqSecToTicks</A></TD>
+
+<TD>Converts a time value from microseconds to MIDI clock ticks.</TD>
+</TR>
+</TABLE>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="02"></A>
+<H2>
+17.3.2 Representing Instruments</H2>
+
+<p>Instruments are represented at runtime by the ALBankFile structure. This structure describes the instruments that sound in response to an <a href="../../keywords/index/data/audio.htm#event" target="keywords">event</a> in the sequence. <a href="../../keywords/index/data/audio.htm#bank file" target="keywords">Bank Files</a> are composed of <a href="../../keywords/index/data/audio.htm#bank" target="keywords">Banks</a>; which are composed of Instruments; which themselves are composed of groups of Sounds, <a href="../../keywords/index/data/audio.htm#key map" target="keywords">KeyMaps</a>, <a href="../../keywords/index/data/audio.htm#envelope" target="keywords">Envelopes</a>, and gain and pan information. The Bank File format is described in detail <A HREF="../pro19/index.htm">Chapter 19 &QUOT;Audio File Formats&QUOT;</A>.</A></p>
+
+<P>To use a Bank File in your game, you must first create a runtime structure to represent it. This is accomplished with the <A HREF="../../n64man/al/alBnkfNew.htm">alBnkfNew()</A> function as described in the following table. Both sequence players use the same function call for this operation. </p>
+
+<TABLE BORDER=1>
+<CAPTION><A NAME="t17-03"></A><strong>Table 17-3 Bank Functions</strong></CAPTION>
+
+<TR>
+<TH>Type 0 MIDI
+<BR>Sequence Player</TH>
+
+<TH>Compact MIDI
+<BR>Sequence Player</TH>
+
+<TH>Function</TH>
+</TR>
+
+<TR>
+<TD><A HREF="../../n64man/al/alBnkfNew.htm">alBnkfNew</A></TD>
+
+<TD><A HREF="../../n64man/al/alBnkfNew.htm">alBnkfNew</A></TD>
+
+<TD>Initializes a collection of banks for use with a Sequence Player.</TD>
+</TR>
+</TABLE>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="03"></A>
+<H2>
+17.3.3 Playing Sequences</H2>
+
+<p>The Sequence Player is the mechanism by which the Nintendo 64 Audio Library plays back MIDI sequence files. It is responsible for allocating the hardware and software resources needed to play a sequence and for controlling the performance of the sequence data for the
+application. </p>
+
+<P><strong>Note:</strong>  A Sequence Player can play only one sequence at a time.</p>
+
+<P>There are certain steps you must take for your game to play a music sequence. The minimum steps needed to use the Type 0 MIDI sequence player are listed below. Using the compressed MIDI sequence player is identical, only you use the calls specific to the compressed MIDI sequence player. </p>
+<OL>
+<LI>
+Create and initialize the basic resources described in the section &QUOT;Generating Audio Output&QUOT;. <BR><BR></LI>
+
+<LI>
+Initialize the sequence by using <A HREF="../../n64man/al/alSeqNew.htm">alSeqNew()</A>.<BR><BR></LI>
+
+<LI>
+Load the bank file .ctl file into RAM, and initialize the bank by calling <A HREF="../../n64man/al/alBnkfNew.htm">alBnkfNew()</A>.<BR><BR></LI>
+
+<LI>
+Initialize the sequence by using <A HREF="../../n64man/al/alSeqpNew.htm">alSeqpNew()</A><BR><BR></LI>
+
+<LI>
+Set the sequence player's bank by using <A HREF="../../n64man/al/alSeqpSetBank.htm">alSeqpSetBank()</A>.<BR><BR></LI>
+
+<LI>
+Set the sequence player's target sequence by using <A HREF="../../n64man/al/alSeqpSetSeq.htm">alSeqpSetSeq()</A>.<BR><BR></LI>
+
+<LI>
+Play the sequence by using <A HREF="../../n64man/al/alSeqpPlay.htm">alSeqpPlay()</A>.<BR><BR></LI>
+
+<LI>
+Stop the sequence when you are finished with it, by using <A HREF="../../n64man/al/alSeqpStop.htm">alSeqpStop()</A>.<BR><BR></LI>
+
+<LI>
+If the sequence player is no longer needed it can be removed from the Synthesis Driver's client list by using <A HREF="../../n64man/al/alSeqpDelete.htm">alSeqpDelete()</A><BR><BR></LI>
+</OL>
+
+<TABLE BORDER >
+<CAPTION><A NAME="t17-04"></A><strong>Table 17-4 Sequence Player Functions</strong></CAPTION>
+
+<TR>
+<TH>Type 0 MIDI
+<BR>Sequence Player</TH>
+
+<TH>Compact MIDI
+<BR>Sequence Player</TH>
+
+<TH>Function</TH>
+</TR>
+
+<TR>
+<TD><A HREF="../../n64man/al/alSeqpNew.htm">alSeqpNew</A></TD>
+
+<TD><A HREF="../../n64man/al/alCSPNew.htm">alCSPNew</A></TD>
+
+<TD>Initializes a Sequence Player.</TD>
+</TR>
+
+<TR>
+<TD><A HREF="../../n64man/al/alSeqpDelete.htm">alSeqpDelete</A></TD>
+
+<TD><A HREF="../../n64man/al/alCSPDelete.htm">alCSPDelete</A></TD>
+
+<TD>Frees the resource the sequence player has used.</TD>
+</TR>
+
+<TR>
+<TD>alSeqpGetState</TD>
+
+<TD>alCSPGetState</TD>
+
+<TD>Returns the current state of the Sequence Player.</TD>
+</TR>
+
+<TR>
+<TD><A HREF="../../n64man/al/alSeqpSetBank.htm">alSeqpSetBank</A></TD>
+
+<TD><A HREF="../../n64man/al/alCSPSetBank.htm">alCSPSetBank</A></TD>
+
+<TD>Assigns a bank of instruments to the sequence.</TD>
+</TR>
+
+<TR>
+<TD><A HREF="../../n64man/al/alSeqpGetSeq.htm">alSeqpGetSeq</A></TD>
+
+<TD><A HREF="../../n64man/al/alCSPGetSeq.htm">alCSPGetSeq</A></TD>
+
+<TD>Gets a reference to the sequence that is currently bound to the Sequence Player.</TD>
+</TR>
+
+<TR>
+<TD><A HREF="../../n64man/al/alSeqpSetSeq.htm">alSeqpSetSeq</A></TD>
+
+<TD><A HREF="../../n64man/al/alCSPSetSeq.htm">alCSPSetSeq</A></TD>
+
+<TD>Makes the specified sequence the target sequence.</TD>
+</TR>
+
+<TR>
+<TD><A HREF="../../n64man/al/alSeqpPlay.htm">alSeqpPlay</A></TD>
+
+<TD><A HREF="../../n64man/al/alCSPPlay.htm">alCSPPlay</A></TD>
+
+<TD>Starts the target sequence playing.</TD>
+</TR>
+
+<TR>
+<TD><A HREF="../../n64man/al/alSeqpStop.htm">alSeqpStop</A></TD>
+
+<TD><A HREF="../../n64man/al/alCSPStop.htm">alCSPStop</A></TD>
+
+<TD>Stops the target sequence if it is playing.</TD>
+</TR>
+
+<TR>
+<TD><A HREF="../../n64man/al/alSeqpGetTempo.htm">alSeqpGetTempo</A></TD>
+
+<TD><A HREF="../../n64man/al/alCSPGetTempo.htm">alCSPGetTempo</A></TD>
+
+<TD>Returns the current playback tempo for the target sequence.</TD>
+</TR>
+
+<TR>
+<TD><A HREF="../../n64man/al/alSeqpSetTempo.htm">alSeqpSetTempo</A></TD>
+
+<TD><A HREF="../../n64man/al/alCSPSetTempo.htm">alCSPSetTempo</A></TD>
+
+<TD>Sets the current playback tempo of the target sequence.</TD>
+</TR>
+
+<TR>
+<TD><A HREF="../../n64man/al/alSeqpGetVol.htm">alSeqpGetVol</A></TD>
+
+<TD><A HREF="../../n64man/al/alCSPGetVol.htm">alCSPGetVol</A></TD>
+
+<TD>Returns the overall <a href="../../keywords/index/data/audio.htm#volume" target="keywords">volume</a> for the sequence.</TD>
+</TR>
+
+<TR>
+<TD><A HREF="../../n64man/al/alSeqpSetVol.htm">alSeqpSetVol</A></TD>
+
+<TD><A HREF="../../n64man/al/alCSPSetVol.htm">alCSPSetVol</A></TD>
+
+<TD>Sets the overall volume for the sequence.</TD>
+</TR>
+
+<TR>
+<TD><A HREF="../../n64man/al/alSeqpGetChlPan.htm">alSeqpGetChlPan</A></TD>
+
+<TD><A HREF="../../n64man/al/alCSPGetChlPan.htm">alCSPGetChlPan</A></TD>
+
+<TD>Gets the pan on the specified MIDI channel.</TD>
+</TR>
+
+<TR>
+<TD><A HREF="../../n64man/al/alSeqpSetChlPan.htm">alSeqpSetChlPan</A></TD>
+
+<TD><A HREF="../../n64man/al/alCSPSetChlPan.htm">alCSPSetChlPan</A></TD>
+
+<TD>Sets the pan for the specified MIDI channel.</TD>
+</TR>
+
+<TR>
+<TD><A HREF="../../n64man/al/alSeqpGetChlVol.htm">alSeqpGetChlVol</A></TD>
+
+<TD><A HREF="../../n64man/al/alCSPGetChlVol.htm">alCSPGetChlVol</A></TD>
+
+<TD>Gets the volume for the specified MIDI channel.</TD>
+</TR>
+
+<TR>
+<TD><A HREF="../../n64man/al/alSeqpSetChlVol.htm">alSeqpSetChlVol</A></TD>
+
+<TD><A HREF="../../n64man/al/alCSPSetChlVol.htm">alCSPSetChlVol</A></TD>
+
+<TD>Sets the volume for the specified MIDI channel.</TD>
+</TR>
+
+<TR>
+<TD><A HREF="../../n64man/al/alSeqpGetChlProgram.htm">alSeqpGetChlProgram</A></TD>
+
+<TD><A HREF="../../n64man/al/alCSPGetChlProgram.htm">alCSPGetChlProgram</A></TD>
+
+<TD>Returns the program assigned to the specified MIDI channel.</TD>
+</TR>
+
+<TR>
+<TD><A HREF="../../n64man/al/alSeqpSetChlProgram.htm">alSeqpSetChlProgram</A></TD>
+
+<TD><A HREF="../../n64man/al/alCSPSetChlProgram.htm">alCSPSetChlProgram</A></TD>
+
+<TD>Assigns the given program to the specified MIDI channel.</TD>
+</TR>
+
+<TR>
+<TD><A HREF="../../n64man/al/alSeqpGetChlFXMix.htm">alSeqpGetChlFXMix</A></TD>
+
+<TD><A HREF="../../n64man/al/alCSPGetChlFXMix.htm">alCSPGetChlFXMix</A></TD>
+
+<TD>Gets the <a href="../../keywords/index/data/audio.htm#wet" target="keywords">wet</a>/<a href="../../keywords/index/data/audio.htm#dry" target="keywords">dry</a>FX mix on the specified MIDI channel.</TD>
+</TR>
+
+<TR>
+<TD><A HREF="../../n64man/al/alSeqpSetChlFXMix.htm">alSeqpSetChlFXMix</A></TD>
+
+<TD><A HREF="../../n64man/al/alCSPSetChlFXMix.htm">alCSPSetChlFXMix</A></TD>
+
+<TD>Sets the wet/dry FX mix on the specified MIDI channel.</TD>
+</TR>
+
+<TR>
+<TD><A HREF="../../n64man/al/alSeqpGetChlPriority.htm">alSeqpGetChlPriority</A></TD>
+
+<TD><A HREF="../../n64man/al/alCSPGetChlPriority.htm">alCSPGetChlPriority</A></TD>
+
+<TD>Gets the priority value for the specified MIDI channel.</TD>
+</TR>
+
+<TR>
+<TD><A HREF="../../n64man/al/alSeqpSetChlPriority.htm">alSeqpSetChlPriority</A></TD>
+
+<TD><A HREF="../../n64man/al/alCSPSetChlPriority.htm">alCSPSetChlPriority</A></TD>
+
+<TD>Sets the priority value for the specified MIDI channel.</TD>
+</TR>
+
+<TR>
+<TD><A HREF="../../n64man/al/alSeqpLoop.htm">alSeqpLoop</A></TD>
+
+<TD>(Not Supported)</TD>
+
+<TD>Sets the loop points for the target sequence.</TD>
+</TR>
+
+<TR>
+<TD><A HREF="../../n64man/al/alSeqpSendMidi.htm">alSeqpSendMidi</A></TD>
+
+<TD><A HREF="../../n64man/al/alCSPSendMidi.htm">alCSPSendMidi</A></TD>
+
+<TD>Sends the specified MIDI message to the sequence player.</TD>
+</TR>
+</TABLE>
+
+<p>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="04"></A>
+<H2>
+17.3.4 Loops in Sequence Players</H2>
+
+<p>The way in which loops are handled in the sequence players is different. When using the Type 0 MIDI sequence player, the programmer must create a marker at the loop start point, and a marker at the loop end point. Then the sequence can be looped between these two
+markers using <A HREF="../../n64man/al/alSeqpLoop.htm">alSeqpLoop()</A>. Using the compressed MIDI sequence player, loops are constructed by the musician, in the tracks of the sequence by inserting controllers. (This is discussed in <a href="../pro20/index.htm">Chapter 20 &QUOT;Using the Audio Tools&QUOT;</a>. This method allows different loops for different tracks, and allows for <a href="../../keywords/index/data/audio.htm#nest" target="keywords">nesting</a> of loops. </p>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="05"></A>
+<H2>
+17.3.5 Controllers in Sequence Players</H2>
+
+<p>The real-time controllers that the Sequence Player responds to are (control numbers in parenthesis): pan (10), volume (7), priority (16), sustain (64), and reverb amount (91). Note that because only one <a href="../../keywords/index/data/audio.htm#effect" target="keywords">effect</a> bus is supported, reverb amount is used to control effect amount, no matter what the effect is.</p>
+
+<P>The <a href="../../keywords/index/data/audio.htm#compact sequence player" target="keywords">compact sequence player</a> also uses controllers 102, 103, 104, and 105 for creating  loops. Details of this are discussed in <A HREF="../pro20/index.htm">Chapter 20 &QUOT;Using the Audio Tools&QUOT;</A>.</p>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR>
+</BODY>
+</HTML>

@@ -1,0 +1,174 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 17 - Audio Library</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. -->
+</head>
+
+<H1>17.2 Sampled Sound Playback</H1>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="01"></A>
+<H2>
+17.2.1 Representing Sound</H2>
+
+<p>The Audio Library supports playback of both uncompressed and <a href="../../keywords/index/data/audio.htm#ADPCM" target="keywords">ADPCM</a> compressed, 16-bit audio. (Currently, the sample format support includes only mono ADPCM compression format.) An audio waveform is represented with the Sound object via the ALSound structure. The ALSound structure contains entries for the <a href="../../keywords/index/data/audio.htm#envelope" target="keywords">envelope</a>, <a href="../../keywords/index/data/audio.htm#pan" target="keywords">pan</a>, and <a href="../../keywords/index/data/audio.htm#volume" target="keywords">volume</a> along with a pointer to the ALWaveTable structure (which contains the audio). </p>
+
+<P>Collections of sounds can be stored in an ALBankFile structure. The format of this structure is described in <A HREF="../pro19/index.htm">Chapter 19 &QUOT;Audio File Formats&QUOT;</A> The tools available to create <a href="../../keywords/index/data/audio.htm#bank file" target="keywords">Bank Files</a> for inclusion in the ROM are described in <A HREF="../pro18/index.htm">Chapter 18 &QUOT;Audio Tools</A>&QUOT;. </p>
+
+<P><strong>Note:</strong>  Currently, the only supported sample formats are single-channel, ADPCM compressed and 16-bit uncompressed. 
+</p>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="02"></A>
+<H2>
+17.2.2 Playing Sound</H2>
+
+<p>The <a href="../../keywords/index/data/audio.htm#sound player" target="keywords">Sound Player</a> is the mechanism by which the Audio Library plays back individual sounds, such as isolated sound effects. It is responsible for allocating the resources needed to play a
+sound and for controlling the performance of the sound data for the application. </p>
+
+<P>There are certain steps you must take for your game to play a sound. At a minimum, you must:</p>
+<OL>
+<LI>
+Create and initialize the basic resources described in the section &QUOT;Generating Audio Output&QUOT;. <br><br></li>
+
+<LI>
+Instantiate the Sound Player with <A HREF="../../n64man/al/alSndpNew.htm">alSndpNew()</A>. The Sound Player created also signs in as a client to the Synthesis Driver. <br><br></li>
+
+<LI>
+Load the sound bank's .ctl file into RAM, and initialize it with a call to <A HREF="../../n64man/al/alBnkfNew.htm">alBnkfNew</A>.<br><br></li>
+
+<LI>
+Allocate a sound with a call to <A HREF="../../n64man/al/alSndpAllocate.htm">alSndpAllocate()</A><br><br></li>
+
+<LI>
+Set the Sound Player's target sound to reference your sound with <A HREF="../../n64man/al/alSndpSetSound.htm">alSndpSetSound()</A><br><br></li>
+
+<LI>
+Play the sound with <A HREF="../../n64man/al/alSndpPlay.htm">alSndpPlay()</A>.<br><br></li>
+
+<LI>
+Stop the sound when you are finished with <A HREF="../../n64man/al/alSndpStop.htm">alSndpStop()</A>. Note that if the sound is not looped, the sound player will take care of stopping the sound when it is finished playing. However, you can stop the sound at any time during playback with this call. <br><br></li>
+</OL>
+
+<p>When the sound is no longer needed, the resources in the Sound Player can be freed with a call to <A HREF="../../n64man/al/alSndpDeallocate.htm">alSndpDeallocate()</A>. If the Sound Player itself is no longer required, it can be removed from the Synthesis Driver <a href="../../keywords/index/data/audio.htm#callback" target="keywords">callback</a> list with <A HREF="../../n64man/al/alSndpDelete.htm">alSndpDelete()</A>.</p>
+
+<P>The Sound Player can play both looped and unlooped sounds. When playing a sound, the Sound Player steps through the Envelope states Attack, Decay, and Release. Envelope parameters are defined in the ALSound structure. The duration of the sound is determined by the sum of the Attack time, Decay time, and Release time, or the length of the <a href="../../keywords/index/data/audio.htm#wave table" target="keywords">wavetable</a> (whichever is shorter), scaled by the <a href="../../keywords/index/data/audio.htm#pitch" target="keywords">pitch</a>. </p>
+
+<P>For looped sounds, the duration is always determined by the Envelope parameters and the pitch. If the Envelope Decay time is set to -1, the sound will continue playing (that is, it will never enter the Release phase) until it is stopped by the application with a call to
+<A HREF="../../n64man/al/alSndpStop.htm">alSndpStop()</A>. Envelope times are scaled by the playback pitch so that regardless of pitch, finite-length sounds play to completion. For example, by default, a sound played an octave lower plays for twice as long as it does at unity pitch. Loop points for sounds are embedded in the ALWaveTable structure. (Loop points will be automatically extracted from the .aiff file when using the file conversion tools provided such as <A HREF="../../n64man/tool/vadpcm_enc.htm">vadpcm_enc</A>.) </p>
+
+<P>Various parameters that affect the playback of a sound can be set before and during playback. When a sound is allocated to a Sound Player, an ID is returned that uniquely identifies that sound. Parameters for a particular sound are set by first setting the target
+sound with a call to <A HREF="../../n64man/al/alSndpSetSound.htm">alSndpSetSound()</A>, and then making a subsequent call to set a parameter for the target sound. Available calls are described in Table 17-1 below. </p>
+
+<P><strong>Note:</strong>  Each sound allocated to a Sound Player has a unique ID and private parameter values and play state. To play the same sound simultaneously, possibly with different parameter settings, it must be allocated multiple times to the Sound Player. </p>
+
+<P>A summary of Sound Player functions is given below. Details can be found in the reference (man) pages. </p>
+<TABLE BORDER >
+<CAPTION><A NAME="t17-01"></A><strong>Table 17-1 Sound Player Functions</strong></CAPTION>
+
+<TR>
+<TH>Function</TH>
+
+<TH>Description</TH>
+</TR>
+
+<TR>
+<TD><A HREF="../../n64man/al/alSndpNew.htm">alSndpNew</A></TD>
+
+<TD>Creates a new Sound Player.</TD>
+</TR>
+
+<TR>
+<TD><A HREF="../../n64man/al/alSndpDelete.htm">alSndpDelete</A></TD>
+
+<TD>Removes a Sound Player from the Synthesis Driver's client list.</TD>
+</TR>
+
+<TR>
+<TD><A HREF="../../n64man/al/alSndpAllocate.htm">alSndpAllocate</A></TD>
+
+<TD>Allocate a sound to a sound player.</TD>
+</TR>
+
+<TR>
+<TD><A HREF="../../n64man/al/alSndpDeallocate.htm">alSndpDeallocate</A></TD>
+
+<TD>Deallocate a sound from the sound player.</TD>
+</TR>
+
+<TR>
+<TD><A HREF="../../n64man/al/alSndpSetSound.htm">alSndpSetSound</A></TD>
+
+<TD>Sets the Sound Player's current sound.</TD>
+</TR>
+
+<TR>
+<TD><A HREF="../../n64man/al/alSndpGetSound.htm">alSndpGetSound</A></TD>
+
+<TD>Returns the Sound Player's current sound.</TD>
+</TR>
+
+<TR>
+<TD><A HREF="../../n64man/al/alSndpPlay.htm">alSndpPlay</A></TD>
+
+<TD>Plays the Sound Player's current sound.</TD>
+</TR>
+
+<TR>
+<TD><A HREF="../../n64man/al/alSndpPlayAt.htm">alSndpPlayAt</A></TD>
+
+<TD>Plays a sound at some specified time in the future.</TD>
+</TR>
+
+<TR>
+<TD><A HREF="../../n64man/al/alSndpStop.htm">alSndpStop</A></TD>
+
+<TD>Stops the current sound from playing.</TD>
+</TR>
+
+<TR>
+<TD><A HREF="../../n64man/al/alSndpGetState.htm">alSndpGetState</A></TD>
+
+<TD>Gets the current state (stopped or playing) of the current sound.</TD>
+</TR>
+
+<TR>
+<TD><A HREF="../../n64man/al/alSndpSetPitch.htm">alSndpSetPitch</A></TD>
+
+<TD>Sets the pitch for the current sound.</TD>
+</TR>
+
+<TR>
+<TD><A HREF="../../n64man/al/alSndpSetVol.htm">alSndpSetVol</A></TD>
+
+<TD>Sets the playback volume of the current sound.</TD>
+</TR>
+
+<TR>
+<TD><A HREF="../../n64man/al/alSndpSetPan.htm">alSndpSetPan</A></TD>
+
+<TD>Sets the pan position of the current sound.</TD>
+</TR>
+
+<TR>
+<TD><A HREF="../../n64man/al/alSndpSetPriority.htm">alSndpSetPriority</A></TD>
+
+<TD>Sets the sounds priority value.</TD>
+</TR>
+
+<TR>
+<TD><A HREF="../../n64man/al/alSndpSetFXMix.htm">alSndpSetFXMix</A></TD>
+
+<TD>Sets the <a href="../../keywords/index/data/audio.htm#wet" target="keywords">wet</a>/<a href="../../keywords/index/data/audio.htm#dry" target="keywords">dry</a> mix of the current sound.</TD>
+</TR>
+</TABLE>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR>
+</BODY>
+</HTML>

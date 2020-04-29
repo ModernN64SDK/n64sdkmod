@@ -1,0 +1,206 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN"
+--Editor notes- MAP- edited content 10/18/99
+PWC 2/21/00-->
+<HTML>
+<HEAD><link rel=stylesheet type="text/css" href="../style.css">
+<TITLE>BL (Blender)</TITLE>
+</HEAD>
+<A name="index"></a>
+<BODY>
+
+
+<b><IMG src="../../gif/n64_logo2.gif" height="21" width="136"></b></FONT>
+
+<h3><FONT color="#FF8000">Q&A</FONT>- BL (Blender)</h3>
+
+
+<P>
+<TABLE>
+  <TR>
+    <TD><B><A href="blender.htm#qa1">QA1</A></B></TD>
+    <TD>Is sorting required for proper display of translucent polygons?</TD></TR>
+  <TR>
+    <TD><B><A href="blender.htm#qa2">QA2</A></B></TD>
+    <TD>Realizing fog in 1 cycle mode</TD></TR>
+  <TR>
+    <TD><B><A href="blender.htm#qa3">QA3</A></B></TD>
+    <TD>Anti-aliasing does not work on transparent primitives</TD></TR>
+  <TR>
+    <TD><B><A href="blender.htm#qa4">QA4</A></B></TD>
+    <TD>Color and translucent processing with the blender and G_RM_ADD</TD></TR>
+  <TR>
+    <TD><B><A href="blender.htm#qa5">QA5</A></B></TD>
+    <TD>How to prevent overflow of results from calculations in ADD rendering mode</TD></TR>
+  <TR>
+    <TD><B><A href="blender.htm#qa6">QA6</A></B></TD>
+    <TD>When 3D data is displayed, you can faintly see the picture behind it</TD></TR>
+  <TR>
+    <TD><B><A href="blender.htm#qa7">QA7</A></B></TD>
+    <TD>When using OPA_SURF can you make excess areas transparent?</TD></TR>
+  <TR>
+    <TD valign="top"><B><A href="blender.htm#qa8">QA8</A></B></TD>
+    <TD>I set the Z value with gDPSetPrimDepth when I used "rectangle" but the Z-Buffer was not enabled</TD></TR>
+  <TR>
+    <TD><A href="blender.htm#qa9"><B>QA9</B></A></TD>
+    <TD>About the PCL mode of gDPSetRenderMode</TD></TR>
+  <TR>
+    <TD><A href="blender.htm#qa10"><B>QA10</B></A></TD>
+    <TD>When various RenderMode's are mixed together</TR>
+</TABLE>
+
+<HR>
+<P>
+<A name="qa1"><B><FONT color="#ff0000">Q1</FONT></B></A> <b>When several translucent polygons are layered, can they be accurately written if they are not rendered once they have been sorted in the Z direction?</b>
+
+<P>
+<FONT color="#008000"><B><FONT>A1</FONT></B></FONT> When rendering 3 or more translucent polygons layered on one another, strictly speaking, accurate color information cannot be obtained if they are not rendered after being Z-sorted.  The colors will shift a little at a time.  However, you could verify the extent to which the color has shifted in the areas where the multiple translucent polygons were overlapped, and use them without sorting as long as the color shift is not a problem.  Try this with a variety of games. 
+
+<P align="right">
+<A href="blender.htm#index">top</A>
+
+<HR>
+<P>
+<A name="qa2"><B><FONT  color="#ff0000">Q2</FONT></B></A> <b>I thought that I had applied fog in 1 cycle mode as was described in the Programming Manual, but when I use the Z buffer, the fog is not applied.  What should I do?</b>
+
+<P>
+<B><FONT  color="#008000">A2</FONT></B> As you pointed out, fog will normally not be applied when you do it as outlined in the manual.  When you do it according to the manual, the Z buffer processing is performed on the second cycle of the render mode.  We tried creating a new render mode as follows, so that both fog processing and Z buffer processing are performed in the first cycle.  
+
+<BLOCKQUOTE>
+
+<PRE>
+#define G_RM_ZB_1C_FOG_SHADE_A \
+    Z_CMP | Z_UPD | CVG_DST_FULL | ALPHA_CVG_SEL | ZMODE_OPA | \
+    GBL_c1(G_BL_CLR_FOG, G_BL_A_SHADE, G_BL_CLR_IN, G_BL_1MA)
+
+#define G_RM_ZB_1C_FOG_SHADE_A2 \
+   CVG_DST_FULL | FORCE_BL | ZMODE_OPA | \
+    GBL_c2(G_BL_CLR_FOG, G_BL_A_SHADE, G_BL_CLR_IN, G_BL_1MA)
+
+<A href="../../n64man/gdp/gDPSetRenderMode.htm">gDPSetRenderMode</A>(G_RM_ZB_1C_FOG_SHADE_A,G_RM_ZB_1C_FOG_SHADE_A2);
+</pre>
+</BLOCKQUOTE>
+<P>
+I think this should probably display fog nicely.  Give it a try. 
+
+<P align="right">
+<A href="blender.htm#index">top</A>
+
+<HR>
+<P>
+<A name="qa3"><FONT ><B><FONT color="#ff0000">Q3</FONT></B></FONT></A> <b>When I display translucent texture rectangles as a covering over anti-aliased 3D polygons, if the texture rectangles are rendered without anti-aliasing, then the initially drawn polygons also lose their anti-aliasing.  What should I do? </b>
+
+<P>
+<B><FONT color="#008000">A3</FONT></B> You are probably using G_RM_ZB_XLU_SURF as the primitive render mode for texture rectangle rendering.  Either use G_RM_ZB_CLD_SURF or stick with G_RM_ZB_XLU_SURF but attach the CVG_DST_WRAP flag.  Drawing of texture rectangles with that render mode should work fine.
+
+<P align="right">
+<A href="blender.htm#index">top</A>
+
+<HR>
+<P>
+<A name="qa4"><B><FONT  color="#ff0000">Q4</FONT></B></A> <b>The colors don't appear as I thought they would when I do translucent processing using the blender with G_RM_ADD. </b>
+
+<P>
+<B><FONT  color="#008000">A4</FONT></B> This may be because the color addition result is over 255 and caused an overflow.  When the RCP overflows due to a calculation result, that result is not guaranteed.  It is impossible to predict what kind of result you will get.  In other words, when an overflow occurs because rendering is not set up to clamp calculation results whose values are over 255, you will get unexpected results in the control of those colors.  
+
+<P align="right">
+<A href="blender.htm#index">top</A>
+
+<HR>
+<P>
+<A name="qa5"><B><FONT   color="#ff0000">Q5</FONT></B></A> <b>How exactly do I "make it so that the addition operation results will not overflow" in the ADD rendering mode?</b>
+
+<P>
+<FONT color="#008000"><B>A5</FONT></B>   When using primitive colors, etc., it should be possible to pre-adjust the colors of the pixels which will be added to the colors in memory.  Theoretically, it is possible to "prevent an overflow" in addition between textures using similar pre-addition adjustment.  
+
+<P align="right">
+<A href="blender.htm#index">top</A>
+
+<HR>
+<P>
+<A name="qa6"><B><FONT   color="#ff0000">Q6</FONT></B></A> <b>When 3D data is displayed, you can faintly see the picture behind it.  Can you think of any reason for this happening?</b>
+
+<P>
+<B><FONT   color="#008000">A6</FONT></B> Maybe Render mode is not set.
+
+<P>
+Another possibility has to do with the color combiner settings.  For the TEXO * PRIM calculation, if both are "255" the result of the calculation can still be "254" and there will be a little transparence.  To get around this problem, add "1" to the result.
+
+<P align="right">
+<A href="blender.htm#index">top</A>
+
+<HR>
+<P>
+<A name="qa7"><B><FONT  color="#ff0000">Q7</FONT></B></A> <b>When using OPA_SURF can you make excess areas transparent?</b>
+
+<P>
+<B><FONT  color="#008000">A7</FONT></B> Yes, that is possible.  However, you cannot apply anti-aliasing.  Use the method shown below.  (For details, see the Online Manual.)  Of course, this assumes the "excess areas" have an alpha = 0
+
+<BLOCKQUOTE>
+
+<PRE>
+<A href="../../n64man/gdp/gDPSetAlphaCompare.htm">gsDPSetAlphaCompare</A>(G_AC_THRESHOLD)
+<A href="../../n64man/gdp/gDPSetBlendColor.htm">gsDPSetBlendColor</A>(0,0,0,alpha)
+</pre>
+</BLOCKQUOTE>
+<P align="right">
+<A href="blender.htm#index">top</A>
+
+<HR>
+<P>
+<B><FONT color="#ff0000"><A name="qa8">Q8</A></FONT></B> <b>Z value was set by <A href="../../n64man/gdp/gDPSetPrimDepth.htm">gDPSetPrimDepth</A> when rectangle is used, but Z-Buffer didn't become effective. </b>
+
+<P>
+<B><FONT   color="#008000">A8</FONT></B> One of the following functions may be missing. Please confirm.
+
+<BLOCKQUOTE>
+
+<PRE>
+<A href="../../n64man/gdp/gDPSetDepthSource.htm">gsDPSetDepthSource</A>(G_ZS_PRIM)
+<A href="../../n64man/gdp/gDPSetCycleType.htm">gsDPSetCycleType</A>(G_CYC_1CYCLE)
+<A href="../../n64man/gdp/gDPSetRenderMode.htm">gsDPSetRenderMode</A>(G_RM_ZB....)
+</pre>
+</BLOCKQUOTE>
+<P align="right">
+<A href="blender.htm#index">top</A>
+
+<HR>
+<P>
+<A name="qa9"><B><FONT  color="#ff0000">Q9</FONT></B></A> <b>When PCL is used with <A href="../../n64man/gdp/gDPSetRenderMode.htm">gsDPSetRenderMode</A>, particles appear in any objects which are subsequently rendered in the _OPA or _XLU mode.  How can I avoid this?</b>
+
+<P>
+<B><FONT color="#008000">A9</FONT></B> Particles can be set with <A href="../../n64man/gdp/gDPSetRenderMode.htm">gsDPSetRenderMode</A>, but they cannot be reset.  Execute 
+
+<BLOCKQUOTE>
+
+<PRE>
+<A href="../../n64man/gdp/gDPSetAlphaCompare.htm">gsDPSetAlphaCompare</A>(G_AC_NONE)
+</PRE>
+</BLOCKQUOTE>
+<P>
+to reset particles.
+
+<P align="right">
+<A href="blender.htm#index">top</A>
+
+<HR>
+<P>
+<B><FONT  color="#ff0000"><A name="qa10">Q10</A></FONT></B> <b>Are there any precautions when mixing opaque, translucent, and missing objects, etc.?</b>
+
+<P>
+<B><FONT  color="#008000">A10</FONT></B> The database during rendering is divided in 3, "opaque (OPA)", "translucent (XLU)", and "missing (TEX_EDGE)."  In other words, when creating data at the designer level, more efficient operation is possible by grouping objects taking these attributes into consideration.  The priority order of the actual render modes is as follows: 
+
+<ol>
+<li>OPA_SURF</li>
+<li>OPA_DECAL</li>
+<li>OPA_INTER</li>
+<li>TEX_EDGE</li>
+<li>XLU_SURF</li>
+<li>XLU_DECAL</li>
+<li>XLU_INTER</li>
+</ol>
+<P align="right">
+<A href="blender.htm#index">top</A>
+
+<HR>
+</BODY>
+</HTML>

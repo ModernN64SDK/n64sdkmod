@@ -1,0 +1,254 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Device-Chapter 1  How to Use Devices Connected to the SI</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/21/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<FONT style="font-size:12pt"><B>1.4  Controller Pak Functions</B></FONT>
+<br>
+<P>
+ In this section, we explain specific ways of using the Controller Pak.  Many other functions have been prepared for the Controller Pak in addition to the ones explained here. For information about these see the Function Manual and the Sample Programs.
+</P>
+<BR>
+<B>1.4.1  Setting the Company Code and the Game Code</B>
+<P>
+ Before accessing the Controller Pak, use the nuContPakCodeSet function to set the company code and the game code (initial code) in the Controller Manager.<BR>
+<HR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Function name:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP COLSPAN=2><tt>nuContPakCodeSet</tt></TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Syntax:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP COLSPAN=2>void nuContPakCodeSet(u8* companyCode, u8* gameCode)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Arguments:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP><b>companyCode</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Company code</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP><b>gameCode</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Game code (initial code)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Return value:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP COLSPAN=2>None</TD>
+</TR></TABLE>
+<HR>
+<p>
+These values are unique to the game, so unless you are accessing data created by other game software, you don't have to reset these values once they have been set.  
+</P>
+<p>
+<BR>
+<B>1.4.2  Opening the Controller Pak Device</B>
+<P>
+ To gain access to the Controller Pak, first you must open the device.  <BR>
+<HR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Function name:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP COLSPAN=2><tt>nuContPakOpen</tt></TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Syntax:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP COLSPAN=2>s32 nuContPakOpen(NUContPakFile *file, u32 cont_no)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Arguments:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP><b>file</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Controller Pak file structure</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP><b>cont_no</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP>The number of the Controller  to open</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Return value:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP COLSPAN=2>Error</TD>
+</TR></TABLE>
+<HR>
+<p>
+ The pointer to the NUContPakFile structure is passed to the <b>file</b> argument.  If a Controller Pak is inserted, a NUContPakFile type file structure is initialized so the Controller Pak can be accessed.  
+     This structure contains the pointer to the N64 OS OSPfs structure and various information managed by the Controller Pak Manager.  
+</P>
+<P>
+ The return value of this function is the error value when a device is opened.  At the same time, the error value is also stored in the NUContPakFile structure.  
+</P>
+<br>
+<p>
+<B>1.4.3  Opening a Game Note</B>
+<P>
+     If the Controller Pak can be identified, the next thing to do is to open the game note that you want to access.  
+<BR>
+<HR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Function name:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP COLSPAN=2><tt>nuContPakFileOpen</tt></TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Syntax:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP COLSPAN=2>s32 nuContPakFileOpen(NUContPakFile *file, u8* noteName, </TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP COLSPAN=2>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;u8* extName, u32 mode, s32 size)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Arguments:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP><b>file</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Controller Pak file structure</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP><b>noteName</b>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Game note name (16 bytes in N64 font code)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP><b>extName</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Note extension (1 byte in N64 font code)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP><b>mode</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Specifies whether to create a new game note, or not if one exists.<TABLE BORDER=0><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP><b>NU_CONT_PAK_MODE_CREATE</b>&nbsp;Creates a game note if none exists.</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP><b>NU_CONT_PAK_MODE_NOCREATE</b>&nbsp;Does not create a game note.</TD>
+	</TR></TABLE>
+</TD><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP><b>size</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP>The size of the created game note when "mode" is NU_CONT_PAK_MODE_CREATE.
+</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>This value is invalid when
+                                              the mode is NU_CONT_PAK_MODE_NOCREATE.
+</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Return value:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP COLSPAN=2>None</TD>
+</TR></TABLE>
+
+<HR>
+<p>
+  When NU_CONT_PAK_MODE_CREATE is specified for <b>mode</b>, a game note of the specified <b>size</b> is created if the game note does not exist.  However, as mentioned above, game notes are managed in units of 256 bytes, so the size of the area actually reserved is rounded up to a multiple of 256.<br><br>
+
+     The N64 OS prescribes that the N64 font code be used for the note name and extension.  However, in the NuSystem, codes are converted within functions, and functions are prepared that enable you to use ASCII code for the <b>noteName</b> and <b>extName</b> arguments.  There are also functions that let you specify the opening of notes using JIS code.  
+</P>
+<P>
+<HR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Function name: </TD>
+	<TD ALIGN=LEFT VALIGN=TOP COLSPAN=2><tt>nuContPakFileOpenJis</tt></TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Syntax:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP COLSPAN=2>s32 nuContPakFileOpenJis(NUContPakFile *file, u8* noteName,</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP COLSPAN=2>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;u8* extName, u32 mode, s32 size)</TD>
+</TR><TR>	
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Arguments:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP><b>file</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Controller Pak file structure</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP><b>noteName</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Note name (JIS) </TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Terminal NULL (Converted to N64 font code 16 bytes)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP><b>extName</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Extension (JIS)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Terminal NULL (Converted to N64 font code 1 byte)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP><b>mode,size</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP>The same as <tt>nuContPakFileOpen</tt></TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Return value:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP COLSPAN=2>None</TD>
+</TR></TABLE>
+<HR>
+<p>
+Be careful when converting from JIS code to N64 font code, because the number of characters may change when you convert characters of voiced sounds (daku-ten(sonant) and handaku-ten(p sound)).  The two functions <tt>nuContPakJisToN64</tt> and <tt>nuContPakN64ToJis</tt> have been prepared for converting the code.
+</P>
+<p>
+<B>1.4.4  Reading/Writing with Game Notes</B>
+<P>
+ Once the game note can be opened without any problems, you can perform read/writes with the game note.  The following functions have been prepared to read/write Controller Pak data: 
+<BR>
+<HR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Function name: </TD>
+	<TD ALIGN=LEFT VALIGN=TOP COLSPAN=2><tt>nuContPakFileFread</tt></TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Syntax:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP COLSPAN=2>s32 nuContPakFileFread(NUContPakFile *file,</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP COLSPAN=2>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;s32 offset, s32 size, u8* buf)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Arguments:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP><b>file</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Controller Pak structure</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP><b>offset</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Offset position</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP><b>size</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Size to read</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP><b>buf</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Buffer where read data is stored</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Return value:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP COLSPAN=2>Error</TD>
+</TR></TABLE>
+<HR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Function name: </TD>
+	<TD ALIGN=LEFT VALIGN=TOP COLSPAN=2><tt>nuContPakFileFwrite</tt></TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Syntax: </TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP COLSPAN=2>ss32 nuContPakFileFwrite(NUContPakFile *file,</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP COLSPAN=2>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;s32 offset, s32 size, u8* buf)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Arguments: </TD>
+	<TD ALIGN=LEFT VALIGN=TOP><b>file</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Controller Pak structure</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP><b>offset</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Offset position to write</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP><b>size</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Size to write</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP><b>buf</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Buffer where data to be written is stored</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Return value:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP COLSPAN=2>Error</TD>
+</TR></TABLE>
+<HR>
+<p>
+ In the N64 OS functions for read/writes with the Controller Pak, the <b>offset</b> and <b>size</b> arguments must be specified as multiples of 32.  However, there are no such restrictions in the NuSystem functions described above because the functions adjust internally to perform the reading process. 
+</P>
+<p>
+<B>1.4.5  A Note of Caution about Controller Pak Access</B>
+<P>
+ There is always the chance that the Controller Pak will be removed/inserted during game play.  Thus, please be sure to perform the complete procedure from <tt>nuContPakOpen</tt> to actual reading/writing every time you access the Controller Pak, even for software that prohibits the game player from removing/inserting the Controller Pak during game play.
+</P>
+<BR>
+<BR>
+<BR>
+</BODY>
+</HTML>

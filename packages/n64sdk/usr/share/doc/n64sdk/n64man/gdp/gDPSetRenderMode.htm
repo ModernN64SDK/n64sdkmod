@@ -1,0 +1,218 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<link rel=stylesheet type="text/css" HREF="../N64man.css">
+<!--
+Editors Notes:
+  JLR made reformating and copy edits.
+  PWC- updated formatting
+-->
+
+<TITLE>gDPSetRenderMode</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>gDPSetRenderMode [Macro]</h1>
+<h2>Function</h2>
+<p>gDPSetRenderMode<br><br><i>
+Sets the rendering mode of the blender (BL)</i>
+</P>
+<p><b>Syntax</p></font></b>
+<p>
+<PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gbi.htm">gbi.h</A> */
+gDPSetRenderMode( Gfx *gdl, u32 mode1, u32 mode2 )
+gsDPSetRenderMode(          u32 mode1, u32 mode2 )</CODE></PRE>
+</p>
+<p><b>Arguments</p></font></b>
+<p><DL>
+  <DT><B>gdl</B>
+  <DD>Display list pointer.
+  <DT><B>mode1</B>
+  <DD>Rendering mode set for first cycle:
+  <DD><B>G_RM_ [ AA_ | RA_ ] [ ZB_ ]*</B> (Rendering type)
+  <DD><B>G_RM_FOG_SHADE_A</B> (Fog type)
+  <DD><B>G_RM_FOG_PRIM_A</B> (Fog type)
+  <DD><B>G_RM_PASS</B> (Pass type)
+  <DD><B>G_RM_NOOP</B> (No operation type)
+  <DT><B>mode2</B>
+  <DD>Rendering mode set for second cycle:
+  <DD><B>G_RM_ [ AA_ | RA_ ] [ ZB_ ]*2</B> (Rendering type)
+  <DD><B>G_RM_NOOP2</B> (No operation type)
+</DL></p>
+<p><b>Description</b></font></p>
+<P>
+Sets the rendering modes of the BL.  The BL can render a variety of Z-buffered, anti-aliased primitives.  Although N64 supports Z-buffer anti-aliasing, you still need to be careful about the order of rendering with regards to surface and rendering mode.  For example, all opaque polygons must be drawn before translucent (semi-transparent) polygons.
+<DL>
+  <DT>Regarding the <B>mode1</B> and <B>mode2</B> arguments:
+  <DT>
+  <DD>The constants shown in the table below can be used to specify a general rendering mode.  These constants are all defined in &lt;<A HREF="../../header/gbi.htm">gbi.h</A>&gt;.  However, if the needed rendering mode is not defined, you can add your own original mode.
+  <DD>
+  <DD>In 1-cycle mode, set one of the modes described below for <B>mode1</B> and then set the same mode for <B>mode2</B>.  In 2-cycle mode, fog or pass usually is set for <B>mode1</B> and rendering is set for <B>mode2</B>.
+  <DD>
+  <DD>When the cycle type is set to fill mode or copy mode (g*DPSetCycleType), execute g*DPSetRenderMode (G_RM_NOOP, G_RM_NOOP2) to place the BL is a safe state.  Regardless of the mode, append "2" after the mode name for the <B>mode2</B> setting.  For example, for G_RM_AA_ZB_OPA_SURF, set G_RM_AA_ZB_OPA_SURF2.</p>
+  </dl>
+<p><B>List of Rendering Modes</B></p>
+<p>(AA_: Antialiasing, RA_: Simple antialiasing (not as pretty as AA, but somewhat faster), ZB_: Z-buffering)
+<p>
+<TABLE BORDER="1" CELLSPACING="0" CELLPADDING="3">
+<TR><TD VALIGN="MIDDLE">
+<B>Rendering type</B>
+</TD></TR><TR><TD VALIGN="MIDDLE">
+<B>G_RM_ [ AA_ | RA_ ] [ ZB_ ] OPA_SURF</B>
+<UL>Opaque surfaces</UL>
+</TD></TR><TR><TD VALIGN="MIDDLE">
+<B>G_RM_ [ AA ] [ _ZB_ ] XLU_SURF</B> 
+<UL>Translucent surfaces</UL>
+</TD></TR><TR><TD VALIGN="MIDDLE">
+<B>G_RM_ [ ZB_ | AA_ZB_ | RA_ZB_ ] OPA_DECAL</B>
+<UL>Opaque decal surfaces</UL>
+</TD></TR><TR><TD VALIGN="MIDDLE">
+<B>G_RM_ [ ZB_ | AA_ZB_ ] XLU_DECAL</B> 
+<UL>Translucent decal surfaces</UL>
+</TD></TR><TR><TD VALIGN="MIDDLE">
+<B>G_RM_ [ AA_ZB_ | RA_ZB_ ] OPA_INTER</B> 
+<UL>Opaque interpenetrating surfaces</UL>
+</TD></TR><TR><TD VALIGN="MIDDLE">
+<B>G_RM_AA_ZB_XLU_INTER</B> 
+<UL>Translucent interpenetrating surfaces</UL>
+</TD></TR><TR><TD VALIGN="MIDDLE">
+<B>G_RM_AA_ [ ZB_ ] XLU_LINE</B> 
+<UL>Translucent lines</UL>
+</TD></TR><TR><TD VALIGN="MIDDLE">
+<B>G_RM_AA_ [ ZB_ ] DEC_LINE</B> 
+<UL>Decal lines</UL>
+</TD></TR><TR><TD VALIGN="MIDDLE">
+<B>G_RM_AA_ [ ZB_ ] TEX_EDGE</B> 
+<UL>Textured surfaces with alpha edge mask<BR>
+Enables conversion within a single pixel to be turned ON/OFF for texture alpha-outlined objects.  When normal texture filtering is used, the edge appears blurry.</UL>
+</TD></TR><TR><TD VALIGN="MIDDLE">
+<B>G_RM_AA_ZB_TEX_INTER</B>
+<UL>Textured interpenetrating surfaces</UL>
+</TD></TR><TR><TD VALIGN="MIDDLE">
+<B>G_RM_AA_ [ ZB_] SUB_SURF</B>
+<UL>Subsurfaces</UL>
+</TD></TR><TR><TD VALIGN="MIDDLE">
+<B>G_RM_ [ AA_ ] [ ZB_ ] PCL_SURF</B>
+<UL>Particle system</UL>
+</TD></TR><TR><TD VALIGN="MIDDLE">
+<B>G_RM_AA_ [ ZB_ ] OPA_TERR</B>
+<UL>Opaque terrain</UL>
+</TD></TR><TR><TD VALIGN="MIDDLE">
+<B>G_RM_AA_ [ ZB_ ] TEX_TERR</B>
+<UL>Textured terrain</UL>
+</TD></TR><TR><TD VALIGN="MIDDLE">
+<B>G_RM_AA_ [ ZB_ ] SUB_TERR</B>
+<UL>Sub-terrain</UL>
+</TD></TR><TR><TD VALIGN="MIDDLE">
+<B>G_RM_ [ ZB_ ] CLD_SURF</B>
+<UL>Cloud surfaces</UL>
+</TD></TR><TR><TD VALIGN="MIDDLE">
+<B>G_RM_ZB_OVL_SURF</B>
+<UL>Overlay surfaces</UL>
+</TD></TR><TR><TD VALIGN="MIDDLE">
+<B>G_RM_ADD</B>
+<UL>Adds pixel color over memory color.</UL>
+</TD></TR><TR><TD VALIGN="MIDDLE" >
+<B>Fog type</B>
+</TD></TR><TR><TD VALIGN="MIDDLE">
+<B>G_RM_FOG_SHADE_A</B>
+<UL>Uses the shading alpha to determine a varying fog coefficient.  This shading alpha is used to determine the ratio of blending between fog and the output of the color combiner (CC).</UL>
+</TD></TR><TR><TD VALIGN="MIDDLE">
+<B>G_RM_FOG_PRIM_A</B>
+<UL>Uses the fog color alpha to express constant fog.  This fog color alpha is used to determine the ratio of blending between fog and the output of the CC.
+</UL>
+</TD></TR><TR><TD VALIGN="MIDDLE" >
+<B>Pass type</B>
+</TD></TR><TR><TD VALIGN="MIDDLE">
+<B>G_RM_PASS</B>
+<UL>Passes the CC output directly to the second cycle or the memory interface.
+</UL>
+</TD></TR><TR><TD VALIGN="MIDDLE">
+<B>No operation type</B>
+</TD></TR><TR><TD VALIGN="MIDDLE">
+<B>G_RM_NOOP</B>
+<UL>Prohibits color and Z calls, and sets the remaining BL state to zero.</UL>
+</TD></TR>
+</TABLE>
+</P>
+<P>
+A decal surface is a surface that is applied on top of another surface.  For example, it can be used to place a surface on an airplane wing.  In this case, a pixel is only written when the Z value of the pixel in the frame buffer is the same as the Z value of the pixel being drawn.
+</P>
+<P>
+An interpenetrating surface is a surface that penetrates and is penetrated by another surface.  For intersecting objects, only the first of the two interpenetrating surfaces needs to be set in G_RM_ [ AA_ZB_ | RA_ZB_ ] OPA_INTER or G_RM_ [ AA_ZB_ | RA_ZB_ ] XLU_INTER mode.  However, if the second surface is also set, then antialiasing is performed on the portion that intersects.
+</P>
+<P>
+Opaque lines are supported by setting the alpha value to 1.0.
+</P>
+<P>
+Decal lines are applied on top of surfaces in the same way as decal surfaces.
+</P>
+<P>
+For details, see to Section 12.7 "BL - Blender" and Section 15.7 "Blender Modes and Assumptions" in the N64 Programming Manual.
+</P>
+<p><b>Note</b></font></p>
+<P>
+In texture edge mode, if dithering is enabled when you zoom in on, say, a tree object that is extremely close to the viewpoint, then the dither pattern near the edges cannot be filtered.  If this phenomenon occurs, it can be worked around with the following kinds of settings:
+<TABLE BORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD>
+<TABLE BORDER="0" CELLSPACING="0" CELLPADDING="1">
+<TR>
+<TD NOWRAP ALIGN="left" VALIGN="top"></TD>
+<TD ALIGN="left" VALIGN="top">
+<li>Disable dithering when rendering a texture edge mode object.</li>
+</TD>
+</TR><TR>
+<TD NOWRAP ALIGN="left" VALIGN="top"></TD>
+<TD ALIGN="left" VALIGN="top">
+<li>Do not use texture edge mode.</li><BR>
+(The edges defined by the texture will not be as sharp as in texture edge mode.)
+</TD>
+</TR><TR>
+<TD NOWRAP ALIGN="left" VALIGN="top"></TD>
+<TD ALIGN="left" VALIGN="top">
+<li>Use sharp texture mode instead of texture edge mode.</li>
+</TD></TR></TABLE>
+</TD></TR></TABLE>
+</P>
+<P>
+Depth cannot be represented accurately when viewing decal surfaces (surfaces on the same plane) from the perpendicular.  This problem can be worked around in the following ways:
+<TABLE BORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD>
+<TABLE BORDER="0" CELLSPACING="0" CELLPADDING="1">
+<TR>
+<TD NOWRAP ALIGN="left" VALIGN="top"></TD>
+<TD ALIGN="left" VALIGN="top">
+<li>Use texture decals instead of geometrical decals.</li>
+</TD>
+</TR><TR>
+<TD NOWRAP ALIGN="left" VALIGN="top"></TD>
+<TD ALIGN="left" VALIGN="top">
+<li>Create the decal and the underlying surface such that they share vertices.</li>
+</TD></TR></TABLE>
+</TD></TR></TABLE>
+</P>
+<P>
+Although simple antialiasing (RA_) mode is somewhat faster than antialiasing (AA_) mode, the results are not as good.  In particular, the lines of internal edges (the junctions between polygons) will appear blurry when texture maps incorporating high-frequency components are used.  This kind of problem can be worked around in the following ways:
+<TABLE BORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD>
+<TABLE BORDER="0" CELLSPACING="0" CELLPADDING="1">
+<TR>
+<TD NOWRAP ALIGN="left" VALIGN="top"></TD>
+<TD ALIGN="left" VALIGN="top">
+<li>Use AA_ mode.</li>
+</TD>
+</TR><TR>
+<TD NOWRAP ALIGN="left" VALIGN="top"></TD>
+<TD ALIGN="left" VALIGN="top">
+<li>Do not use AA_ mode or RA_ mode for geometry aliasing of anything other than distinct interior edges. </li>
+</TD></TR></TABLE>
+</TD></TR></TABLE>
+</P>
+<p><b>See Also</b></font></p>
+<P>
+<A HREF="gDPSetCombineMode.htm">gDPSetCombineMode</A>, <A HREF="gDPSetCycleType.htm">gDPSetCycleType</A>, <A HREF="gDPSetFogColor.htm">gDPSetFogColor</A>,  <A HREF="../gsp/gSPSetGeometryMode.htm">gSPSetGeometryMode</A>
+</P>
+
+<p><b>Revision History</p></b>
+<p>02/01/99&nbsp;&nbsp;&nbsp;Completely rewritten</p>
+
+</BODY>
+</HTML>

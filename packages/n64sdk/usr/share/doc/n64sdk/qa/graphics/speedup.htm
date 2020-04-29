@@ -1,0 +1,196 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN"
+Editor notes- MAP added revisions 9/29/99
+              MAP- edited content 10/18/99
+PWC 2/23/00-->
+
+
+<HTML>
+<HEAD><link rel=stylesheet type="text/css" href="../style.css">
+<TITLE>Speedup Techniques</TITLE>
+</HEAD>
+
+<BODY>
+<A name="index"></a>
+<IMG src="../../gif/n64_logo2.gif" height="21" width="136">
+
+<h3><FONT color="#FF8000">Q&A</FONT>- Speedup Techniques</h3>
+
+
+<P>
+<TABLE>
+  <TR>
+    <TD><B><A href="speedup.htm#qa1">QA1</A></B></TD>
+    <TD>What should I pay attention to when speeding up graphics rendering?</td></tr>
+  <TR>
+    <TD><B><A href="speedup.htm#qa2">QA2</A></B></TD>
+    <TD>Can texture mip-map processing, etc. actually be used in games?</td></tr>
+  <TR>
+    <TD><B><A href="speedup.htm#qa3">QA3</A></B></TD>
+    <TD>What should I keep in mind when doing high-speed graphic rendering?</td></tr>
+  <TR>
+    <TD><B><A href="speedup.htm#qa4">QA4</A></B></TD>
+    <TD>By what percent is processing efficiency decreased by using or not using lighting?</td></tr>
+  <TR>
+    <TD><B><A href="speedup.htm#qa5">QA5</A></B></TD>
+    <TD>What is Nintendo's policy regarding the use of anti-aliasing?</td></tr>
+</TABLE>
+
+<HR>
+<P>
+<B><FONT color="#ff0000"><A name="qa1">Q1</A></FONT> What should I watch out for when speeding up graphics rendering?</B>
+
+<P>
+<B><FONT color="#008000">A1</FONT></B> The basic ways of increasing rendering speed are listed below. 
+
+<P>
+<B>(1) Optimize the vertex cache</B>
+
+<P>
+For instance, there is a maximum of 32 F3DEX microcode vertex caches (64 for F3DEX2).  The rendering speed will change considerably depending on how efficiently you use them.  Create display lists efficiently so that, once vertex data have been loaded to the vertex cache, they are effectively utilized and the same vertexes don't have to be loaded again and again.
+
+<P>
+<B>(2) Optimizing matrix computations</B>
+
+<P>
+The matrix computations used for changing the coordinates of the vertex are performed inside the RSP.  That is to say, the processes of loading data into the RSP's matrix stack and the multiplication calculations are carried out by the RSP.  However, it is also possible to carry out all matrix multiplication calculations with the CPU, and only load into the RSP's matrix stack.  Doing this lightens the burden on the RSP.
+
+<P>
+It is important to cut down as much as possible on wasteful matrix calculations by the RSP, for example by completing the calculation in advance for the level movement matrix, the rotation matrix and the scaling matrix of the modeling matrix corresponding to a model at a fixed location.
+
+<P>
+<B>(3) Optimize the display list</B>
+
+<P>
+It is necessary to optimize the display list in areas other than just loading vertices.
+
+<P>
+Display list of large models like maps needs to be divided efficiently in advance. If much time is spent for structuring the display list, the time needed to start RSP and RDP will be wasted.
+
+<P>
+Lay out the display list so that all the polygons that use a texture that has been loaded into TMEM are rendered at the same time, or so that there are as few changes to the RSP and RDP settings as possible, etc.  
+
+<P>
+Of course, any back-face culling and volume culling supported by the microcode are essential, and techniques such as culling the models not placed in the field of vision primitive by the CPU are necessary before executing them.  Clipping and scissoring adjustments also greatly effect performance. 
+
+<P>
+Changing the precision of distant models and close-up models(LOD) is an extremely effective technique.  The same can be said not only for models, but for textures, etc., as well.  By using these, switching is done so that distant models are rendered with a few polygons and primitive colors, models at a mid-distance are rendered with a moderate number of polygons and textures, and close-up models are rendered with a lot of polygons and textures.  There is also the method of texture animation for models which are extremely far away. 
+
+<P>
+<B>(4) Lighting</B>
+
+<P>
+When lighting is used, the lighting calculations are done by the RSP using the normal vectors of the vertices, and therefore require a commensurate amount of computation time.  Since the computation time increases as the number of lights increases, the number of lights should be kept to a minimum in scenes where speed is demanded. 
+
+<P>
+In addition, with flat shading, (depending on the model,) lighting is not used and light calculations are done by the CPU, so another method is to set this in the primitive color and combine it using the Color Combiner. 
+
+<P>
+Using the CG Tools preshading function and representing effects similar to lighting with the vertex color, without using lights, is one acceleration technique.
+
+<P>
+<B>(5) Texture</B>
+
+<P>
+When textures are used, excess RSP processing time is used to calculate the texture coordinates of each vertex, and RDP processing time is used to load them to TMEM.  However, the pixel rendering time is not decreased only by the use of textures.  Decreasing the number of times textures are loaded is tied to increased speed.  
+
+<P>
+Due to the RDRAM performance, it is important to cut texture so that the width will be longer than the height. 
+When rendering a large texture that does not fit in TMEM, it is necessary to cut the texture so that the width of the segments will be longer than the height instead of cutting polygons in grid form. However, it doesn't apply to a texture where the polygon is rotated, and the rectangle is longer in the vertical direction. It always applies to an object with a width longer than the height.
+
+
+<P>
+<B>(6) 1Cycle Mode, 2Cycle Mode</B>
+
+<P>
+While this may be obvious, processing is faster in the 1Cycle Mode. However, as described in 8, access (read and write) to Z buffer may have an impact and the process in 1Cycle Mode will not be a great deal faster than the one in 2Cycle Mode. (Please see Chapter 12.1.3 in the N64 Programming Manual)
+
+<P>
+<B>(7) Writing Opaque vs. Writing Translucent</B>
+
+<P>
+When writing opaque data, they only need to be written to the frame buffer, but when writing translucent data, they have to be written after reading data from the frame buffer, consequently doubling the amount of RDRAM access. 
+
+<P>
+<B>(8) Z Buffer</B>
+
+<P>
+Access to Z buffer considerably influences the RDP performance. Many applications with bad RDP performance have a number of unnecessary acesses to Z buffer.
+
+<P>
+Interchange with the RDRAM is increased when the Z buffer is used.  This is because the Z buffer read/writes increase.  When the Z buffer is used, there is virtually no decrease in speed, even if the 2Cycle Mode is used.  This is because, when the 1Cycle Mode is used, even if the pixel calculations are performed at high speed by another unit, processing has to wait for RDRAM read/writing at the memory interface.  
+
+<P>
+When the Z buffer is used, rendering can be performed faster by drawing starting from the nearest polygons.  When rendering is started from the farthest polygon, a Z buffer read, a new Z buffer write, and a frame buffer read/write are all generated for each polygon.  Yet if polygons are rendered starting from the nearest, objects which are obscured behind polygons which are closer can be skipped after only reading the Z buffer. 
+
+<P>
+Depending on the scene being rendered, it is recommended that you turn the Z buffer(Compare) ON/OFF frequently with each object.  Be sure to keep in mind which object needs to be the farthest away and which absolutely has to be the closest at hand. 
+One of the recommended methods is to create a render mode that does not provide reading and comparing Z buffer when Z buffer of LOD or fog uses necessary functions even if the Object is being sorted in the CPU. In other words, it is important to consider the necessity of Z buffer in an object when creating a system.
+
+<P>
+<B>(9) Use of the RDRAM Active Page Register</B>
+
+<P>
+One RDRAM (2Mbyte) has 1Mbyte x 2 banks.  There are separate active page registers in each bank.  (In N64, there are 4 in 4Mbytes, etc.)  This active page register becomes the cache in reading and writing to and from contiguous memory, making high-speed data read/write possible.  If the wrong page of memory is accessed it is a page mistake, and time losses develop due to page switching.  In other words, if frequently accessed data are placed in separate banks, time for precharging becomes unnecessary, speeding up data access.  It is best if the frame buffer and Z buffer are divided up. 
+
+<P>
+<B>(10) Triple the Frame Buffer</B>
+
+<P>
+If the frame buffer is held in essentially a double buffer, the display buffer and write buffer can be separated.  However, If writing is finished faster than the display subdivision time (1/60), the system winds up waiting for the display buffer, which is no good.  Thus, writing is done to a "3rd buffer" during this time. 
+
+<P>
+If there is even more extra memory, try using a "double display list + triple frame buffer."
+
+<P align="right">
+<A href="speedup.htm#index">top</A>
+
+<HR>
+<P>
+<B><A name="qa2"><FONT color="#ff0000">Q2</FONT></A> Can texture mip-map processing, etc. actually be used in games? (Or should it not be used due to speed-related problems?)</B>
+
+<P>
+<B><FONT color="#008000">A2</FONT></B> We haven't actually measured, but we've heard that, in an environment using a Z-buffer, there really isn't any difference when the RDP 1Cycle Mode and 2Cycle Mode is used.  Consequently, there probably wouldn't be any problem from a processing speed aspect.  This could actually be used with a positive effect, taking into consideration the quality of the final video and trade-offs for processing speed(even with FOG). 
+
+<P align="right">
+<A href="speedup.htm#index">top</A>
+
+<HR>
+<P>
+<B><A name="qa3"><FONT color="#ff0000">Q3</FONT></A> Besides not drawing characters that can't be seen and not rendering large polygons, what should I keep in mind when doing high-speed graphic rendering?</B>
+
+<P>
+<B><FONT color="#008000">A3</FONT></B>
+
+<UL>
+  <LI>Draw starting from the front.  (When the Z-buffer is enabled)<P>
+  <LI>Use <A href="../../n64man/gsp/gSPCullDisplayList.htm">gSPCullDisplayList()</A> to do culling from the visible volume in display list units.  Since computations closer than the clip plane boundary are slow in 3D, try to place those objects in the center of the screen.<P>
+  <LI>(FRUSTRATIO_2 is optimal for <A href="../../n64man/gsp/gSPClipRatio.htm">gSPClipRatio</A>)  Use LOD to do model switching.  (In extreme cases, use billboards) (This is common 3D optimization)<P>
+  <LI>LoadTextureTile is fast in the horizontal direction (becauseDMA block transfer is used internally)<P>
+  <LI>In R4300, float is faster for multiplication than whole numbers.  Since division is several times slower than multiplication, use multiplication as much as possible.  (For example: use a*=0.2 instead of a/=5 ) Refer to the R4300 Manual for more information.
+</UL>
+<P align="right">
+<A href="speedup.htm#index">top</A>
+
+<HR>
+<P>
+<B><A name="qa4"><FONT color="#ff0000">Q4</FONT></A> By what percent is processing efficieny decreased by using or not using lighting?</B>
+
+<P>
+<B><FONT color="#008000">A4</FONT></B> To the extent that we've measured it here, lighting reduces the RSP Triangle processing rate by 0.02% or less, and the Vertex processing rate by 17.5%.  
+
+<P align="right">
+<A href="speedup.htm#index">top</A>
+
+<HR>
+<P>
+<B><A name="qa5"><FONT color="#ff0000">Q5</FONT></A> High-speed rendering is possible when anti-aliasing is not installed, but which does Nintendo recommend (anti-aliasing ON or OFF)?</B>
+
+<P>
+<B><FONT color="#008000">A5</FONT></B> It should be enabled to the extent that it can be.  The video graphics which use anti-aliasing are considered to be one of the big differences from other hardware.  However, since it's impossible to say that it should always be used, it should be used when it can be.  (Turn it ON/OFF within one frame)
+
+<P align="right">
+<A href="speedup.htm#index">top</A>
+
+<HR>
+</BODY>
+</HTML>

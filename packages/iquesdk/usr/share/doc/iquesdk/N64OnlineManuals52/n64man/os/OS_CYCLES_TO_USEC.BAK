@@ -1,0 +1,49 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.
+  PWC- updated formatting
+-->
+<title>OS_CYCLES_TO_USEC</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<h1>OS_CYCLES_TO_USEC</h1>
+
+<h3>Function</h3>
+
+<p>OS_NSEC_TO_CYCLES, OS_USEC_TO_CYCLES,
+OS_CYCLES_TO_NSEC, OS_CYCLES_TO_USEC</p>
+
+<p><i>Converts from CPU Count register cycles to nanoseconds/microseconds</i></p>
+
+<h3>Syntax</h3>
+<p>
+<blockquote>
+    <pre>#include &lt;ultra64.h&gt;
+OSTime OS_NSEC_TO_CYCLES(u64 nsecs);
+OSTime OS_USEC_TO_CYCLES(u64 usecs);
+u64 OS_CYCLES_TO_NSEC(OSTime cycles);
+u64 OS_CYCLES_TO_USEC(OSTime cycles);</pre>
+</blockquote>
+</p>
+
+<h3>Description</h3>
+
+<p>The macros OS_NSEC_TO_CYCLES <img src="y-symbol.gif">OS_USEC_TO_CYCLES convert from nanoseconds or microseconds to CPU count register cycles. OS_CYCLES_TO_NSEC and OS_CYCLES_TO_USEC are macros that respectively convert from CPU Count register cycles to nanoseconds and microseconds.</p>
+
+<p>CPU Count register ticks are the units used by the timer services <a href="osGetTime.htm">osGetTime</a> and <a href="osSetTimer.htm">osSetTimer</a>. This counter increments at 46.875 Mhz and each counter tick represents approximately 21.33 nanoseconds regardless of whether it uses NTSC or PAL. These macros reference osTvType variables and give a proper conversion to determine the system configuration.</p>
+
+<p>Note that all types are 64-bit quantities, so formatted print functions must use the &quot;%ll&quot; size format to print these values correctly. </p>
+
+<h3>See Also</h3>
+
+<p>
+<A HREF="../os/OS_NSEC_TO_CYCLES.htm">OS_NSEC_TO_CYCLES</A>, 
+<A HREF="../os/OS_USEC_TO_CYCLES.htm">OS_USEC_TO_CYCLES</A>, 
+<A HREF="../os/OS_CYCLES_TO_NSEC.htm">OS_CYCLES_TO_NSEC</A>, and 
+<a href="osGetCount.htm">osGetCount</a></p>
+</body>
+</html>

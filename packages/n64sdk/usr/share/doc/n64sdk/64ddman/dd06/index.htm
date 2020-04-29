@@ -1,0 +1,354 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+
+<HTML>
+<HEAD>
+<TITLE>64DD Chapter 6:</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+<font face="arial" size="-1">
+<b><FONT SIZE="3">Chapter 6 Disk ID</b></font>
+<hr>
+The ID is the information used to identify a disk.  In the 64DD, each disk is assigned a unique 32-byte ID for identification of individual disks. 
+
+<P>
+The ID value is determined at the factory production stage, based on master data used in production.  The following structures are used for storing ID numbers with LeoReadDiskID().
+<P>
+The following table summarizes the structure.
+</P>
+<TABLE border="1" cellspacing="1" cellpadding="2">
+  <TR>
+    <TD><font face="arial" size="-1">
+
+    <P>
+<B>Offset</B>
+    </P>
+</TD>
+    <TD><font face="arial" size="-1">
+
+    <P>
+<B>Contents</B>
+    </P>
+</TD>
+    <TD><font face="arial" size="-1">
+
+    <P>
+<B>Data Format</B>
+    </P>
+</TD>
+    <TD><font face="arial" size="-1">
+
+    <P>
+<B>Comments</B>
+    </P>
+</TD>
+    <TD><font face="arial" size="-1">
+
+    <P>
+<B><font face="arial" size="-1">
+Examples</B>
+    </P>
+</TD></TR>
+  <TR>
+    <TD><font face="arial" size="-1">
+
+    <P>
++0~+3
+    </P>
+</TD>
+    <TD><font face="arial" size="-1">
+
+    <P>
+initial code
+    </P>
+</TD>
+    <TD><font face="arial" size="-1">
+
+    <P>
+ASCII
+    </P>
+</TD>
+    <TD><font face="arial" size="-1">
+
+    <P>
+Complies with rules for registration data in mask ROM. 
+    </P>
+</TD>
+    <TD><font face="arial" size="-1">
+
+    <P>
+DMPJ
+    </P>
+</TD></TR>
+  <TR>
+    <TD><font face="arial" size="-1">
+
+    <P>
++4
+    </P>
+</TD>
+    <TD><font face="arial" size="-1">
+
+    <P>
+game version
+    </P>
+</TD>
+    <TD><font face="arial" size="-1">
+
+    <P>
+BCD
+    </P>
+</TD>
+    <TD><font face="arial" size="-1">
+
+    <P>
+Writes the version at the time of game production.
+    </P>
+00, 01, 02, 03, ...</TD>
+    <TD><font face="arial" size="-1">
+
+    <P>
+00
+    </P>
+</TD></TR>
+  <TR>
+    <TD><font face="arial" size="-1">
+
+    <P>
++5
+    </P>
+</TD>
+    <TD><font face="arial" size="-1">
+
+    <P>
+disk number
+    </P>
+</TD>
+    <TD><font face="arial" size="-1">
+
+    <P>
+BCD
+    </P>
+</TD>
+    <TD><font face="arial" size="-1">
+
+    <P>
+Writes which disk is being used for games that use multiple disks.
+    </P>
+00, 01, 02, 03, ...</TD>
+    <TD><font face="arial" size="-1">
+
+    <P>
+00
+    </P>
+</TD></TR>
+  <TR>
+    <TD><font face="arial" size="-1">
+
+    <P>
++6
+    </P>
+</TD>
+    <TD><font face="arial" size="-1">
+
+    <P>
+RAM use
+    </P>
+</TD>
+    <TD><font face="arial" size="-1">
+
+    <P>
+Binary
+    </P>
+</TD>
+    <TD><font face="arial" size="-1">
+
+    <P>
+Used to identify the RAM area used.
+    </P>
+0: Do not use the specific format indicated below.
+    <P>
+1: Use the file system recommended by Nintendo.
+    </P>
+</TD>
+    <TD><font face="arial" size="-1">
+
+    <P>
+00
+    </P>
+</TD></TR>
+  <TR>
+    <TD><font face="arial" size="-1">
+
+    <P>+7</P>
+</TD>
+    <TD><font face="arial" size="-1">
+
+    <P>
+disk use
+    </P>
+</TD>
+    <TD><font face="arial" size="-1">
+
+    <P>
+BCD
+    </P>
+</TD>
+    <TD><font face="arial" size="-1">
+
+    <P>
+Used to identify the disk used.
+    </P>
+0:game disk</TD>
+    <TD><font face="arial" size="-1">
+
+    <P>
+00
+    </P>
+</TD></TR>
+  <TR>
+    <TD><font face="arial" size="-1">
+
+    <P>
++8~+15
+    </P>
+</TD>
+    <TD><font face="arial" size="-1">
+
+    <P>
+factory line number
+    </P>
+</TD>
+    <TD><font face="arial" size="-1">
+
+    <P>
+BCD
+    </P>
+</TD>
+    <TD><font face="arial" size="-1">
+
+    <P>
+Contains the line number at the factory where the disk was produced.
+    </P>
+</TD>
+    <TD><font face="arial" size="-1">
+
+    <P>
+*1
+    </P>
+</TD></TR>
+  <TR>
+    <TD><font face="arial" size="-1">
+
+    <P>
++16~+23
+    </P>
+</TD>
+    <TD><font face="arial" size="-1">
+
+    <P>
+production time
+    </P>
+</TD>
+    <TD><font face="arial" size="-1">
+
+    <P>
+BCD
+    </P>
+</TD>
+    <TD><font face="arial" size="-1">
+
+    <P>
+Contains the time of production.
+    </P>
+</TD>
+    <TD><font face="arial" size="-1">
+
+    <P>
+*1
+    </P>
+</TD></TR>
+  <TR>
+    <TD><font face="arial" size="-1">
+
+    <P>
++24~+25
+    </P>
+</TD>
+    <TD><font face="arial" size="-1">
+
+    <P>
+company code
+    </P>
+</TD>
+    <TD><font face="arial" size="-1">
+
+    <P>
+ASCII
+    </P>
+</TD>
+    <TD><font face="arial" size="-1">
+
+    <P>
+Contains a code for identifying the company that created the game.  The same value as the company code used for the Controller Pak. 
+    </P>
+</TD>
+    <TD><font face="arial" size="-1">
+
+    <P>
+01
+    </P>
+</TD></TR>
+  <TR>
+    <TD><font face="arial" size="-1">
+
+    <P>
++26~+31
+    </P>
+</TD>
+    <TD><font face="arial" size="-1">
+
+    <P>
+free area
+    </P>
+</TD>
+    <TD><font face="arial" size="-1">
+
+    <P>
+          --     
+    </P>
+</TD>
+    <TD><font face="arial" size="-1">
+
+    <P>
+Can be used freely by the application.
+    </P>
+</TD>
+    <TD><font face="arial" size="-1">
+
+    <P>
+*2
+    </P>
+</TD></TR>
+</TABLE>
+
+<P>
+*1: For this item, a value is automatically determined for each disk at the time of disk production at the factory.
+</P>
+<P>
+*2: Please refer to <a href="../dd06/06-02.htm">"Section 6.2, Free Area."</a>  
+</P>
+<P>
+-I option is used to write ID using the PARTNER.  See  <a href="../dd0d/index.htm">"APPENDIX D, loewrite Command Description"</a>  for details.
+<P>
+To specify ID in the master data, the config file to which n64mdisk (tool to create master data) refers is used.  See the <a href="../dd05/index.htm">"Chapter 5, The Development Process,"</a> for details.  
+</P>
+<HR>
+<P><a name="index"></a>
+<A href="06-01.htm"> 6.1 ID Usage</A>
+</P>
+<P>
+<A href="06-02.htm"> 6.2 Free Area</A>
+</P>
+</BODY>
+</HTML>

@@ -1,0 +1,139 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits
+MAP- added links, updated format>
+<TITLE>osVoiceInit</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+<font style="font-size: 12pt"><b>osVoiceInit</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p><i>Initializes Voice Recognition System control structure and hardware</p></i>
+</P>
+<P>
+<h3>Syntax</h3>
+</P>
+<P>
+#include &lt;ultra64.h&gt;     /* <A HREF="../../header/ultra64.htm">ultra64.h</A> */
+</P>
+<P>
+s32 osVoiceInit(OSMesgQueue *siMessegeQ, OSVoiceHandle *hd, int channel);
+<BR>
+</P>
+<P>
+<h3>Description</h3>
+</P>
+<P>
+The <tt>osVoiceInit</tt> function initializes the Voice Recognition System.  It initializes both the hardware and the Voice Recognition System control structure.  Consequently, there is no need to initialize the hd structure on the application side.  Call this function first when using the Voice Recognition System.<BR>
+</P>
+<P>
+It is recommended that you check to see which device is connected to a particular port prior to initialization. Standard controllers and  peripheral devices other than the Voice Recognition System may be inserted into the controller ports as well.  This check can be accomplished with the <A href="osContStartQuery.htm">osContStartQuery</A> function and the <A href="osContGetQuery.htm">osContGetQuery</A> function.
+The Voice Recognition System is connected if the value of the member variable "errno" of the OSContStatus structure is 0 (zero), and if the AND (logical product) of the value for type and CONT_TYPE_MASK is CONT_TYPE_VOICE. <BR>
+</P>
+<P>
+siMessageQ is the message queue initialized in connection with OS_EVENT_SI.  Please refer to the <A href="osSetEventMesg.htm">osSetEventMesg</A> function in the <i>"N64 Function Reference Manual,"</i> regarding how to establish this connection.  
+channel is the channel number of the controller port to which the Voice Recognition Unit is connected.  It is a value 0-3. <BR>
+</P>
+<P>
+The Voice Recognition System control structure OSVoiceHandle is configured as follows. 
+</P>
+<PRE>
+typedef struct {
+  OSMesgQueue   *__mq;          /* SI message queue */
+  int           __channel;      /* Controller port No. */
+  s32           __mode;         /* Used within the OS */
+  u8            cmd_status;     /* Command status */
+} OSVoiceHandle;
+</PRE>
+<P>
+Do not change the values of these various members in the application.  In addition, the only member variable which is referred to and which has any meaning is <tt>cmd_status</tt>. The member variables other than <tt>cmd_status</tt> are used by the system and therefore do not need to be referred to by the application. <BR>
+</P>
+<P>
+The member variable <tt>cmd_status</tt> indicates the voice recognition command status.  When the voice recognition command status is checked within the <a href="osVoiceGetReadData.htm">osVoiceGetReadData</a> function's voice recognition library, that value is kept in <tt>cmd_status</tt>.  The following values can be handled by <tt>cmd_status</tt>.
+</P>
+<CENTER>
+<TABLE border="1">
+  <TR>
+    <TD align="center">Definition Name</TD>
+    <TD align="center">Value</TD>
+    <TD align="center">Description</TD></TR>
+  <TR>
+    <TD>VOICE_STATUS_READY</TD>
+    <TD align="right">0</TD>
+    <TD>Stop/End</TD></TR>
+  <TR>
+    <TD>VOICE_STATUS_START</TD>
+    <TD align="right">1</TD>
+    <TD>Voice Undetected (no voice input)</TD></TR>
+  <TR>
+    <TD>VOICE_STATUS_CANCEL</TD>
+    <TD align="right">3</TD>
+    <TD>Cancel (cancel extraneous noise)</TD></TR>
+  <TR>
+    <TD>VOICE_STATUS_BUSY</TD>
+    <TD align="right">5</TD>
+    <TD>Detected/Detecting (voice being input, recognition processing under way)</TD></TR>
+  <TR>
+    <TD>VOICE_STATUS_END</TD>
+    <TD align="right">7</TD>
+    <TD>End recognition processing (enable execution of Get Recognition Results command)</TD></TR>
+</TABLE>
+
+</CENTER>
+<P>
+<BR>
+</P>
+<P>
+The returned value is an error code.  A 0 (zero) is returned when processing ends normally.  If an error occurs, this function has the following error codes. <BR>
+</P>
+<P>
+<B>CONT_ERR_NO_CONTROLLER</B>
+</P>
+<BLOCKQUOTE>
+<font style="font-size:10pt">Nothing is connected to the controller port.</font> <BR>
+</BLOCKQUOTE>
+<P>
+<B>CONT_ERR_DEVICE</B>
+</P>
+<BLOCKQUOTE>
+<font style="font-size:10pt">Something other than the Voice Recognition System is connected to the controller port.</font>
+</BLOCKQUOTE>
+<P>
+<B>CONT_ERR_VOICE_NO_RESPONSE</B>
+</P>
+<BLOCKQUOTE>
+<font style="font-size:10pt">There was no response from the Voice Recognition System.  There may be a problem with the hardware. </font>
+</BLOCKQUOTE>
+<P>
+<B>CONT_ERR_CONTRFAIL</B>
+</P>
+<BLOCKQUOTE>
+<font style="font-size:10pt">There was a data transmission failure.  There is a problem in the Voice Recognition System connection.</font> 
+</BLOCKQUOTE>
+<P>
+<B>CONT_ERR_INVALID</B>
+</P>
+<BLOCKQUOTE>
+<font style="font-size:10pt">There is an error in the function call method or in the argument.  This error will not occur if the function is being used correctly.</font>
+
+</BLOCKQUOTE>
+<P>
+<h3>See also</h3>
+</P>
+<P>
+<A href="osContInit.htm">osContInit</A>, <A href="osContStartQuery.htm">osContStartQuery</A>,
+<A href="osContGetQuery.htm">osContGetQuery</A>, <A href="osVoiceCheckWord.htm">osVoiceCheckWord</A>,
+<A href="osVoiceClearDictionary.htm">osVoiceClearDictionary</A>, <A href="osVoiceControlGain.htm">osVoiceControlGain</A>,
+<A href="osVoiceCountSyllables.htm">osVoiceCountSyllables</A>, <A href="osVoiceGetReadData.htm">osVoiceGetReadData</A>,
+<A href="osVoiceInit.htm">osVoiceInit</A>, <A href="osVoiceMaskDictionary.htm">osVoiceMaskDictionary</A>,
+<A href="osVoiceSetWord.htm">osVoiceSetWord</A>, <A href="osVoiceStartReadData.htm">osVoiceStartReadData</A>, and 
+<A href="osVoiceStopReadData.htm">osVoiceStopReadData</A>
+</P>
+<h3>Revision History</h3>
+<p>1999/04/30  Changed Format</p>
+<br><br>
+
+</BODY>
+</HTML>

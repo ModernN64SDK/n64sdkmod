@@ -1,0 +1,366 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>iQue Player Debugger</title>
+   
+  <meta http-equiv="content-type"
+ content="text/html; charset=ISO-8859-1">
+</head>
+  <body>
+               
+<h2 align="center">iQue Player Debugger</h2>
+ 
+<div align="center">$Revision: 1.1 $<br>
+$Date: 2004/10/11 20:15:55 $<br>
+</div>
+  
+<h3>Contents</h3>
+ 
+<ul>
+ <a href="#Introduction">Introduction</a> <br>
+ <a href="#Usage">Using the iQue Player debugger</a> <br>
+   
+  <ul>
+   <a href="#Usage%20Preparation">Preparing a program for debugging</a> 
+ <br>
+   <a href="#Usage%20Debugging">Debugging your program</a>   <br>
+   <a href="#Usage%20GUI">Graphical Front Ends to GDB</a>   <br>
+   
+  </ul>
+ <a href="#Limitations">Limitations and Guidelines</a> <br>
+ <a href="#Issues">Known Issues</a> <br>
+ 
+</ul>
+  <a name="Introduction"></a> 
+<h3>Introduction</h3>
+ 
+<p>The iQue Software Development Kit provides a debugging environment for
+the iQue Player based on the <a
+ href="http://www.gnu.org/software/gdb/gdb.html">GNU Debugger (GDB)</a>.
+ GDB is a command-line based source level debugger, but there are many <a
+ href="#Usage%20GUI">graphical user interfaces</a> for it. The iQue Player
+debugging environment is composed of two parts: the iQue Player GDB, <em>ique_gdb</em>,
+running on the host machine and a GDB stub running on the iQue Player.  The
+GDB stub is part of the iQue Player debug library, <b>libultra_d</b>, and
+must be included in the program by the developer.  The GDB stub has to be
+running on the iQue Player before the program can be debugged.  </p>
+<p>The user of the debugger interacts with GDB, and GDB will communicate
+the requests to the GDB stub on the iQue Player.  In order for the two components
+to communicate, there is a third helper tool, <i>mux</i>, that takes the
+input from GDB via a TCP socket and sends the information using RDB over
+USB to the iQue Player.  Note that because GDB and <i>mux</i> communicate
+via TCP, it is not necessary for GDB and <i>mux</i> to be on the same machine. 
+ </p>
+<p>The iQue Player debugger supports debugging the main CPU (i.e. the R4300
+processor) of the iQue Player.  It allows the user to set breakpoints, step,
+display registers, variables, and thread information for the main CPU.  The
+debugger does not support debugging of the RCP (the graphics co-processor).
+   <a name="Usage"></a>        </p>
+<h3>Using the iQue Player debugger</h3>
+  
+<p>The iQue debugger is part of the iQue Software Development Kit.  Please
+see the iQue SDK documentation for the system requirements and how to install
+the iQue SDK.  The iQue debugger has been tested on RedHat Linux 9.0.
+After installing the iQue SDK, the iQue
+Player GDB program <i>ique_gdb</i> should be located in <i>$ROOT/usr/sbin</i>.
+ The following two sections describe how to prepare an iQue player program
+for debugging and how to use <em>ique_gdb</em> to debug the program.  <a
+ name="Usage Preparation"></a> </p>
+<h4>Preparing a program for debugging</h4>
+   
+<ul>
+ <li>Create and start the GDB stub threads. 
+    <p>To include the GDB stub in the program, the programmer should call
+    <code>gdbInit()</code> to initialize and start the GDB stub threads.
+     <br>
+    <br>
+   <b>GDB example</b>:   <code>
+    <pre>    gdbInit();</pre>
+    </code>   The call to <code>gdbInit</code> effectively starts a thread
+with <code>gdbMain</code> as its entry point, a priority of <code>OS_PRIORITY_GDB</code>
+and a thread ID of <code>OS_TID_GDBMAIN</code>.  The following code fragment
+shows what <code>gdbInit()</code> does:    <code>
+    <pre>    static OSThread gdbThread;<br>    static u64      gdbStack[GDB_STACKSIZE/sizeof(u64)] __attribute__ ((aligned (8)));<br>    osCreateThread(&amp;gdbThread, OS_TID_GDBMAIN, gdbMain, (void *)0,<br>                   (void *)(gdbStack + GDB_STACKSIZE/sizeof(u64)),(OSPri) OS_PRIORITY_GDB );<br>    osStartThread(&amp;gdbThread);</pre>
+    </code>    For backward compatibility with a program written to be debugged
+using RMON, creating a thread that calls <code>rmonMain</code> will create
+threads for the GDB stub instead.      <br>
+    <br>
+   <b>RMON example</b> (deprecated):   <code>
+    <pre>    static OSThread rmonThread;<br>    static u64      rmonStack[RMON_STACKSIZE/sizeof(u64)] __attribute__ ((aligned (8)));<br>    osCreateThread(&amp;rmonThread, OS_TID_RMONMAIN, rmonMain, (void *)0,<br>                   (void *)(rmonStack + RMON_STACKSIZE/8), (OSPri) OS_PRIORITY_RMON );<br>    osStartThread(&amp;rmonThread);</pre>
+    </code>   </p>
+  </li>
+  <li>To distinguish between threads, give each thread an unique ID.  This
+is not enforced by the OS, but unless every thread has an unique ID, it will
+be difficult to determine which thread is which.</li>
+  <br>
+  <li>Restrict user thread priorities to the range 1 to 127 (OS_PRIORITY_APPMAX),
+with 127 being the highest priority.  The idle thread must have a priority
+of 0 (OS_PRIORITY_IDLE).  This is not enforced by the OS, but is necessary
+for the debugger to function properly.  The debugger determines which threads
+are user threads based on the priority, and if the thread priorities are
+not set appropriately, the debugger may not function and may cause the system
+to hang. 
+    <p>Some possible scenarios are:   </p>
+    <ul>
+     <li>If the idle thread priority is not set to 0, the debugger will not
+be able to identify which thread is the idle thread.  If the debugger suspends
+the idle thread, the system will lock up.  To prevent this from happening,
+the debugger will not suspend any user thread, but may not function correctly.</li>
+     <li>If the user thread priority is too high, the debugger and USB threads
+may never run.  It will be impossible to debug the program in that case.</li>
+   
+    </ul>
+ </li>
+  <br>
+  <li>Compile a debug version and link with the libultra debugging library</li>
+   
+  <ul>
+     <li>Use the <b>-g</b> option with <i>gcc</i> to compile a debug version
+of the program</li>
+     <li>Link with <b>libultra_d</b></li>
+   
+  </ul>
+ 
+</ul>
+   <a name="Usage Debugging"></a> 
+<h4>Debugging your program</h4>
+      Connect the USB cable between your linux host and the iQue player and
+follow the steps below to start a debugging session with GDB: 
+<ul>
+ <li>Start <i>mux</i> on the host machine so that it is ready for GDB to
+connect to it via TCP.  By default, <i>mux</i> will listen on TCP port 8088
+for GDB debugger messages.  You can select a different port by using the
+    <code>--debugport</code> option.</li>
+ <li>Start the program to be debugged on the iQue Player.</li>
+ <li>Start the GDB debugger on the host machine (or another machine that
+has network connectivity to the host machine):   
+    <ul>
+     <li><code>      ique_gdb &lt;elf file&gt; <br>
+     </code></li>
+    
+    </ul>
+    See <a href="#Usage%20GUI">Graphical Front Ends to GDB</a> for how to
+run <em>ique_gdb</em> with a GUI. </li>
+ <li>Connect to the iQue Player from GDB via <i>mux</i>.<br>
+     At the GDB prompt type <code>target remote &lt;machine name&gt;:&lt;port&gt;</code>. 
+    For instance, if <i>mux</i> and GDB are running on the same machine with
+the default port:     
+    <ul>
+       <li>target remote localhost:8088     </li>
+    </ul>
+ </li>
+ 
+</ul>
+  Once GDB has attached to the target, all user threads will be stopped and
+the program can now be debugged.  See the <a
+ href="http://sources.redhat.com/gdb/current/onlinedocs/gdb_toc.html"> GDB
+User Guide</a> for more information on how to use GDB.  When you are done
+debugging, use the "<code>detach</code>" command to stop the GDB debugging
+session and resume execution of the program.  If you want to leave the application
+stopped so another debugger can connect to it, use the "<code>disconnect</code>"
+command to disconnect from the iQue player.  Only one debugger can connect
+to the iQue player at a time, so make sure that you've disconnected or detached
+from the iQue player when you are finished debugging.  <a
+ name="Usage GUI"></a> 
+<h4>Graphical Front Ends to GDB</h4>
+        For a visual debugging environment, there are several applications
+that can supply a graphical front-end to GDB:   
+<ul>
+      <li><a href="http://www.gnu.org/software/ddd"><b>DDD</b></a> (Data
+Display Debugger)<br>
+         <b>Note:</b> DDD does not display all the thread information that
+the iQue Player provides.           Use the command <code>"info threads"</code>
+in the gdb console window to get the full information.         
+    <pre>Usage:   <code>ddd --debugger &lt;gdb&gt; &lt;elf file&gt;</code></pre>
+         
+    <pre>Example: <code>ddd --debugger "$ROOT/usr/sbin/ique_gdb" &lt;elf file&gt;</code></pre>
+      </li>
+      <li><a href="http://libre.act-europe.fr/gvd"><b>GVD</b></a> (GNU Visual
+Debugger)<br>
+         GVD is integrated into <a
+ href="http://libre.act-europe.fr/gps/">GPS</a>         (GNAT Programming
+System).<br>
+             <b>Note:</b> Do not use the code disassembly feature in GVD.
+ That does not work well with           the iQue Player.         
+    <pre>Usage:   <code>gps --debugger=&lt;gdb&gt; --debug=&lt;elf file&gt;</code></pre>
+         
+    <pre>Example: <code>gps --debugger="$ROOT/usr/sbin/ique_gdb" --debug=&lt;elf file&gt;</code></pre>
+      </li>
+    
+</ul>
+  <a name="Limitations"></a> 
+<h3>Limitations and Guidelines</h3>
+ 
+<p>Because the iQue Player debugger runs in the same memory space as the
+user program and relies on RDB/USB for communication with GDB, the iQue Player
+debugger has several limitations in how it can be used.  These limitations
+imply that the user must be very careful in how the debugger is used.  </p>
+<p><b>When using the debugger, the following should be avoided:</b> </p>
+<ul>
+ <li>Never try to stop or step into the GDB stub threads or the USB threads.
+ If you attempt to do this, and one of the GDB stub thread or USB thread
+hits a break, then the debugger will cease to function.</li>
+  
+  <p>A summary of the system threads that you should not interfere with is
+given below: 
+  <table align="center" cellspacing="3" cellpadding="3" border="1">
+ <tbody>
+      <tr>
+        <th>Thread</th>
+     <th>Entry function</th>
+     <th>Thread ID</th>
+     <th>Thread Priority</th>
+ </tr>
+ <tr>
+        <td rowspan="2">USB threads</td>
+     <td><code>__osBbUsbMgrProc</code></td>
+     <td><code>3141</code></td>
+     <td><code>230</code></td>
+ </tr>
+ <tr>
+     <td><code>__osBbUsbMgrProc</code></td>
+     <td><code>3142</code></td>
+     <td><code>232</code></td>
+ </tr>
+ <tr>
+        <td rowspan="2">GDB threads</td>
+     <td><code>gdbMain</code></td>
+     <td><code>3201</code></td>
+     <td><code>250</code></td>
+ </tr>
+ <tr>
+     <td><code>__gdbIOHandler</code></td>
+     <td><code>3202</code></td>
+     <td><code>255</code></td>
+ </tr>
+ <tr>
+        <td rowspan="1">Profile thread</td>
+     <td><code>__osProfileIO</code></td>
+     <td><code>3251</code></td>
+     <td><code>129</code></td>
+ </tr>
+ <tr>
+        <td rowspan="2">PI Manager</td>
+     <td><code>__osDevMgrMain</code></td>
+     <td><code>3301</code></td>
+     <td><code>150</code></td>
+ </tr>
+ <tr>
+     <td><code>ramromMain</code></td>
+     <td><code>3302</code></td>
+     <td><code>149</code></td>
+ </tr>
+ <tr>
+        <td rowspan="1">VI Manager</td>
+     <td><code>viMgrMain</code></td>
+     <td><code>3401</code></td>
+     <td><code>254</code></td>
+ </tr>
+ 
+    </tbody>
+  </table>
+                 <br>
+ </p>
+  <li>Never try to stop, step into, or set breakpoints in the idle thread.
+ If the idle thread stops, it will cause the entire system to lock up.</li>
+ <br>
+ <li>Never try to put a breakpoint in or step into an operating system function.
+ Because the system functions are shared by GDB stub and the USB thread,
+placing a breakpoint or stepping into these functions may also cause the
+GDB stub thread or USB thread to stop, thus disabling the debugger.</li>
+ <br>
+ <li>Do not use watchpoints in GDB.  GDB uses software watchpoints that will
+automatically set breakpoints in the running program and will very likely
+set breakpoints in the GDB stub and USB threads, causing the debugger to
+stop working.</li>
+ <br>
+ <li>Do not use <code>osSetEventMesg</code> to register message queues for
+    <code>OS_EVENT_FAULT</code> or <code>OS_EVENT_CPU_BREAK</code>      events
+if you want to use the GDB debugger.  Since only one message queue may be
+associated with one event, the GDB stub will defer      to the user program
+if the user program attempts to register messages queues for these events.
+ This means that the GDB stub will not     get notified if there is a CPU
+fault or a breakpoint.  If the GDB stub does not get notified of breakpoints,
+you cannot use GDB     to set breakpoints and to step through your problem.
+ If the GDB stub does not get notified of CPU faults, then GDB cannot inform 
+    you when an CPU fault occurs.</li>
+ 
+</ul>
+  
+<p><b>The debugger will not be able to debug all programs or problems.</b> 
+</p>
+<ul>
+ <li>It cannot be used to debug problems with the RDB or USB since it relies
+on these two components to function.</li>
+ <br>
+ <li>It is of limited use when debugging application startup.  Since the
+GDB stub must be running before the program can be debugged, it is impossible
+to debug anything that happens before that.   
+    <p> To enable as much debugging of the start-up code as possible, the
+developer should minimize the boot procedure and have the thread that is
+started by the boot function do the following (in order):     </p>
+    <ul>
+       <li>Call <code>gdbInit()</code>. This will create and start the GDB
+stub threads and allow the program to be debugged.</li>
+       <li>Create but do not start the rest of the threads in the program.
+ This will allow the program to start up in a stopped state.  The developer
+can then attach to the program using GDB and start up the threads within
+the debugger (by using the continue command).  This gives the developer a
+chance to set breakpoints at the beginning of the thread and to watch the
+startup of the thread.</li>
+       <li>Lower the priority of the thread to 0 and have it become the idle
+thread.</li>
+    
+    </ul>
+ </li>
+ <br>
+ <li>Because the debugger changes the timing of the application and the scheduling
+of the threads, the debugger is also of limited use when debugging multithreaded
+problems (i.e. deadlock, race conditions, etc).</li>
+ <br>
+ <li>Since the software program and the debug support are all in the same
+memory space, it is possible for a bug (i.e. buffer overflow) in the software
+program to stomp over the GDB stub. Once that happens, the debugger will
+not be of use any longer.</li>
+ 
+</ul>
+  
+<p><b>The following are not supported by the iQue Player debugger:</b> </p>
+<ul>
+   <li>Debugging the Reality Coprocessor.</li>
+   <li>Watchpoints and tracepoints.</li>
+   <li>Sending signals to the iQue Player.</li>
+   <li>Scheduler locking.</li>
+</ul>
+  <a name="Issues"></a> 
+<h3>Known Issues</h3>
+ 
+<ol>
+    <li>When attaching to the iQue player, <em>ique_gdb</em> gives following warning:
+        <blockquote><code>
+        warning: shared library handler failed to enable breakpoint
+        </code></blockquote>
+        This message appears to be harmless and should not interfere with 
+        the functionality of the debugger.</li>
+    <li>If the PC is invalid (e.g. by trying to jump to an invalid function
+pointer), then        the stack backtrace is unavailable.       <em>ique_gdb</em>
+is based on GDB 6.0 and there appears to be a problem with GDB 6.0 frames
+support for the MIPS processor.  Once GDB 6.1 becomes available, we will
+check whether the new version fixes the problem.</li>
+    <br>
+    <li>The iQue Player can get into a state where it stops communicating
+with the <em>ique_gdb</em> program.  If you encounter this, restart the application,
+    <em>ique_gdb</em>, <em>mux</em> and try again.</li>
+    <br>
+    <li>If more than one GDB tries to connect to the iQue player, the second
+GDB will just hang.  Only one GDB can connect to the iQue Player at a time.
+ Do not try to use multiple GDBs at the same time.</li>
+    <br>
+    <li>If multiple threads are faulted or stopped due to different causes,
+only one cause can be reported back to GDB.  The GDB Remote Serial Protocol
+only allows for one signal to be sent to GDB when the program stops.</li>
+ 
+</ol>
+  <br>
+</body>
+</html>

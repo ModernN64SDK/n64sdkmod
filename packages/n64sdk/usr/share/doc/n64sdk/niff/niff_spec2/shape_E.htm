@@ -1,0 +1,132 @@
+<HTML>
+<HEAD>
+<TITLE>ShapeNode</TITLE>
+</HEAD>
+<BODY LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff">
+
+<font face="arial" size="-1">
+<b><font size="3">7. ShapeNode</font></b>
+<HR>
+
+<P>
+<b>(1) ShapeNode</b>
+<p>
+<blockquote>
+
+<table border="1" width="600">
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 shape_type</font>
+</td>
+<td>
+<font face="arial" size="-1">Specifies the Shape type.  As of this time, the following flags are defined:
+
+<font face="courier" size="2">
+<pre>
+<b>
+SHAPE_TYPE_CLEAR&#9;0x00000000
+SHAPE_TYPE_AA&#9;&#9;0x00000001
+SHAPE_TYPE_RA&#9;&#9;0x00000002
+SHAPE_TYPE_ZB&#9;&#9;0x00000004
+SHAPE_TYPE_CULL_BACK&#9;0x00000010
+SHAPE_TYPE_CULL_FRONT&#9;0x00000020
+SHAPE_TYPE_CULL_BOTH&#9;0x00000030
+</b>
+</pre>
+</font>
+
+SHAPE_TYPE_CLEAR clears the shape type.<p>
+SHAPE_TYPE_AA performs anti-aliasing.<p>
+SHAPE_TYPE_RA performs reduced aliasing.<p>
+SHAPE_TYPE_ZB performs Z buffering.<p>
+SHAPE_TYPE_CULL_BACK performs back face culling.<p>
+SHAPE_TYPE_CULL_FRONT performs front face culling.<p>
+SHAPE_TYPE_CULL_BOTH always performs culling.<p>
+The SHAPE_TYPE_AA flag and the SHAPE_TYPE_RA flag cannot be specified together at the same time.  Further, you only specify one of the SHAPE_TYPE_CULL_* flags.<p>
+If you want to specify the shape type for anti-aliasing, Z-buffering and back face culling, you would set the flags as shown below:<p>
+
+<font face="courier" size="2">
+<pre>
+<b>
+SHAPE_TYPE_AA | SHAPE_TYPE_ZB | SHAPE_TYPE_CULL_BACK
+</b>
+</pre>
+</font>
+
+The following flag has been added since NIFF2.0:
+
+<font face="courier" size="2">
+<pre>
+<b>
+SHAPE_TYPE_USE_VTX_ALPHA_FOR_FOG&#9;0x00000100
+</b>
+</pre>
+</font>
+
+Set this flag when you will be using vertex alpha with Fog.  Normally, when you use Fog, the vertex alpha is not output when you convert from NIFF to N64.  But if you set this flag, the vertex alpha will be forcibly output even when you use Fog.</font>
+</td>
+</tr>
+
+
+
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 kind_of_node_for_geometry</font>
+</td>
+<td>
+<font face="arial" size="-1">NIFF2.0 makes it possible to link three kinds of nodes with shape_tri_link.  These are the TriGroup node, the Envelope node, and the ClusterShape node.<br>
+By setting any one of the following tags in the data, shape_tri_link will indicate the index number from the pertinent list.
+
+<font face="courier" size="2">
+<pre>
+<b>
+TAG_TRI_GROUP           0x00080100
+TAG_ENVELOPE            0x00220100
+TAG_CLUSTER_SHAPE       0x00280100
+</b>
+</pre>
+</font>
+
+For the TAG_TRI_GROUP tag, shape_tri_link describes the TriGroup index number.<br>
+For the TAG_ENVELOPE tag, shape_tri_link describes the Envelope index number.<br>
+For the TAG_CLUSTER_SHAPE tag, shape_tri_link describes the ClusterShape index number.</font>
+</td>
+</tr>
+
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 external_mat_file_name_index</font>
+</td>
+<td>
+<font face="arial" size="-1">When the Mat node references an external file, that file name is described with an ExternalNameList index number.<p>
+Please do not include the directory name etc. when describing the file name.<p>
+In this case, specify shape_mat_link = 0xffffffff.<p>
+If an external file is not referenced, please describe with 0xffffffff.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 external_mat_name_index</font>
+</td>
+<td>
+<font face="arial" size="-1">When the Mat node references an external file, the Mat name name is described with an ExternalNameList index number.<p>
+In this case, specify shape_mat_link = 0xffffffff.<p>
+If an external file is not referenced, please describe with 0xffffffff.</font>
+</td>
+</tr>
+</table>
+
+<p>
+<a href="./shape_C.htm">Go to the data chunk</a>
+<p>
+
+</blockquote>
+
+<hr>
+
+</body>
+</html>

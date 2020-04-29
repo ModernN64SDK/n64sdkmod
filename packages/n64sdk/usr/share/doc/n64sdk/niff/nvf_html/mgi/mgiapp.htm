@@ -1,0 +1,416 @@
+<HTML>
+<HEAD>
+<TITLE>MgiApp</TITLE>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../mobile/allman.css">
+<!-- Editor's Notes: 9/21/1999 Ron Daring -->
+</HEAD>
+  <BODY bgcolor="#FFFFFF">
+<h1>Function</h1>
+<hr>
+<a name="mgiAppInit">
+</A>
+<h1><a name="mgiAppInit">mgiAppInit</A></h1>
+<a name="mgiAppInit">
+</A>
+<p><a name="mgiAppInit"><i>Initialize the application</i></A></p>
+<a name="mgiAppInit">
+
+</A>
+<H2><a name="mgiAppInit">Syntax</A></H2>
+<a name="mgiAppInit">
+</A>
+<blockquote><a name="mgiAppInit">
+    </A>
+<pre><a name="mgiAppInit">#include &lt;mgi/App.h&gt;
+void mgiAppInit(   const u32 frame_latency,
+                   const u32 gfx_length,
+                   const u32 frame_resource_size,
+                   const u32 instance_queue_size,
+                   const u32 max_modules,
+                   const u32 transform_buffer_size,
+                   void *user_data )
+</A></pre>
+<a name="mgiAppInit">
+</A></blockquote>
+<a name="mgiAppInit">
+</A>
+<H2><a name="mgiAppInit">Arguments</A></H2>
+<a name="mgiAppInit">
+</A>
+<dl>
+    <dt><a name="mgiAppInit"><strong><TT>frame_latency</TT></strong></A></dt>
+    <dd><a name="mgiAppInit"><TT>frame_latency</TT> is determined by NuSystem.<br>
+    Double buffer: <TT>frame_latency</TT> = 2<br>
+    Triple buffer: <TT>frame_latency</TT> = 3<br>
+    </A></dd>
+    <dt><a name="mgiAppInit"><strong><TT>gfx_length</TT></strong></A></dt>
+    <dd><a name="mgiAppInit"><TT>gfx_length</TT> is the size of the <TT>gfx</TT> buffer, and the actual capacity of the <TT>gfx</TT> buffer is<br>
+    <TT>frame_latency * gfx_length * sizeof( Gfx )</TT>. 
+    </A></dd>
+    <dt><a name="mgiAppInit"><strong><TT>frame_resource_size</TT></strong></A></dt>
+    <dd><a name="mgiAppInit"><TT>frame_resource_size</TT> sets the frame resource capacity of the scene. <br>
+    Frame resource is the temporary storage area used for rendering each frame, and is discarded when
+    frame rendering is completed.  For example, it is suitable for recording <TT>Mtx</TT> and dynamical <TT>Vtx</TT>. 
+    </A></dd>
+    <dt><a name="mgiAppInit"><strong><TT>instance_queue_size</TT></strong></A></dt>
+    <dd><a name="mgiAppInit"><TT>instance_queue_size</TT> sets the maximum number of queues necessary during hierarchy evaluation.
+    </A></dd>
+    <dt><a name="mgiAppInit"><strong><TT>max_modules</TT></strong></A></dt>
+    <dd><a name="mgiAppInit"><TT>max_modules</TT> sets the maximum number of modules used by the application.
+    </A></dd>
+    <dt><a name="mgiAppInit"><strong><TT>transform_buffer_size</TT></strong></A></dt>
+    <dd><a name="mgiAppInit"><TT>transform_buffer_size</TT> sets the maximum capacity of the coordinate conversion buffer needed during 
+    hierarchy evaluation. 
+    </A></dd>
+</dl>
+<a name="mgiAppInit">
+
+</A>
+<H2><a name="mgiAppInit">Description</A></H2>
+<a name="mgiAppInit">
+
+</A>
+<hr>
+
+<a name="mgiAppMainLoop">
+</A>
+<h1><a name="mgiAppMainLoop">mgiAppMainLoop</A></h1>
+<a name="mgiAppMainLoop">
+</A>
+<p><a name="mgiAppMainLoop"><i>Enters the main loop.</i></A></p>
+<a name="mgiAppMainLoop">
+
+</A>
+<H3><a name="mgiAppMainLoop">Syntax</A></H3>
+<a name="mgiAppMainLoop">
+</A>
+<blockquote><a name="mgiAppMainLoop">
+    </A>
+<pre><a name="mgiAppMainLoop">#include &lt;mgi/App.h&gt;
+void mgiAppMainLoop( void )</A></pre>
+<a name="mgiAppMainLoop">
+</A></blockquote>
+<a name="mgiAppMainLoop">
+</A>
+<H3><a name="mgiAppMainLoop">Description</A></H3>
+<a name="mgiAppMainLoop">
+Enters the main loop.  This loop does not end. 
+
+</A>
+<hr>
+
+<a name="mgiAppAddRenderJob">
+</A>
+<h1><a name="mgiAppAddRenderJob">mgiAppAddRenderJob</A></h1>
+<a name="mgiAppAddRenderJob">
+</A>
+<p><a name="mgiAppAddRenderJob"><i>Adds a render job.</i></A></p>
+<a name="mgiAppAddRenderJob">
+</A>
+<H3><a name="mgiAppAddRenderJob">Syntax</A></H3>
+<a name="mgiAppAddRenderJob">
+</A>
+<blockquote><a name="mgiAppAddRenderJob">
+    </A>
+<pre><a name="mgiAppAddRenderJob">#include &lt;mgi/App.h&gt;
+void mgiAppAddRenderJob( MgiJob *job_ptr )</A></pre>
+<a name="mgiAppAddRenderJob">
+</A></blockquote>
+<a name="mgiAppAddRenderJob">
+</A>
+<H3><a name="mgiAppAddRenderJob">Description</A></H3>
+<a name="mgiAppAddRenderJob">
+  Adds a render job.<br>
+  A render job only executes the frame after rendering has been completed.<br>
+  Render jobs are executed in the order that they were added. 
+</A>
+<H3><a name="mgiAppAddRenderJob">See Also</A></H3>
+<a name="mgiAppAddRenderJob">
+</A><a href="mgijob.htm#MgiJob">MgiJob</a><a name="mgiAppAddRenderJob">
+
+</A>
+<hr>
+
+<a name="mgiAppInsertRenderJob">
+</A>
+<h1><a name="mgiAppInsertRenderJob">mgiAppInsertRenderJob</A></h1>
+<a name="mgiAppInsertRenderJob">
+</A>
+<p><a name="mgiAppInsertRenderJob"><i>Inserts a render job in front of a job which has already been added.</i></A></p>
+<a name="mgiAppInsertRenderJob">
+</A>
+<H3><a name="mgiAppInsertRenderJob">Syntax</A></H3>
+<a name="mgiAppInsertRenderJob">
+</A>
+<blockquote><a name="mgiAppInsertRenderJob">
+    </A>
+<pre><a name="mgiAppInsertRenderJob">#include &lt;mgi/App.h&gt;
+void mgiAppInsertRenderJob( MgiJob *new_job_ptr, MgiJob *job_ptr )</A></pre>
+<a name="mgiAppInsertRenderJob">
+</A></blockquote>
+<a name="mgiAppInsertRenderJob">
+</A>
+<H3><a name="mgiAppInsertRenderJob">Description</A></H3>
+<a name="mgiAppInsertRenderJob">
+  Inserts a render job in front of a job which has already been added.
+
+</A>
+<hr>
+
+<a name="mgiAppRemoveRenderJob">
+</A>
+<h1><a name="mgiAppRemoveRenderJob">mgiAppRemoveRenderJob</A></h1>
+<a name="mgiAppRemoveRenderJob">
+</A>
+<p><a name="mgiAppRemoveRenderJob"><i>Cancels a render job. </i></A></p>
+<a name="mgiAppRemoveRenderJob">
+</A>
+<H3><a name="mgiAppRemoveRenderJob">Syntax</A></H3>
+<a name="mgiAppRemoveRenderJob">
+</A>
+<blockquote><a name="mgiAppRemoveRenderJob">
+    </A>
+<pre><a name="mgiAppRemoveRenderJob">#include &lt;mgi/App.h&gt;
+void mgiAppRemoveRenderJob( MgiJob *job_ptr )</A></pre>
+<a name="mgiAppRemoveRenderJob">
+</A></blockquote>
+<a name="mgiAppRemoveRenderJob">
+</A>
+<H3><a name="mgiAppRemoveRenderJob">Description</A></H3>
+<a name="mgiAppRemoveRenderJob">
+  Cancels a render job. 
+
+</A>
+<hr>
+
+<a name="mgiAppAddFrameJob">
+</A>
+<h1><a name="mgiAppAddFrameJob">mgiAppAddFrameJob</A></h1>
+<a name="mgiAppAddFrameJob">
+</A>
+<p><a name="mgiAppAddFrameJob"><i>Adds a frame job.</i></A></p>
+<a name="mgiAppAddFrameJob">
+</A>
+<H3><a name="mgiAppAddFrameJob">Syntax</A></H3>
+<a name="mgiAppAddFrameJob">
+</A>
+<blockquote><a name="mgiAppAddFrameJob">
+    </A>
+<pre><a name="mgiAppAddFrameJob">#include &lt;mgi/App.h&gt;
+void mgiAppAddFrameJob( MgiJob *job_ptr )</A></pre>
+<a name="mgiAppAddFrameJob">
+</A></blockquote>
+<a name="mgiAppAddFrameJob">
+</A>
+<H3><a name="mgiAppAddFrameJob">Description</A></H3>
+<a name="mgiAppAddFrameJob">
+  Adds a frame job.  A frame job executes each frame even if rendering is not completed.  Frame jobs are
+  executed in the order that they were added.
+
+</A>
+<hr>
+
+<a name="mgiAppInsertFrameJob">
+</A>
+<h1><a name="mgiAppInsertFrameJob">mgiAppInsertFrameJob</A></h1>
+<a name="mgiAppInsertFrameJob">
+</A>
+<p><a name="mgiAppInsertFrameJob"><i>Inserts a frame job in front of a job which has already been added.</i></A></p>
+<a name="mgiAppInsertFrameJob">
+</A>
+<H3><a name="mgiAppInsertFrameJob">Syntax</A></H3>
+<a name="mgiAppInsertFrameJob">
+</A>
+<blockquote><a name="mgiAppInsertFrameJob">
+    </A>
+<pre><a name="mgiAppInsertFrameJob">#include &lt;mgi/App.h&gt;
+void mgiAppInsertFrameJob( MgiJob *new_job_ptr, MgiJob *job_ptr )
+</A></pre></blockquote>
+<a name="mgiAppInsertFrameJob">
+</A>
+<H3><a name="mgiAppInsertFrameJob">Description</A></H3>
+<a name="mgiAppInsertFrameJob">
+  Inserts a frame job in front of a job which has already been added.
+
+</A>
+<hr>
+
+<a name="mgiAppRemoveFrameJob">
+</A>
+<h1><a name="mgiAppRemoveFrameJob">mgiAppRemoveFrameJob</A></h1>
+<a name="mgiAppRemoveFrameJob">
+</A>
+<p><a name="mgiAppRemoveFrameJob"><i>Cancels a frame job.</i></A></p>
+<a name="mgiAppRemoveFrameJob">
+</A>
+<H3><a name="mgiAppRemoveFrameJob">Syntax</A></H3>
+<a name="mgiAppRemoveFrameJob">
+</A>
+<blockquote><a name="mgiAppRemoveFrameJob">
+    </A>
+<pre><a name="mgiAppRemoveFrameJob">#include &lt;mgi/App.h&gt;
+void mgiAppRemoveFrameJob( MgiJob *job_ptr )
+</A></pre></blockquote>
+<a name="mgiAppRemoveFrameJob">
+</A>
+<H3><a name="mgiAppRemoveFrameJob">Description</A></H3>
+<a name="mgiAppRemoveFrameJob">
+  Cancels a frame job.
+
+</A>
+<hr>
+<h1><a name="mgiAppRemoveFrameJob">Global Variables</A></h1><hr>
+<hr>
+
+<a name="gMgiApp">
+</A>
+<h1><a name="gMgiApp">gMgiApp</A></h1>
+<a name="gMgiApp">
+</A>
+<p><a name="gMgiApp"><i>This is the actual application itself.</i></A></p>
+<a name="gMgiApp">
+</A>
+<H3><a name="gMgiApp">Syntax</A></H3>
+<a name="gMgiApp">
+</A>
+<blockquote><a name="gMgiApp">
+</A>
+<pre><a name="gMgiApp">#include &lt;mgi/App.h&gt;
+MgiApp gMgiApp</A></pre></blockquote>
+<a name="gMgiApp">
+</A>
+<H3><a name="gMgiApp">Description</A></H3>
+<a name="gMgiApp">
+  This is the actual application itself.<br>
+  A pointer to MgiApp is not specified in the argument of mgpApp*() because<br>
+  all functions access this global variable.
+</A>
+<H3><a name="gMgiApp">See Also</A></H3>
+<a name="gMgiApp">
+</A><A href="#MgiApp">MgiApp</A><a name="gMgiApp">
+
+</A>
+<hr>
+<h1><a name="gMgiApp">Macros</A></h1><hr>
+<hr>
+
+<a name="_mgiAppAddCharacter">
+</A>
+<h1><a name="_mgiAppAddCharacter">_mgiAppAddCharacter</A></h1>
+<a name="_mgiAppAddCharacter">
+</A>
+<p><a name="_mgiAppAddCharacter"><i>Adds an MgiCharacter job as a render job.</i></A></p>
+<a name="_mgiAppAddCharacter">
+</A>
+<H3><a name="_mgiAppAddCharacter">Syntax</A></H3>
+<a name="_mgiAppAddCharacter">
+</A>
+<blockquote><a name="_mgiAppAddCharacter">
+    </A>
+<pre><a name="_mgiAppAddCharacter">#include &lt;mgi/App.h&gt;
+_mgiAppAddCharacter( char_ptr )
+</A></pre></blockquote>
+<a name="_mgiAppAddCharacter">
+</A>
+<H3><a name="_mgiAppAddCharacter">Description</A></H3>
+<a name="_mgiAppAddCharacter">
+  Adds an MgiCharacter job as a render job.
+
+</A>
+<hr>
+
+<a name="_mgiAppGetHierarchy">
+</A>
+<h1><a name="_mgiAppGetHierarchy">_mgiAppGetHierarchy</A></h1>
+<a name="_mgiAppGetHierarchy">
+</A>
+<p><a name="_mgiAppGetHierarchy"><i>Returns a pointer to the scene hierarchy.</i></A></p>
+<a name="_mgiAppGetHierarchy">
+</A>
+<H3><a name="_mgiAppGetHierarchy">Syntax</A></H3>
+<a name="_mgiAppGetHierarchy">
+</A>
+<blockquote><a name="_mgiAppGetHierarchy">
+</A>
+<pre><a name="_mgiAppGetHierarchy">#include &lt;mgi/App.h&gt;
+_mgiAppGetHierarchy( )
+</A></pre></blockquote>
+<a name="_mgiAppGetHierarchy">
+</A>
+<H3><a name="_mgiAppGetHierarchy">Description</A></H3>
+<a name="_mgiAppGetHierarchy">
+  Returns a pointer to the scene hierarchy.
+
+</A>
+<hr>
+
+<a name="_mgiAppGetScene">
+</A>
+<h1><a name="_mgiAppGetScene">_mgiAppGetScene</A></h1>
+<a name="_mgiAppGetScene">
+</A>
+<p><a name="_mgiAppGetScene"><i>Returns a pointer to the scene.</i></A></p>
+<a name="_mgiAppGetScene">
+</A>
+<H3><a name="_mgiAppGetScene">Syntax</A></H3>
+<a name="_mgiAppGetScene">
+</A>
+<blockquote><a name="_mgiAppGetScene">
+</A>
+<pre><a name="_mgiAppGetScene">#include &lt;mgi/App.h&gt;
+_mgiAppGetScene( )
+</A></pre></blockquote>
+<a name="_mgiAppGetScene">
+</A>
+<H3><a name="_mgiAppGetScene">Description</A></H3>
+<a name="_mgiAppGetScene">
+  Returns a pointer to the scene.
+
+</A>
+<hr>
+<h1><a name="_mgiAppGetScene">Structure</A></h1><hr>
+<hr>
+
+<a name="MgiApp">
+</A>
+<h1><a name="MgiApp">MgiApp</A></h1>
+<a name="MgiApp">
+</A>
+<blockquote><pre><a name="MgiApp">
+#include &lt;mgi/App.h&gt;
+typedef struct _MgiApp
+{
+    MgiJobList          frame_job_list;
+    MgiJobList          render_job_list;
+
+    MhcScene            hierarchy;
+    MrnScene            render_scene;
+    MrnScreen           screen;
+
+    u32                 gfx_length;
+    Gfx                 **gfx_array;
+    u32                 current_gfx;
+    Gfx                 *current_gfx_ptr;
+
+    u32                 is_perfbar_enable;
+    u32                 render_microcode;
+
+    u32                 frame_latency;
+    u32                 frame_count;
+    u32                 frame_rate;
+
+    int                 number_of_controllers;
+    u16                 *last_button;
+    struct st_ContData  *cont_data;
+
+    void                *user_data;
+} MgiApp;
+</A></pre></blockquote>
+<a name="MgiApp">
+</A>
+<H2><a name="MgiApp">See Also</A></H2>
+<a name="MgiApp">
+</A><A href="../mhc/mhcscene.htm#MhcScene">MhcScene</A><a name="MgiApp">
+</A><A href="../mrn/mrnscene.htm#MrnScene">MrnScene</A><a name="MgiApp"><br>
+  </A></BODY>
+</HTML>

@@ -1,0 +1,358 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<BASE TARGET="main">
+<head>
+<title>Gateway Software Submission Requirements</title>
+<!-- Editor Notes: Ron Daring 9/1/2000 -->
+</head>
+<body bgcolor="#FFFFFF">
+
+
+<P>
+
+<b><font face="arial" color="#29296b">Nintendo Gateway 64 System Technical and Promotional Material Requirements</b></font>
+
+
+
+<P>
+<font face="arial" size="-1" color="#000000">
+<a name="01.1"></a>
+<b>Overview</b>
+<br>
+This document describes <font color="red">additional requirements</font> necessary for developers submitting games for use on the N64 Gateway System. Please be aware that games being submitted for testing approval must also meet the requirements laid out in the either the <a target="contents" href="../ntsc/01-01.html">NTSC</a> or <a target="contents" href="../pal/01-01.html">PAL</a> Software Submission Requirements documents. 
+<P>
+Before a game can be approved for use on the Gateway 64 System, some minor game programming modifications are required. 
+<P>
+The following guidelines provide a brief description of the necessary modifications. Please refer to the subsequent pages in this document for further details on programming requirements. 
+
+<P>
+<a name="01.2"></a>
+<b>Game Modifications Summary</b>
+<br> 
+<table border=0 cellpadding="3" cellspacing="3" width=80%>
+<tr>
+<td valign="top"><font face="arial" size="-1">____</td>
+<td><font face="arial" size="-1">Multi-player, accessory option screens, and Controller Pak save data options need to be removed or locked out<td></tr>
+<tr>
+<td valign="top"><font face="arial" size="-1">____</td>
+<td><font face="arial" size="-1">Stored passwords, not hard coded password screens, should be modified to allow a player to back out without the need to enter a valid password.<td></tr>
+<tr>
+<td valign="top"><font face="arial" size="-1">____</td>
+<td><font face="arial" size="-1">Implementation of special Gateway 64 game halt functions are required in the game software.<td></tr>
+<tr>
+<td valign="top"><font face="arial" size="-1">____</td>
+<td><font face="arial" size="-1">Remove any copy protection schemes.<td></tr>
+<tr>
+<td valign="top"><font face="arial" size="-1">____</td>
+<td><font face="arial" size="-1">
+The destination code (the fourth letter of the game code) must be changed from the N64 Game code to the Gateway 64 System code. The fourth letter of the game code becomes a "G" for NTSC and an "L" for PAL games.
+<td></tr></table>
+
+<P>
+<a name="01.3"></a>
+<b>Estimated Time for Software Modifications</b>
+<br>
+Depending on the type of game play options available with each game title, it is estimated that approximately 2 to 4 days are required to make the necessary programming modifications, including testing, for application on the Nintendo Gateway 64 System. Any technical questions regarding game modifications should be directed to Nintendo Developer Tools Support at (425) 861-2607 or email: tools@noa.nintendo.com.
+
+<P>
+<a name="01.4"></a>
+<b>Software Submission Procedures</b>
+<ul>
+<li>Once the changes described above have been made to your software programs and the game has been thoroughly tested, you will need to submit your game software to our Product Testing Department for Lot Check testing.
+<P>
+<li>Please utilize the <a target="_top" href="../chcklist/6-13-2000.pdf">Nintendo Software Destination Declaration/Checklist</a> and refer to the <a target="_top" href="../ntsc/01-01.html">NTSC</a> or <a target="_top" href="../pal/01-01.html">PAL</a> Software Submission Requirements.
+<P>
+<li>Game code should be requested from NOA prior to submission. Please contact our Product Testing Department by calling (425) 861-2661 to make your request.
+<P>
+<li>If applicable, NTSC and PAL versions should be submitted for all game titles.
+</ul>
+
+
+<P>
+<a name="01.5"></a>
+<b>Collateral Materials</b>
+<br>
+For Gateway 64 software submissions, Nintendo requires game artwork and other collateral materials for promotional use be provided upon approval of the software. The following collateral materials must be provided to the Gateway Program Manager at (425) 861-2732.
+
+
+<P>
+<ul><a name="01.5.1"></a>
+<li>Artwork
+<br>____ Packaging (Box Art)
+<br>____ Game Logo
+<br>____ Character Art
+
+<P>
+<a name="01.5.2"></a>
+<li> Required Format
+<br>The artwork for the above items should be submitted to Nintendo via an electronic/ digital artwork file that can be used for print production. The preferred format is a TIFF file in Photoshop. However, a CMYK version of the file for print production is also acceptable. We will consider the artwork provided to be approved artwork that can be used by our Hotel and Airline customers so that they may create promotional/marketing materials. Any modification of this artwork will be sent to you for approval.
+
+<P>
+<a name="01.5.3"></a>
+<li>PAL Versions
+<br>Please submit any artwork that is unique for the PAL version of the game. 
+
+<P>
+<a name="01.5.4"></a>
+<li>Courtesy Copies  (NTSC and PAL)
+<br>For demonstration and promotional purposes, 2 complimentary copies each (NTSC and PAL versions) of the approved artwork for the consumer Game Pak must be provided.
+</ul>
+
+
+
+
+<P>
+<a name="01.6"></a>
+<b>Nintendo 64 Gateway Technical Requirements</b>
+
+<P>
+<a name="01.6.1"></a>
+<b>Scope</b>
+<br>
+This document applies to Nintendo 64 game titles being developed for the Gateway 64 System, and provides the required programming procedures by which games need to be modified. These criteria must be met before the game can be approved for use on the Gateway 64 System.
+
+<P>
+<a name="01.6.2"></a>
+<b>Procedure</b>
+<br>The following information describes the required programming modifications to an N64 game for use on the Gateway 64 System.
+
+
+<P>
+<a name="01.6.2.1"></a>
+<ol start="1"><b>
+<li>Multi-Player, Password Functions, Accessory Options and Save Functions</b>
+<P>
+Multi-player modes, password functions, accessory options, and save functions are not supported on the Gateway 64 System. Feature operations relating to these modes need to be either removed or locked out. The following paragraphs describe the Gateway 64 game modification requirements for multi-player options, save data, and password functions, and accessories i.e., Rumble Pak, Controller Pak.
+</ol>
+
+<P>
+<a name="01.6.2.1.1"></a>
+<ul>
+<li>Multi-Player Modification Options
+<p>The following information provides examples of the methods that can be used to disable multi-player functions.
+<br>
+<table border=0 cellpadding="3" cellspacing="3" width=80%>
+<tr>
+<td valign="top"><font face="arial" size="-1"></td>
+<td><font face="arial" size="-1"><u>Remove the multi-player options from main menu screen.</u>
+<br>The artwork is changed to remove all multi-player options from the main menu screen.</td></tr>
+<tr>
+<td valign="top"><font face="arial" size="-1"></td>
+<td><font face="arial" size="-1"><u>Leave the graphics the same but disable multi-player options.</u>
+<br>Change the cursor movement routine so that the cursor is limited to select the 1 player mode only. No changes would be necessary to the 2 player routines, since the cursor will not allow them to be selected. </td></tr>
+<tr>
+<td valign="top"><font face="arial" size="-1"></td>
+<td><font face="arial" size="-1"><u>Leave the graphics the same but disable multi-player options.</u>
+<br>If it is not convenient to modify the cursor routine to skip over 2 player games, the menu selection routine can be changed so that when a 2 player game is selected, the game loops back to the main menu screen. The user would know that a 2 player game is not a valid selection.</td></tr></table>
+
+<P>
+<a name="01.6.2.1.2"></a>
+<li>Password Screens
+<br>Disable or modify any password screens where a valid password must be entered. Stored passwords, not hard coded password screens, should be modified to allow a player to back out without the need to enter a valid password. In the past, problems have occurred when a player has accessed a password entry screen without knowing a valid password, and the game did not provide a way to exit the password screen. This situation required the game to be reset, which is not optimum for the Gateway 64 System. Therefore, a way to exit any password screens must be provided.
+
+<P>
+<a name="01.6.2.1.3"></a>
+<li>Accessory Options
+<br>Any screens containing artwork or messaging relating to accessory options should be removed. Messages instructing players to take certain actions during the progress of a game could be confusing to players when options are not available.
+
+<P>
+<a name="01.6.2.1.4"></a>
+<li>Save Game Data
+<br>
+Disable any user option screens relating to saving data to Controller Pak.
+
+<P>
+<b>Note:</b> All of the above methods of modification should take into consideration the frequency in which a particular screen or message appears throughout a game. Also, the method in which a player would be required to bypass or back out of a function should be considered-this method should be intuitive and not confusing to the player. Traditional menu nomenclature should be followed such as; `A' accept highlighted option and `B' go back one step in the menu.
+
+<P>
+<a name="01.6.2.1.5"></a>
+<li>Game Halt Function
+<br>In order for Nintendo 64 games to be used with the new Gateway 64 System, the ability to suspend game play for an arbitrary period of time must be realized. The "game halt" feature allows the menus of the Gateway 64 System to be accessed (to buy more game-play time, in-flight announcements, emergency announcements) without losing one's place in the game. Since the Nintendo 64 hardware does not have a facility for halting the system, this function must be added to the game code itself.
+<P>
+The proposed method for halting a game is by detecting impossible combinations of keys in the controller data input (the data retrieved by osContGetReadData()). If the game is currently running (not halted) and the Up and Down keys of the Joy Pad are detected simultaneously (U_JPAD & D_JPAD), the video on the screen should freeze, game play should be suspended, and the game should not respond to normal controller input. Audio muting during halt is allowed, but is not mandatory. The game should remain in this state until the Right and Left keys of the Joy Pad are detected simultaneously (L_JPAD & R_JPAD), after which normal game play should resume.
+<P>
+When the above method of halt is invoked, it will be necessary to communicate the Halt Status to the Gateway 64 System controller. This status will be communicated via a hardware register that is mapped into unused cartridge memory space on the N64. Whenever a new game is downloaded the register will default to the unhalted status. Upon detecting the halt command (U_JPAD & D_JPAD) the game should halt as described above and bit 0 at address 0FF7 0000H should be set to a 1, all the other bits are a don't care. The Gateway 64 System controller will be polling this register and will stop requesting the halt upon reading a 1. When the unhalt (resume) command is detected (L_JPAD & R_JPAD), the game should resume and bit 0 at address 0FF7 0000H should be reset to a 0. The Gateway 64 System controller will again be polling this register and will quit requesting the resume command when a 0 is read.
+<P>
+In order to set and clear bit zero in the register at address 0FF7 0000H the osEPI function (Enhanced PI) osEPiWriteIo() must be used. (A detailed description of the EPI Manager can be found in Chapter 27 of the Online Nintendo 64 Programming Manual. A detailed description of the osEPi-WriteIo() function can be found in the Nintendo 64 Function Reference Manual.) A brief over-view is given here.
+<P>
+The osEPiWriteIo() routine performs 32-bit write operations to the PI device (In this case the device is the register at address 0FF7 0000H). The function requires a handle for the device being accessed. This handle is of type OSPiHandle. The details for procuring the handle are
+described in Chapter 27 of the Online Nintendo 64 Programming Manual. The handle requires several parameters. The following parameters should be used:
+
+<p>
+<table border=0 cellspacing="3" cellpadding="3">
+<tr>
+<td><font face="arial" size="-1">#define</td>
+<td><font face="arial" size="-1">&nbsp; HALT_REG_START_ADDR</td>
+<td><font face="arial" size="-1">0x0ff70000</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">#define</td>
+<td><font face="arial" size="-1">&nbsp; HALT_REG_SIZE</td>
+<td><font face="arial" size="-1">0x32</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">#define</td>
+<td><font face="arial" size="-1">&nbsp; HALT_REG_latency</td>
+<td><font face="arial" size="-1">0x5</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">#define</td>
+<td><font face="arial" size="-1">&nbsp;  HALT_REG_pulse</td>
+<td><font face="arial" size="-1">0x0c</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">#define</td>
+<td><font face="arial" size="-1">&nbsp;  HALT_REG_pageSize</td>
+<td><font face="arial" size="-1">0xd</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">#define</td>
+<td><font face="arial" size="-1">&nbsp;  HALT_REG_relDuration</td>
+<td><font face="arial" size="-1">0x2</td>
+</tr></table>
+
+<P>
+Assume that a handle has been obtained using the method described in Chapter 27 of the Online Nintendo 64 Programming Manual. The osEPiWriteIo() function would be used as follows to set bit
+0 at address 0FF7 0000H when the halt command is detected (U_JPAD & D_JPAD):
+<P>
+osEPiWriteIo(&handle, HALT_REG_START_ADDR, SET);
+<P>
+The recommended value of "SET" is 0xFFFFFFFF.
+<P>
+The osEPiWriteIo() function would be used as follows to clear bit 0 at address 0FF7 0000H when the unhalt (resume) command is detected (L_JPAD & R_JPAD):
+<P>
+osEPiWriteIo(&handle, HALT_REG_START_ADDR, CLEAR);
+
+<P>
+The recommended value of "CLEAR" is 0x0.
+
+<P>
+A problem arises for Nintendo 64 games developed using an operating system (O/S) before O/S 2.0H. The problem is that the EPI Manager does not exist in any O/S before O/S 2.0H. The consequence
+of this is that the osEPiWriteIo() function is not available. In order for these games to set and clear bit zero in the register at address 0FF7 0000H a different procedure must be used.
+
+<P>
+The following example code is provided for use in this case:
+<pre><font face="courier" size="3">/* Example */
+#define HALT_REG_START_ADDR 0x0ff70000
+#define HALT_REG_latency 0x5
+#define HALT_REG_pulse 0x0c
+#define HALT_REG_pageSize 0xd
+#define HALT_REG_relDuration 0x2
+
+extern void __osPiGetAccess(void);
+extern void __osPiRelAccess(void);
+
+/********************************************************
+*This example function is used to write the halt status bit.*
+*********************************************************/
+
+static void WriteGatewayRegister (int active)
+{
+int status;
+IO_WRITE(PI_BSD_DOM2_LAT_REG, HALT_REG_latency);
+IO_WRITE(PI_BSD_DOM2_LAT_REG, HALT_REG_pulse);
+IO_WRITE(PI_BSD_DOM2_LAT_REG, HALT_REG_pageSize);
+IO_WRITE(PI_BSD_DOM2_LAT_REG, HALT_REG_relDuration);
+__osPiGetAccess();
+status = IO_READ(PI_STATUS_REG);
+while (status & (PI_STATUS_IO_BUSY | PI_STATUS_DMA_BUSY))
+{
+status = IO_READ(PI_STATUS_REG);
+}
+if (active)
+IO_WRITE(HALT_REG_START_ADDR,0xffffffff);
+else
+IO_WRITE(HALT_REG_START_ADDR,0x0);
+__osPiRelAccess();
+}
+</pre></font>
+
+<P>
+
+The WriteGatewayRegister() function would be used as follows to set bit 0 at address 0FF7 0000H when the halt command is detected (U_JPAD & D_JPAD):
+<P>
+WriteGatewayRegister(1);
+<P>
+The WriteGatewayRegister() function would be used as follows to clear bit 0 at address 0FF7 0000H when the unhalt (resume) command is detected (L_JPAD & R_JPAD):
+<P>
+WriteGatewayRegister(0);
+</ul>
+
+<P>
+<ul>
+<a name="01.6.2.1.6"></a>
+<li>Remove Any Copy Protection Schemes
+<br>Since the Gateway 64 System will have a contiguous memory map of up to 256MB (less the PIF address space), any copy protection schemes involving memory map configuration should be removed.
+
+<P>
+<a name="01.6.2.1.7"></a>
+<li>Update the Destination Code in the ROM Registration Data
+<br>The destination code (the fourth letter of the game code) must be changed from the N64 Game code to the Gateway 64 System code. The fourth letter of the game code becomes a "G" for NTSC and an "L" for PAL games. Please refer to the Software Submission requirements as provided with your Nintendo 64 Development manual.
+
+<P>
+<table border=0 align="center">
+<tr><td>
+<img border=0 align="center" src="../ntsc/gif/ntscs~10.gif"></tr></td></table>
+
+<P>
+Once the above changes have been made to your software programs, submit your software to the Nintendo Product Testing Department for approval. Please utilize the <a target="_top" href="../chcklist/6-13-2000.pdf">Nintendo Software Destination Declaration/Checklist</a> to ensure that you have included all necessary items with your submission.
+</ul>
+
+<P>
+<br>
+<a name="01.7"></a>
+<ol start="2"><b>
+<li>Gateway 64 vs N64 System</b>
+<p>
+The Gateway 64 System closely emulates the N64 system. The following are the major differences in system features and functionality. The Gateway 64 Controller will have no Rumble Pak or Expansion Pak installed. The Gateway 64 System sends the appropriate command 0 or command 255 response, indicating that no Controller Pak is installed.
+</ol>
+
+<ul><a name="01.7.1"></a>
+<li>Controller
+<br>
+The Gateway 64 System operates in a one-player mode only. Therefore, multi-player options are not supported on the Gateway 64 System.
+
+<P>
+<a name="01.7.2"></a>
+<li>Cartridge EEPROM
+<br>EEPROM is used as a temporary storage media only in the Gateway 64 System. The Gateway 64 has a 4K bit and 16Kbit EEPROM. Only one of these EEPROMs is available during game play, as it would be in a N64 consumer product. The Gateway 64 selects one of these EEPROMs before the game is loaded, based on individual game requirements. Before loading a game, all data in the EEPROM is cleared. All of this is done by the Gateway 64 System, so it is not necessary to modify game software for EEPROM data storage. Save Game data that is usually stored in the EEPROM will therefore be cleared between each game play.
+
+<P>
+<a name="01.7.3"></a>
+<li>Cartridge SRAM
+<br>SRAM is used as a temporary storage media only in the Gateway 64 System. The SRAM has no battery backup and is cleared prior to loading a game. All of this is done by the Gateway 64 System, so that it is not necessary to modify game software for SRAM data storage.
+Game data that is usually stored in the SRAM will therefore be cleared between each game play.
+
+<P>
+<a name="01.7.4"></a>
+<li>Game Halt
+<br>The Gateway 64 System requires a game "Halt" feature for game play accounting and time-keeping purposes.
+
+<P>
+<a name="01.7.5"></a>
+<li>Accessories
+<br>Controller Pak, Rumble Pak, and accessories are not supported on the Gateway 64 System.
+
+<P>
+<a name="01.7.6"></a>
+<li>Memory
+<br>The Gateway 64 System uses DRAM as game program memory rather than the Mask ROM used in the N64. When a hotel guest finishes game play, the DRAM data is purged.
+</ul>
+
+
+<P>
+<br>
+
+<br>
+
+
+
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0 ALIGN="center">
+         <TR><td align="center"><font face="Arial" size="-2" color="#29296B">
+Copyright &copy; 1999, 2000<br>
+Nintendo of America Inc. All Rights Reserved<BR>
+Nintendo and N64 are registered trademarks of Nintendo<br>
+Last Updated September, 2000</FONT>
+</TD></TR></TABLE>
+</body>
+</html>

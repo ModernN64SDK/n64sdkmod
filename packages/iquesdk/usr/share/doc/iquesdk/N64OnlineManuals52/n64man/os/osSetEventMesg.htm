@@ -1,0 +1,97 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.
+  PWC- updated formatting
+  MAP- added links, updated format
+-->
+<title>osSetEventMesg</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>osSetEventMesg</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p><i>Associates a message queue and message with an event</i></p>
+
+<h3>Syntax</h3>
+<p>
+<blockquote>
+    <pre>#include &lt;ultra64.h&gt;     /* <A HREF="../../header/ultra64.htm">ultra64.h</A> */
+void osSetEventMesg(OSEvent e, OSMesgQueue *mq, OSMesg m);</pre></blockquote></p>
+
+<h3>Description</h3>
+
+<p><tt>osSetEventMesg</tt> associates a message queue and message with an event, which usually corresponds to an interrupt or an exception of some kind. When an event occurs, the message registered with <tt>osSetEventMesg</tt> is sent to the associated message queue. The message sending is of the non-blocking form; if the message queue is full, the message is dropped.</p>
+
+<p>The following events are supported: </p>
+<p>
+<dl>
+    <dt><strong>OS_EVENT_SW1</strong></dt>
+    <dd>CPU software interrupt 1; although supported by the CPU, this is not expected to be widely used. <br>
+        <br>
+        </dd>
+    <dt><strong>OS_EVENT_SW2</strong></dt>
+    <dd>CPU software interrupt 2; not expected to be widely used. <br>
+        <br>
+        </dd>
+    <dt><strong>OS_EVENT_CART</strong></dt>
+    <dd>Indy has written to GIO bus register; intended for use by the rmon debugger program. <br>
+        <br>
+        </dd>
+    <dt><strong>OS_EVENT_COUNTER</strong></dt>
+    <dd>CPU COUNT register has reached COMPARE value; intended for use by the VI or Timer manager. <br>
+        <br>
+        </dd>
+    <dt><strong>OS_EVENT_SP</strong></dt>
+    <dd>Signal Processor (SP) interrupt; intended for application use to indicate SP task completion. <br>
+        <br>
+        </dd>
+    <dt><strong>OS_EVENT_SI</strong></dt>
+    <dd>Serial Interface (SI) interrupt; intended for application use to indicate Controller input is available. <br>
+        <br>
+        </dd>
+    <dt><strong>OS_EVENT_AI</strong></dt>
+    <dd>Audio Interface (AI) interrupt; intended for application use to indicate that the audio buffer has been consumed. <br>
+        <br>
+        </dd>
+    <dt><strong>OS_EVENT_VI</strong></dt>
+    <dd>Video Interface (VI) interrupt; intended for application use to indicate vertical retrace. <br>
+        <br>
+        </dd>
+    <dt><strong>OS_EVENT_PI</strong></dt>
+    <dd>Parallel Interface (PI) interrupt to indicate that DMA is finished; intended for use by the PI manager. <br>
+        <br>
+        </dd>
+    <dt><strong>OS_EVENT_DP</strong></dt>
+    <dd>Display Processor (DP) interrupt triggered by the DP FullSync command<br>
+        <br>
+        </dd>
+    <dt><strong>OS_EVENT_PRENMI</strong></dt>
+    <dd>An NMI has been requested and will occur in 0.5 seconds; intended for application use to begin graceful shutdown.<br>
+        <br>
+        </dd>
+    <dt><strong>OS_EVENT_SP_BREAK</strong></dt>
+    <dd>The SP has hit a breakpoint; intended for use by the rmon program. <br>
+        <br>
+        </dd>
+    <dt><strong>OS_EVENT_FAULT</strong></dt>
+    <dd>The CPU has encountered an unrecoverable exception; intended for use by the rmon debugger program.<br>
+        <br>
+        </dd>
+    <dt><strong>OS_EVENT_THREADSTATUS</strong></dt>
+    <dd>A thread has been created or destroyed; intended for use by the rmon debugger program.<br>
+        <br>
+        </dd>
+</dl></p>
+
+<h3>See Also</h3>
+
+<p><a href="osCreateMesgQueue.htm">osCreateMesgQueue</a>, <a href="osSendMesg.htm">osSendMesg</a>, <a href="osSpTaskLoad.htm">osSpTaskLoad</a>, <a href="osContInit.htm">osContInit</a>, <a href="osAiSetNextBuffer.htm">osAiSetNextBuffer</a>, <a href="osViSetEvent.htm">osViSetEvent</a>, <a href="osPiStartDma.htm">osPiStartDma</a>, and <a href="osDpSetNextBuffer.htm">osDpSetNextBuffer</a></p>
+<H3>Revision History</H3>
+<P>
+1999/04/30 Changed format
+</P>
+
+</body>
+</html>

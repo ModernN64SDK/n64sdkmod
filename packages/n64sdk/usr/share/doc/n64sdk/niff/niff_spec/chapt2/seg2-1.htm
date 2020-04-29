@@ -1,0 +1,50 @@
+<HTML>
+<HEAD>
+<TITLE>Chapter 2 Nodes</TITLE>
+</HEAD>
+<BODY LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff">
+
+<font face="arial" size="-1">
+<b><font size="3">Chapter 2 Nodes</b></font>
+<HR>
+
+<P>
+<b>2-2. Links to Nodes in NIFF</b>
+<P>
+<u>1. 3D Objects With One Shape</u>
+<P>
+For example, consider the node links for a 3D object consisting of one shape.  The links for the nodes that comprise the object in this case are as illustrated below.
+<P>
+<center>
+<img src="sphere_mat.gif">
+<p>
+<img src="./fig_1shape.gif">
+<p>
+Figure: Links of Nodes that Comprise One Shape
+</center>
+<BR>
+<P>
+In this example, the Obj node has links to a Shape node, Anim node, Coll node, and Mat node.  (The Coll node is not necessary for display, but it becomes crucial when applying these data to game data.)<p>
+The Shape node has links to a Tri node and a Mat node.  In this example, a Part node is not needed since the shape is not divided into parts.<p>
+The Tri node has links to a Vtx node, Color node, Vector node, and St node.  In the case of this example, Vtx is the node that describes the vertex coordinates that constitute the sphere.  The Color node is the node that describes the vertex color and the polygon color.  The Vector node is the node that describes the normal vector of the vertex of the sphere and the normal vector of the polygon.  The St node is the node that describes the ST texture coordinates of the vertex.And these determine the shape of the sphere by referring to the Tri node's triangle list.
+<p>
+The Mat node is the node that describes the attributes specified by the shape of the sphere.  It describes information such as, the sphere has smooth shading and is lit.  In addition, since there is a texture applied to this sphere, it also has a link to a Tex node to describe that texture data.  (Of course, the fact that this object is lit means that there is a link in the Scene node to some kind of Light node.)
+<p>
+The Anim node describes the conditions in which the object is animated.  For example, even if it is stationary in the scene, there would be a link to a static Anim node.
+<p>
+A Coll node is linked as needed.  If absolutely no hit decision processing is given in the game scene, then a Coll node is not linked.  Conversely, if there is any hit decision processing related to this object, there would be a link to a Coll node according to that processing.
+<p>
+
+<hr>
+
+<p align="right"><a href="../index.htm">
+<img src="../../../gif/index.gif"
+border="0" width="65" height="17"></a>
+&nbsp; <a href="./seg2-2.htm"><img src="../../../gif/next.gif"
+border="0" width="65" height="17"></a></p>
+
+
+</body>
+</html>
+
+

@@ -1,0 +1,67 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Author's Comments: JLR made formating edits for 4.1.
+MAP- added links, updated format>
+<title>alSeqFileNew</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>alSeqFileNew</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p><i>Initializes the N64 sequence file structure</i>
+
+<p><b>Syntax</b></p>
+<p>
+<blockquote>
+    <pre>#include &lt;libaudio.h&gt;     /* <a href="../../header/libaudio.htm">libaudio.h</a> */
+void alSeqFileNew(ALSeqFile *file, u8 *base);</pre>
+</blockquote>
+</h3>
+<dl>
+    <dt><strong>file</strong></dt>
+    <dd>Pointer to the ALSeqFIle structure that will be initialized<br>
+        <br>
+        </dd>
+    <dt><strong>base</strong></dt>
+    <dd>Address where the sequence bank file (.sbk) is stored<br>
+        <br>
+        </dd>
+</dl>
+</p>
+<p><b>Description</b></p>
+
+<p>This function reads the header part of the sequence bank file and initializes the ALSeqFile structure. </p>
+<P>
+The Sequence Bank Compiler (<A HREF="../tool/sbc.htm">sbc</A>) creates a sequence bank file (<B>.sbk</B>) from one or more MIDI sequence files.  The sequence bank file contains an array of sequences (8-byte aligned) with a header at the front that allows indexing into the sequence bank to gain access to individual sequences.
+<BR>
+<BR>
+<p>
+Before the game application can get to the individual sequences, it must
+first initialize the sequence bank header by calling the <tt>alSeqFileNew</tt> function.
+Typically, the game application first allocates enough memory to contain
+the sequence bank header information (ALSeqFile). Then it copies the
+header information from the Cartridge ROM into the allocated ALSeqFile
+structure.  Finally, it calls <tt>alSeqFileNew</tt> with the pointer to the
+ALSeqFile structure and the base of the sequence bank data in ROM.<BR></p>
+<p>
+Note that to allocate memory for the sequence bank header, the game
+application may need to first look at the seqCount field to know the exact
+size of the header.</p>
+
+<p><B>Warning</B>
+<p>
+This routine is designed to be called once for a single sequence bank
+file. Calling the routine on an already initialized sequence bank file
+could produce unexpected results.</p>
+
+<p><b>See Also</b></p>
+
+<p><a href="alCSeqNew.htm">alCSeqNew</a>, <a href="alSeqNew.htm">alSeqNew</a></p>
+<h3>Revision History</h3>
+<p>1999/04/30  Changed Format</p>
+<br><br>
+
+</body>
+</html>

@@ -1,0 +1,80 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>error message</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font face="arial" size="-1">
+<p><font size="3"><strong>APPENDIX D
+<br>
+leowrite
+Command Description</strong></font>
+<hr>
+ 
+<p>leowrite is one of the commands entered in the PARTNER command window.  It is used to write data to 64DD.  The following describes the operation and arguments of leowrite.
+</p>
+
+<p>gwrite (see 3.3) and mwrite (see 5.4) are batch files that make up leowrite.  They are created automatically by tools, so knowledge of leowrite syntax is usually not necessary.  For information on how to modify the execution of leowrite, see the following description. </p>
+
+<p><strong>Syntax</strong>
+
+<p>leowrite [-fi] [-L LBA] [-t Type] [-w [start]-[end]] [-a
+address] [-I idfile] file </p>
+
+<p><strong>Description </strong>
+
+<p>All or part of the file specified by file is written beginning from the specified block. 
+</p>
+
+<p> <strong> Arguments </strong>
+
+<table border="1">
+    <tr>
+        <td width="100" align="center"><font face="Arial" size="-1"><strong>-L</strong></td>
+        <td><font face="Arial" size="-1">Specifies which block to begin writing from as an LBA.  Specify a value between 0 and 4291.  The default is 0. </td>
+    </tr>
+    <tr>
+        <td width="100" align="center"><strong><font face="Arial" size="-1">-t</strong></td>
+        <td><font face="Arial" size="-1">Specifies the disk type [0-6].  If omitted, the disk type currently written to the disk is unchanged. </td>
+    </tr>
+    <tr>
+        <td width="100" align="center"><strong><font face="Arial" size="-1">-w</strong></td>
+        <td><font face="Arial" size="-1">Specifies which portion of the file to write.  Note that this is specified as the offset from the start of the file (start is 0).  If start is omitted, the file is written from the start of the file to the location specified by end.  If end is omitted, the file is written from the location specified by start to the end of the file. </td>
+    </tr>
+    <tr>
+        <td width="100" align="center"><font face="Arial" size="-1"><strong>-a</strong></td>
+        <td><font face="Arial" size="-1">Specifies the load address.  After booting the game, the IPL (see Chapter 4) jumps to the address specified here. </td>
+    </tr>
+    <tr>
+        <td width="100" align="center"><font face="Arial" size="-1"><strong>-f</strong></td>
+        <td><font face="Arial" size="-1">Logically formats the disk.  If the disk is not formatted, leowrite normally detects this automatically and formats it.  However, this option can be tried if a failure of some sort prevents proper access to the disk. 
+    </tr>
+    <tr>
+        <td width="100" align="center"><strong><font face="Arial" size="-1">-i</strong></td>
+        <td><font face="Arial" size="-1">Reads and displays disk information (eg, disk type, ID).</td>
+    </tr>
+    <tr>
+        <td width="100" align="center"><strong><font face="Arial" size="-1">-I</strong></td>
+        <td><font face="Arial" size="-1">Writes the first 32 bytes of idfile to the disk as the ID.
+	<br>
+        &quot;ptn64&quot; and the current time are used for the factory line number and time of manufacture (see Chapter 6). </td>
+    </tr>
+</table>
+
+<p> <strong> Items to Note </strong> 
+
+<p>When leowrite writes beginning from LBA 0, the file being written is recognized as the file read by the IPL.  The file size is automatically corrected to the number of blocks and is written to the system area of the disk as the IPL size.  Note that, as a result, splitting up the file read by the IPL and writing it in several different parts prevents proper startup.  
+</p>
+
+<p>The empty portions of blocks not filled to the LBA boundary are filled with the value 0xff. </p>
+
+<p>When executed, leowrite overwrites over the factory line number and manufacture time of the ID with &quot;ptn64&quot; and the current time.  (However, when executed with script files such as gwrite and mwrite, nothing is overwritten from the second line onward.) </p>
+
+<p>If the ID is written using the -I option, &quot;ptn64&quot; and the current time are used instead of the specified factory line number and manufacture time. </p>
+
+<p>The file argument cannot be omitted with any option other than -i. </p>
+
+<hr>
+</body>
+</html>

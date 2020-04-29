@@ -1,0 +1,388 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 18 - Audio Tools</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. -->
+</head>
+
+<H1>18.1 The Instrument Compiler: ic</H1>
+
+<p>The Nintendo 64 Audio Library synthesizes audio from MIDI events using information contained in the .ctl and .tbl data files. These files, along with the .sym file, are known collectively as <a href="../../keywords/index/data/audio.htm#bank file" target="keywords">bank files</a>, and are created by the <A HREF="../../n64man/tool/ic.htm">ic</A> tool. </p>
+
+<P>The .tbl file contains the <a href="../../keywords/index/data/audio.htm#ADPCM" target="keywords">ADPCM</a>-compressed audio <a href="../../keywords/index/data/audio.htm#wave table" target="keywords">wavetable</a> data.</p>
+
+<P>The .ctl file contains information about how the wavetables are to be synthesized. It includes information about the wavetables, <a href="../../keywords/index/data/audio.htm#envelope" target="keywords">envelope</a>, pan position, <a href="../../keywords/index/data/audio.htm#pitch" target="keywords">pitch</a>, mapping to MIDI note numbers, and velocity values. For more information about the format of the .ctl file, see  <a href="../pro19/19-01.htm">Section 19.1 &QUOT;Audio File Formats&QUOT;</a></p>
+
+<P>The .sym file contains the bank file's symbol information, and is used mainly for development and debugging. It is used only by the audio bank tools, not by the Audio Library. </p>
+
+<P><strong>Note:</strong>  <A HREF="../../n64man/tool/ic.htm">ic</A> can also be used to collect sound effects into a single <a href="../../keywords/index/data/audio.htm#bank structure" target="keywords">bank structure</a> for inclusion in the ROM. In this case some of the features of the Bank format are not used (for example, <a href="../../keywords/index/data/audio.htm#key map" target="keywords">key map</a> and <a href="../../keywords/index/data/audio.htm#instrument" target="keywords">instrument</a> parameters). </p>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="01"></A>
+<H2>18.1.1 Invoking ic</H2>
+
+<p>Invoke <A HREF="../../n64man/tool/ic.htm">ic</A> by entering this command:</p>
+<BLOCKQUOTE>
+<PRE><A HREF="../../n64man/tool/ic.htm">ic</A> [-v] -o &lt;output file prefix> &lt;source file></PRE>
+</BLOCKQUOTE>
+
+<TABLE BORDER >
+<CAPTION><A NAME="t18-01"></A><strong>Table 18-1 <A HREF="../../n64man/tool/ic.htm">ic</A> Command Line Options</strong></CAPTION>
+
+<TR>
+<TH NOWRAP>Command Line Options</TH>
+
+<TH>Function</TH>
+</TR>
+
+<TR>
+<TD align="center">-v</TD>
+
+<TD>Turns on <a href="../../keywords/index/data/audio.htm#redundancy mode" target="keywords">redundancy mode</a>, which causes the compiler to compile a quantity of largely useless information.</TD>
+</TR>
+
+<TR>
+<TD align="center">-o &lt;output file prefix></TD>
+
+<TD>Specifies the <a href="../../keywords/index/data/audio.htm#prefix" target="keywords">prefix</a> for the .ctl, .tbl, and .sym files created by the compiler.</TD>
+</TR>
+
+<TR>
+<TD align="center">&lt;source file></TD>
+
+<TD>The name of the file containing the source code for the banks of instruments.</TD>
+</TR>
+</TABLE>
+
+<p>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="02"></A>
+<H2>18.1.2 Writing ic Source Files</H2>
+
+<p><a href="../../keywords/index/data/audio.htm#instrument compiler" target="keywords">Instrument Compiler</a> source files consist of C-like definitions for the collection of objects that make up the <a href="../../keywords/index/data/audio.htm#bank" target="keywords">Bank</a>. There are objects to represent banks, instruments, sounds, keymaps, and envelopes. Each of these objects is detailed below. 
+</p>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="02-01"></A>
+<H3>
+18.1.2.1 The Bank Object</H3>
+
+<p>A bank object, denoted by the keyword &QUOT;bank&QUOT;, contains an array of instruments, a sample rate specification, and an optional default percussion instrument. In the example below, the bank defined as &QUOT;GenMidiBank&QUOT; contains one instrument, called &QUOT;GrandPiano&QUOT;, at instrument location 0. It is intended to operate at 44.1 kHz. </p>
+
+<BLOCKQUOTE>
+<PRE>bank GenMidiBank
+{
+        sampleRate = 44100;
+        program [0] = GrandPiano;
+}</PRE>
+</BLOCKQUOTE>
+<p><strong>Note:</strong>  The General MIDI 1.0 Specification specifies that MIDI channel 10 is the default drum or percussion channel. As a result, many General MIDI sequences do not contain program change messages for channel 10. You can specify the default instrument (program) for channel 10 as follows: </p>
+
+<BLOCKQUOTE>
+<PRE>bank GenMidiBank
+{
+        sampleRate = 44100;
+        percussionDefault = Standard_kit;
+        program [0] = GrandPiano;
+}</PRE>
+</BLOCKQUOTE>
+
+<p>The Sequence Player sets the default instrument for channel 10 messages to be &QUOT;Standard_Kit&QUOT;.</p>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="02-02"></A>
+<H3>
+18.1.2.2 The Instrument Object</H3>
+
+<p>The instrument object, referenced by the bank object, contains the overall <a href="../../keywords/index/data/audio.htm#volume" target="keywords">volume</a> and pan for the instrument as well as the list of sounds that make up the instrument. </p>
+
+<P>In the example below, the GrandPiano instrument object contains eight sounds: (GrandPiano00, GrandPiano01, GrandPiano02, GrandPiano03, GrandPiano04, GrandPiano05, GrandPiano06, and GrandPiano07).</p>
+
+<P>The overall instrument volume is 127, or full volume, and is panned to the position 64, which is center. </p>
+<BLOCKQUOTE>
+<PRE>instrument GrandPiano
+{
+        volume = 127;
+        pan = 64;
+
+        sound [0] = GrandPiano00;
+        sound [1] = GrandPiano01;
+        sound [2] = GrandPiano02;
+        sound [3] = GrandPiano03;
+        sound [4] = GrandPiano04;
+        sound [5] = GrandPiano05;
+        sound [6] = GrandPiano06;
+        sound [7] = GrandPiano07;
+}</PRE>
+</BLOCKQUOTE>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="02-03"></A>
+<H3>
+18.1.2.3 The Sound Object</H3>
+
+<p>The sound object specifies the volume and pan, keyboard mapping, and envelope for the sound. It also specifies the AIFF-C sound file containing the ADPCM compressed wavetable data. A description of the AIFF-C format expected by <A HREF="../../n64man/tool/ic.htm">ic</A> (which is generated by the ADPCM encoding tools) is given in Section 19.2 &QUOT;Audio File Formats&QUOT;.</p>
+
+<P><strong>Note:</strong>  The Sequence Player multiplies the instrument volume with the sound volume to get the overall volume. It adds the instrument pan with the sequence pan to get the sound's overall pan. </p>
+
+<P>In the example below, the GrandPiano00 sound specifies that the wavetable data is to come from the file ../sounds/GMPiano_C2.18k.aifc. It is to be panned center (64) at full volume (127) and arranged on the keyboard according to the map specified in piano00key with the
+envelope specified in GrandPianoEnv. </p>
+
+<BLOCKQUOTE>
+<PRE>sound GrandPiano00
+{
+        use ("../sounds/GMPiano_C2.18k.aifc");
+        pan      = 64;
+        volume   = 127;
+        keymap   = piano00key;
+        envelope = GrandPianoEnv;
+}</PRE>
+</BLOCKQUOTE>
+
+<p>Keymaps and envelopes are described in the following sections.</p> 
+
+<P><strong>Note:</strong>  When using multiple banks to collect <a href="../../keywords/index/data/audio.htm#sound effect" target="keywords">sound effects</a>, the keymap entry is not necessary. </p>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="02-04"></A>
+<H3>
+18.1.2.4 The Keymap Object</H3>
+
+<p>The keymap object, referenced by the sound object, specifies the range of <a href="../../keywords/index/data/audio.htm#MIDI" target="keywords">MIDI</a> <a href="../../keywords/index/data/audio.htm#velocity" target="keywords">velocity</a> and key numbers that the sound is intended to cover. It is used by the Sequence Player to determine which sound to <A target="keywords" HREF="../../keywords/index/data/system.htm#map">map</a> to a given MIDI note number, and at what pitch ratio to play the sound. In the example below, piano00key specifies a MIDI Note On message with a velocity between 0 and 127 and a note number between 0 and 43. </p>
+
+<P>In this example, the keyBase is 41, so a MIDI Note on message for key 41 triggers the sound that references this keymap at unity pitch. A MIDI Note On message for key 42 triggers the same sound, but shifted up a half step in pitch. </p>
+
+<P><strong>Note:</strong>  You can set the keyBase value outside the range of keyMin to keyMax. This is useful if you want to do critical re-<a href="../../keywords/index/data/audio.htm#sampling" target="keywords">sampling</a> a wavetable to conserve ROM space. You could, for instance, resample a wavetable from 44.1 kHz to 22.05 kHz and adjust the keyBase up an octave to give a correction. Remember, however, that quality degrades at larger pitch shift ratios. 
+</p>
+
+<P>The detune parameter indicates the number of <a href="../../keywords/index/data/audio.htm#cent" target="keywords">cents</a> that is to be added to the default tuning. A half step is equal to 100 cents. </p>
+<BLOCKQUOTE>
+<PRE>keymap piano00key
+{
+        velocityMin  = 0;
+        velocityMax  = 127;
+        keyMin       = 0;
+        keyMax       = 43;
+        keyBase      = 41;
+        detune       = 0;
+}</PRE>
+</BLOCKQUOTE>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="02-05"></A>
+<H3>
+18.1.2.5 The Envelope Object</H3>
+
+<p>The envelope object specifies the attack-decay-sustain-release (ADSR) envelope, or volume contour, for a sound. Volumes are specified in the range of 0 to 127, and the times are specified in microseconds. </p>
+
+<P>In the example below, the sound's envelopes would ramp from 0 to 127 in 0 microseconds, decay to 0 in 400 milliseconds, wait (<a href="../../keywords/index/data/audio.htm#sustain" target="keywords">sustain</a>) for a MIDI Note Off, and then release to 0 in 200 milliseconds. The decay portion of the envelope decays to zero. For many acoustic instruments, especially percussion instruments, this gives the most realistic envelope. </p>
+
+<P><strong>Note:</strong>  The Sound Player uses envelopes in a slightly different way. See Section 17 for details. </p>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="02-06"></A>
+<H3>
+18.1.2.6 A Complete Example</H3>
+
+<p>The following example, taken from the General MIDI bank that is shipped with the development software, defines a bank with one instrument, the Grand Piano. </p>
+
+<BLOCKQUOTE>
+<PRE>envelope GrandPianoEnv
+{
+        attackTime      = 0;
+        attackVolume    = 127;
+        decayTime       = 4000000;
+        decayVolume     = 0;
+        releaseTime     = 200000;
+        releaseVolume   = 0;
+}
+
+keymap piano00key
+{
+        velocityMin     = 0;
+        velocityMax     = 127;
+        keyMin          = 0;
+        keyMax          = 41;
+        keyBase         = 51;
+        detune          = 0;
+}
+
+sound GrandPiano00
+{
+        use ("./sounds/GMPiano_C2.18k.aifc");
+        pan     = 64;
+        volume   = 127;
+        keymap   = piano00key;
+        envelope = GrandPianoEnv;
+}
+
+keymap piano01key
+{
+        velocityMin     = 0;
+        velocityMax     = 127;
+        keyMin          = 42;
+        keyMax          = 49;
+        keyBase         = 63;
+        detune          = 0;
+}
+
+sound GrandPiano01
+{
+        use ("./sounds/GMPiano_Bb2.16k.aifc");
+        pan     = 64;
+        volume   = 127;
+        keymap   = piano01key;
+        envelope = GrandPianoEnv;
+}
+
+keymap piano02key
+{
+        velocityMin     = 0;
+        velocityMax     = 127;
+        keyMin          = 50;
+        keyMax          = 57;
+        keyBase         = 67;
+        detune          = 0;
+}
+
+sound GrandPiano02
+{
+        use ("./sounds/GMPiano_F3.19k.aifc");
+        pan      = 64;
+        volume   = 127;
+        keymap   = piano02key;
+        envelope = GrandPianoEnv;
+}
+
+keymap piano03key
+{
+        velocityMin     = 0;
+        velocityMax     = 127;
+        keyMin          = 58;
+        keyMax          = 63;
+        keyBase         = 72;
+        detune          = 0;
+}
+
+sound GrandPiano03
+{
+        use ("./sounds/GMPiano_C4.22k.aifc");
+        pan      = 64;
+        volume   = 127;
+        keymap   = piano03key;
+        envelope = GrandPianoEnv;
+}
+
+keymap piano04key
+{
+        velocityMin     = 0;
+        velocityMax     = 127;
+        keyMin          = 64;
+        keyMax          = 69;
+        keyBase         = 79;
+        detune          = 0;
+}
+
+sound GrandPiano04
+{
+        use ("./sounds/GMPiano_G4.22k.aifc");
+        pan      = 64;
+        volume   = 127;
+        keymap   = piano04key;
+        envelope = GrandPianoEnv;
+}
+
+keymap piano05key
+{
+        velocityMin     = 0;
+        velocityMax     = 127;
+        keyMin          = 70;
+        keyMax          = 75;
+        keyBase         = 84;
+        detune          = 0;
+}
+
+sound GrandPiano05
+{
+        use ("./sounds/GMPiano_C5.22k.aifc");
+        pan      = 64;
+        volume   = 127;
+        keymap   = piano05key;
+        envelope = GrandPianoEnv;
+}
+
+keymap piano06key
+{
+        velocityMin     = 0;
+        velocityMax     = 127;
+        keyMin          = 76;
+        keyMax          = 81;
+        keyBase         = 91;
+        detune          = 0;
+}
+
+sound GrandPiano06
+{
+        use ("./sounds/GMPiano_G5.22k.aifc");
+        pan      = 64;
+        volume   = 127;
+        keymap   = piano06key;
+        envelope = GrandPianoEnv;
+}
+
+keymap piano07key
+{
+        velocityMin     = 0;
+        velocityMax     = 127;
+        keyMin          = 82;
+        keyMax          = 111;
+        keyBase         = 99;
+        detune          = 0;
+}
+
+sound GrandPiano07
+{
+        use("./sounds/GMPiano_C6.18k.aifc");
+        pan      = 64;
+        volume   = 127;
+        keymap   = piano07key;
+        envelope = GrandPianoEnv;
+}
+
+instrument GrandPiano
+{
+        volume  = 127;
+        pan     = 64;
+
+        sound [0]  = GrandPiano00;
+        sound [1]  = GrandPiano01;
+        sound [2]  = GrandPiano02;
+        sound [3]  = GrandPiano03;
+        sound [4]  = GrandPiano04;
+        sound [5]  = GrandPiano05;
+        sound [6]  = GrandPiano06;
+        sound [7]  = GrandPiano07;
+}
+
+bank GenMidiBank
+{
+        sampleRate  = 44100;
+        program [0] = GrandPiano;
+}</PRE>
+</BLOCKQUOTE>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR>
+</BODY>
+</HTML>

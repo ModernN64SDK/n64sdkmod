@@ -1,0 +1,317 @@
+<HTML>
+<HEAD>
+<TITLE>Chapter 3 Binary Format</TITLE>
+</HEAD>
+<BODY LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff">
+
+<font face="arial" size="-1">
+<b><font size="3">Chapter 3 Binary Format</b></font>
+<HR>
+
+<b>3-20. EnvList</b>
+<P>
+<u>2. Env Area</u>
+<p>
+The Env area is used for the environment settings of a scene. The Env area is mapped as follows.
+
+<p>
+<table border="1" cellpadding="3" cellspacing="3">
+
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+env_tag
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+this_env_index
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+env_size
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+env_name_index
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+fog
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+fog_color
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+fog_near
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+fog_far
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+fill_color
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+fill_depth
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+bg_sprite_img
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+bg_sprite_depth
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+nintendo_extension_block
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td>
+user_<font face="arial" size="-1">extension_block
+</td>
+</tr>
+</table>
+
+<p>
+Figure: Env Area Memory Map
+
+<p>
+<table border="1" cellpadding="3" cellspacing="3">
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 env_tag
+</td>
+<td>
+<font face="arial" size="-1">
+Tag indicating Env. Set the following 
+<pre><font face="courier" size="2"><b>TAG_ENV&#9;0x00100100</b></pre></font>
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 this_env_index
+</td>
+<td>
+<font face="arial" size="-1">
+Index number of this Env
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 env_size
+</td>
+<td>
+<font face="arial" size="-1">
+Size of this Env
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 env_name_index
+</td>
+<td>
+<font face="arial" size="-1">
+Index number of Env name in NameList
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+<a href="../chapt5/seg1.htm#FOG">u32 fog</a>
+</td>
+<td>
+<font face="arial" size="-1">
+When FOG is used, set the following 
+<pre><font face="courier" size="2"><b>ENV_FOG_USE&#9;0x00000001</b></pre></font>
+<P>
+When FOG is not used, set the following.
+<pre><font face="courier" size="2"><b>ENV_FOG_NONE&#9;0x00000000</b></pre></font>
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 fog_color
+</td>
+<td>
+<font face="arial" size="-1">
+When FOG is used, set as 0xRRGGBBAA.
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 fog_near
+</td>
+<td>
+<font face="arial" size="-1">
+Sets the starting position where Fog is displayed. Set the near clipping plane as 0 and the far clipping plane as 1000, then pick the value in between.
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 fog_far
+</td>
+<td>
+<font face="arial" size="-1">
+Sets the saturation point of FOG. Set the near clipping plane as 0 and the far clipping plane as 1000, then pick the value in between.
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+<a href="../chapt5/seg1.htm#FILL_COLOR">u32 fill_color</a>
+</td>
+<td>
+<font face="arial" size="-1">
+Sets the color for clearing the frame buffer. Specify as 0x00RRGGBB. <p>
+When the frame buffer is not cleared by the fill color, set the following: 
+<pre><font face="courier" size="2"><b>FILL_COLOR_NONE&#9;0xffffffff</b></pre>
+</font>
+
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+<a href="../chapt5/seg1.htm#FILL_DEPTH">u32 fill_depth</a>
+</td>
+<td>
+<font face="arial" size="-1">
+Sets the color for clearing the Z buffer. Specify as 0x00RRGGBB. <p>
+When the Z buffer is not cleared by the fill color, specify the following: 
+<pre><font face="courier" size="2"><b>FILL_DEPTH_NONE	0xffffffff</b></pre></font>
+
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+<a href="../chapt5/seg1.htm#BG_SPRITE_IMG">u32 bg_sprite_img</a>
+</td>
+<td>
+<font face="arial" size="-1">
+Specifies the TexList index number of the texture image to be used in BG.<p>
+When a texture image is not used, specify: 
+<pre><font face="courier" size="2"><b>BG_COLOR_IMG_NONE	0xffffffff</b></pre>
+</font>
+
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+<a href="../chapt5/seg1.htm#BG_SPRITE_DEPTH">u32 bg_sprite_depth</a>
+</td>
+<td>
+<font face="arial" size="-1">
+Specifies the TextList index number of the depth image to be used in BG. <p>
+When a depth image is not used, specify: 
+<pre><font face="courier" size="2"><b>BG_DEPTH_IMG_NONE	0xffffffff</b></pre></font>
+
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 nintendo_extension_block_size
+</td>
+<td>
+<font face="arial" size="-1">
+Nintendo extension block size
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 user_extension_block_size
+</td>
+<td>
+<font face="arial" size="-1">
+User extension block size
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+NintendoExtensionBlock
+</td>
+<td>
+<font face="arial" size="-1">
+Nintendo extension block
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+UserExtensinoBlock
+</td>
+<td>
+<font face="arial" size="-1">
+User extension block
+</td>
+</tr>
+</table>
+<p>
+
+<hr>
+
+<p align="right"><a href="../index.htm">
+<img src="../../../gif/index.gif"
+border="0" width="65" height="17"></a>
+&nbsp; <a href="./seg21.htm">
+<img src="../../../gif/next.gif"
+border="0" width="65" height="17"></a></p>
+
+</body>
+</html>
+
+

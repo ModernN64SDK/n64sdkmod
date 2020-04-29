@@ -1,0 +1,217 @@
+<html>
+<HEAD>
+<TITLE>ColorPaletteNode</TITLE>
+</HEAD>
+<BODY LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff">
+
+<font face="arial" size="-1">
+<b><font size="3">14. ColorPaletteList</font></b>
+<HR>
+
+<P>
+<b>(1) ColorPaletteList</b>
+<p>
+<blockquote>
+
+<table border="1" width="600">
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 color_palette_list_tag</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the tags of the ColorPaletteList.  Please set the tags shown below.
+<font face="courier" size-"2">
+<pre>
+<b>
+TAG_COLOR_PALETTE_LIST  0x00210000
+</b>
+</pre>
+</font>
+</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 color_palette_list_header_size</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the ColorPaletteList byte size.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 color_palette_list_size</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the ColorPaletteList byte size.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 color_palette_num</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the ColorPalette number.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 color_palette_num_byte</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the ColorPalette byte size.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">ColorPalette</font>
+</td>
+<td>
+<font face="arial" size="-1">This is the ColorPalette area.</font>
+</td>
+</tr>
+</table>
+<p>
+<a href="./color_palette_C.htm">Go to the data chunk</a>
+<p>
+</blockquote>
+
+<b>(2) ColorPalette</b>
+
+<blockquote>
+
+<table border="1" width="600">
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 color_palette_tag</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the tags of the color palette.  Please specify the tags shown below.
+<font face="courier" size="2">
+<pre>
+<b>
+TAG_COLOR_PALETTE       0x00210100
+</b>
+</pre>
+</font>
+</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 this_color_palette_index</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes this ColorPalette index number.</font>
+</td>
+</tr>
+
+<!..
+-- DELETE START --
+1998/09/30
+
+<tr
+<td nowrap
+u32 color_palette_header_size
+</td
+<td
+Describes the ColorPaletteHeader byte size.
+</td
+</tr
+
+-- DELETE END --
+..>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 color_palette_size</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the ColorPalette byte size.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 color_palette_name_index</font>
+</td>
+<td>
+<font face="arial" size="-1">Uses a NameList index number to specify the ColorPalette name.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 color_num</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the color number of ColorPalette.  The following flags have been defined:
+<font face="courier" size="2">
+<pre>
+<b>
+NIFF2_PALETTE_COLOR_16&#9;&#9;0x00000010
+NIFF2_PALETTE_COLOR_256&#9;&#9;0x00000100
+</b>
+</pre>
+</font>
+</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 color_type</font>
+</td>
+<td>
+<font face="arial" size="-1">It is possible to specify either IA16 or RGBA16 for each 16-bit color in the palette.  IA refers to Intensity Alpha data, and it is used with 8-bit intensity and 8-bit alpha.  RGBA is used with 5-bit red, 5-bit green, 5-bit blue, and 1-bit and alpha.  The following flags have been defined:
+<font face="courier" size="2">
+<pre>
+<b>
+NIFF2_PALETTE_RGBA16&#9;&#9;0x00000000
+NIFF2_PALETTE_IA16&#9;&#9;0x00000001
+</b>
+</pre>
+</font>
+</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 reserved</font>
+</td>
+<td>
+<font face="arial" size="-1">Please describe 0x0 as the default.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 color_array</font>
+</td>
+<td>
+<font face="arial" size="-1">The actual palette data.<p>
+Actual color values are stored in order from palette number 0.<p>
+Since each color value is a 16-bit value, they are stored using the bid endian method in pairs in color_array.<p>
+Since the total number of colors in the palette is 16 when color_num = NIFF2_PALETTE_COLOR_NUM_16, color_array has 8 units of data: 0 ~ 7.<p>
+Since the total number of colors in palette is 256 when color_num = NIFF2_PALETTE_COLOR_NUM_256, color_array has 128 units of data: 0 ~ 127.  In other words, color_array_num = 128.</font>
+</td>
+</tr>
+</table>
+<p>
+<a href="./color_palette_C.htm">Go to the data chunk</a>
+<p>
+</blockquote>
+
+<hr>
+
+</body>
+</html>

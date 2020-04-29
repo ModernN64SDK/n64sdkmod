@@ -1,0 +1,94 @@
+<HTML>
+<HEAD>
+<TITLE>nuContPakFileReadWrite</TITLE>
+</HEAD>
+
+<BODY bgcolor="#FFFFFF">
+<font face="arial" size="-1">
+
+<P>
+<FONT size="5"><b><IMG src="../nusystem2.gif" height="30" width="176">Function</b></FONT>
+
+<HR>
+<P>
+<FONT size="3"><b>nuContPakFileReadWrite</b></FONT>
+<p>
+<HR>
+<P>
+<b>Syntax</b>
+<font face="courier" size="2">
+<pre>s32 nuContPakFileReadWrite(NUContPakFile *file, s32 offset, s32 size, u8* buf, u32 mode)</pre>
+</font>
+
+<p><b>Arguments</b>
+<font face="courier" size="2">
+<pre>
+*file      Controller Pak structure<br>
+offset     read/write offset position<br>
+size       read/write size<br>
+*buf       buffer where read data is to be stored or the buffer where data to be written is stored<br>
+mode       specifies whether to read or write
+           NU_CONT_PAK_READ    Read data
+           NU_CONT_PAK_WRITE   Write data</pre>
+</font>
+
+<p><b>Return Value</b>
+<font face="courier" size="2">
+<pre>Error</pre>
+</font>
+
+<p><b>Description</b>
+
+<p><i>Read/write Controller Pak game note's game data</i>
+
+<p>Reads game data from Controller Pak's game note or writes game data to the Controller Pak's game note. "file" specifies the Controller Pak structure in the game note opened by the nuContPakFileOpen function in the device opened by the nuContPakOpen function. "size" bytes of data are read or written starting from the "offset" position.
+
+<p>When NU_CONT_PAK_READ is specified for the mode, data is read into the area specified with "buf." When NU_CONT_PAK_WRITE is specified for the mode, the data specified with "buf" is written to the Controller Pak. Both "offset" and "size" must be multiples of 32 and they must be smaller than the file size. 
+
+<p>The value returned from the osPfsFileReadWrite function is stored in file.error.
+
+<p><b>Errors</b>
+<p>
+<table border="1" cellspacing="1">
+    <tr>
+	<td><font face="arial" size="-1">PFS_ERR_NOPACK</font></td>
+	<td><font face="arial" size="-1">Nothing is inserted in the specified Controller.</font></td>
+    </tr>
+    <tr>
+	<td><font face="arial" size="-1">PFS_ERR_NEW_PACK</font></td>
+	<td><font face="arial" size="-1">The Controller Pak may have been changed. Please perform the Open process again.</font></td>
+    </tr>
+    <tr>
+ 	<td><font face="arial" size="-1">PFS_ERR_INCONSISTENT</font></td>
+ 	<td><font face="arial" size="-1">There is an inconsistency in the file system management area.</font></td>
+    </tr>
+    <tr>
+	<td><font face="arial" size="-1">PFS_ERR_CONTRFAIL</font></td>
+   	<td><font face="arial" size="-1">Data transfer with Controller has failed.</font></td>
+    </tr>
+    <tr>
+	<td><font face="arial" size="-1">PFS_ERR_INVALID</font></td>
+	<td><font face="arial" size="-1">Invalid parameter or the game note does not exist.</font></td>
+    </tr>
+    <tr>
+	<td><font face="arial" size="-1">PFS_ERR_BAD_DATA</font></td>
+	<td><font face="arial" size="-1">An attempt was made to read from a game note containing no data.</font></td>
+    </tr>
+</table>
+
+<p><b>See Also</b>
+<p><a href="nuContPakOpen.htm">nuContPakOpen</a>, <a
+href="nuContPakFileOpen.htm">nuContPakFileOpen</a>, <a
+href="nuContPakFileOpenJis.htm">nuContPakFileOpenJis</a>, <a
+href="nuContPakFileRead.htm">nuContPakFileRead</a>, <a
+href="nuContPakFileWrite.htm">nuContPakFileWrite</a>, <a
+href="nuContPakFileFread.htm">nuContPakFileFread</a>, and <a
+href="nuContPakFileFwrite.htm">nuContPakFileFwrite</a>
+
+<p>
+<hr>
+
+<p align="right"><a href="index.htm"><img src="../index.gif" border="0"
+width="65" height="17"></a>
+</body>
+</html>

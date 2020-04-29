@@ -1,0 +1,301 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../N64man.css">
+<Author's Comments: JLR made formating edits.
+MAP updated format 9/28/99>
+<TITLE>n64mdisk</TITLE>
+</HEAD>
+
+<BODY bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>n64mdisk</b></font><font style="font-size: 9pt"><b> (tool command)</b></font>
+
+<P><i>Produces master data from the created game</i></P>
+
+<p><b>Syntax</B></font></p>
+<p>
+n64mdisk [config file] ...... Follows the config file specifications to create the master data.
+<p>n64mdisk -m [master data] ... Creates mwrite, mwrite.id from the master data.</p>
+
+<p><b>Description</B></font></p>
+<P>
+n64mdisk is the tool used to create the game program's master data. The master data is used by the developer when submitting an N64 Disk Drive game program to Nintendo after debugging. The data follows a certain fixed format. A disk is created from the master data using a batch file called mwrite for final checking of the game. n64mdisk creates this batch file when it is producing the master data. <BR>
+</p>
+<p>
+<B>Note: </B>When presenting the master data, please also provide NCC, the code used for checking the data. Use  <A href="calcncc.htm">calcncc</A> to calculate the NCC.<BR>
+</P>
+<TABLE width="100%" border="0">
+  <TR>
+    <TD width="50%">[For the PARTNER-N64NW]
+    <P>
+% n64mdisk
+    </P>
+</TD>
+    <TD width="50%">[For the PARTNER-N64PC]
+    <P>
+C&gt; n64mdisk
+    </P>
+</TD></TR>
+</TABLE>
+<P>
+When you enter as shown above, the file n64mdisk.cfg (the default config file) is read and its contents are used to create the master data file. The following files are produced at the time the master data is created: </P>
+<p><TABLE border="1">
+  <TR>
+    <TD width="76">master.d64</TD>
+    <TD width="295">The master data file</TD>
+    <TD width="76">mwrite</TD>
+    <TD width="295">The batch file that writes the master data to a disk. A disk for final checking can be created by entering &lt;mwrite in the PARTNER command window. (&quot;&lt;&quot; is the PARTNER command for executing a batch file.) Please make sure to complete final debugging before creating the master data for submission. </TD>
+    <TD width="76"><BR>
+mwrite.id</TD>
+    <TD width="295">The ID file used by mwrite. This is a 32-byte file and it is copied as-is into the ID region when mwrite is executed. The information includes the "factory line number" and the "production time" of the machine on which mwrite was executed. For details, please refer to "Chapter 6: ID" in the N64 Disk Drive Programming Manual. </TD></TR></p>
+</TABLE>
+<P>
+It is also possible to create mwrite and mwrite.id from the already-created master data. To do this, enter as follows:
+</P>
+<P>
+<STRONG>n64mdisk -m (master file name)</STRONG>
+</P>
+<P>
+When the master file name is omitted, master.d64 is used. If n64mdisk is used with this format, it performs a simple check of whether or not the specified file (master.d64 if omitted) is the correct master data. If the file extension is not .d64, the system prompts for confirmation and waits for input. 
+</P>
+<P>
+<B>Note:</B> When creating the master data, make sure to use the libraries libleo.a and libultra_rom.a for linking. The libraries libleo_d.a and libultra_d.a are for debugging. Please create a disk for final checking using master data linked to libleo.a and libultra_rom.a, and conduct sufficient debugging with this disk before submitting the master. <BR>
+</P><p>
+<TABLE width="100%" border="0">
+  <TR>
+    <TD width="50%">[For the PARTNER-N64NW]
+    <P>
+% n64mdisk n64mdisk.yes
+    </P>
+</TD>
+    <TD width="50%">[For the PARTNER-N64PC]
+    <P>
+C&gt; n64mdisk n64mdisk.yes
+    </P>
+</TD></TR>
+</TABLE>
+
+<P>
+A master production config file can be specified as the above (here named n64mdisk.yes). <BR>
+</P>
+<P>
+Following is an example of such a config file and details about each line.
+</P>
+<P>
+&lt;Example of config file&gt;<BR>
+</P>
+<TABLE border="1">
+  <TR>
+    <TD>
+<PRE>
+USE GWRITE              gwrite
+DISK TYPE               AUTO
+IPL LOAD ADDRESS        0x80000400
+RAM START LBA           AUTO
+RAM END LBA             AUTO
+INITIAL CODE            NINT
+GAME VERSION            0
+DISK NUMBER             0
+DISK USE                0
+DESTINATION CODE        JAPAN
+COMPANY CODE            01
+FREE AREA               0x123456789abc
+</PRE>
+</TD></TR></p>
+</TABLE>
+
+<P>
+* USE GWRITE
+</P>
+<P>
+Specifies NO or gwrite. When NO is specified, ROM INIT. FILE must also be specified. When gwrite is specified, the master's ROM region data is created based on the contents of the gwrite file. If RAM region data is specified in the gwrite file, then RAM region data is also created. 
+</P>
+<P>
+(Example) <FONT face="Courier">USE GWRITE gwrite</FONT>
+</P>
+<P>
+(Example) <FONT face="Courier">USE GWRITE NO<BR>
+</FONT>
+</P>
+<P>
+* DISK TYPE
+</P>
+<P>
+Specifies the disk type. Numerical values of 0 to 6 can be specified. AUTO can also be specified, in which case the disk type is the value specified by gwrite. For details, see "Chapter 11.5: Disk Types (ROM area and RAM area)" in the N64 Disk Drive Programming Manual. Generally, gwrite created with <a href="makedisk.htm">makedisk</a> needs to be specified when creating master data for game disk.<BR>
+</P>
+<P>
+(Example) <FONT face="Courier">DISK TYPE AUTO<BR>
+(Example) DISK TYPE 0<BR>
+</FONT>
+</P>
+<P>
+* IPL LOAD ADDRESS
+</P>
+<P>
+Specifies the IPL load address. (See "Chapter 11.4: System Area" in the N64 Disk Drive Programming Manual to read about the load address.) When data is created with gwrite, any address specified with "leowrite -a xxxxxx" in gwrite is given priority. 
+</P>
+<P>
+(Example) <FONT face="Courier">IPL LOAD ADDRESS 0x80000400<BR>
+</FONT>
+</P>
+<P>
+* IPL LOAD SIZE
+</P>
+<P>
+Specifies the IPL load size. When data is created with gwrite, this is not needed (it is ignored). (See "Section 11.4: System Area" in the N64 Disk Drive Programming Manual for information about the IPL size.) 
+</P>
+<P>
+(Example) <FONT face="Courier">IPL LOAD SIZE 8</FONT></P>
+<P>
+* ROM INIT. FILE
+</P>
+<P>
+Specifies the image file for the ROM area data. This must be specified when no data is created using gwrite. Conversely, when gwrite is used to create data, this cannot be specified. 
+</P>
+<P>
+(Example) <FONT face="Courier">ROM INIT. FILE romimage<BR>
+</FONT>
+</P>
+<P>
+* RAM START LBA
+</P>
+<P>
+Specifies the starting LBA for the RAM area data. When AUTO is specified, the RAM area's starting LBA is set according to the disk type specified by DISK TYPE. Specify AUTO even when the RAM area is not being used. 
+</P>
+<P>
+(Example) <FONT face="Courier">RAM START LBA AUTO</FONT>
+</P>
+<P>
+(Example) <FONT face="Courier">RAM START LBA 1500<BR>
+</FONT>
+</P>
+<P>
+* RAM END LBA
+</P>
+<P>
+Specifies the ending LBA for the RAM area data. When AUTO is specified, the ending LBA is automatically set from the RAM area image file size specified by gwrite or by RAM INIT. FILE. 
+</P>
+<P>
+(Example) <FONT face="Courier">RAM END LBA AUTO</FONT>
+</P>
+<P>
+(Example) <FONT face="Courier">RAM END LBA 2000<BR>
+</FONT>
+</P>
+<P>
+* RAM INIT. FILE
+</P>
+<P>
+Specifies the image file for the RAM area data. 
+</P>
+<P>
+(Example) <FONT face="Courier">RAM INIT. FILE ramimage<BR>
+</FONT>
+</P>
+<P>
+Note: When there is a clearly specified value for RAM END LBA, the RAM area from the starting LBA to the specified ending LBA is secured. But parts whose initial data values are not specified by gwrite or by RAM INIT. FILE at that time are filled with 0xFF.<BR>
+</P>
+<P>
+For details concerning all of the following specifications, please refer to "Chapter 6: Disk ID" in the N64 Disk Drive Programming Manual.
+</P>
+<P>
+* INITIAL CODE
+</P>
+<P>
+Specifies the initial code. (Up to 4 ASCII characters).
+</P>
+<P>
+(Example) <FONT face="Courier">INITIAL CODE NINT<BR>
+</FONT>
+</P>
+<P>
+* GAME VERSION
+</P>
+<P>
+Specifies the game version. (Maximum two-digit decimal number).
+</P>
+<P>
+(Example) <FONT face="Courier">GAME VERSION 1</FONT>
+</P>
+<P>
+(Example) <FONT face="Courier">GAME VERSION 99<BR>
+</FONT>
+</P>
+<P>
+* DISK NUMBER
+</P>
+<P>
+Specifies the disk number. (Maximum two-digit decimal number). 
+</P>
+<P>
+(Example) <FONT face="Courier">DISK NUMBER 0</FONT>
+</P>
+<P>
+(Example) <FONT face="Courier">DISK NUMBER 99<BR>
+</FONT>
+</P>
+<P>
+* RAM USE
+</P>
+<P>
+Specifies usage of RAM (no greater than 2-digit hexadecimal). 1 indicates use of Nintendo's recommended file system. Specify 0 when no special format like Nintendo's recommended file system is used. 
+</P>
+<P>
+(Example) <FONT face="Courier">RAM USE 0x0</FONT>
+</P>
+<P>
+* DISK USE
+</P>
+<P>
+Specifies disk use. 0 is normally specified.
+</P>
+<P>
+(Example) <FONT face="Courier">DISK USE 0<BR>
+</FONT>
+</P>
+<P>
+* DESTINATION CODE
+</P>
+<P>
+Specifies the destination (code). Specify JAPAN or 0 for Japan. Specify 1 for the U.S.
+</P>
+<P>
+(Example) <FONT face="Courier">DESTINATION CODE JAPAN</FONT>
+</P>
+<P>
+(Example) <FONT face="Courier">DESTINATION CODE 1<BR>
+</FONT>
+</P>
+<P>
+* COMPANY CODE
+</P>
+<P>
+Specifies the company code (ASCII 2-byte) of the game manufacturer. 
+</P>
+<P>
+(Example) <FONT face="Courier">COMPANY CODE 12<BR>
+</FONT>
+</P>
+<P>
+* FREE AREA
+</P>
+<P>
+An area for writing data freely (Maximum 12-digit hexadecimal number).
+</P>
+<P>
+(Example) FREE AREA 0x123456789abc<BR>
+</P>
+<p><b>See Also</B></font></p>
+</P>
+<P>
+<A href="calcncc.htm">calcncc</A><BR>
+</P>
+<p><b>Revision History</B></font></p>
+<P>
+01/21/1999 Modified the contents on -m option. Modified the contents on USE GWRITE and DISK USE. Added RAM USE.<br>
+04/30/1999  Changed Format
+<br><br>
+
+</P>
+</BODY>
+</HTML>

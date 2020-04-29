@@ -1,0 +1,71 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../n64man.css">
+<title>MusSetFxType()</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check-->
+</head>
+
+<h1>MusSetFxType()</h1>
+
+<h2>Syntax</h2>
+
+<pre>
+int MusSetFxType(int fxtype);
+</pre>
+
+<h2>Arguments</h2>
+
+<dl>
+  <dt><b>fxtype</b>
+  <dd>the audio library FX type 
+</dl>
+
+<h2>Description</h2>
+
+<p>It sets the global audio library FX type.</p>
+
+<p>This function passes the FX change command to the player via the FIFO buffer. If there is no space free in the FIFO buffer this command will be ignored. The FIFO buffer is emptied every time the player processes sound data.</p>
+
+<p>The fxtype argument sets the audio library FX type from one of the following.</p>
+
+<pre>  AL_FX_NONE
+  AL_FX_SMALLROOM
+  AL_FX_BIGROOM (default value)
+  AL_FX_CHORUS
+  AL_FX_FLANGE
+  AL_FX_ECHO
+</pre>
+
+<h2>Return Value</h2>
+
+<p>Zero (0) if the FIFO command has been ignored, otherwise a none zero value.</p>
+
+<h2>Example</h2>
+
+<pre>void SetFxType(int fxtype)
+{
+  static int last_fxtype;
+
+  if (fxtype==last_fxtype)
+    return;
+  last_fxtype = fxtype;
+  while (MusSetFxType(fxtype)==0);
+}
+
+void InitCavernLevel(void)
+{
+  ...
+  SetFxType(AL_FX_ECHO);
+  ...
+}
+</pre>
+
+<h2>See Also</h2>
+
+<p>
+<a href="MusSetSongFxChange.html">MusSetSongFxChange()</a>
+</p>
+
+</body>
+</html>

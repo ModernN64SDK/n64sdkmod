@@ -1,0 +1,37 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Device-Chapter 1  How to Use Devices Connected to the SI</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/21/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<FONT style="font-size:12pt"><B>1.3  Introduction to the Controller Pak</B></FONT>
+<br>
+<P>
+     The Controller Pak is a peripheral that connects to the Controller joyport and is used as a N64 auxiliary storage device.  Think of it as a kind of removable media like a floppy disk. <br><br> 
+     Since there is a file system structure inside the Controller Pak, the device can be used for the storage of multiple data files.  However, in the N64 system these data files are not called files, but rather "game notes" (or simply notes). <br><br> 
+
+      In a disk drive, data access is based on a system in which data is managed in units called sectors.  In the same way, data in the Controller Pak is managed in units called "pages."  The size of a page is always 256 bytes, so the size of a game note created by the programmer is always a multiple of 256.<br><br>
+     The pages are numbered starting from Page 0, Page 1 ... in order from the start of the memory area.   The first five pages are used as the management area.<br><br>
+     You can create up to 16 game notes in one Controller Pak (if the Controller Pak is 256K). There is a limit to the number of game notes as well as the capacity of the Controller Pak, so when you put together the game application be sure to check whether a game note and sufficient space can be secured before the game starts.  Informing a player that there is "insufficient memory" after they have obtained a high score is something that should be avoided.<br><br>
+
+     Next we'll explain game notes.  To identify a game note in the Controller Pak, the following four elements are required: </P>
+<OL>
+<LI>Company code	             ( 2 bytes)
+<LI>Game code (initial code)       ( 4 bytes)
+<LI>Note name	(16 bytes)
+<LI>Note extension	             ( 4 bytes)
+</OL>
+<P>
+ The company code and the game code (initial code) are the ASCII codes that represent the name of the developer/marketer and the name of the game title.  Please use the codes issued by Nintendo. <br><br> 
+     The note name corresponds to the file name.  It is described using the N64 font code system.  If the note name is smaller than 16 bytes, you must fill the remaining bytes with null characters (0x00).  <br><br>
+     The note extension is designed so that multiple game notes can be used in a single game.  For details, please see the programming manual "26.3.2.5, Multiple Notes".  If you will only be using one note, you can think of the note extension as a 4-byte integer value 0. <br><br> 
+</P>
+<BR>
+<BR>
+<BR>
+</BODY>
+</HTML>

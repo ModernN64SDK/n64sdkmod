@@ -1,0 +1,106 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.>
+<TITLE>guParseGbiDL</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>guParseGbiDL<FONT size="+0"> [Function]</FONT></H1>
+
+<p><h3>Function</h3></p>
+
+<p>guParseGbiDL</p>
+<P>
+<i>Outputs a GBI display list</i>
+</P>
+<H3>Syntax</H3>
+<p>
+<PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gu.htm">gu.h</A> */
+void guParseGbiDL(u64 *gbi_dl, u32 nbytes, u8 flags);</CODE></PRE></p>
+
+<H3>Arguments</H3>
+<p><DL>
+  <DT><B>gbi_dl</B>
+  <DD>Pointer to the GBI display list in DRAM
+  <DT><B>nbytes</B>
+  <DD>Byte size of the GBI display list (0 shows the entire list)
+  <DT><B>flags</B>
+  <DD>Additional information flags
+  <DD><B>GU_PARSEGBI_ROWMAJOR</B> (Enables output by order of rows)
+  <DD><B>GU_PARSEGBI_NONEST</B> (Disables output of nests)
+  <DD><B>GU_PARSEGBI_FLTMTX</B> (Enables output in floating point)
+  <DD><B>GU_PARSEGBI_SHOWDMA</B> (Enables showing of DMA data)
+  <DD><B>GU_PARSEGBI_ALLMTX</B> (Enables output of matrices)
+  <DD><B>GU_PARSEGBI_DUMPONLY</B> (Enables showing in hexadecimal)
+</DL></p>
+
+<H3>Returned value</H3>
+<P>
+None.
+</P>
+<H3>Description</H3>
+<P>
+This function interprets commands and data in the GBI display list and outputs them in a readable format.  The GBI display list is processed by graphics microcode running on the RSP in order to create an RDP-format display list.  Depending on which microcode is used in the graphics task, this output from the RSP can be either sent directly to the RDP or passed via DRAM.  If this RSP output (RDP display list) has been stored in DRAM, it can be output in a readable format using the <A HREF="guParseRdpDL.htm">guParseRdpDL</A> function.  See <A HREF="../os/osSpTaskLoad.htm">osSpTaskLoad</A> to read about the OSTask structure.
+<DL>
+  <DT>Regarding the <B>flags</B> argument:
+  <DD>The following flags can be ORed to make multiple specifications.
+  <DL>
+  <DT><B>GU_PARSEGBI_ROWMAJOR</B>
+  <DD>Outputs the matrix in order of rows (when not specified, the matrix is output in order of columns).
+  <DT><B>GU_PARSEGBI_NONEST</B>
+  <DD>Nested display lists are not output.
+  <DT><B>GU_PARSEGBI_FLTMTX</B>
+  <DD>Matrix is output in floating point.
+  <DT><B>GU_PARSEGBI_SHOWDMA</B>
+  <DD>DMA-processed data are also output.
+  <DT><B>GU_PARSEGBI_ALLMTX</B>
+  <DD>Modeling matrices and projection matrices are also output.
+  <DT><B>GU_PARSEGBI_DUMPONLY</B>
+  <DD>Dumped in hexadecimal.
+  </DL>
+</DL>
+</P>
+<H3>Note</H3>
+<P>
+To use this function you must run <A HREF="../tool/dlprint.htm">dlprint</A> on the Indy. <B>gbi_dl</B> and <B>nbytes</B> correspond to the data_ptr field and the data_size field of the OSTask structure.  Normally you set <B>nbytes</B> to 0 in order to output the entire list.
+</P>
+<H3>Comment</H3>
+<P>
+The OSTask looks like this:
+</P>
+<PRE><CODE>typedef struct {
+     u32  type;              // Task type
+     u32  flags;             // Task state bit type
+     u64  *ucode_boot;       // Pointer to boot microcode
+     u32  ucode_boot_size;   // Size of this
+     u64  *ucode;            // Pointer to task microcode
+     u32  ucode_size;        // Size of this
+     u64  *ucode_data;       // Pointer to microcode data
+     u32  ucode_data_size;   // Size of this
+     u64  *dram_stack;       // Pointer to DRAM matrix stack
+     u32  dram_stack_size;   // Size of this
+     u64  *output_buff;      // Pointer to output buffer
+     u64  *output_buff_size; // Size of this
+     u64  *data_ptr;         // Pointer to SP command list
+     u32  data_size;         // Size of this
+     u64  *yield_data_ptr;   // Pointer to yield buffer
+     u32  yield_data_size;   // Size of this
+} OSTask_t;
+typedef union {
+    OSTask_t       t;
+    long long int  force_structure_alignment;
+} OSTask;
+</CODE></PRE>
+<H3>See Also</H3>
+<P>
+<A HREF="../al/alParseAbiCL.htm">alParseAbiCL</A>, <A HREF="../tool/dlprint.htm">dlprint</A>, <A HREF="guParseRdpDL.htm">guParseRdpDL</A>, and <A HREF="../os/osSpTaskLoad.htm">osSpTaskLoad</A>
+</P>
+<H3>Revision History</H3>
+<P>
+03/01/99  Completely rewritten.
+</P>
+</BODY>
+</HTML>

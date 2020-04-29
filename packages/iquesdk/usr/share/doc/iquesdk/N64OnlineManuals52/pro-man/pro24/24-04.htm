@@ -1,0 +1,88 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 24 - Performance Tuning Guide</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. -->
+</head>
+
+<h1>24.4 Raster Tuning (Filtrate) </h1>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="01"><h2>24.4.1 Disable Atomic Primitives </h2></a>
+
+<p><A HREF="../../keywords/index/data/system.htm#atomic primitive mode" target="keywords">Atomic primitive mode</A> (gPipelineMode(G_PM_1PRIMITIVE)) is intended to avoid <a href="../../keywords/index/data/system.htm#span buffer coherency problem" target="keywords">span buffer coherency problems</a> which can be caused by successive primitives with overlapping <a href="../../keywords/index/data/graphics.htm#span" target="keywords">spans</a> during "read-modify-write" modes (<a href="../../keywords/index/data/graphics.htm#Z buffer" target="keywords">Z-buffered</a> or blended modes). The 1PRIMITIVE mode inserts a delay into the pipeline between each primitive to make sure there are no overlaps. </p>
+
+<p>In reality, the overlap case is very rare, and would be hard to see unless you were looking for it. In the worst case, the lost cycles between primitives can add up to about 1-1.5Mpixels/sec of lost <a href="../../keywords/index/data/graphics.htm#fill rate" target="keywords">fill rate</a>.</p>
+
+<p>To disable the atomic primitive mode, use the following command. </p>
+
+<blockquote><pre>
+gPipelineMode(G_PM_NPRIMITIVE)
+</pre></blockquote>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="02"><h2>24.4.2 Partial Sorting for Z-Buffer</h2></a>
+
+<p>A "partial sorting" of objects being drawn can accelerate <a href="../../keywords/index/data/graphics.htm#rendering" target="keywords">rendering</a> when using Z-buffering. The Z-buffer test is a conditional write, so if objects are drawn in roughly front-to-back order, this test will often prevent the write to update the Z-buffer value. </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="03"><h2>24.4.3 No Z-Buffer </h2></a>
+
+<p>Z-buffer causes major penalty in fill rate. <a href="../../keywords/index/data/graphics.htm#anti-aliasing" target="keywords">Antialiasing</a> also causes some performance loss in fill rate. We have included a simple performance tool (blockmonkey) in the release to give you a feel for geometry and fill rate performance. </p>
+
+<p>There are many visibility sorting algorithms available and even more hybrids of these algorithms. There are also properties of particular games that impart valuable information about depth order. If a game can use these techniques and avoid Z-buffering, performance will improve. </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="03-01"><h3>24.4.3.1 Convex Objects</h3></a>
+
+<p>If a group of objects are all convex, a centroid or bounding volume sort and back-face rejection will give the proper rendering order.</p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="03-02"><h3>24.4.3.2 Meshed Objects</h3></a>
+
+<p>Many <a href="../../keywords/index/data/graphics.htm#mesh object" target="keywords">meshed objects</a> have a small number of mesh traversal orders which are correct sorts at arbitrary orientation, even though they are concave.  Meshed objects are <A target="keywords" HREF="../../keywords/index/data/system.htm#topology">topologically</A> 2D, for example, a torus, a terrain height field, building corridors, etc.  With one batch of <a href="../../keywords/index/data/graphics.htm#vertex" target="keywords">vertex</a> points, one of several <a href="../../keywords/index/data/graphics.htm#polygon" target="keywords">polygon</a> descriptor <a href="../../keywords/index/data/graphics.htm#display list" target="keywords">display lists</a> could be selected by view location.  For example, the polygons in a terrain mesh might have four orders across the mesh, S+T+, S-T+, S+T-, S-T-. The two sides of the mesh then closest to the view point select the order. </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="03-03"><h3>24.4.3.3 Cell Based Scenes</h3></a>
+
+<p>Cells are simply a higher level of mesh, where the cell draw order can be determined from view. </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="03-04"><h3>24.4.3.4 Layered Scenes </h3></a>
+
+<p>Often layers of data are known never to be behind another (buildings on a landscape, furniture in a room). then the layers can be drawn in this order, with only a sort within each layer. </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="03-05"><h3>24.4.3.5 Bucket Sort </h3></a>
+
+<p>Attractive since data need only be accessed once. A linked list of buckets can avoid local overflow without excessive memory usage. The bucket can be a display list, for example, of calls to <a href="../../keywords/index/data/graphics.htm#clamp" target="keywords">clamps</a>. </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="03-06"><h3>24.4.3.6 Avoid Cyclic Objects</h3></a>
+
+<p>Clamps of polygons in which NO sort order is correct (three long triangles arranged in a triangle in which at each corner a different triangle is in front) have no visibility solution without subdivision. </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="03-07"><h3>24.4.3.7 Game-Specific Visibility </h3></a>
+
+<p>Many game situations provide implied visibility order between objects or even within objects. Consider a jet fighter flight simulator game: The player is always moving "toward" (in general) and targets attack from a limited number of directions. This could allow you to model the targets carefully and achieve correct <a href="../../keywords/index/data/graphics.htm#surface" target="keywords">surface</a> visibility determination,
+even if they are not strictly convex. </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="04"><h2>24.4.4 No Antialiasing </h2></a>
+
+<p>Turning off antialiasing can help increase fill rate. To minimize the <a href="../../keywords/index/data/graphics.htm#aliasing" target="keywords">aliasing</a> effects, you can increase the horizontal resolution of the framebuffer. Performance tests (blockmonkey) show that 512x240 "no AA no ZB" is faster than 320x240 "AA no ZB" on large polygons. In some cases, this is better than a 25% gain, in exchange for an increase in framebuffer size. </p>
+
+<p>On smaller polygons, you will pay a 5% to 10% fixed <A target="keywords" HREF="../../keywords/index/data/system.htm#overhead">overhead</A> due to additional video bandwidth. Both antialiasing and <a href="../../keywords/index/data/graphics.htm#dither filter" target="keywords">dither filter</a> video hardware require fetching 3 scan lines and filter down to produce a single scan line of video.</p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="05"><h2>24.4.5 Reduced Aliasing</h2></a>
+
+<p>Reduced Aliasing refers to a <a href="../../keywords/index/data/graphics.htm#blender" target="keywords">blender</a> mode (see the G_RM_RA* macros in gbi.h) in which the color and the pixel <a href="../../keywords/index/data/graphics.htm#coverage value" target="keywords">coverage </a> are only written instead of the normal read/modify /write cycle. In this mode silhouette edges will be antialiased, but internal edges of an object will not be antialiased. This mode works with and without Z-buffering. </p>
+
+<p>Silouettes can also have artifacts in this mode when displayed on top of a surface which has edges through it, such as a tessellated background, which has also been rendered in this mode. This is because the edges in the background will be partial, rather than fully covered.  In this case, the pixel will have multiple partial fragments, and the antialiasing on the silhouette will look wrong. A possible work around for this problem is to render the background in non-antialiased mode, which will write full coverage to the framebuffer. Then render the foreground characters using this reduced antialiasing mode. </p>
+
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+</body> </html>

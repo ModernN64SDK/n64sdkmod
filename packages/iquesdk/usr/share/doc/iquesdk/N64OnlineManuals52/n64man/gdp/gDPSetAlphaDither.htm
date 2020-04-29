@@ -1,0 +1,67 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<link rel=stylesheet type="text/css" HREF="../N64man.css">
+<!--
+Editors Notes:
+  JLR made reformating and copy edits.
+  PWC- updated formatting
+-->
+
+<TITLE>gDPSetAlphaDither</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>gDPSetAlphaDither [Macro]</H1>
+<h2>Function</h2>
+<p>gDPSetAlphaDither<br><br>
+<i>Sets alpha dithering</i>
+</P>
+<p><b>Syntax</b></p>
+<p>
+<PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gbi.htm">gbi.h</A> */
+gDPSetAlphaDither(Gfx *gdl, u32 type)
+gsDPSetAlphaDither(         u32 type)</CODE></PRE></p>
+
+<p><b>Argument</b></p>
+<p><DL>
+  <DT><B>gdl</B>
+  <DD>Display list pointer.
+  <DT><B>type</B>
+  <DD>The alpha dithering type:
+  <DD><B>G_AD_PATTERN</B> (No change in pattern)
+  <DD><B>G_AD_NOTPATTERN</B> (The inverse of G_AD_PATTERN)
+  <DD><B>G_AD_NOISE</B> (Random noise dither pattern)
+    <DD><B>G_AD_DISABLE</B> (Disables alpha dithering)
+</DL></p>
+
+<p><b>Description</b></p>
+
+<P>
+Sets the alpha dithering type.  The RDP maintains the alpha value with 8-bit precision until processing in the blender (BL).  The resolution of the alpha value output from the BL is reduced to 5-bit precision.  For this reason, dithering is also used sometimes to reduce Mach bands.
+</P>
+<P>
+All of the dithering types have their strong points and their weak points, depending on the rendering mode and the contents of the scene.  For example, if camera motion is slow, then pattern dither generally produces good results.  Special noise effects can be achieved with a noise dither.
+</P>
+<P>
+For details, see Section 15.5.1 "Color Blend Hardware" in the N64 Programming Manual.
+</P>
+<p><b>Note</b></p>
+<P>
+The BL alpha value always drops from 8-bit precision to 5-bit precision, even when you use a 32-bit frame buffer which obviates the need for color dithering.
+</P>
+<p><b>Comment</p></b>
+<P>
+G_AD_PATTERN type alpha dithering depends on the color dithering settings (see <A HREF="gDPSetColorDither.htm">gDPSetColorDither</A>).  If color dithering is disabled, then the "standard" Bayer matrix ordered dither method is used for alpha dithering.  If color dither is set to noise dither, then the magic square ordered dither method is used for alpha dithering. 
+</P>
+<p><b>See Also</b></p>
+<P>
+<A HREF="gDPSetAlphaCompare.htm">gDPSetAlphaCompare</A>, <A HREF="gDPSetColorDither.htm">gDPSetColorDither</A>
+</P>
+
+<p><b>Revision History</p></b>
+<p>02/01/99&nbsp;&nbsp;&nbsp;Completely rewritten</p>
+
+</BODY>
+</HTML>

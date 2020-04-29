@@ -1,0 +1,39 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<html>
+
+	<head>
+              <LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+              <!-- Editor's Notes: JLR made reformating and copy edits.
+                     MAP- added links, updated format -->
+              <title>osGbpakPower</title>
+	</head>
+
+	<body bgcolor="white">
+		<font style="font-size: 12pt"><b>osGbpakPower</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+		<p><i>Turns power ON/OFF to the Game Boy Game Pak inserted in the N64 Transfer Pak</i></p>
+		<h3>Syntax</h3>
+		<pre>#include &lt;ultra64.h&gt;     /* <a href="../../header/ultra64.htm">ultra64.h</a> */
+s32 osGbpakPower(OSPfs *pfs, s32 flag);</pre>
+		<h3>Description</h3>
+		<p>The <tt>osGbpakPower</tt> function controls the supply of power to the Game Boy Game Pak.</p>
+		<p>If there is no activity, no power is supplied to the Game Boy Game Pak connected to the N64 Transfer Pak. Before accessing the Game Boy Game Pak, power must be turned on using <tt>osGbpakPower</tt>.</p>
+		<p>Also, please use the <a href="osGbpakInit.htm">osGbpakInit</a> function to initialize the pfs structure in advance. Power is turned ON or OFF according to the value specified by the flag. If OS_GBPAK_POWER_ON is specified for flag, the power is turned on; if OS_GBPAK_POWER_OFF is specified, the power is turned off.</p>
+		<p>Ensure that the power is on before calling <a href="osGbpakReadWrite.htm">osGbpakReadWrite</a>.</p>
+		<p>When the Game Boy Game Pak is not being accessed, use the <tt>osGbpakPower</tt> function to turn the Game Pak power OFF. Then turn the power back ON the next time it is accessed. Before a user may insert/pull out the Game Boy Game Pak, turn off the power.</p>
+		<p>If power is turned from OFF to ON, the function performs an internal process for more than 0.12 second to wait for the power supply to stabilize. <tt>osGbpakPower</tt> internally uses the CPU timer (<a href="osSetTimer.htm">osSetTimer</a> function)to wait for this interval. Thus, <a href="osCreateViManager.htm">osCreateViManager</a> must be called before calling <tt>osGbpakPower</tt>.</p>
+		<p>Return value is an error code. If the function terminates normally, a value of 0 is returned. If an error occurs, one of the following error codes is returned:</p>
+		<p><b>PFS_ERR_NOPACK</b></p>
+		<blockquote>
+			<p>Nothing is inserted in the specified Controller.</p>
+		</blockquote>
+		<p><b>PFS_ERR_CONTRFAIL</b></p>
+		<blockquote>
+			<p>Data transfers with the Controller have failed. The Controller may not be connected correctly, or there may be some problem with the N64 Transfer Pak or the Controller connector.</p>
+		</blockquote>
+		<h3>See Also</h3>
+		<p><a href="osGbpakInit.htm">osGbpakInit</a>, <a href="osGbpakPower.htm">osGbpakPower</a>, <a href="osGbpakReadWrite.htm">osGbpakReadWrite</a>, <a href="osGbpakGetStatus.htm">osGbpakGetStatus</a>, <a href="osGbpakReadId.htm">osGbpakReadId</a>, and <a href="osGbpakCheckConnector.htm">osGbpakCheckConnector</a></p>
+		<h3>Revision History</h3>
+		<p>1999/04/30 Changed format
+	</body>
+
+</html>

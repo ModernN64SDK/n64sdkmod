@@ -1,0 +1,197 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 13 - Texture Mapping</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. -->
+</head>
+
+<H1>13.8 Texture Memory </H1>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="01"></A>
+<H2>
+13.8.1 Memory Organization </H2>
+
+<p>Because texturing requires a large amount of random accesses with consistent access time to <a href="../../keywords/index/data/graphics.htm#texture memory" target="keywords">texture memory</a>, it is impractical to texture directly from DRAM.  The approach taken by the Nintendo 64 system is to cache up to 4 KB of an image in an on-chip, high-speed texture memory called <a href="../../keywords/index/data/graphics.htm#TMEM" target="keywords">TMEM</a>.  All primitives are textured using the contents of TMEM. The basic sequence of <A target="keywords" HREF="../../keywords/index/data/system.htm#event">events</A> needed to texture a primitive is: </p>
+<OL>
+<LI>Load a texture tile into TMEM. <BR><BR></LI>
+
+<LI>Describe <a href="../../keywords/index/data/graphics.htm#attribute" target="keywords">attributes</a> of the texture tile.<BR><BR></LI>
+
+<LI>Render primitives that use this tile. <BR><BR></LI>
+</OL>
+
+<p>TMEM should indeed be considered a cache from the programmer's point of view.  Since each tile must be loaded from DRAM, it makes sense to <a href="../../keywords/index/data/graphics.htm#rendering" target="keywords">render</a> as many primitives as possible, using the current tile before loading the next one in order to conserve DRAM <A target="keywords" HREF="../../keywords/index/data/system.htm#bandwidth">bandwidth</A>.</p>
+
+<P>Physically, TMEM is arranged as shown in <a href="#f13-09">Figure 13-9</a>. L0-3 are referred to as the low half of TMEM, H0-3 are referred to as the high half of TMEM. </p>
+<DL>
+<DT>
+<A NAME="f13-09"></A><strong>Figure 13-9 Physical TMEM Diagram </strong></DT>
+<DD>
+<IMG SRC="gif/f13-09.gif" ALT="[Figure 13-9]" ></DD>
+</DL>
+
+<p>For loading, TMEM is arranged logically, as shown in <a href="#f13-10"></a>Figure 13-10. </p>
+
+<DL>
+<DT>
+<A NAME="f13-10"></A><strong>Figure 13-10 TMEM Loading</strong></DT>
+<DD>
+<IMG SRC="gif/f13-10.gif" ALT="[Figure 13-10]" ></DD>
+</DL>
+
+<p>The following table shows the maximum tile sizes that can be stored in the 4KB Texture Memory. Images larger than this will be tiled. </p>
+
+<TABLE BORDER >
+<CAPTION><A NAME="t13-08"></A><strong>Table 13-8 Maximum tile sizes in TMEM </strong></CAPTION>
+
+<TR>
+<TH><a href="../../keywords/index/data/graphics.htm#texel" target="keywords">Texel</a> Type</TH>
+<TH>Maximum Texel Count</TH>
+</TR>
+
+<TR>
+<TD>4-bit(I,IA)</TD>
+
+<TD>8K</TD>
+</TR>
+
+<TR>
+<TD>4-bit <a href="../../keywords/index/data/graphics.htm#color index" target="keywords">Color Index</a></TD>
+
+<TD>4K(plus 16 palettes)</TD>
+</TR>
+
+<TR>
+<TD>8-bit(I,IA)</TD>
+
+<TD>4K</TD>
+</TR>
+
+<TR>
+<TD>8-bit Color Index</TD>
+
+<TD>2K(plus 256-entry LUT)</TD>
+</TR>
+
+<TR>
+<TD>16-bit RGBA</TD>
+
+<TD>2K</TD>
+</TR>
+
+<TR>
+<TD>16-bit IA</TD>
+
+<TD>2K</TD>
+</TR>
+
+<TR>
+<TD>16-bit <a href="../../keywords/index/data/graphics.htm#YUV" target="keywords">YUV</a></TD>
+
+<TD>2K Y's, 1K UV pairs</TD>
+</TR>
+
+<TR>
+<TD>32-bit RGBA</TD>
+
+<TD>1K</TD>
+</TR>
+</TABLE>
+
+<p>Four-bit textures are stored in TMEM, as shown in <a href="#f13-11">Figure 13-11</a>.</p>
+ 
+<DL>
+<DT>
+<A NAME="f13-11"></A><strong>Figure 13-11  Four-Bit Texel Layout in TMEM </strong></DT>
+
+<DD>
+<IMG SRC="gif/f13-11.gif" ALT="[Figure 13-11]" ></DD>
+</DL>
+
+<p>Eight-bit textures are stored in TMEM, as shown in <a href="#f13-12">Figure 13-12</a>.</p>
+
+<DL>
+<DT>
+<A NAME="f13-12"></A><strong>Figure 13-12  Eight-Bit Texel Layout in TMEM </strong></DT>
+
+<DD>
+<IMG SRC="gif/f13-12.gif" ALT="[Figure 13-12]" ></DD>
+</DL>
+
+<p>Sixteen-bit textures (except YUV) are stored in TMEM, as shown in <a href="#f13-13">Figure 13-13</a>. </p>
+
+<DL>
+<DT>
+<A NAME="f13-13"></A><strong>Figure 13-13 Sixteen-Bit Texel Layout in TMEM </strong></DT>
+
+<DD>
+<IMG SRC="gif/f13-13.gif" ALT="[Figure 13-13]" ></DD>
+</DL>
+
+<p>Sixteen-bit YUV textures are stored in TMEM, as shown in <a href="#f13-14">Figure 13-14</a>. Note that YUV texels must be loaded in pairs.  In other words two Y's at a time. Also note that if filtering is enabled, an additional UYVY pair must be loaded per row and SH set accordingly to allow proper filtering of the last UV texel per row. 
+</p>
+<DL>
+<DT>
+<A NAME="f13-14"></A><strong>Figure 13-14 YUV Texel Layout in TMEM</strong></DT>
+<DD>
+<IMG SRC="gif/f13-14.gif" ALT="[Figure 13-14]" ></DD>
+</DL>
+
+<p>Thirty-two bit (RGBA) textures are stored in TMEM, as shown in <a href="#f13-15">Figure 13-15</a>. </p>
+
+<DL>
+<DT>
+<A NAME="f13-15"></A><strong>Figure 13-15 Thirty-Two Bit RGBA Texel Layout in TMEM</strong></DT>
+
+<DD>
+<IMG SRC="gif/f13-15.gif" ALT="[Figure 13-15]" ></DD>
+</DL>
+
+<p>For color index (<a href="../../keywords/index/data/graphics.htm#CI" target="keywords">CI</a>) textures, the texture is stored in the lower half of TMEM, and the Texture/Color Look-Up Table  (<a href="../../keywords/index/data/graphics.htm#TLUT" target="keywords">TLUT</a>) is stored in the upper half of TMEM.  For 4-bit CI textures, the texels (or indices) addressed in the lower half of TMEM have the 4-bit palette number for the tile prepended to create an 8-bit address into the upper half of TMEM.  Since four texels are addressed simultaneously, there must be four (usually identical) TLUTs stored in the upper half of TMEM across the four banks. </p>
+
+<P>For 4-bit CI textures, the palette effectively selects one of sixteen possible tables, each table having sixteen entries.  Each table is aligned on 16-word boundaries.  Note that there are two choices for the texel type that resides in the TLUT: 16-bit RGBA, or 16-bit IA. The type is selected using the <A HREF="../../n64man/gdp/gDPSetTextureLUT.htm">gDPSetTextureLUT()</A> command.  This command also configures the TMEM as shown in the following figure.  Because of this, CI textures cannot be combined with other texture types in two-cycle mode. </p>
+<DL>
+<DT>
+<A NAME="f13-16"></A><strong>Figure 13-16 TMEM Organization for Four-Bit Color Index Textures </strong></DT>
+
+<DD>
+<IMG SRC="gif/f13-16.gif" ALT="[Figure 13-16]" ></DD>
+</DL>
+<p>Eight-bit CI textures do not use the palette number of the tile, since they address the whole 256 TLUT directly. It is possible to use the 8-bit mode for storing index textures that have between 16 and 256 entries. </p>
+
+<P>For example, you could define a texture that had 40 entries, numbered 0-39, and load the TLUT into the upper half of TMEM (word 256). Further suppose that you had another texture with indices 40-69. You could load this texture's 30 entry TLUT into TMEM, starting at word 296. </p>
+
+<P>Assuming that both textures together fit into the lower half of TMEM (2 KB), these textures could be co-resident in TMEM. It is also possible to have CI textures co-resident with other non-CI textures.</p>
+
+<P>In the above example, you are using only the first 70 words of upper TMEM for TLUTs.  You could use the remaining 186 words to store a 4-bit I texture, for example.  Note that even though you can store CI and other types together in TMEM, you cannot access these types simultaneously in two-cycle mode, because the configuration of the TMEM for CI textures is controlled with a mode bit that must be updated using the <A HREF="../../n64man/gdp/gDPSetTextureLUT.htm">gDPSetTextureLUT</A> command, as mentioned previously. </p>
+<DL>
+<DT>
+<A NAME="f13-17"></A><strong>Figure 13-17 TMEM Organization for Eight-Bit CI textures Textures</strong></DT>
+
+<DD>
+<IMG SRC="gif/f13-17.gif" ALT="[Figure 13-17]" ></DD>
+</DL>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="02"></A>
+<H2>
+13.8.2 Texel Formatting</H2>
+
+<p>In the RDP graphics pipeline, most operations are done on 8-bit-per-component RGBA pixels.  After looking up the texels, the texture unit converts them into the 32-bit RGBA format.  Table  2 describes how each type is converted. The format for beatified descriptions is [MSB:LSB] where MSB is the most significant bit and LSB is the least significant bit. Bit fields are grouped together in braces {} with the most significant field on the left and the least significant field on the right. </p>
+<DL>
+<DT>
+<A NAME="t13-09"></A><strong>Table 13-9 Texel Output Formatting</strong></DT>
+
+<DD>
+<IMG SRC="gif/t13-09.gif" ALT="[Table 13-9]" ></DD>
+</DL>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR>
+</BODY>
+</HTML>

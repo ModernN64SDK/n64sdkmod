@@ -1,0 +1,33 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits
+MAP- added revisions, updated format>
+<title>osResetType</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>osResetType</b></font><font style="font-size: 9pt"><b> (Global variable)</b></font>
+
+<p>osResetType</p>
+
+<p><i>System reboot types</i></p>
+
+<h3>Syntax</h3>
+<p>
+<blockquote>
+    <pre>#include &lt;ultra64.h&gt;     /* <A HREF="../../header/ultra64.htm">ultra64.h</A> */
+
+s32 osResetType;</pre></blockquote></p>
+
+<h3>Description</h3>
+
+<!--  --><p>Operation differs slightly depending on the type of system reboot.  With a cold start (initialize by turning power on), cache is simply disabled and RDRAM is configured.  With a hot start (initialize by pressing Reset), cache is disabled after being flushed, and RDRAM remains unchanged.  From this point, both kinds of system reboots continue in the same way by copying the first 1Mbyte of ROM to the 1Mbyte following the boot address in RDRAM, clearing the BSS relating to the boot segment, and calling the boot procedure.  However, you should use the osResetType variable because it is possible to make an incorrect judgement if you try to distinguish between the two kinds of system reboots by checking beyond the first 1Mbyte of RDRAM.</a>
+<!--  -->
+<H3>Revision History</H3>
+<P>
+1999/06/15 Completely revised</P>
+
+</body>
+</html>

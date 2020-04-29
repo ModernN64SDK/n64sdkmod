@@ -1,0 +1,57 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>mfsInitDiskRom</title>
+</head>
+
+<body>
+
+<font face="arial" size="-1">
+<b><font size="3">mfsInitDiskRom<br>
+mfsInitDiskRam<br>
+mfsInitDiskRomRam</b></font>
+
+<hr>
+
+<strong>Syntax</strong>
+<font face="courier" size="2">
+<pre>s32 mfsInitDiskRom(u8* companyCode, u8* gameCode,u8 dest)
+s32 mfsInitDiskRam(u8* companyCode, u8* gameCode,u8 dest)
+s32 mfsInitDiskRomRam(u8* companyCode, u8* gameCode,u8 dest)</pre></font>
+
+
+<P>
+<b>Arguments</b>
+<dl><dd>*companyCode	&nbsp; Company code
+<dd>*gameCode	&nbsp; Game code
+<dd>&nbsp;dest		&nbsp; Destination code</dl></dd>
+
+<P>
+<b>Return value</b>
+<dl><dd>Error</dl></dd>
+
+<P>
+<b>Function</b>
+<dl><dd>Performs initialization for disk booting</dl></dd>
+
+<P>
+<b>Description</b>
+<P>
+This function initializes the Leo manager for disk booting and then calls mfsInit to initialize the MFS library.
+
+	mfsInitDiskRom calls mfsRomInit internally so that only the ROM area can be accessed.
+mfsInitDiskRam calls mfsRamInit internally so that only the RAM area can be accessed.
+mfsInitDiskRomRam calls both mfsRomInit and mfsRamInit internally so that the ROM area and RAM area can be accessed.
+
+<P>
+<b>Main errors</b>
+<P>
+<table border="0" cellpadding="3" cellspacing="3">
+<tr><td valign="top"><font face="arial" size="-1">		MFS_ERR_NO</td>
+<td><font face="arial" size="-1">Normal termination</td></tr>
+<tr><td valign="top"><font face="arial" size="-1">			MFS_ERR_DEVICE</td>
+<td><font face="arial" size="-1">Device error</td></tr></table>
+
+<hr>
+</body>
+</html>

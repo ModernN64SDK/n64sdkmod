@@ -1,0 +1,145 @@
+<html>
+<head>
+<title>Developers News 1.9</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font face="arial" size="-1">
+
+<hr>
+<p align="center">
+<font size="6"><strong><IMG src="gif/devnews.gif" height="44" width="453">1.9</strong></font>
+
+</p>
+<p align="left">
+Bug information and programming guides for the N64 will be periodically released.  All information that will become unnecessary with software (library, etc.) and hardware upgrades used in development will be noted together.  Please utilize this information after confirming that the information concerns your specific upgrade. 
+</p>
+
+<p>
+<b><A name="top"></A>Contents:</b>
+
+<ol>
+<li><A href="#p1">Recurring Problems with N64 Software Submissions</A>
+</ol>
+</p>
+
+
+<hr>
+
+<A name="p1"></A>1. Recurring Problems with N64 Software Submissions
+<p>
+
+The purpose of this newsletter is to describe frequently recurring problems 
+with N64 Software Submissions which delay their approval through the 
+Nintendo software submissions approval process (Lot Check).  Please ensure 
+that a copy of this document is circulated among your N64 software 
+development team.  Taking these items into consideration during your 
+software development process will greatly improve the probability that your 
+N64 software will be rapidly approved by Nintendo.
+
+<p>
+<u>Submissions Compatible with Controller Pak/Rumble Pak</u>
+<p>
+
+Most (70%) of the problems which delay Nintendo approval of N64 Software 
+Submissions are related to Controller Pak or Rumble Pak messages.  Please 
+ensure that your development team is thoroughly familiar with all Controller 
+Pak and Rumble Pak programming cautions.  These cautions are documented in 
+the <a href="../caution/caution.htm">Programming Cautions Manual</a>.
+
+<p>
+<u>Controller Not Connected Messages</u>
+<p>
+
+When a Controller is not connected to the N64 Control Deck at game 
+initialization a message must be displayed to notify the user of this 
+condition.  There are only 2 messages which are acceptable.  These 
+messages are:
+
+<ol>
+<li>No Controller
+<li>Turn OFF Control Deck.  Connect Controller to Controller Socket #1.  Turn 
+ON Control Deck.
+</ol>
+
+In many cases, software being submitted will use an error message in the 
+above situation which tells the user to "insert Controller and press Reset".  
+This message is unacceptable, because it is in conflict with the N64 Control 
+Deck user's manual, which states that power to the Control Deck must be 
+turned OFF before removing or connecting a Controller.
+
+<p>
+<u>Rumble Pak Does Not Stop Rumbling</u>
+<p>
+
+Nintendo requires that a Rumble Pak stop rumbling under the following 
+specific conditions.
+
+<ol>
+<li>The player pauses the game.
+<li>The player presses the Reset switch.
+<li>Main game play stops, whether it be for the end of a level, race or game, 
+or in any other appropriate place within the game (such as after a play has 
+been run in a football game).
+</ol>
+
+In order to ensure that the Rumble Pak has stopped in any of the above 
+conditions, you must perform the following sequence of calls.
+
+<ol>
+<li><a href="../n64man/os/osMotorInit.htm">osMotorInit()</a>;
+<li><a href="../n64man/os/osMotorStop.htm">osMotorStop()</a>;
+</ol>
+
+The above call osMotorStop(), does not provide a correct return value under 
+certain conditions.  The motor may continue to run, even though the return 
+value is "0x00".  So, checking the return value of "0x00" or 
+"!(PFS_ERR_CONTRFAIL)" from osMotorStop(); is <b>NOT</b> an accurate way to 
+determine the state of the Rumble Pak.  In addition, repeated calls to 
+osMotorStop(); will not have any effect until osMotorInit(); is called.  
+A single call to osMotorInit(); should be sufficient to re-sync the Rumble 
+Pak when this condition occurs.
+
+<p>
+An inexpensive Rumble Pak Tester can be produced using a Nintendo retail Rumble Pak 
+by following the steps listed below.  This Rumble Pak Tester simulates a 
+brief communication failure between the Rumble Pak and the Controller.  It 
+will verify that your software program will properly control the Rumble Pak 
+under the conditions described above.  This is part of the testing process 
+performed by Nintendo on all Rumble Pak compatible software.
+
+<p>
+<u>Create Rumble Pak Tester</u>
+<p>
+
+<ol>
+<li>Open the Rumble Pak.
+<li>Cut trace between card edge connector pin 2 and U1 pin 4.  (Pin 2 is on 
+the back of the PCB.  Look for the silk-screened numbers 1 and 16.  Pin 4 is 
+below the second "n" in "Nintendo" on the "VDC-CNT" chip.)
+<li>Insert a momentary switch, which is normally closed, between the card 
+edge pin 2 and U1 pin 4.
+<li>Remove the surface mount resistor chip R7.
+</ol>
+
+<p>
+<u>Operation of Rumble Pak Tester</u>
+<p>
+
+<ol>
+<li>With the Rumble Pak motor running press and release the momentary switch, 
+while osMotorStop(); is called.
+<li>Verify that the Rumble Pak stops rumbling after the momentary switch is 
+released.
+</ol>
+
+<p align="right">
+<a href="#top"><img src="../gif/index.gif" height="17" width="65" border="0"></a>
+</p>
+
+<hr>
+&copy; 1999 Nintendo of America Inc.
+
+</font>
+</body>
+</html>

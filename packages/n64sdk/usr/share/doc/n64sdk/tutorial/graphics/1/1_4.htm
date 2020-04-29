@@ -1,0 +1,96 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Graphics-CHAPTER 1  The Basics of N64 Graphics-Introduction to RSP</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/22/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<font style="font-size:12pt"><B>1.4  Defining and Loading Vertices</B></FONT>
+<br>
+<P>
+Once the matrix has been loaded into the RSP, the next step is to load the vertices in order to define the model.  As mentioned previously, when the vertices are loaded into the vertex buffer the coordinates are transformed according to the set matrix, so you need to remember to load the matrix before you load the vertices.<br><br>
+
+     Next we will cover defining vertices.  Vertex information is stored in the Vtx union.  The meanings of some of the elements in the Vtx union change when coloring with vertex color, and when performing lighting processes.  This will be explained in detail in the next chapter when we talk about shading.
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=5><TR>
+<TD NOWRAP COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE><B>List 1-3</B></TD>
+</TR><TR>
+<TD NOWRAP BGCOLOR="666666" WIDTH="4" ALIGN=LEFT VALIGN=TOP><HR NOSHADE SIZE=0></TD>
+<TD NOWRAP ALIGN=LEFT VALIGN=TOP><FONT COLOR="#000080"><PRE><CODE>static Vtx  square_vtx[] = {
+  {-10, -10, 0, 0, 0, 0, 255,   0,   0, 255},
+  { 10, -10, 0, 0, 0, 0,   0, 255,   0, 255},
+  { 10,  10, 0, 0, 0, 0,   0,   0, 255, 255},
+  {-10,  10, 0, 0, 0, 0, 255, 255, 255, 255},
+};
+</CODE></PRE></FONT>
+</TD>
+</TR></TABLE>
+<P>
+  In this example the Vtx union is an array, so an explanation will be done by focusing on single elements in the array.<br><br>
+     The first three elements in the Vtx structure are short type integer values that store the x, y, z coordinates of the vertex.  This example defines a vertex with the coordinate values (-10, -10, 0).<br><br>
+     The next element is not being used at the present time, so will not be explained here.  The next two elements following this are parameters relating to texture mapping, and will be covered in Chapter 3 when we talk about the handling of textures.<br><br>
+     The last four elements indicate the color of the vertex in the order of R, G, B, A.  See Chapter 6 for details about A, the alpha value.  As will be explained in the next chapter, in the case of lighting you need to store the normal vector components here rather than the RGB values.<br><br>
+
+     Once you have defined vertices this way, load them into the RSP's vertex buffer using the gSPVertex command.
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=5><TR>
+<TD NOWRAP COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE><B>List 1-4</B></FONT></TD>
+</TR><TR>
+<TD NOWRAP BGCOLOR="666666" WIDTH="4" ALIGN=LEFT VALIGN=TOP><HR NOSHADE SIZE=0></TD>
+<TD NOWRAP ALIGN=LEFT VALIGN=TOP><FONT COLOR="#000080"><PRE><CODE>  /* Load the model's vertices  */
+  gSPVertex(glistp++, square_vtx, 4, 0);
+</CODE></PRE></FONT>
+</TD>
+</TR></TABLE>
+<P>
+ The arguments in gSPVertex specify the pointer to the Vtx union array, followed by the number of vertices to be loaded, and the index at the start of the load destination.  Both the number of vertices that can be loaded at the same time and the range of valid index values will differ, depending on the microcode that is being used.   (The valid range of index values also depends on the size of the vertex buffer.)
+</P>
+<p>
+  Number of vertices that can be loaded at the same time:<BR>
+<TABLE BORDER=0><TR><TD></TD><TD>
+<TABLE BORDER=1 CELLSPACING=0 CELLPADDING=1>
+<TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE>
+	 F3DEX2 <BR>
+	 F3DEX2.NoN <BR>
+	 F3DLX2 <BR>
+	 F3DLX2.NoN <BR>
+	 L3DEX2 <BR>
+	</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE> 1-32 </TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE>
+	 F3DEX2.Rej<BR>
+	 F3DLX2.Rej<BR>
+	</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE> 1-64 </TD>
+</TR>
+</TABLE>
+</TD></TR></TABLE>
+
+<p>Specifiable starting index:<BR>
+<TABLE BORDER=0><TR><TD></TD><TD>
+<TABLE BORDER=1 CELLSPACING=0 CELLPADDING=1>
+<TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE>
+	 F3DEX2 <BR>
+	 F3DEX2.NoN <BR>
+	 F3DLX2 <BR>
+	 F3DLX2.NoN <BR>
+	 L3DEX2 <BR>
+	</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE> 0-31 </TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE>
+	 F3DEX2.Rej<BR>
+	 F3DLX2.Rej<BR>
+	</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE> 0-63 </TD>
+</TR>
+</TABLE>
+</TD></TR></TABLE>
+</BODY>
+</HTML>

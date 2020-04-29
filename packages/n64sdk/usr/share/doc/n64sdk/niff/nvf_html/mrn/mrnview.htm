@@ -1,0 +1,155 @@
+<HTML>
+<HEAD>
+<TITLE>mrnview</TITLE>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../mobile/allman.css">
+<!-- Editor's Notes: 9/23/1999 Ron Daring -->
+</HEAD>
+  <BODY bgcolor="#FFFFFF">
+<h1>Function</h1>
+
+<hr>
+<a name="mrnViewInit">
+</A>
+<h1><a name="mrnViewInit">mrnViewInit</A></h1>
+<a name="mrnViewInit">
+</A>
+<p><a name="mrnViewInit"><i>Initializes</i> <TT>mrnView</TT></A></p>
+<a name="mrnViewInit">
+</A>
+<H2><a name="mrnViewInit">Syntax</A></H2>
+<a name="mrnViewInit">
+</A>
+<blockquote><a name="mrnViewInit">
+    </A>
+<pre><a name="mrnViewInit">#include &lt;mrn/View.h&gt;
+void mrnViewInit( MrnView *view_ptr )
+</A></pre></blockquote>
+<a name="mrnViewInit">
+</A>
+<H2><a name="mrnViewInit">Description</A></H2>
+<a name="mrnViewInit">
+  Initializes <TT>mrnView</TT>
+
+</A>
+<hr>
+
+<a name="mrnViewGenerateClearGfx">
+</A>
+<h1><a name="mrnViewGenerateClearGfx">mrnViewGenerateClearGfx</A></h1>
+<a name="mrnViewGenerateClearGfx">
+</A>
+<p><a name="mrnViewGenerateClearGfx"><i>Generates a</i> <TT>gfx</TT> <i>which clears view</i></A></p>
+<a name="mrnViewGenerateClearGfx">
+</A>
+<H2><a name="mrnViewGenerateClearGfx">Syntax</A></H2>
+<a name="mrnViewGenerateClearGfx">
+</A>
+<blockquote><a name="mrnViewGenerateClearGfx">
+    </A>
+<pre><a name="mrnViewGenerateClearGfx">#include &lt;mrn/View.h&gt;
+Gfx *mrnViewGenerateClearGfx( MrnView *view_ptr,
+                              MrnContext *context_ptr,
+                              Gfx *gfx_ptr )
+</A></pre></blockquote>
+<a name="mrnViewGenerateClearGfx">
+</A>
+<H2><a name="mrnViewGenerateClearGfx">Description</A></H2>
+<a name="mrnViewGenerateClearGfx">
+  Generates a <TT>gfx</TT> which clears view
+
+</A>
+<hr>
+
+<a name="mrnViewGenerateSetupGfx">
+</A>
+<h1><a name="mrnViewGenerateSetupGfx">mrnViewGenerateSetupGfx</A></h1>
+<a name="mrnViewGenerateSetupGfx">
+</A>
+<p><a name="mrnViewGenerateSetupGfx"><i>Generates a</i> <TT>gfx</TT> <i>which sets the view</i></A></p>
+<a name="mrnViewGenerateSetupGfx">
+</A>
+<H2><a name="mrnViewGenerateSetupGfx">Syntax</A></H2>
+<a name="mrnViewGenerateSetupGfx">
+</A>
+<blockquote><a name="mrnViewGenerateSetupGfx">
+    </A>
+<pre><a name="mrnViewGenerateSetupGfx">#include &lt;mrn/View.h&gt;
+Gfx *mrnViewGenerateSetupGfx( MrnView *view_ptr,
+                              MrnContext *context_ptr,
+                              Gfx *gfx_ptr )
+</A></pre></blockquote>
+<a name="mrnViewGenerateSetupGfx">
+</A>
+<H2><a name="mrnViewGenerateSetupGfx">Description</A></H2>
+<a name="mrnViewGenerateSetupGfx">
+  Generates a <TT>gfx</TT> which sets the view
+
+
+</A>
+<hr>
+
+<a name="mrnViewSetClearColor">
+</A>
+<h1><a name="mrnViewSetClearColor">mrnViewSetClearColor</A></h1>
+<a name="mrnViewSetClearColor">
+</A>
+<p><a name="mrnViewSetClearColor"><i>Sets the background color when the view is cleared</i></A></p>
+<a name="mrnViewSetClearColor">
+</A>
+<H2><a name="mrnViewSetClearColor">Syntax</A></H2>
+<a name="mrnViewSetClearColor">
+</A>
+<blockquote><a name="mrnViewSetClearColor">
+</A>
+<pre><a name="mrnViewSetClearColor">#include &lt;mrn/View.h&gt;
+void mrnViewSetClearColor( MrnView *view_ptr, MvmColor4c color )
+</A></pre></blockquote>
+<a name="mrnViewSetClearColor">
+</A>
+<H2><a name="mrnViewSetClearColor">Description</A></H2>
+<a name="mrnViewSetClearColor">
+  Sets the background color when the view is cleared <br>
+  When anti-aliasing is used, the alpha component is 255.
+
+</A>
+<hr>
+<h1><a name="mrnViewSetClearColor">Structure</A></h1><hr>
+<hr>
+
+<a name="MrnView">
+</A>
+<h1><a name="MrnView">MrnView</A></h1>
+<a name="MrnView">
+</A>
+<blockquote><pre><a name="MrnView">
+#include &lt;mrn/View.h&gt;
+typedef struct _MrnView
+{
+    u16                         color_depth;
+    u16                         z_depth;
+    u16                         is_clean;
+    u16                         clear_flags;
+    u32                         interlace;
+    u32                         interlace_mode;
+    u32                         clear_color;
+    u32                         clear_depth;
+    u32                         width;
+    u32                         height;
+    u32                         frame_buffer_segment;
+    u32                         z_buffer_segment;
+    MrnViewBufferAddress        frame_buffer_address;
+    MrnViewBufferAddress        z_buffer_address;
+    MrnViewBufferAddress        number_of_frame_buffers;
+    MrnViewBufferAddress        current_field;
+} MrnView;
+
+typedef u32 ( *MrnViewBufferAddress )( struct _MrnView *view_ptr );
+</A></pre></blockquote>
+<a name="MrnView">
+
+<br><br><br><br><br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br><br><br><br><br>
+
+  </A></BODY>
+</HTML>

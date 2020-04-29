@@ -1,0 +1,63 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../n64man.css">
+<title>MusHandleAsk()</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check-->
+</head>
+
+<h1>MusHandleAsk()</h1>
+
+<h2>Syntax</h2>
+
+<pre>
+int MusHandleAsk(musHandle handle);
+</pre>
+
+<h2>Arguments</h2>
+
+<dl>
+  <dt><b>handle</b>
+  <dd>the sound handle 
+</dl>
+
+<h2>Description</h2>
+
+<p>It determines how many channels associated with the specified sound handle are currently being processed.</p>
+
+<p>The handle must be a sound handle returned by <a href="MusStartSong.html">MusStartSong()</a>, <a href="MusStartSongFromMarker.html">MusStartSongFromMarker()</a>, <a href="MusStartEffect.html">MusStartEffect()</a>, or <a href="MusStartEffect2.html">MusStartEffect2()</a>.  If a handle of zero is supplied, this function will always return zero.</p>
+
+<h2>Return Value</h2>
+
+<p>Number of channels currently being processed for the specified sound handle.</p>
+
+<h2>Example</h2>
+
+<pre>void PlayEntireSong(void *addr);
+{
+  unsigned long handle;
+
+  handle = <a href="MusStartSong.html">MusStartSong</a>(addr);
+  while (MusHandleAsk(handle))
+  CallNormalProcessing();
+}
+
+void AlwaysTriggerSoundEffect(void)
+{
+  static unsigned long handle=0;
+
+  if (MusHandleAsk(handle)==0)
+  handle = <a href="MusStartEffect.html">MusStartEffect</a>(RETRIGGER_SOUND);
+}
+</pre>
+
+<h2>See Also</h2>
+<p>
+<a href="MusAsk.html">MusAsk()</a>,
+<a href="MusStartSong.html">MusStartSong()</a>,
+<a href="MusStartEffect.html">MusStartEffect()</a>,
+<a href="MusStartEffect2.html">MusStartEffect2()</a>
+</p>
+
+</body>
+</html>

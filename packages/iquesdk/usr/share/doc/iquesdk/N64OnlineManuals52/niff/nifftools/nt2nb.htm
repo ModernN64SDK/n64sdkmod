@@ -1,0 +1,52 @@
+<!doctype html "public">
+<html>
+<head>
+   <title>nt2nb</title>
+</head>
+<body text="#000000" bgcolor="#FFFFFF" link="#0000EE" vlink="#551A8B" alink="#FF0000">
+
+<font face="arial" size="-1">
+<B><font size="3"><strong>
+nt2nb</strong></font></b>
+
+<P>Converts NIFF text into binary
+
+<P>
+<b>Syntax</b>
+<font face="courier" size="2">
+<blockquote><pre>nt2nb input-file output-file</pre></blockquote></font>
+
+<P>
+<b>Description</b>
+<P>
+Reads the text file input-file and outputs it to the NIFF data file output-file.<p>
+This command can convert the data output in text format by nb2nt into NIFF binary data.
+<ul>
+ <li> Everything below ";" is a comment and is thrown out when the file is read
+ <li> The read data is a list of integers and real numbers, but it corresponds to a list of NIFF binary data
+ <li> If the list of numerical data is not wrong, then it does not matter whether the other character strings are correct or not. 
+ <li> If the first character in a string is - or 0~9, the string is judged to be numerical data. After the string has been judged to be numerical data, it is read as "floating" if there is a decimal point.
+ <li> The part bounded by &lt;List name&gt &lt/Listname&gt is read as that List, and it does not matter what is written outside of its delimiters.
+</ul>
+
+Basically, each numeric written in text format and delimited by spaces is converted into 4 bytes of binary data. Character strings that are not numerics are skipped.<p>
+Texture data and NameList are not 4 byte data, so these are given special treatment. Please refer to the output of nb2nt. 
+
+<P>
+<b>Notes</b>
+<P>
+If there are errors in the data list, sometimes the file cannot be converted.<p>
+
+Because floating data is rounded off with nb2nt, you cannot be certain you have returned to the original data when using nt2nb. 
+
+<P>
+<b>See Also</b>
+<P>
+<a href="nb2nt.htm">nb2nt</a>
+
+<p>
+<hr>
+<div align=right><a href="index.htm"><img SRC="../../gif/index.gif" BORDER=0></a></div>
+
+</body>
+</html>

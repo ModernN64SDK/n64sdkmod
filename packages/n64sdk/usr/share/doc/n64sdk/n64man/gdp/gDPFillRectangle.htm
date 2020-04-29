@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<!--
+Editors Notes:
+  JLR made reformating and copy edits.
+  PWC- updated formatting
+-->
+
+<TITLE>gDPFillRectangle</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>gDPFillRectangle<FONT size="+0"> [Macro]</FONT></H1>
+
+<h2>Function</h2>
+
+<P>gDPFillRectangle<br><br>
+<i>Renders a solid-color rectangle in the screen coordinates</i>
+</P>
+<p><b>Syntax</b></p>
+
+<p><PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gbi.htm">gbi.h</A> */
+gDPFillRectangle(Gfx *gdl, s32 ulx, s32 uly, s32 lrx, s32 lry)
+gsDPFillRectangle(         s32 ulx, s32 uly, s32 lrx, s32 lry)</CODE></PRE></p>
+
+<p><b>Arguments</b></p>
+<p><DL>
+  <DT><B>gdl</B>
+  <DD>Display list pointer
+  <DT><B>ulx</B>
+  <DD>Left edge coordinates of rectangle (10-bit precision, 0~1023)
+  <DT><B>uly</B>
+  <DD>Top edge coordinates of rectangle (10-bit precision, 0~1023)
+  <DT><B>lrx</B>
+  <DD>Right edge coordinates of rectangle (10-bit precision, 0~1023)
+  <DT><B>lry</B>
+  <DD>Bottom edge coordinates of rectangle (10-bit precision, 0~1023)
+</DL></p>
+<p><b>Description</b></p>
+<P>
+Renders a 2D rectangle using the fill color set in the blender (BL) in the RDP.  When this rectangle is rendered in fill mode, the specified coordinates are included.  When it is rendered in 1-cycle or 2-cycle mode, the bottom edge and right edge are not included.
+</P>
+<P>
+For example, when <B>ulx</B>=0 and <B>lrx</B>=19, 20 columns of pixels will be filled in fill mode and 19 columns of pixels will be filled in 1-cycle or 2-cycle mode.
+</P>
+<P>
+For information about each mode, see Section 2-7 "Rendering Cycle Modes" in Step 2 of the N64 Introductory Manual.  For information about setting the fill color, see <A HREF="gDPSetFillColor.htm">gDPSetFillColor</A>, and for information about setting the cycle type, see <A HREF="gDPSetCycleType.htm">gDPSetCycleType</A>.
+</P>
+<P>
+This command can also be used to clear the screen, and to initialize the color frame buffer or the Z buffer.
+</P>
+<p><b>Note</b></p>
+<P>
+The screen coordinates (0,0) indicate the upper-left corner of the screen.  Since each coordinate has 10-bit precision, you cannot specify a value greater than 1023.  Also, since all specifications are integers, you cannot address sub-pixels (a portion of a pixel).  Since coordinates cannot take negative values, use <A HREF="gDPScisFillRectangle.htm">gDPScisFillRectangle</A> if there is a chance a negative value might be generated for a screen coordinate.
+</P>
+<P>
+The following restrictions apply to each mode:
+</P><p>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD COLSPAN=2 NOWRAP ALIGN=left VALIGN=middle>(Copy mode)</TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=left VALIGN=middle></TD>
+	<TD ALIGN=left VALIGN=middle>Operation cannot be guaranteed if gDPFillRectangle is used for rendering.  Use the <A HREF="../gsp/gSPTextureRectangle.htm">gSPTextureRectangle</A> command.</TD>
+</TR><TR>
+	<TD COLSPAN=2 NOWRAP ALIGN=left VALIGN=middle>(1-cycle and 2-cycle mode)</TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=left VALIGN=middle></TD>
+	<TD ALIGN=left VALIGN=middle>Since the bottom and right edges are not included, one column is missing.</TD>
+</TR><TR>
+	<TD COLSPAN=2 NOWRAP ALIGN=left VALIGN=middle>(Copy mode)</TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=left VALIGN=middle></TD>
+	<TD ALIGN=left VALIGN=middle>When using this macro to clear the Z buffer, do not set a rendering mode for the Z buffer (see <A HREF="gDPSetRenderMode.htm">gDPSetRenderMode</A>).  When the Z buffer is cleared, the memory area is treated as a color frame buffer, and an appropriate pixel value is written in memory.</TD>
+</TR></TABLE></p>
+
+<p><b>Comment</p></b>
+<p>
+There is a performance-related restriction on the drawing of rectangles.  The RDP requires the most drawing time when primitives are being rendered to fill the entire screen.  Because the display list of a rectangle is extremely compact, the FIFO between the RSP and RDP can become filled with a consecutive series of rectangle primitives, which will take a long time to render.  Although the RSP and CPU will issue instructions to stop or yield the RDP in order to execute high-priority tasks (such as audio tasks) during a vertical retrace, the RDP cannot accept these requests while these consecutive rectangle primitives are being rendered.  This only occurs for rectangles, since triangles that fill the entire screen cannot fill the FIFO with a large enough number of primitives to lock-out the CPU and RSP.  
+</P>
+<P>
+When a standard frame-scheduling algorithm is used such as for audio processing during the vertical retrace at every 1/60 of a second, do not send more than eight or nine consecutive full-screen rectangles to the RDP.  Non-full-screen rectangles or non-consecutive rectangle commands (another command or a NOOP is inserted between them) do not present a problem.  Also, if every frame rendering interval does not exceed 1/60 of a second, the scheduling algorithm is processed in a similar manner as yield.
+</P>
+<p><b>See Also</b></p>
+<P>
+<A HREF="gDPScisFillRectangle.htm">gDPScisFillRectangle</A>, <A HREF="gDPSetCycleType.htm">gDPSetCycleType</A>, <A HREF="gDPSetFillColor.htm">gDPSetFillColor</A>, <A HREF="gDPSetRenderMode.htm">gDPSetRenderMode</A>, and <A HREF="../gsp/gSPTextureRectangle.htm">gSPTextureRectangle</A>
+</P>
+
+<p><b>Revision History</p></b>
+<p>02/01/99&nbsp;&nbsp;&nbsp;Completely rewritten</p>
+
+</BODY>
+</HTML>

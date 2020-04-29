@@ -1,0 +1,179 @@
+<HTML>
+<HEAD>
+<TITLE>Inside NuSystem</TITLE>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<!-- Editor's Notes: 9/15/1999 Ron Daring -->
+</HEAD>
+
+<BODY bgcolor="#FFFFFF">
+
+
+<P>
+<a name="top"></a><h1>4. Graphics</h1>
+<p>
+
+<ol>
+  <li><a href="#1">Organization of the Graphics</a>
+  <li><a href="#2">Customizing the Graphics Manager</a>
+</ol>
+
+<hr>
+
+<h2><a name="1">4.1 Organization of the Graphics</a></h2>
+
+<p>NuSystem graphics management consists of the graphics thread, the Graphics Manager thread, and the graphics setting functions. </p>
+
+<p>The graphics thread is created and executed by the nuGfxThreadStart function. It executes a retrace callback function or PRE-NMI callback function registered by the application.  (The nuGfxThreadStart function is called in the nuGfxInit function.) The graphics thread is first registered as a client in the Scheduler so that it can receive retrace and PRE-NMI event messages.  If it receives a retrace message, it executes the callback function registered by the nuGfxFuncSet function. However, if it receives a PRE-NMI event message, it executes the callback function registered by the nuGfxPreNMIFuncSet function as shown here: </p>
+
+<p align="center"><img src="./images/f040100.gif" alt="Figure 4.1  Graphics Thread Process Flow"><br>
+Figure 4.1  Graphics Thread Process Flow</p>
+
+<p>The Graphics Stack Manager consists of the nuGfxTaskStart function and the Graphics Task Manager thread. </p>
+
+<p>The nuGfxTaskStart function receives the display list buffer pointer, size, and microcode type from your application, as well as the frame buffer swap flag. It sets these values in the task structure. It then sends this task structure as a message to the graphics task thread. </p>
+
+<p>The graphics task thread sends an end message to the Graphics Task Manager when the task is complete. The Graphics Task Manager checks messages, and in the case of an end message or buffer swap message, it uses the ViSwapBuffer function to swap the frame buffer. This is shown in Figure 4.2.</p>
+
+<p align="center"><img src="./images/f040200.gif" alt="Figure 4.2  Activation of a Graphics Task"><br>
+Figure 4.2  Activation of a Graphics Task</p>
+
+<p>Task structures are in ring buffers and are automatically swapped by the nuGfxTaskStart function.  The size of the graphics task thread message queue is 8, and if more than eight messages are sent in block mode, the transmitted threads will wait until the queue opens up.  Because this can be used to accommodate more than 8 task structures, the size of the task structure is 10 ring buffers. </p>
+
+<p>The internal processing of the nuGfxTaskStart function differs depending on whether NU_SC_SWAPBUFFER or NU_SC_NOSWAPBUFFER is specified in the argument. In the case of NU_SC_SWAPBUFFER, a flag specifies that the frame buffer can be swapped by a task-end message, and the value of the variable nuGfxCfb_ptr is changed. The value of nuGfxCfb_ptr is set in the order of the frame buffer address table which is entered by the nuGfxSetCfb function. The frame buffer address table is defined as a frame buffer pointer array by the nuGfxInit function in the following way:</p>
+
+<font face="courier" size="2">
+<pre>static u16* FrameBuf[3] = {
+	(u16*)NU_GFX_FRAMEBUFFER0_ADDR,
+	(u16*)NU_GFX_FRAMEBUFFER1_ADDR,
+	(u16*)NU_GFX_FRAMEBUFFER2_ADDR
+};
+....
+void nuGfxInit(void)
+{
+	....
+	nuGfxSetCfb(FrameBuf, 3);
+	....
+}</pre>
+</font>
+
+<p>The value of nuGfxCfb_ptr is entered into the task structure by the nuGfxTaskStart function and passed to the Graphics Task Manager after a task is completed.  The value is then passed as an argument of the frame buffer swap callback function (the nuGfxSwapCfb function is registered as the callback in the nuGfxInit function).  The callback function, by passing the argument value to the osViSwapBuffer function, can specify which frame buffer to display next. If you change the value of nuGfxCfb_ptr before calling the nuGfxTaskStart function, the frame buffer with that value can be displayed. </p>
+
+<p align="right"><a href="#top"><img src="../../gif/index.gif" border="0" width="65" height="17"></a></p>
+<hr>
+
+<h2><a name="2">4.2 Customizing the Graphics Manager</a></h2>
+
+<p> By calling appropriate functions, the nuGfxInit function does the following to set the defaults for the graphics settings: </p>
+
+
+<blockquote>
+<p>1. Activates the graphics thread (nuGfxThreadStart function)</p>
+
+<p>2. Regisers the frame buffer address table(nuGfxSetCfb function) </p>
+
+<p>3. Sets the (nuGfxSetCfb function) </p>
+
+<p>4. Sets the Z-Buffer address (nuGfxSetZBuffer function) </p>
+
+<p>5. Registers the frame buffer swap callback function (nuGfxSwapCfbFuncSet function) </p>
+
+<!--  --><p>6. Sets FIFO buffer size and address (nuGfxSetUCodeFifo function) </p>
+
+<p>7. Registers the graphics microcode array (nuGfxSetUcode function) </p>
+
+<p>8. Activates the Graphics Task Manager (nuGfxTaskMgrInit function) </p>
+
+<p>9. Initializes the RDP</p><!--  -->
+</blockquote>
+
+<p><!--  -->As descrived above, there are particular functions for various settings, providing graphic settings appropriate for each application without using the nuGfxInit function. Of those functions, changes in items #4 and #7 require changes to the spec file.<!--  --></p>
+
+<p> In item #<!--  -->7<!--  -->, all of the Fast3D graphics microcode presently in use is entered. Therefore, by deleting all microcode that is ultimately unnecessary for the application, you can open up a little more ROM space. Since this action is related to the microcode array defined in the nuGfxInit function, to do it, you will need to initialize items #1~<!--  -->9<!--  --> within your application. However, this is not a big job; all you need to do is copy the nuGfxInit function source code into your application source code, and then change the necessary parts. It is a good idea to start with several different pieces of microcode so that you can check the performance of each and see how they display differently. </p>
+
+<p> From the explanations in the Function Reference Manual and the explanations above, you should be able to figure out how to change the settings of items #2~<!--  -->6<!--  -->, in an application. Below is an explanaiton of how to change item #<!--  -->7<!--  -->. </p>
+
+<p>Any change to the default microcode setting involves the deletion of microcode. In the following example all microcode is deleted except F3DEX and L3DED, leaving only N_Audio microcode. </p>
+
+<p>Start by changing the spec file. The segment of the spec file which defines microcode: </p>
+
+<font face="courier" size="2">
+<pre>beginseg
+ 	name	&quot;code&quot;
+ 	flags	BOOT OBJECT
+ 	entry	nuBoot
+ 	address	NU_SPEC_BOOT_ADDR
+ 	stack	NU_SPEC_BOOT_STACK
+ 	include	&quot;codesegment.o&quot;
+ 	include	&quot;$(ROOT)/usr/lib/PR/rspboot.o&quot;
+ 	<b>include	&quot;$(ROOT)/usr/lib/PR/aspMain.o&quot;</b>
+ 	include	&quot;$(ROOT)/usr/lib/PR/n_aspMain.o&quot;
+ 	include	&quot;$(ROOT)/usr/lib/PR/gspF3DEX.fifo.o&quot;
+ 	<b>include	&quot;$(ROOT)/usr/lib/PR/gspF3DEX.NoN.fifo.o&quot;</b>
+ 	<b>include	&quot;$(ROOT)/usr/lib/PR/gspF3DLX.fifo.o&quot;</b>
+ 	<b>include	&quot;$(ROOT)/usr/lib/PR/gspF3DLX.NoN.fifo.o&quot;</b>
+ 	<b>include	&quot;$(ROOT)/usr/lib/PR/gspF3DLX.Rej.fifo.o&quot;</b>
+ 	<b>include	&quot;$(ROOT)/usr/lib/PR/gspF3DLP.Rej.fifo.o&quot;</b>
+ 	include	&quot;$(ROOT)/usr/lib/PR/gspL3DEX.fifo.o&quot;
+ 	<b>include	&quot;$(ROOT)/usr/lib/PR/gspS2DEX.fifo.o&quot;</b>
+ 	<b>include	&quot;$(ROOT)/usr/lib/PR/gspS2DEX.fifo_d.o&quot;</b>
+ endseg</pre>
+</font>
+
+<p>You can delete the lines in boldface type thus changing the code segment to this:</p>
+
+<font face="courier" size="2">
+<pre>beginseg
+ 	name	&quot;code&quot;
+ 	flags	BOOT OBJECT
+ 	entry	nuBoot
+ 	address	NU_SPEC_BOOT_ADDR
+ 	stack	NU_SPEC_BOOT_STACK
+ 	include	&quot;codesegment.o&quot;
+ 	include	&quot;$(ROOT)/usr/lib/PR/rspboot.o&quot;
+ 	include	&quot;$(ROOT)/usr/lib/PR/n_aspMain.o&quot;
+ 	include	&quot;$(ROOT)/usr/lib/PR/gspF3DEX.fifo.o&quot;
+ 	include	&quot;$(ROOT)/usr/lib/PR/gspL3DEX.fifo.o&quot;
+endseg</pre>
+</font>
+
+<p>That's all you need to do to modify the spec file.</p>
+
+<p>The next step is to copy nugfxinit.c from the NuSystem  source code directory to the application directory, and then change the name of the copied file.  For this example, rename it to appgfxinit.c. Now you can change the contents of this file to customize the graphics settings.  </p>
+
+<p>For example, you might change the following portion of the appgfxinit.c file:</p>
+
+<font face="courier" size="2">
+<pre>//line 17
+static NUUcode nugfx_ucode[] = {
+    {(u64*)gspF3DEX_fifoTextStart,(u64*)gspF3DEX_fifoDataStart},
+    <b>{(u64*)gspF3DEX_NoN_fifoTextStart,(u64*)gspF3DEX_NoN_fifoDataStart},</b>
+    <b>{(u64*)gspF3DLX_fifoTextStart, (u64*)gspF3DLX_fifoDataStart},</b>
+    <b>{(u64*)gspF3DLX_NoN_fifoTextStart,(u64*)gspF3DLX_NoN_fifoDataStart},</b>
+    <b>{(u64*)gspF3DLX_Rej_fifoTextStart,(u64*)gspF3DLX_Rej_fifoDataStart},</b>
+    <b>{(u64*)gspF3DLP_Rej_fifoTextStart,(u64*)gspF3DLP_Rej_fifoDataStart},</b>
+    {(u64*)gspL3DEX_fifoTextStart, (u64*)gspL3DEX_fifoDataStart},
+    <b>{(u64*)gspS2DEX_fifoTextStart, (u64*)gspS2DEX_fifoDataStart},</b>
+    <b>{(u64*)gspS2DEX_fifo_dTextStart, (u64*)gspS2DEX_fifo_dDataStart},</b>
+};</pre>
+</font>
+
+<p>Delete the bold face lines to make the code section look like this:</p>
+
+<font face="courier" size="2">
+<pre>static NUUcode nugfx_ucode[] = {
+    {(u64*)gspF3DEX_fifoTextStart, (u64*)gspF3DEX_fifoDataStart},
+    {(u64*)gspL3DEX_fifoTextStart, (u64*)gspL3DEX_fifoDataStart},
+};</pre>
+</font>
+
+<p>Now, change the function name:</p>
+
+<font face="courier" size="2">
+<pre>void nuGfxInit(void)	->	void appGfxInit(void)</pre>
+</font>
+
+<p>By following the above, you can change nuGfxInit function to the graphics settings functions for use by your application.</p>
+
+<p align="right"><a href="#top"><img src="../../gif/index.gif" border="0" width="65" height="17"></a></p>
+<hr>
+</body> </html>

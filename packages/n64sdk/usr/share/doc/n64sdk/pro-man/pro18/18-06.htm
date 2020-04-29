@@ -1,0 +1,46 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 18 - Audio Tools</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. -->
+</head>
+
+<H1>
+18.6 MIDI and the Indy</H1>
+
+<p>Before using <a href="../../keywords/index/data/audio.htm#MIDI daemon" target="keywords">MIDI daemon</a>, you will have to correctly configure your Indy for <a href="../../keywords/index/data/audio.htm#MIDI" target="keywords">MIDI</a>.   Because there have been changes in both the MIDI software, and the serial ports, on the motherboard, it is recommended that only a recently purchased Indy and the latest software releases be used.</p>
+
+<P>Motherboards need to be of version 013 or newer. To determine the version of your motherboard, open your Indy, and on the front right of the motherboard, you will find a version number. The first four digits should be 8123 and they are followed by three more digits that are the version number. The revision number that follows the version number is not important. If you find that you have an Indy with an older version motherboard, contact SGI field service for a replacement board.</P>
+
+<P>The Indy uses a standard Macintosh Computer Midi Interface. Because there are differences between the interfaces sold for the Mac, (particularly in the voltage levels necessary) not all Mac Midi Interfaces will work correctly. Insufficient testing has been done to recommend a particular brand. We have seen cases where interfaces that do not supply their own power, but instead draw their power from the Indy serial port will drop MIDI messages sent back to back. For that reason we do recommend that you purchase a MIDI interface that has its own power supply. </p>
+
+<P>At present, we are recommending the installation of the DMedia 5.5 package, which contains the necessary MIDI drivers.</p>
+
+<P>To configure your Indy for MIDI, you can use either of two methods. The first method, is to run startMIDI. This utility is started from the command line, with arguments specifying which MIDI ports to turn on. This is the only way to turn on the internal MIDI port. </p>
+
+<P>Alternately, you can turn on MIDI by using the Serial Port manager, in the System Manager tools. This provides a more user friendly interface, and once configured, a serial port will remain configured even after a reboot. If you find that selecting the System Manager or the Serial Port manager generates error messages pertaining to the object server, try the following sequence of commands: </p>
+
+<BLOCKQUOTE>
+<PRE>/etc/init.d/cadmin stop
+/etc/init.d/cadmin clean
+/etc/init.d/cadmin start</PRE>
+</BLOCKQUOTE>
+<p>You can verify that your MIDI is working, by starting Midi Daemon with the -v (verbose) option. If MIDI is working, you will get a message printed in the window for every MIDI message received. </p>
+
+<P>If you wish to use serial port number one for receiving MIDI, it is important to turn off automatic spawning of getty on that port. To do this, you must edit the file /etc/inittab. Find the line that starts with: </p>
+
+<BLOCKQUOTE>
+<PRE>t1:23:respawn:/sbin/getty ttyd1</PRE>
+</BLOCKQUOTE>
+<p>Change this to:</p>
+<BLOCKQUOTE>
+<PRE>t1:23:off:/sbin/getty ttyd1</PRE>
+</BLOCKQUOTE>
+<p>Save the file and reboot the Indy.</p>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR>
+</BODY>
+</HTML>

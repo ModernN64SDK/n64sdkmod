@@ -1,0 +1,296 @@
+<html>
+<head>
+<title>[N64 CITextureEditor] 2.5 Plug-In SDK</title>
+</head>
+<body><FONT FACE="Arial" SIZE="-1">
+<center>
+<h1><font color=#0000c0><font color=#ff0000>N64</font> <font color=#ff8000>CI</font><font color=#ff0000>T</font>exture<font color=#ff0000>E</font>ditor</font> <font color=#808080>Plug-In SDK</font></h1>
+<!--#config timefmt="%Y %m/%d(%a) %X"-->
+<font size=-1><!--#echo var="LAST_MODIFIED"--></font><br>
+</center>
+<hr>
+<p align="right"><a href="../ja/plugin.html">Japanese</a></p>
+<ol>
+ <li><b>The Plug-Ins</b>
+ <p>
+ <ol>
+  <li><font color=green>Initialization process at start-up</font>
+  <ul>
+   <p>
+   The plug-ins use the DLL interface.<br>
+When the texture editor starts up, it searches the DLLs in the  <font color=green>PlugIns</font> directory of the application's directory, checks the name, version and type of each plug-in, and automatically links them.
+   </p>
+   <p>
+The name and version information is obtained from the <font color=green>VS_VERSION_INFO</font> of the DLL resource, so be sure to include the version resource in the DLL.<br>
+   Please prepare a Japanese-language resource (<b>041104b0</b>) and an English-language resource (<b>040904e4</b>) of  <font color=green>VS_VERSION_INFO</font>.<br>
+   <font color=green>Comment</font> is used for detailed information, 
+   <font color=green>CompanyName</font> for the company name, 
+   <font color=green>FileVersion</font> for the plug-in version, and 
+   <font color=green>InternalName</font> for the menu name.
+   </p>
+   <p>
+   On the DLL side, first <font color=blue>int TEPI_getType()</font> is called, and the plug-in type is returned.<br>
+   Next, <font color=blue>BOOL TEPI_isAvail(DWORD version)</font> is called, and the application's 4-byte version is passed as the parameter (<font color=green>0x0100000f</font> in the case of <font color=green>1.0.0.15</font>). If supported in the application, return <font color=green>TRUE</font>.  If not supported, return <font color=green>FALSE</font>.
+   </p>
+  </ul>
+  <li><font color=green>Import process</font>
+  <ul>
+   <p>
+   If the type is Import (the <font color=green>TEPIT_IMPORT</font> flag is up) then a name should be registered in Import of the 
+   <a href="gui.html#UI_MENU_FILE">File menu</a><br>
+   When the user calls the Import plug-in, the corresponding DLL
+   <font color=blue>BOOL TEPI_import(Pic* pInput, Pic* pOutput)</font> is called.<br>
+   </p>
+  </ul>
+  <li><font color=green>Export process</font>
+  <ul>
+   <p>
+   If the type is Export (the <font color=green>TEPIT_EXPORT</font> flag is up) then a name should be registered in Export of the 
+   <a href="gui.html#UI_MENU_FILE">File menu</a>.<br>
+    When the user calls the Export plug-in, the corresponding DLL 
+   <font color=blue>BOOL TEPI_export(Pic* pInput)</font> is called.<br>
+   </p>
+  </ul>
+  <li><font color=green>Preview process</font>
+  <ul>
+   <p>
+   If the type if Preview (the <font color=green>TEPIT_PREVIEW</font> flag is up) then a call is made from Preview of the 
+   <a href="gui.html#UI_MENU_FILE">View menu</a>.<br>
+   
+However, older versions of the texture editor (before 1.0.1.4) support only one preview plug-in, and it cannot be used at the same time as another preview plug-in.<br>
+   When the user calls the Preview plug-in, the corresponding DLL <font color=blue>BOOL TEPI_preview(Pic* pInput)</font> is called.
+   </p>
+   <p>
+   
+Up to two Previews are possible from version 1.0.1.5 of the texture editor.<br>
+   When the user calls the Preview plug-in, the corresponding DLL <font color=blue>BOOL TEPI_preview2(Pic* pInput, int no)</font> is called.
+   </p>
+  </ul>
+ </ol>
+ <li><b>Plug-in Development Environment</b>
+ <p>
+ <ol>
+  <li>Language: C/C++
+  <li>Environment: Visual C++ 5.0
+  <li>File format: Windows 32bit DLL
+ </ol>
+ <p>
+ <li><b>Type information handled by plug-ins</b>
+ <p>
+ <ul>
+  <table border=1>
+   <tr>
+    <td bgcolor=#f0c080>
+     <font color=blue>struct</font> TMF {<br>
+      <dd><font color=blue>int</font> m_width;<br>
+      <dd><font color=blue>int</font> m_height;<br>
+      <dd><font color=blue>int</font> m_bits;<br>
+      <dd>u32* m_pBitmap;<br>
+     };<br>
+    </td>
+    <td bgcolor=#c0c0f0>
+     <font color=green>m_width</font> is the image width, 
+     <font color=green>m_height</font> is the image height, and
+     <font color=green>m_bits</font> is the image bit depth (4 or 8).<br>
+     <font color=green>m_pBitmap</font> is the exact same binary image data as BMP<br>
+     In 4bit mode, 1 byte has 2 pixels of image data: the higher 4bits is the left pixel and the lower 4bits is the right pixel.<br>
+     In 8bit mode, 1 byte has 1 pixel, so they are in order from left to right.<br>
+     Because 1 line has 32bit alignment, the fractional gap on the right end is filled with 0.<br>
+     Size is equal to <font color=green>((((m_width * m_bits / 8) + 3) & ~3) * m_height)</font> bytes.<br>
+     Note that, like with BMP, pixels are arranged from the bottom of the image to the top, and the Y axis is reversed. <br>
+    </td>
+   </tr>
+   <tr>
+    <td bgcolor=#f0c080>
+     <font color=blue>struct</font> TLF {<br>
+      <dd>u32 m_type;<br>
+      <dd>s32 m_num;<br>
+      <dd>u16* m_color_array;<br>
+     };<br>
+    </td>
+    <td bgcolor=#c0c0f0>
+     <font color=green>m_type</font>is the palette type (<font color=green>0</font> = 16bit RGBA/<font color=green>1</font> = 16bit IA)<br>
+     <font color=green>m_num</font>is the number of palettes (<font color=green>16</font>/<font color=green>256</font>)<br>
+     <font color=green>m_color_array</font> is the palette array.<br>
+    </td>
+   </tr>
+   <tr>
+    <td bgcolor=#f0c080>
+     <font color=blue>struct</font> Pic {<br>
+      <dd>TMF* m_pTMF;<br>
+      <dd>TLF* m_pTLF;<br>
+      <dd><font color=blue>void</font>* m_pReserved;<br>
+      <dd><font color=blue>int</font> m_palette;<br>
+     };<br>
+    </td>
+    <td bgcolor=#c0c0f0>
+     <font color=green>m_pTMF</font> is the TMF pointer<br>
+     <font color=green>m_pTLF</font> is the TLF pointer<br>
+     <font color=green>m_pReserved</font> is for a future attribute table pointer.<br>
+     <font color=green>m_palette</font> is the palette block number for a 4bit image + 256 palettes.<br>
+    </td>
+   </tr>
+  </table>
+  <p>
+ </ul>
+ <li><b>The Plug-In Interface</b>
+ <p>
+ <ul>
+  <li><font color=blue>int</font> <font color=red>TEPI_getType</font>()
+  <ul>
+   <p>
+   Returns the type (<font color=green>TEPIT_IMPORT</font> | <font color=green>TEPIT_EXPORT</font> | <font color=green>TEPIT_PREVIEW</font>)<br>
+   Depending on the plug-in, <font color=blue>TEPI_import()</font> | <font color=blue>TEPI_export()</font> | <font color=blue>TEPI_preview()</font> is called.<br>
+   This function is only called the first time at start-up.<br>
+   </p>
+  </ul>
+  <li><font color=blue>BOOL</font> <font color=red>TEPI_isAvail</font>(<font color=blue>DWORD</font> <font color=green>version</font>)
+  <ul>
+   <p>
+   From the version number of the texture editor (e.g., <font color=green>1.0.0.15</font> = <font color=green>0x0100000f</font>) the validity or invalidity of the plug-in is returned.<br>
+   If valid, return <font color=green>TRUE</font>.  If invalid, return <font color=green>FALSE</font>.<br>
+   This function is only called the first time at start-up.<br>
+   </p>
+  </ul>
+  <li><font color=blue>BOOL</font> <font color=red>TEPI_property</font>()
+  <ul>
+   <p>
+This is planned for future implementation.<br>
+   Quit on <font color=green>TRUE</font>.<br>
+   </p>
+  </ul>
+  <li><font color=blue>BOOL</font> <font color=red>TEPI_about</font>()
+  <ul>
+   <p>
+   This is planned for future implementation.<br>
+   Please display a dialog with DLL information using <font color=blue>AfxMessageBox()</font> etc.
+   Quit on <font color=green>TRUE</font>.
+   </p>
+  </ul>
+  <li><font color=blue>BOOL</font> <font color=red>TEPI_import</font>(<font color=blue>Pic*</font> <font color=green>pInput</font>, <font color=blue>Pic*</font> <font color=green>pOutput</font>)
+  <ul>
+   <p>
+   Called on request from the user when the <font color=green>TEPIT_IMPORT</font> flag is up for type.<br>
+A copy of the current image on the texture editor is included in pInput<br>
+By passing an image to pOutput you can paste an image imported on the texture editor side.<br>
+   If the import is successful, return <font color=green>TRUE</font>.  If it is cancelled or fails, return <font color=green>FALSE</font>.<br>
+   </p>
+   <p>
+   <font color=red>Notes:</font><br>
+   <li><font color=green>pInput-&gt;m_pTLF</font> can be <font color=green>NULL</font>.<br>
+   <li><font color=green>pOutput-&gt;m_pTMF</font> and <font color=green>pOutput-&gt;m_pTLF</font> are initially <font color=green>NULL</font>, but upon normal termination, please make <font color=green>new</font> and reserve memory.<br>
+       Ultimately, it will be removed on the calling side, so <font color=green>delete</font> is unnecessary.<br>
+   <li>By directly editing the contents of <font color=green>pInput-&gt;m_pTMF</font> the image can be updated without using paste mode.
+   </p>
+  </ul>
+  <li><font color=blue>BOOL</font> <font color=red>TEPI_export</font>(<font color=blue>Pic*</font> <font color=green>pInput</font>)
+  <ul>
+   <p>
+  Called on request from the user when the <font color=green>TEPIT_EXPORT</font> flag is up for the type.<br>
+   
+Since a copy of the current image in the texture editor is included in pInput, please use this to perform the Export process.<br>
+   If the export is successful, return <font color=green>TRUE</font>.  I fit is cancelled or fails, return <font color=green>FALSE</font>.<br>
+   </p>
+  </ul>
+  <li><font color=blue>BOOL</font> <font color=red>TEPI_preview</font>(<font color=blue>Pic*</font> <font color=green>pInput</font>)
+  <ul>
+   <p>
+   This is called on request from the user when the <font color=green>TEPIT_PREVIEW</font> flag is up for the type.<br>
+   
+Called when preview is ON for the texture editor, and when changes are made to  images and palettes.<br>
+   If the preview is successful, return <font color=green>TRUE</font>.  If it is cancelled or fails, return <font color=green>FALSE</font>.<br>
+   </p>
+  </ul>
+ </ul>
+ <li><b>Header file for declaring plug-in DLLs</b>
+ <p>
+ <ul>
+<table border=1>
+ <caption>&lt;<font color=green>tePlugIn.h</font>&gt;</caption>
+ <tr>
+  <td>
+<font color=blue>#ifndef</font> __tePlugIn_H__<br>
+<font color=blue>#define</font> __tePlugIn_H__<br>
+<br>
+<font color=blue>#ifdef</font> __cplusplus<br>
+<font color=blue>extern</font> "C" {<br>
+<font color=blue>#endif</font><br>
+<br>
+<font color=blue>#pragma pack(1)</font><br>
+<br>
+<font color=blue>struct</font> TMF {<br>
+    <dd><font color=blue>int</font> m_width;<br>
+    <dd><font color=blue>int</font> m_height;<br>
+    <dd><font color=blue>int</font> m_bits;<br>
+    <dd>u32* m_pBitmap;<br>
+};<br>
+<br>
+<font color=blue>struct</font> TLF {<br>
+    <dd>u32 m_type;<br>
+    <dd>s32 m_num;<br>
+    <dd>u16* m_color_array;<br>
+};<br>
+<br>
+<font color=green>/* Picture */</font><br>
+<font color=blue>struct</font> Pic {<br>
+    <dd>TMF* m_pTMF;<br>
+    <dd>TLF* m_pTLF;<br>
+    <dd><font color=blue>void</font>* m_pReserved;<br>
+    <dd><font color=blue>int</font> m_palette;<br>
+};<br>
+<br>
+<font color=blue>#pragma pack()</font><br>
+<br>
+<font color=green>//// TextureEditor Plug-In Type</font><br>
+<font color=blue>enum</font> TEPIT {<br>
+    <dd>TEPIT_IMPORT = 1,<br>
+    <dd>TEPIT_EXPORT = 2,<br>
+    <dd>TEPIT_PREVIEW = 4,<br>
+};<br>
+<br>
+<font color=blue>#define</font> DLLEXPORT <font color=blue>__declspec</font>(<font color=blue>dllexport</font>)<br>
+<font color=green>/*<br>
+//// YOU MUST IMPLEMENT THE BELOW FUNCTIONS ////<br>
+// get type of plug-in<br>
+// ex) return TEPIT_IMPORT | TEPIT_EXPORT;<br>
+// caution: preview type plug-in is only one.<br>
+*/</font><br>
+DLLEXPORT <font color=blue>int</font> PASCAL EXPORT TEPI_getType();<br>
+<font color=green>/* check  application version. If available then return TRUE. */</font><br>
+DLLEXPORT BOOL PASCAL EXPORT TEPI_isAvail(DWORD version);<br>
+DLLEXPORT BOOL PASCAL EXPORT TEPI_property();<br>
+DLLEXPORT BOOL PASCAL EXPORT TEPI_about();<br>
+DLLEXPORT BOOL PASCAL EXPORT TEPI_import(Pic* pInput, Pic* pOutput); <font color=green>/* called on import. */</font><br>
+DLLEXPORT BOOL PASCAL EXPORT TEPI_export(Pic* pInput); <font color=green>/* called on export. */</font><br>
+DLLEXPORT BOOL PASCAL EXPORT TEPI_preview(Pic* pInput); <font color=green>/* called on update time of TMF/TLF. */</font><br>
+<br>
+<font color=blue>#ifdef</font> __cplusplus<br>
+};<br>
+<font color=blue>#endif</font><br>
+<br>
+<font color=blue>#endif</font><br>
+  </td>
+ </tr>
+</table>
+ </ul>
+</ol>
+<p align="right"><a href="../us/plugin.html">English</a></p>
+<hr>
+<table width=100%>
+ <tr>
+  <td valign=top>
+  </td>
+  <td valign=top align=right nowrap>
+   <font size=-1>
+   Copyright (C) 1998-1999 NINTENDO Co.,Ltd.<br>
+   Copyright (C) 1998-1999 NINTENDO OF AMERICA, Inc.<br>
+   Copyright (C) 1998-1999 MONEGI CORPORATION.<br>
+   Copyright (C) 1998-1999 INTELLIGENT SYSTEMS Co.,Ltd.<br>
+   All rights reserved.<br>
+   </font>
+
+  </td>
+ </tr>
+</table>
+</body>
+</html>

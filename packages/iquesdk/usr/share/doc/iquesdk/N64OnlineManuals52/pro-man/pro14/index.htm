@@ -1,0 +1,100 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 14 - Texture Rectangles (Hardware Sprites)</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. -->
+</head>
+
+<h1>Chapter 14 - Texture Rectangles (Hardware Sprites)</h1>
+
+<p>A texture rectangle is a special primitive supported by the Reality Display Processor (RDP) hardware. This primitive is intended to provide simple &QUOT;<a href="../../keywords/index/data/graphics.htm#sprite" target="keywords">sprite</a>&QUOT; capabilities with a minimum number of parameters. Texture rectangles are screen-aligned rectangles whose coordinates are defined directly in screen space. </p>
+
+
+<dl>
+  <dt><a name="e14-01"><strong>Example 14-1  Texture Rectangle Command</strong></a>
+  <dd><blockquote><pre>
+<a href="../../n64man/gsp/gSPTextureRectangle.htm">gsSPTextureRectangle</a>(x1,y1,xh,yh,tile,s,t,dsdx,dtdy)
+      </pre></blockquote>
+</dl>
+
+<p>Texture coordinates are defined by specifying the start point S and T coordinates at the top
+left corner of the rectangle and the step in S per pixel in X and the step in T per pixel in Y.
+
+Example 14-2 shows a rectangle 100 pixels wide by 100 pixels high drawn at screen coordinates (100,100). The texture coordinates at the top left corner of the rectangle are (0,0). The texture steps 1 <a href="../../keywords/index/data/graphics.htm#texel" target="keywords">texel</a> per pixel in both the S and T directions. This example assumes that a texture has been previously loaded (see Section <a href="../pro13/13-09.htm">&QUOT;13.9, Texture Loading&QUOT;</a>).</p>
+
+<dl>
+  <dt><a name="e14-02"><strong>Example 14-2  Texture Rectangle Example</strong></a>
+  <dd><blockquote><pre>
+<a href="../../n64man/gdp/gDPSetTexturePersp.htm">gsDPSetTexturePersp</a>(G_TP_NONE),
+<a href="../../n64man/gsp/gSPTextureRectangle.htm">gsSPTextureRectangle</a>(100&lt;&lt;2,100&lt;&lt;2,200&lt;&lt;2,200&lt;&lt;2,
+                G_TX_RENDERTILE,
+                0,0,
+                1&lt;&lt;10,1&lt;&lt;10),
+      </pre></blockquote>
+</dl>
+
+
+<p><strong>Caution:</strong>  The perspective divide of the texture coordinates in the RDP must be disabled
+using the <a href="../../n64man/gdp/gDPSetTexturePersp.htm">gsDPSetTexturePersp()</a> command when <a href="../../keywords/index/data/graphics.htm#rendering" target="keywords">rendering</a> texture rectangles. 
+</p>
+
+<p>Texture rectangles are two-dimensional (2D)-- they may be translated in X and Y, but not rotated. Texture rectangles may be Z buffered in a limited way, as described in Section <a href="14-07.htm">14.7, &QUOT;Z Buffering Texture Rectangles&QUOT;</a>. This chapter will explain some of the details associated with the <a href="../../keywords/index/data/graphics.htm#texture rectangle primitive" target="keywords">texture rectangle primitive</a> and provide some simple examples for new Nintendo 64 programmers.</p>
+
+<dl>
+  <dt><a name="f14-01"><strong>Figure 14-1 Texture Rectangle Definition</strong></a>
+  <dd><img alt="[Figure14-1]" src="gif/f14-01.gif">
+</dl>
+
+
+<hr>
+<a name="index"></a>
+<dl>
+  <dt><a href="14-01.htm">14.1 Sampling Overview</a>
+  <dd><a href="14-01.htm#01">14.1.1 Point Sampling</a><br>
+      <a href="14-01.htm#02">14.1.2 Bilinear Filtering</a><br>
+      <a href="14-01.htm#03">14.1.3 Average mode for 1:1 Ratio Sampling</a><br>
+      <a href="14-01.htm#04">14.1.4 Copy</a><br>
+</dl>
+<dl>
+  <dt><a href="14-02.htm">14.2 Simple Texture Effects</a>
+  <dd><a href="14-02.htm#01">14.2.1 Flip</a><br>
+      <a href="14-02.htm#02">14.2.2 Mirror</a><br>
+      <a href="14-02.htm#03">14.2.3 Wrap</a><br>
+      <a href="14-02.htm#04">14.2.4 Sliding Textures</a><br>
+      <a href="14-02.htm#05">14.2.5 Smooth Scrolling</a><br>
+      <a href="14-02.htm#06">14.2.6 Billboards</a><br>
+      <a href="14-02.htm#07">14.2.7 Cloud (CLD) Render Mode</a><br>
+</dl>
+<dl>
+  <dt><a href="14-03.htm">14.3 Texture Types</a>
+  <dd><a href="14-03.htm#01">14.3.1 Intensity (I) Textures</a><br>
+      <a href="14-03.htm#02">14.3.2 Intensity Alpha (IA) Texture</a><br>
+      <a href="14-03.htm#03">14.3.3 Color (RGBA) Textures</a><br>
+      <a href="14-03.htm#04">14.3.4 Color Index (CI) Textures</a><br>
+      <a href="14-03.htm#05">14.3.5 Combining Types</a><br>
+</dl>
+<dl>
+  <dt><a href="14-04.htm">14.4 Multi-Tile Effects</a>
+  <dd><a href="14-04.htm#01">14.4.1 Simple Morph</a><br>
+      <a href="14-04.htm#02">14.4.2 Smoothing Flip-Book Animations</a><br>
+      <a href="14-04.htm#03">14.4.3 Shrinking Sprites</a><br>
+      <a href="14-04.htm#04">14.4.4 Texture Decals</a><br>
+      <a href="14-04.htm#05">14.4.5 Interference Effects</a><br>
+</dl>
+<dl>
+  <dt><a href="14-05.htm">14.5 Tiling Large Images</a>
+  <dd>
+</dl>
+<dl>
+  <dt><a href="14-06.htm">14.6 Color Index Frame Buffer</a>
+  <dd>
+</dl>
+<dl>
+  <dt><a href="14-07.htm">14.7 Z buffering Texture Rectangles</a>
+  <dd><a href="14-07.htm#01">14.7.1 Primitive Z</a>
+</dl>
+
+
+<hr>
+</body> </html>

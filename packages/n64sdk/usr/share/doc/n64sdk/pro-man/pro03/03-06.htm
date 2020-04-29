@@ -1,0 +1,89 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 3 - Hardware Architecture</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check.-->
+</head>
+
+<h1>3.6 Memory Issues</h1>
+
+<p>The main memory in the system is used in parallel by the R4300 CPU, the RSP <a
+href="../../keywords/index/data/system.htm#microcode engine" target="keywords">microcode engine</a>, the RDP graphics pipeline, and the other I/O interfaces of the RCP.  The software is responsible for defining the memory map.  Please see <a href="../pro09/index.htm">Chapter 9, "Basic Memory Management"</a> for additional details.</p>
+
+<p align="right"><a href="index.htm#index"><img
+src="../../gif/index.gif" alt="UP" border="0" width="65"
+height="17"></a></p>
+
+<hr>
+
+<h2><a name="01">3.6.1 Addressing</a></h2>
+
+<p>The N64 CPU can use both physical or <a
+href="../../keywords/index/data/system.htm#virtual address"
+target="keywords">virtual addresses</a>.  The TLB maps virtual addresses into physical addresses (see NOTE).   It is anticipated that programs will mainly use KSEG0
+(cached, unmapped) addresses for instructions and data.  The RSP hardware uses physical addresses.  The microcode imposes a <a
+href="../../keywords/index/data/system.htm#segment address"
+target="keywords">segmented addressing</a> scheme to generate the physical addresses.  Bits 24 through 27 of the segmented address are used to index into a 16-entry table to obtain the base address of the <a
+href="../../keywords/index/data/system.htm#segment"
+target="keywords">segment</a>.  The upper 4 bits are masked off. The lower bits are an offset into the segment. This scheme is used to create dynamic RSP task lists easily. The RDP hardware uses physical addresses.  The RSP
+microcode translates the segmented addresses stored in the task list into physical addresses. </p>
+
+<p><strong>NOTE:</strong>  Depending on address space, there are situations where conversion from virtual to physical address is done without using TLB.  For example, mapping method is not used when converting each space address between KSEG0 and KSEG1.  In this instance, the physical address is calculated by subtracting the base address from the virtual address.</p>
+
+<p align="right"><a href="index.htm#index"><img
+src="../../gif/index.gif" alt="UP" border="0" width="65"
+height="17"></a></p>
+
+<hr>
+
+<h2><a name="02">3.6.2 Data Cache </a></h2>
+
+<p>The N64 CPU has an 8 KB writeback data cache.  This means that when the CPU writes a variable, it may not be written to main memory until later.  Since the RSP reads the task list directly from main memory, the dynamic portion of the task list must be flushed from the data cache before the RSP starts. </p>
+
+<p>You also need to be careful with DMA operations.  The data buffer must be flushed from the cache before the write from memory occurs.  The data buffer must be invalidated in the cache before a read into memory occurs.  If the cache invalidate does not occur, a write back from the cache may destroy data that has just been transferred into main memory by a read DMA.  It is also a good idea to align I/O buffers on the 16-byte data cache line size, to avoid cache line tearing.  Tearing occurs when a buffer and an unrelated variable share a cache line. The potential writeback of the variable could destroy data read into the I/O buffer. </p>
+
+<p align="right"><a href="index.htm#index"><img
+src="../../gif/index.gif" alt="UP" border="0" width="65"
+height="17"></a></p>
+
+<hr>
+
+<h2><a name="03">3.6.3 Alignment</a></h2>
+
+<p>Please note the following alignment restrictions: </p>
+
+<ul>
+    <li>8 byte alignment for most DMA <br>
+        </li>
+    <li>Access to PI using DMA<br>
+        <table border="0" cellpadding="0" cellspaceing="0">
+            <tr>
+                <td>Alignment for Main Memory:</td>
+                <td>8 byte</td>
+            </tr>
+            <tr>
+                <td>Alignment for ROM:</td>
+                <td>2 byte (see NOTE)</td>
+            </tr>
+        </table>
+    </li>
+    <li>64 byte alignment for color frame buffers (cfb) and <a
+        href="../../keywords/index/data/graphics.htm#Z buffer"
+        target="keywords">Z buffer</a><br>
+        8 byte alignment for textures
+<br>
+        </li>
+</ul>
+
+<p><strong>NOTE:</strong>  There are some restrictions in direct access to a Game Pak using the PI manager.  Please access using the OS functions (<a
+href="../../n64man/os/osEPiStartDma.htm">osEPiStartDma</a>, <a
+href="../../n64man/os/osEPiReadIo.htm">osEPiReadIo</a>).</p>
+
+<p align="right"><a href="index.htm#index"><img
+src="../../gif/index.gif" alt="UP" border="0" width="65"
+height="17"></a></p>
+
+<hr>
+</body>
+</html>

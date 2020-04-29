@@ -1,0 +1,86 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.
+  PWC- updated formatting
+  MAP- added links, updated format
+-->
+<TITLE>osPfsAllocateFile</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+<font style="font-size: 12pt"><b>osPfsAllocateFile</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p><i>Creates a new game note</i></P>
+
+<H3>Syntax</H3>
+<p><PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/os.htm">os.h</A> */
+s32 osPfsAllocateFile(OSPfs *pfs,  u16 company_code,  u32 game_code,  u8 *game_name, 
+                      u8 *ext_name,  int length,  s32 *file_no);</CODE></PRE></p>
+
+<H3>Description</H3>
+<P>
+<tt>osPfsAllocateFile</tt> creates a new game note (file) in a Controller Pak. The <B>company_code</B> (company code), <B>game_code</B> (game code), <B>game_name</B> (note name), <B>ext_name</B> (note extension), and <B>length</B> (size) arguments must be specified as the information for the game note.</P>
+
+<P>
+The company_code and game_code are specified as ASCII character strings. The game_name and ext_name are specified by N64 font code.
+</P>
+<P>
+The size of game_name is PFS_FILE_NAME_LEN(16) bytes. If the size is less than 16 bytes, fill the rest with 0x00. Be sure to make the length 16 bytes.
+</P>
+<P>
+The size of ext_name is PFS_FILE_EXT_LEN(4) bytes. However, only the first byte is actually used. For this code, use '0' - '9', 'A' ~ 'Z' (0x10~0x33) of N64 font code. The second through fourth bytes are reserved, so use 0x00.</P>
+<P>
+The size is specified by <B>length</B>, in bytes. Since the smallest internal unit is a page (256 bytes), if length is not specified in multiples of 256, the length will be rounded up to the nearest multiple of 256.
+</P>
+<P>
+The newly created game note's note number (file descriptor) will be returned to <B>file_no</B>. Up to 16 game notes can be created. Therefore, file_no ranges from 0 to 15.
+</P>
+<P>
+The OSPfs structure pointed to by pfs is the file handle to be initialized by the function <a href="osPfsInitPak.htm">osPfsInitPak</a>. Please refer to <tt>osPfsInitPak</tt> to determine how to create this handle.
+</P>
+<P>
+If this function is called successfully, 0 is returned. If an error occurs, one of the following error codes is returned: 
+</P>
+<p>
+<DL>
+  <DT><B>PFS_ERR_NOPACK</B>
+  <DD>Either the Controller Pak is not inserted into the specified Controller or the Controller is not properly connected. To determine which is the case, use <a href="osContStartQuery.htm">osContStartQuery</a> or <a href="osContGetQuery.htm">osContGetQuery</a>. 
+  <BR><BR>
+  <DT><B>PFS_ERR_NEW_PACK</B>
+  <DD>A different Controller Pak has been inserted. To use the inserted Controller Pak, initialize it by calling <tt>osPfsInitPak</tt>.
+  <BR><BR>
+  <DT><B>PFS_ERR_INCONSISTENT</B>
+  <DD>There is a problem in the file system's management area. Usually this error does not occur because <a href="osPfsChecker.htm">osPfsChecker</a> is called internally when you initialize the file system by calling <tt>osPfsInitPak</tt>. If this error is returned, either the Controller Pak is not connected properly, or the Controller Pak itself is damaged. 
+  <BR><BR>
+  <DT><B>PFS_ERR_CONTRFAIL</B>
+  <DD>Data transfer to or from the Controller has failed. If a transfer error occurs, up to three tries will be done internally. Therefore, it is rather rare to see this error. If this error has returned, it is possible that either the Controller is not connected properly, or the Controller Pak or Controller Socket is damaged. 
+  <BR><BR>
+  <DT><B>PFS_ERR_INVALID</B>
+  <DD>If this error is returned, an incorrect argument was specified when this function was called, the specified game note does not exist, or the Pfs function has been called without being initialized using <tt>osPfsInitPak</tt>. Also, if the functions for the Controller were executed after the file handle structure pfs was initialized by other than <tt>osPfsInitPak</tt>, this error occurs.For instance, if <tt>osPfsAllocateFile</tt> is executed after the initialization function for rumble pak <a href="osMotorInit.htm">osMotorInit</a> is used to initialize OSPfs structure, then this error occurs. 
+  <BR><BR>
+  <DT><B>PFS_DATA_FULL</B>
+  <DD>Although the creation of a new game note was attempted, one could not be created because there was not enough space in the Controller Pak. 
+  <BR><BR>
+  <DT><B>PFS_DIR_FULL</B>
+  <DD>Although the creation of a new game note was attempted, it could not be done because the maximum (16) number of game notes have been stored in the Controller Pak. 
+  <BR><BR>
+  <DT><B>PFS_ERR_EXIST</B>
+  <DD>Although the creation of a new game note was attempted, it could not be done because the same game note already exists in the Controller Pak.
+  <BR><BR>
+</DL></p>
+
+<H3>See Also</H3>
+<P>
+<A HREF="osContInit.htm">osContInit</A>, <A HREF="osContStartQuery.htm">osContStartQuery</A>, <A HREF="osContGetQuery.htm">osContGetQuery</A>, <A HREF="osPfsChecker.htm">osPfsChecker</A>, <A HREF="osPfsDeleteFile.htm">osPfsDeleteFile</A>, <A HREF="osPfsFileState.htm">osPfsFileState</A>, <A HREF="osPfsFindFile.htm">osPfsFindFile</A>, <A HREF="osPfsFreeBlocks.htm">osPfsFreeBlocks</A>, <A HREF="osPfsInitPak.htm">osPfsInitPak</A>, <A HREF="osPfsIsPlug.htm">osPfsIsPlug</A>, and <A HREF="osPfsReadWriteFile.htm">osPfsReadWriteFile</A>
+</P>
+
+<H3>Revision History</H3>
+<P>
+1999/02/01 Completely revised<br>
+1999/04/30 Changed format
+</P>
+
+</BODY>
+</HTML>

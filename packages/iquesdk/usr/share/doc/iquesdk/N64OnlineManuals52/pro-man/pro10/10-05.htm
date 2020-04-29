@@ -1,0 +1,57 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 10 - Advanced Memory Management</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. -->
+</head>
+
+<h1>10.5 Using the Region Allocation Routines </h1>
+
+<p>Previous examples were primarily concerned with static memory allocation; many applications may find it necessary to do some form of dynamic allocation.   For situations where the allocation is always done in fixed size chunks, a family of region allocation routines are provided.  These routines will divide up a larger buffer into some fixed
+memory regions that are managed by the library. The routines of interest are:</p>
+
+<dl>
+  <dt><strong><a href="../../n64man/os/osCreateRegion.htm">osCreateRegion</a></strong>
+  <dd>This function initializes an allocation arena given a memory address, size, and alignment.
+</dl>
+<dl>
+  <dt><strong><a href="../../n64man/os/osMalloc.htm">osMalloc</a></strong>
+  <dd>This function allocates and returns the address to a single fixed sized and properly aligned buffer from a given region. This function will fail and return NULL if there is no available free buffer in the region. 
+</dl>
+<dl>
+  <dt><strong><a href="../../n64man/os/osFree.htm">osFree</a></strong>
+  <dd>This routine returns a previously allocated buffer to the given region pool.
+</dl>
+<dl>
+  <dt><strong><a href="../../n64man/os/osGetRegionBufCount.htm">osGetRegionBufCount</a></strong>
+  <dd>This function returns the total number of buffers in the region. 
+</dl>
+<dl>
+  <dt><strong><a href="../../n64man/os/osGetRegionBufSize.htm">osGetRegionBufSize</a></strong>
+  <dd>This function returns the actual buffer size, after having been possibly <a href="../../keywords/index/data/graphics.htm#padding" target="keywords">padded</a> to the given alignment. 
+</dl>
+
+
+<p>The following code sample creates a region, allocates a buffer, and then frees it. </p>
+
+<blockquote><pre>
+void    *region;
+char    regionMemory[REGION_SIZE];
+u64     *buffer;
+
+region = <a href="../../n64man/os/osCreateRegion.htm">osCreateRegion</a>(regionMemory,
+                sizeof(regionMemory),
+                BUFFER_SIZE, OS_RG_ALIGN_16B);
+buffer = <a href="../../n64man/os/osMalloc.htm">osMalloc</a>(region);
+
+/* do some work that uses 'buffer' */
+
+<a href="../../n64man/os/osFree.htm">osFree</a>(region,buffer);
+</pre></blockquote>
+
+<p>Incidentally, if the fixed size regions are intended to hold entire <A target="keywords" HREF="../../keywords/index/data/system.htm#segment">segments</A>, the maxsize keyword of the <a href="../../n64man/tool/makerom.htm">makerom</a> specification file may be of interest. See <a href="../../n64man/tool/makerom.htm">makerom</a> for details. </p>
+
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+</body> </html>

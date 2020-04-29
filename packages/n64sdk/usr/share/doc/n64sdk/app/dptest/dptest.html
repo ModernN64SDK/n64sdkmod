@@ -1,0 +1,422 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<!--
+**********************************************************************
+			  dptest Manual
+**********************************************************************
+-->
+<HEAD>
+<TITLE>dptest Manual</TITLE>
+</HEAD>
+
+<BODY bgcolor="#CCFFFF">
+<FONT FACE="Arial" SIZE="-1">
+
+<!--
+   <LINK REL=stylesheet TYPE="text/css" HREF="dptest.css">
+-->
+<CENTER>
+dptest Manual Ver0.1
+</CENTER>
+<HR>
+<H2><FONT size="4" color="#0000FF">Summary</FONT></H2>
+<H3><FONT size="3" color="#009900">dptest is </FONT></H3>
+<P>
+a program for adding several functions which cooperate with the ccbl program that runs on the N64. 
+</P>
+<P>
+It's main functions are 
+</P>
+<UL>
+  <LI>save and restore ccbl settings to an external memory device
+  <LI>text display of ccbl settings as a display list
+</UL>
+<H3><FONT size="3" color="#009900"> ccbl is </FONT></H3>
+<P>
+the name of a program that runs on the N64.  It was created as a simple tutorial especially for the ColorCombiner and Blender functions of RDP, a function program for the Nintendo64. 
+</P>
+<P>
+In order to cooperate with dptest, the ccbl made by the command "make DPTEST=1" is stored, by default, as dptest.n64 in "[instal-dir]/ccbl/dptest.n64".  This can be changed by the user. 
+</P>
+<P>
+Please also refer to the <A href="../../sample/ccbl.html">ccbl Manual</A>. 
+</P>
+<H3><FONT size="3" color="#009900"> Operating Environment </FONT></H3>
+<CENTER>
+<TABLE width="80%" border="1" summary="Operating Environment"  cellpadding="3" cellspacing="3">
+  <TR>
+    <TH><font face="arial" size="-1">Platforms</font></TH>
+    <TD><font face="arial" size="-1">Windows95, Windows98, Windows NT4.0(SR3)</font></TD></TR>
+  <TR>
+    <TH><font face="arial" size="-1">Targets</font></TH>
+    <TD><font face="arial" size="-1">MSP-A, MSP-B, MSP-C<BR>
+PARTNER-N64PC<BR>
+IS-VIEWER64</font></TD></TR>
+</TABLE>
+
+</CENTER>
+<P>
+<FONT color="#FF0000">* However, it cannot be used on the PARTNER-N64PC under a combination of NT with a PARTNER-PCI I/F board. 
+</FONT>
+</P>
+<HR>
+<H2><FONT size="4" color="#0000FF"> How to Use </FONT></H2>
+<H3><FONT size="3" color="#009900"> Necessary Files </FONT></H3>
+<P>
+The following files are included in the dptest package. 
+</P>
+<CENTER>
+<TABLE width="80%" border="1" summary="dptest Package Contents" style="margin-top:10pt; margin-bottom:10pt;">
+  <TR>
+    <TH><font face="arial" size="-1">dptest.exe</font></TH>
+    <TD><font face="arial" size="-1">dptest executable file</font></TD></TR>
+  <TR>
+    <TH><font face="arial" size="-1">TargetN64.dll</font></TH>
+    <TD><font face="arial" size="-1">DLL for controlling the various target devices.</font></TD></TR>
+  <TR>
+    <TH><font face="arial" size="-1">KMCCtrl.dll</font></TH>
+    <TD><font face="arial" size="-1">DLL for controlling the PARTNER-N64PC.</font></TD></TR>
+  <TR>
+    <TH><font face="arial" size="-1">dptest.n64</font></TH>
+    <TD><font face="arial" size="-1">ccbl ROM image for dptest.</font></TD></TR>
+</TABLE>
+
+</CENTER>
+<P>
+Store all of these files under any directory.  However, make sure to store them all under the same directory. 
+</P>
+<H3><FONT size="3" color="#009900"> Run </FONT></H3>
+<P>
+Double click on dptest.exe in the Explorer. 
+</P>
+<P>
+The following window will open.  This is the main window. 
+</P>
+<CENTER>
+<IMG src="image/mainform.gif" alt="Main Window Graphic" height="83" width="442">
+</CENTER>
+<CENTER>
+<TABLE width="80%" border="1" summary="Main Window Menu Content" style="margin-top:10pt; margin-bottom:10pt;">
+  <CAPTION><font face="arial" size="-1">Contents of Main Window Menus</font></CAPTION>
+  <TR>
+    <TD rowspan=3><font face="arial" size="-1">File</font></TD>
+    <TD><font face="arial" size="-1">Save to File</font></TD></TR>
+  <TR>
+
+    <TD><font face="arial" size="-1">Recover from File</font></TD></TR>
+  <TR>
+
+    <TD><font face="arial" size="-1">Exit</font></TD></TR>
+  <TR>
+    <TD rowspan=5><font face="arial" size="-1">Target</font></TD>
+    <TD><font face="arial" size="-1">Initialize</font></TD></TR>
+  <TR>
+
+    <TD><font face="arial" size="-1">Sample Static DL Setup</font></TD></TR>
+  <TR>
+
+    <TD><font face="arial" size="-1">Sample Dynamic DL Setup</font></TD></TR>
+  <TR>
+
+    <TD><font face="arial" size="-1">Save</font></TD></TR>
+  <TR>
+
+    <TD><font face="arial" size="-1">Restore</font></TD></TR>
+  <TR>
+    <TD><font face="arial" size="-1">Setup</font></TD>
+    <TD><font face="arial" size="-1">Select Target</font></TD></TR>
+  <TR>
+    <TD><font face="arial" size="-1">Help</font></TD>
+    <TD><font face="arial" size="-1">About dptest</font></TD></TR>
+</TABLE>
+
+</CENTER>
+<H3><FONT size="3" color="#009900"> Setup </FONT></H3>
+<P>
+In order to use the various functions of dptest, you must select the type of target to be used. 
+</P>
+<P>
+Select [Setup] then [Select Target]from the menus in the main window.  The "Select Target" dialog box will appear. 
+</P>
+<CENTER>
+<IMG src="image/tgtselform.gif" alt="Graphic of Select Target dialog box" height="194" width="366">
+</CENTER>
+<CENTER>
+<TABLE width="80%" border="1" summary="How to select a target" style="margin-top:10pt; margin-bottom:10pt;">
+  <CAPTION><font face="arial" size="-1">How to Select a Target</font></CAPTION>
+  <TR>
+    <TD><font face="arial" size="-1">When selecting any of MSP-A, MSP-B, or MSP-C</font></TD>
+    <TD><font face="arial" size="-1">Select the [MSP] radio button. <BR>
+Then select the target to be used from the combo box on the right.</font></TD></TR>
+  <TR>
+    <TD><font face="arial" size="-1">When using PARTNER-N64PC</font></TD>
+    <TD><font face="arial" size="-1">Select the [PTR] radio button.<BR>
+Then enter the full path name of the directory in which PARTNER (debugger) is installed in the edit box on the right.</font></TD></TR>
+  <TR>
+    <TD><font face="arial" size="-1">When using IS-VIEWER64</font></TD>
+    <TD><font face="arial" size="-1">Select the [ISV] radio button.<BR>
+Then select from the combo box on the right which of the IS-VIEWER64's which are connected will be used.<BR>
+The IS-VIEWER64's are numbered from 0 (zero) in the order from the closest to the PC in the daisy chain.  Please note that they are not identified by their SCSI-ID.</font></TD></TR>
+</TABLE>
+
+</CENTER>
+<P>
+When you are finished with your selection, press the OK button.  The content of the selection will be validated and the N64 will be initialized. 
+</P>
+<H3><FONT size="3" color="#009900"> Functions </FONT></H3>
+<P>
+The main functions of dptest are listed below. 
+</P>
+<CENTER>
+<TABLE width="80%" border="1" class="Function">
+  <TR>
+    <TH colspan="2"><font face="arial" size="-1">Initialize</font></TH></TR>
+  <TR>
+    <TD><font face="arial" size="-1">Menu</font></TD>
+    <TD><font face="arial" size="-1">[Target]-[Initialize]</font></TD></TR>
+  <TR>
+    <TD><font face="arial" size="-1">Description</font></TD>
+    <TD><font face="arial" size="-1">Initializes the N64 and transfers ccbl.</font></TD></TR>
+</TABLE>
+
+</CENTER>
+<CENTER>
+<TABLE width="80%" border="1" class="Function">
+  <TR>
+    <TH colspan="2"><font face="arial" size="-1">Save As</font></TH></TR>
+  <TR>
+    <TD><font face="arial" size="-1">Menu</font></TD>
+    <TD><font face="arial" size="-1">[File]-[Save to File]</font></TD></TR>
+  <TR>
+    <TD><font face="arial" size="-1">Description</font></TD>
+    <TD><font face="arial" size="-1">Saves the content set by ccbl to a file.</font></TD></TR>
+</TABLE>
+
+</CENTER>
+<CENTER>
+<TABLE width="80%" border="1" class="Function">
+  <TR>
+    <TH colspan="2"><font face="arial" size="-1">Restore settings from file</font></TH></TR>
+  <TR>
+    <TD><font face="arial" size="-1">Menu</font></TD>
+    <TD><font face="arial" size="-1">[File]-[Restore Settings]</font></TD></TR>
+  <TR>
+    <TD><font face="arial" size="-1">Description</font></TD>
+    <TD><font face="arial" size="-1">Reads and restores ccbl settings which have been saved in a file.</font></TD></TR>
+</TABLE>
+
+</CENTER>
+<CENTER>
+<TABLE width="80%" border="1" class="Function">
+  <TR>
+    <TH colspan="2"><font face="arial" size="-1">Get sample settings for static display list</font></TH></TR>
+  <TR>
+    <TD><font face="arial" size="-1">Menu</font></TD>
+    <TD><font face="arial" size="-1">[Target]-[Sample Static DL Settings]</font></TD></TR>
+  <TR>
+    <TD><font face="arial" size="-1">Description</font></TD>
+    <TD><font face="arial" size="-1">Outputs ccbl settings to the GBI window as a static display list.</font></TD></TR>
+</TABLE>
+
+</CENTER>
+<CENTER>
+<TABLE width="80%" border="1" class="Function">
+  <TR>
+    <TH colspan="2"><font face="arial" size="-1">Get sample settings for dynamic display list</font></TH></TR>
+  <TR>
+    <TD><font face="arial" size="-1">Menu</font></TD>
+    <TD><font face="arial" size="-1">[Target]-[Sample Dynamic DL Settings]</font></TD></TR>
+  <TR>
+    <TD><font face="arial" size="-1">Description</font></TD>
+    <TD><font face="arial" size="-1">Outputs ccbl settings to the GBI window as a dynamic display list.</font></TD></TR>
+</TABLE>
+
+</CENTER>
+<H3><FONT size="3" color="#009900"> GBI Window </FONT></H3>
+<P>
+With the "get sample settings for static/dynamic display list" above, the resulting text is displayed in the window illustrated below.  This window is called the GBI window. 
+</P>
+<CENTER>
+<IMG src="image/gbiviewform.gif" alt="Graphic of GBI window" height="456" width="479">
+</CENTER>
+<CENTER>
+<TABLE width="80%" border="1" summary="Menu contents in GBI window" style="margin-top:10pt; margin-bottom:10pt;">
+  <TR>
+    <TD rowspan=3><font face="arial" size="-1">File</font></TD>
+    <TD><font face="arial" size="-1">Save As</font></TD></TR>
+  <TR>
+
+    <TD><font face="arial" size="-1">Save</font></TD></TR>
+  <TR>
+
+    <TD><font face="arial" size="-1">Close</font></TD></TR>
+  <TR>
+    <TD rowspan=2><font face="arial" size="-1">Edit</font></TD>
+    <TD><font face="arial" size="-1">Copy</font></TD></TR>
+  <TR>
+
+    <TD><font face="arial" size="-1">Select All</font></TD></TR>
+  <TR>
+    <TD rowspan=2><font face="arial" size="-1">Target</font></TD>
+    <TD><font face="arial" size="-1">Sample Static DL Settings</font></TD></TR>
+  <TR>
+
+    <TD><font face="arial" size="-1">Sample Dynamic DL Settings</font></TD></TR>
+</TABLE>
+
+</CENTER>
+<P>
+You can view the output display list and save them to a file in this window 
+</P>
+<HR>
+<H2><FONT size="4" color="#0000FF"> Error Messages </FONT></H2>
+<CENTER>
+
+<HR width="80%">
+</CENTER>
+<CENTER>
+<TABLE width="80%" border="0" class="ErrorMessage">
+  <TR>
+    <TH colspan="2" align="left"><font face="arial" size="-1">Write failure to file</font></TH></TR>
+  <TR valign=top>
+    <TD><font face="arial" size="-1">Description: </font></TD>
+    <TD><font face="arial" size="-1">Please make sure there is enought space available on the storage medium. <BR>
+Also check whether or not the file is write protected.</font></TD></TR>
+</TABLE>
+
+</CENTER>
+<CENTER>
+
+<HR width="80%">
+</CENTER>
+<CENTER>
+<TABLE width="80%" border="0" class="ErrorMessage">
+  <TR>
+    <TH colspan="2" align="left"><font face="arial" size="-1">Forced exit</font></TH></TR>
+  <TR valign=top>
+    <TD><font face="arial" size="-1">Description: </font></TD>
+    <TD><font face="arial" size="-1">This message is displayed when a user's operation was canceled while the target was being accessed.</font></TD></TR>
+</TABLE>
+
+</CENTER>
+<CENTER>
+
+<HR width="80%">
+</CENTER>
+<CENTER>
+<TABLE width="80%" border="0" class="ErrorMessage">
+  <TR>
+    <TH colspan="2" align="left"><font face="arial" size="-1">Not a ccbl saved file.</font></TH></TR>
+  <TR valign=top>
+    <TD><font face="arial" size="-1">Description: </font></TD>
+    <TD><font face="arial" size="-1">This error message is displayed when an attempt is made to restore ccbl settings from a file which was not saved in ccbl.</font></TD></TR>
+</TABLE>
+
+</CENTER>
+<CENTER>
+
+<HR width="80%">
+</CENTER>
+<CENTER>
+<TABLE width="80%" border="0" class="ErrorMessage">
+  <TR>
+    <TH colspan="2" align="left"><font face="arial" size="-1">ccbl saved file is wrong version</font></TH></TR>
+  <TR valign=top>
+    <TD><font face="arial" size="-1">Description: </font></TD>
+    <TD><font face="arial" size="-1">This error occurs when the dptest version is older than that of the ccbl file which is being loaded.  Please use the latest version of dptest and the corresponding version ccbl.</font></TD></TR>
+</TABLE>
+
+</CENTER>
+<CENTER>
+
+<HR width="80%">
+</CENTER>
+<CENTER>
+<TABLE width="80%" border="0" class="ErrorMessage">
+  <TR>
+    <TH colspan="2" align="left"><font face="arial" size="-1">Cannot find DLL</font></TH></TR>
+  <TR valign=top>
+    <TD><font face="arial" size="-1">Description: </font></TD>
+    <TD><font face="arial" size="-1">This error occurs when the DLL required for each target cannot be found.  Check whether or not the software for the specified target has been properly installed.</font></TD></TR>
+</TABLE>
+
+</CENTER>
+<CENTER>
+
+<HR width="80%">
+</CENTER>
+<CENTER>
+<TABLE width="80%" border="0" class="ErrorMessage">
+  <TR>
+    <TH colspan="2" align="left"><font face="arial" size="-1">Opening target failed.</font></TH></TR>
+  <TR valign=top>
+    <TD><font face="arial" size="-1">Description: </font></TD>
+    <TD><font face="arial" size="-1">This error occurs when the target does not exist.  Check whether or not the hardware for the specified target has been properly installed.</font></TD></TR>
+</TABLE>
+
+</CENTER>
+<CENTER>
+
+<HR width="80%">
+</CENTER>
+<CENTER>
+<TABLE width="80%" border="0" class="ErrorMessage">
+  <TR>
+    <TH colspan="2" align="left"><font face="arial" size="-1">Target does not exist</font></TH></TR>
+  <TR valign=top>
+    <TD><font face="arial" size="-1">Description: </font></TD>
+    <TD><font face="arial" size="-1">This error occurs when the target does not exist.  Check whether or not the hardware for the specified target has been properly installed.</font></TD></TR>
+</TABLE>
+
+</CENTER>
+<CENTER>
+
+<HR width="80%">
+</CENTER>
+<CENTER>
+<TABLE width="80%" border="0" class="ErrorMessage">
+  <TR>
+    <TH colspan="2" align="left"><font face="arial" size="-1">Specified target is already in use</font></TH></TR>
+  <TR valign=top>
+    <TD><font face="arial" size="-1">Description: </font></TD>
+    <TD><font face="arial" size="-1">This error occurs when dptest is double-started and an attempt has been made to use the same target as that which is being used by the dptest which has already been started.</font></TD></TR>
+</TABLE>
+
+</CENTER>
+<CENTER>
+
+<HR width="80%">
+</CENTER>
+<CENTER>
+<TABLE width="80%" border="0" class="ErrorMessage">
+  <TR>
+    <TH colspan="2" align="left"><font face="arial" size="-1">Failure on initializing target</font></TH></TR>
+  <TR valign=top>
+    <TD><font face="arial" size="-1">Description: </font></TD>
+    <TD><font face="arial" size="-1">Initialization of the target has failed.</font></TD></TR>
+</TABLE>
+
+</CENTER>
+<CENTER>
+
+<HR width="80%">
+</CENTER>
+<CENTER>
+<TABLE width="80%" border="0" class="ErrorMessage">
+  <TR>
+    <TH colspan="2" align="left"><font face="arial" size="-1">Program file (dptest.n64) not found on target side</font></TH></TR>
+  <TR valign=top>
+    <TD><font face="arial" size="-1">Description: </font></TD>
+    <TD><font face="arial" size="-1">Check whether or not dptest.n64 has been stored in the same directory as dptest.exe.</font></TD></TR>
+</TABLE>
+
+</CENTER>
+<HR>
+<H2><FONT size="4" color="#0000FF"> Registry </FONT></H2>
+<P>
+With dptest, the contents which have been set by the program are saved in a registry and are loaded and reflected in operation the next time the program is started.  The key name of this registry is &quot;HKEY_LOCAL_MACHINE\SOFTWARE\Monegi\DPTest&quot;.  The user should not edit this file as it will make operation unreliable.  However, this key may be deleted.  When deleting the key, please delete &quot;HKEY_LOCAL_MACHINE\SOFTWARE\Monegi\DPTest&quot;. 
+</P>
+<HR>
+<H2><FONT size="4" color="#0000FF"> Manual Update History </FONT></H2>
+</BODY>
+</HTML>

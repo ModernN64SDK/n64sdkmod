@@ -1,0 +1,128 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<!--
+Editors Notes:
+  PWC- updated formatting
+  MAP- updated format
+-->
+<title>gdis</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>gdis</b></font><font style="font-size: 9pt"><b> (tool command)</b></font>
+
+<p><i>Disassembles object files (.o)</i></p>
+
+<h3>Syntax</h3>
+<p>
+gdis [ options ] file </p>
+
+<h3>Description</h3>
+
+<p>gdis disassembles object files in machine instructions.
+</p>
+
+<p>Command Line Options</p>
+
+<dl>
+    <dt><strong>-b beginaddress</strong></dt>
+    <dd>Disassembles starting at the given address. The address can be in decimal, octal (with a leading 0), or hexadecimal (with a leading 0x). <br>
+        <br>
+        </dd>
+    <dt><strong>-d section</strong></dt>
+    <dd>Disassembles the named section as data, printing the offset from the beginning of the section. <br>
+        <br>
+        </dd>
+    <dt><strong>-C</strong></dt>
+    <dd>demangle C++ names.<br>
+        <br>
+        </dd>
+    <dt><strong>-D section</strong></dt>
+    <dd>Disassembles the named section as data, printing the actual address of the data. <br>
+        <br>
+        </dd>
+    <dt><strong>-e endaddress</strong></dt>
+    <dd>Disassembly stops at the given address. The address can be in decimal, octal (with a leading 0), or hexadecimal (with a leading 0x). <br>
+        <br>
+        </dd>
+    <dt><strong>-F function</strong></dt>
+    <dd>Disassembles the named function only in each object file specified on the command line. This option may be specified multiple times on the command line. <br>
+        <br>
+        </dd>
+    <dt><strong>-h</strong></dt>
+    <dd>Substitutes the general register names for the software register names in the output. <br>
+        <br>
+        </dd>
+    <dt><strong>-H</strong></dt>
+    <dd>Removes the leading source line, leaving the hex value and the instructions.<br>
+        <br>
+        </dd>
+    <dt><strong>-i</strong></dt>
+    <dd>Removes the leading source line and hexadecimal value of disassembly, leaving only the instructions. <br>
+        <br>
+        </dd>
+    <dt><strong>-I directory</strong></dt>
+    <dd>Uses the directory to help find the source code. <br>
+        <br>
+        </dd>
+    <dt><strong>-l string</strong></dt>
+    <dd>Disassembles the archive file specified by string.</dd>
+    <dd>For example, gdis -l x would add usr/lib/libx.a to the files to be disassembled. <br>
+        <br>
+        </dd>
+    <dt><strong>-L</strong></dt>
+    <dd>Looks up source labels for subsequent printing. This option works only if the file was compiled with debugging information. <br>
+        <br>
+        </dd>
+    <dt><strong>-o</strong></dt>
+    <dd>Prints addresses and contents in octal. The default is hexadecimal. <br>
+        <br>
+        </dd>
+    <dt><strong>-p function</strong></dt>
+    <dd>Exactly the same meaning as <tt>-F</tt> function.<br>
+        <br>
+        </dd>
+    <dt><strong>-s</strong></dt>
+    <dd>Performs symbolic disassembly where possible. Symbolic disassembly output will appear on the line following the instruction. Symbol names will be printed in C syntax. This is the default unless the -svr4 option is given. <br>
+        <br>
+        </dd>
+    <dt><strong>-svr4</strong></dt>
+    <dd>Prints using svr4 output format. This means (if no other options given) no externals are named (when loading data off of the $gp register). <br>
+        <br>
+        </dd>
+    <dt><strong>-S</strong></dt>
+    <dd>Displays source code intermixed with the assembly code. There is no guarantee that the source code displayed is the source code used to compile the function because gdis simply looks for a source file starting with the name&quot;/&quot;path given in the object and continuing by looking in directories specified with -I (if any) and accepts the first appropriately-named file it finds as the source file. <br>
+        <br>
+        </dd>
+    <dt><strong>-T</strong></dt>
+    <dd>Sets trace flag for debugging of the disassembler itself. <br>
+        <br>
+        </dd>
+    <dt><strong>-t section</strong></dt>
+    <dd>Disassembles the named section as a text section. <br>
+        <br>
+        </dd>
+    <dt><strong>-V</strong></dt>
+    <dd>Prints the version of gdis being executed. <br>
+        <br>
+        </dd>
+    <dt><strong>-w</strong></dt>
+    <dd>Attempts to print source information (names of user variables involved) after (to the right of) assembly codes. This option comes into effect only if -s is also specified, but does not imply -s. (But recall from above that -s is on by default unless -svr4 is specified, so -w is effective by itself unless -svr4 was specified.) <br>
+        <br>
+        </dd>
+    <dt><strong>-x</strong></dt>
+    <dd>Prints offsets as hex numbers. This is the default. <br>
+        <br>
+        </dd>
+</dl>
+
+<p>If the -d, -D or -t options are specified, only those named sections from each user-supplied filename will be is assembled. Otherwise, all sections containing text will be disassembled. </p>
+<h3>Revision History</h3>
+<p>1999/04/30  Changed Format</p>
+<br><br>
+
+</body>
+</html>

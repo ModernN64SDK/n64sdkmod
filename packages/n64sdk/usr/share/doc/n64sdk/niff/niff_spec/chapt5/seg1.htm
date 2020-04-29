@@ -1,0 +1,322 @@
+<HTML>
+<HEAD>
+<TITLE>Chapter 5 Flags</TITLE>
+</HEAD>
+<BODY LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff">
+
+<font face="arial" size="-1">
+<b><font size="3">Chapter 5 Flags</b></font>
+<hr>
+<P>
+<b>5-1. Flags</b>
+<P>
+The following flags are currently defined for NIFF:
+<P>
+<pre><font face="courier" size="2">
+/* Flags for Nintendo Intermediate File Format ver1.0 */
+
+<a name="SCENE_CFG">/* SceneList -> scene_cfg */</a>
+
+#define SCENE_CFG_VIDEO_NTSC	0x00000000
+#define SCENE_CFG_VIDEO_PAL	0x00000001
+#define SCENE_CFG_VIDEO_MPAL	0x00000002
+#define SCENE_CFG_GAMMA	0x00000004
+#define SCENE_CFG_DITHER	0x00000008
+#define SCENE_CFG_DIVOT	0x00000010
+
+<a name="OBJ_STATE">/* ObjList -> Obj -> obj_state */</a>
+
+#define OBJ_STATE_CLEAR	0x00000000
+#define OBJ_STATE_ACTIVE	0x00000001
+
+<a name="OBJ_TYPE">/* ObjList -> Obj -> obj_type */</a>
+
+#define OBJ_TYPE_NULL	0x00000000
+#define OBJ_TYPE_3D	0x00000001
+#define OBJ_TYPE_BILLBOARD	0x00000002
+
+<a name="OBJ_GROUP">/* ObjList -> Obj -> obj_group */</a>
+
+#define OBJ_GROUP_NONE
+
+<a name="OBJ_RENDER_CYCLE_TYPE">/* ObjList -> Obj -> obj_render_cycle_type */</a>
+
+#define OBJ_RENDER_CYC_1CYC
+#define OBJ_RENDER_CYC_2CYC
+
+<a name="OBJ_PRI">/* ObjList -> Obj -> obj_pri */</a>
+
+#define OBJ_PRI_NONE	0x00000000
+
+<a name="OBJ_RENDER_PRI">/* ObjList -> Obj -> obj_render_pri */</a>
+
+#define OBJ_RENDER_FLAG_NIFF	0x00
+#define OBJ_RENDER_FLAG_N64	0x01
+
+#define OBJ_RENDER_NIFF_OPA_SURF	0x00d00000
+#define OBJ_RENDER_NIFF_OPA_INTER	0x00b00000
+#define OBJ_RENDER_NIFF_OPA_DECAL	0x00900000
+#define OBJ_RENDER_NIFF_TEX_EDGE	0x00700000
+#define OBJ_RENDER_NIFF_XLU_SURF	0x00500000
+#define OBJ_RENDER_NIFF_XLU_INTER	0x00300000
+#define OBJ_RENDER_NIFF_XLU_DECAL	0x00100000
+
+<a name="HAVE_LINK_BILLBOARD">/* ObjList -> Obj -> have_link_billboard */</a>
+
+#define ANY_LINK_BILLBOARD	0x00000001
+#define NO_LINK_BILLBOARD	0x00000000
+
+<a name="OBJ_LOD_NUM">/* ObjList -> Obj -> obj_lod_num */</a>
+
+#define OBJ_NOLOD	0x00000000
+
+<a name="OBJ_LOD_DIST">/* ObjList -> Obj -> obj_lod_dist */</a>
+
+#define OBJ_LOD_DIST_MAX	0xffffffff
+
+<a name="OBJ_CHILD_NUM">/* ObjList -> Obj -> obj_child_num */</a>
+
+#define OBJ_NOCHILD	0x00000000
+
+<a name="OBJ_PARENT_LINK">/* ObjList -> Obj -> obj_parent_link */</a>
+
+#define OBJ_NO_PARENT	0xffffffff
+
+<a name="OBJ_MAT_LINK">/* ObjList -> Obj -> obj_mat_link */</a>
+
+#define OBJ_MAT_NOLINK	0xffffffff
+
+<a name="OBJ_ANIM_LINK">/* ObjList -> Obj -> obj_anim_link */</a>
+
+#define OBJ_ANIM_NOLINK	0xffffffff
+
+<a name="OBJ_COLL_GROUP_LINK">/* ObjList -> Obj -> obj_coll_group_link */</a>
+
+#define OBJ_COLL_GROUP_NOLINK	0xffffffff
+
+<a name="OBJ_SHAPE_LINK">/* ObjList -> Obj -> obj_shape_link */</a>
+
+#define OBJ_NOSHAPE	0xffffffff
+
+<a name="SHAPE_TYPE">/* ShapeList -> Shape -> shape_type */</a>
+
+#define SHAPE_TYPE_CLEAR	0x00000000
+#define SHAPE_TYPE_AA	0x00000001
+#define SHAPE_TYPE_RA	0x00000002
+#define SHAPE_TYPE_ZB	0x00000004
+#define SHAPE_TYPE_CULL_BACK	0x00000010
+#define SHAPE_TYPE_CULL_FRONT	0x00000020
+#define SHAPE_TYPE_CULL_BOTH	0x00000030
+
+<a name="SHAPE_MAT_LINK">/* ShapeList -> Shape -> shape_mat_link */</a>
+
+#define SHAPE_MAT_NOLINK	0xffffffff
+
+<a name="SHAPE_PART_NUM">/* ShapeList -> Shape -> shape_part_num */</a>
+
+#define SHAPE_NOPART	0x00000000
+
+<a name="TRI_ANIM_TYPE">/* TriList -> TriGroup -> tri_anim_type */</a>
+
+#define TRI_ANIM_NONE	0x00000000
+#define TRI_ANIM_VTX_FULL	0x00000001
+#define TRI_ANIM_VTX_KEY	0x00000002
+#define TRI_ANIM_TRI_COLOR_FULL	0x00000010
+#define TRI_ANIM_TRI_COLOR_KEY	0x00000020
+#define TRI_ANIM_VTX_COLOR_FULL	0x00000100
+#define TRI_ANIM_VTX_COLOR_KEY	0x00000200
+#define TRI_ANIM_TRI_NV_FULL	0x00001000
+#define TRI_ANIM_TRI_NV_KEY	0x00002000
+#define TRI_ANIM_VTX_NV_FULL	0x00010000
+#define TRI_ANIM_VTX_NV_KEY	0x00020000
+#define TRI_ANIM_ST_FULL	0x00100000
+#define TRI_ANIM_ST_KEY	0x00200000
+
+<a name="MAT_TYPE">/* MatList -> Mat -> mat_type */</a>
+
+#define MAT_TYPE_NIFF	0x00000000
+#define MAT_TYPE_N64	0x01010101
+
+<a name="MAT_SHADE_TYPE">/* MatList -> Mat -> mat_shade_type */</a>
+
+#define MAT_SHADE_LIGHT_OFF	0x00000000
+#define MAT_SHADE_LIGHT_LOCAL	0x00000001
+#define MAT_SHADE_LIGHT_GLOBAL	0x00000002
+#define MAT_SHADE_FLAT	0x00000000
+#define MAT_SHADE_SMOOTH	0x00000010
+#define MAT_SHADE_USE_HILIGHT	0x00000100
+#define MAT_SHADE_USE_REFLECT	0x00000200
+
+<a name="MAT_COLOR_TYPE">/* MatList -> Mat -> mat_color_type & mat_alpha_type */</a>
+/* with MAT_TYPE_NIFF on mat_type */
+
+#define MAT_CC_NIFF_VTX	0x00000001
+#define MAT_CC_NIFF_TRI	0x00000002
+#define MAT_CC_NIFF_PRIM	0x00000004
+#define MAT_CC_NIFF_TEX0	0x00000008
+#define MAT_CC_NIFF_TEX1	0x00000010
+#define MAT_CC_NIFF_VTX_ALPHA	0x00010000
+#define MAT_CC_NIFF_TRI_ALPHA	0x00020000
+#define MAT_CC_NIFF_PRIM_ALPHA	0x00040000
+#define MAT_CC_NIFF_TEX0_ALPHA	0x00080000
+#define MAT_CC_NIFF_TEX1_ALPHA	0x00100000
+#define MAT_CC_NIFF_NONE	0xffffffff
+
+/* with MAT_TYPE_N64 on mat_type */
+
+#define MAT_CC_N64_COMBINED	0x00
+#define MAT_CC_N64_TEX0	0x01
+#define MAT_CC_N64_TEX1	0x02
+#define MAT_CC_N64_PRIMITIVE	0x03
+#define MAT_CC_N64_SHADE	0x04
+#define MAT_CC_N64_ENV	0x05
+#define MAT_CC_N64_KEY_CENTER	0x10
+#define MAT_CC_N64_KEY_SCALE	0x11
+#define MAT_CC_N64_COMBINED_ALPHA	0x06
+#define MAT_CC_N64_TEX0_ALPHA	0x07
+#define MAT_CC_N64_TEX1_ALPHA	0x08
+#define MAT_CC_N64_PRIM_ALPHA	0x09
+#define MAT_CC_N64_SHADE_ALPHA	0x0a
+#define MAT_CC_N64_ENV_ALPHA	0x0b
+#define MAT_CC_N64_LOD	0x0c
+#define MAT_CC_N64_PRIM_LOD	0x0d
+#define MAT_CC_N64_NOISE	0x12
+#define MAT_CC_N64_K4	0x14
+#define MAT_CC_N64_K5	0x15
+#define MAT_CC_N64_1	0x0e
+#define MAT_CC_N64_0	0x0f
+#define MAT_CC_N64_NONE	0xffffffff
+
+<a name="TEX_TYPE">/* TexList -> Tex ->tex_type */</a>
+
+#define TEX_FORM_I	0x00000000
+#define TEX_FORM_IA	0x00000001
+#define TEX_FORM_CI	0x00000002
+#define TEX_FORM_YUV	0x00000003
+#define TEX_FORM_RGB	0x00000004
+#define TEX_FORM_RGBA	0x00000005
+#define TEX_DEPTH_4	0x00000000
+#define TEX_DEPTH_8	0x00000100
+#define TEX_DEPTH_16	0x00000200
+#define TEX_DEPTH_32	0x00000400
+
+<a name="TEX_WRAP_S">/* TexList -> Tex -> tex_wrap_s */</a>
+
+#define TEX_WRAP_S	0x00000000
+#define TEX_CLAMP_S	0x00000001
+#define TEX_MIRROR_S	0x00000002
+
+<a name="TEX_WRAP_T">/* TexList -> Tex -> tex_wrap_t */</a>
+
+#define TEX_WRAP_T	0x00000000
+#define TEX_CLAMP_T	0x00000001
+#define TEX_MIRROR_T	0x00000002
+
+<a name="TEX_ANIM">/* TexList -> Tex -> tex_anim */</a>
+
+#define TEX_ANIM_OFF	0x00000000
+#define TEX_ANIM_FLIPBOOK	0x00000001
+#define TEX_ANIM_FLIPBOOK_KEY	0x00000002
+#define TEX_ANIM_SCROLL_OFFSET	0x00000010
+#define TEX_ANIM_SCROLL_OFFSET_KEY	0x00000020
+#define TEX_ANIM_SCROLL_SCALE	0x00000100
+#define TEX_ANIM_SCROLL_SCALE_KEY	0x00000200
+
+<a name="TEX_TILE_SCALE_NUM">/* TexList -> Tex -> TexDataArea -> tex_tile_scale_num */</a>
+
+#define TEX_TILE_SCALE_NONE	0x00000001
+
+<a name="TEX_TILE_OFFSET_NUM">/* TexList -> Tex -> TexDataArea -> tex_tile_offset_num */</a>
+
+#define TEX_TILE_OFFSET_NONE	0x00000001
+
+<a name="TEX_TILE_IMG_NUM">/* TexList -> Tex -> TexDataArea -> tex_tile_img_num */</a>
+
+#define TEX_FLIPBOOK_NONE	0x00000001
+
+<a name="ANIM_TYPE">/* AnimList -> AnimGroup -> anim_type */</a>
+
+#define ANIM_TYPE_STATIC	0x00000000
+#define ANIM_TYPE_FULL	0x00000002
+#define ANIM_TYPE_KEY	0x00000003
+#define ANIM_TYPE_BILLBOARD_OBJ	0x00000004
+
+<a name="ANIM_LOOP">/* AnimList -> AnimGroup -> anim_loop */</a>
+
+#define ANIM_LOOP_ENDLESS	0x00000000
+
+<a name="ANIM_ROT_MTX_ORDER">/* AnimList -> AnimGroup -> anim_rot_mtx_order */</a>
+
+#define ANIM_ROT_ORDER_XYZ	0x00010203
+#define ANIM_ROT_ORDER_XZY	0x00010302
+#define ANIM_ROT_ORDER_YXZ	0x00020103
+#define ANIM_ROT_ORDER_YZX	0x00030102
+#define ANIM_ROT_ORDER_ZXY	0x00020301
+#define ANIM_ROT_ORDER_ZYX	0x00030201
+
+<a name="INTERPOLATION_TYPE">/* AnimList -> AnimGroup -> Anim -> interplation_type */</a>
+
+#define INTERPOLATION_STATIC	0x00000000
+#define INTERPOLATION_LINEAR	0x00000001
+#define INTERPOLATION_SLOWIN	0x00000002
+#define INTERPOLATION_SLOWOUT	0x00000004
+#define INTERPOLATION_SLOW	0x00000006
+
+<a name="COLL_TYPE">/* CollList -> CollGroup -> Coll -> coll_type */</a>
+
+#define COLL_TYPE_NONE	0x00000000
+#define COLL_TYPE_TERRAIN	0x00000010
+#define COLL_TYPE_POINT	0x00000020
+#define COLL_TYPE_CIRCLE	0x00000021
+#define COLL_TYPE_SPHERE	0x00000022
+#define COLL_TYPE_CYLINDER	0x00000023
+#define COLL_TYPE_BOX	0x00000024
+
+<a name="CAM_TYPE">/* CamList -> Cam -> cam_type */</a>
+
+#define CAM_TYPE_PERSP	0x00000000
+#define CAM_TYPE_ORTHO	0x00000001
+
+<a name="LIGHT_TYPE">/* LightList -> Light -> light_type */</a>
+
+#define LIGHT_TYPE_DIRECTION	0x00000000
+#define LIGHT_TYPE_POSITION	0x00000001
+
+<a name="FOG">/* EnvList -> Env -> fog */</a>
+
+#define ENV_FOG_USE	0x00000001
+#define ENV_FOG_NONE	0x00000000
+
+<a name="FILL_COLOR">/* EnvList -> Env -> fill_color */</a>
+
+#define FILL_COLOR_NONE	0xffffffff
+
+<a name="FILL_DEPTH">/* EnvList -> Env -> fill_depth */</a>
+
+#define FILL_DEPTH_NONE	0xffffffff
+
+<a name="BG_SPRITE_IMG">/* EnvList -> Env -> bg_sprite_img */</a>
+
+#define BG_COLOR_IMG_NONE	0xffffffff
+
+<a name="BG_SPRITE_DEPTH">/* EnvList -> Env -> bg_sprite_depth */</a>
+
+#define BG_DEPTH_IMG_NONE	0xffffffff
+
+</b></pre></font>
+
+
+
+<hr>
+
+<p align="right"><a href="../index.htm">
+<img src="../../../gif/index.gif"
+border="0" width="65" height="17"></a>
+&nbsp; <a href="./seg2.htm">
+<img src="../../../gif/next.gif"
+border="0" width="65" height="17"></a></p>
+
+</body>
+</html>
+
+

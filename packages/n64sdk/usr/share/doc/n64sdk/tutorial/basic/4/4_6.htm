@@ -1,0 +1,57 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-N64 Programming Basics-Chapter 4  N64 Programming Toolbox-Useful Functions for Nusystem</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/20/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<FONT Style="font-size:12pt"><B>4.6  The basic4 Sample Program</B></FONT>
+<P>
+   The basic4 sample program utilizes the functions explained in this chapter to implement an application with a simple menu.<br><br>
+     The program has two modes: the menu mode and the animation mode.  The program runs in menu mode when the static variable <tt>IsMenuMode</tt> in the <tt>Draw</tt> function of graphic.c is set to 1.  When this variable is set to 0, the program runs in animation mode. 
+</P>
+<b>Animation mode</B><br>
+This mode draws moving rectangles using the same rendering routine used in the basic3 program, with almost no modifications.  However, you can also change the color of the rectangle when in menu mode.  You can switch to menu mode by pressing the Start button.
+<bR><bR>
+<B>Menu mode</B><br>
+This mode displays the menu for selecting a color for the rectangle displayed in animation mode.  Choose between red, green and blue by pressing RIGHT/LEFT on the Control Pad.  When you press the Start button, the mode switches to animation mode.<br><br>  
+<P>
+ A variety of debug console functions are utilized to display the menu in this sample program, so if you want to see an example of actual usage of the debug console, we recommend you look through graphic.c.
+
+     The basic4 sample program also contains a routine for Controller input.  The process is not very difficult, so you should be able to comprehend things by reading the sample source.  To learn more about the Controller, see the relevant chapter in the Device Tutorial.
+
+     This chapter's sample program is written not only to draw rectangles, but also to display the debug console and the performance meter.  Ultimately, it is the <tt>Draw</tt> function in graphic.c that instructs NuSystem to render these.  
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=5><TR>
+	<TD NOWRAP COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE><B>List 4-1</B>  <B>See basic4 "graphic.c"</b>
+</TR><TR>
+	<TD NOWRAP BGCOLOR="666666" WIDTH="4" ALIGN=LEFT VALIGN=TOP><HR NOSHADE SIZE=0></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>
+<FONT COLOR="#000080"><PRE><CODE>  /* Activate a task for rendering a rectangle (no swap) */
+  nuGfxTaskStart(glist,
+                (s32)(glistp - glist) * sizeof(Gfx),
+                NU_GFX_UCODE_F3DEX, NU_SC_NOSWAPBUFFER);
+
+  /* Display the menu if in menu mode */
+  if(IsMenuMode)
+  {
+    ShowMenu(RectColor);
+    nuDebConDisp(NU_SC_NOSWAPBUFFER);
+  }
+
+  /* Controller process */
+  HandleController(&amp;IsMenuMode, &amp;RectColor);
+
+  /* Display the performance meter */
+  nuDebTaskPerfBar1(1, 210, NU_SC_SWAPBUFFER);
+</CODE></PRE></FONT>
+	</TD>
+</TR></TABLE>
+<P>
+   Important here is that the last argument in both <tt>nuGfxTaskStart</tt> and <tt>nuDebConDisp</tt> is <b>NU_SC_NOSWAPBUFFER</b>.  If you do not suppress swapping with this argument, then the framebuffer will be swapped when the rendering of the rectangle or the debug console has been completed.  As a result, when you call <tt>nuDebTaskPerfBar1</tt>, the performance meter will be displayed in a different framebuffer than the rectangle or the debug console.
+</P>
+</BODY>
+</HTML>

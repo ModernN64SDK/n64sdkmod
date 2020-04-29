@@ -1,0 +1,128 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN"
+PWC 2/21/00>
+<HTML><link rel=stylesheet type="text/css" href="../style.css">
+<TITLE>RSP General</TITLE>
+</HEAD>
+
+<BODY>
+
+<A name="index"></A>
+
+<IMG src="../../gif/n64_logo2.gif" height="21" width="136">
+
+<h3>
+<FONT color="#FF8000">Q&A</FONT>- RSP General</h3>
+
+<p>
+
+<TABLE>
+  <TR>
+    <TD><A href="rsp_etc.htm#qa1"><B>QA1</B></A></TD>
+    <TD>About Lighting Positions</TD></TR>
+  <TR>
+    <TD><A href="rsp_etc.htm#qa2"><B>QA2</B></A></TD>
+    <TD>Does the number of vertexes that can be loaded increase with differences in the microcode? </TD></TR>
+  <TR>
+    <TD><A href="rsp_etc.htm#qa3"><B>QA3</B></A></TD>
+    <TD>When handling a model with a lot of vertexes, are they repeatedly loaded and rendered?</TD></TR>
+  <TR>
+    <TD><A href="rsp_etc.htm#qa4"><B>QA4</B></A></TD>
+    <TD>How do I put highlights on edges as well?</TD></TR>
+  <TR>
+    <TD><B><A href="rsp_etc.htm#qa5">QA5</A></B></TD>
+    <TD>Timing of Changing Light States</TD></TR>
+</TABLE>
+
+<HR >
+<P>
+<A name="qa1"><B><FONT  color="#ff0000">Q1</FONT></B></A><B> Lighting positions</B>
+
+<P>
+<B><FONT color="#008000">A1</FONT></B> There is a problem with the lighting position.  The lighting position has a limitation of square(x**2 + y**2 + z**2) &amp;rsp_etc.htm#060 120.  Consequently, while a model will get darker as it moves through levels 0~120 when (0,0,120), for example, since there are only levels 0~30 when (0,0,30)no more than 1/4 of the levels will appear as compared to the above situation.  Therefore, it is recommended that you set the light position at (0,0,120) in those cases. 
+
+<P align="right">
+<A href="rsp_etc.htm#index">top</A>
+
+<HR >
+<P>
+<B><FONT  color="#ff0000"><A name="qa2">Q2</A></FONT> When loading vertexes with the gspFast3D microcode, the manual says that I can load up to 16 vertexes at once.  Does the number of vertexes that can be loaded increase with differences in the microcodes?</B>
+
+<P>
+<B><FONT  color="#008000">A2</FONT></B> Yes.  F3DEX2 has the following vertex cache sizes. 
+
+<P>
+Vertex cache sizes for each microcode. 
+
+<BLOCKQUOTE>
+
+<Pre>
+F3DEX2.fifo/gspF3DEX2.xbus  Number of vertex caches  32
+F3DEX2.NoN.fifo/gspF3DEX2.NoN.xbus  Number of vertex caches  32
+F3DEX2.Rej.fifo/gspF3DEX2.Rej.xbus  Number of vertex caches  64
+F3DLX2.Rej.fifo/gspF3DLX2.Rej.xbus  Number of vertex caches  64
+L3DEX2.fifo/L3DEX2.xbus  Number of vertex caches  32
+</pre>
+</BLOCKQUOTE>
+
+If you wish to load more than the cache size, use <A href="../../n64man/gsp/gSPVertex.htm">gSPVertex</A> multiple times.  See the documentation for details. 
+
+<P align="right">
+<A href="rsp_etc.htm#index">top</A>
+
+<HR>
+<P>
+<B><FONT color="#ff0000"><A name="qa3">Q3</A></FONT> In the case of a microcode that can load 16 vertexes, for example, when handling a model with a lot of vertexes, is the model repeatedly loaded and rendered? </B>
+
+<P>
+<B><FONT color="#008000">A3</FONT></B> In this case, it may be necessary to divide triangles or sort the display list so as to decrease the number of vertexes to be loaded as much as possible.  In addition, since each model should be divided into parts, each part can be tuned.  In other words, bear in mind that "the processing time will substantially differ even for the same model according to how it is loaded" and consider methods for optimizing that loading.  Additionally, since there are also cases, depending on the microcode, in which 32 vertexes (F3DEX) or 80 vertexes (F3DLP.Rej) can be loaded, the number of load repetitions will inevitably be decreased by selecting one of these. 
+
+<P align="right">
+<A href="rsp_etc.htm#index">top</A>
+
+<HR>
+<P>
+<B><FONT color="#ff0000"><A name="qa4">Q4</A></FONT> There are even edges which are highlighted in the FZEROX setting screen, but when I try to reproduce that here, the surface shines instead, giving the impression of cheap metal plate.  Is this impossible only with the environment map?  Also, how should I set it up in Lightwave3D?</B>
+
+<P>
+<B><FONT color="#008000">A4</FONT></B> I think that highlighting of the edges emphasizes the edge area.  Could it be that the normal vector of the vertex of the edge is being shared in the model that you are using?  When reflection mapping is used, the ST value of the texture for reflection mapping is recalculated based on the normal vector when the vertex data are loaded into the vertex cache.  Consequently, since the same ST value will be produced if the normal vector data of the edge vertexes are the same, a smooth impression is given.  If the values of the normal vectors of the vertexes which are being used to emphasize the edge are different, a sharp edge can be produced. 
+
+<P>
+With LightWave3D, you cannot edit the normal vectors one at a time before outputting NIFF data since the normal vector data are not internally stored in the file.  The method of intentionally doubling the edges of the polygon is for expressing edges. For instance, after a smooth shape, such as a sphere, has been modeled, the Smooth flag is set as the surface attribute.  Thus, the sphere will be displayed in a state in which it is smoothly shaded, but if you double the points of the portion whose edges you wish to emphasize and divide the area into various polygons, only those portions will be shaded as if they've been creased.  Edges can be emphasized locally by a manual method, or you can download a plug-in called Edge Opener from http://www.dstorm.co.jp/dslib/.  Simply execute this after selecting the connected vertexes of the portion whose edges you wish to emphasize. 
+
+<P align="right">
+<A href="rsp_etc.htm#index">top</A>
+
+<HR>
+<P>
+<B><A name="qa5"><FONT  color="#ff0000">Q5</FONT></A> In the manual,
+it says that, even if the color of a light is changed, as long as it is from the same direction, you can send a new light structure to the RCP using the gSPLight command, after the first primitive vertex command, and before the second primitive vertex command. </B>
+<blockquote>
+<Pre>
+gsSPSetLights3(material1_light),
+gsSPVertex(*/ define vertices for object 1 */);
+gsSPLight(&material2_light,1[0],LIGHT_1),
+gsSPLight(&material2_light.a,LIGHT_2),
+gsSPVertex(/* define vertices for object 2 */);
+</pre></blockquote>
+
+<P>
+<B>Looking at the gSPSetLights macro, gSPNumLights is written before gSPLight, as follows. </B>
+<blockquote>
+<Pre>
+gSPNumLights(pkt,NUMLIGHTS_0);
+gSPLight(pkt,&name.l[0],1);
+gSPLight(pkt,&name.a,2);
+</pre></blockquote>
+
+<P>
+<B>Is the direction synchronized (recalculated) by gSPNumLights? </B>
+
+<P>
+<B><FONT   color="#008000">A5</FONT></B> gSPNumLights and gSPLight both simply send transfer data to the RSP's DMEM, and calculation of the direction is performed when the vertex command comes.  However, gSPNumLights sets a recalculate direction flag in DMEM.  When the vertex command is executed, the direction matrix is calculated only when this flag has been set.  This flag is cleared once calculation is completed.  Consequently, the result is used for the direction until gSPNumLights is executed again.  It has no relationship to the sequence of gSPLight and gSPNumLights.  
+
+<P align="right">
+<A href="rsp_etc.htm#index">top</A>
+
+<HR>
+</BODY>
+</HTML>

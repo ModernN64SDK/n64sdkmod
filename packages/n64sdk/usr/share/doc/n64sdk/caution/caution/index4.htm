@@ -1,0 +1,130 @@
+<HTML>
+<HEAD>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<TITLE>Compiler, Assembler and Library</TITLE>
+<BASE target="contents">
+<!-- Editor Notes: Edited by Ron Daring on 7/1/1999. Changed title of 4-2 from "Repeated multiplication instructions prohibited" to "R4300 Multiplication Anomaly" for clarification, per Product Support. Moved items listed under 4-2 "Reference" to "Remarks". Changed last paragraph under 4-2 "Remarks" per Product Support for clarification. Changed 4-3 "Description" for clarification per Product Support. Fixed link "p4". -->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+
+<font face="arial" size="-1">
+<font size="3"><b><a name="p4"></a>4. Compiler, Assembler and Library</b></font>
+
+<p>
+4-1 <a href="#4-1">Version of the Library (Recommended)</a><br>
+4-2 <a href="#4-2">R4300 Multiplication Anomaly (Required)</a><br>
+4-3 <a href="#4-3">Deleting Debug Information (Required)</a>
+<p>
+<hr>
+
+<font size="3"><b><a name="4-1"></a>4-1 Version of the Library (Recommended)</b></font>
+<p>
+
+<b>Description</b>
+
+<p>The most recent version of the N64 OS/Library should be used for each game program. </p>
+
+<b>Reason</b>
+
+<p>The library may be revised to avoid a problem with Control Deck compatibility. 
+</p>
+
+<b>Reference</b>
+
+<p><br></p>
+
+<b>Remarks</b>
+
+<p><br></p>
+
+<p align="right"><a href="#p4"><img src="../../gif/index.gif"
+border="0" width="65" height="17"></a></p>
+
+<hr>
+
+<font size="3"><b><a name="4-2"></a>4-2 R4300 Multiplication Anomaly (Required)</b></font>
+<p>
+
+<b>Description</b>
+
+<p>Use the standard compiler and assembler with any and all necessary patches. If a different compiler or assembler is used, ensure that integer or floating point multiplication is not performed immediately following a floating point multiplication. </p>
+
+<b>Reason</b>
+
+<p>The program may not work as expected if one of the operands of the first multiplication is not a number, zero, or infinity. </p>
+
+<b>Reference</b>
+
+<P>&nbsp;</P>
+
+<b>Remarks</b>
+
+<p>These routines are prohibited.</p>
+
+<p>Example 1)<br>
+Multiplication instructions are allocated continuously </p>
+
+<blockquote>
+    <font face="courier" size="2">
+    <pre>
+         F
+        mul.d fv0,ft0
+        mult a0,a1
+         F
+    </pre>
+    </font>
+</blockquote>
+
+<p>Example 2)<br>
+First multiplication instruction is in a delay slot of branch instruction and also the second multiplication instruction is on the destination of the branch 
+
+</p>
+
+<blockquote>
+    <font face="courier" size="2">
+    <pre>
+         F
+        bne t1,t7,Label ; branch instruction
+        mul.s fa0,fa1 ; delay slot
+         F
+Label:
+        dmult t1,t7
+         F
+    </pre>
+    </font>
+</blockquote>
+
+<p>If IRIX 5.3 is being used for the development system, patch1118 must be installed to ensure that back-to-back multiplies are not generated.  This patch is distributed with the standard N64 development system. If using IRIX 6.2 with IDO 7.1, no patch needs to be installed.  In both cases, use the &quot;-Wab, -r4300_mul&quot; compiler option in order to activate the multiply check.</p>
+
+<p align="right"><a href="#p4"><img src="../../gif/index.gif"
+border="0" width="65" height="17"></a></p>
+
+<hr>
+
+<font size="3"><b><a name="4-3"></a>4-3 Deleting Debug Information (Required)</b></font>
+<p>
+
+<b>Description</b>
+
+<p>When programs are compiled or assembled as a release version, debug information (-g option when using the standard compiler and debugger) must not be added.  The debug library should not be used.</p>
+
+<b>Reason</b>
+
+<p>When debug information is left in the program its execution speed is slow and program size is larger. If any operation related to the interface between the e-board and host is left in the program, it could create problems with the program.
+</p>
+
+<b>Reference</b>
+
+<p><br></p>
+
+<b>Remarks</b>
+
+<p>Delete &quot;-g&quot; option if SGI standard compiler and assembler are used. Delete rmon related operation and interface to host such as <a href="../../n64man/os/osSyncPrintf.htm">osSyncPrintf()</a>. If assert() is used, it must be removed from the ROM version by inserting #define NDEBUG.
+</p>
+
+<p align="right"><a href="#p4"><img src="../../gif/index.gif"
+border="0" width="65" height="17"></a></p>
+
+<hr>
+</body>
+</html>

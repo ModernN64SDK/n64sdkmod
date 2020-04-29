@@ -1,0 +1,47 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.>
+<TITLE>gDPSetPrimDepth</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>gDPSetPrimDepth [Macro]</H1>
+
+<p><b>Function</p></b>
+
+<p>gDPSetPrimDepth</p>
+<P>
+<i>Sets the primitive depth (Z) in the RDP</i>
+</P>
+<p><b>Syntax</p></b>
+<p>
+<PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gbi.htm">gbi.h</A> */
+gDPSetPrimDepth(Gfx *gdl, s32 z, s32 dz)
+gsDPSetPrimDepth(         s32 z, s32 dz)</CODE></PRE>
+</p>
+<p><b>Arguments</p></b>
+<p><DL>
+  <DT><B>gdl</B>
+  <DD>Display list pointer
+  <DT><B>z</B>
+  <DD>Z value (16-bit precision, s15)
+  <DT><B>dz</B>
+  <DD><I>delta</I>Z value (16-bit precision, s15)
+</DL></p>
+<p><b>Description</b></p>
+<P>
+Sets the Z value (as well as the <I>delta</I>Z value) to be used for the entire primitive in the RDP.  The Z format used in the blender (BL) is 15.3 fixed point.  The primitive Z is a 16-bit register.  So when the depth source is set to G_ZS_PRIMI (see g*DPSetDepthSource), the high-order bit is ignored, and the integer value corresponding to the Z value is given to the remaining 15 bits.  When the primitive Z is being used, the bit for the fractional part is set to 0.  The <I>delta</I>Z format used in the BL is 16-bit.  The primitive <I>delta</I>Z uses all 16 bits.  Note that for storage in the Z buffer, the Z value is converted to a 14-bit value, and the <I>delta</I>Z value is converted to a 4-bit value.  For details about using and storing Z values, see Section 12.7.6 "Depth Source" in the N64 Programming Manual.
+</P>
+<p><b>See Also</b></p>
+<P>
+<A HREF="gDPSetDepthSource.htm">gDPSetDepthSource</A>, <A HREF="gDPSetPrimColor.htm">gDPSetPrimColor</A>
+</P>
+<p><b>Revision History</b></p>
+<P>
+02/01/99  Completely rewritten.
+</P>
+</BODY>
+</HTML>

@@ -1,0 +1,36 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-N64 Programming Basics-Chapter 1  N64 Programming with NuSystem</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/20/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<FONT Style="font-size:12pt"><B>1.4  Creating the ROM File</B></FONT>
+<br>
+<P>
+   If you look at the SNAKE TAIL HACK makefile you will notice that it can be described in almost the same way as programs developed with the general-purpose gcc compiler.  In fact, the command structure is similar to the general GNU environment, with the compiler named gcc, the linker named ld, and the C preprocessor named cpp. <br><br>
+     However, there is one big difference.  Lines 71 and 72 of  the makefile are written as follows: 
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=5><TR>
+	<TD NOWRAP COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE>
+	<B>List 1-2</B>  <B>See nusnake "makefile"</B>
+</TR><TR>
+	<TD NOWRAP BGCOLOR="666666" WIDTH="4" ALIGN=LEFT VALIGN=TOP><HR NOSHADE SIZE=0></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>
+<FONT COLOR="#000080"><PRE><CODE>$(TARGET) $(APP): spec $(OBJECTS)
+    $(MAKEROM) spec -I$(NUSYSINCDIR) -r $(TARGETS) -e $(APP)
+</CODE></PRE></FONT>
+	</TD>
+</TR></TABLE>
+<P>
+  Line 71 indicates that the final targets $(TARGETS) and $(APP) are dependent on the object and a file called "spec".  However, the role of this spec file is ambiguous.  Line 72 activates the $(MAKEROM) command, but there is no definition for $(MAKEROM).  If you study the file called $(ROOT)/usr/include/make/PRdefs that is included in Line 8 of the makefile, you will see that a command called "mild" has been specified.  This command will not be familiar to you as well.<br><br>
+     Next, we will explain what is happening here.  Specified here is the creation (in other words, the linking) of an N64-executable ROM image.  The spec file is the settings file that provides the link information pertaining to the ROM image. <br><br> 
+     Execution files that run on the N64 are generally named with the extension ".n64," while the debug symbol information files corresponding to those execution files are named with the extension ".out."<br><br>
+
+     Incidentally, if you build an N64 application following the procedures we have just covered and store it in ROM or burn it into a flash cartridge for a commercial product, the game will not run.  You still need to use the "makemask" command to convert the *.n64 file into a form that can be executed in ROM.  Of course, you do not need to worry about this as long as you use PARTNER-N64 for debugging, but it is a good thing to remember. 
+</P>
+</BODY>
+</HTML>

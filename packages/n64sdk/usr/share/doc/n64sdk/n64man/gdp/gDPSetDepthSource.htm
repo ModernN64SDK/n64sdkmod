@@ -1,0 +1,73 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.>
+<TITLE>gDPSetDepthSource</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>gDPSetDepthSource [Macro]</H1>
+
+<p><b>Function</p></b>
+
+<p>gDPSetDepthSource</p>
+<P>
+<i>Sets which depth source value to use for comparisons with the Z buffer</i>
+</P>
+<p><b>Syntax</p></b>
+<p>
+<PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gbi.htm">gbi.h</A> */
+gDPSetDepthSource(Gfx *gdl, u32 source)
+gsDPSetDepthSource(         u32 source)</CODE></PRE></p>
+
+<p><b>Arguments</p></b>
+<p><DL>
+  <DT><B>gdl</B>
+  <DD>Display list pointer.
+  <DT><B>source</B>
+  <DD>Depth source value:
+  <DD><B>G_ZS_PIXEL</B> (Use the Z value and <I>delta</I>Z value repeated for each pixel)
+  <DD><B>G_ZS_PRIM</B> (Use the primitive depth register's Z value and <I>delta</I>Z value)
+
+</DL></p>
+<p><b>Description</b></p>
+<P>
+Sets which depth source value to use for comparisons with the Z buffer.</p>
+<p><DL>
+  <DT>The different depth source values are explained below:</p>
+<p><DL>
+    <DT><B>G_ZS_PIXEL</B>
+    <DD>Uses the Z value and <I>delta</I>Z value repeated for each pixel for the comparison with the Z buffer.  This is the standard procedure in applications that perform Z buffering.
+    <DT><B>G_ZS_PRIM</B>
+    <DD>Uses the Z value and <I>delta</I>Z value in the blender's primitive depth register (set with <A HREF="gDPSetPrimDepth.htm">gDPSetPrimDepth</A>) for the comparison with the Z buffer.  In this case, every pixel in a triangle has uniform depth.
+  </DL>
+</DL>
+</P>
+<P>
+For details, see Sections 12.7.6 "Depth Source", 14.7.1 "Primitive Z Value" and 15.5.8 "Z Calculation" in the N64 Programming Manual.
+</P>
+<p><b>Example</b></p>
+<P>
+When the flag is set to G_ZS_PRIM, you must use a Z-enabled rendering mode.  The only modes which are Z-enabled are 1-cycle mode and 2-cycle mode.
+</P><p>
+<PRE><CODE>// Set cycle type
+gDPSetCycleType(gp++, G_CYC_2CYCLE);
+// Set rendering mode
+gDPSetRenderMode(gp++, G_RM_AA_ZB_TEX_EDGE, G_RM_AA_ZB_TEX_EDGE2);
+// Set depth source value
+<B>gDPSetDepthSource</B>(gp++, G_ZS_PRIM);
+// Set primitive depth
+gDPSetPrimDepth(gp++, 0, 0);</CODE></PRE></p>
+
+<p><b>See Also</b></p>
+<P>
+<A HREF="gDPSetPrimDepth.htm">gDPSetPrimDepth</A>
+</P>
+<p><b>Revision History</b></p>
+<P>
+02/01/99  Completely rewritten.
+</P>
+</BODY>
+</HTML>

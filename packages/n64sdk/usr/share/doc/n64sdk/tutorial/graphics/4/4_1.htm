@@ -1,0 +1,43 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Graphics-Chapter 4  The Color Combiner</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/22/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<font style="font-size:16pt"><B>CHAPTER 4  THE COLOR COMBINER</B></FONT>
+<br><br>
+<HR SIZE=3 NOSHADE>
+<P>
+The texture mapping we explained in the previous chapter simply attached a texture image to a polygon.  With the N64, you can produce a variety of interesting visual effects using textures.<br><br>
+     The Combiner and the Blender units in the RDP play essential roles in the realization of these effects, and you will need a complete understanding of these units if you are going to put together advanced graphics programs.<br><br>
+     In this chapter we present a detailed explanation of how to use the functions of the Combiner, presenting a number of examples of visual effects obtained by combining colors together in this unit of the RDP.
+</P>
+<font style="font-size:12pt"><B>4.1  Architecture of the Color Combiner</B></FONT>
+<P>
+The Combiner, located after the Texture Filter along the RDP pipeline, combines together a number of source colors and source alphas to determine the output color and the output alpha.  These output values are then sent to the Blender.  In this chapter, we are going to ignore this fact and instead talk as if the output from the Combiner is directly displayed on the screen.<br><br>
+
+     You can think of the Combiner as two separate units: the "Color Combiner" calculating RGB color and the "Alpha Combiner" dealing with alpha values.  We do not begin to talk about sample programs that make use of alpha values until Chapter 5.  However, because the Color Combiner and the Alpha Combiner are extremely similar in operation, if you understand the Color Combiner you can use the Alpha Combiner in the same way.<br><br>
+
+     The Color Combiner calculates the output color by combining the various source colors and source alphas using the following equation:
+</P>
+<P>
+    Output  =  (a - b) * c + d
+</P>
+<P>
+The source colors and source alphas that can be used for a, b, c, d differ for each coefficient.  As shown in Figure 4-1, a number of source colors & alphas can be selected as the input source for each coefficient.
+</P>
+<P>
+<IMG SRC="image07.gif">
+</P>
+<P>
+<B>Figure 4-1  Color Combiner input source</B></FONT>
+</P>
+<P>
+One thing to note here is that a number of source alphas can be used for the c coefficient regardless of the color computation.  Due to this, special texture effects can be realized based on the alpha value.
+</P>
+</BODY>
+</HTML>

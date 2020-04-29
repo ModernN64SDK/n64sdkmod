@@ -1,0 +1,37 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!--
+Editors Notes:
+  PWC- updated formatting
+-->
+<title>STEP2 A Guide to the N64 Programming - Chapter 2 Drawing Structure and Samples</title>
+<base target="keywords">
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<p><font style="font-size:12pt; font-weight:bold">2-7 Drawing Cycle Mode</font><br>
+<br>
+<br>
+N64 has four kinds of drawing cycle modes as below.  The <a href="../../../n64man/gdp/gDPSetCycleType.htm">gDPSetCycleType function</a> is used for setting the drawing cycle mode. <br>
+<br>
+<br> 
+<b>#Fill mode (FILL)</b><br>
+In FILL mode, the RDP writes pixels into the frame buffer using the color specified in the fill color register. At maximum speed (usually only attained with rectangles), two 32-bit pixels or four 16-bit pixels are written per cycle. In FILL mode, you cannot use polygon drawing functions such as <a href="../../../n64man/gsp/gSP1Triangle.htm">gSP1Triangle</a>.<br>
+<br>
+<br>
+<b>#Copy mode (COPY)</b><br>
+In COPY mode, the RDP transfers the accepted textured pixels in <a href="../../../keywords/index/data/graphics.htm#TMEM" target="keywords">TMEM</a> to the frame buffer. At maximum speed (usually only attained with rectangles), two 32-bit pixels or four 16-bit pixels are copied per cycle. In COPY mode, you cannot use polygon drawing functions such as the <a href="../../../n64man/gsp/gSP1Triangle.htm">gSP1Triangle</a> function. However, you can use texturing functions such as the <a href="../../../n64man/gsp/gSPTextureRectangle.htm"> gSPTextureRectangle</a> function.<br>
+<br>
+<br>
+<b>#One-cycle mode (1CYCLE)</b><br>
+In 1CYCLE mode, the RDP fills a maximum of one pixel per clock cycle. In this mode, the RDP can fill a fairly high-quality pixel. Using 1CYCLE mode, you can generate pixels that are perspective corrected, bilinear filtered, modulate/decal textured, transparent, and z-buffered at a maximum bandwidth of one pixel per cycle. This mode uses each process unit in the RDP pipeline (RS, TX, TF, CC, BL, and MI) once.<br>
+<br>
+<br>
+<b>#Two-cycle mode (2CYCLE)</b><br>
+In 2CYCLE mode, the RDP pipeline's process units are reconfigured for additional functionality at a slower maximum speed of one pixel per two clocks. Each process unit in the RDP pipeline is used twice except for the RS (the rasterizer).</p>
+</body>
+</html>

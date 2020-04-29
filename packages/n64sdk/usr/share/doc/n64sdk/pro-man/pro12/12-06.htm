@@ -1,0 +1,197 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 12 - RDP Programming</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. -->
+</head>
+
+<h1>12.6 CC - Color Combiner</h1>
+
+<p>The color combiner (CC) combines <a href="../../keywords/index/data/graphics.htm#texel" target="keywords">texels</a> from TX and stepped RGBA pixel values from RS. The CC is the ultimate paint mixer. It can take two color values from many sources and linearly interpolate between them. The CC basically performs this equation: </p>
+<blockquote><pre>
+newcolor = (A-B)*C+D
+</pre></blockquote>
+<p>Here, A, B, C, and D can come from many different sources. Notice that if D=B, then this is a simple linear interpolator. </p>
+
+<dl>
+  <dt><a name="f12-09"><strong>Figure 12-9 Color Combiner State and Input/Output 
+</strong></a>
+  <dd><img alt="[Figure 12-9]" src="gif/f12-09.gif">
+</dl>
+
+<p>Most of CC programming involves setting the desired sources for (A,B,C,D) of the equation above. There are also programmable color registers within CC that can be used to source (A,B,C,D) input of the <a href="../../keywords/index/data/graphics.htm#interpolator" target="keywords">interpolator</a>. </p>
+
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="01"><h2>12.6.1 Color and Alpha Combiner Inputs Sources </h2></a>
+
+<p>The <a href="#f12-10">Figure 12-10</a> and the <a href="#f12-11">Figure 12-11</a> describes all possible input selection of a general purpose linear interpolator for RGB and Alpha color combination.  The input in the shaded boxes are CC internal state that you can set. Most are programmable color registers.</p>
+
+<dl>
+  <dt><a name="f12-10"><strong>Figure 12-10 RGB Color Combiner Input Selection</strong></a>
+  <dd><img alt="[Figure 12-10]" src="gif/f12-10.gif">
+</dl>
+
+<dl>
+  <dt><a name="f12-11"><strong>Figure 12-11 Alpha Combiner Input Selection </strong></a>
+  <dd><img alt="[Figure 12-11]" src="gif/f12-11.gif">
+</dl>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="02"><h2>12.6.2 CC Internal Color Registers </h2></a>
+
+<p>There are two internal color registers in the CC: primitive and environment color.  The primitive color can be used to set a constant <a href="../../keywords/index/data/graphics.htm#polygon" target="keywords">polygon</a> face color.  The environment color can be used to represent the ambient color of the environment.  Both can be used as source for linear interpolation.  The names "primitive" and "environment" are purely arbitrary; you can use them for any purpose you wish.   
+</p>
+
+<table border=1 align="center">
+  <caption><a name="t12-21"><strong>Table  12-21 <a href="../../n64man/gdp/gDPSetPrimColor.htm">gsDPSetPrimColor</a>(minlevel,frac,r,g,b,a), <a href="../../n64man/gdp/gDPSetEnvColor.htm">gsDPSetEnvColor</a>(r,g,b,a)</strong></a></caption>
+  <tr><th nowrap>Parameter</th><th>Values</th></tr>
+  <tr><td align="center">minlevel</td><td>minimum <a href="../../keywords/index/data/graphics.htm#LOD" target="keywords">LOD</a> level</td></tr>
+  <tr><td align="center">frac</td><td>LOD fraction for blending two texture tiles</td></tr>
+  <tr><td align="center">r,g,b,a</td><td>color</td></tr>
+</table>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="03"><h2>12.6.3 1 One-Cycle Mode</h2></a>
+
+<p>Many of the typical RGB and alpha input selections are predefined in Table 12-12.  In 1 cycle mode both mode1 and mode2 should be same.   Please see the man page for <a href="../../n64man/gdp/gDPSetCombineMode.htm">gDPSetCombineMode</a> for a description of each mode setting. </p>
+
+<table border=1 align="center">
+  <caption><a name="t12-22"><strong>Table  12-22 One-Cycle Mode Using <a href="../../n64man/gdp/gDPSetCombineMode.htm">gsDPSetCombineMode</a>(mode1, mode2)</strong></a></caption>
+  <tr><th nowrap>Parameter</th><th>Values</th></tr>
+  <tr><td align="center">model/2</td><td>G_CC_PRIMITIVE<br>
+                G_CC_SHADE<br>
+                G_CC_ADDRGB<br>
+                G_CC_ADDRGBDECALA<br>
+                G_CC_SHADEDECALA</td></tr>
+  <tr><td align="center">model/2</td><td><a href="../../keywords/index/data/graphics.htm#decal texture" target="keywords">Decal texture</a> in RGB, RGBA formats<br>
+                G_CC_DECALRGB<br>
+                G_CC_DECALRGBA</td></tr>
+  <tr><td align="center">mode1/2</td><td><a href="../../keywords/index/data/graphics.htm#modulated texture" target="keywords">Modulate texture</a> in I, IA, RGB, RGBA formats<br>
+                G_CC_MODULATEI<br>
+                G_CC_MODULATEIA<br>
+                G_CC_MODULATEIDECALA<br>
+                G_CC_MODULATERGB<br>
+                G_CC_MODULATERGBA<br>
+                G_CC_MODULATERGBDECALA<br>
+                G_CC_MODULATEI_PRIM<br>
+                G_CC_MODULATEIA_PRIM<br>
+                G_CC_MODULATEIDECALA_PRIM<br>
+                G_CC_MODULATERGB_PRIM<br>
+                G_CC_MODULATERGBA_PRIM<br>
+                G_CC_MODULATERGBDECALA_PRIM</td></tr>
+  <tr><td align="center">mode1/2</td><td><a href="../../keywords/index/data/graphics.htm#blend texture" target="keywords">Blend texture</a> in I, IA, RGB, RGBA formats<br>
+                G_CC_BLENDI<br>
+                G_CC_BLENDIA<br>
+                G_CC_BLENDIDECALA<br>
+                G_CC_BLE`NDRGBA<br>
+                G_CC_BLENDRGBDECALA</td></tr>
+  <tr><td align="center">mode1/2</td><td>Reflection and specular hilite in RGB, RGBA formats.<br>
+                G_CC_REFLECTRGB<br>
+                G_CC_REFLECTRGBDECALA<br>
+                G_CC_HILITERGB<br>
+                G_CC_HILITERGBA<br>
+                G_CC_HILITERGBDECALA</td></tr>
+</table>
+
+<p><strong>Note:</strong>  In one-cycle mode, mode1 and mode2 should be the same value.</p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="04"><h2>12.6.4 Two-Cycle Mode </h2></a>
+
+<p>Color Combiner (CC) can perform two linear interpolation arithmetic computations in two-cycle pipeline mode. Typically, the second cycle is used to perform texture and shading color modulation (in other words, all those modes you saw in one-cycle mode). However, the first cycle can be used for another linear interpolation calculation; for example, LOD interpolation between the two bilinear filtered texels from two <a href="../../keywords/index/data/graphics.htm#MIP map" target="keywords">mipmap</a> tiles. </p>
+
+<table border=1 align="center">
+  <caption><a name="t12-23"><strong>Table  12-23 Two-Cycle Mode Using <a href="../../n64man/gdp/gDPSetCombineMode.htm">gsDPSetCombineMode</a>(mode1, mode2)</strong></a></caption>
+  <tr><th nowrap>Parameter</th><th>Values</th></tr>
+  <tr><td align="center">mode1</td><td>G_CC_TRILERP<br>
+                G_CC_INTERFERENCE</td></tr>
+  <tr><td align="center">mode2</td><td>G_CC_PASS2<br>
+                Most of the Decal, Modulate, Blend and Reflection/Hilite texture modes mentioned in one cycle mode.<br>
+                However, since they are values for mode2 parameter, the names must all end with 2. e.g. G_CC_MODULATEI2.
+</td></tr>
+</table>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="05"><h2>12.6.5 Custom Modes</h2></a>
+
+<p>Color Combiner (CC) can be programmed more specifically when you design your own color combine modes. To define a new mode use the format: </p>
+
+<blockquote><pre>
+#define G_CC_MYNEWMODE a,b,d,d, A,B,C,D
+</pre></blockquote>
+
+<p>Where the color output will be (a-b)*c+d and the alpha output will be (A-B)*C+D. The values you can use for each of a, b, c, d, A, B, C, and D are:</p>
+
+<blockquote><pre>
+COMBINED        combined output from cycle 1 mode
+TEXEL0          <a href="../../keywords/index/data/graphics.htm#texture map" target="keywords">texture map</a> output
+TEXEL1          texture map output from tile+1 
+PRIMITIVE       PrimColor
+SHADE           Shade color
+ENVIRONMENT     Environment color
+CENTER          chroma key center value
+SCALE           key scale value
+COMBINED_ALPHA  combined alpha output from cycle 1
+TEXEL0_ALPHA    texture map alpha
+TEXEL1_ALPHA    texture map alpha from tile+1
+PRIMITIVE_ALPHA PrimColor Alpha
+SHADE_ALPHA     Shade alpha
+ENV_ALPHA       Environment color alpha
+LOD_FRACTION    LOD fraction
+PRIM_LOD_FRAC   Prim LOD fraction
+NOISE           noise (random)
+K4              color convert constant K4
+K5              color convert constant k5
+1               1.0
+0               0.0
+</pre></blockquote>
+
+<p>Then you can use your new mode just like a regular mode:</p>
+
+<blockquote><pre>
+<a href="../../n64man/gdp/gDPSetCombineMode.htm">gDPSetCombineMode</a>(G_CC_MYNEWMODE, G_CC_MYNEWMODE);
+</pre></blockquote>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="06"><h2>12.6.6 Chroma Key</h2></a>
+
+<p>The color combiner can be used to perform "chroma keying" which is a process where areas of a certain color are taken out and replaced with a texture.  This is a similar effect to "blue screen photography" or as seen on the television news weather maps. </p>
+
+<p>The theory is quite simple; a key color is provided, and all pixels of this color are replaced by the texel color requested.  The key color is actually specified as a center and width, allowing soft-edge chroma keying (for blended colors): </p>
+
+<p>Chroma Key Equations </p>
+
+<blockquote><pre>
+KeyR = clamp(0, (-abs((R - RCen) * RScl) + RWd), 255)
+KeyG = clamp(0, (-abs((G - Gen) * GScl) + GWd), 255)
+KeyB = clamp(0, (-abs((B - BCen) * BScl) + BWd), 255)
+KeyA = min(KeyR, KeyG, KeyB)
+</pre></blockquote>
+
+<p>The center, scale, and width parameters have the following meanings: </p>
+
+<table border=0 align="center">
+  <tr><td align="center">Center</td><td>Defines the color intensity at which the key is active, 0-255.</td></tr>
+  <tr><td align="center">Scale</td><td>(255/(size of soft edge)). For hard edge keying, set scale to 255.</td></tr>
+  <tr><td valign="top" align="center">Width</td><td>(Size of half the key window including the soft edge)*scale. If width &GT; 255, then keying is disabled for that channel.</td></tr>
+</table>
+
+<p>In two-cycle mode, the keying operation must be specified in the second cycle (key alpha is not available as a combine operand).  The combine mode G_CC_CHROMA_KEY2 is defined for this purpose.</p>
+
+<blockquote><pre>
+<a href="../../n64man/gdp/gDPSetCombineKey.htm">gsDPSetCombineKey</a>(G_CK_KEY)
+</pre></blockquote>
+
+<p>The command above enables chroma keying.</p>
+
+<blockquote><pre>
+<a href="../../n64man/gdp/gDPSetKeyR.htm">gsDPSetKeyR</a>(cR, sR, wR)
+<a href="../../n64man/gdp/gDPSetKeyGB.htm">gsDPSetKeyGB</a>(cG, sG, wG, cB, sB, wB)
+</pre></blockquote>
+
+<p>The commands above allow you to set the parameters for each channel. </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+</body> </html>

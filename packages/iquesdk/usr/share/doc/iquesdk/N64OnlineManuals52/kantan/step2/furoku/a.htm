@@ -1,0 +1,668 @@
+<HTML>
+<HEAD>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!--
+Editors Notes:
+  PWC- updated formatting
+-->
+<TITLE>STEP2 [A Guide to the N64 Programming] - Appendix A N64 Function List (Extract)</TITLE>
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+
+<B><font style="font-size:12pt; font-weight:bold">Appendix A N64 Function List (Extract)<BR>
+<BR>
+<BR>
+<B>Display List Control</B>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=4>
+<TR><TD NOWRAP ALIGN=left VALIGN=top><B>&LT;GBI Commands&GT;</B></TD><TD ALIGN=left VALIGN=top></TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gSPSegment</TD><TD ALIGN=left VALIGN=top>Set the segment register and base address.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gSPBranchLessZ</TD><TD ALIGN=left VALIGN=top>Process the model's LOD.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gSPBranchLessZrg</TD><TD ALIGN=left VALIGN=top>Process the model's LOD.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gSPBranchList</TD><TD ALIGN=left VALIGN=top>Branch the display list.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gSPDisplayList</TD><TD ALIGN=left VALIGN=top>Branch execution with the current display list.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gSPEndDisplayList</TD><TD ALIGN=left VALIGN=top>Terminate the display list command.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gSPLoadUcode</TD><TD ALIGN=left VALIGN=top> Load specified microcode.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gSPLoadUcodeL</TD><TD ALIGN=left VALIGN=top> Load specified microcode.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gDPPipeSync</TD><TD ALIGN=left VALIGN=top>Synchronize the RDP attribute change which is on the primitive drawing.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gDPFullSync</TD><TD ALIGN=left VALIGN=top>Signal the end of a frame.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gDPLoadSync</TD><TD ALIGN=left VALIGN=top>Synchronize the texture load which is on the primitive drawing.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gDPTileSync</TD><TD ALIGN=left VALIGN=top>Synchronize the texture tile change which is on the primitive drawing.</TD></TR>
+</TABLE>
+<BR>
+<BR>
+<B>Drawing Primitives</B>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=4>
+<TR><TD NOWRAP ALIGN=left VALIGN=top><B>&LT;GBI Commands&GT;</B></TD><TD ALIGN=left VALIGN=top></TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gSPVertex</TD><TD ALIGN=left VALIGN=top> Load the vertex to the on-chip vertex cache.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gSPModifyVertex</TD><TD ALIGN=left VALIGN=top>Update the vertex data after the RSP accepts it.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gSP1Triangle</TD><TD ALIGN=left VALIGN=top>Draw a triangle. (The single triangle surface command.)</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gSPLine3D</TD><TD ALIGN=left VALIGN=top>Draw a line. (Single Line Drawing Command.)</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gSPLineW3D</TD><TD ALIGN=left VALIGN=top>Draw a line that includes a width specification.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gSP2Triangles</TD><TD ALIGN=left VALIGN=top>The triangle surface command. (Draw two triangles.)</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gSPSprite2Ddraw</TD><TD ALIGN=left VALIGN=top>Specify the screen coordinate of the sprite and initiate the rendering.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gDPFillRectangle</TD><TD ALIGN=left VALIGN=top>Draw a single-color rectangle using the screen coordinate.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gDPScisFillRectangle</TD><TD ALIGN=left VALIGN=top>Draw a single-color rectangle using the screen coordinate.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gSPTextureRectangle</TD><TD ALIGN=left VALIGN=top>Draw a textured 2D rectangle.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gSPTextureRectangleFlip</TD><TD ALIGN=left VALIGN=top>Draw a rectangle using the s/t inversion on the texture coordinate.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gSPScisTextureRectangle</TD><TD ALIGN=left VALIGN=top>Draw a rectangle using the scissoring on the texture coordinate.</TD></TR>
+</TABLE>
+<BR>
+<BR>
+<B>Perspective Transformation, Clipping and Scissoring</B>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=4>
+<TR><TD NOWRAP ALIGN=left VALIGN=top><B>&LT;Utility Functions&GT;</B></TD><TD ALIGN=left VALIGN=top></TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>guFrustum</TD><TD ALIGN=left VALIGN=top>Calculate a perspective projection matrix.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>guFrustumF</TD><TD ALIGN=left VALIGN=top>Calculate a perspective projection matrix.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>guLookAt</TD><TD ALIGN=left VALIGN=top>Calculate a 'lookat' view matrix.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>guLookAtF</TD><TD ALIGN=left VALIGN=top>Calculate a 'lookat' view matrix.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>guOrtho</TD><TD ALIGN=left VALIGN=top>Calculate a positive projection matrix.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>guOrthoF</TD><TD ALIGN=left VALIGN=top>Calculate a positive projection matrix.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>guPerspective</TD><TD ALIGN=left VALIGN=top>Calculate a perspective drawing projection matrix.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>guPerspectiveF</TD><TD ALIGN=left VALIGN=top>Calculate a perspective drawing projection matrix. </TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top></TD><TD ALIGN=left VALIGN=top></TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top><B>&LT;GBI Commands&GT;</B></TD><TD ALIGN=left VALIGN=top></TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gSPViewport</TD><TD ALIGN=left VALIGN=top> Load the view port using the projection parameter.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gSPPerspNormalize</TD><TD ALIGN=left VALIGN=top>Normalize the perspective projection.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gSPClipRatio</TD><TD ALIGN=left VALIGN=top>Specify the relative ratio between clipping and scissoring.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gDPSetScissor</TD><TD ALIGN=left VALIGN=top>Specify the scissoring box using the screen coordinate.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gdSPDefLookAt</TD><TD ALIGN=left VALIGN=top>
+   Load the x and y screen space coordinate directions to the lookat structure.</TD></TR>
+</TABLE>
+<BR>
+<BR>
+<B>Culling</B>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=4>
+<TR><TD NOWRAP ALIGN=left VALIGN=top><B>&LT;GBI Commands&GT;</B></TD><TD ALIGN=left VALIGN=top></TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gSPSetGeometryMode</TD><TD ALIGN=left VALIGN=top>Set the geometry pipeline mode.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gSPClearGeometryMode</TD><TD ALIGN=left VALIGN=top>Clear the geometry pipeline mode.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gSPCullDisplayList</TD><TD ALIGN=left VALIGN=top>Cull volumes from the display list if they lie outside the screen. </TD></TR>
+</TABLE>
+<BR>
+<BR>
+<B>Lighting</B>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=4>
+<TR><TD NOWRAP ALIGN=left VALIGN=top><B>&LT;Utility Functions&GT;</B></TD><TD ALIGN=left VALIGN=top></TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>guPosLight</TD><TD ALIGN=left VALIGN=top>Pseudo-represent positional light.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>guPosLightHilite</TD><TD ALIGN=left VALIGN=top>Pseudo-represent positional light. </TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top></TD><TD ALIGN=left VALIGN=top></TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top><B>&LT;GBI Commands&GT;</B></TD><TD ALIGN=left VALIGN=top></TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gSPSetGeometryMode</TD><TD ALIGN=left VALIGN=top>Set the geometry pipeline mode.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>SPClearGeometryMode</TD><TD ALIGN=left VALIGN=top>Clear the geometry pipeline mode.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gSPLight</TD><TD ALIGN=left VALIGN=top>Load light to the RSP.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gSPLightColor</TD><TD ALIGN=left VALIGN=top>Change the light color of the RSP quickly.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gSPNumLights</TD><TD ALIGN=left VALIGN=top> Specify the number of the light structure that loads to RSP.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gSPSetLights</TD><TD ALIGN=left VALIGN=top>Load the light structure to the RSP.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gdSPDefLights</TD><TD ALIGN=left VALIGN=top> Load the parameter that defines a light to the light structure. </TD></TR>
+</TABLE>
+<BR>
+<BR>
+<B>Specular Highlight</B>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=4>
+<TR><TD NOWRAP ALIGN=left VALIGN=top><B>&LT;Utility Functions&GT;</B></TD><TD ALIGN=left VALIGN=top></TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>guLookAtHilite</TD><TD ALIGN=left VALIGN=top>Calculate the lookat viewing matrix, and set the light structure that sets the default color and the viewing direction. Then calculate the texture offsets of two specular highlights. </TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>guLookAtHiliteF</TD><TD ALIGN=left VALIGN=top>&LT;the same as the above&GT;</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top> </TD><TD ALIGN=left VALIGN=top> </TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top><B>&LT;GBI Commands&GT;</B></TD><TD ALIGN=left VALIGN=top></TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gSPLookAt</TD><TD ALIGN=left VALIGN=top> Load the 'lookat' structure to the RSP for specular highlights or reflection mapping.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gSPLookAtX</TD><TD ALIGN=left VALIGN=top>&LT;the same as the above&GT;</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gSPLookAtY</TD><TD ALIGN=left VALIGN=top>&LT;the same as the above&GT;</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gDPSetHilite1Tile</TD><TD ALIGN=left VALIGN=top>Set the texture parameter in the RDP to be used when rendering the specular highlight.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gDPSetHilite2Tile</TD><TD ALIGN=left VALIGN=top>&LT;the same as the above&GT;</TD></TR>
+</TABLE>
+<BR>
+<BR>
+<B>Reflection Mapping</B>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=4>
+<TR><TD NOWRAP ALIGN=left VALIGN=top><B>&LT;Utility Functions&GT;</B></TD><TD ALIGN=left VALIGN=top></TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>guLookAtReflect</TD><TD ALIGN=left VALIGN=top>Calculate the 'lookat' viewing matrix, and set up the 'lookat' structure for the reflection mapping. </TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>guLookAtReflectF</TD><TD ALIGN=left VALIGN=top>&LT;the same as the above&GT;</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top></TD><TD ALIGN=left VALIGN=top></TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top><B>&LT;GBI Commands&GT;</B></TD><TD ALIGN=left VALIGN=top></TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gSPSetGeometryMode</TD><TD ALIGN=left VALIGN=top>Set the geometry pipeline mode.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gSPClearGeometryMode</TD><TD ALIGN=left VALIGN=top>Clear the geometry pipeline mode.</TD></TR>
+
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gSPLookAt</TD><TD ALIGN=left VALIGN=top>Load the 'lookat' structure to the RSP for the specular highlight or reflection mapping. </TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gSPLookAtX</TD><TD ALIGN=left VALIGN=top>&LT;the same as the above&GT;</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gSPLookAtY</TD><TD ALIGN=left VALIGN=top>&LT;the same as the above&GT;</TD></TR>
+</TABLE>
+<BR>
+<BR>
+<B>Matrix Operations</B>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=4>
+<TR><TD NOWRAP ALIGN=left VALIGN=top><B>&LT;Utility Functions&GT;</B></TD><TD ALIGN=left VALIGN=top></TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>guAlign</TD><TD ALIGN=left VALIGN=top>Calculate vector alignment for the modeling matrix.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>guAlignF</TD><TD ALIGN=left VALIGN=top>Calculate vector alignment for the modeling matrix.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>guLookAtStereo</TD><TD ALIGN=left VALIGN=top>Calculate the lookat view matrix for the stereo graphics display.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>guLookAtStereoF</TD><TD ALIGN=left VALIGN=top> Calculate lookat view matrix for the stereo graphics display.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>guMtxCatF</TD><TD ALIGN=left VALIGN=top>Concatenate two 4x4 floating-point matrices using multiplication.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>guMtxCatL</TD><TD ALIGN=left VALIGN=top> Concatenate two 4x4 fixed-point matrices using multiplication.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>guMtxF2L</TD><TD ALIGN=left VALIGN=top>Convert the 4x4 floating-point matrix to the fixed-point matrix.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>guMtxIdent</TD><TD ALIGN=left VALIGN=top>Create the 4x4 fixed-point identity matrix.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>guMtxIdentF</TD><TD ALIGN=left VALIGN=top>Create the 4x4 floating-point matrix.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>guMtxL2F</TD><TD ALIGN=left VALIGN=top>Create the 4x4 fixed-point matrix to the floating-point matrix.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>guMtxXFMF</TD><TD ALIGN=left VALIGN=top>Provide the point coordinate transformation using the 4x4 floating-point matrix.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>guMtxXFML</TD><TD ALIGN=left VALIGN=top>Provide the point coordinate transformation using the 4x4 fixed-point matrix.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>guNormalize</TD><TD ALIGN=left VALIGN=top>Normalize the vector.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>guPosition</TD><TD ALIGN=left VALIGN=top>Calculate the modeling matrix.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>guPositionF</TD><TD ALIGN=left VALIGN=top>Calculate the modeling matrix.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>guRotate</TD><TD ALIGN=left VALIGN=top>Rotate the modeling matrix.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>guRotateF</TD><TD ALIGN=left VALIGN=top>&LT;the same as the above&GT;</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>guRotateRPY</TD><TD ALIGN=left VALIGN=top>&LT;the same the above&GT;</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>guRotateRPYF</TD><TD ALIGN=left VALIGN=top>&LT;the same as the above&GT;</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>guScale</TD><TD ALIGN=left VALIGN=top>Calculate the scaling matrix.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>guScaleF</TD><TD ALIGN=left VALIGN=top>Calculate the scaling modeling matrix.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>guTranslate</TD><TD ALIGN=left VALIGN=top>Calculate the conversion modeling matrix.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>guTranslateF</TD><TD ALIGN=left VALIGN=top>Calculate the conversion modeling matrix. </TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top></TD><TD ALIGN=left VALIGN=top></TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top><B>&LT;GBI Commands&GT;</B></TD><TD ALIGN=left VALIGN=top></TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gSPMatrix</TD><TD ALIGN=left VALIGN=top>Load the matrix, concatenate, and push the stack.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gSPPopMatrix</TD><TD ALIGN=left VALIGN=top>Pop the matrix stack.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gSPForceMatrix</TD><TD ALIGN=left VALIGN=top>Load the new MP matrix.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gSPInsertMatrix</TD><TD ALIGN=left VALIGN=top>Update the matrix element without using multiplication. </TD></TR>
+</TABLE>
+<BR>
+<BR>
+<B>RDP Setting</B>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=4>
+<TR><TD NOWRAP ALIGN=left VALIGN=top><B>&LT;
+
+   GBI Commands&GT;</B></TD><TD ALIGN=left VALIGN=top></TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gDPPipelineMode</TD><TD ALIGN=left VALIGN=top>Turn ON/OFF the coherent pipeline mode of the span cache buffer.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gDPSetCycleType</TD><TD ALIGN=left VALIGN=top>Set the RDP cycle type.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gDPSetDepthSource</TD><TD ALIGN=left VALIGN=top>Set the type of the source Z to use for comparing the depth buffer.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gDPSetColorImage</TD><TD ALIGN=left VALIGN=top>Set the color of the frame buffer area.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gDPSetDepthImage </TD><TD ALIGN=left VALIGN=top>Set the Z-Buffer area.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gSPSetOtherMode</TD><TD ALIGN=left VALIGN=top>Set or clear the RDP othermode. </TD></TR>
+</TABLE>
+<BR>
+<BR>
+<B>Textures</B>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=4>
+<TR><TD NOWRAP ALIGN=left VALIGN=top><B>&LT;Utility Functions&GT;</B></TD><TD ALIGN=left VALIGN=top></TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>guLoadTextureBlockMipMap</TD><TD ALIGN=left VALIGN=top>Calculate the MIP-map pyramid from the original texture, and return the MIP-map texture with the required display list for drawing. </TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top></TD><TD ALIGN=left VALIGN=top></TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top><B>&LT;GBI Commands&GT;</B></TD><TD ALIGN=left VALIGN=top></TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gSPTexture  </TD><TD ALIGN=left VALIGN=top>Make the texture effective and specify the scaling of the texture.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gDPLoadBlock</TD><TD ALIGN=left VALIGN=top>Load TMEM using this low-level TMEM load macro.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gDPLoadTLUT_pal16</TD><TD ALIGN=left VALIGN=top> Load the CI4 (16 colors) pallet to texture memory.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gDPLoadTLUT_pal256</TD><TD ALIGN=left VALIGN=top>Load the CI8 (256 colors) pallet to texture memory.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gDPLoadTextureBlock</TD><TD ALIGN=left VALIGN=top>Load the consecutive texture block to TMEM.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gDPLoadTextureBlock_4b</TD><TD ALIGN=left VALIGN=top>Load the consecutive 4-bit texture block to TMEM.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gDPLoadTextureTile</TD><TD ALIGN=left VALIGN=top>Load a part of a large texture image to TMEM.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gDPLoadTextureTile_4b</TD><TD ALIGN=left VALIGN=top>Load a part of a large 4-bit texture image to TMEM.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gDPSetTextureImage</TD><TD ALIGN=left VALIGN=top>Set the texture area.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gDPSetTextureConvert</TD><TD ALIGN=left VALIGN=top>Control and convert the color texture filter.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gDPSetTextureDetail</TD><TD ALIGN=left VALIGN=top>Turn ON/OFF the detail texture.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gDPSetTextureFilter</TD><TD ALIGN=left VALIGN=top> Set the filter type on the sampling of the texture tile.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gDPSetTextureLOD</TD><TD ALIGN=left VALIGN=top>Turn ON/OFF LOD for the MIP-map texture.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gDPSetTextureLUT</TD><TD ALIGN=left VALIGN=top>Set the full color texture or the textualizing of the table look-up</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gDPSetTexturePersp</TD><TD ALIGN=left VALIGN=top>Turn ON/OFF texture map perspective transformation correction.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gDPSetTile  </TD><TD ALIGN=left VALIGN=top>Set the parameter for one of the eight tile descriptors.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gDPSetTileSize</TD><TD ALIGN=left VALIGN=top>Set the parameter for one of the eight tile descriptors. </TD></TR>
+</TABLE>
+<BR>
+<BR>
+<B>Using the Color Combiner</B>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=4>
+<TR><TD NOWRAP ALIGN=left VALIGN=top><B>&LT;GBI Commands&GT;</B></TD><TD ALIGN=left VALIGN=top></TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gDPSetCombineMode</TD><TD ALIGN=left VALIGN=top>Set the color combine mode.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gDPSetPrimColor</TD><TD ALIGN=left VALIGN=top>Set the RDP primitive color.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gDPSetEnvColor</TD><TD ALIGN=left VALIGN=top>Set the RDP environment color.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gDPSetConvert</TD><TD ALIGN=left VALIGN=top> Set the matrix coefficient to convert the YUV pixel to RGB.</TD></TR>
+</TABLE>
+<BR>
+<BR>
+<B>Using the Chroma Key</B>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=4>
+<TR><TD NOWRAP ALIGN=left VALIGN=top><B>&LT;GBI Commands&GT;</B></TD><TD ALIGN=left VALIGN=top></TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gDPSetCombineKey</TD><TD ALIGN=left VALIGN=top>Turn ON/OFF chroma keying.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gDPSetKeyR</TD><TD ALIGN=left VALIGN=top>Select the color of the chroma key operation. </TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gDPSetKeyGB</TD><TD ALIGN=left VALIGN=top>&LT;the same as the above&GT;</TD></TR>
+</TABLE>
+<BR>
+<BR>
+<B>Using the Blender</B>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=4>
+<TR><TD NOWRAP ALIGN=left VALIGN=top><B>&LT;GBI Commands&GT;</B></TD><TD ALIGN=left VALIGN=top></TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gDPSetBlendColor</TD><TD ALIGN=left VALIGN=top>Set the RDP blend color.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gDPSetRenderMode</TD><TD ALIGN=left VALIGN=top>Set the rendering mode of the blender.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gDPSetAlphaCompare</TD><TD ALIGN=left VALIGN=top> Set the alpha compare mode of the writing condition to the frame buffer.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gDPSetAlphaDither</TD><TD ALIGN=left VALIGN=top> Turn ON/OFF the alpha dither.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gDPSetColorDither</TD><TD ALIGN=left VALIGN=top>Turn ON/OFF the RGB color dither.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gDPSetPrimDepth</TD><TD ALIGN=left VALIGN=top>Set the primitive depth. </TD></TR>
+</TABLE>
+<BR>
+<BR>
+<B>Using Fog</B>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=4>
+<TR><TD NOWRAP ALIGN=left VALIGN=top><B>&LT;GBI Commands&GT;</B></TD><TD ALIGN=left VALIGN=top></TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gSPSetGeometryMode</TD><TD ALIGN=left VALIGN=top> Set the geometry pipeline mode.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gSPClearGeometryMode</TD><TD ALIGN=left VALIGN=top>Clear the geometry pipeline mode.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gSPFogPosition</TD><TD ALIGN=left VALIGN=top>Specify the thickness of the fog.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gDPSetFogColor</TD><TD ALIGN=left VALIGN=top>Set the RDP fog color. </TD></TR>
+</TABLE>
+<BR>
+<BR>
+<B>Mathematical Calculation Utilities</B>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=4>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>sinf, sins</TD><TD ALIGN=left VALIGN=top>Calculate the sine of the angle using floating or fixed-point.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>cosf, coss</TD><TD ALIGN=left VALIGN=top>Calculate the cosine of the angle using floating or fixed-point.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>sqrtf</TD><TD ALIGN=left VALIGN=top>Calculate the square root.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>guRandom</TD><TD ALIGN=left VALIGN=top>Calculate a 32-bit integer random number. </TD></TR>
+</TABLE>
+<BR>
+<BR>
+<B>N64 Operating System Initialization</B>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=4>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osInitialize</TD><TD ALIGN=left VALIGN=top>Initialize the hardware and software. </TD></TR>
+</TABLE>
+<BR>
+<BR>
+<B>Threads</B>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=4>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osCreateThread</TD><TD ALIGN=left VALIGN=top>Create a thread.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osDestroyThread</TD><TD ALIGN=left VALIGN=top>Delete a thread.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osGetThreadId</TD><TD ALIGN=left VALIGN=top>Get the debugger ID of a thread.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osGetThreadPri</TD><TD ALIGN=left VALIGN=top>Get the priority of a thread.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osSetThreadPri</TD><TD ALIGN=left VALIGN=top>Reset the priority of a thread.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osStartThread</TD><TD ALIGN=left VALIGN=top>Start or restart the execution of a thread.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osStopThread</TD><TD ALIGN=left VALIGN=top>Stop a thread.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osYieldThread</TD><TD ALIGN=left VALIGN=top>Yield CPU access and activate the thread dispatcher. </TD></TR>
+</TABLE>
+<BR>
+<BR>
+<B>Messages</B>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=4>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osCreateMesgQueue</TD><TD ALIGN=left VALIGN=top>Create a message queue.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osSendMesg</TD><TD ALIGN=left VALIGN=top>Send a message and synchronize.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osJamMesg</TD><TD ALIGN=left VALIGN=top>Send a message and synchronize.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osRecvMesg</TD><TD ALIGN=left VALIGN=top>Receive a message and synchronize.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osSetEventMesg</TD><TD ALIGN=left VALIGN=top>Register the message queue and message each time an event occurs. </TD></TR>
+</TABLE>
+<BR>
+<BR>
+<B>Scheduler</B>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=4>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osCreateScheduler</TD><TD ALIGN=left VALIGN=top>Create the RCP task scheduler.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osScAddClient</TD><TD ALIGN=left VALIGN=top>Add the client to the RCP task scheduler.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osScGetTaskQ</TD><TD ALIGN=left VALIGN=top> Get the message queue used for the communication with the scheduler thread.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osScRemoveClient</TD><TD ALIGN=left VALIGN=top>Delete the client from the RCP task scheduler. </TD></TR>
+</TABLE>
+<BR>
+<BR>
+<B>Tasks</B>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=4>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osSpTaskLoad</TD><TD ALIGN=left VALIGN=top>Load the received task to the SP.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osSpTaskStart</TD><TD ALIGN=left VALIGN=top>Start the SP task.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osSpTaskStartGo</TD><TD ALIGN=left VALIGN=top>Load and start the SP task.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osSpTaskYield</TD><TD ALIGN=left VALIGN=top>Request to yield the SP task.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osSpTaskYielded</TD><TD ALIGN=left VALIGN=top>Validate the break of the SP task. </TD></TR>
+</TABLE>
+<BR>
+<BR>
+<B>Display Processor</B>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=4>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osDpGetCounters</TD><TD ALIGN=left VALIGN=top>Get the inside execution counter of the display processor (DP).</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osDpGetStatus</TD><TD ALIGN=left VALIGN=top>Get the status of the display processor (DP).</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osDpSetStatus</TD><TD ALIGN=left VALIGN=top>Set the status of the display processor (DP).</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osDpSetNextBuffer</TD><TD ALIGN=left VALIGN=top>Set the DMA transfer of the display processor (DP). </TD></TR>
+</TABLE>
+<BR>
+<BR>
+<B>Controller</B>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=4>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osContInit</TD><TD ALIGN=left VALIGN=top>Detect and initialize the Controller.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osContReset</TD><TD ALIGN=left VALIGN=top>Reset all Controllers.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osContSetCh</TD><TD ALIGN=left VALIGN=top>Set the number of accepting Controllers.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osContStartQuery</TD><TD ALIGN=left VALIGN=top>Issue the create command to acquire the status and type of the Controller.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osContGetQuery</TD><TD ALIGN=left VALIGN=top>Get the state and type of the Controller.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osContStartReadData</TD><TD ALIGN=left VALIGN=top>Issue the lead command to get the state of the Controller.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osContGetReadData</TD><TD ALIGN=left VALIGN=top>Get the 3D stack and the button status. </TD></TR>
+</TABLE>
+<BR>
+<BR>
+<B>Controller Pak</B>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=4>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osPfsAllocateFile</TD><TD ALIGN=left VALIGN=top>Create the specified file.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osPfsDeleteFile</TD><TD ALIGN=left VALIGN=top>Delete the specified file.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osPfsFindFile</TD><TD ALIGN=left VALIGN=top>Browse the specified file.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osPfsChecker</TD><TD ALIGN=left VALIGN=top>Check and repair the file system of the Controller Pak.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osPfsFileState</TD><TD ALIGN=left VALIGN=top>Get the file information of the Controller Pak.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osPfsNumFiles</TD><TD ALIGN=left VALIGN=top>Get the file number of the Controller Pak.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osPfsFreeBlocks</TD><TD ALIGN=left VALIGN=top>Get the space size (in number of bytes) of the Controller Pak.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osPfsIsPlug</TD><TD ALIGN=left VALIGN=top>Detect the Controller Pak.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osPfsReSizeFile</TD><TD ALIGN=left VALIGN=top>Make the file the specified length.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osPfsReadWriteFile</TD><TD ALIGN=left VALIGN=top>Read and write the file data.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osPfsSetLabel</TD><TD ALIGN=left VALIGN=top>Write the label of the Controller Pak.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osPfsGetLabel</TD><TD ALIGN=left VALIGN=top>Get the label of the Controller Pak.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osMotorInit</TD><TD ALIGN=left VALIGN=top>Initialize the Rumble Pak.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osMotorStart</TD><TD ALIGN=left VALIGN=top>Work the Rumble Pak.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osMotorStop</TD><TD ALIGN=left VALIGN=top>Stop the Rumble Pak.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osPfsInitPak</TD><TD ALIGN=left VALIGN=top>Initialize the file handle of the Controller Pak.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osPfsRepairId</TD><TD ALIGN=left VALIGN=top>Correct the ID area of the Controller Pak. </TD></TR>
+</TABLE>
+<BR>
+<BR>
+<B>EEPROM</B>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=4>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osEepromLongRead</TD><TD ALIGN=left VALIGN=top>Read the data of several EEPROM blocks.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osEepromLongWrite</TD><TD ALIGN=left VALIGN=top>Write the data of several EEPROM blocks.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osEepromProbe</TD><TD ALIGN=left VALIGN=top>Detect EEPROM.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osEepromRead</TD><TD ALIGN=left VALIGN=top>Read one EEPROM block.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osEepromWrite</TD><TD ALIGN=left VALIGN=top>Write one EEPROM block.</TD></TR>
+</TABLE>
+<BR>
+<BR>
+<B>AI (Audio Interface)</B>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=4>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osAiGetStatus</TD><TD ALIGN=left VALIGN=top> Get the status of the audio interface (AI).</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osAiGetLength</TD><TD ALIGN=left VALIGN=top>Get the DMA remaining transfer amount of the audio interface (AI).</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osAiSetFrequency</TD><TD ALIGN=left VALIGN=top> Get the frequency of the audio interface (AI).</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osAiSetNextBuffer</TD><TD ALIGN=left VALIGN=top>Set the DMA transfer of the audio interface (AI). </TD></TR>
+</TABLE>
+<BR>
+<BR>
+<B>PI (Parallel Interface)</B>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=4>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osPiRawStartDma</TD><TD ALIGN=left VALIGN=top>Set the DMA transfer of PI (low level).</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osPiRawWriteIo</TD><TD ALIGN=left VALIGN=top>Write PI I/O (low level).</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osPiRawReadIo</TD><TD ALIGN=left VALIGN=top>Read PI I/O (low level).</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osPiGetStatus</TD><TD ALIGN=left VALIGN=top>Get the status of PI.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osPiStartDma</TD><TD ALIGN=left VALIGN=top> Set the DMA transfer of PI using the PI Manager.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osPiWriteIo</TD><TD ALIGN=left VALIGN=top>Write PI I/O using the PI Manager.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osPiReadIo</TD><TD ALIGN=left VALIGN=top>Read PI I/O using the PI Manager.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osCreatePiManager</TD><TD ALIGN=left VALIGN=top>Create the PI Manager.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osPiGetCmdQueue</TD><TD ALIGN=left VALIGN=top>Get the command queue of the PI Manager.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osCartRomInit</TD><TD ALIGN=left VALIGN=top>Return information about hardware setting that are required by the Game Pak.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osDriveRomInit</TD><TD ALIGN=left VALIGN=top>Return information about hardware setting that are required by the ROM in the N64 Disk Drive.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osEPiWriteIo</TD><TD ALIGN=left VALIGN=top>Provide "32bit IO Write" to the PI device address (devAddr), and store its value to "data".</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osEPiReadIo</TD><TD ALIGN=left VALIGN=top> Provide "32 bit IO Read" from the PI device address (devAddr), and store the value in "data."</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osEPiRawStartDma</TD><TD ALIGN=left VALIGN=top>Obtain low-level access to EPI without using the PI Manager.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osEPiStartDma</TD><TD ALIGN=left VALIGN=top>Obtain access to EPI by using the PI Manager. </TD></TR>
+</TABLE>
+<BR>
+<BR>
+<B>VI (Video Interface)</B>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=4>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osTvType</TD><TD ALIGN=left VALIGN=top>Get the television system.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osViGetStatus</TD><TD ALIGN=left VALIGN=top>Get the VI status.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osViGetCurrentMode</TD><TD ALIGN=left VALIGN=top>Get the current VI mode.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osViGetCurrentLine</TD><TD ALIGN=left VALIGN=top>Get the VI half line.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osViGetCurrentField</TD><TD ALIGN=left VALIGN=top>Get the VI field number.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osViGetCurrentFramebuffer</TD><TD ALIGN=left VALIGN=top>Get the current frame buffet address.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osViGetNextFramebuffer</TD><TD ALIGN=left VALIGN=top>Get the next frame buffer address.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osViSetMode</TD><TD ALIGN=left VALIGN=top>Set the VI mode.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osViSetEvent</TD><TD ALIGN=left VALIGN=top>Register the vertical synchronization event message to the VI Manager.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osViSetSpecialFeatures</TD><TD ALIGN=left VALIGN=top>Set the VI special features.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osViSetXScale</TD><TD ALIGN=left VALIGN=top>Set the VI horizontal expanding ratio.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osViSetYScale</TD><TD ALIGN=left VALIGN=top>Set the VI vertical expanding ratio.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osViSwapBuffer</TD><TD ALIGN=left VALIGN=top>Register the frame buffer displayed in the next frame.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osViBlack</TD><TD ALIGN=left VALIGN=top>Black out the VI screen.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osViFade</TD><TD ALIGN=left VALIGN=top>Fade out the VI screen.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osViRepeatLine</TD><TD ALIGN=left VALIGN=top>Display the first scan line to all frames.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osCreateViManager</TD><TD ALIGN=left VALIGN=top> Create the VI Manager. </TD></TR>
+</TABLE>
+<BR>
+<BR>
+<B>Timer</B>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=4>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>OS_NSEC_TO_CYCLES</TD><TD ALIGN=left VALIGN=top>Convert nanoseconds (ns) to the cycle number of the CPU count register.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>OS_USEC_TO_CYCLES</TD><TD ALIGN=left VALIGN=top>Convert microseconds (ms) to the cycle number of the CPU count register.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>OS_CYCLES_TO_NSEC</TD><TD ALIGN=left VALIGN=top> Convert cycle number of the CPU count register to the time in nanoseconds (ns).</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>OS_CYCLES_TO_USEC</TD><TD ALIGN=left VALIGN=top>Convert the cycle number of the CPU count register to the time in microseconds (ms).</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osGetTime</TD><TD ALIGN=left VALIGN=top>Get the real time counter value.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osSetTime</TD><TD ALIGN=left VALIGN=top>Set the real time counter value.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osSetTimer</TD><TD ALIGN=left VALIGN=top>Start the interval or count-down timer.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osStopTimer</TD><TD ALIGN=left VALIGN=top>Stop the interval or count-down timer. </TD></TR>
+</TABLE>
+<BR>
+<BR>
+<B>Administration of Virtual and Physical Addresses</B>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=4>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>OS_K0_TO_PHYSICAL</TD><TD ALIGN=left VALIGN=top>Convert the CPU virtual address (KSEG0), which is direct-mapped with cache, to the physical address.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>OS_K1_TO_PHYSICAL</TD><TD ALIGN=left VALIGN=top>Convert the CPU virtual address (KSEG1), which is direct-mapped without cache, to the physical address.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>OS_PHYSICAL_TO_K0</TD><TD ALIGN=left VALIGN=top>Convert the physical address to the direct-map CPU virtual address (KSEG0) with cache.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>OS_PHYSICAL_TO_K1</TD><TD ALIGN=left VALIGN=top>Convert the physical address to the direct-map CPU virtual address (KSEG1) without cache.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osVirtualToPhysical</TD><TD ALIGN=left VALIGN=top>Convert the CPU virtual address to the physical address.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osPhysicalToVirtual</TD><TD ALIGN=left VALIGN=top>Convert the CPU physical address to the virtual address.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osMapTLB</TD><TD ALIGN=left VALIGN=top>Set up the CPU virtual address mapping.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osUnmapTLB</TD><TD ALIGN=left VALIGN=top>Free the CPU virtual address mapping.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osUnmapTLBAll</TD><TD ALIGN=left VALIGN=top>Free all the CPU virtual address mapping.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osSetTLBASID</TD><TD ALIGN=left VALIGN=top>Set the ID setting of the CPU virtual address mapping.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osGetRegionBufSize</TD><TD ALIGN=left VALIGN=top>Get the size of the memory buffer. </TD></TR>
+</TABLE>
+<BR>
+<BR>
+<B>Cache Management</B>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=4>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>OS_DCACHE_ROUNDUP_ADDR</TD><TD ALIGN=left VALIGN=top>Round up address or size values to adapt to the data cache line size, and make the address the physical address.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>OS_DCACHE_ROUNDUP_SIZE</TD><TD ALIGN=left VALIGN=top>&LT;the same as the above&GT;</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osInvalDCache</TD><TD ALIGN=left VALIGN=top>Nullify the CPU data cache line.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osInvalICache</TD><TD ALIGN=left VALIGN=top>Nullify the CPU instruction cache line.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osWritebackDCache</TD><TD ALIGN=left VALIGN=top>Write back the CPU data cache line to the physical memory.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osWritebackDCacheAll</TD><TD ALIGN=left VALIGN=top>Write back the CPU data cache line to the physical memory. </TD></TR>
+</TABLE>
+<BR>
+<BR>
+<B>Memory Region Library</B>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=4>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osCreateRegion</TD><TD ALIGN=left VALIGN=top>Initialize the memory allocation region.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osMalloc</TD><TD ALIGN=left VALIGN=top>Allocate the memory region.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osFree</TD><TD ALIGN=left VALIGN=top> Free the memory region.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osGetRegionBufCount</TD><TD ALIGN=left VALIGN=top>Get the buffer count created in the region.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osGetRegionBufSize</TD><TD ALIGN=left VALIGN=top>Get the size allocated to each buffer in the region. </TD></TR>
+</TABLE>
+<BR>
+<BR>
+<B>Emulator Board and Host Communications</B>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=4>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osReadHost</TD><TD ALIGN=left VALIGN=top>Read data from the host.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osWriteHost</TD><TD ALIGN=left VALIGN=top>Write data to the host.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osTestHost</TD><TD ALIGN=left VALIGN=top>Get the data transfer state from the host.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>uhCloseGame</TD><TD ALIGN=left VALIGN=top>Close the data communication facility between the host (Indy) and the emulator board.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>uhOpenGame</TD><TD ALIGN=left VALIGN=top>Open the data communication facility between the host (Indy) and the emulator board.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>uhReadGame</TD><TD ALIGN=left VALIGN=top> Read data from the game to send it to the host (Indy).</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>uhReadRamrom</TD><TD ALIGN=left VALIGN=top>Read data from RAMROM.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>uhWriteGame</TD><TD ALIGN=left VALIGN=top>Write data from the host (Indy) to the game.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>uhWriteRamrom</TD><TD ALIGN=left VALIGN=top>Write data to RAMROM. </TD></TR>
+</TABLE>
+<BR>
+<BR>
+<B>Debugging</B>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=4>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gDPNoOpTag</TD><TD ALIGN=left VALIGN=top>NO-OP command of the RDP.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gDPNoOp</TD><TD ALIGN=left VALIGN=top>NO-OP command of the RDP.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>guParseGbiDL</TD><TD ALIGN=left VALIGN=top> Display using the decodable format of the GBI display list.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>guParseRdpDL</TD><TD ALIGN=left VALIGN=top>Display using the decodable format of the low-level RDP display list.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>guDumpRawRdpDL</TD><TD ALIGN=left VALIGN=top>&LT;the same as the above&GT;</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osSyncPrintf</TD><TD ALIGN=left VALIGN=top>Output the formatted text to the debug board. </TD></TR>
+</TABLE>
+<BR>
+<BR>
+<B>Logging</B>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=4>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osCreateLog</TD><TD ALIGN=left VALIGN=top>Initialize logging.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osLogEvent</TD><TD ALIGN=left VALIGN=top> Add the entry of logging.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osFlushLog</TD><TD ALIGN=left VALIGN=top>Output logged data to the host. </TD></TR>
+</TABLE>
+<BR>
+<BR>
+<B>Profiler</B>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=4>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osProfileInit</TD><TD ALIGN=left VALIGN=top>Initialize the profiled segment count buffer.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osProfileStart</TD><TD ALIGN=left VALIGN=top>Start the counter between profilers.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osProfileStop</TD><TD ALIGN=left VALIGN=top>Stop the counter between profilers.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osProfileFlush</TD><TD ALIGN=left VALIGN=top>Transfer the profiler data to the host.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>gperf</TD><TD ALIGN=left VALIGN=top>Analyze the profiler data. </TD></TR>
+</TABLE>
+<BR>
+<BR>
+00><B>OS Global Variables</B>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=4>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osTvType</TD><TD ALIGN=left VALIGN=top>Type configuration.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osMemSize</TD><TD ALIGN=left VALIGN=top>Size of the main memory (DRAM).</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osResetType</TD><TD ALIGN=left VALIGN=top>Type of the system reboot. </TD></TR>
+</TABLE>
+<BR>
+<BR>
+<B>Manage CPU Registers and Error Handler</B>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=4>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osGetCount</TD><TD ALIGN=left VALIGN=top>Get the count register of CPU.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osGetIntMask</TD><TD ALIGN=left VALIGN=top>Get the interrupt mask.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osSetIntMask</TD><TD ALIGN=left VALIGN=top>Set the interrupt mask.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>osSetErrorHandler</TD><TD ALIGN=left VALIGN=top> Set the error handling routine of the debug library. </TD></TR>
+</TABLE>
+<BR>
+<BR>
+<B>Sprite Library</B>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=4>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>spColor</TD><TD ALIGN=left VALIGN=top>Set the sprite color.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>spDraw</TD><TD ALIGN=left VALIGN=top>Create the display list to display the sprite on the screen.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>spFinish</TD><TD ALIGN=left VALIGN=top> Reset the graphics mode to default at the end of the sprite drawing.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>spInit</TD><TD ALIGN=left VALIGN=top>Set the graphics mode required for the sprite drawing.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>sp, spIntro</TD><TD ALIGN=left VALIGN=top>Introduce the sprite library.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>spMove</TD><TD ALIGN=left VALIGN=top>Specify the position of the top left-hand angle on the sprite screen.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>spScale</TD><TD ALIGN=left VALIGN=top>Change the size and shape of the sprite.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>spScissor</TD><TD ALIGN=left VALIGN=top>Set the border area drawn.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>spSetAttribute</TD><TD ALIGN=left VALIGN=top> Set the designated attribute.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>spClearAttribute</TD><TD ALIGN=left VALIGN=top>Clear the designated attribute.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>spSetZ</TD><TD ALIGN=left VALIGN=top>Set the depth value (the Z value) of the sprite.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>mksprite, mksprite32, mkisprite</TD><TD ALIGN=left VALIGN=top>Convert RGB file to the sprite data structure of the C language. </TD></TR>
+</TABLE>
+<BR>
+<BR>
+<B>Audio Library</B>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=4>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alAudioFrame</TD><TD ALIGN=left VALIGN=top>Creates an audio command list for one frame.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alBnkfNew</TD><TD ALIGN=left VALIGN=top> Initializes a bank file for use on the Nintendo 64.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alCents2Ratio</TD><TD ALIGN=left VALIGN=top>Converts an s32 cents value to an f32 ratio.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alClose</TD><TD ALIGN=left VALIGN=top>Shuts down the N64 Audio Library.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alCSeqGetLoc</TD><TD ALIGN=left VALIGN=top> Initializes a marker with the current sequence location for use with the compressed MIDI sequence player.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alCSeqGetTicks</TD><TD ALIGN=left VALIGN=top>Returns the number of MIDI clock ticks of the compressed MIDI sequence location.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alCSeqNew</TD><TD ALIGN=left VALIGN=top>Initializes an N64 compressed MIDI sequence structure.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alCSeqNewMarker</TD><TD ALIGN=left VALIGN=top>Initializes a sequence marker at a given location for use with the compressed MIDI sequence player.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alCSeqNextEvent</TD><TD ALIGN=left VALIGN=top>Returns the next MIDI event from the compressed MIDI sequence.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alCSeqSecToTicks</TD><TD ALIGN=left VALIGN=top>Converts from seconds to MIDI clock ticks.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alCSeqSetLoc</TD><TD ALIGN=left VALIGN=top>Sets the current sequence location within the compressed MIDI sequence.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alCSeqTicksToSec</TD><TD ALIGN=left VALIGN=top>Converts from MIDI clock ticks to seconds.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alCSPDelete</TD><TD ALIGN=left VALIGN=top>Deallocates a MIDI sequence player.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alCSPGetChlFXMix</TD><TD ALIGN=left VALIGN=top>Returns the effect mix for the given MIDI channel.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alCSPGetChlPan</TD><TD ALIGN=left VALIGN=top> Returns the pan position for the given MIDI channel.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alCSPGetChlPriority</TD><TD ALIGN=left VALIGN=top>Returns the priority for the given MIDI channel.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alCSPGetChlProgram</TD><TD ALIGN=left VALIGN=top>Returns the MIDI program number assigned to a MIDI channel.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alCSPGetChlVol</TD><TD ALIGN=left VALIGN=top>Returns the volume for the given MIDI channel.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alCSPGetSeq</TD><TD ALIGN=left VALIGN=top>Returns the sequence currently assigned to the compressed MIDI sequence player.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alCSPGetTempo</TD><TD ALIGN=left VALIGN=top>Returns the tempo of the current sequence.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alCSPGetVol</TD><TD ALIGN=left VALIGN=top>Returns the overall sequence volume.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alCSPNew</TD><TD ALIGN=left VALIGN=top>Initializes a compressed MIDI sequence player.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alCSPPlay</TD><TD ALIGN=left VALIGN=top>Starts the target sequence playing.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alCSPSetBank</TD><TD ALIGN=left VALIGN=top>Specifies the instrument bank for the sequence player to use.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alCSPSetChlFXMix</TD><TD ALIGN=left VALIGN=top>Sets the effect mix on the given MIDI channel.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alCSPSetChlPan</TD><TD ALIGN=left VALIGN=top>Sets the pan position for the given MIDI channel.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alCSPSetChlPriority</TD><TD ALIGN=left VALIGN=top>Sets the priority for the given MIDI channel.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alCSPSetChlProgram</TD><TD ALIGN=left VALIGN=top>Assigns a MIDI program to a MIDI channel.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alCSPSetChlVol</TD><TD ALIGN=left VALIGN=top>Sets the volume for the given MIDI channel.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alCSPSetSeq</TD><TD ALIGN=left VALIGN=top>Sets the compressed MIDI sequence player's target sequence.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alCSPSetTempo</TD><TD ALIGN=left VALIGN=top>Specifies the tempo for the sequence player to use.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alCSPSetVol</TD><TD ALIGN=left VALIGN=top>Sets the overall sequence volume.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alCSPStop</TD><TD ALIGN=left VALIGN=top>Stops the target compressed MIDI sequence.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alHeapAlloc</TD><TD ALIGN=left VALIGN=top>Allocates memory from an Nintendo 64 audio heap.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alHeapCheck</TD><TD ALIGN=left VALIGN=top>Checks the consistency of an N64 audio heap.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alHeapInit</TD><TD ALIGN=left VALIGN=top>Initializes an audio heap for use with the Nintendo 64 Audio Library.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alInit</TD><TD ALIGN=left VALIGN=top> Initializes the N64 Audio Library.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alSeqGetLoc</TD><TD ALIGN=left VALIGN=top>Initializes a marker with the current sequence location.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alSeqGetTicks</TD><TD ALIGN=left VALIGN=top>Returns the number of MIDI clock ticks of the sequence location.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alSeqNew</TD><TD ALIGN=left VALIGN=top> Initializes an N64 MIDI sequence structure.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alSeqNewMarker</TD><TD ALIGN=left VALIGN=top>Initializes a sequence marker at a given location.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alSeqNextEvent</TD><TD ALIGN=left VALIGN=top>Returns the next MIDI event in the sequence.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alSeqpDelete </TD><TD ALIGN=left VALIGN=top>Deallocates a MIDI sequence player.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alSeqpGetChlFXMix</TD><TD ALIGN=left VALIGN=top>Returns the effect mix for the given MIDI channel.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alSeqpGetChlPan</TD><TD ALIGN=left VALIGN=top>Returns the pan position for the given MIDI channel.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alSeqpGetChlPriority</TD><TD ALIGN=left VALIGN=top>Returns the priority for the given MIDI channel.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alSeqpGetChlProgram</TD><TD ALIGN=left VALIGN=top>Returns the MIDI program number assigned to a MIDI.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alSeqpGetChlVol</TD><TD ALIGN=left VALIGN=top>Returns the volume for the given MIDI channel.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alSeqpGetSeq</TD><TD ALIGN=left VALIGN=top>Returns the sequence currently assigned to the ALSeqPlayer.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alSeqpGetTempo</TD><TD ALIGN=left VALIGN=top>Returns the tempo of the current sequence.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alSeqpGetVol</TD><TD ALIGN=left VALIGN=top> Returns the overall sequence volume.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alSeqpLoop</TD><TD ALIGN=left VALIGN=top>Sets sequence loop points.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alSeqpNew</TD><TD ALIGN=left VALIGN=top>Initializes a Type 0 MIDI sequence player.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alSeqpPlay</TD><TD ALIGN=left VALIGN=top> Starts the target sequence playing.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alSeqpSendMidi</TD><TD ALIGN=left VALIGN=top>Sends the given MIDI message to the sequence player.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alSeqpSetBank</TD><TD ALIGN=left VALIGN=top>Specifies the instrument bank for the sequence player to use.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alSeqpSetChlFXMix</TD><TD ALIGN=left VALIGN=top>Sets the effect mix on the given MIDI channel.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alSeqpSetChlPan</TD><TD ALIGN=left VALIGN=top>Sets the pan position for the given MIDI channel.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alSeqpSetChlPriority</TD><TD ALIGN=left VALIGN=top>Sets the priority for the given MIDI channel.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alSeqpSetChlProgram</TD><TD ALIGN=left VALIGN=top>Assigns a MIDI program to a MIDI channel.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alSeqpSetChlVol</TD><TD ALIGN=left VALIGN=top>Set the volume for the given MIDI channel.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alSeqpSetSeq</TD><TD ALIGN=left VALIGN=top>Sets the sequence player's target sequence.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alSeqpSetTempo</TD><TD ALIGN=left VALIGN=top>Specifies the tempo for the sequence player to use.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alSeqpSetVol</TD><TD ALIGN=left VALIGN=top>Sets the overall sequence volume.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alSeqpStop</TD><TD ALIGN=left VALIGN=top>Stop the target sequence.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alSeqSecToTicks</TD><TD ALIGN=left VALIGN=top>Converts from seconds to MIDI clock ticks.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alSeqSetLoc</TD><TD ALIGN=left VALIGN=top>Sets the current sequence location.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alSeqTicksToSec</TD><TD ALIGN=left VALIGN=top>Converts from MIDI clock ticks to seconds.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alSndpAllocate</TD><TD ALIGN=left VALIGN=top>Allocates a sound to a sound player.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alSndpDeallocate</TD><TD ALIGN=left VALIGN=top>Deallocates a sound from a sound player.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alSndpDelete</TD><TD ALIGN=left VALIGN=top>Deallocates a sound player.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alSndGetSound</TD><TD ALIGN=left VALIGN=top> Gets the identifier of the current target sound in a sound player.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alSndpGetState</TD><TD ALIGN=left VALIGN=top>Gets the state (playing, stopping, or stopped) of the current target sound.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alSndpNew</TD><TD ALIGN=left VALIGN=top> Initializes a sound player.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alSndpPlay</TD><TD ALIGN=left VALIGN=top>Starts playing the current target sound.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alSndpPlayAt</TD><TD ALIGN=left VALIGN=top>Starts playing the current target sound at a specified time.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alSndpSetFXMix</TD><TD ALIGN=left VALIGN=top>Sets the wet/dry mix of the current target sound.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alSndpSetPan</TD><TD ALIGN=left VALIGN=top>Sets the pan position of the current target sound.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alSndpSetPitch</TD><TD ALIGN=left VALIGN=top>Sets the pitch of the current target sound.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alSndpSetPriority</TD><TD ALIGN=left VALIGN=top>Sets the priority of a sound.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alSndpSetSound</TD><TD ALIGN=left VALIGN=top>Sets the current target sound in a sound player.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alSndpSetVol</TD><TD ALIGN=left VALIGN=top>Sets the volume of the current target sound.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alSndpStop</TD><TD ALIGN=left VALIGN=top>Stops playing the current target sound.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alSynAddPlayer</TD><TD ALIGN=left VALIGN=top>Adds a client player to the synthesizer.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alSynAllocFX</TD><TD ALIGN=left VALIGN=top>Allocates an audio effect processor.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alSynAllocVoice</TD><TD ALIGN=left VALIGN=top>Allocates a synthesizer voice.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alSynFreeVoice</TD><TD ALIGN=left VALIGN=top>Deallocates a synthesizer voice.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alSynGetFXRef</TD><TD ALIGN=left VALIGN=top>Gets the address of an effect.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alSynGetPriority</TD><TD ALIGN=left VALIGN=top>Requests the priority of a voice.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alSynHeapSize</TD><TD ALIGN=left VALIGN=top>Get the heap size of the synthesizer</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alSynNew</TD><TD ALIGN=left VALIGN=top>Allocates the specified synthesizer driver.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alSynRemovePlayer</TD><TD ALIGN=left VALIGN=top>Removes a player from the synthesizer driver.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alSynSetFXMix</TD><TD ALIGN=left VALIGN=top>Sets the wet/dry effect mix for a voice.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alSynSetFXParam</TD><TD ALIGN=left VALIGN=top>Sets an effect parameter to the specified value.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alSynSetPan</TD><TD ALIGN=left VALIGN=top> Sets the stereo pan position of the specified voice.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alSynSetPitch</TD><TD ALIGN=left VALIGN=top>Sets the pitch of the specified voice.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alSynSetPriority</TD><TD ALIGN=left VALIGN=top>Sets the priority of the specified voice.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alSynSetVol</TD><TD ALIGN=left VALIGN=top>Sets the target volume of the specified voice.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alSynStartVoice</TD><TD ALIGN=left VALIGN=top>Starts synthesizing audio samples with the specified voice.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alSynStartVoiceParam</TD><TD ALIGN=left VALIGN=top>Starts synthesizing audio samples with the specified voice using the specified parameters.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>alSynStopVoice</TD><TD ALIGN=left VALIGN=top>Stops generating audio samples with the specified voice.</TD></TR>
+</TABLE>
+<BR>
+<BR>
+<B>64DD Leo Functions</B>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=4>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>LeoByteToLBA</TD><TD ALIGN=left VALIGN=top>Converts a byte size to an LBA number.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>LeoLBAToByte</TD><TD ALIGN=left VALIGN=top>Converts an LBA number to a byte size.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>LeoClearQueue</TD><TD ALIGN=left VALIGN=top>Clears the Leo Manager command queue.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>LeoCJCreateLeoManager</TD><TD ALIGN=left VALIGN=top>Start (Game Pak boot, Japanese version).</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>LeoCACreateLeoManager</TD><TD ALIGN=left VALIGN=top>Start (Game Pak boot, English version).</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>LeoCreateLeoManager</TD><TD ALIGN=left VALIGN=top> Start (disk boot).</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>LeoGetKAdr</TD><TD ALIGN=left VALIGN=top>Gets the kanji storage offset address from the Shift JIS code sjis.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>LeoGetAAdr</TD><TD ALIGN=left VALIGN=top>Gets the ASCII character storage offset address from the character code.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>LeoGetAAdr2</TD><TD ALIGN=left VALIGN=top>Gets the ASCII character storage offset address from the character information data code.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>LeoInquiry</TD><TD ALIGN=left VALIGN=top>Checks the version number of the hardware and the software.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>LeoModeSelectAsync</TD><TD ALIGN=left VALIGN=top> Changes the time for switching between 64DD modes.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>LeoReadCapacity</TD><TD ALIGN=left VALIGN=top>Calculates the usable area of the disk.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>LeoReadDiskID</TD><TD ALIGN=left VALIGN=top>Gets the disk ID.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>LeoReadRTC</TD><TD ALIGN=left VALIGN=top>Reads the time of the built-in real-time clock.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>LeoSetRTC</TD><TD ALIGN=left VALIGN=top>Sets the time of the built-in real-time clock.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>LeoReadWrite</TD><TD ALIGN=left VALIGN=top>Reads from and writes to 64DD.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>LeoReset</TD><TD ALIGN=left VALIGN=top>Stops any further execution of commands sent to Leo Manager and clears the command queue.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>LeoResetClear</TD><TD ALIGN=left VALIGN=top>Releases 64DD from the Reset state.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>LeoRezero</TD><TD ALIGN=left VALIGN=top>Recalibrates the 64DD.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>LeoSeek</TD><TD ALIGN=left VALIGN=top>Executes the command to seek on 64DD.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>LeoSpdlMotor</TD><TD ALIGN=left VALIGN=top>Controls the 64DD motor and heads.</TD></TR>
+<TR><TD NOWRAP ALIGN=left VALIGN=top>LeoTestUnitReady</TD><TD ALIGN=left VALIGN=top>Checks the 64DD status.</TD></TR>
+</TABLE>
+
+</BODY>
+</HTML>

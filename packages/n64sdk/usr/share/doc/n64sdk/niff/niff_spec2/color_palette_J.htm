@@ -1,0 +1,249 @@
+<html>
+<body bgcolor="ffffff">
+<title>
+ColorPaletteNode
+</title>
+
+<h1>
+<font color="ff0000">
+<i>
+Nintendo Confidential
+</i>
+</font>
+</h1>
+<hr size="3">
+
+
+<h2>
+14. ColorPaletteList
+
+</h2>
+<hr size="3">
+<h3>
+(1) ColorPaletteList
+</h3>
+<blockquote>
+
+
+
+<table border width="600">
+
+<tr>
+<td nowrap>
+u32 color_palette_list_tag
+</td>
+<td>
+ColorPaletteListを示すタグを記述します。下記のタグを設定してください。
+<pre>
+<b>
+TAG_COLOR_PALETTE_LIST  0x00210000
+</b>
+</pre>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 color_palette_list_header_size
+</td>
+<td>
+ColorPaletteListのバイト数を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 color_palette_list_size
+</td>
+<td>
+ColorPaletteListのバイト数を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 color_palette_num
+</td>
+<td>
+ColorPalette数を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 color_palette_num_byte
+</td>
+<td>
+ColorPaletteのバイト数を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+ColorPalette
+</td>
+<td>
+ColorPaletteエリアです。
+</td>
+</tr>
+
+
+</table>
+
+
+<p>
+<a href="./color_palette_C.htm">
+Go to the data chunk
+</a>
+<p>
+<a href="./index.htm">
+Go back to the index
+</a>
+
+
+</blockquote>
+
+
+<h3>
+(2) ColorPalette
+</h3>
+
+<blockquote>
+
+<table border width="600">
+
+<tr>
+<td nowrap>
+u32 color_palette_tag
+</td>
+<td>
+カラーパレットを示すタグを記述します。下記のタグを指定してください。
+<pre>
+<b>
+TAG_COLOR_PALETTE       0x00210100
+</b>
+</pre>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 this_color_palette_index
+</td>
+<td>
+このColorPaletteのインデックス番号を記述します。
+</td>
+</tr>
+
+<!..
+-- DELETE START --
+1998/09/30
+
+<tr
+<td nowrap
+u32 color_palette_header_size
+</td
+<td
+ColorPaletteHeaderのバイト数を記述します。
+</td
+</tr
+
+-- DELETE END --
+..>
+
+<tr>
+<td nowrap>
+u32 color_palette_size
+</td>
+<td>
+ColorPaletteのバイト数を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 color_palette_name_index
+</td>
+<td>
+ColorPalette名をNameListのインデックス番号で指定します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 color_num
+</td>
+<td>
+ColorPaletteのカラー数を記述します。下記のフラグが定義されています。
+<pre>
+<b>
+NIFF2_PALETTE_COLOR_16&#9;&#9;0x00000010
+NIFF2_PALETTE_COLOR_256&#9;&#9;0x00000100
+</b>
+</pre>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 color_type
+</td>
+<td>
+パレット内のカラーはそれぞれ16bitですが、それをIA16あるいはRGBA16のどちらかに指定できます。IAはIntensity Alphaデータで、輝度8bit、アルファ8bitで使用されます。RGBAは赤5bit、緑5bit、青5bit、アルファ1bitで使用されます。下記のフラグが定義されています。
+<pre>
+<b>
+NIFF2_PALETTE_RGBA16&#9;&#9;0x00000000
+NIFF2_PALETTE_IA16&#9;&#9;0x00000001
+</b>
+</pre>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 reserved
+</td>
+<td>
+デフォルトで0x0を記述してください。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 color_array
+</td>
+<td>
+実際のパレット内のデータです。<p>
+パレット番号0から順に実際のカラー値を格納していきます。<p>
+カラー値はそれぞれ16bit値なので、それぞれのcolor_arrayに2個ずつビッグエンディアンで格納します。<p>
+color_num = NIFF2_PALETTE_COLOR_NUM_16の場合、パレット内のカラーの総数は16個になるので、color_arrayは0～7までの8個のデータです。つまり、color_array_num = 8です。<p>
+color_num = NIFF2_PALETTE_COLOR_NUM_256の場合、パレット内のカラーの総数は256個になるので、color_arrayは0～127までの128個のデータです。つまり、color_array_num = 128です。
+
+</td>
+</tr>
+
+
+
+</table>
+
+
+<p>
+<a href="./color_palette_C.htm">
+Go to the data chunk
+</a>
+<p>
+<a href="./index.htm">
+Go back to the index
+</a>
+
+
+</blockquote>
+
+<hr>
+<i>
+Copyright 1998,1999 NINTENDO Co.,Ltd. All rights reserved.<br>
+Copyright 1998,1999 MONEGI CORPORATION All rights reserved.
+</i>
+
+</body>
+</html>

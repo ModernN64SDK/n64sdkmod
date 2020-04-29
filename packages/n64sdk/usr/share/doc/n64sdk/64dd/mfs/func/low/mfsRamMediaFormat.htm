@@ -1,0 +1,71 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>mfsRamMediaFormat</title>
+</head>
+
+<body>
+<font face="arial" size="-1">
+<b><font size="3">mfsRamMediaFormat</b></font>
+
+<hr>
+
+<strong>Syntax</strong>
+<font face="courier" size="2">
+<pre>s32 mfsRamMediaFormat(s32 mode)</pre></font>
+
+<P>
+<b>Arguments</b>
+<dl><dd>mode		&nbsp; Format mode</dl></dd>
+
+<P>
+<b>Return value</b>
+<dl><dd>Error</dl></dd>
+
+<P>
+<b>Function</b>
+<dl><dd>Formats medium</dl></dd>
+
+<P>
+<b>Description</b>
+<P>This function formats the RAM area of the medium to MFS format.
+The RAM area can be formatted only on a medium for which the disk ID's RAM use is 1.
+The following values can be specified for mode.
+
+<P>
+<table border="0" cellpadding="3" cellspacing="3">
+<tr><td valign="top"><font face="arial" size="-1">MFS_FORMAT_NORMAL</td>
+<td><font face="arial" size="-1">0</td>
+<td><font face="arial" size="-1">Normal format</td>
+</tr>
+<tr><td valign="top"><font face="arial" size="-1">MFS_FORMAT_FORCE</td>
+<td><font face="arial" size="-1">1</td>
+<td><font face="arial" size="-1">Forced format</td>
+</tr></table>
+
+<P>
+When MFS_FORMAT_NORMAL is specified, a check is performed to determine whether or not the disk is an MFS-format disk.  If it is an MFS-format disk, the volume attribute is checked.  
+If the volume attribute indicates that the disk is protected, the disk cannot be formatted.  
+When MFS_FORMAT_FORCE is specified, the disk is formatted without checking whether or not it is an MFS-format disk or checking its attribute.
+
+<P>
+<b>Main errors</b>
+<P>
+<table border="0" cellpadding="3" cellspacing="3">
+<tr><td valign="top"><font face="arial" size="-1">MFS_ERR_NO</td>
+<td><font face="arial" size="-1">Normal termination</td></tr>
+<tr><td valign="top"><font face="arial" size="-1">MFS_ERR_NOTMFSDISK</td>
+<td><font face="arial" size="-1">Not an MFS-format disk
+<br>The disk ID's disk use is not 1, or the header is different.</td></tr>
+<tr><td valign="top"><font face="arial" size="-1">MFS_ERR_VERSION</td>
+<td><font face="arial" size="-1">Different version MFS-format disk
+<br>The version is an unsupported version.</td></tr>	<tr><td valign="top"><font face="arial" size="-1">MFS_ERR_PROTECT</td>
+<td><font face="arial" size="-1">Write protected disk
+<br>The volume attribute is write protected.  No error occurs in the case of MFS_FORMAT_FORCE.</td></tr>	</table>		
+		
+                       
+		
+                           
+		
+</body>
+</html>

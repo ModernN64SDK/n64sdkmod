@@ -1,0 +1,65 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.>
+<title>osPfsReSizeFile</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<h1>osPfsReSizeFile</h1>
+
+<h3>Function</h3>
+
+<p>osPfsReSizeFile</p>
+
+<p><i>Changes the capacity reserved for game notes</i></p>
+
+<p>This function was removed from the N64 operating system OS2.0I or later.</p>
+
+<h3>Syntax</h3>
+<p>
+<blockquote>
+    <pre>#include &lt;ultra64.h&gt;
+s32 osPfsReSizeFile(OSPfs *pfs, u16 company_code, u32 game_code, 
+                        u8 *game_name, u8 *ext_name, int length);</pre></blockquote></p>
+
+<h3>Description</h3>
+
+<p>osPfsReSizeFile increases and decreases the size of existing game notes. However, since attempting to change the number of pages during a game may confuse the game user, use of this function should be minimized. </p>
+
+<p>Information specified for game notes is the company code (company_code), game code (game_code), game name (game_name), extension (ext_name), and the new note size (length). Although the size is expressed in bytes, it must actually be allocated as a number of pages, so it should be specified as a multiple of 256. </p>
+
+<p>When game note size is decreased, the area that is removed can no longer be read. When the size is increased, the area that is added is set to 0x00. </p>
+
+<p>If the function is successful, 0 is returned; otherwise, the following error codes are returned. </p>
+<p>
+<dl>
+    <dt><strong>PFS_ERR_NOPACK</strong></dt>
+    <dd>Either the Controller Pak is not inserted into the specified Controller or the Controller is not properly connected. To determine which is the case, use <a href="osContStartQuery.htm">osContStartQuery</a> or <a href="osContGetQuery.htm">osContGetQuery</a>. <br>
+        <br>
+        </dd>
+    <dt><strong>PFS_ERR_NEW_PACK</strong></dt>
+    <dd>A different Controller Pak has been inserted. To use the inserted Controller Pak, initialize it by calling <a href="osPfsInitPak.htm">osPfsInitPak</a>.<br>
+        <br>
+        </dd>
+    <dt><strong>PFS_ERR_INCONSISTENT</strong></dt>
+    <dd>There is a problem in the file system's management area. Usually this error does not occur because <a href="osPfsChecker.htm">osPfsChecker</a> is called internally when you initialize the file system by calling <a href="osPfsInitPak.htm">osPfsInitPak</a>. If this error is returned, either the Controller Pak is not connected properly, or the Controller Pak itself is damaged. <br>
+        <br>
+        </dd>
+    <dt><strong>PFS_ERR_CONTRFAIL</strong></dt>
+    <dd>Data transfer to or from the Controller has failed. If a transfer error occurs, up to three tries will be done internally. Therefore, it is rather rare to see this error. If this error has returned, it is possible that either the Controller is not connected properly, or the Controller Pak or Controller Socket is damaged. <br>
+        <br>
+        </dd>
+    <dt><strong>PFS_ERR_INVALID</strong></dt>
+    <dd>If this error is returned, an incorrect argument was specified when this function was called, the specified game note does not exist, or the Pfs function has been called without being initialized using <a href="osPfsInitPak.htm">osPfsInitPak</a>. This error should rarely occur.<br>
+        <br>
+        </dd>
+</dl></p>
+
+<h3>See Also</h3>
+
+<p><a href="osContInit.htm">osContInit</a>, <a href="osContStartQuery.htm">osContStartQuery</a>, <a href="osContGetQuery.htm">osContGetQuery</a>, <a href="osPfsAllocateFile.htm">osPfsAllocateFile</a>, <a href="osPfsChecker.htm">osPfsChecker</a>, <a href="osPfsDeleteFile.htm">osPfsDeleteFile</a>, <a href="osPfsFileState.htm">osPfsFileState</a>, <a href="osPfsFindFile.htm">osPfsFindFile</a>, <a href="osPfsFreeBlocks.htm">osPfsFreeBlocks</a>, <a href="osPfsInitPak.htm">osPfsInitPak</a>, <a href="osPfsIsPlug.htm">osPfsIsPlug</a>, and <a href="osPfsReadWriteFile.htm">osPfsReadWriteFile</a></p>
+</body>
+</html>

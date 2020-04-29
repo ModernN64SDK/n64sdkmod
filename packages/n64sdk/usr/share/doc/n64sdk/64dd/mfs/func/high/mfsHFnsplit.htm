@@ -1,0 +1,97 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>mfsHFnsplit</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font face="arial" size="-1">
+<b><font size="3">mfsHFnsplit</b></font>
+
+<hr>
+
+<p><strong>Syntax</strong> 
+<font face="courier" size="2">
+<pre>s32 mfsHFnsplit(const u8* path, u8* drive, u8* dir, u8* name, u8* type)</pre></font>
+
+<p><strong>Arguments</strong></p>
+<dl>
+<dd>*path &nbsp; Path name
+<dd>*drive &nbsp; Drive name
+<dd>*dir  &nbsp; Directory name
+<dd>*name  &nbsp; File name
+<dd>*type  &nbsp; File extension</dl></dd>
+
+<p><strong>Return value</strong>
+<dl>
+<dd>Flag indicating component</dl></dd>
+
+<p><strong>Function</strong> 
+<dl>
+<dd>Splits pathname into components</dl></dd>
+
+<p><strong>Description</strong> 
+<P>This function splits the pathname specified by path into four components (drive name, directory name, file name, and extension) and stores them in the buffers specified by drive, dir, name, and type, respectively.  If NULL is specified for a buffer, the corresponding component is only split from the pathname and is not stored.</p>
+
+<p>The maximum sizes of these character strings are defined as follows. These values includes the terminating NULL space.</p>
+
+<P>
+<table border="0" cellpadding="3" cellspacing="3">
+<tr><td><font face="arial" size="-1">MFS_MAXPATH </td>
+<td><font face="arial" size="-1">128	</td>
+<td><font face="arial" size="-1">Path name</td></tr>
+
+<tr><td><font face="arial" size="-1">MFS_MAXDRIVE  </td>
+<td><font face="arial" size="-1">3</td>
+<td><font face="arial" size="-1">Drive name
+</td></tr>
+
+<tr><td><font face="arial" size="-1">MFS_MAXDIR  </td>
+<td><font face="arial" size="-1">100</td>
+<td><font face="arial" size="-1">Directory name
+</td></tr>
+
+<tr><td><font face="arial" size="-1">MFS_MAXFILE  </td>
+<td><font face="arial" size="-1">21</td>
+<td><font face="arial" size="-1">File name
+</td></tr>
+
+<tr><td><font face="arial" size="-1">MFS_MAXTYPE   </td>
+<td><font face="arial" size="-1">7</td>
+<td><font face="arial" size="-1">Extension
+</td></tr></table>
+
+<p>mfsHFnsplit assumes that there is a sufficiently large amount of space to be able to store each non-NULL component. mfsHFnsplit uses the following rules to split path.</p>
+
+<p>* drive contains a colon (such as A: or B:)
+<P>
+* dir contains the directory separator '/' at the beginning and end (such as /nintendo/64/)
+<P>
+* type contains a period before the extension (such as .text or .html)</p>
+
+<p>A flag indicating whether or not a component is contained in path is returned as the return value.  
+The flag has a bit configuration in which the corresponding bits are as follows:</p>
+
+<P>
+<table border="0" cellpadding="3" cellspacing="3">
+<tr><td><font face="arial" size="-1">MFS_FNSPLIT_TYPE	</td>
+<td><font face="arial" size="-1">0x02</td>
+</tr>
+
+<tr><td><font face="arial" size="-1">MFS_FNSPLIT_FILENAME	</td>
+<td><font face="arial" size="-1">0x04</td>
+</tr>
+
+<tr><td><font face="arial" size="-1">MFS_FNSPLIT_DIRECTORY	</td>
+<td><font face="arial" size="-1">0x08</td>
+</tr>
+
+<tr><td><font face="arial" size="-1">MFS_FNSPLIT_DRIVE	</td>
+<td><font face="arial" size="-1">0x10</td>
+</tr></table>
+
+<p>mfsHFsplit performs the opposite operation to the operation performed by mfsHFnmerge.</p>
+
+<hr>
+</body>
+</html>

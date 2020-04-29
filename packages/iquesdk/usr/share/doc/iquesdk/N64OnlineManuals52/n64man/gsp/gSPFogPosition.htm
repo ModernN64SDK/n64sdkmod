@@ -1,0 +1,74 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.>
+<TITLE>gSPFogPosition</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>gSPFogPosition [Macro]</H1>
+
+<p><b>Function</b></p>
+<P>
+<i>Specifies fog thickness</i>
+</P>
+<p><b>Syntax</b></p>
+<p>
+<PRE><CODE>#include &lt;ultra64.h&gt;        /* <A href="../../header/gbi.htm">gbi.h</A> */
+gSPFogPosition(Gfx *gdl, s32 min, s32 max)
+gsSPFogPosition(         s32 min, s32 max)</CODE></PRE></p>
+
+<p><b>Arguments</b></p>
+<p>
+<DL>
+  <DT><B>gdl</B>
+  <DD>the display list pointer. 
+  <DT><B>min</B>
+  <DD>the place where fog starts (0~1000 (near plane ~ far plane)). 
+  <DT><B>max</B>
+  <DD>the place where fog saturates (0~1000 (near plane ~ far plane)). 
+</DL></p>
+<p><b>Description</b></p>
+<P>
+specifies the location where the fog effect begins and the location where the effect saturates. Fog changes the color of objects based on their Z positions. Generally, objects are blended with the "fog color" (see <A href="../gdp/gDPSetFogColor.htm">gDPSetFogColor</A>) as they become further away from the viewpoint. The farther the object is from the viewpoint, the closer its color gets to the fog color. 
+</P>
+<P>
+The fog effect is mainly used so objects don't suddenly "pop out" of view when they reach the far clipping plane and "pop into" view when they enter the clipping range. To use this effect, set <B>max</B> to 1000. As the object gets closer to the far plane it fades out with the fog color, becoming totally saturated with fog at the far plane. 
+</P>
+<P>
+<B>min</B> sets the distance at which the object begins to fade into the fog. This can be set on the near clipping plane (<B>min</B> = 0) or between the near and far planes (0 &lt; <B>min</B> &lt; 1000). Generally, the <B>min</B> value is set smaller than the <B>max</B> value (but this is reversed when transparent fog is being used). </P>
+
+<p><b>Note</b></p>
+
+<P> When fog is used in a perspective-transformed space, it has greater effect than one would expect. The <B>min</B> value may turn out to be far larger than imagined. Also, the location of the near plane has a big influence on the fog effect. One currently-known restriction is that the fog effect does not work well when the value of (starting point) is greater than the value of (ending point - 4). For example, when max=1000 and min=998. 
+</P>
+<p><b>Example</b></p>
+<P>
+Turn fog ON:
+</P>
+<PRE>
+<CODE>// Set the RDP cycle type.
+gDPSetCycleType(gdl++, G_CYC_2CYCLE);
+// Set the RDP fog color.
+gDPSetFogColor(gdl++, fog_red, fog_green, fog_blue, 0xff);
+// Set the blender (BL) rendering mode.
+gDPSetRenderMode(gdl++, G_RM_FOG_SHADE_A, G_RM_AA_ZB_OPA_SURF2);
+// Specify the fog thickness.
+<B>gSPFogPosition</B>(gdl++, 500, 1000);
+// Set the geometry mode (fog creation ON).
+gSPSetGeometryMode(gdl++, G_FOG);
+</CODE>
+</PRE>
+<p><b>See Also</b></p>
+<P>
+<A href="../gdp/gDPSetCycleType.htm">gDPSetCycleType</A>, <A href="../gdp/gDPSetFogColor.htm">gDPSetFogColor</A>, and 
+<A href="../gdp/gDPSetRenderMode.htm">gDPSetRenderMode</A>
+</P>
+<p><b>Revision History</b></p>
+<P>
+02/01/99  Entirely revised.
+</P>
+</BODY>
+</HTML>

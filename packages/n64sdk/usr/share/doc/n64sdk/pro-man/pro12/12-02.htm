@@ -1,0 +1,81 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 12 - RDP Programming</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. -->
+</head>
+
+<h1>12.2 RDP Global State </h1>
+
+<p>Several states are global to the RDP, usually to specify pipeline configuration and synchronization.</p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="01"><h2>12.2.1 Cycle Type </h2></a>
+
+<p>To configure the pipeline for <a href="../../keywords/index/data/graphics.htm#rendering" target="keywords">rendering</a>, choose one of the cycle types that offers the functionality required at peak performance.</p>
+
+<table border=1 align="center">
+  <caption><a name="t12-05"><strong>Table  12-5 <a href="../../n64man/gdp/gDPSetCycleType.htm">gsDPSetCycleType</a>(type)</strong></a></caption>
+  <tr><th>Parameter</th><th>Values</th></tr>
+  <tr><td align="center">type</td><td>G_CYC_1CYCLE<br>
+      G_CYC_2CYCLE<br>
+      G_CYC_COPY<br>
+      G_CYC_FILL<br></td></tr>
+</table>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="02"><h2>12.2.2 Synchronization </h2></a>
+
+<p>You might ask "how does the primitive rendering pipeline synchronize with all of the different <a href="../../keywords/index/data/graphics.htm#attribute" target="keywords">attribute</a> states that the programmer can set?"   Imagine that the last few pixels are being processed in the RDP pipeline when it receives a new attribute command, and this command affects the pixel currently being processed.  You would not want the last few pixels of a primitive to have the attributes of a primitive that follows.  You really want to have the attribute state only to modify the pixels of the primitive following the attribute state change.  This synchronization is not implicit within the pipeline; the application must explicitly insert proper synchronization between attribute state changes and primitives. </p>
+
+<table border=1 align="center">
+  <caption><a name="t12-06"><strong>Table  12-6 <a href="../../n64man/gdp/gDPPipeSync.htm">gsDPPipeSync()</a></strong></a></caption>
+  <tr><th>Parameter</th><th>Values</th></tr>
+  <tr><td align="center">none</td><td>none</td></tr>
+</table>
+
+<p>This command synchronizes the attribute update with respect to primitive rendering. It ensures that the last pixels of a primitive are rendered prior to the attribute taking effect. Insert this in between an RDP primitive followed by an RDP attribute: </p>
+
+<blockquote><pre>
+<a href="../../n64man/gdp/gDPSetCycleType.htm">gDPSetCycleType</a>(glistp++,G_CYC_FILL);
+<a href="../../n64man/gdp/gDPFillRectangle.htm">gDPFillRectangle</a>(glistp++,0,0,127,127);
+<a href="../../n64man/gdp/gDPPipeSync.htm">gDPPipeSync</a>(glistp++);
+<a href="../../n64man/gdp/gDPSetCycleType.htm">gDPSetCycleType</a>(glistp++,G_CYC_1CYCLE);
+</pre></blockquote>
+
+<p><strong>Note:</strong>  After a primitive (i.e.,. <a href="../../n64man/gsp/gSP1Triangle.htm">gSP1Triangle</a>, <a href="../../n64man/gdp/gDPFillRectangle.htm">gDPFillRectangle</a>, <a href="../../n64man/gsp/gSPTextureRectangle.htm">gSPTextureRectangle</a>) and before an RDP attribute (i.e.,. gDPSet*), you need to insert a <a href="../../n64man/gdp/gDPPipeSync.htm">gDPPipeSync</a>. </p>
+
+<p>After processing all of the RDP display list, the host processor must be interrupted and notified.</p>
+
+<table border=1 align="center">
+  <caption><a name="t12-07"><strong>Table  12-7 <a href="../../n64man/gdp/gDPFullSync.htm">gsDPFullSync()</a></strong></a></caption>
+  <tr><th>Parameter</th><th>Values</th></tr>
+  <tr><td align="center">none</td><td>none</td></tr>
+</table>
+
+<p><a href="../../n64man/gdp/gDPFullSync.htm">gDPFullSync()</a> also shuts down the RDP until given a new DL to eliminate excessive power consumption. </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="03"><h2>12.2.3 Span Buffer Coherency</h2></a>
+
+<p>For RMW (Read/Modify/Write) cycles, the RDP is smart enough to pre-fetch a row of pixels as soon as the X, Y coordinates of the <a href="../../keywords/index/data/graphics.htm#span" target="keywords">span</a> are determined.  The RDP pre-loads the framebuffer content of this span into an RDP on-chip <a href="../../keywords/index/data/graphics.htm#span buffer" target="keywords">span buffer</a>.  The RDP then waits for the pipeline to process the parameters for the outgoing pixels.  When the outgoing pixels are computed, they are "Combined" with the pre-loaded framebuffer pixels before writing back to the framebuffer. </p>
+
+<p>An example of this operation is <a href="../../keywords/index/data/graphics.htm#Z buffer" target="keywords">Z buffer</a> and transparency blending. (This was not shown in the logical pipeline description, to help simplify the explanation.) </p>
+
+<p>The RDP has enough on-chip RAM to hold several span buffers.  Therefore, if two spans in succession happened to overlap the same screen area, the RDP would pre-fetch the first span into a span buffer while the pipeline started processing this span.  Then it would pre-fetch the next span into another span buffer.  This is where the problems occur: the pixel data for the next span is not yet computed. The RDP does have span buffer coherency, at the cost of some performance.   If
+errors are objectionable in your animation, use <a href="../../n64man/gdp/gDPPipelineMode.htm">gsDPPipelineMode</a>(G_PM_1PRIMITIVE) to cause all primitives to add between 30 to 40 null cycles after the last span of a primitive is rendered.</p>
+
+<table border=1 align="center">
+  <caption><a name="t12-08"><strong>Table  12-8 <a href="../../n64man/gdp/gDPPipelineMode.htm">gsDPPipelineMode</a>(mode)</strong></a></caption>
+  <tr><th>Parameter</th><th>Values</th></tr>
+  <tr><td align="center">mode</td><td>G_PM_1PRIMITIVE<br>
+                G_PM_NPRIMITIVE</td></tr>
+</table>
+
+<p>These dead cycles can be expensive in terms of <a href="../../keywords/index/data/graphics.htm#fill rate" target="keywords">fill rate</a> so it is recommended not to use the 1PRIMITIVE mode unless absolutely necessary.
+</p>
+
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+</body> </html>

@@ -1,0 +1,75 @@
+<HTML>
+<HEAD>
+<TITLE>NuSystem Tutorial</TITLE>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<!-- Editor's Notes: 9/8/1999 Ron Daring -->
+</HEAD>
+
+<BODY bgcolor="#FFFFFF">
+
+
+<P>
+<FONT size="3"><b>7 Performance</b></FONT>
+
+<p>In this section we add a sequence playback and performance meter to nu2, and indicate how to make efficient use of a triple frame buffer.</p>
+
+<p>We also explain task division. </p>
+
+<p>The source can be found in the nu5 directory below the sample directory.</p>
+
+<p align="right"><a href="index.htm"><img
+src="../../gif/index.gif" border="0" width="65" height="17"></a></p>
+
+<hr>
+
+<b><a name="1">7.1 Triple Frame Buffer</a></b>
+
+<p>Upon execution, the stage number, frame buffer mode (double or triple), and frame/second rate is displayed in the upper left corner of the screen.</p>
+
+<p><!--  -->It displays the performance meter vertically on the screen.<!--  --></p>
+
+<p><!--  -->From top to botton, the performance meter shows the audio task processing time, the RSP graphics task processing time, and the RDP processing time.<!--  --></p>
+
+<p>The performance meter can be displayed with the following function.</p>
+
+<blockquote>
+<font face="courier" size="2">
+    <pre>nuDebTaskPerfBar0(1,200,NU_SC_NOSWAPBUFFER);</pre>
+</font>
+</blockquote>
+
+<p>In the same way, the debug console can use this function internally to set the RDP and to create a display list and activate a graphics task.</p>
+
+<p>(Be careful that the function is only inserted into the libnusys_d.a debug library.)</p>
+
+<p>Only one square shape appears on the screen, but the graphic spans around 1.2 frames because it comprises a stack of 25 overlaid drawings.</p>
+
+<p>If you push the Z trigger here, the mode changes to triple frame buffer mode. </p>
+
+<p>The number of frames processed per second increases a little and,
+at the same time, the timing of task starts changes significantly.</p>
+
+<p><!--  -->Pressing the Z trigger in 3 frame buffer mode provides continuous RCP task processing.<!--  --></p>
+
+<p align="right"><a href="index.htm"><img
+src="../../gif/index.gif" border="0" width="65" height="17"></a></p>
+
+<hr>
+
+<b><a name="2">7.2  Graphic Task Division</a></b>
+
+<p>Pushing the START button swaps to stage 1. </p>
+
+<p>In stage 1, graphic processes are divided into a screen clearing process and a drawing process.
+</p>
+
+<p>Clearing the screen takes a long time in an RDP process. So instead of running the process as a single task, you can clear the screen as a separate task and thereby slightly increase the RSP's free time.</p>
+
+<p><!--  -->If the display list gets long for functions other than clearing the screen, dividing tasks provides efficient RSP usage.<!--  --></p>
+
+<p align="right"><a href="index.htm"><img
+src="../../gif/index.gif" border="0" width="65" height="17"></a></p>
+
+<hr>
+</body>
+</html>

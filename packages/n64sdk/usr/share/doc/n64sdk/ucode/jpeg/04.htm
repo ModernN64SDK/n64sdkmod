@@ -1,0 +1,177 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<title>4</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<FONT FACE="Arial" SIZE="-1">
+
+<h2>4. Tools</h2>
+
+<p>Tools provided by the N64 JPEG library are described below.</p>
+
+<h3><a name="01">4.1 njpgCompress Tool</a></h3>
+
+<p>Use the njpgCompress tool to compress a graphic image (16bitRGBA format) into N64_JPEG format.</p>
+
+<hr>
+
+<h4><font face="Courier New">njpgCompress(1P)</font></h4>
+
+<p><strong>Function Name</strong></p>
+
+<p><font face="Courier New" size="2"><strong>njpgCompress</strong> </font> --> to compress a graphic image (16bitRGBA format) to N64 JPEG format.</p>
+
+<p><strong>Syntax</strong></p>
+
+
+  <pre><font face="Courier New" SIZE="3">njpgCompress [-w width][-h height][-s scale]
+			[-v] inFile outFile</font></pre>
+
+
+<p><strong>Description</strong></p>
+
+<p>The following command line options are available for the njpgCompress tool: 
+
+
+<dl>
+  <dt><font size="2" face="Courier New"><b>-w width</b></font> </dt>
+  <dd>The width of the image (default = 320). It must be a multiple of 16.<br>
+    <br>
+  </dd>
+  <dt><font size="2" face="Courier New"><b>-h height</b></font> </dt>
+  <dd>The height of the image (default = 240). It must be a multiple of 16.<br>
+    <br>
+  </dd>
+  <dt><font size="2" face="Courier New"><b>-s scale</b></font> </dt>
+  <dd>The scale of the quantization table (-2<U>&lt</U>scale<U>&lt</U>2, default = 1). </dd>
+  <dd>If this value is small, the image quality is improved but the compression ratio goes down. Conversely, if this value is large, the image quality falls but the compression ratio goes up.
+  </dd>
+  <dd>If the scale = 0, there is no quantization.<br>
+    <br>
+  </dd>
+  <dt><font size="2" face="Courier New"><b>-v</b></font> </dt>
+  <dd>Switches ON verbose mode. When this option is included, information about the image, such as the compression rate, is shown during the compression process. 
+    <br>
+    <br>
+  </dd>
+  <dt><b><font size="2" face="Courier New">inFile</font></b> </dt>
+  <dd>The name of the graphic image file(16bitRGBA format).  Use the rgb2u64 tool to put your input file into 16bitRGBA format if necessary.<br>
+    <br>
+  </dd>
+  <dt><font size="2" face="Courier New"><b>outFile</b></font> </dt>
+  <dd>The name of the output file.<br>
+    <br>
+  </dd>
+</dl>
+
+<hr>
+
+<h3><a name="02">4.2 njpgMakeSlide Tool</a></h3>
+
+<hr>
+
+<h4><font face="Courier New">njpgMakeSlide(1P)</font></h4>
+
+<p><strong>Function Name</strong></p>
+
+<p><font face="Courier New"><strong>njpgMakeSlide</strong></font> --> compress 1 or more 16bitRGBA format graphic images into N64 JPEG format.</p>
+
+<p><strong>Syntax</strong></p>
+
+<blockquote>
+  <pre><font face="Courier New" SIZE="3">njpgMakeSlide [-w width][-h height][-s scale]
+			[-v] inFile outFile</font></pre>
+</blockquote>
+
+<p><strong>Description</strong></p>
+
+<p>Use the njpgMakeSlide tool to compress one or more 16-bit RGBA-format graphic images into N64 JPEG format and place the result into a single file. This is useful for making a file of all background images or for using images continuously as slides or flip animation pictures. 
+</p>
+
+<p>Command options are as follows.
+
+<dl>
+  <dt><font size="2" face="Courier New"><b>-w width</b></font></dt>
+  <dd>The width of the image (default = 320). It must be a multiple of 16.<br>
+    <br>
+  </dd>
+  <dt><font size="2" face="Courier New"><b>-h height</b></font></dt>
+  <dd>The height of the image (default = 240). It must be a multiple of 16.<br>
+    <br>
+  </dd>
+  <dt><font size="2" face="Courier New"><b>-s scale</b></font></dt>
+  <dd>The scale of the quantization table (-2<U>&lt</U>scale<U>&lt</U>2, default = 1). </dd>
+  <dd>If this value is small, the image quality is improved but the compression ratio goes down. Conversely, if this value is large, the image quality falls but the compression ratio goes up.</dd>
+  <dd>If the scale is scale = 0, there is no quantization.<br>
+    <br>
+  </dd>
+  <dt><font size="2" face="Courier New"><b>-v</b></font></dt>
+  <dd>Switches ON the verbose mode. When this option is included, information about the image, such as the compression rate, is shown during the compression process.<br>
+    <br>
+  </dd>
+  <dt><font size="2" face="Courier New"><b>inFile</b></font></dt>
+  <dd>The name of a text file that lists the names of all the graphic image(16bitRGBA format) files.
+Use rgb2u64 tool to create 16bitRGBA format images.<br>
+    <br>
+  </dd>
+  <dt><font size="2" face="Courier New"><b>outFile</b></font></dt>
+  <dd>The name of output file.<br>
+    <br>
+  </dd>
+</dl>
+
+<hr>
+
+<h3><a name="03">4.3 rgb2u64 Tool</a></h3>
+
+<p>
+Each original image file must be in the 16-bit RGBA format before it can be compressed into the N64 JPEG format. You can use this rgb2u64 tool to convert an image from
+RGB format into 16-bit RGBA format. </p>
+
+<hr>
+
+<h4><font face="Courier New">rgb2u64(1P)</font></h4>
+
+<p><strong>Function name</strong></p>
+
+<blockquote>
+  <p>rgb2u64  --> to convert images in RGB format to 16bitRGBA format</p>
+</blockquote>
+
+<p><strong>Syntax</strong></p>
+
+<blockquote>
+  <p><font face="Courier New">rgb2u64 &lt;infile&gt; [x_size y_size] &gt; &lt;outfile&gt;</font></p>
+</blockquote>
+
+<p>&nbsp;</p>
+
+<p><strong>Description</strong></p>
+
+<p>This tool converts images in RGB format to 16-bit RGBA format. This tool is used on an SGI workstation. </p>
+
+<p>Command options are as follows.</p>
+
+<table border="0">
+  <tr>
+    <td width="127"><strong><font face="Courier New" SIZE="-1">infile</font></strong></td>
+    <td width="529"><font face="Arial" SIZE="-1">RGB</font> format input file</td>
+  </tr>
+  <tr>
+    <td width="127"><strong><font face="Courier New" SIZE="-1">outfile</font></strong></td>
+    <td width="529"><font face="Arial" SIZE="-1">16bitRGBA</font> format output file. Note that redirect (&gt;) is used to output data to a file.</td>
+  </tr>
+  <tr>
+    <td width="127"><font face="Courier New" SIZE="-1"><strong>x_size</strong> <strong>y_size</strong></font> 
+    </td>
+    <td width="529">With <font face="Arial" SIZE="-1">X,Y</font> directions of the image specified, that region is cut out and it converts it to <font face="Arial">16bitRGBA</font> format. The original image is cut in the top, bottom, left, and right sides.</FONT>
+    </td>
+  </tr>
+</table>
+
+<hr>
+</body>
+</html>

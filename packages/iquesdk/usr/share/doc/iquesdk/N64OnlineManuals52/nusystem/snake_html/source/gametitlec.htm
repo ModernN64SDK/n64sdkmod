@@ -1,0 +1,224 @@
+<html>
+
+<head>
+<title>gametitle.c</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font face="courier" size="2">
+
+
+<body>
+
+<pre>/*============================================================================
+  NuSYSTEM sample program SNAKE TAIL HACK
+  
+  gametitle.c
+  
+  Copyright (C) 1997, NINTENDO Co,Ltd.
+  ============================================================================*/
+
+#include &lt;assert.h&gt;
+#include &lt;nusys.h&gt;
+#include &lt;nualsgi_n.h&gt;
+
+#include &quot;main.h&quot;
+#include &quot;graphic.h&quot;
+#include &quot;font.h&quot;
+#include &quot;para.h&quot;
+
+/*nusys*/
+extern u32 nuScRetraceCounter;    /* The retrace counter  */
+
+/* gamemain.c */
+extern void InitGame( void );
+
+/* main.c */
+extern void LoadContPak( void );
+extern void ContPakOpenAll( void );
+extern void NoteOpenAll( void );
+extern int ChkPakStat( void );
+extern int ReplayMode;
+extern NUContData ContTriger[];
+volatile extern int stage;
+extern int ContPakError;
+extern NUContPakFile pakFile[4];
+
+/* view.c */
+extern void SetViewMtx( Dynamic* dynamicp );
+
+/* gamepakrwerr.c */
+extern int ReadFlg;
+
+void DrawTitle( void );
+/*--------------------------------------------------------------*/
+/*  Make the display list and activate the graphic task  	*/
+/*  IN:	None							*/
+/*  RET:None							*/
+/*--------------------------------------------------------------*/
+void
+maketitleDL(void)
+{
+    Dynamic* dynamicp;
+
+    /* Specify the dynamic buffer  */
+    dynamicp = &amp;gfx_dynamic[gfx_gtask_no];
+
+    /* Specify the display list buffer */
+    glistp = &amp;gfx_glist[gfx_gtask_no][0];
+
+    /*  The initialization of RSP and RDP  */
+    gfxRCPInit();
+
+    /* Clear the frame and Z-buffer */
+    gfxClearCfb();
+
+    /* Setting the view-matrix */
+    SetViewMtx( dynamicp );
+
+    DrawTitle();
+
+    gDPFullSync(glistp++);
+    gSPEndDisplayList(glistp++);
+
+    assert((glistp - gfx_glist[gfx_gtask_no]) &lt; GFX_GLIST_LEN);
+
+    /* Activate the RSP task and switch display buffers*/
+    nuGfxTaskStart(&amp;gfx_glist[gfx_gtask_no][0],
+		   (s32)(glistp - gfx_glist[gfx_gtask_no]) * sizeof (Gfx),
+		   NU_GFX_UCODE_F3DEX , NU_SC_SWAPBUFFER);
+
+    /* Indicate next graphic task number*/
+    gfx_gtask_no++;
+    gfx_gtask_no %= GFX_GTASK_NUM;
+}
+
+/*----------------------*/
+/*  The title progressing process	*/
+/*  IN:	None		*/
+/*  RET:None		*/
+/*----------------------*/
+void
+updateTitle(void)
+{
+
+#if 0
+    int idx;
+    if(ContTriger[0].trigger &amp; L_TRIG){
+	for(idx = 0; idx &lt; 4; idx++){
+	    nuContPakOpen(&amp;pakFile[idx], idx);
+	    switch(pakFile[idx].error){
+	      case 0:
+		osSyncPrintf(&quot;PACK%d\tOK\n&quot;,idx);
+		break;
+	      case PFS_ERR_NOPACK:
+		osSyncPrintf(&quot;PACK%d\tPFS_ERR_NOPACK\n&quot;,idx);
+		break;
+	      case PFS_ERR_NEW_PACK:
+		osSyncPrintf(&quot;PACK%d\tPFS_ERR_NEW_PACK\n&quot;,idx);
+		break;
+	      case PFS_ERR_CONTRFAIL:
+		osSyncPrintf(&quot;PACK%d\tPFS_ERR_CONTRFAIL\n&quot;,idx);
+		break;
+	      case PFS_ERR_ID_FATAL:
+		osSyncPrintf(&quot;PACK%d\tPFS_ERR_ID_FATAL\n&quot;,idx);
+		break;
+	      case PFS_ERR_DEVICE:
+		osSyncPrintf(&quot;PACK%d\tPFS_ERR_DEVICE\n&quot;,idx);
+		break;
+	      default:
+		break;
+	    }
+	}
+	osSyncPrintf(&quot;\n&quot;);
+    }
+#endif
+    
+    /* A BUTTON */
+    if(ContTriger[0].trigger &amp; A_BUTTON){
+	ContPakOpenAll();
+	if(ChkPakStat() == -1){
+	    NoteOpenAll();
+	    if(ChkPakStat() != -1){
+		/* Remove the call-back function.*/
+		nuGfxFuncRemove();
+		/* To the pack error screen*/
+		stage = 3;
+	    }else{
+		/* Remove the call-back function. */
+		nuGfxFuncRemove();
+		/* Indicate next stage to main*/
+		stage = 1;
+		/*The initialization for this game volume*/
+		InitGame();
+		ReplayMode = 0;
+	    }
+	}else{
+	    /*  Remove the call-back function.*/
+	    nuGfxFuncRemove();
+	    /*  Indicate next stage to main*/
+	    stage = 3;
+	}
+	/* Play effect of OK  */
+	nuAuSndPlayerPlay(EFF_OK);
+	nuAuSndPlayerSetPitch(44100.0/32000);
+    }
+
+    if(ContTriger[0].trigger &amp; B_BUTTON){
+	ContPakOpenAll();
+	if(ChkPakStat() != -1){
+	    /* Remove the call-back function.*/
+	    nuGfxFuncRemove();
+	    /* To the pack error screen */
+	    stage = 3;
+	}else{
+	    NoteOpenAll();
+	    /* The initialization for this game volume */
+	    InitGame();
+	    ReplayMode = 1;
+	    /* Play effect of OK*/
+	    nuAuSndPlayerPlay(EFF_OK);
+	    nuAuSndPlayerSetPitch(44100.0/32000);
+	    /*Load data of the controller pack */
+	    LoadContPak();
+	    if(ChkPakStat() == -1){
+		/* Remove the call-back function.*/
+		nuGfxFuncRemove();
+		/*  Indicate next stage to main */
+		stage = 1;
+	    }else{
+		/* Remove the call-back function.*/
+		nuGfxFuncRemove();
+		ReadFlg = 1;
+		/* Indicate next stage to main*/
+		stage = 4;
+	    }
+	}
+	/* Play effect of OK*/
+	nuAuSndPlayerPlay(EFF_OK);
+	nuAuSndPlayerSetPitch(44100.0/32000);
+    }
+}
+
+/*----------------------*/
+/*   Draw the title screen	*/
+/*  IN:	None		*/
+/*  RET:None		*/
+/*----------------------*/
+void
+DrawTitle( void )
+{
+    sprintf(outstring,&quot;SNAKE TAIL HACK&quot;);
+    Draw8Font(100,70, TEX_COL_WHITE, 0);
+
+    if(0x30 &gt; (nuScRetraceCounter &amp; 0x30)){
+	sprintf(outstring,&quot;PUSH A PADDATA SAVE MODE&quot;);
+	Draw8Font(50,130, TEX_COL_WHITE, 0);
+	
+	sprintf(outstring,&quot;PUSH B REPLAY MODE&quot;);
+	Draw8Font(50,150, TEX_COL_WHITE, 0);
+    }
+}</pre>
+</font>
+</body>
+</html>

@@ -1,0 +1,52 @@
+<HTML>
+<HEAD>
+<TITLE>STEP4 [What is 64DD?] - Chapter 3 Developing for 64DD</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park 7/15/1999 
+reviewed PWC 7/16/99-->
+
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+
+<font style="font-size:12pt"><B>3-6 Booting the Game Pak when Connected to the 64DD</B></FONT><BR>
+<BR>
+<BR>
+<B>3-6-1 Disk Boot</B><BR>
+<BR>
+<BR>
+<B><lI>Initialization Function</li></B><BR>
+Please note that the initialization function for a disk boot is different from that for a Game Pak boot. <BR>
+<BR>
+<B><li>Special Start-up Methods</li></B><BR>
+With a multiple-disk configuration, only the second and subsequent disks can be used for normal game data. Although, it is possible to restart a separate program stored on these disks by bringing up a special function. However, separate settings are required for each program and the programs cannot both be restarted.<BR>
+<BR>
+<B><Li>Disk ID Storage Method</li></B><BR>
+Upon booting the disk, the disk id is automatically stored into RDRAM.  However, if a game consists of multiple disks, the application has to store the disk id.<BR>
+<BR>
+<BR>
+<BR>
+<B>3-6-2 Game Pak Boot</B><BR>
+<BR>
+<BR>
+Basically, with a game pak boot, applications have to do all the jobs done by an IPL on a booting disk.<BR>
+<BR>
+<B><li>Initialization Function</li></B><BR>
+Please note that the initialization function for a disk boot is different from that for a Game Pak boot. <BR>
+<BR>
+<B><li>System reset immediately after initialization </li></B><BR>
+Immediately after the initialization function has been executed, the system enters the reset state. In this state, the execution of any other function will generate an error. To return to the normal state, a function to cancel the reset state must be executed. <BR>
+<BR>
+<B><li>Check the RTC after initialization </li></B><BR>
+When using the Real-time Clock (RTC) from a Game Pak boot, the RTC must be checked after initialization. <BR>
+<BR>
+<B><li>Check the Memory Expansion Pak </li></B><BR>
+Use the program on the ROM cartridge to check whether the Memory Expansion Pak has been inserted. If it has not been inserted, display a message prompting the user to insert the Pak. After that, the 64DD terminates abonormally, except in special cases and cannot start another process. <BR>
+<BR>
+<B><li>Special Start-up Methods</li></B><BR>
+In the case of a configuration with a ROM Game Pak and a disk, the disk can be used only for normal game data. Although, it is possible to restart a separate program stored on the disk by bringing up a special function. However, separate settings are required for each program and the programs cannot both be restarted. <BR>
+<BR>
+<B><li>Disk ID Storage Method</li></B><BR>
+All disk IDs must be stored on the application side.
+<br><br><br> 
+</BODY>
+</HTML>

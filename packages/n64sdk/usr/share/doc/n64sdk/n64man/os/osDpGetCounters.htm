@@ -1,0 +1,40 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.
+  PWC- updated formatting
+  MAP- added links, updated format
+-->
+<title>osDpGetCounters</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>osDpGetCounters</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p><i>Gets internal performance counters from the display processor</i></p>
+
+<h3>Syntax</h3>
+<p>
+<blockquote>
+    <pre>#include &lt;ultra64.h&gt;     /* <A HREF="../../header/ultra64.htm">ultra64.h</A> */
+
+void osDpGetCounters(u32 *array);</pre>
+</blockquote>
+</p>
+<h3>Description</h3>
+
+<p>This routine returns the values of four internal performance counters from the display processor (DP). The <b>array</b> argument must point to a buffer that is large enough to hold four 32-bit values. The first element of <b>array</b> is CLOCK counter. This counter is incremented by the free running RCP clock. For NTSC systems, this counter increments at 60.85 Mhz and each counter tick represents approximately 16.43 nanoseconds. The second element is CMC counter. This counter is incremented once every clock cycle when the RDP has work to do. The RSP places RDP commands in a FIFO for execution. If this FIFO is not empty, the counter is incremented. The third element is PIPE counter. This counter is incremented when the internal RDP pipeline is not stalled while waiting for memory accesses to occur. The last element is TMEM counter. This counter is incremented when the texture memory is being loaded.</p>
+
+<p>The counters can be individually cleared by calling the <a href="osDpSetStatus.htm">osDpSetStatus</a> function and using these status bits that include DPC_CLR_TMEM_CTR, DPC_CLR_PIPE_CTR, DPC_CLR_CMD_CTR, and DPC_CLR_CLOCK_CTR.</p>
+
+<h3>See Also</h3>
+
+<p><a href="osDpSetStatus.htm">osDpSetStatus</a></p>
+<H3>Revision History</H3>
+<P>
+1999/04/30  Changed Format
+</P>
+
+</body>
+</html>

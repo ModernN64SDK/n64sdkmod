@@ -1,0 +1,85 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<html>
+
+	<head>
+              <LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+              <!-- Editor's Notes: JLR made reformating and copy edits.
+                   MAP- added links, updated format -->
+              <title>osGbpakCheckConnector</title>
+	</head>
+
+	<body bgcolor="white">
+		<font style="font-size: 12pt"><b>osGbpakCheckConnector</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+		<p>osGbpakCheckConnector</p>
+		<p><i>Checks Game Boy Game Pak connector</i></p>
+		<h3>Syntax</h3>
+		<pre>#include &lt;ultra64.h&gt;     /* <a href="../../header/ultra64.htm">ultra64.h</a> */
+s32 osGbpakCheckConnector(OSPfs *pfs, u8 *status);</pre>
+		<h3>Description</h3>
+		<p>The <tt>osGbpakCheckConnector</tt> function confirms that the N64 Transfer Pak and the Game Boy Game Pak are firmly connected together. It checks whether each Game Boy Game Pak address line is properly connected.</p>
+		<p>If you call <a href="osGbpakReadWrite.htm">osGbpakReadWrite</a> function without first calling this function, data could be read or written to the wrong address because of a poor connection. Therefore, please be sure to call the <tt>osGbpakCheckConnector</tt> function before calling the <tt>osGbpakReadWrite</tt> function.</p>
+		<p>Before this function is called, the functions <a href="osGbpakInit.htm">osGbpakInit</a> and <a href="osGbpakReadId.htm">osGbpakReadId</a> must always be called. <tt>osGbpakCheckConnector</tt> internally performs a status check with <a href="osGbpakGetStatus.htm">osGbpakGetStatus</a> and turns the power on with <a href="osGbpakPower.htm">osGbpakPower</a>. Thus, these functions do not need to be called.</p>
+		<p><tt>osGbpakCheckConnector</tt> supports only the following Game Boy Game Paks. Note that its operation is not guaranteed with other Game Paks.</p>
+		<ul>
+			<li>No memory controller
+			<li>MBC1
+			<li>MBC2
+			<li>MBC3
+		</ul>
+		<p>The OSpfs structure pfs is used for N64 Transfer Pak control. Before being used, it must initialized by the function <tt>osGbpakInit</tt>. The status of the N64 Transfer Pak is returned as *status. For information on status, see the <tt>osGbpakGetStatus</tt> function.<br>
+		</p>
+		<p>The internal operations performed by the <tt>osGbpakCheckConnector</tt> function are as follows.<br>
+		</p>
+		<ul>
+			<li>Checks the ROM area addresses of the Game Boy Game Pak and performs the following processing for 0x0000, 0x0080, 0x0100, 0x0200, 0x0400, 0x0800, 0x1000, 0x2000, and 0x4000.
+			<ol>
+				<li>Compares data starting at the above addresses with neighboring data in 32-byte units.
+				<li>If the data are identical, compares the next 32 bytes, and if this is also the same, compares the next 32 bytes. Up to 4 comparisons (ie, 128 bytes) are performed. If all data are identical, the address line is considered insecurely connected and an error is returned.<br>
+				If different data are detected even once, it is determined that the data are being read properly and the function advances.
+				<li>Data at each of the above addresses are compared with the data starting at 0x0000 in 32-byte units.
+				<li>As in 2., up to 4 comparisons (128 bytes) are made. If all the data are identical, an error is returned.<br>
+				If different data are detected even once, it is determined that the data are being read properly and the function advances.
+			</ol>
+			<p>
+			<li>If a RAM area exists, the function checks the address of the Game Boy Game Pak RAM area and performs the following processing for 0x2000 and 0xa000.
+			<ol>
+				<li>Compares the data starting at the above addresses in 32-byte units.
+				<li>If the data are identical, compares the next 32 bytes, and if this is also the same, compares the next 32 bytes. Up to 4 comparisons (ie, 128 bytes) are performed. If all the data are the same, the address line is evaluated to be insecurely connected and an error is returned.<br>
+				If different data are detected even once, it is determined that the data are being read properly and the function advances.
+			</ol>
+		</ul>
+		<p>Since <tt>osGbpakCheckConnector</tt> performs the processing above, it does not support all Game Boy Game Paks. It may not operate properly in some Game Boy Game Paks. Examples are as follows.</p>
+		<ul>
+			<li>The Game Pak uses a special memory controller.<br>
+			(<tt>osGbpakCheckConnector</tt> does not swap banks internally)
+			<li>The 128 bytes beginning from 0x0000 and the 128 bytes beginning from 0x0080 by chance contain the same data.
+			<li>The 128 bytes beginning from ROM address 0x2000 contain the data at the start of SRAM.
+			<li>During play, the data at the start of SRAM become the same as those in the 128 bytes starting from address 0x2000.
+		</ul>
+		<p>When using <tt>osGbpakCheckConnector</tt>, be careful to note whether the above conditions occur. If they are unavoidable, <tt>osGbpakCheckConnector</tt> should not be used, and the connector-check function supported by the application should be used instead.</p>
+		<p>Return value is an error code. If the function terminates normally, a value of 0 is returned. If an error occurs, one of the following error codes is returned:<br>
+		</p>
+		<p><b>PFS_ERR_NOPACK</b></p>
+		<blockquote>
+			<p>Nothing is inserted in the specified Controller.</p>
+		</blockquote>
+		<p><b>PFS_ERR_DEVICE</b></p>
+		<blockquote>
+			<p>A device other than the N64 Transfer Pak is inserted in the Controller.</p>
+		</blockquote>
+		<p><b>PFS_ERR_CONTRFAIL</b></p>
+		<blockquote>
+			<p>The Controller may not be connected correctly, or there may be some problem with the N64 Transfer Pak or the Controller connector.<br>
+			If this error is issued, display a message such as the following to the screen: The Game Boy Game Pak connection is abnormal. Please turn off power to the N64 Control Deck and refer to the N64 Transfer Pak User's Manual.</p>
+		</blockquote>
+		<p><b>PFS_ERR_NO_GBCART</b></p>
+		<blockquote>
+			<p>No Game Boy Game Pak is inserted in the N64 Transfer Pak.</p>
+		</blockquote>
+		<h3>See Also</h3>
+		<p><a href="osGbpakInit.htm">osGbpakInit</a>, <a href="osGbpakGetStatus.htm">osGbpakGetStatus</a>, <a href="osGbpakPower.htm">osGbpakPower</a>, <a href="osGbpakReadWrite.htm">osGbpakReadWrite</a>, and <a href="osGbpakReadId.htm">osGbpakReadId</a></p>
+		<h3>Revision History</h3>
+		<p>1999/04/30 Changed Format
+	</body>
+
+</html>

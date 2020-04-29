@@ -1,0 +1,341 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../n64man.css">
+<title>OS2.0J Release Notes</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check-->
+</head>
+
+<h1>OS2.0J Release Notes</h1>
+
+<hr>
+
+<P align="right">
+[<A href="../relnote_i/index.htm">OS2.0I Release Notes</A>]
+</P>
+<HR>
+<H2>Summary:</H2>
+<P>
+The newly released NINTENDO64 OS2.0J (version 2.0J for RCP 2.0) contains all N64 OS patches that were released after 2.0I.
+</P>
+<P>
+Sample programs located under /usr/src/PR/demos were revised.  Sample programs which will be supported hereafter are installed in /usr/src/PR/demos, and sample programs which will no longer be supported are installed in /usr/src/PR/demos_old.  Refer to /usr/src/PR/README.txt for other more detailed structural information.   Refer to /usr/src/PR/demos/README_DEMOS.txt for description of each demo software.  It is recommended that you erase /usr/src/PR altogether or back it up before installation.  By doing so, you can prevent an old directory from being mixed up with a newly installed directory in advance.
+</P>
+<P>
+A description, 'execute "gload"' found in the README in some sample program directories under /usr/src/PR/demos/README_DEMOS.txt and /usr/src/PR/demos/ means an execution method of a program in the Indy + development board development environment.  Those who use the PARTNER-N64 development environment, Monegi Smart Pack development environment, or IS development environment should execute it according to the execution method for that environment. 
+</P>
+<P>
+With OS version 2.0I, the 64DD development environment and n_audio development environment were separate packages.  With OS version 2.0J, however, they are all integrated into ultra.
+</P>
+
+<hr>
+<H2>New functions:</H2>
+<H3>OS</H3>
+<P>
+ os_version.h was revised under /usr/include/PR, and the following version strings were defined.
+</P>
+<P>
+ #define OS_MAJOR_VERSION &quot;2.0J&quot; /* major version */<BR>
+ #define OS_MINOR_VERSION 0 /* patch level */
+</P>
+<H3>TOOL</H3>
+<P>
+The tool called dn was revised under /usr/lib/PR. This tool is used to fix a problem found in the part of a Disk for development. The detailed usage is explained in "NINTENDO64 Developer News 2.0".
+</P>
+
+<hr>
+<H2>New Sample Programs:</H2>
+<p>None</p>
+
+<hr>
+<H2>Modified Sample Programs:</H2>
+<P>
+The major change made this time is the change from the old micro code( Fast3D ) to the latest micro code ( F3DEX2 ).
+</P>
+<P>
+<B>reboot</B>
+</P>
+<P>
+makefat was changed in the sample program of reboot so that the boot segment size of the game that is started can be acquired.  Also, modules for 64DD access used were slightly adjusted.
+</P>
+<P>
+<B>autofill</B>
+</P>
+<P>
+Fast3D.dram was changed to Fast3D.fifo.  autofill was changed so that argument handling is performed after the PI manager is registered.  dram_stack.c was added, and the alignment specification for the RCP buffer was added.
+</P>
+<P>
+<B>blockmonkey</B>
+</P>
+<P>
+Fast3D.dram was deleted. Fast3D.xbus and Fast3D.fifo were changed to F3DEX2.xbus and F3DEX2.fifo.   blockmonkey was changed so that argument handling is performed after the PI manager is registered. 
+</P>
+<P>
+<B>bumpmap</B>
+</P>
+<P>
+Fast3D.dram was deleted. Fast3D.xbus and Fast3D.fifo were changed to  F3DEX2.xbus and F3DEX2.fifo.  dram_stack.c was added, and the alignment specification for the RCP buffer was added.
+</P>
+<P>
+<B>chrome</B>
+</P>
+<P>
+Fast3D.dram was deleted.  Fast3D.xbus and Fast3D.fifo were changed to F3DEX2.xbus and F3DEX2.fifo.  dram_stack.c was added, and the alignment specification for the RCP buffer was added.  chrome was modified, as there was the possibility of entering an infinite loop when processing an argument with the previous version.  chrome was also changed so that argument handling is performed after the PI manager is registered.
+</P>
+<P>
+<B>ddspgame</B>
+</P>
+<P>
+Disk access by ddspgame was modularized.  It was changed so that a Disk is accessed in the same form as reboot.
+</P>
+<P>
+With the previous ddspgame, some commands showed an error number and the number of errors if they occurred continuously, after executing.  This was changed so that only an error number is displayed small.  With the previous version, when the program is compiled after ERROR_DONT_STOP is defined, the specification allowed the next command to execute without stopping, even when an error occurs. It was changed so that if an error occurs it is impossible to execute the next command.
+</P>
+<P>
+Fast3D.dram was deleted.  Fast3D.xbus and Fast3D.fifo were changed to F3DEX2.xbus and F3DEX2.fifo.  Now F3DEX2.xbus is used by the L button, and F3DEX2.fifo is used by the R button. 
+</P>
+<P>
+<B>ci8fb</B>
+</P>
+<P>
+Fast3D.dram was deleted. Fast3D.xbus was changed to F3DEX2.fifo.  This was changed so that argument handling is performed after the PI manager is registered.  dram_stack.c and rdp_output.c were added, and the alignment specification for the RCP buffer was added.
+</P>
+<P>
+<B>detail</B>
+</P>
+<P>
+Fast3D.dram was deleted.  Fast3D.xbus was changed to F3DEX2.xbus.  F3DEX2.fifo was added. 
+</P>
+<P>
+<B>fogworld</B>
+</P>
+<P>
+Fast3D.dram and Line3D.dram were deleted and changed to L3DEX2.fifo and F3DEX2.fifo.  Fast3D.xbus was changed to F3DEX2.xbus.
+</P>
+<P>
+<B>gbpak</B>
+</P>
+<P>
+A mode to display a message on the screen in English was added.  It was changed so that when "make LANG_ENGLISH=YES" at the time of make,  a message is displayed in English.  By default, a message is displayed in Japanese, as before.
+</P>
+<P>
+<B>ground</B>
+</P>
+<P>
+Menu DUMP was changed to correspond only to the emulator board.  Fast3D.dram was deleted.  Fast3D.xbus was changed to F3DEX2.xbus.  F3DEX2.fifo was added.
+</P>
+<P>
+<B>gs2dex</B>
+</P>
+<P>
+The keyboard operation method of the menu was improved, and the selection menu display was added to the console.
+</P>
+<P>
+<B>lights</B>
+</P>
+<P>
+Fast3D.dram was deleted.  Fast3D.xbus was changed to F3DEX2.xbus.  F3DEX2.fifo was added.  Changed the key operation so that if Control Pad up/down is pressed, a shadow moves up/down.  dram_stack.c was added, and the alignment specification for the RCP buffer was added.  There was the possibility of entering an infinite loop when processing an argument with the previous version. It was modified to eliminate this possibility.
+</P>
+<P>
+<B>mipmap</B>
+</P>
+<P>
+Fast3D.dram was deleted.  Fast3D.dram was changed to F3DEX2.xbus.   F3DEX2.fifo was added.
+</P>
+<P>
+<B>morphcube</B>
+</P>
+<P>
+Fast3D.xbus was changed to F3DEX2.xbus.
+</P>
+<P>
+<B>morphfaces</B>
+</P>
+<P>
+Fast3D.xbus was changed to F3DEX2.xbus.
+</P>
+<P>
+<B>nnsample1</B>
+</P>
+<P>
+F3DEX.fifo was changed to F3DEX2.fifo.  dram_stack.c and rdp_output.c were added, and the alignment specification for the RCP buffer was added.
+</P>
+<P>
+<B>nnsample2</B>
+</P>
+<P>
+F3DEX.fifo was changed to F3DEX2.fifo.  dram_stack.c and rdp_output.c were added, and the alignment specification for the RCP buffer was added. 
+</P>
+<P>
+<B>nosPak</B>
+</P>
+<P>
+Fast3D.dram was deleted. Fast3D.xbus was changed to F3DEX2.xbus.  F3DEX2.fifo was added.  dram_stack.c and rdp_output.c were added, and the alignment specification for the RCP buffer was added. There was the possibility of entering an infinite loop when processing an argument with the previous version. It was modified to eliminate this possibility.
+</P>
+<P>
+<B>onetri</B>
+</P>
+<P>
+Fast3D.dram was deleted.  Fast3D.xbus was changed to F3DEX2.xbus.   dram_stack.c and rdp_output.c were added, and the alignment specification for the RCP buffer was added.
+</P>
+<P>
+<B>onetri-fpal</B>
+</P>
+<P>
+osViExtendVStart function was deleted.
+</P>
+<P>
+<B>overlay</B>
+</P>
+<P>
+Changed so that it operates with the PC.  Fast3D.xbus was changed to F3DEX2.xbus. rdp_output.c was added, and the alignment specification for the RCP buffer was added.  There was the possibility of entering an infinite loop when processing an argument with the previous version. It was modified to eliminate this possibility.  Changed so that if __MWERKS__ is defined, overlaying using CodeWarrior is possible.
+</P>
+<P>
+<B>polyline</B>
+</P>
+<P>
+Fast3D.xbus was changed to F3DEX2.xbus.  Line3D.xbus was changed to L3DEX2.xbus.
+</P>
+<P>
+<B>spgame</B>
+</P>
+<P>
+Fast3D.dram was deleted.  Fast3D.xbus was changed to F3DEX2.xbus.  dram_stack.c was added, and the alignment specification for the RCP buffer was added.  Some of the dead codes were deleted.   Changed the process time of the RDP from osSpTaskStart() till the end of RDP, since the measuring method of RDP process time was changed to gspF3DEX2.fifo.  This was also changed so that argument handling is performed after the PI manager is registered.
+</P>
+<P>
+<B>spritemonkey</B>
+</P>
+<P>
+The key operation was changed.
+</P>
+<P>
+<B>terrain</B>
+</P>
+<P>
+Fast3D.dram was deleted.  Fast3D.xbus was changed to F3DEX2.xbus.  F3DEX2.fifo was added.  The dump menu was deleted from the menu list.  
+</P>
+<P>
+<B>texlight</B>
+</P>
+<P>
+Fast3D.dram was deleted.  Fast3D.xbus was changed to F3DEX2.xbus.  F3DEX2.fifo was added.  The dump menu was deleted from the menu list.  dram_stack.c was added, and the alignment specification for the RCP buffer was added.  Some dead codes were deleted.  This was also changed so that argument handling is performed after the PI manager is registered.
+</P>
+<P>
+<B>tile_rect2d</B>
+</P>
+<P>
+Fast3D.xbus was changed to F3DEX2.xbus.  Some dead codes were deleted.  The specification of alignment for the RCP buffer was added. 
+</P>
+<P>
+<B>tile_rect3d</B>
+</P>
+<P>
+Fast3D.xbus was changed to F3DEX2.xbus.
+</P>
+<P>
+<B>topgun</B>
+</P>
+<P>
+Fast3D.dram was deleted. Fast3D.xbus was changed to F3DEX2.xbus.  F3DEX2.fifo was added.  Some dead codes were deleted.   The alignment specification for the RCP buffer was added.  This was also changed so that argument handling is performed after the PI manager is registered.
+</P>
+<P>
+<B>tron</B>
+</P>
+<P>
+Fast3D.xbus was changed to F3DEX2.xbus.
+</P>
+
+<hr>
+<H2>Modified functions:</H2>
+<H3> OS</H3>
+<P>
+os.h under /usr/include/PR was split into several header files. Since os.h now includes all of the new headers, developers can simply include os.h as before.
+</P>
+<P>
+Previously these programs checked each bit of variable "type," a member of OSContStatus structure, with CONT_JOYPORT and CONT_ABSOLUTE. They now first mask with CONT_TYPE_MASK and then check with CONT_TYPE_NORMAL, which is equivalent to (CONT_JOYPORT & CONT_ABSOLUTE). The following sample programs were modified according to this specification change.
+</P>
+<P>
+ddspgame<BR>
+gbpak<BR>
+eeptest<BR>
+pfs<BR>
+reboot
+</P>
+<P>
+Refer to the N64 Programming Manual, <a href="../../pro-man/pro26/index.htm">Chapter 26 "SI Devices"</a> for details.
+</P>
+
+<hr>
+<H2>Fixed problems:</H2>
+<H3>AUDIO</H3>
+<P>
+The problem with osAiSetNextBuffer was fixed.  This RCP hardware problem was corrected. If the lower 13 bits of the waveform data end address are 0 (the address of the next byte of the end data, to be exact), DMA is transferred from the address of 0x2000 bytes ahead of the next waveform data. There was a program to avoid this, however, it did not always solve the problem and caused some noise.  (NuSystem users should not have a problem using version 2.0I OS.)
+</P>
+<H3>GRAPHICS</H3>
+<p>None</p>
+<H3>OS</H3>
+<P>
+When a debug library is used, if a value outside the range of original values is entered as an argument of the library function, an internal function, __osError is called inside the OS.  __osError is a function to indicate that condition.  But it did not function properly with PARTNER-N64.   This was changed so that when PARTNER-N64 is used, the error is displayed properly using osSyncPrintf by branching. 
+</P>
+<P>
+When the value I-NODE of the Controller Pak was more than 0x80, and osPfsChecker() or osPfsInitPak() was called, there was the possibility that a hang-up would occur.  This was fixed.  As an example, when trying to restore the contents using the PC version sample program, nosPak, by filling all the contents of the Controller Pak with 0xff, a hang-up occurred with the previous version.
+</P>
+<P>
+The operation of assert when NDEBUG is defined was fixed.  This was changed so that the assert function cannot be used with libgultra.a now.    Please use libgultra_d.a when the assert function is used. 
+</P>
+<H3>TOOL</H3>
+<p>None</p>
+
+<hr>
+<H2>Expanded functions:</H2>
+<H3>AUDIO</H3>
+<p>None</p>
+
+<H3>GRAPHICS</H3>
+<p>None</p>
+
+<H3>OS</H3>
+<P>
+This was changed so that spDraw() can be displayed with 64DD fonts.  Please specify G_IM_SIZ_DD instead of G_IM_SIZ_4b as a bmsiz member of the sprite structure to be entered spDraw() when 64DD fonts are used.
+</P>
+<P>
+The version of F3DEX2 series micro code became 2.08.  Refer to /usr/src/PR/doc/gfxucode.F3DEX2/README.txt for details. 
+</P>
+<H3>64DD</H3>
+<P>
+With the previous n64mdisk, the maximum value for the number of lines of gwrite that can be entered was 1024.  This was changed to 5120.  The version is 1.11.
+</P>
+
+<hr>
+<H2>Sample programs that are no longer supported:</H2>
+<P>
+The following sample programs were moved to /PR/demos_old/.
+</P>
+<P>
+ gtdemo<BR>
+ hostio<BR>
+ print<BR>
+ simple<BR>
+ turbomonkey<BR>
+ host_test
+</P>
+
+<hr>
+<H2>Function that is no longer supported:</H2>
+<P>
+Due to insufficient testing of osViExtendVStart in Europe, and the fact that it is not used much, the function is no longer supported.
+</P>
+
+<hr>
+<H2>Caution:</H2>
+<P>
+OS2.0J operates with Windows95, Windows98, and WindowsNT4.0 SP3.  Please be aware that WindowsNT4.0 SP4 is not supported. 
+</P>
+
+<hr>
+<H2>Documents:</H2>
+<P>
+A brief explanation of ddspgame was changed and included in ddspgame/README.txt.
+</P>
+</BODY>
+</HTML>

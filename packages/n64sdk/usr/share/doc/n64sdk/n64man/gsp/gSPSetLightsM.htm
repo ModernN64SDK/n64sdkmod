@@ -1,0 +1,101 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.
+  PWC- updated formatting
+-->
+<TITLE>gSPSetLightsM</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>gSPSetLights<I>M</I> [Macro]</H1>
+
+<p><b>Function</b></font></p>
+
+<P>gSPSetLights<I>M</I></p>
+
+<p><i>Loads LightsM structure into the RSP</i></P>
+
+<p><b>Syntax</b></font></p>
+<p>
+<PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gbi.htm">gbi.h</A> */
+gSPSetLights<I>M</I>(Gfx *gdl, Lights<I>M</I> lites)
+gsSPSetLights<I>M</I>(         Lights<I>M</I> lites)</CODE></PRE></p>
+
+<p>* Number of diffuse lights (integer 0~7) will be set for <I>M</I>.</p>
+
+<p><b>Arguments</b></font></p>
+<p>
+<DL>
+  <DT><B>gdl</B>
+  <DD>the display list pointer. 
+  <DT><B>lites</B>
+  <DD>Lights<I>M</I> structure to load into the RSP
+</DL></p>
+<p><b>Description</b></font></p>
+<P>
+It loads Lights<I>M</I> structures for ambient and diffuse lights into the light buffer. The last character in the macro, indicated by M above, represents the number of diffuse lights to set. You specify proper macros from the 8 macros such as gSPSetLights0, gSPSetLights1, gSPSetLights2,..., and gSPSetLights7 to load a structure. For instance, if you use 3 diffuse lights, use gSPSetLights3 and the corresponding structure would be Lights3.
+</P>
+<P>
+Once the lights are activated, they remain on until the next call to gSPSetLightsM. Whenever a new structure of Light<I>M</I> is activated, the old structure of Light<I>M</I> is overwritten.
+</P>
+<P>
+In the Lights<I>M</I> structure, Ambient a is the ambient light structure, and Light l[<I>M</I>] is an array of M diffuse light structures. The Lights<I>M</I> structure can be set up by calling <A HREF="../gdsp/gdSPDefLights.htm">gdSPDefLights</A> with the parameters defining the lights as inputs. The individual Lights<I>M</I> structures combine the color of the light with the color of the material. 
+</P>
+<P>
+For more information, please see the section 11.7.3 "Lighting by ambient light and diffuse light" in the N64 programmers' guide.
+</P>
+<p><b>Note</b></font></p>
+<P>
+To change the color of some or all of the lights after the light has been used one or more times, you should use the more efficient <A HREF="gSPLight.htm">gSPLight</A> macro instead of this macro. See <A HREF="../gsp/gSPLight.htm">gSPLight</A> for more information about this.</P>
+
+<p><b>Comment</b></p>
+<P>
+The Light<I>M</I> structure is shown below.
+<PRE>typedef struct {
+        unsigned char	col[3];	/* Diffuse light value (RGBA) */
+        char		pad1;
+        unsigned char	colc[3];/* Copy of diffuse light value (RGBA) */
+        char		pad2;
+        signed char	dir[3];	/* Direction toward light source (normalized) */
+        char		pad3;	/* Important:  Size of "dir" must not exceed 127 */
+} Light_t;
+typedef struct {
+        unsigned char	col[3];	/* Ambient light value (RGBA) */
+        char		pad1;
+        unsigned char	colc[3];/* Copy of ambient light value (RGBA) */
+        char		pad2;
+} Ambient_t;
+typedef union {
+        Light_t		l;
+        long long int	force_structure_alignment[2];
+} Light;
+typedef union {
+        Ambient_t	l;
+        long long int	force_structure_alignment[1];
+} Ambient;
+typedef struct {
+        Ambient		a;	/* Ambient light */
+        Light		l[<I>M</I>];	/* Diffuse light */
+} Lights<I>M</I>;
+* Number of diffuse lights (integer 0~7) will be set for <I>M</I>.
+</PRE>
+</P>
+<p><b>Example</b></font></p>
+<P>
+Please refer to Section 11.7.3.6 "Note on Material Properties" in the N64 Online Programming Manual. 
+</P>
+<p><b>See Also</b></font></p>
+<P>
+<A HREF="../gdsp/gdSPDefLights.htm">gdSPDefLights</A>, <A HREF="gSPLight.htm">gSPLight</A>, and <A HREF="gSPLightColor.htm">gSPLightColor</A>
+</P>
+
+</P><p><b>Revision History</b></p>
+<P>
+02/01/99 Completely rewritten.
+</P>
+
+</BODY>
+</HTML>

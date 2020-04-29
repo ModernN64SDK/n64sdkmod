@@ -1,0 +1,72 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.>
+<TITLE>gSPLoadUcodeL</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>gSPLoadUcodeL [Macro]</H1>
+
+<p><b>Function</b></font></p>
+
+<p>gSPLoadUcodeL</p>
+<P>
+<i>Loads the specified microcode using a simplified method</i>
+</P>
+<p><b>Syntax</b></font></p>
+<p>
+<PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gbi.htm">gbi.h</A> */
+gSPLoadUcodeL(Gfx *gdl, ucode_name)
+gsSPLoadUcodeL(         ucode_name)</CODE></PRE></p>
+
+<p><b>Arguments</b></font></p>
+<p>
+<DL>
+  <DT><B>gdl</B>
+  <DD>the display list pointer. 
+  <DT><B>ucode_name</B>
+  <DD>the name of the microcode: 
+  <DD><B>gspF3DEX_fifo</B>
+  <DD><B>gspF3DEX_NoN_fifo</B>
+  <DD><B>gspF3DLX_fifo</B>
+  <DD><B>gspF3DLX_NoN_fifo</B>
+  <DD><B>gspF3DLX_Rej_fifo</B>
+  <DD><B>gspF3DLP_Rej_fifo</B>
+  <DD><B>gspL3DEX_fifo</B>
+  <DD> 
+  <DD>* The following are used for the F3DEX2 microcode group (F3DEX2/F3DLX2/F3DLP2/L3DEX2):
+  <DD><B>gspF3DEX2_fifo</B>
+  <DD><B>gspF3DEX2_NoN_fifo</B>
+  <DD><B>gspF3DEX2_Rej_fifo</B>
+  <DD><B>gspF3DLX2_Rej_fifo</B>
+  <DD><B>gspL3DEX2_fifo</B>
+  <DD><B>gspF3DEX2_xbus</B>
+  <DD><B>gspF3DEX2_NoN_xbus</B>
+  <DD><B>gspF3DEX2_Rej_xbus</B>
+  <DD><B>gspF3DLX2_Rej_xbus</B>
+  <DD><B>gspL3DEX2_xbus</B>
+</DL></p>
+<p><b>Description</b></font></p>
+<P>
+This macro loads the specified microcode using a simplified version of <A HREF="gSPLoadUcode.htm">gSPLoadUcode</A>. In other words, the following two calls (a) and (b) do the same thing: 
+</P>
+<PRE><CODE>(a) gsSPLoadUcode(OS_K0_TO_PHYSICAL(&amp;gspF3DEX_fifoTextStart),
+                  OS_K0_TO_PHYSICAL(&amp;gspF3DEX_fifoDataStart))
+(b) <B>gsSPLoadUcodeL</B>(gspF3DEX_fifo) 
+</CODE></PRE>
+<P>
+For details, see <A HREF="gSPLoadUcode.htm">gSPLoadUcode</A> and Section 25.3.1, "F3DEX Microcode Series Functions" in the N64 Programming Manual.
+</P>
+<p><b>See Also</b></font></p>
+<P>
+<A HREF="gSPLoadUcode.htm">gSPLoadUcode</A>
+</P>
+<p><b>Revision History</b></font></p>
+<P>
+02/01/99  Entirely revised.
+</P>
+</BODY>
+</HTML>

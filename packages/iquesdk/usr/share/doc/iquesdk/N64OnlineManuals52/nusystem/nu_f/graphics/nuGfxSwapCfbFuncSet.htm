@@ -1,0 +1,71 @@
+<HTML>
+<HEAD>
+<TITLE>nuGfxSwapCfbFuncSet</TITLE>
+</HEAD>
+
+<BODY bgcolor="#FFFFFF">
+<font face="arial" size="-1">
+
+<P>
+<FONT size="5"><b><IMG src="../nusystem2.gif" height="30" width="176">Function</b></FONT>
+
+<HR>
+<P>
+<FONT size="3"><b>nuGfxSwapCfbFuncSet</b></FONT>
+<p>
+<HR>
+<P>
+<b>Syntax</b>
+<font face="courier" size="2">
+<pre>void nuGfxSwapCfbFuncSet(NUGfxSwapCfbFunc func)</pre>
+</font>
+
+<b>Arguments</b>
+<font face="courier" size="2">
+<pre>func    call back function</pre>
+</font>
+
+<b>Return Value</b>
+<font face="courier" size="2">
+<pre>None</pre>
+</font>
+
+<b>Description</b>
+
+<p><i>Registers the call back function which is executed when the graphics task is completed </i></p>
+
+<p>Registers the call back function which is executed before switching the frame buffer. When NU_SC_SWAPBUFFER is specified by the nuGfxTaskStart function, the registered call back function is executed at the completion of the graphics task. The NUScTask structure of the task which was executed last is sent to the func file as an argument. It is normally not necessary to call this function as it is called by the nuGfxInit function.</p>
+
+<b>Example</b>
+<font face="courier" size="2">
+<pre>
+/* Function to switch the frame buffer */
+void gfxSwapCfbFunc(NUScTask* gfxTask)
+{
+  osViSwapBuffer(gfxTask-&gt;framebuffer);
+}
+
+void mainProc(void)
+{
+  /* Initialization of the graphics */
+  nuGfxInit();
+
+  /*  Registration of the call back function */
+  nuGfxSwapCfbFuncSet(gfxSwapCfbFunc);
+  ......
+}</pre>
+</font>
+
+<p><b>See Also</b>
+<p><a href="nuGfxInit.htm">nuGfxInit</a>, <a
+href="nuGfxSwapCfb.htm">nuGfxSwapCfb</a>, <a
+href="nuGfxTaskStart.htm">nuGfxTaskStart</a>, and <a
+href="nuGfxSwapCfbFuncRemove.htm">nuGfxSwapCfbFuncRemove</a>
+
+<p>
+<hr>
+
+<p align="right"><a href="index.htm"><img src="../index.gif" border="0"
+width="65" height="17"></a></p>
+</body>
+</html>

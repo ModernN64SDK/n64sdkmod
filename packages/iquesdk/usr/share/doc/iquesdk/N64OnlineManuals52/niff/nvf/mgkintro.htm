@@ -1,0 +1,330 @@
+<HTML>
+<HEAD>
+<TITLE>MGK Library Manual</TITLE>
+</HEAD>
+<BODY LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff">
+<a name="top">
+<font face="arial" size="-1">
+<b><font size="3">MGK Library Manual</b></font>
+<HR>
+
+<P>
+<b>Introduction</b>
+<P>
+<b>Graphics Library Structure</b>
+
+<P>
+<TABLE BORDER="1" CELLSPACING=3 CELLPADDING=3 WIDTH=267>
+<TR><TD VALIGN="MIDDLE" COLSPAN=4 HEIGHT=34>
+<B><FONT FACE="arial" size="-1"><P ALIGN="CENTER">mgk</B></TD>
+</TR>
+<TR><TD VALIGN="MIDDLE" COLSPAN=4 HEIGHT=34>
+<B><FONT FACE="arial" size="-1"><P ALIGN="CENTER">mgi</B></TD>
+</TR>
+<TR><TD VALIGN="MIDDLE" COLSPAN=4 HEIGHT=34>
+<B><FONT FACE="arial" size="-1"><P ALIGN="CENTER">mhc</B></TD>
+</TR>
+<TR><TD WIDTH="50%" VALIGN="MIDDLE" COLSPAN=2 HEIGHT=34>
+<B><FONT FACE="arial" size="-1"><P ALIGN="CENTER">mif</B></TD>
+<TD WIDTH="50%" VALIGN="MIDDLE" COLSPAN=2 ROWSPAN=2 HEIGHT=34>
+<B><FONT FACE="arial" size="-1"><P ALIGN="CENTER">mrn</B></TD>
+</TR>
+<TR><TD WIDTH="50%" VALIGN="MIDDLE" COLSPAN=2 HEIGHT=34>
+<B><FONT FACE="arial" size="-1"><P ALIGN="CENTER">mis</B></TD>
+</TR>
+<TR><TD WIDTH="33%" VALIGN="MIDDLE" HEIGHT=34>
+<B><FONT FACE="arial" size="-1"><P ALIGN="CENTER">mso</B></TD>
+<TD WIDTH="33%" VALIGN="MIDDLE" COLSPAN=2 HEIGHT=34>
+<B><FONT FACE="arial" size="-1"><P ALIGN="CENTER">mvm</B></TD>
+<TD WIDTH="33%" VALIGN="MIDDLE" HEIGHT=34>
+<B><FONT FACE="arial" size="-1"><P ALIGN="CENTER">nusys</B></TD>
+</TR>
+</TABLE>
+</P>
+
+<P>
+<ul>
+<li>mvm
+<br>handles vectors and matrices.
+<P>
+<li>mso
+<br>contains all of the share portions, such as memory allocation, etc. 
+<P>
+<li>mis
+<br>
+handles input from ROM.
+<P>
+<li>mif
+<br>loads the IFF files. 
+<P>
+<li>mrn
+<br>produces gfx from objects which have no hierarchy.
+<P>
+<li>mhc
+<br>performs hierarchy evaluation and produces objects which can be rendered by mrn.
+<P>
+<li>mgi
+<br>provides the means for initializing the application and accessing the hierarchical structure. 
+<P>
+<li>mgk
+<br>
+is a utility library for easily constructing applications.</ul> 
+<P>
+
+<b>Objects in the mgk Library</b>
+<P>
+
+<UL>
+<LI>MgkApp
+<dir>
+Performs application management. 
+<br>
+Primary functions and macros
+</DIR>
+
+<P>
+<LI>MgkAppInit
+<DIR>Initializes the application.
+</DIR>
+
+
+<P>
+<LI>MgkAppInitGroups
+<DIR>Initializes MrnGroup.  MrnGroup plays an essential role in rendering, but it will not be explained here as it is a bit complicated. 
+</DIR>
+
+<P>
+<LI>_mgkAppBeginFrame
+<DIR>
+Declares the beginning of a frame.  Create Gfx during the period from when _mgkAppBeginFrame is called until _mgkAppEndFrame is called. 
+<br>In addition, the screen mode must not be changed (mrnScreenSetMode) during this period. </P>
+</DIR>
+
+<P>
+<LI>_mgkAppEndFrame
+<DIR>Declares the end of a frame. 
+</DIR>
+
+<P>
+<LI>mgkAppEvalAll
+<dir>
+Evaluates a hierarchy. 
+</DIR>
+
+<P>
+<LI>mgkAppDraw
+<DIR>Creates Gfx and returns a pointer to after the last Gfx as a return value. 
+</DIR>
+<P>
+
+<LI>mgkObj
+<DIR>Performs object management.
+<P ALIGN="JUSTIFY">Primary functions and macros
+</DIR>
+
+<P>
+<LI>mgkObjLoad
+<DIR>
+Loads NVF to an object.
+</DIR>
+
+<P>
+<LI>mgkObjCreateCamera
+<DIR>Creates a camera object.  A camera object is an object which contains only a camera. 
+</DIR>
+
+<P>
+<LI>mgkObjMove
+<DIR>Performs parallel movement of the object. 
+</DIR>
+
+<P>
+<LI>mgkObjRotate
+<DIR>Rotates the object. 
+</DIR>
+
+<P>
+<LI>mgkObjLookAt
+<dir>
+Makes it so that the negative direction of the Z axis of the object faces a specified coordinate. 
+</DIR>
+
+<P>
+<LI>mgkObjScale
+<DIR>
+Imparts a scale to the object. 
+</DIR>
+
+<P>
+<LI>mgkObjSetAnim
+<DIR>
+Selects object animation. 
+</DIR>
+
+<P>
+<LI>mgkObjPlayAnim
+<DIR>
+Starts playback of object animation. 
+</DIR>
+</ul>
+
+
+
+<P>
+<b>Usage Examples</b>
+<P>
+mainproc should be executed as follows. 
+
+<ol>
+<LI>Initialize the default allocator. 
+<p>
+Since the default allocator is used when allocating memory, it must be initialized first before anything else.
+
+<P>
+<CENTER><TABLE BORDER="1" cellpadding="3"><TR><TD>
+<pre><font face="courier" size="2"> 
+    static MsoHeapAllocator     heap_allocator;
+    void                        *heap_ptr;
+
+    heap_ptr = _codeSegmentEnd;
+    msoHeapAllocatorInit( &heap_allocator,
+                          heap_ptr, 0x80380000 - ( u32 )heap_ptr );
+    msoSetDefaultAllocator( _msoUpCast( MsoAllocator, &heap_allocator ) );
+</pre></font>
+</TD></TR></TABLE></CENTER>
+
+<P>
+The heap area is managed by MsoHeapAllocator. 
+<P>
+MsoHeapAllocator is initialized by msoHeamAllocatorInit and set in the default allocator by msoSetDefaultAllocator.
+<P>
+In the above example, the memory area from immediately after codeSegment to 0x80380000 is reserved as the heap area. 
+</P>
+
+<P>
+<LI>Initialize the application. 
+<P><CENTER><TABLE BORDER="1" cellpadding="3"><TR><TD>
+<pre><font face="courier" size="-1">
+    #define     MAX_OBJS        (4)
+
+    MgkObj      gObjArray[ MAX_OBJS ];
+
+    mgkAppInit( 2, 32768, 65536, 256, 16384, MAX_OBJS, gObjArray, NULL );
+    mgkAppInitGroups( );
+</pre></font>
+</TD></TR></TABLE></CENTER>
+
+<P>
+The application is initialized by mgkAppInit. 
+<P>
+The subsequent mgkAppInitGroups initializes MrnGroup. 
+<P>
+Initialization of MrnGroup has historically been rather complicated, but this is the simplest initialization method. 
+<P>
+In this example, the following settings are made.
+<P> 
+<UL>
+<LI>Double buffer mode
+<LI>Gfx length = 32768 per frame 
+<LI>Frame resource size = 65536 bytes
+<LI>Instance queue size = 256
+<LI>Conversion buffer size = 16384 bytes
+<LI>Maximum number of objects = MAX_OBJS
+<LI>Object array = gObjArray
+</UL>
+</P>
+
+<P><LI>Load the object. 
+
+<P><CENTER><TABLE BORDER="1" cellpadding="3"><TR><TD>
+<pre><font face="courier" size="2">
+    mgkObjLoad( &gObjArray[ 0 ], ( u32 )_stageSegmentRomStart,
+                                 ( u32 )_stageSegmentRomEnd );
+    mgkObjLoad( &gObjArray[ 1 ], ( u32 )_animalSegmentRomStart,
+                                 ( u32 )_animalSegmentRomEnd );
+</pre></font>
+</TD></TR></TABLE></CENTER>
+<P>
+Use mgkObjLoad to load the NVF to the object.
+<P>
+In the above example, the NVF in _stageSegment is loaded to gObjArray[0], and the NVF in 
+<P>
+_animalSegment is loaded to gObjArray[1]. 
+</P>
+
+<P><LI>Set the camera. 
+<P><CENTER><TABLE BORDER="1" cellpadding="3"><TR><TD>
+<pre><font face="courier" size="2">
+    mgkObjCreateCamera( &gObjArray[ 2 ], 45.0f, 1.333333333f, 5.0f, 2000.0 );
+</pre></font>
+</TD></TR></TABLE></CENTER>
+<P>
+The camera itself takes up one object.
+<P>
+mgkObjCreateCamera turns an object into a camera object. 
+<P>
+Camera control is possible by using mgjObjLookAt, etc. on a camera object. 
+<P>
+The following settings are made in this example. 
+<P>
+<UL>
+<LI>Field of view (Y) = 45
+<LI>Aspect ratio = 1.3333333333
+<LI>Clip near = 5
+<LI>Clip far = 2000
+</UL>
+</P>
+
+<P><LI>Main loop
+<P>
+The method for independently constructing the main loop is introduced here. 
+<P><CENTER><TABLE BORDER="1" cellpadding="3"><TR><TD>
+<pre><font face="courier" size="2">
+    while ( 1 )
+    {
+        ++gMgiApp.frame_count;
+        nuContDataGetExAll( gMgiApp.cont_data );
+
+        _mgkAppBeginFrame( );
+
+        /* Object movement */
+        mgkObjMove( &gObjArray[ 1 ], x, y, z );
+
+        /* Face camera in direction of object */
+        mgkObjLookAt( &gObjArray[ 2 ],
+                      0.0f, 0.0f, 1000.0f,      /* Camera coordinates */
+                      x, y, z,                  /* POV coordinates */
+                      0.0f, 1.0f, 0.0f );       /* Upward vector */
+
+        mgkAppEvalAll( );
+        mgkAppDraw( );
+        _mgkAppEndFrame( );
+    }
+</pre></font>
+</TD></TR></TABLE></CENTER></P>
+
+<P>
+The main loop must be processed in the following order. 
+<P>
+<OL>
+<LI>Increment gMuiApp.frame_count. 
+<P>
+<LI>Read the controller status.
+<P>
+<LI>Declare the start of the frame with _mgkAppBeginFrame. 
+<P>
+<LI>Perform various processing, such as object movement, etc.
+<P>
+<LI>Perform hierarchy evaluation with mgkAppEvalAll. <P>
+<LI>Create gfx with mgkAppDraw. 
+<P>
+<LI>Declare the end of the frame with _mgkAppEndFrame. 
+<P>
+</OL>
+<P>
+There are no retrace stand-by's anywhere in this code, but since _mgkAppEndFrame is called in synchronization with the scheduler, processing proceeds as a whole in 1/60 units (as long as a frame is not dropped). <P>
+
+</OL></ul>
+
+</BODY>
+</HTML>

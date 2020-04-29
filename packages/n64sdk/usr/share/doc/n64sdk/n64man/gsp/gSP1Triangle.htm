@@ -1,0 +1,93 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.>
+<TITLE>gSP1Triangle</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>gSP1Triangle [Macro]</H1>
+
+<p><b>Function</b></p>
+
+<p>gSP1Triangle</p>
+<P>
+<i>Draws 1 triangle</i>
+</P>
+<p><b>Syntax</b></p>
+<p>
+<PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gbi.htm">gbi.h</A> */
+gSP1Triangle(Gfx *gdl, s32 v0, s32 v1, s32 v2, s32 flag)
+gsSP1Triangle(         s32 v0, s32 v1, s32 v2, s32 flag)</CODE></PRE></p>
+
+<p><b>Arguments</b></p>
+<p>
+<DL>
+  <DT><B>gdl</B>
+  <DD>Display list pointer
+  <DD> 
+  <DT><B>v0</B>, <B>v1</B>, <B>v2</B>
+  <DD>Vertex buffer index<BR>
+	<TABLE BORDER="1" CELLSPACING="0" CELLPADDING="3">
+	<TR>
+	<TD NOWRAP ALIGN="left" VALIGN="middle">
+		F3DEX<BR>
+		F3DEX.NoN<BR>
+		F3DLX<BR>
+		F3DLX.NoN<BR>
+		L3DEX</TD>
+	<TD NOWRAP ALIGN="left" VALIGN="middle">0~31</TD>
+	</TR>
+	<TR>
+	<TD NOWRAP ALIGN="left" VALIGN="middle">F3DLX.Rej</TD>
+	<TD NOWRAP ALIGN="left" VALIGN="middle">0~63</TD>
+	</TR>
+	<TR>
+	<TD NOWRAP ALIGN="left" VALIGN="middle">F3DLP.Rej</TD>
+	<TD NOWRAP ALIGN="left" VALIGN="middle">0~79</TD>
+	</TR>
+	</TABLE>
+<BR>
+* For F3DEX2 microcode group (F3DEX2/F3DLX2/F3DLP2/L3DEX2), the values are as follows:
+	<TABLE BORDER="1" CELLSPACING="0" CELLPADDING="3">
+	<TR>
+	<TD NOWRAP ALIGN="left" VALIGN="middle">
+		F3DEX2<BR>
+		F3DEX2.NoN<BR>
+		F3DLX2<BR>
+		F3DLX2.NoN<BR>
+		L3DEX2</TD>
+	<TD NOWRAP ALIGN="left" VALIGN="middle">0~31</TD>
+	</TR>
+	<TR>
+	<TD NOWRAP ALIGN="left" VALIGN="middle">F3DEX2.Rej<BR>F3DLX2.Rej</TD>
+	<TD NOWRAP ALIGN="left" VALIGN="middle">0~63</TD>
+	</TR>
+	</TABLE>
+  <DD> 
+  <DT><B>flag</B>
+  <DD>Triangle face flag 0~2
+</DL></p>
+<p><b>Description</b></p>
+<P>
+Generates a single triangle face (using the vertices <B>v0</B>, <B>v1</B>, and <B>v2</B>) in the internal vertex buffer loaded by the <A HREF="gSPVertex.htm">gSPVertex</A> macro. The <B>flag</B> (0, 1, or 2) identifies which of the three vertices contains the normal or the color for the face (for flat shading). For details, see Section 11.9.1 "Triangles" in the N64 Programming Manual.
+</P>
+
+<p><b>Note</b></p>
+<P>
+The actual type of triangle drawn (shaded, textured, Z-Buffered, and so on) is determined by the current RSP rendering state.
+
+</P>
+
+<p><b>See Also</b></p>
+<P>
+<A HREF="gSP2Triangles.htm">gSP2Triangles</A>, <A HREF="gSPVertex.htm">gSPVertex</A>
+</P>
+<p><b>Revision History</b></p>
+<P>
+02/01/99  Entirely revised.
+</P>
+</BODY>
+</HTML>

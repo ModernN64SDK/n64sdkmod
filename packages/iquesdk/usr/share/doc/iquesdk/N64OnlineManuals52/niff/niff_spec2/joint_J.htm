@@ -1,0 +1,333 @@
+<html>
+<title>
+JointNode
+</title>
+<body bgcolor="ffffff">
+
+<h1>
+<font color="ff0000">
+<i>
+Nintendo Confidential
+</i>
+</font>
+</h1>
+<hr size="3">
+
+<h2>
+19. JointList
+
+</h2>
+<hr size="3">
+
+<h3>
+(1) JointList
+</h3>
+<blockquote>
+
+
+<table border width="600">
+
+<tr>
+<td nowrap>
+u32 joint_list_tag
+</td>
+<td>
+JointListを示すタグを記述します。下記のタグを指定してください。
+<pre>
+<b>
+TAG_JOINT_LIST          0x00250000
+</b>
+</pre>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 joint_list_header_size
+</td>
+<td>
+JointListHeaderのバイト数を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 joint_list_size
+</td>
+<td>
+JointListのバイト数を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 joint_num
+</td>
+<td>
+Joint数を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 joint_num_byte
+</td>
+<td>
+それぞれのJointのバイト数を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+Joint 
+</td>
+<td>
+Jointエリアです。
+</td>
+</tr>
+
+</table>
+
+
+
+<p>
+<a href="./appendix/IK_system_J.htm">
+Appendix ... about IK System
+</a>
+
+<p>
+<a href="./joint_C.htm">
+Go to the data chunk
+</a>
+<p>
+<a href="./index.htm">
+Go back to the index
+</a>
+
+</blockquote>
+
+
+
+<h3>
+(2) Joint
+</h3>
+<blockquote>
+
+
+<table border width="600">
+
+<tr>
+<td nowrap>
+u32 joint_tag
+</td>
+<td>
+Jointを示すタグを記述します。下記のタグを指定してください。
+<pre>
+<b>
+TAG_JOINT               0x00250100
+</b>
+</pre>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 this_joint_index
+</td>
+<td>
+このJointのインデックス番号を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 joint_size
+</td>
+<td>
+Jointのバイト数を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 joint_name_index
+</td>
+<td>
+Joint名をNameList内のインデックス番号で記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 joint_type
+</td>
+<td>
+Jointのタイプを記述します。<p>
+NIFF2.0ではIK-Chainは2joint-chainのみを扱います。下記のフラグが定義されています。
+<pre>
+<b>
+NIFF2_1ST_JOINT             0x00000000
+NIFF2_2ND_JOINT             0x00000001
+NIFF2_JOINT_UP              0x00000000
+NIFF2_JOINT_DOWN            0x00010000
+</b>
+</pre>
+NIFF2_1ST_JOINTは第1Jointの場合に設定します。<p>
+NIFF2_2ND_JOINTは第2Jointの場合に設定します。<p>
+NIFF2_JOINT_UPはEffectorの移動に応じて正方向にIK-Chainが動作します。正方向とは、第1JointのY軸の正の方向にEffectorを移動した時にIK-Chainが曲がることを意味します。<p>
+NIFF2_JOINT_DOWNはEffectorの移動に応じて逆方向にIK-Chainが動作します。逆方向とは、第1JointのY軸の負の方向にEffectorを移動したときにIK-Chainが曲がることを意味します。<p>
+NIFF2_1ST_JOINT, NIFF2_2ND_JOINTとNIFF2_JOINT_UP, NIFF2_JOINT_DOWNはそれぞれbitORして記述します。
+</td>
+</tr>
+
+
+<tr>
+<td nowrap>
+float joint_length
+</td>
+<td>
+Jointの長さを記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+float resplane_axis_x<br>
+float resplane_axis_y<br>
+float respalne_axis_z
+</td>
+<td>
+本来のZ軸の向きからのずれを示すベクトルです。IKのレゾリューションプレーンの法線ベクトルを示します。通常はZ軸の向き(x, y, z)=(0, 0, 1)に設定してください。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 obj_num
+</td>
+<td>
+JointからリンクするObj数を記述します。
+</td>
+</tr>
+
+
+<tr>
+<td nowrap>
+u32 external_obj_num
+</td>
+<td>
+外部ファイル参照するJointからリンクするObj数を記述します。
+</td>
+</tr>
+
+
+<tr>
+<td nowrap>
+u32 joint_index
+</td>
+<td>
+このJointがリンクするJointのインデックス番号を記述します。このJointがEffectorにリンクする場合、下記のフラグを記述してください。
+<pre>
+<b>
+NIFF2_NO_LINK_TO_JOINT&#9;&#9;0xffffffff
+</b>
+</pre>
+</td>
+</tr>
+
+
+<tr>
+<td nowrap>
+u32 effector_index
+</td>
+<td>
+このJointがリンクするEffectorのインデックス番号を記述します。このJointがJointにリンクする場合、下記のフラグを記述してください。
+<pre>
+<b>
+NIFF2_NO_LINK_TO_EFFECTOR&#9;0xffffffff
+</b>
+</pre>
+</td>
+</tr>
+
+
+<tr>
+<td nowrap>
+u32 anim_index
+</td>
+<td>
+このJointがリンクするAnimGroupのインデックス番号を記述します。<p>
+第１Jointの場合、PreferredAxisConstraintまたはUpVectorConstraintチャンネルを使用することでレゾリューション・プレーンを決定することができます。<p>
+これらのconstraintがされていない場合は、ChainRootのZ軸に沿ってレゾリューションプレーンが決定されます。<p>
+Jointの回転はX軸周りの回転がもっとも優先されます。実際のレゾリューションプレーンはX軸の回転に矛盾しない形にZ軸を向けた時に決定します。<p>
+PreferredAxisConstraintをリンクした場合はJointのZ軸をそのconstraintされたオブジェクトに向くように調整されます。勿論、最優先回転軸はX軸です。<p>
+UpVectorConstraintをリンクした場合は、第２Jointの原点と、Effector、Constraintされているオブジェクトの原点がレゾリューションプレーン上になるように計算されます。<p>
+第２Jointにはアニメーションがリンクされていても無視されます。<p>
+また、何もアニメーションをリンクしない場合はanim_index = 0xffffffffを記述してください。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 obj_index
+</td>
+<td>
+JointからリンクするObjのインデックス番号を記述します。<p>
+obj_num = 0の場合、このフィールドは記述されません。
+</td>
+</tr>
+
+
+<tr>
+<td nowrap>
+u32 external_obj_file_name_index
+</td>
+<td>
+JointからリンクするObjを外部ファイル参照する場合、そのファイル名をExternalNameListのインデックス番号で記述します。<p>
+ファイル名はディレクトリ名などを含まない形で記述してください。<p>
+external_obj_num = 0の場合、このフィールドは記述されません。
+</td>
+</tr>
+
+
+
+<tr>
+<td nowrap>
+u32 external_obj_name_index
+</td>
+<td>
+JointからリンクするObjを外部ファイル参照する場合、そのObj名をExternalNameList内のインデックス番号で記述します。<p>
+external_obj_num = 0の場合、このフィールドは記述されません。
+</td>
+</tr>
+
+
+</table>
+
+
+
+<p>
+<a href="./appendix/IK_system_J.htm">
+Appendix ... about IK System
+</a>
+
+<p>
+<a href="./joint_C.htm">
+Go to the data chunk
+</a>
+<p>
+<a href="./index.htm">
+Go back to the index
+</a>
+
+</blockquote>
+
+
+<hr>
+<i>
+Copyright 1998,1999 NINTENDO Co.,Ltd. All rights reserved.<br>
+Copyright 1998,1999 MONEGI CORPORATION All rights reserved.
+</i>
+
+</body>
+</html>

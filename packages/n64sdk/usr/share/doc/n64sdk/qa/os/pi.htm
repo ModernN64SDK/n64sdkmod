@@ -1,0 +1,87 @@
+<HTML>
+<HEAD>
+<TITLE>PI</TITLE>
+<link rel=stylesheet type="text/css" href="gif/style.css">
+</HEAD>
+
+<BODY>
+<A name="index"></a>
+
+<IMG src="../../gif/n64_logo2.gif" height="21" width="136">
+<h3><FONT color="#FF8000">Q&A</FONT>- PI</h3>
+
+<P>
+
+<TABLE border="0">
+  <TR>
+    <TD valign="top" width="50"><A href="pi.htm#01"><b>QA1</b></A></TD>
+    <TD>I'd like to know the address of a ROM area...</TD>
+  </TR>
+  <TR>
+    <TD valign="top" width="50"><A href="pi.htm#02"><b>QA2</b></A></TD>
+    <TD>Where does ROM stop and RAM begin?</TD>
+  </TR>
+  <TR>
+    <TD valign="top" width="50"><A href="pi.htm#03"><b>QA3</b></A></TD>
+    <TD>DMA interrupts between RAM and RDRAM</TD>
+  </TR>
+</TABLE>
+
+<HR>
+
+<P>
+<A name="01"><FONT color="#FF0000"><b>Q1</b></FONT></A>
+<b> I'd like to know the address of a ROM area...</b>
+</P>
+
+<P>
+<FONT  color="#008000"><b>A1</b></FONT>
+ Very detailed memory maps are given in the file /usr/include/PR/rcp.h and in the Kantan Manual, Step 1.  Please review these.  However, these show only physical addresses.  The addresses actually required by the CPU are not physical addresses, but are virtual addresses.  In the case of kseg 0, which is generally supported by the libraries, 0x8000_0000 is allotted, therefore it is 0x9000_0000.
+
+
+<P align="right">
+<A href="pi.htm#index">top</A>
+</P>
+
+<HR>
+
+<P>
+<A name="02"><FONT color="#FF0000"><b>Q2</b></FONT></A>
+<b> Where does ROM end and RAM begin (or do I need to worry about that from a programming standpoint)?</b>
+</P>
+
+<P>
+<FONT  color="#008000"><b>A2</b></FONT>
+ At first it is all ROM.  During startup, a segment (at most 1MB) specified by flags BOOT in the spec file is transferred to RAM.  Thereafter, reading from ROM must be managed by the game application.  To put it simply, ROM is no more than a fast, small-capacity auxiliary storage device, like a CD ROM.  Like past ROM, such as the SFC, the CPU does not directly direct the PC (program counter) to the ROM.  As shown in the block diagram of the hardware, the CPU and ROM are completely independent, connected only by the DMA (RCP).  The CPU only refers to the DRAM by a virtual address.
+
+
+<P align="right">
+<A href="pi.htm#index">top</A>
+</P>
+
+<HR>
+
+<P>
+<A name="03"><FONT color="#FF0000"><b>Q3</b></FONT></A>
+<b> DMA interrupts between ROM and RDRAM</b>
+</P>
+
+<P>
+<FONT color="#008000"><b>A3</b></FONT>
+ The only function used while a DMA is being executed is <a href="../../n64man/os/osPiStartDma.htm">OsPiStartDma</a>.  If there is a request to run a DMA, the message queue is used.  These requests normally are processed in the order in which they were received, according to the amount of buffer in which the message queue is stored and how much can be stored there. 
+
+<p>
+This has been generally stated before, but the following two types of requests can be sent.  If the priority is High in <a href="../../n64man/os/osPiStartDma.htm">OsPiStartDma</a>, there is an interrupt at the head of the buffer so that it is processed first.  If Normal has been specified, it is appended to the end of the buffer.  In any case, since the DMA currently being executed cannot be stopped and interrupted, avoid doing so by allotting a great deal of storage buffer while keeping the transfer size in as small a range as possible.
+
+<p>
+Essentially, since it is faster to handle large quantities of data, it is best to transfer large quantities while booting up or when there are vast changes in the stage, and minimize processing to a certain extent while the game is processing. 
+
+
+<P align="right">
+<A href="pi.htm#index">top</A>
+</P>
+
+<HR>
+
+</BODY>
+</HTML>

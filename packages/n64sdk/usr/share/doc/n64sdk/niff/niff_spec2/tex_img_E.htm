@@ -1,0 +1,71 @@
+<HTML>
+<HEAD>
+<TITLE>TexImgNode</TITLE>
+</HEAD>
+<BODY LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff">
+
+<font face="arial" size="-1">
+<b><font size="3">11. TexImgNode</font></b>
+<HR>
+
+<P>
+<b>(1) TexImg</b>
+<p>
+
+<blockquote>
+
+<table border="1" width="600">
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 mipmap_max_level</font>
+</td>
+<td>
+<font face="arial" size="-1">When MipMap is used, the MipMap image is stored in the TexImgData area.<p>
+This describes the maximum number of levels.<p>
+If MipMap is not used, please describe with the following flag:
+<font face="courier" size="2">
+<pre>
+<b>
+NIFF2_NO_MIPMAP&#9;0x00000000
+</b>
+</pre>
+</font>
+The maximum value for the MipMap level is stipulated with the following flag.  Level numbers greater than this cannot be reproduced on N64.
+<font face="courier" size="2">
+<pre>
+<b>
+NIFF2_MIPMAP_MAX_LEVEL_MAX&#9;0x00000007
+</b>
+</pre>
+</font>
+In addition, the value for mipmap_max_level must be set greater than the value for TexNode -> mipmap_level.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 mipmap_img_offset</font>
+</td>
+<td>
+<font face="arial" size="-1">The offset for each level of the MipMap image stored in the TexImgData area is described in bytes.  When MipMap is used, the texture image levels are stored in the TexImgData area in order, starting from level 0.<p>
+
+mipmap_img_offset(0) is the offset value for Level 1 mipmap images. Since the
+offset for Level 0 is always zero (0), there is no storage area for these data.
+<p>
+
+This field is not described when MipMap is not used.</font>
+</td>
+</tr>
+
+</table>
+
+<p>
+<a href="./tex_img_C.htm">Go to the data chunk</a>
+<p>
+
+</blockquote>
+
+<hr>
+
+</body>
+</html>

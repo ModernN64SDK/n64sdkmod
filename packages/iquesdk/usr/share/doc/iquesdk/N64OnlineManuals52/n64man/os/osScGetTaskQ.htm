@@ -1,0 +1,72 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.
+MAP- added links, updated format>
+<title>osScGetTaskQ</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>osScGetTaskQ</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p><i>Gets the message queue used for communicating with the scheduler thread</i></p>
+
+<h3>Syntax</h3>
+<p>
+<blockquote>
+    <pre>#include &lt;ultra64.h&gt;     /* <A HREF="../../header/ultra64.htm">ultra64.h</A> */
+OSMesgQueue *osScGetCmdQ(OSSched *s);</pre></blockquote></p>
+
+<h3>Arguments</h3>
+<p>
+<dl>
+    <dt><strong>s</strong></dt>
+    <dd>the pointer to the scheduler structure<br>
+        <br>
+        </dd>
+</dl></p>
+
+<h3>Description</h3>
+
+<p>To send tasks to the Scheduler on the task queue for execution, you must first create and initialize an OSScTask structure, which has the following fields: </p>
+
+<dl><p>
+    <dt><strong>next</strong></dt>
+    <dd>Not used by the client. (It is used by the scheduler for list management.) <br>
+        <br>
+        </dd>
+    <dt><strong>state</strong></dt>
+    <dd>Not used by the client. (It is used by the scheduler for state management.) <br>
+        <br>
+        </dd>
+    <dt><strong>framebuffer</strong></dt>
+    <dd>Address of the frame buffer for this task if it is a graphics task. <br>
+        <br>
+        </dd>
+    <dt><strong>list</strong></dt>
+    <dd>Structure containing task code and command list data. (See osSpTaskLoad for more information.) <br>
+        <br>
+        </dd>
+    <dt><strong>msgQ</strong></dt>
+    <dd>The message queue on which the client is to receive the "task done" message. <br>
+        <br>
+        </dd>
+    <dt><strong>msg</strong></dt>
+    <dd>The message that the client is to receive when the task is finished.<br>
+        <br>
+        </dd>
+</dl></p>
+
+<p>Once you have created and initialized an OSScTask structure, you can send it to the Scheduler thread by way of the Scheduler's task queue. To obtain a pointer to this queue, call <tt>osScGetTaskQ</tt>. The Scheduler will read this task queue after the next retrace message from the Vi Manager. Usually, you will send one audio and one graphics task to the Scheduler each frame. After you send the task to the Scheduler, you should not modify it until you receive the "done" message (the message that the client is to receive when the task in finished).</p>
+
+<h3>See Also</h3>
+
+<p><a href="osSpTaskLoad.htm">osSpTaskLoad</a>, <a href="osCreateScheduler.htm">osCreateScheduler</a>, and <a href="osScAddClient.htm">osScAddClient</a></p>
+<H3>Revision History</H3>
+<P>
+1999/04/30 Changed format
+</P>
+
+</body>
+</html>

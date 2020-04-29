@@ -1,0 +1,72 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits
+MAP- added links, updated format>
+</head>
+<title>osTestHost</title>
+<body>
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>osTestHost</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p>osReadHost, osWriteHost, osTestHost</p>
+
+<p><i>Transfers data between host memory and RDRAM</i></p>
+
+<h3>Syntax</h3>
+<p>
+<dl>
+  <dd>#include &lt;ultra64.h&gt;     /* <A HREF="../../header/ultra64.htm">ultra64.h</A> */<br>
+    void osReadHost(void *vAddr, s32 nbytes);<br>
+    void osWriteHost(void *vAddr, s32 nbytes);<br>
+    s32 osTestHost(void);</dd>
+</dl></p>
+
+<p>* osTestHost routine is not supported. </p>
+
+<p>* osAckRamromRead and osAckRamromWrite are used to form associations with uhReadRamRom and uhWriteRamRom, but there currently is no need to use them.  (They are ignored.) </p>
+
+<h3>Description</h3>
+
+<p>These routines are used to transfer data between the 64 game and the host application.  These are written into the 64 program, and function paired with the uh** function, which is declared in &lt;<A HREF="../../header/ultrahost.htm">ultrahost.h</A>&gt; in the host-side application. </p>
+
+<p>The <A HREF="osReadHost.htm">osReadHost</A> routine receives nbytes of data sent by <A HREF="../uh/uhWriteGame.htm">uhWriteGame</A> on the host side at the address vAddr in RDRAM. </p>
+
+<p>The <A HREF="osWriteHost.htm">osWriteHost</A> routine transfers nbytes of data from the address vAddr in RDRAM to <A HREF="../uh/uhReadGame.htm">uhReadGame</A> on the host side. </p>
+
+<p>For more precise synchronization, accurately match the numbers of bytes transferred in the paired functions <tt>osReadHost</tt> and <tt>uhWriteGame</tt>, and <tt>osWriteHost</tt> and <tt>uhReadGame</tt>. <br>
+<br>
+When any of the functions is called, the corresponding host-side command is executed, and the thread at the call origin is blocked until the transfer is completed.</p>
+
+<p>For example, if <tt>osReadHost</tt> is executed on the game side, the thread on the game side is interrupted until <tt>uhWriteGame</tt> is executed on the host side.  Conversely, if <tt>uhWriteGame</tt> is executed, the program is blocked on the host side until <tt>osReadHost</tt> is executed on the game side. </p>
+
+<p>Align the DRAM virtual address on 8 bytes (64 bit).  Also make the transfer size nbytes a multiple of 4.  (Due to a 4 bytes restriction on the host side)
+</p>
+
+<p>Please be aware of the "endian" differences when data transferred from a host-side program on an Intel machine are to be used by a 64 program, or when data transferred from a 64 program are to be used by a host-side program on an Intel machine. </p>
+
+<h3>Note</h3>
+
+<p>Because these use 64 development environment functions, it is necessary to link to a debugging library when compiling. (-|**_d)</p>
+
+<p>Restrictions in PARTNER</p>
+
+<p>Add the PTN64 definition to the compile options in makefile. (-DPTN64)</p>
+
+<p><a
+href="osCreateViManager.htm">osCreateViManager</a> must be executed before using this routine in the PC version of PARTNER.  This is a restriction since a timer is used inside the function. </p>
+
+<h3>See Also</h3>
+
+<p>See <a href="../uh/uhOpenGame.htm">uhOpenGame</a> regarding exact opening methods and how to use connections from the host. </p>
+
+<p><a href="../uh/uhOpenGame.htm">uhOpenGame</a>,  <a href="../uh/uhCloseGame.htm">uhCloseGame</a>,  
+<a href="../uh/uhReadGame.htm">uhReadGame</a>, <a href="../uh/uhWriteGame.htm">uhWriteGame</a>,  
+<a href="osReadHost.htm">osReadHost</a>, and <a href="osWriteHost.htm">osWriteHost</a></p>
+<h3>Revision History</h3>
+<p>1999/04/30  Changed Format</p>
+<br><br>
+
+</body>
+</html>

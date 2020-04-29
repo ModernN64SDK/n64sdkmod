@@ -1,0 +1,127 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<BASE TARGET="main">
+<head>
+<title>PAL Submission Requirements</title>
+<!-- Editor Notes: Ron Daring 7/15/1999 -->
+</head>
+<body bgcolor="#FFFFFF">
+
+
+<P>
+
+<b><font face="arial" color="#29296b">Nintendo 64 ROM Registration Instructions</b></font>
+
+
+<P>
+<font face="arial" size="-1" color="#000000">
+
+<P>
+<a name="04.1"></a>
+<b>ROM Registration Data Specification</b>
+
+<ul>
+<li>Insert the game title and Nintendo 64 game specification at the specified addresses in the ROM.
+<P>
+<li>The ROM Registration Data area is 32 bytes from address 20H ~ 3FH.
+<P>
+<li>ROM registration data should be stored using the NRDC software provided by Nintendo.
+</ul>
+
+<p>
+<table border=0 align="center">
+<tr><td>
+<img border=0 align="center" src="../ntsc/gif/ntscsu~9.gif"></tr></td></table>
+<P>
+
+
+The following data will be stored in ROM for every Nintendo 64 game.
+<P>
+34H ~ 38H = 00H
+
+
+<P>
+<a name="04.2">
+<b>Instructions for ROM Registration Data Specification</b>
+
+<ul>
+<a name="04.2.1">
+<li>Game Title (20H ~ 33H) 
+<br>Enter the game title using ASCII code (JIS 8 bit). Refer to "Character Code List for Game Title Registration" for characters which may be used. The code "20H" should be used for a space and for all unused areas. The game title registered should be close to the title under which the game will be marketed, not a temporary name used for development purposes.
+
+<P>
+<a name="04.2.2">
+<li>Reserved Area (34H ~ 3AH) 
+<br>Store fixed value 00H at addresses 34H ~ 3AH.
+
+<P>
+<a name="04.2.3">
+<li>Game Code (3BH ~ 3EH) 
+<br>Enter the 4-digit Game Code assigned by Nintendo in ASCII. All letters must be in upper case. All game codes must be requested from Nintendo prior to submission for Lot Check. Please address your request for game codes to the NOA Product Receiving Administrator.
+
+<P>
+<b>Example</b>
+<P>
+If Game Code is "NSMJ,"the following ASCII codes will be entered at the indicated addresses:
+<P>
+4EH ---> (N) 3BH
+<br>53H ---> (S) 3CH
+<br>4DH ---> (M) 3DH
+<br>4AH ---> (J) 3EH
+
+<P>
+<a name="04.2.4">
+<li>Mask ROM Version (3FH) 
+<br>Store the version number of the mask ROM released to the market as a product. The number begins with 0 at production and increases with each revised version.
+
+<P>
+<a name="04.2.5">
+<li>Preparation of Master ROM 
+<P>
+<b>Note:</b> Before submitting the master ROM, please review the <a>N64 Programming Cautions</a> one last time.
+<P>
+The desired program file must be copied to a back-up file. Then execute the current version of "makemask" on this file, as follows.
+<P>
+When compiling a program file created on either the SGI or PC,  into the final ROM format, make sure to use libultra_rom.a (for the SGI) and libgultra_rom.a (for the PC) .
+<P>
+The program size must be <u>exactly</u> the same as the ROM capacity of the final product when makemask is executed. The size may be selected using the -s option of the makemask program.
+<P>
+Now execute the makemask program to change the created file into data for use in mass production. (Please check to make sure you are using Version 2.02. The version number is displayed when you execute the makemask program).
+<P>
+To execute the program. enter:
+<P>
+>makemask program_file_name
+<P>
+<b>Note</b> Once makemask is completed, the ROM registration filename cannot be altered. Also, the data does not change no matter how many times you execute the program.
+<P>
+The ROM registration data can be added to the program file using the "Nintendo 64 Master Data Utility Nrdc".
+<P>
+Execute a CRC calculation with Nrdc, then enter this value on the MO disk label.
+<P>
+Change the filename using the specified form. (Please see "Storing Data to the MO disk.")
+<P>
+This completes creation of the Master ROM.
+
+<P>
+<a name="04.2.6"></a>
+<li>Final Debugging of the Master ROM Data
+<br>The final debugging of the program should be performed after makemask and ROM registration have been added.
+</ul>
+
+<P>
+For more information about writing data to Flash ROM cartridges, please see the "Nintendo 64 Flash ROM Gang Writer" Users Manual.
+
+<P>
+
+<br>
+
+
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0 ALIGN="center">
+         <TR><td align="center"><font face="Arial" size="-2" color="#29296B">
+Copyright &copy; 1999, 2000<br>
+Nintendo of America Inc. All Rights Reserved<BR>
+Nintendo and N64 are registered trademarks of Nintendo<br>
+Last Updated March, 1999</FONT>
+</TD></TR></TABLE>
+</body>
+</html>

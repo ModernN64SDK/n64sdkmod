@@ -1,0 +1,173 @@
+<HTML>
+<HEAD>
+<TITLE>NuSystem Tutorial</TITLE>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<!-- Editor's Notes: 9/8/1999 Ron Daring -->
+</HEAD>
+
+<BODY bgcolor="#FFFFFF">
+
+
+<P>
+<FONT size="3"><b>6 Audio</b></FONT>
+
+<p>This section explains tools and microcode, and the way to play audio with NuSystem.</p>
+
+<p align="right"><a href="index.htm"><img
+src="../../gif/index.gif" border="0" width="65" height="17"></a></p>
+
+<hr>
+
+<b><a name="1">6.1 Tools and Microcode</a></b>
+
+<p>Two types of sound tools have been released for N64 at this time. </p>
+
+<p>One group includes ic, sbc, midicomp and other SGI tools. The other is N64
+Sound Tools for the PC. </p>
+
+<p>The output data from these different tools is not compatible, and the libraries they use are also different.
+</p>
+
+<p>There are also two types of new and old audio microcode (aspMain.o and n_aspMain.o), and there is a separate underlying library for each.</p>
+
+<p>In NuSystem, these tools and microcode can be combined in four ways.</p>
+
+<p>Depending on the combination, the following libraries and headers are needed.
+</p>
+
+<table border="1">
+    <tr>
+        <td><font face="arial" size="-1">SGItool/aspMain.o</font></td>
+        <td><font face="arial" size="-1">nualsgi.h</font></td>
+        <td><font face="arial" size="-1">libnualsgi.a</font></td>
+	<td><br></td>
+	<td><br></td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">SGItool/n_aspMain.o</font></td>
+        <td><font face="arial" size="-1">nualsgi_n.h</font></td>
+        <td><font face="arial" size="-1">libnualsgi_n.a</font></td>
+	<td><font face="arial" size="-1">libn_audio.a</font></td>
+	<td><br></td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">SoundTools/aspMain.o</font></td>
+        <td><font face="arial" size="-1">nualstl.h</font></td>
+        <td><font face="arial" size="-1">libnualstl.a</font></td>
+	<td><br></td>
+	<td><font face="arial" size="-1">libmus.a</font></td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">SoundTools/n_aspMain.o</font></td>
+        <td><font face="arial" size="-1">nualstl_n.h</font></td>
+        <td><font face="arial" size="-1">libnualstl_n.a</font></td>
+	<td><font face="arial" size="-1">libn_audio_sc.a</font></td>
+	<td><font face="arial" size="-1">libn_mus.a</font></td>
+    </tr>
+</table>
+
+<p><!--  -->The mus library that is included with N64 Sound Tools is necessary to play sound using N64 Sound Tools.<!--  --></p>
+
+<p>The SGI version is compatible only with compact MIDI.</p>
+
+<p>For information on the use of each tool, please refer to their separate manuals (N64 Audio Development Guide (SGI) or N64 Sound Tools User's
+Guide).</p>
+
+<p>Samples that use the SGI tools and the N64 Sound Tools can be found in the nu3 and nu4 directories below the sample directory. </p>
+
+<p>(The nu1 sample is based on both.)</p>
+
+<p>Processing either with <TT>make</TT> compiles them so they can use N_AUDIO(n_aspMain.o).</p>
+
+<p align="right"><a href="index.htm"><img
+src="../../gif/index.gif" border="0" width="65" height="17"></a></p>
+
+<hr>
+
+<b><a name="2">6.2 Sample Using SGI Tools</a></b>
+
+<p>Below is the main routine of the nu3 sample with sound functions added.</p>
+
+<blockquote>
+<font face="courier" size="2">
+    <pre>void mainproc(void)
+{
+  /* initialize graphic*/
+  nuGfxInit();
+
+  /* initialize controller manager*/
+  contPattern = nuContInit();
+
+  /* initialize audio */
+  nuAuInit();
+  /* register ROM audio data*/
+  setAudioData();
+
+    .
+    .
+    .
+}
+
+
+/* set audio data */
+void setAudioData(void)
+{
+  /* register bank in sequence player  */
+  nuAuSeqPlayerBankSet(_midibankSegmentRomStart,
+		       _midibankSegmentRomEnd - _midibankSegmentRomStart,
+		       _miditableSegmentRomStart);
+  /* register MIDI sequence data in the sequence player */
+  nuAuSeqPlayerSeqSet(_seqSegmentRomStart);
+  /* register bank in sound player */
+  nuAuSndPlayerBankSet(_sfxbankSegmentRomStart,
+		       _sfxbankSegmentRomEnd - _sfxbankSegmentRomStart,
+		       _sfxtableSegmentRomStart);
+}</pre>
+</font>
+</blockquote>
+
+<p>Audio is initialized with a call to nuAuInit().</p>
+
+<p>The NuSystem audio data set functions are called with setAudioData(). </p>
+
+<p>The arguments of these functions correspond to the contents of spec, so
+they can be defined as external references with segment.h.</p>
+
+<p>Once the audio settings have been made, you can play back simply by setting the sequence number.</p>
+
+<blockquote>
+<font face="courier" size="2">
+    <pre>nuAuSeqPlayerSetNo(0,seq_no);
+nuAuSeqPlayerPlay(0);</pre>
+</font>
+</blockquote>
+
+<p>To play back a sound effect, simply specify the number.</p>
+
+<p>The default playback frequency is 32KHz, so when sampling data that has a 44KHz cycle, you need to quickly lower the pitch as shown below. (This is not normally done).
+</p>
+
+<blockquote>
+<font face="courier" size="2">
+    <pre>nuAuSndPlayerPlay(snd_no); 
+nuAuSndPlayerSetPitch(44100.0/32000);</pre>
+</font>
+</blockquote>
+
+<p align="right"><a href="index.htm"><img
+src="../../gif/index.gif" border="0" width="65" height="17"></a></p>
+
+<hr>
+
+<b><a name="3">6.3 N64 Sound Tools</a></b>
+
+<p><!--  -->The library and header files for N64 Sound Tools must be installed to <TT>make</TT> this sample.<!--  --></p>
+
+<p><!--  -->For detailed information, please refer to the audio section of the N64 Tutorial Manual (on this CD), the N64 Sound Tools User's Guide (provided with N64 Sound Tools software) and the NuSystem Functions Manual (on this CD).<!--  --></p>
+
+<p align="right"><a href="index.htm"><img
+src="../../gif/index.gif" border="0" width="65" height="17"></a></p>
+
+<hr>
+</body>
+</html>

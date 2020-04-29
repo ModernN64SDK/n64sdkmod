@@ -1,0 +1,88 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Device-Chapter 2 How to USE Devices Connected to the PI </TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/21/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<font style="font-size:12pt"><B>2.2  SRAM</B></FONT>
+<br>
+<P>
+N64 Game Paks can incorporate SRAM with a battery-backup to save data.  Unlike EEPROM and the Controller Pak, SRAM can be managed using the PI functions just like normal Mask ROM, even though the addressing is different.
+     You can utilize this during software development by connecting a SRAM board to the development equipment.<br><br>
+
+     To access SRAM from NuSystem you first need to initialize with the following function: 
+</P>
+<P>
+<BR>
+<HR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Function name:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP><tt>nuPiInitSram</tt></TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Syntax:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>void nuPiInitSram (void)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Arguments:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>None</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Return Value:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>None</TD>
+</TR></TABLE>
+<HR>
+</P>
+<P>
+After initialization is completed, you can use the nuPiReadSram macro for reading from SRAM and the nuPiWriteSram macro for writing to SRAM.<BR>
+<HR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Function name:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP COLSPAN=2><tt>nuPiReadSram</tt></TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Syntax:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP COLSPAN=2>void nuPiReadSram(u32 addr, void* buf_ptr, u32 size)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Arguments:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP><b>addr</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP>SRAM address</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP><b>buf_ptr</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Buffer pointer</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP><b>size</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Transfer size</TD>
+</TR></TABLE>
+<HR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Function name:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP COLSPAN=2><tt>nuPiWriteSram</tt></TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Syntax</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP COLSPAN=2>void nuPiWriteSram(u32 addr, void* buf_ptr, u32 size)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Arguments:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP><b>addr</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP>SRAM Address</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP><b>buf_ptr</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Buffer pointer</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP><b>size</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Transfer size</TD>
+</TR></TABLE>
+<HR>
+<p>
+ For both reading and writing, the SRAM address "addr" must have 2byte alignment and the buffer pointer "buf_ptr" must have 8byte alignment.<br><br>  
+     The macros nuPiReadSram and nuPiWriteSram can be replaced with the function call to <tt>nuPiReadWriteSram</tt>.  
+</P>
+<BR>
+<BR>
+<BR>
+</BODY>
+</HTML>

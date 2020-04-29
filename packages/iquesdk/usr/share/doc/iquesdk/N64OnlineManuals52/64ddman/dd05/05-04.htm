@@ -1,0 +1,258 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<TITLE>05-04</TITLE>
+</HEAD>
+
+<BODY bgcolor="#FFFFFF">
+<font face="arial" size="-1">
+<P>
+<STRONG>5.4 Creating Master Data</STRONG>
+
+<P>
+The master data are data based on a certain fixed format and are used when a 64DD game program that has been debugged by the developer is submitted to Nintendo.  After implementing the game, the developer performs the final check in accordance with the flowchart shown in Section <A href="05-02.htm">5.2</A>, then submits the data to Nintendo.  The tool <A href="../../n64man/64dd/64ddtool/n64mdisk.htm">n64mdisk</A> is used to create the master data, and the batch file mwrite is used to create a final-check disk from the master data.  mwrite is generated when <A href="../../n64man/64dd/64ddtool/n64mdisk.htm">n64mdisk</A> creates the master data.  
+</P>
+<P>
+The following describes how to use <A href="../../n64man/64dd/64ddtool/n64mdisk.htm">n64mdisk</A>.
+</P>
+<TABLE width="100%" border="1" cellpadding="3" cellspcaing="3">
+  <TR>
+    <TD width="290"><font face="arial" size="-1">[NW]
+    <P>
+% <A href="../../n64man/64dd/64ddtool/n64mdisk.htm">n64mdisk</A>
+    </P>
+</TD>
+    <TD width="290"><font face="arial" size="-1">[PC]
+    <P>
+C&gt; <A href="../../n64man/64dd/64ddtool/n64mdisk.htm">n64mdisk</A>
+    </P>
+</TD></TR>
+</TABLE>
+
+<P>
+With the following input, the file n64mdisk.cfg (default configuration file) is read, and the master data are created according to its contents.  The following files are created when the master data are created.
+</P>
+<P>
+<STRONG>master.d64</STRONG>
+
+<P>
+Master data
+
+<P>
+<STRONG>mwrite</STRONG>
+<P>
+A batch file that writes the master data to disk.  The final-check disk can be created by entering &lt;mwrite (&quot;&lt;&quot; is the Partner command to run a batch file) in the Partner Command Window.  Please be sure to use this final-check disk to complete final debugging of the master data before submitting the data. 
+</P>
+<P>
+<STRONG>mwrite.id</STRONG>
+<P>
+The ID file used by mwrite.  This 32-byte file is copied unchanged to the ID area when mwrite is executed.  However, the name of the machine that ran mwrite and the time are entered for Factory Line Number and Production Time.  For more information, please see <A href="../dd06/index.htm">"Chapter 6,  Disk ID</A>."
+ 
+<P>
+ 
+<strong>Note:</STRONG> When creating master data, be sure to use libleo.a and libultra_rom.a as linking library files .  libleo_d.a and libleo_d.a are for debugging use.  When submitting master data, also be sure to create the final-check disk using master data with libleo.a and libultra_rom.a linked, and adequately debug with this disk before submission.
+<P>
+<TABLE width="100%" border="1" cellpadding="3"cellspacing="3">
+  <TR>
+    <TD width="290"><font face="arial" size="-1">[NW]
+    <P>
+% <A href="../../n64man/64dd/64ddtool/n64mdisk.htm">n64mdisk</A> n64mdisk.yes
+    </P>
+</TD>
+    <TD width="290"><font face="arial" size="-1">[PC]
+    <P>
+C&gt; <A href="../../n64man/64dd/64ddtool/n64mdisk.htm">n64mdisk</A> n64mdisk.yes
+    </P>
+</TD></TR>
+</TABLE>
+
+<P>
+A configuration file for creating master data (n64mdisk.yes in this example) can also be specified as shown above.
+</P>
+<P>
+Examples of configuration file are discussed below
+</P>
+<P>
+<Configuration File Examples>
+</P>
+<TABLE border="1">
+  <TR>
+    <TD>
+<PRE>
+USE GWRITE              gwrite
+DISK TYPE               AUTO
+IPL LOAD ADDRESS        0x80000400
+RAM START LBA           AUTO
+RAM END LBA             AUTO
+INITIAL CODE            NINT
+GAME VERSION            0
+DISK NUMBER             0
+DISK USE                0
+DESTINATION CODE        JAPAN
+COMPANY CODE            01 
+FREE AREA               0x123456789abc
+</PRE>
+</TD></TR>
+</TABLE>
+
+<P>
+<STRONG>USE GWRITE </STRONG> 
+ 
+<P>
+Specify NO or gwrite.  When NO is specified, a ROM INIT.FILE specification is required.  When gwrite is specified, the contents of the gwrite file create data for the master ROM area.  If the gwrite file contains a specification for RAM area data, RAM area data are also created. When creating game disk master data, a gwrite file created by makedisk should generally be specified.
+ 
+<P>
+Example: USE GWRITE gwrite
+ 
+<P>
+Example: USE GWRITE NO
+ 
+<P>
+<STRONG>DISK TYPE </STRONG> 
+<P>
+Specifies the disk type.  Values that can be specified are numeric values from 0 to 6. AUTO can be specified.  When AUTO is specified, a disk type is a value that is specified by gwrite.  For more information, please see 
+<A href="../dd11/11-05.htm"> "Section 11.5, Disk Types (ROM and RAM Areas")</A>
+ 
+<P>
+Example: DISK TYPE AUTO 
+<P>
+Example: DISK TYPE 0
+</P>
+<P>
+<STRONG>IPL LOAD ADDRESS </STRONG> 
+<P>
+Specifies the load address (For information on load addresses, see <A href="../dd11/11-04.htm">"Section 11.4, System Area</A>.")  If data are created using gwrite, priority is given to the address specified in gwrite when an address is specified by a leowrite -a . . . statement contained in gwrite.
+</P>
+<P>
+Example: IPL LOAD ADDRESS 0x80000400
+ 
+<P>
+<STRONG>IPL LOAD SIZE</STRONG> 
+<P>
+Specifies the IPL size (see "Section 11.4, System Area," for information on IPL size).  If data are created using gwrite, these data are unnecessary (ignored).
+ 
+<P>
+Example: IPL LOAD SIZE 8
+ 
+<P>
+<STRONG>ROM INIT. FILE</STRONG> 
+<P>
+Specifies an image file for ROM area data.  If data are not created using gwrite, this specification is required.  If, on the other hand, data are created using gwrite, this specification cannot be performed.
+ 
+<P>
+Example: ROM INIT. FILE romimage
+</P>
+<P>
+<STRONG>RAM START LBA </STRONG> 
+<P>
+Specifies the starting LBA for the RAM area data.  If AUTO is specified, the starting LBA for the RAM area is set according to the disk type specified by DISK TYPE.  Also specify AUTO if no RAM area is used.  
+ 
+<P>
+Example: RAM START LBA AUTO
+</P>
+<P>
+Example: RAM START LBA 1500
+ 
+<P>
+<STRONG>RAM END LBA </STRONG> 
+<P>
+Specifies the ending LBA for the RAM area data. If AUTO is specified, the ending LBA is set by the RAM area image file size specified by gwrite or RAM.INIT.FILE.
+ 
+<P>
+Example: RAM END LBA AUTO
+</P>
+<P>
+Example: RAM END LBA 2000
+ 
+<P>
+<STRONG>RAM INIT. FILE</STRONG>
+<P>
+Specifies an image file for the RAM area data.  
+ 
+<P>
+Example: RAM INIT. FILE ramimage
+ 
+<P>
+<table border="0"><tr><td valign="top"><font face="arial" size="-1"><STRONG>Note:</STRONG></td><td><font face="arial" size="-1">If a value is specified for RAM END LBA, the area from the starting LBA for the RAM area to the ending LBA is reserved as RAM area.  However, the portion with initial data values not then specified by gwrite or RAM INIT.FILE is embedded at 0xFF.</td></tr></table>
+<P>
+For detailed descriptions of the following specifications, please see <A href="../dd06/index.htm">"Chapter 6, Disk ID"</A>
+
+<P>
+<STRONG>INITIAL CODE</STRONG> 
+<P>
+Specifies the initial code (up to 4 ASCII characters)
+ 
+<P>
+Example: INITIAL CODE NINT
+ 
+<P>
+<STRONG>GAME VERSION</STRONG> 
+<P>
+Specifies the game version (decimal number up to 2 digits long).
+ 
+<P>
+Example: GAME VERSION 1
+ 
+<P>
+Example: GAME VERSION 99
+ 
+<P>
+<STRONG>DISK NUMBER </STRONG> 
+<P>
+Specifies the disk number (decimal number up to 2 digits long).
+ 
+<P>
+Example: DISK NUMBER 0
+ 
+<P>
+Example: DISK NUMBER 99
+ 
+<P>
+<STRONG>RAM USE</STRONG> 
+<P>
+Specifies the RAM area used (base-16 number up to two digits long).  Specifying 1 designates use of the file system recommended by Nintendo.  Specify 0 when not using a specific format such as the file system recommended by Nintendo.
+ 
+<P>
+RAM USE 0x0
+ 
+<P>
+<STRONG>DISK USE</STRONG>
+<P>
+Specifies whether a disk is used.
+ 
+<P>
+Example: DISK USE 0
+ 
+<P>
+<STRONG>DESTINATION CODE </STRONG> 
+<P>
+Specifies the destination code.  If the destination is Japan, specify JAPAN or 0.  If the destination is the U.S., specify 1.  
+ 
+<P>
+Example: DESTINATION CODE JAPAN
+ 
+<P>
+Example: DESTINATION CODE 1
+ 
+<P>
+<STRONG>COMPANY CODE </STRONG> 
+<P>
+Specifies the company code of the company that created the game (2-byte ASCII code).
+ 
+<P>
+Example: COMPANY CODE 12
+ 
+<P>
+<STRONG> FREE AREA</STRONG> 
+<P>
+Area where unrestricted data are written (hexadecimal number up to 12 digits long).
+
+<P>
+Example: FREE AREA 0x123456789abc
+ 
+<P>
+<A href="index.htm"><IMG src="../../gif/index.gif" height="17" width="65" border="0"></A>
+ 
+<HR>
+</BODY>
+</HTML>

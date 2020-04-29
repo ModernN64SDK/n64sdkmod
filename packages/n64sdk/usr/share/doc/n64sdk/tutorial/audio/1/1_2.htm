@@ -1,0 +1,54 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Audio-Chapter 1 AUDIO PLAYBACK</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/15/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<font style="font-size:12pt"><b>1.2  Data Used in Audio Playback</B></FONT>
+<P>
+Here we explain the data needed for audio playback.  All of the data talked about here are output as files by the tools in Sound Tools.  These are shown in the table below.</P>
+
+<TABLE BORDER=0><TR><TD ROWSPAN=5>&nbsp;</TD><TD>
+<TABLE BORDER=1 CELLSPACING=0 CELLPADDING=2>
+<TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE>Name</TD>
+	<TD NOWRAP ALIGN=MIDDLE VALIGN=MIDDLE>Extension</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE>Explanation</TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE>Song</TD>
+	<TD NOWRAP ALIGN=MIDDLE VALIGN=MIDDLE>bin</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE>The data for one song(sequence)</TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE>Sound effect bank</TD>
+	<TD NOWRAP ALIGN=MIDDLE VALIGN=MIDDLE>bfx</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE>The collection of data for sound effects</TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE>Sample wave bank</TD>
+	<TD NOWRAP ALIGN=MIDDLE VALIGN=MIDDLE>wbk</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE>The collection of sample waveform information</TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE>Sample pointer bank</TD>
+	<TD NOWRAP ALIGN=MIDDLE VALIGN=MIDDLE>ptr</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE>Information on the address (offset) for each <BR>
+	waveform in the sample wave bank</TD>
+</TR></TABLE>
+</TD></TR></TABLE>
+<P>
+The sample wave bank data and the sample pointer bank data are always paired.  The combination of these two data sets is called the "sample bank," which contains the information for numerous audio waveforms.  Each "song" is one song's worth of data.   The sound effect bank contains the data for multiple sound effects (their mapping) to play short audio effects.</P>
+<P>
+ To playback audio, the data can be combined in two ways: by combining a song with a sample bank, and by combining a sound effect bank with a sample bank.  It is OK to use just songs or just sound effect banks.  Moreover, numerous songs and sound effect banks can share the same group of sample banks.</P>
+<P>
+ The data for songs, sound effect banks and sample pointer banks must all be placed into RAM.  In this tutorial, the area in RAM needed for this data is automatically secured from the audio heap.  The sample wave bank data, on the other hand, does not normally need to be placed into RAM, although it is possible to specify whether or not to do this at the time of initialization.
+</P>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0><TR>
+<TD ALIGN=LEFT VALIGN=TOP>(*)When placing the sample wave bank data in RAM you can maintain the data as an array of global variables or in some other manner, but the MUS library specifications require that the data have 32bit alignment.  For DMA transfers the data should be cache aligned (16byte alignment) for safety, even though the specs say 8byte alignment is fine.<br><br>
+     When exeGCC is being used, N64ALIGN is "on" for environmental variables, so arrays of 1024bytes and larger are always cache aligned.  However,  arrays that are less than 1024bytes take on 8byte alignment.  In such instances, you must clearly state cache alignment.  For details, see the exeGCC manual.</TD></TR></TABLE>
+<BR>
+<BR>
+<BR>
+</BODY>
+</HTML>

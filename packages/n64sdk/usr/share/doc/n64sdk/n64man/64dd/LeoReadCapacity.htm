@@ -1,0 +1,66 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Author's Comments: JLR made formating edits.
+MAP updated format, links 9/28/99>
+<title>LeoReadCapacity</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>LeoReadCapacity</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p><i>
+Calculates the usable disk space</i>
+</p>
+
+<h3>Syntax</h3>
+<p>
+<pre>
+#include &lt;PR/leo.h&gt;     /* <A HREF="../../header/leo.htm">leo.h</A> */
+
+s32 LeoReadCapacity(LEOCapacity *<u>cap</u>, s32 <u>direction</u>);
+
+typedef struct
+{
+   u32 startLBA;     /* Beginning LBA of usable region */
+   u32 endLBA;       /* Ending LBA of usable region */
+   u32 nbytes;       /* Total byte size of usable region */
+} LEOCapacity;
+</pre></p>
+<h3>Description</h3>
+
+<p>It calculates the usable disk space. When this function is called with OS_READ placed in the <b>direction</b> argument, "readable starting LBA" is returned in cap-&gt;startLBA, "readable ending LBA" is returned in cap-&gt;endLBA, and "total readable bytes" is returned in cap-&gt;nbytes. These values are usually the same no matter what the type of inserted disk, with startLBA=0, endLBA=4291 and nbytes=64458560. 
+</p>
+
+<p>When this function is called with OS_WRITE placed in the <b>direction</b> argument, "writable starting LBA" is returned in cap-&gt;startLBA, "writable ending LBA" is returned in cap-&gt;endLBA, and "total writable bytes" is returned in cap-&gt;nbytes. The return values vary, depending on the disk types used.
+
+Like <a href="LeoByteToLBA.htm">LeoByteToLBA</a> and <a href="LeoLBAToByte.htm">LeoLBAToByte</a>, internally stored variables are used for the types of disks inserted. See "7.3.1 Conversion between number of bytes and number of LBA" in the N64 Disk Drive Programming Manual for more information.
+</p>
+
+<p>The following returned values are possible. A check is usually not necessary. 
+</p>
+
+<p><b>-1</b> </p>
+
+<p>Leo Manager is not running. The currently inserted disk type is referenced for the conversion operation, so be sure to start Leo Manager before calling this function. </p>
+
+<p><b>LEO_ERROR_GOOD</b> </p>
+
+<p>Normal termination.<br>
+</p>
+
+<h3>See Also</h3>
+</b></p>
+
+<p><a href="LeoCreateLeoManager.htm">Leo*CreateLeoManager</a>,
+<a href="LeoByteToLBA.htm">LeoByteToLBA</a>, and <a
+href="LeoLBAToByte.htm">LeoLBAToByte</a>
+</p>
+
+<h3>Revision History</h3>
+<p>04/30/1999  Changed Format</p>
+<br><br>
+
+</body>
+</html>

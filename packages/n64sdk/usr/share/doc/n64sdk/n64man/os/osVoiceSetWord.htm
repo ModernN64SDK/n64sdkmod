@@ -1,0 +1,139 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits
+MAP- added links, updated format>
+<TITLE>osVoiceSetWord</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+<font style="font-size: 12pt"><b>osVoiceSetWord</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p><i>Registers words to the Voice Recognition System dictionary</p></i>
+</P>
+<P>
+<h3>Syntax</h3>
+</P>
+<P>
+#include &lt;ultra64.h&gt;     /* <A HREF="../../header/ultra64.htm">ultra64.h</A> */
+</P>
+<P>
+s32 osVoiceSetWord(OSVoiceHandle *hd, u8 *word);
+</P>
+<P>
+<h3>Description</h3>
+</P>
+<P>
+The <tt>osVoiceSetWord</tt> function is for registering words in the Voice Recognition System dictionary.<BR>
+</P>
+<P>
+hd is the Voice Recognition System control structure.  The Voice Recognition System must be initialized with the <A href="osVoiceInit.htm">osVoiceInit</A> function before the <tt>osVoiceSetWord</tt> function is called.
+The word (SJIS) to be registered is specified in "word."  The word can be up to 17 characters long. Since calling the <tt>osVoiceSetWord</tt> function once registers one word, execute <tt>osVoiceSetWord</tt> multiple times to register multiple words.  The number of words registered must match the number set by the <a href="osVoiceClearDictionary.htm">osVoiceClearDictionary</a> function.  Please note that an error will be generated when the <a href="osVoiceStartReadData.htm">osVoiceStartReadData</a> function is executed, if the number of words registered is greater than or less than the specified number of words. <BR>
+</P>
+<P>
+The maximum number of words which can be registered in the dictionary is about 80 words, assuming 5 syllables per word.  Therefore, while the maximum number of words which can be registered is set at 255, if there are several syllables per word, the dictionary may subsequently overflow the memory.  In this case, voice recognition can be executed without an error being caused by the <tt>osVoiceStartReadData</tt> function even if the number of registered words is less than the number set by the <tt>osVoiceClearDictionary</tt> function. <BR>
+</P>
+<P>
+The characters which can be registered and their codes are shown in the table below.<BR>
+</P>
+<CENTER>
+<table border=0 align="center">
+<tr><td>
+<img border=0 align="center" src="../../gif/t26-08-01.gif"></tr></td></table>
+
+</CENTER>
+<P>
+In addition, the following restrictions apply to character combinations when registering words.  Use the <A href="osVoiceCheckWord.htm">osVoiceCheckWord</A> function to check whether or not the word that you are trying to register can be registered in the Voice Recognition System.  Use this in the case of game applications in which registered words will be input during debugging or by the game player. 
+</P>
+<CENTER>
+<table border=1 cellspacing="3" cellpadding="3" width=80%>
+<tr><td valign="top" width=40%><font face="arial" size="-1"><b>Usage</b>
+<td valign="top" width=60%><font face="arial" size="-1"><b>Character</b></td></tr>
+<tr>
+<td valign="top" width=40%><font face="arial" size="-1">No limitation on use</td>
+<td width=60% valign="top"><img src="../../gif/t26-08-02.1.gif"></td>
+</tr>
+<tr>
+<td width=40% valign="top"><font face="arial" size="-1">Can be used only after specified characters
+<br>(Combinable characters)</td>
+<td width=60% valign="top"><img src="../../gif/t26-08-02.2.gif"></td>
+</tr>
+<tr>
+<td valign="top" width=40%><font face="arial" size="-1">Cannot be used at the beginning of a word</td>
+<td  width=60% valign="top"><img src="../../gif/t26-08-02.3.gif"></td>
+</tr>
+<tr>
+<td valign="top" width=40%><font face="arial" size="-1">Cannot be used at the end of a word</td>
+<td width=60% valign="top"><img src="../../gif/t26-08-02.4.gif"></td>
+</tr>
+<tr>
+<td width=40% valign="top"><font face="arial" size="-1">Cannot be used in front of "-"</td>
+<td width=60% valign="top"><img src="../../gif/t26-08-02.5.gif"></td>
+</tr>
+<tr>
+<td valign="top" width=40%><font face="arial" size="-1">Cannot be used after "tsu" or "tsu"</td>
+<td width=60% valign="top"><img src="../../gif/t26-08-02.6.gif"></td>
+</tr>
+<tr><td valign="top" width=40%><font face="arial" size="-1">Combinations which cannot be used</td>
+<td width=60% valign="top"><img src="../../gif/t26-08-02.7.gif"></td></tr>
+</table>
+
+</CENTER>
+<P>
+The returned value is an error code.  A 0 (zero) is returned when processing ends normally.  If an error occurs, this function has the following error codes. <BR>
+</P>
+<P>
+<B>CONT_ERR_NO_CONTROLLER</B>
+</P>
+<BLOCKQUOTE>
+<font style="font-size:10pt">Nothing is connected to the controller port.</font><BR>
+</BLOCKQUOTE>
+<P>
+<B>CONT_ERR_DEVICE</B>
+</P>
+<BLOCKQUOTE>
+<font style="font-size:10pt">Something other than the Voice Recognition System is connected to the controller port.</font>
+</BLOCKQUOTE>
+<P>	
+<B>CONT_ERR_VOICE_NO_RESPONSE</B>
+</P>
+<BLOCKQUOTE>
+<font style="font-size:10pt">There was no response from the Voice Recognition System.  There may be a problem with the hardware. </font>
+</BLOCKQUOTE>
+<P>
+<B>CONT_ERR_CONTRFAIL</B>
+</P>
+<BLOCKQUOTE>
+<font style="font-size:10pt">There was a data transmission failure.  There is a problem in the Voice Recognition System connection.</font> 
+</BLOCKQUOTE>
+<P>
+<B>CONT_ERR_INVALID</B>
+</P>
+<BLOCKQUOTE>
+<font style="font-size:10pt">There is an error in the function call method or in the argument.  This error will not occur if the function is being used correctly. This error will also be returned when you try to register a number of words more than the value specified in <tt>osVoiceClearDictionary</tt></font></BLOCKQUOTE>
+<P>
+<B>CONT_ERR_VOICE_WORD</B>
+</P>
+<BLOCKQUOTE>
+<font style="font-size:10pt">A word containing improper characters has been registered.  The set word is invalidated and the word number is not incremented.  Execute the <tt>osVoiceSetWord</tt> function to register a proper word.</font> 
+</BLOCKQUOTE>
+<P>
+<B>CONT_ERR_VOICE_MEMORY</B>
+</P>
+<BLOCKQUOTE><font style="font-size:10pt">
+Dictionary memory overflow.  However, if the recognition command is executed in this condition, normal recognition processing can be performed even if the number of words which have been set is less than the number of words set by the <tt>osVoiceClearDictionary</tt>function.  When this error is generated, manage the number of words actually set on the application side. </font>
+</BLOCKQUOTE>
+<P>
+<p><b>See also</b><br><br>
+<A href="osVoiceCheckWord.htm">osVoiceCheckWord</A>, <A href="osVoiceClearDictionary.htm">osVoiceClearDictionary</A>,
+<A href="osVoiceControlGain.htm">osVoiceControlGain</A>, <A href="osVoiceCountSyllables.htm">osVoiceCountSyllables</A>,
+<A href="osVoiceGetReadData.htm">osVoiceGetReadData</A>, <A href="osVoiceInit.htm">osVoiceInit</A>,
+<A href="osVoiceMaskDictionary.htm">osVoiceMaskDictionary</A>, <A href="osVoiceStartReadData.htm">osVoiceStartReadData</A>, and <A href="osVoiceStopReadData.htm">osVoiceStopReadData</A>
+</P>
+<h3>Revision History</h3>
+<p>1999/04/30  Changed Format</p>
+<br><br>
+
+</BODY>
+</HTML>

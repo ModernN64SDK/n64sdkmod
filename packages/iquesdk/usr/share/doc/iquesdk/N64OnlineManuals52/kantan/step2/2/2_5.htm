@@ -1,0 +1,231 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!--
+Editors Notes:
+  PWC- updated formatting
+-->
+<title>STEP2 [A Guide to the N64 Programming] - Chapter 2 Drawing Structure and Samples</title>
+<base target="keywords">
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<p><font style="font-size:12pt; font-weight:bold">2-5 2D Rendering Process</font><br>
+<br>
+<br>
+The N64 displays 2D images using the same process it uses to display <a href="../../../keywords/index/data/graphics.htm#polygon" target="keywords">polygons</a>. In reality, 2D images are just polygons with texture data pasted on them. <br>
+<br>
+<br>
+<b>2-5-1 Kinds of 2D Images</b><br>
+<br>
+<br>
+To display a 2D image, the N64 uses two kinds of library functions:
+<ul><b><li>Bitmap display functions</li></b><br>
+ Bitmap display functions that draw bitmaps by using drawing parameters specified in the game application. <br><br>
+<b><li><a href="../../../keywords/index/data/graphics.htm#sprite" target="keywords">Sprite</a> display functions</li></b><br>
+ Sprite display functions that use built-in hardware capabilities to draw four-sided figures (sprites) using a small number of parameters.<br><br>
+</ul>
+ The 2D images drawn can be moved in the X or Y directions or be rotated. Note: Rotation is currently not supported.<br>
+<br>
+<br>
+<br>
+<b>2-5-2 Procedure</b><br>
+<img src="img00010.gif"><br>
+The actual procedure is best illustrated with a sample program (2d.c).  See [<a
+href="../furoku/c.htm">Appendix C Sample Description</a>] about the sample program. 
+Note that the gfx function is not a standard N64 function. It is defined within the 2D sample for use by that sample. <br>
+<br>
+<br>
+<b>1. Main 2D Drawing Routine</b><br>
+The main drawing routine forms the executing core for the 2D image drawing sample. 
+As a process flow, first construct the <a href="../../../keywords/index/data/graphics.htm#display list" target="keywords">display list</a> and enter (transfer) it into the RCP. The RCP creates the actual displaying data and outputs the video signal via the frame buffer.<br>
+<br>
+<pre>void entry(void)
+{
+ Gfx *gp;  /* points to display list */
+ u16 w, h;
+
+ w=64; h=64;  /* sets up sprite size */
+ while(1){</pre><br>
+<br>
+<b><li>Construct the display list</li></b><br>
+The following code reserves the necessary memory area for the construction of the display list, sets up the RCP execution process for sprite drawing in the reserved area, and provides a termination process for the constructed display list. <br>
+<br>
+<pre>/* Start to construct a display list */
+   gp = gfxBegin(1024);
+   </pre>
+
+<table border="1" cellpadding="4" cellspacing="0">
+    <tr>
+        <td>This code checks to see if a display list has already been constructed. If a display list has not been completed, this code reserves the GBI command area for new construction. If it has been completed, this code moves on to step 2, the process that transfers the display list to the RCP. 
+        </td>
+    </tr>
+</table>
+
+<p><br><pre>
+/* Set the drawing mode for RSP and RDP */
+   gp = setup_SP_DP(gp);</pre> 
+
+<table border="1" cellpadding="4" cellspacing="0">
+    <tr>
+        <td>This code constructs a command that sets the necessary RCP drawing mode, and then adds that command to the display list. 
+        </td>
+    </tr>
+</table>
+
+<p><br><pre>
+ /* Accept the texture pattern */
+    gp = load_texture(gp,w,h);</pre> 
+
+<table border="1" cellspacing="0" cellpadding="4">
+    <tr>
+        <td>This code sets up a texture pattern loading command in the display list. 
+        </td>
+    </tr>
+</table>
+
+<p><br><pre>
+ /* Write the texture pattern */
+   gp = draw_texture(gp,124,92,w,h);</pre> 
+
+<table border="1" cellspacing="0" cellpadding="4">
+    <tr>
+        <td>This code sets up a texture drawing command in the display list. 
+        </td>
+    </tr>
+</table>
+
+<p><br><pre>
+ /* End the construction of display list */
+   gfxEnd(gp);</pre> 
+
+<table border="1" cellspacing="0" cellpadding="4">
+    <tr>
+        <td>This code terminates the display list.<br>
+        <li>Caution 1: Watch out for an unterminated display list. If it is transferred to the RCP, it will cause the RCP to hang (stop responding).</li>
+        <li>Caution 2: be sure to put the <a href="../../../n64man/gdp/gDPFullSync.htm">gDPFullSync</a> function at the end of each display list. Otherwise, the RDP end <a href="../../../keywords/index/data/system.htm#message" target="keywords">message</a> will not ever come.</li> 
+        </td>
+    </tr>
+</table>
+<br><br>
+<br>
+
+<B><li>Transfer the display list to the RCP to execute the drawing process</li></B><br>
+
+The following code transfers the display list to the RCP where the display list is interpreted and executed. <br>
+<BR><br><PRE>
+ /* Transfer display list to RCP */
+   gfxFlush( ); </PRE> 
+
+<table border="1" cellspacing="0" cellpadding="4">
+    <tr>
+        <td>This code transfers the display list to the RCP where it is executed.<br>
+        This function also provides the frame buffer switch that writes the created image data into the frame buffer. 
+        </td>
+    </tr>
+</table>
+
+<br><br>
+<li><b>Synchronize the CPU with the RCP</b></li><br>
+The following function ensures coordination between the CPU and RSP:<br>
+<br><pre>
+ /* Wait for the retrace */
+   gfxWaitSync( );<br>
+   }
+   }</pre><br>
+<br>
+<b>2. Techniques for Construction of the Display List</b><br>
+The actual construction of the display list uses one of these processes:
+<ul>
+<li>Set the RSP and RDP Drawing Modes</li>
+<li>Set and Read the Texture</li>
+<li>Set the Drawing Sequence of the Bitmap Pattern</li>
+</ul>
+<br>
+<b><li>Set the RSP and RDP Drawing Modes</li></b><br>
+The following routines set the RCP drawing mode that actually creates the commands that render the drawing reflected in the display list. The <a href="../../../n64man/gsp/gSP_INDEX.htm">gSP</a> and <a href="../../../n64man/gdp/gDP_INDEX.htm">gDP</a> functions are included in the N64 library.
+ For more information, please see the online <a href="../../../n64man/n64man.htm" target="index">"N64 Function Reference Manual"</a> (HTML manual pages). <br>
+<br>
+<pre>static Gfx *setup_SP_DP(Gfx *gp)
+     {
+/* Set all sorts */
+
+/* Set the texturing parameter */
+ <a href="../../../n64man/gsp/gSPTexture.htm">gSPTexture</a>(gp++,0x8000,0x8000,0,G_TX_RENDERTILE,G_ON);
+
+/* The synchronous setting between the <a href="../../../keywords/index/data/graphics.htm#rendering" target="keywords">rendering</a> and  sub-<a href="../../../keywords/index/data/graphics.htm#attribute" target="keywords">attribute</a>*/
+ <a href="../../../n64man/gdp/gDPPipeSync.htm">gDPPipeSync</a>(gp++);<br>
+
+/* Set the RDP cycle type */
+ <a href="../../../n64man/gdp/gDPSetCycleType.htm">gDPSetCycleType</a>(gp++,G_CYC_COPY);
+
+/* Set the rendering mode of the <a href="../../../keywords/index/data/graphics.htm#blender" target="keywords">blender</a> within RDP */
+ <a href="../../../n64man/gdp/gDPSetRenderMode.htm">gDPSetRenderMode</a>(gp++,G_RM_NOOP,G_RM_NOOP2);
+
+/* Set the texture<a href="../../../keywords/index/data/graphics.htm#LOD" target="keywords">LOD</a> */
+ <a href="../../../n64man/gdp/gDPSetTextureLOD.htm">gDPSetTextureLOD</a>(gp++,G_TL_TILE);
+
+/* Set the <a href="../../../keywords/index/data/graphics.htm#perspective correction" target="keywords">perspective</a> of the <a href="../../../keywords/index/data/graphics.htm#texture map" target="keywords">texture map</a> */
+ <a href="../../../n64man/gdp/gDPSetTexturePersp.htm">gDPSetTexturePersp</a>(gp++,G_TP_NONE);
+
+/* Set the detail type */
+ <a href="../../../n64man/gdp/gDPSetTextureDetail.htm">gDPSetTextureDetail</a>(gp++,G_TD_CLAMP);
+
+/* Set the texture filter type */
+ <a href="../../../n64man/gdp/gDPSetTextureFilter.htm">gDPSetTextureFilter</a>(gp++,G_TF_BILERP);
+
+/* Set the conversion mode of the color space */
+ <a href="../../../n64man/gdp/gDPSetTextureConvert.htm">gDPSetTextureConvert</a>(gp++,G_TC_FILT);
+
+/* Set the compare mode of the <a href="../../../keywords/index/data/graphics.htm#alpha value" target="keywords">alpha value</a> */
+ <a href="../../../n64man/gdp/gDPSetAlphaCompare.htm">gDPSetAlphaCompare</a>(gp++,G_AC_NONE);
+
+/* Set the dithering mode of the color data */
+ <a href="../../../n64man/gdp/gDPSetColorDither.htm">gDPSetColorDither</a>(gp++,G_CD_DISABLE);
+
+/* Set the dithering mode of the alpha value */
+ <a href="../../../n64man/gdp/gDPSetAlphaDither.htm">gDPSetAlphaDither</a>(gp++,G_AD_NOISE);
+ return gp;
+ }</pre><br>
+<br>
+<b><li>Set and Read the Texture</li></b><br>
+The <a href="../../../n64man/gdp/gDP_INDEX.htm">gDP functions</a> are included in the N64 library. For more information, please see the online <a href="../../../n64man/n64man.htm" target="index">"N64 Function Reference Manual"</a> (HTML manual pages). <br>
+<br>
+<pre>static Gfx *load_texture(Gfx *gp,u16 w,u16 h)
+{
+/* Read <a href="../../../keywords/index/data/graphics.htm#TLUT" target="keywords">TLUT</a> */
+
+/* Set the texture look-up table */
+ <a href="../../../n64man/gdp/gDPSetTextureLUT.htm">gDPSetTextureLUT</a>(gp++,G_TT_RGBA16);
+
+/* Read the texture look-up table */
+ <a href="../../../n64man/gdp/gDPLoadTLUT_pal16.htm">gDPLoadTLUT_pal16</a>(gp++,0,texturetlut);
+
+/* Read the bitmap pattern */
+ <a href="../../../n64man/gdp/gDPLoadTextureTile_4b.htm">gDPLoadTextureTile_4b</a>(gp++,texture,G_IM_FMT_CI,w,h,
+  0,0,w-1,h-1,0,
+  G_TX_WRAP | G_TX_NOMIRROR,G_TX_WRAP |
+  G_TX_NOMIRROR,
+  G_TX_NOMASK,G_TX_NOMASK,G_TX_NOLOD,
+  G_TX_NOLOD);
+
+  return gp;
+  }</pre><br>
+<br>
+<b><li>Set the Drawing Sequence for a Bitmap Pattern</li></b><br>
+The following code sets the drawing sequence for an accepted texture image. The <a href="../../../n64man/gsp/gSP_INDEX.htm">gSP functions</a> are included in the N64 library. For more information, please see the online <a href="../../../n64man/n64man.htm" target="index">"N64 Function Reference Manual"</a> (HTML manual pages). <br>
+<br>
+<pre>static Gfx *draw_texture(Gfx *gp,u16 left,u16 top,u16 w,u16 h)
+{
+/* The bitmap pattern drawing */
+ <a href="../../../n64man/gsp/gSPTextureRectangle.htm">gSPTextureRectangle</a>(gp++,
+  left&lt;&lt;2,top&lt;&lt;2,((left+w)&lt;&lt;2)-1,((top+h)&lt;&lt;2)-1,
+  G_TX_RENDERTILE,
+  0,0,4&lt;&lt;10,1&lt;&lt;10);
+ return gp;
+}</pre>
+</body>
+</html>

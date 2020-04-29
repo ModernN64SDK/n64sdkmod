@@ -1,0 +1,428 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<title>F3DEX2</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<FONT FACE="Arial" SIZE="-1">
+
+<h3>F3DEX2 Microcode<br>
+(F3DEX Level 2) Document</h3>
+
+<hr>
+
+<h4>Table of Contents</h4>
+
+<p><a href="#01">1. Special Features of F3DEX2 Microcode</a></p>
+
+<p><a href="#02">2. Details of F3DEX2 Usage</a></p>
+
+<p><a href="#03">3. Appendix</a></p>
+
+<p><a href="#04">4. Revision History</a></p>
+
+<hr>
+
+<h4><a name="01"></a>1. Special Features of F3DEX2 Microcode</h4>
+
+<p>F3DEX2 microcode is the reconstructed F3DEX microcode which was formerly 
+released. So, the calculation speed of the RSP became faster. 
+</p>
+
+<p>The following are the characteristics.</p>
+
+<dl>
+    <dd>o GBI command set is compatible with F3DEX. (except some GBIs)<br>
+        o High speed processing of RSP is possible.<br>
+        o FIFO format and XBUS format are supported</dd>
+</dl>
+
+<hr>
+
+<h4><a name="02"></a>2. Details of F3DEX2 Usage</h4>
+
+<p>* Compatibility of GBI</p>
+
+<p>The GBI used for F3DEX2 series is compatible with the GBI for Fast3D/F3DEX series at the source level.  The codes created by Fast3D/F3DEX can be used for F3DEX2 by re-compiling.  Please note that there is no compatibility between them at the binary level.</p>
+
+<p>Specifically, it is necessary to define a macro F3DEX_GBI_2 when compiling.</p>
+
+<p>Add -DF3DEX_GBI_2 to an option of the C compiler (cc/gcc), or add the define sentence before the include sentence of ultra64.h of the source file as follows:</p>
+
+<p>|<br>
+|#define F3DEX_GBI_2<br>
+|#include &lt;ultra64.h&gt;<br>
+|</p>
+
+<p>The following GBI is  not supported.</p>
+
+<p>g[s]SPInsertMatrix()</p>
+
+<p>* Supporting F3DEX2, F3DEX2.NoN, F3DEX2.Rej, F3DLX2.Rej, and L3DEX2</p>
+
+<p>F3DLX / F3DLX.NoN (the version without sub-pixel calculation of F3DEX) that was 
+supported for F3DEX and F3DLP.Rej (the version without texture correction of F3DLX.Rej) are no longer supported. This is because as a result of optimization of F3DEX micro code,there is not much merit in omitting the sub-pixel calculation or the texture correction processing. So, those who use these micro codes need to switch them as shown below.
+More 
+detailed information on the comparison of micro codes is found in the Appendix A. </p>
+
+<p>if gspF3DLX.fifo.o is used  ----&gt; use gspF3DEX2.fifo.o<br>
+if gspF3DLX.NoN.fifo.o is used ----&gt; use gspF3DEX2.NoN.fifo.o<br>
+if gspF3DLP.Rej.fifo.o is used ----&gt; use gspF3DLX2.Rej.fifo.o
+or <br>
+gspF3DEX2.Rej.fifo.o</p>
+
+<p>And, F3DEX2.Rej, which is F3DLX2.Rej that does sub-pixel calculation is now supported. Unlike F3DEX2, this does not perform the Clipping, but performs the Rejection processing, and has 64 vertex caches.  The process speed is faster than F3DEX2 and slower than F3DLX2.Rej.As the quality of screen is about same as that of F3DEX2, it might be a good idea to use both F3DLX2.Rej and F3DEX2.Rej properly depending on the situation.</p>
+
+<p><a name="s2"></a>* Supporting S2DEX2</p>
+
+<p>S2DEX2 is provided instead of S2DEX as a sprite micro code.  Use this when self-loading with F3DEX2 series using gSPLoadUcode.</p>
+
+<p>use gspS2DEX.fifo.o ----&gt; use gspS2DEX2.fifo.o</p>
+
+<p>The performance of S2DEX2 micro code has not been changed at all from that of S2DEX. It just can load with F3DEX2 series mutually, so there should be no problem if S2DEX is used as long as it is not mixed with F3DEX2.</p>
+
+<p>XBUS version is supported for S2DEX2 just like F3DEX2, however, be aware that S2DEX_d micro code, a micro code for debugging, which was being supported for S2DEX is not supported for S2DEX2.</p>
+
+<p>The usage for S2DEX2 micro code is as follows, which is same as F3DEX2.</p>
+
+<p>o Define a macro F3DEX_GBI_2 by a compile option, or define it by "define 
+sentence " before "include sentence" of ultra64.h.<br>
+o "Include" a header file PR/gs2dex.h after "include sentence" of ultra64h.
+</p>
+
+<p>Examples of when "define sentence" is used</p>
+
+<p>|<br>
+|#define F3DEX_GBI_2<br>
+|#include &lt;ultra64.h&gt;<br>
+|#include &lt;PR/gs2dex.h&gt;<br>
+|</p>
+
+<p>* Improving the speed of RSP calculation</p>
+
+<p>Compared with F3DEX series, F3DEX2 series can reduce the process time by 5 - 70%.  Since switching F3DEX to F3DEX2 has the largest effect of reduction, there is a possibility that the calculation speed of RSP may improve dramtically by this change. The effect of reduction by switching F3DLX.Rej to F3DLX2.Rej is not as large as the case with F3DEX, however,   the reduction is by 5 - 15%. It may be worth trying</p>
+
+<p>* Supporting XBUS Microcode</p>
+
+<p>
+The graphic micro code finally performs a drawing by creating RDP command array from GBI command array and transferring it to RDP. To transfer RDP command arrayto RDP, there are three methods, XBUS method, FIFO method, and DRAM(DUMP) method.</p>
+
+<p>FIFO method expands RDP command in RDRAM as a FIFO buffer, and send it to RDP.  For F3DEX series, only this method is supported.</p>
+
+<p>XBUS method sends RDP command to RDP through the internal buffer (XBUS) which connects RSP and RDP directly.  Therefore, unlike FIFO, it does not use RDRAM.  Most of the sample programs which are attached to the current library use this micro code.</p>
+
+<p>DRAM(DUMP) method only expands RDP command in RDRAM, and the process to start sending to RDP needs to be done by CPU. As the amount used for RDRAM is too much, this is not efficient.</p>
+
+<p>In the past, the first micro code, Fast3D (the original version of F3DEX) micro code series had micro codes for each of three methods. However, XBUS micro code is no longer supported because with XBUS method, F3DEX has used the internal buffer that is used to send a RDP command, as a vertex cache area in order to increase the number of vertex cache from 16 to 32.  And, unlike FIFO micro code, XBUS micro code cannot make RDP do the drawing processing during the operation of Audio micro code, and the performance as a whole does not improve, hence the support of XBUS was given up.</p>
+
+<p>On releasing F3DEX2 series, the micro code of XBUS method is now supported keeping the same number of vertex cache as F3DEX series, by optimizing the usage of this internal buffer.</p>
+
+<p>With a micro code of XBUS version, since the size of the internal buffer to be used to send a RDP command is smaller than that of normal FIFO micro code (about 1KBytes), if a large OBJECT that requires a lot of time for drawing processing of RDP is drawn repeatedly, the internal buffer becomes full and RSP needs to stop until there is a space in the internal buffer. This will be a bottleneck, and the RSP processing could become slower.  And, a parallel processing of Audio by RSP and drawing by RDP cannotbe done as mentioned above. However, due to less I/O for RDRAM than FIFO (about 1/2), XBUS micro code could become an effective way for speed reduction of CPU/RDP caused by a conflict with RDRAM bus.  When using XBUS micro code, try various combination.</p>
+
+<p>For those who could not use F3DEX till now as XBUS micro code of Fast3D has 
+been used, it is recommended to switch to F3DEX2 micro code.
+Refer to Appendix A, "Comparison of new micro code with old micro code" for information of the micro code comparison.</p>
+
+<p>* Fog processing for Flat Shading polygon</p>
+
+<p>Fog processing can be done now for a polygon that was processed with Flat 
+Shading processing (drawn by G_SHADING_SMOOTH=OFF)</p>
+
+<p>* Changing default value of CLIPRATIO</p>
+
+<p>The default value of CLIPRATIO which specifies the size of CLIPBOX for 
+Fast3D/F3DEX was changed from 1 to 2.</p>
+
+<p>* Increasing minimum required size of FIFO buffer</p>
+
+<p>The minimum required size of FIFO buffer for FIFO micro code (output_buff for OSTask structure) became larger. It was 0x300 Bytes for gspF3DEX, but now has changed to,</p>
+
+<p>gspF3DEX2(.NoN) - 0x410 Bytes <br>
+gspF3DEX2.Rej - 0x600 Bytes <br>
+gspF3DLX2.Rej - 0x600 Bytes <br>
+gspL3DEX2 - 0x540 Bytes<br>
+gspS2DEX2 - 0x800 Bytes</p>
+
+<p>When FIFO buffer is shared by more than one micro code, it is necessary to set it to the micro code of which required size is the largest. FIFO buffer is not necessary for XBUS micro code.</p>
+
+<p>* Change of self-loading processing of Microcode</p>
+
+<p>Changed so that several parameters can be kept when micro code is self-loaded.  The parameters to be kept are shown below.</p>
+
+<p>o DisplayList stack<br>
+o Matrix stack<br>
+o ModelView matrix<br>
+o Projection matrix<br>
+o Segment table<br>
+o Range of Scissor Box<br>
+o SetOtherMode parameter<br>
+o Value of PerspNormalize<br>
+o ViewPort parameter</p>
+
+<p>GeometryMode, Light, or vertex cache other than those above are not to be kept. Model and Projection matrix are kept, however, MP matrix is not kept. It is necessary to load either M or P matrix once again and reconstruct MP matrix.</p>
+
+<p>Please note that along with these changes, self-loading with the previous F3DEX/S2DEX micro code is no longer possible. Self-loading is available only between F3DEX2 series, or between F3DEX2 and S2DEX2 micro codes.</p>
+
+<p>Self-loading between FIFO micro code and XBUS micro code is possible.</p>
+
+<p>* Loading of 64 vertexes of F3DLX2.Rej at once became possible.</p>
+
+<p>For the old version of F3DLX.Rej, the number of vertex cache was 64, however, the number of vertex that can be loaded at once was limited to 32.  Therefore, in order to load data of 64 vertex, it was necessary to issue two gSPVertex commands.  There is no such limit for  F3DLX2.Rej, which is to be released this time.  Now it is possible to load data of 1 - 64 vertex at once by just one gSPVertex command.  This applies to F3DEX2.Rej also.</p>
+
+<p>* Supporting CULL_FRONT of F3DLX2.Rej</p>
+
+<p>For the old version of F3DLX.Rej, CULL_FRONT/CULL_BOTH was not supported.   
+For F3DLX2.Rej,  both are supported. Of course, CULL_FRONT/CULL_BOTH are 
+supported for F3DEX2.Rej.</p>
+
+<p>* Change of GBI number for gSPForceMatrix</p>
+
+<p>For Fast3D/F3DEX series, gSPForceMatrix was a combined command with four GBI's, however, for F3DEX2 series, it has been changed to a combined command with two GBI's.  Any source codes that depend upon this matter need to be modified.  See the following examples for reference.</p>
+
+
+<p>  &lt;Example&gt; Source code that needs modification</p>
+
+
+<table border="0">
+    <tr>
+        <td><pre><FONT FACE="Courier">Gfx *gp = glist;
+gSPForceMatrix(gp, mptr);
+gp += 4;
+     ~~~ </FONT></pre>
+        </td>
+        <td><pre><FONT FACE="Courier">-----&gt;</FONT></pre>
+        </td>
+        <td><pre><FONT FACE="Courier">Gfx *gp = glist;
+gSPForceMatrix(gp, mptr);
+gp += 2;
+     ~~~</FONT></pre>
+        </td>
+    </tr>
+</table>
+
+
+<p>  &lt;Example&gt; Source code that needs modification</p>
+
+
+<PRE><FONT FACE="Courier">	Gfx *gp = glist;
+	gSPForceMatrix(gp++, mptr);</FONT></PRE>
+
+
+
+<p>* Coexisting with FillRectangle/TextureRectangle in Line Micro Code.</p>
+
+<p>The problem that unless Scissor Box is specified again after drawing Line using a Line micro code, sometimes FillRectangle/TextureRectangle does not perform a normal drawing was fixed for L3DEX2.  Hence, in case that it is changed to L3DEX2 --> F3DEX2 by LoadUCode, now it is possible to draw without re-setting Scissor Box.</p>
+
+<hr>
+
+<h3><a name="03"></a>3. Appendix</h3>
+
+<h4>[A] Comparison of New Microcode with Old Microcode</h4>
+
+<table border="1" cellpadding="3" cellspacing="3" align="center">
+<tr>
+<th valign="top"><font face="arial" size="-1">(old)Fast3D/F3DEX Series</th>
+<th><font face="arial" size="-1">(new)F3DEX2 Series</th>
+</tr>
+
+<tr>
+<td align="left" valign="top" colspan="2"><font face="arial" size="-1">&lt;FIFO&gt;</td>
+
+</tr>
+
+<tr>
+<td align="center" valign="center"><font face="arial" size="-1">gspFast3D.fifo.o<BR>gspF3DEX.fifo.o<BR>gspF3DLX.fifo.o</td>
+<td><font face="arial" size="-1">gspF3DEX2.fifo.o</td>
+</tr>
+
+<tr>
+<td align="left" valign="top" colspan="2"><font face="arial" size="-1">&lt;XBUS&gt;</td>
+
+</tr>
+
+<tr>
+<td align="center" valign="center"><font face="arial" size="-1">gspFast3D.o</td>
+<td><font face="arial" size="-1">gspF3DEX2.xbus.o</td>
+</tr>
+
+<tr>
+<td align="left" valign="top" colspan="2"><font face="arial" size="-1">&lt;FIFO&gt;</td>
+
+</tr>
+
+<tr>
+<td align="center" valign="center"><font face="arial" size="-1">gspF3DNoN.fifo.o<BR>gspF3DEX.NoN.fifo.o<BR>gspF3DLX.NoN.fifo.o</td>
+<td><font face="arial" size="-1">gspF3DEX2.NoN.fifo.o</td>
+</tr>
+
+<tr>
+<td align="left" valign="top" colspan="2"><font face="arial" size="-1">&lt;XBUS&gt;</td>
+
+</tr>
+
+<tr>
+<td align="center" valign="center"><font face="arial" size="-1">gspF3DNoN.o</td>
+<td><font face="arial" size="-1">gspF3DEX2.NoN.xbus.o</td>
+</tr>
+
+<tr>
+<td align="left" valign="top" colspan="2"><font face="arial" size="-1">&lt;FIFO&gt;</td>
+
+</tr>
+
+<tr>
+<td align="center" valign="center"><font face="arial" size="-1">gspF3DLP.Rej.fifo.o<BR>gspF3DLX.Rej.fifo.o<BR>&nbsp;</td>
+<td><font face="arial" size="-1">&nbsp;<BR>gspF3DLX2.Rej.fifo.o<BR>gspF3DEX2.Rej.fifo.o</td>
+</tr>
+
+<tr>
+<td align="left" valign="top" colspan="2"><font face="arial" size="-1">&lt;XBUS&gt;</td>
+
+</tr>
+
+<tr>
+<td align="center" valign="center"><font face="arial" size="-1">Not Applicable</td>
+<td><font face="arial" size="-1">gspF3DLX2.Rej.fifo.o<BR>gspF3DEX2.Rej.fifo.o</td>
+</tr>
+
+<tr>
+<td align="left" valign="top" colspan="2"><font face="arial" size="-1">&lt;FIFO&gt;</td>
+
+</tr>
+
+<tr>
+<td align="center" valign="center"><font face="arial" size="-1">gspLine3D.fifo.o<BR>gspL3DEX.fifo.o</td>
+<td><font face="arial" size="-1">&nbsp;<BR>gspL3DEX2.fifo.o</td>
+</tr>
+
+<tr>
+<td align="left" valign="top" colspan="2"><font face="arial" size="-1">&lt;XBUS&gt;</td>
+
+</tr>
+
+<tr>
+<td align="center" valign="center"><font face="arial" size="-1">gspLine3D.o</td>
+<td><font face="arial" size="-1">gspL3DEX2.xbus.o</td>
+</tr>
+
+<tr>
+<td align="left" valign="top" colspan="2"><font face="arial" size="-1">&lt;FIFO&gt;</td>
+
+</tr>
+
+<tr>
+<td align="center" valign="center"><font face="arial" size="-1">gspS2DEX.fifo.o<BR>gspS2DEX_d.fifo.o</td>
+<td><font face="arial" size="-1">gspS2DEX2.fifo.o<BR>No Support</td>
+</tr>
+
+<tr>
+<td align="left" valign="top" colspan="2"><font face="arial" size="-1">&lt;XBUS&gt;</td>
+
+</tr>
+
+<tr>
+<td align="center" valign="center"><font face="arial" size="-1">Not Applicable</td>
+<td><font face="arial" size="-1">gspS2DEX2.xbus.o</td>
+</tr>
+</table>
+
+<hr>
+
+<h4>[B] Explanation of Each Microcode</h4>
+
+<p>gspF3DEX2.fifo.o/gspF3DEX2.xbus.o</p>
+
+<p>the number of vertex cache : 32<br>
+with sub pixel calculation option<br>
+with clipping option</p>
+
+<p>gspF3DEX2.NoN.fifo.o/gspF3DEX2.NoN.xbus.o</p>
+
+<p>the number of vertex cache : 32<br>
+with sub pixel calculation option<br>
+with clipping option by a plane other than NearPlane</p>
+
+<p>gspF3DEX2.Rej.fifo.o/gspF3DEX2.Rej.xbus.o</p>
+
+<p>the number of vertex cache : 64<br>
+with sub pixel calculation option<br>
+with rejection processing<br>
+(if a part of a triangle is outside the CLIPBOX, stop rending of the whole triangle.)</p>
+
+<p>gspF3DLX2.Rej.fifo.o/gspF3DLX2.Rej.xbus.o</p>
+
+<p>the number of vertex cache : 64<br>
+without sub pixel calculation option<br>
+with rejection processing<br>
+(if a part of a triangle is outside the CLIPBOX, stop rendering of the whole triangle.)</p>
+
+<p>gspL3DEX2.fifo.o/gspL3DEX2.xbus.o</p>
+
+<p>Line microcode<br>
+the number of vertex cache : 32<br>
+with sub pixel calculaition option<br>
+with clipping option</p>
+
+<p>gspS2DEX2.fifo.o/gspS2DEX2.xbus.o</p>
+
+<p>Sprite microcode</p>
+
+<hr>
+
+<h3><a name="04"></a>4. Revision History</h3>
+
+
+<p>06/15/98:<br>
+Release 2.05<br>
+* The operation of G_TEXTURE_GEN_LINEAR was modified.<br>
+* Z value of the polygon between the image point and Nearplane in F3DEX2.NoN<br> 
+ &nbsp; was beyond the scope of definition. It has been solved.<br>
+* The drawing method was changed in order to make a drawing method when<br> 
+ &nbsp; polygon is clipped by clipping process in F3DEX2 similar to a drawing<br>
+ &nbsp; method when polygon is clipped by cliggping process in F3DEX as much<br> 
+ &nbsp; as possible.</p>
+
+<p>05/28/98:<br>
+Release 2.04 (patchNg980610 version)<br>
+* gbi.h was changed in order to invalidate G_TEXTURE_ENABLE.<br>
+* No changes of the micro code after 05/20/98 version.</p>
+
+<p>05/20/98:<br>
+Release 2.04<br>
+* The lighting calculation problem has been fixed.  When a normal vector is<br> 
+ &nbsp; normalized by 128, the calculation was not correct.
+
+<p>04/23/98:<br>
+Release 2.03<br>
+* gSPBranchLessZ* command did not run correctly.  The problem was fixed.<br>
+* When more than three lights were used, colors did not come out right. The<br> 
+ &nbsp; problem was fixed.</p>
+
+<p>04/16/98:<br>
+Release 2.02 (patchNg980423 version)<br>
+* Information on change of the number of GBI for gSPForceMatrix and Coexistence<br> 
+ &nbsp; with FillRectangle/TextureRectangle in case of Line micro code was added.<br>
+* The hang that occurs when gSPPopMatrix processing is done for an empty stack<br> 
+ &nbsp; was fixed.  Changed so that when a stack is empty gSPPopMatrix is ignored.<br>
+* S2DEX2 micro code that is possible to load mutually with F3DEX2 series using<br>
+ &nbsp; gSPLoadUcodeL was added to the package and its explanation was added.<br>
+* Drawing process was not performed correctly for narrow frames using<br> 
+ &nbsp; gSPBgRectCopy command for S2DEX 1.06.  The problem was fixed.<br>
+* If clipping process occurs when Flat Shading is used, colors of Flat Shading<br> 
+ &nbsp; became irregular.  The problem was fixed.<br>
+* The assignments other than LIGHT_1 for gSPLightColor were incorrect.<br> 
+ &nbsp; The problem was fixed.</p>
+
+<p>03/30/98:<br>
+Release 2.01<br>
+* F3DEX2.Rej was added, speed of F3DLX2.Rej was slightly increased.</p>
+
+<p>03/26/98:<br>
+Release 2.00<br>
+* officially released</p>
+
+<hr>
+</body>
+</html>

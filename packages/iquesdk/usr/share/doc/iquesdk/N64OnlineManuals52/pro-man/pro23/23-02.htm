@@ -1,0 +1,24 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 23 - GameShop Debugger</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. -->
+</head>
+
+<h1>23.2 Software Environment</h1>
+
+<p>The software debug environment consists of a number of software modules that must be present to support debugging. Some of these will also be present in the final game system, but many will not. A good understanding of the software architecture will enable the game
+developer to deal with unexpected situations that arise during a debugging session. </p>
+
+<p>At the highest level, the debugger consists of two major parts. On the development host, a graphically oriented <A target="keywords" HREF="../../keywords/index/data/system.htm#source level debugger">source level debugger</A> called <a href="../../n64man/tool/gvd.htm">gvd</a> is provided. In the target system, a small in-circuit debug monitor called rmon acts as the agent for <a href="../../n64man/tool/gvd.htm">gvd</a>. The operator of the debugger sees only <a href="../../n64man/tool/gvd.htm">gvd</a>, but requests are actually fulfilled by rmon. That is, you may open a window on the host for the purpose of looking at memory contents. The host cannot access such memory directly, but it can ask rmon to fetch the memory contents from the target so that the host can display them. rmon runs as three <A target="keywords" HREF="../../keywords/index/data/system.htm#thread">threads</A> under the OS, but these threads spend most of their time either blocked (awaiting a host request) or stopped. Thus, they do not interfere with the operation of the game (other than taking up some memory) unless they are processing debugging commands under operator control. </p>
+
+<p>Like the OS and other library routines, rmon is included in a build only if the game developer specifically asks for it. This is done by creating a thread with rmonMain specified as the function to be started when that thread is run. The rmon program is part of libultra, the Nintendo 64 run-time library. You do not need to have any special files to include rmon in a build. Referencing rmonMain automatically includes all code and data for all three of rmon's threads. </p>
+
+<p>On the host side, the main program you see is <a href="../../n64man/tool/gvd.htm">gvd</a>, the debugger. However, there are a number of support programs that run in conjunction with the debugger. Since gvd is designed to work in other environments as well, it uses a separate program called <a href="../../n64man/tool/dbgif.htm">dbgif</a> (for debugger interface) to communicate with the target environment. Only <a href="../../n64man/tool/dbgif.htm">dbgif</a> knows the actual means of communication with the target system; <a href="../../n64man/tool/dbgif.htm">gvd</a> is independent of such concerns. </p>
+
+<p>Since we wish to share the GIO interface between the host and target with other programs (for example, diagnostics), a third module is provided on the host. This is a <A target="keywords" HREF="../../keywords/index/data/system.htm#device driver">device driver</A> built into the UNIX <A target="keywords" HREF="../../keywords/index/data/system.htm#kernel">kernel</A>, and functions as the target manager. When any program (such as dbgif) wishes to communicate with the target, it issues requests to the N64 device driver. In this way, it is possible for two pairs of programs running on the host and target to communicate through a single channel without interference. </p>
+
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+</body> </html>

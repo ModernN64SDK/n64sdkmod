@@ -1,0 +1,75 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<!--
+Editors Notes:
+  PWC- updated formatting
+  MAP- updated format
+-->
+<title>bkpt</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>bkpt</b></font><font style="font-size: 9pt"><b> (tool command)</b></font>
+
+<p><i>Sets or clears the target breakpoint</p></i>
+
+<h3>Syntax</h3>
+<p>
+bkpt - <font style="font-family: times new roman">S</font> tid addr<br>
+bkpt - <font style="font-family: times new roman">C</font> tid bpid
+</p>
+
+<h3>Description</h3>
+<p>
+<dl>
+    <dt><strong>bkpt</strong></dt>
+    <dd>This command sends a request to set or clear a breakpoint in the target system by way of the <a href="dbgif.htm">dbgif</a> tool.
+        <br>
+        <br>
+        </dd>
+    <dt><strong>tid</strong></dt>
+    <dd>The tid is the thread number. Even though a breakpoint is not thread-specific in this debugger, you must still specify a thread.
+        <br>
+        <br>
+        </dd>
+    <dt><strong>addr</strong></dt>
+    <dd>The addr is the address at which a breakpoint should be set. 
+        <br>
+        <br>
+        </dd>
+    <dt><strong>bpid</strong></dt>
+    <dd>The bpid argument is the number of the breakpoint to be cleared.<br>
+        <br>
+        </dd>
+</dl></p>
+<p>Before executing this command, you must ensure that the dbgif program is running and that the METHOD environment variable is set to indicate whether this is a request for the R4300 CPU or the RCP co-processor.
+</p>
+
+<p>The value zero represents the CPU and the value one represents the RCP. In csh, this is accomplished by specifying the following. 
+</p>
+
+<blockquote>
+    <pre>setenv METHOD 0 </pre>
+</blockquote>
+<h3>Note</h3>
+
+<p>In the event of a communications failure, the program will dump the core file. If this happens, you will need to remove the core file manually.
+</p>
+
+<p>Note that support for the -l option to list breakpoints is not implemented in this version of the debug monitor. 
+</p>
+
+<h3>See Also</h3>
+
+<p><a href="dbgif.htm">dbgif</a>, <a href="listthreads.htm">listthreads</a>
+</p>
+
+<h3>Revision History</h3>
+<p>1999/04/30  Changed Format</p>
+<br><br>
+
+</body>
+</html>

@@ -1,0 +1,142 @@
+#include  <nusys.h>
+
+/* code area */
+beginseg
+        name    "code"
+        flags   BOOT OBJECT
+        entry   nuBoot
+        address NU_SPEC_BOOT_ADDR
+        stack   NU_SPEC_BOOT_STACK
+        include "codesegment.o"
+        include "$(ROOT)/usr/lib/PR/rspboot.o"
+        include "$(ROOT)/usr/lib/PR/gspF3DEX2.fifo.o"
+        include "$(ROOT)/usr/lib/PR/gspL3DEX2.fifo.o"
+        include "$(ROOT)/usr/lib/PR/gspF3DEX2.Rej.fifo.o"
+        include "$(ROOT)/usr/lib/PR/gspF3DEX2.NoN.fifo.o"
+        include "$(ROOT)/usr/lib/PR/gspF3DLX2.Rej.fifo.o"
+        include "$(ROOT)/usr/lib/PR/gspS2DEX2.fifo.o"
+#ifdef    N_AUDIO
+        include "$(ROOT)/usr/lib/PR/n_aspMain.o"
+#else
+        include "$(ROOT)/usr/lib/PR/aspMain.o"
+#endif
+endseg
+
+
+/* sound data area */
+beginseg
+        name    "pbank1"
+        flags   RAW
+        include "../data/orch.ptr"
+endseg
+
+beginseg
+        name    "wbank1"
+        flags   RAW
+        include "../data/orch.wbk"
+endseg
+
+beginseg
+        name    "pbank2"
+        flags   RAW
+        include "../data/rock.ptr"
+endseg
+
+beginseg
+        name    "wbank2"
+        flags   RAW
+        include "../data/rock.wbk"
+endseg
+
+beginseg
+        name    "pbank3"
+        flags   RAW
+        include "../data/groove.ptr"
+endseg
+
+beginseg
+        name    "wbank3"
+        flags   RAW
+        include "../data/groove.wbk"
+endseg
+
+beginseg
+        name    "pbank4"
+        flags   RAW
+        include "../data/demo3_4.ptr"
+endseg
+
+beginseg
+        name    "wbank4"
+        flags   RAW
+        include "../data/demo3_4.wbk"
+endseg
+
+beginseg
+        name    "pbank5"
+        flags   RAW
+        include "../data/demo3_5.ptr"
+endseg
+
+beginseg
+        name    "wbank5"
+        flags   RAW
+        include "../data/demo3_5.wbk"
+endseg
+
+beginseg
+        name    "song1"
+        flags   RAW
+        include "../data/orch.bin"
+endseg
+
+beginseg
+        name    "song2"
+        flags   RAW
+        include "../data/rock.bin"
+endseg
+
+beginseg
+        name    "song3"
+        flags   RAW
+        include "../data/groove.bin"
+endseg
+
+beginseg
+        name    "sebank1"
+        flags   RAW
+        include "../data/demo3_4.bfx"
+endseg
+
+beginseg
+        name    "sebank2"
+        flags   RAW
+        include "../data/demo3_5.bfx"
+endseg
+
+beginwave
+        name    "64aud3_0"
+        include "code"
+        include "pbank1"
+        include "wbank1"
+        include "pbank3"
+        include "wbank3"
+        include "pbank4"
+        include "wbank4"
+        include "song1"
+        include "song3"
+        include "sebank1"
+endwave
+
+beginwave
+        name    "64aud3_1"
+        include "code"
+        include "pbank2"
+        include "wbank2"
+        include "pbank3"
+        include "wbank3"
+        include "pbank5"
+        include "wbank5"
+        include "song2"
+        include "sebank2"
+endwave

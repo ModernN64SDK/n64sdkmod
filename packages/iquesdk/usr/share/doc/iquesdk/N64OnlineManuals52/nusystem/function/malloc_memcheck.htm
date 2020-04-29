@@ -1,0 +1,77 @@
+<HTML>
+<HEAD>
+<TITLE>malloc_memcheck</TITLE>
+<link rel=stylesheet type="text/css" href="../../n64man/n64man.css">
+<!-- Editor's Notes: 9/9/1999 Ron Daring -->
+</HEAD>
+
+<BODY bgcolor="#FFFFFF">
+
+
+<P>
+<h1>Memory Allocation Routines</h1>
+
+<HR>
+<P>
+<h2>malloc_memcheck<!--  -->, mt_malloc_memcheck<!--  --></h2>
+<p>
+<HR>
+<P>
+<b>Syntax</b>
+<font face="courier" size="2">
+<pre>
+#include &lt;malloc.h&gt;
+int malloc_memcheck(struct malloc_status_st *st)
+<!--  -->int mt_malloc_memcheck(struct malloc_status_st *st)<!--  --></pre>
+</font>
+
+<p><b>Arguments</b>
+<font face="courier" size="2">
+<pre>
+<B>st</B>      pointer to the malloc_status_st structure that returns
+        information about the memory allocation area
+</pre>
+</font>
+
+<p><b>Return Value</b>
+<font face="courier" size="2">
+<pre>0 is returned if the function execution was normal. In case of any value
+other than 0, the contents of the malloc_status_st structure are suspect
+and probably incorrect. For example, if 0 is returned, the size of the entire
+memory allocation area is recorded in the specified malloc_status_st
+structure. However, if the size of the entire memory allocation area is
+reported as 0 in the malloc_status_st structure, then the malloc_status_st
+contents are incorrect, so the function returns -1 instead of 0. </pre>
+</font>
+
+<p><b>Description</b>
+
+<p>It checks the memory allocation area to see if its condition is normal or
+abnormal, and acquires information on the used and unused portions of the
+memory allocation area.
+
+<P><!--  --><TT>mt_malloc_memcheck</TT> is the multi-thread compatible version of <TT>malloc_memcheck</TT>. Interruption is inhibited when processing is being performed to prevent malfunction if used by more than one thread.<!--  -->
+
+<font face="courier" size="2">
+<pre>
+struct  malloc_status_st    {
+    int     allMemSize;     /*  size of entire memory area      */
+
+    int     useMemSize;     /*  memory size used                */
+    int     useMaxMemSize;  /*  maximum memory size used        */
+    int     useMinMemSize;  /*  minimum memory size used        */
+
+    int     freeMemSize;    /*  free memory size                */
+    int     freeMaxMemSize; /*  minimum free memory size        */
+    int     freeMinMemSize; /*  maximum free memory size        */
+};</pre>
+</font>
+<p>
+<hr>
+<P><b><!--  -->Revision History</b>
+<P>
+<!--  -->6/1/99  Added explanation of the multi-thread version<!--  -->
+<P>
+<hr>
+</body>
+</html>

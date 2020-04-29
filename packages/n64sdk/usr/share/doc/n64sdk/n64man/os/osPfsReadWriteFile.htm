@@ -1,0 +1,71 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.
+  PWC- updated formatting
+  MAP- updated format
+-->
+<TITLE>osPfsReadWriteFile</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+<font style="font-size: 12pt"><b>osPfsReadWriteFile</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p><i>Reads/writes game note game data</i></P>
+
+<H3>Syntax</H3>
+
+<p><PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/os.htm">os.h</A> */
+s32 osPfsReadWriteFile(OSPfs *pfs, s32 file_no, u8 flag, int offset, int nbytes, 
+                       u8 * data_buffer);</CODE></PRE></p>
+
+<H3>Description</H3>
+<P>
+The <tt>osPfsReadWriteFile</tt> reads from and writes to game notes. If PFS_READ is specified for the <b>flag</b> argument, data is read from the game note; if PFS_WRITE is specified data is written to the game note.
+</P>
+<P>
+When data is read, the amount of data specified by the <B>nbytes</B> argument is read, beginning from the offset byte of the game data area specified by the <B>offset</B> argument, and stored in the area pointed to by the <B>data_buffer</B> argument. When data is written, nbytes of data in the area specified by <B>data_buffer</B> is written to the game data area beginning from the <B>offset</B> byte. Both the <B>offset</B> and <b>nbytes</b> arguments must be set to a multiple of BLOCKSIZE (32 bytes) and must be smaller than the file size. The arguments cannot, of course, be set so that data is read from or written to areas outside of those that have been assigned.</P>
+<P>
+The <B>file_no</B> argument specifies the note number (file descriptor). To obtain its value, call the <a href="osPfsAllocateFile.htm">osPfsAllocateFile</a> or <a href="osPfsFindFile.htm">osPfsFindFile</a> function.
+</P>
+<P>
+The OSPfs structure pointed to by the <B>pfs</B> argument is a file handle initialized by the <a href="osPfsInitPak.htm">osPfsInitPak</a> function. For information on creating this handle, please see <tt>osPfsInitPak</tt>.
+</P>
+<P>
+If this function is called successfully, 0 is returned. If an error occurs, one of the following error codes is returned: 
+</P>
+
+<DL><p>
+  <DT><B>PFS_ERR_NOPACK</B>
+  <DD>Either the Controller Pak is not inserted into the specified Controller or the Controller is not properly connected. To determine which is the case, use <a href="osContStartQuery.htm">osContStartQuery</a> or <a href="osContGetQuery.htm">osContGetQuery</a>. 
+      <BR><BR>
+  <DT><B>PFS_ERR_NEW_PACK</B>
+  <DD>A different Controller Pak has been inserted. To use the inserted Controller Pak, initialize it by calling <tt>osPfsInitPak</tt>.
+      <BR><BR>
+  <DT><B>PFS_ERR_INCONSISTENT</B>
+  <DD>There is a problem in the file system's management area. Usually this error does not occur because <a href="osPfsChecker.htm">osPfsChecker</a> is called internally when you initialize the file system by calling <tt>osPfsInitPak</tt>. If this error is returned, either the Controller Pak is not connected properly, or the Controller Pak itself is damaged. 
+      <BR><BR>
+  <DT><B>PFS_ERR_CONTRFAIL</B>
+  <DD>Data transfer to or from the Controller has failed. If a transfer error occurs, up to three tries will be done internally. Therefore, it is rather rare to see this error. If this error has returned, it is possible that either the Controller is not connected properly, or the Controller Pak or Controller Socket is damaged. 
+      <BR><BR>
+  <DT><B>PFS_ERR_INVALID</B>
+  <DD>If this error is returned, an incorrect argument was specified when this function was called, the specified game note does not exist, or the Pfs function has been called without being initialized using <tt>osPfsInitPak</tt>. Also, if the functions for the Controller were executed after the file handle structure pfs was initialized by other than <tt>osPfsInitPak</tt>, this error occurs.For instance, if <tt>osPfsReadWriteFile</tt> is executed after the initialization function for rumble pak <a href="osMotorInit.htm">osMotorInit</a> is used to initialize OSPfs structure, then this error occurs. 
+      <BR><BR>
+  <DT><B>PFS_ERR_BAD_DATA</B>
+  <DD>This is returned when the function <tt>osPfsReadWriteFile</tt> attempts to read data even though the data has not yet been written. If data is written, the PFS_WRITE bit is set to indicate the status of the file information area. When data is read, this bit is checked; if it is not set, this error is returned.
+      <BR><BR>
+</DL></p>
+
+<H3>See Also</H3>
+<P>
+<A HREF="osContInit.htm">osContInit</A>, <A HREF="osContStartQuery.htm">osContStartQuery</A>, <A HREF="osContGetQuery.htm">osContGetQuery</A>, <A HREF="osPfsAllocateFile.htm">osPfsAllocateFile</A>, <A HREF="osPfsChecker.htm">osPfsChecker</A>, <A HREF="osPfsDeleteFile.htm">osPfsDeleteFile</A>, <A HREF="osPfsFileState.htm">osPfsFileState</A>, <A HREF="osPfsFindFile.htm">osPfsFindFile</A>, <A HREF="osPfsFreeBlocks.htm">osPfsFreeBlocks</A>, <A HREF="osPfsInitPak.htm">osPfsInitPak</A>, <A HREF="osPfsIsPlug.htm">osPfsIsPlug</A>, and <A HREF="../os/osPfsReadWriteFile.htm">osPfsReadWriteFile</A>
+
+<H3>Revision History</H3>
+<P>
+1999/02/01 Completely revised<br>
+1999/04/30 Changed format
+</P>
+
+</BODY>
+</HTML>

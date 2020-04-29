@@ -1,0 +1,127 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Graphics-Chapter 6   Rendering Mode and Anti-aliasing</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/23/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<font style="font-size:12pt"><B>6.4  Defined Rendering Modes</B></FONT>
+<br>
+<P>
+ You have already used the macros G_RM_OPA_SURF and G_RM_XLU_SURF for the rendering mode in the sample program.  These are just two of a number of rendering mode macros that are defined in &lt;gbi.h&gt;.  It would be difficult to remember all of these macros, so therefore some kind of systematic understanding is necessary.<br><br>
+
+     There is a certain convention used in naming rendering mode macros.  All of these macros begin with "G_RM" followed by symbols that classify the rendering mode.
+</P>
+<UL>
+<LI>Indicates anti-aliasing  AA_
+<LI>Indicates Z buffering  ZB_
+<LI>Indicates the transparency of the object  OPA_(opaque)  XLU_(transparent)  etc.
+<LI>Indicates the type of the object  SURF  DECAL  LINE  INTER  TERR  etc.
+</UL>
+<P>
+  There are a few exceptions to this naming convention, however, among the rendering modes defined in &lt;gbi.h&gt;.  For example, G_RM_NOOP which stops the operations of the Blender, and G_RM_PASS outputs the input as it came from the Combiner without changes.  There are also the rendering modes G_RM_FOG_SHADE_A and G_RM_FOG_PRIM_A relating to fog, which is brought up in Chapter 8.
+</P>
+<p>
+<B>6.4.1  Anti-aliasing and the Rendering Mode</B>
+<P>
+Next we will look at how to use rendering modes from the point of view of anti-aliasing.<br><br>  
+
+     First, take a look at the gfx6.c sample program.  Anti-aliasing is switched on and off in the program by defining and undefining __ANTI-ALIASING__ on line 27.  If you compare the program with and without __ANTI-ALIASING__ defined, you will notice that the only difference is in the rendering mode.
+     When __ANTI-ALIASING__ is not defined, the mode is set to G_RM_XLU_SURF, similar to the gfx5.c in Chapter 5.  Yet when __ANTI-ALIASING__ is defined, the mode is changed to G_RM_AA_XLU_SURF.<br><br>
+
+     As described above, the "AA_" in G_RM_AA_XLU_SURF means anti-aliasing, and in this mode, anti-aliasing is performed by the Blender.  Think of any rendering mode with AA_ in its name as a mode that performs anti-aliasing.  Conversely, any mode that does not have AA_ in its name does not perform anti-aliasing.<br><br>
+
+     If the rendering mode has RA_ rather than AA_ in its name, then it is in "simple anti-aliasing mode" that performs an abbreviated form of anti-aliasing without reading the color from memory.  Rendering is faster with this rendering mode compared to a normal AA_ mode, but the quality of the anti-aliasing is lower.<br><br>
+
+     You need to keep the following points in mind about anti-aliasing:<br><br>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0><TR>
+        <TD NOWRAP ALIGN=CENTER VALIGN=TOP>-</TD>
+        <TD ALIGN=LEFT VALIGN=TOP COLSPAN=2>When the Blender performs anti-aliasing, so does the VI</TD>
+        </TR><TR>
+        <TD NOWRAP ALIGN=CENTER VALIGN=TOP>&nbsp;</TD>
+        <TD NOWRAP ALIGN=CENTER VALIGN=TOP>&nbsp;</TD>
+        <TD ALIGN=LEFT VALIGN=TOP>When you render using a rendering mode with anti-aliasing on, make sure to enable VI anti-aliasing for the second pass.  If you do not do this, then silhouette edges will not be anti-aliased.  VI anti-aliasing can be switched on and off by specifying the VI mode with osViSetMode.  For details, see Chapter 7.6,  "VI Mode and Special Functions."
+</TD>
+</TR>
+<br><br>
+<TR>
+<TD NOWRAP ALIGN=CENTER VALIGN=TOP>-</TD>
+        <TD ALIGN=LEFT VALIGN=TOP COLSPAN=2>Disable anti-aliasing when rendering a 2D background</TD>
+        </TR><TR>
+        <TD NOWRAP ALIGN=CENTER VALIGN=TOP>&nbsp;</TD>
+        <TD NOWRAP ALIGN=CENTER VALIGN=TOP>&nbsp;</TD>
+        <TD ALIGN=LEFT VALIGN=TOP>When a 2D image is being rendered for the background, there is no pixel in memory that anti-aliasing can use for blending.  For more efficient rendering you should turn off anti-aliasing.</TD>
+        </TR><TR>
+        <TD NOWRAP ALIGN=CENTER VALIGN=TOP>&nbsp;</TD>
+        <TD NOWRAP ALIGN=CENTER VALIGN=TOP>&nbsp;</TD>
+        <TD ALIGN=LEFT VALIGN=TOP>Additionally, when rendering background using polygons, you should turn off anti-aliasing to increase efficiency.</TD>
+</TR></TABLE>
+<p>
+<B>6.4.2  Z buffering and the Rendering Mode</B>
+<P>
+ To perform Z buffering, you use a rendering mode that has ZB_ in its name (e.g., G_RM_AA_ZB_OPA_SURF). The modes that perform Z buffering will reference and if necessary write to the Z buffer when a pixel is being rendered, thus the overall speed of rendering slows.  Therefore, when rendering background you should use a rendering mode with Z buffering turned off.<br><br>
+     We will explain Z buffering on the N64 in detail in the next chapter.
+</P>
+<p>
+<B>6.4.3  Rendering Subject and the Rendering Mode</B>
+<P>
+Many rendering modes are defined in &lt;gbi.h&gt; in accordance with the characteristics of the object being rendered.  A number of these modes have already been utilized in the sample programs.  For example, opaque objects have been rendered using G_RM_OPA_SURF mode, and (semi)-transparent objects have been rendered using G_RM_XLU_SURF.  Also, in gfx6.c, anti-aliasing is performed using G_RM_AA_XLU_SURF mode, which you could call an expanded version of semi-transparent mode.<br><br>
+
+     In addition to the transparency related modes OPA_ (opaque) and XLU_ (transparent), there is another special rendering mode defined in &lt;gbi.h&gt; called texture edge mode (TEX_EDGE).<br><br>
+     Texture edge mode is useful for billboard-type texture mapping, which is a technique often used to express objects like trees.  Billboard texture mapping is a simple way of expressing objects like trees with a small number of polygons.  If you were to use a normal semi-transparent rendering mode with this technique, when the object was enlarged even the alpha values would be interpolated, and you would get a blurry image around the outline of the texture.  With texture edge mode, no blurring due to alpha values is introduced into the final image, so this is a better mode to utilize with billboard texture mapping.<br><br>
+     In billboard texture mapping, the textures for objects like trees are mapped by combining rectangular polygons together in a cross-shape.  Objects are expressed with extremely simple polygons, and you can achieve a bit of a 3D effect unrelated to the angle as long as you render from the horizontal.<br><br>
+
+
+     Three different texture edge modes are defined in &lt;gbi.h&gt;: G_RM_TEX_EDGE, G_RM_AA_TEX_EDGE, G_RM_AA_ZB_TEX_EDGE.<br><br>
+
+  As for OPA (opaque) and XLU (transparent), a number of different rendering modes have been defined for different types of objects and for different situations.
+</P>
+<P>
+-Surface (SURF)<BR>
+ This is for a normal polygon surface.  Rendering modes we have used so far that belong to this type include G_RM_OPA_SURF and G_RM_AA_XLU_SURF.</P>
+<P>
+-Decal surface (DECAL)<BR>
+The decal surface rendering modes are a bit different from other rendering modes, as they are not used to simply render polygons.
+     To use a decal surface type rendering mode, you must first render a separate polygon.  Then, when you try to render a polygon in decal mode, it will only be rendered if there is already a rendered polygon with the same geometry.  If none exists, nothing will be rendered.<br><br>
+     When rendering in decal surface mode, the presence of a matching geometry polygon is determined using the Z value, so the Z buffer must be enabled.  Three decal surface modes are defined: G_RM_AA_ZB_OPA_DECAL, G_RM_RA_ZB_OPA_DECAL and G_RM_AA_ZB_XLU_DECAL.  As you can see from the names, all three are modes in which the Z buffer is enabled.
+<br><br>
+     Other rendering modes include LINE, which renders only the edges of the polygon, INTER, which is the mode for rendering interpenetrating polygons, and TERR, which is the mode for rendering terrain.<br><br>
+
+     Think of the texture edge mode TEX_EDGE as a special case of the OPA_SURF rendering mode.  Be careful not to confuse this with the mode to render just the edges of the polygon.
+</P>
+<p>
+<B>6.4.4  Coexistence of Rendering Modes</B>
+<P>
+  As described in the previous section, a variety of opaque and transparent rendering modes has been prepared in &lt;gbi.h&gt;.  However, when combining these modes together to render a scene, attention must be given to the order in which the objects are drawn.
+
+     As a general rule, first render opaque objects and then render semi-transparent objects.  The reason for this is that Z values are not written in semi-transparent rendering mode.  As a result, even if you were to render the semi-transparent objects first, they would be completely overwritten by the opaque objects, and the image generated would have an odd front-to-back relationship.
+     Also, when rendering two semi-transparent objects, if you do not render starting from the one further in distance, the order of priority will not be correctly expressed.
+     If you render starting from the closest opaque object, you can boost performance when using the Z buffer.  This is because, by comparing Z values, the processing of pixels that do not need to be rendered is suspended at an early stage.
+
+     Figure 6-5 Depicts the order of priority of rendering among rendering modes.
+</P>
+<P>
+<br>
+<IMG SRC="image20.gif" WIDTH="211" HEIGHT="157">
+</P>
+<P>
+<B>Figure 6-5  Rendering mode rendering order</B>
+</P>
+<P>
+Accordingly, the following group of rendering modes should be rendered in the order in which they are listed:
+
+</P>
+<UL>
+OPA_SURF<BR>
+OPA_DECAL<BR>
+OPA_INTER<BR>
+TEX_EDGE<BR>
+XLU_SURF<BR>
+XLU_DECAL<BR>
+XLU_INTER<BR>
+</UL>
+</BODY>
+</HTML>

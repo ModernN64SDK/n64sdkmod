@@ -1,0 +1,56 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../n64man.css">
+<title>MusHandleStop()</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check-->
+</head>
+
+<h1>MusHandleStop()</h1>
+
+<h2>Syntax</h2>
+
+<pre>
+int MusHandleStop(musHandle handle, int speed);
+</pre>
+
+<h2>Arguments</h2>
+
+<dl>
+  <dt><b>handle</b>
+  <dd>the sound handle
+  <dt><b>speed</b>
+  <dd>the number of video frames before channels are silenced 
+</dl>
+
+<h2>Description</h2>
+
+<p>It stops and silences the channels associated with the specified sound handle in a specified amount of time. This function allows the programmer to stop songs and sound effects, which frees the channels associated with them.</p>
+
+<p>The handle must be a sound handle returned by <a href="MusStartSong.html">MusStartSong()</a>, <a href="MusStartSongFromMarker.html">MusStartSongFromMarker()</a>, <a href="MusStartEffect.html">MusStartEffect()</a>, or <a href="MusStartEffect2.html">MusStartEffect2()</a>.  If a handle of zero is supplied, this function will always return zero.</p>
+
+<p>The speed value is the number of video frames before the channel will be stopped. Any positive integer is valid. A value of zero will stop the sound handle's channels immediately.</p>
+
+<h2>Return Value</h2>
+
+<p>Number of channels set to stop.</p>
+
+<h2>Example</h2>
+
+<pre>void StopSpecificSound(unsigned long handle, int time);
+{
+  MusHandleStop(handle, time);
+  while (<a href="MusHandleAsk.html">MusHandleAsk</a>(handle))
+    CallNormalProcessing();
+}
+</pre>
+
+<h2>See Also</h2>
+<p>
+<a href="MusStartSong.html">MusStartSong()</a>,
+<a href="MusStartEffect.html">MusStartEffect()</a>,
+<a href="MusStartEffect2.html">MusStartEffect2()</a>
+</p>
+
+</body>
+</html>

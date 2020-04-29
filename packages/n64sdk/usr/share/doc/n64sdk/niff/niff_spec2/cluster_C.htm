@@ -1,0 +1,617 @@
+<html>
+<HEAD>
+<TITLE>ClusterNode</TITLE>
+</HEAD>
+<BODY LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff">
+
+<font face="arial" size="-1">
+<b><font size="3">16. ClusterList</font></b>
+<HR>
+
+<P>
+<b>(1) ClusterList</b>
+<p>
+<blockquote>
+
+<table border bgcolor="ffc0c0">
+
+<tr>
+<th rowspan="9">
+<font face="arial" size="-1">ClusterListHeader</font>
+</th>
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">cluster_list_tag</font>
+</td>
+</tr>
+
+<tr>
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">cluster_list_header_size</font>
+</td>
+</tr>
+
+<tr>
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">cluster_list_size</font>
+</td>
+</tr>
+
+<tr>
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">cluster_shape_num</font>
+</td>
+</tr>
+
+<tr>
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">nintendo_extension_block_size</font>
+</td>
+</tr>
+
+<tr>
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">user_extension_block_size</font>
+</td>
+</tr>
+
+<tr>
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">cluster_shape_size(0)</font>
+</td>
+</tr>
+
+<tr>
+<td colspan="2">
+<center>
+<font face="arial" size="-1">...</font>
+</center>
+</td>
+</tr>
+
+<tr>
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">cluster_shape_size(cluster_shape_num - 1)</font>
+</td>
+</tr>
+
+<tr>
+<th rowspan="5">
+</th>
+<td colspan="2">
+<center>
+<font face="arial" size="-1">ClusterShape(0)</font>
+</center>
+</td>
+</tr>
+
+<tr>
+<td colspan="2">
+<center>
+<font face="arial" size="-1">...</font>
+</center>
+</td>
+</tr>
+
+<tr>
+<td colspan="2">
+<center>
+<font face="arial" size="-1">ClusterShape(cluster_shape_num - 1)</font>
+</center>
+</td>
+</tr>
+
+<tr>
+<td colspan="2">
+<center>
+<font face="arial" size="-1">NintendoExtensionBlock</font>
+</center>
+</td>
+</tr>
+
+<tr>
+<td colspan="2">
+<center>
+<font face="arial" size="-1">UserExtensionBlock</font>
+</center>
+</td>
+</tr>
+</table>
+
+<p>
+<a href="./cluster_J.htm">Go to the description (Japanese)</a>
+<p>
+<a href="./cluster_E.htm">Go to the description (English)</a>
+<p>
+</blockquote>
+
+<b>(2) ClusterShape</b>
+
+<blockquote>
+<table border width="300" bgcolor="ffc0c0">
+
+<tr>
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">cluster_shape_tag</font>
+</td>
+</tr>
+
+<tr>
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">this_cluster_shape_index</font>
+</td>
+</tr>
+
+<tr>
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">cluster_shape_size</font>
+</td>
+</tr>
+
+<tr>
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">cluster_shape_name_index</font>
+</td>
+</tr>
+
+<tr>
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">cluster_shape_type</font>
+</td>
+</tr>
+
+<tr>
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">cluster_num</font>
+</td>
+</tr>
+
+<tr>
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">cluster_tri_num</font>
+</td>
+</tr>
+
+<tr>
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">nintendo_extension_block_size</font>
+</td>
+</tr>
+
+<tr>
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">user_extension_block_size</font>
+</td>
+</tr>
+
+<tr>
+<td colspan="2">
+<center>
+<font face="arial" size="-1">Cluster(0)</font>
+</center>
+</td>
+</tr>
+
+<tr>
+<td colspan="2">
+<center>
+<font face="arial" size="-1">...</font>
+</center>
+</td>
+</tr>
+
+<tr>
+<td colspan="2">
+<center>
+<font face="arial" size="-1">Cluster(cluster_num - 1)</font>
+</center>
+</td>
+</tr>
+
+<tr>
+<td colspan="2">
+<center>
+<font face="arial" size="-1">ClusterTri(0)</font>
+</center>
+</td>
+</tr>
+
+<tr>
+<td colspan="2">
+<center>
+<font face="arial" size="-1">...</font>
+</center>
+</td>
+</tr>
+
+<tr>
+<td colspan="2">
+<center>
+<font face="arial" size="-1">ClusterTri(cluster_tri_num - 1)</font>
+</center>
+</td>
+</tr>
+
+<tr>
+<td colspan="2">
+<center>
+<font face="arial" size="-1">NintendoExtensionBlock</font>
+</center>
+</td>
+</tr>
+
+<tr>
+<td colspan="2">
+<center>
+<font face="arial" size="-1">UserExtensionBlock</font>
+</center>
+</td>
+</tr>
+
+</table>
+
+<p><a href="./cluster_J.htm">Go to the description (Japanese)</a>
+<p>
+<a href="./cluster_E.htm">Go to the description (English)</a>
+<p>
+
+</blockquote>
+
+<b>(3) Cluster</b>
+
+<blockquote>
+
+<table border width="300" bgcolor="ffc0c0">
+
+<tr>
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">cluster_tag</font>
+</td>
+</tr>
+
+<tr>
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">this_cluster_index</font>
+</td>
+</tr>
+
+<tr>
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">cluster_size</font>
+</td>
+</tr>
+
+<tr>
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">cluster_name_index</font>
+</td>
+</tr>
+
+<tr>
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">kind_of_transform_node</font>
+</td>
+</tr>
+
+<tr>
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">transform_node_index</font>
+</td>
+</tr>
+
+<tr>
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">external_transform_obj_file_name_index</font>
+</td>
+</tr>
+
+<tr>
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">external_transform_obj_name_index</font>
+</td>
+</tr>
+
+<tr>
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">cluster_vtx_group_index</font>
+</td>
+</tr>
+
+<tr>
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">cluster_vtx_nv_group_index</font>
+</td>
+</tr>
+
+<tr>
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">cluster_tri_nv_group_index</font>
+</td>
+</tr>
+
+<tr>
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">cluster_vtx_color_group_index</font>
+</td>
+</tr>
+
+<tr>
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">cluster_tri_color_group_index</font>
+</td>
+</tr>
+
+<tr>
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">cluster_st_group_index</font>
+</td>
+</tr>
+
+</table>
+
+<p>
+<a href="./cluster_J.htm">Go to the description (Japanese)</a>
+<p>
+<a href="./cluster_E.htm">Go to the description (English)</a>
+<p>
+</blockquote>
+
+<b>(4) ClusterTri</b>
+
+<blockquote>
+
+<table border width="300" bgcolor="ffc0c0">
+
+<tr>
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">cluster_tri_tag</font>
+</td>
+</tr>
+
+<tr>
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">this_cluster_tri_index</font>
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">cluster_tri_size</font>
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">kind_of_cluster_for_tri</font>
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">cluster_index_for_tri</font>
+</td>
+</tr>
+
+<tr>
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">tri_nv_index</font>
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">tri_color_index</font>
+</td>
+</tr>
+
+<tr>
+<td colspan="2">
+<center>
+<font face="arial" size="-1">ClusterVtx(0)</font>
+</center>
+</td>
+</tr>
+
+<tr>
+<td colspan="2">
+<center>
+<font face="arial" size="-1">ClusterVtx(1)</font>
+</center>
+</td>
+</tr>
+<tr>
+<td colspan="2">
+<center>
+<font face="arial" size="-1">ClusterVtx(2)</font>
+</center>
+</td>
+</tr>
+
+</table>
+
+<p>
+<a href="./cluster_J.htm">Go to the description (Japanese)</a>
+<p>
+<a href="./cluster_E.htm">Go to the description (English)</a>
+<p>
+</blockquote>
+
+<b>(5) ClusterVtx</b>
+
+<blockquote>
+
+<table border width="300" bgcolor="ffc0c0">
+
+<tr>
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">kind_of_cluster</font>
+</td>
+</tr>
+
+<tr>
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">cluster_index</font>
+</td>
+</tr>
+
+<tr>
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">vtx_index</font>
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">st_index</font>
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">vtx_nv_index</font>
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">u32</font>
+</td>
+<td>
+<font face="arial" size="-1">vtx_color_index</font>
+</td>
+</tr>
+</table>
+
+<p>
+<a href="./cluster_J.htm">Go to the description (Japanese)</a>
+<p>
+<a href="./cluster_E.htm">Go to the description (English)</a>
+<p>
+
+</blockquote>
+
+<hr>
+
+</body>
+</html>

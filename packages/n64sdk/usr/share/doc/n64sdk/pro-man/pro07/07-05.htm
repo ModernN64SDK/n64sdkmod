@@ -1,0 +1,23 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 7 - Operating System Functionality</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check.-->
+</head>
+
+<H1>7.5 Scheduling and Preemption </H1>
+
+<p>Once the OS is running, the highest-priority runnable <A target="keywords" HREF="../../keywords/index/data/system.htm#thread">thread</A> in the system always has control of the CPU.  When a thread gains control of the CPU, it continues to run until it requires some resource or <A target="keywords" HREF="../../keywords/index/data/system.htm#event">event</A> to continue.   It then relinquishes control of the CPU and the next highest priority thread runs.  Typically, this happens as a result of the running thread calling the function to receive a <A target="keywords" HREF="../../keywords/index/data/system.htm#message">message</a>.  If no message is present in the message queue, the running thread will block until a message arrives.   Note that the thread is no longer runnable when it is blocked on a message queue, so it no longer fits the criterion of being the highest-priority runnable thread.</p>
+
+<P>More frequently, the running thread loses control of the CPU through <A target="keywords" HREF="../../keywords/index/data/system.htm#preemption">preemption</A>.  In response to an exception (for example, an interrupt), a higher priority thread becomes runnable.  Since that thread should now be the running thread, the state of the interrupted (preempted) thread will be saved in its thread data structure, the state of the newly-runnable thread will be loaded to the CPU, and the new thread will resume execution at the point where it last ran.  The preempted thread is still runnable; but no longer has the highest priority. When it once again becomes the highest priority thread, it will run from the point where the interrupt occurred. </p>
+
+<P>Note that the running thread does not need to be at a sequence point (for example, a <A target="keywords" HREF="../../keywords/index/data/system.htm#system call">system call</A>) to lose control of the CPU. Thus, this fits the classical description of a <A target="keywords" HREF="../../keywords/index/data/system.htm#preemptive system">preemptive system</A>. </p>
+
+<P>Multiple threads within an application frequently need to synchronize their execution. For example, thread A cannot continue until thread B has performed some operation.  The message-passing functions provide the needed synchronization mechanism, and are described in the chapter on messages. </p>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR>
+</BODY>
+</HTML>

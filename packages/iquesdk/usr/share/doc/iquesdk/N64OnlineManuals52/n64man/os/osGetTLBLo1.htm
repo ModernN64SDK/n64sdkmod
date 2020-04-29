@@ -1,0 +1,52 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.>
+<title>__osGetTLBLo1</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<h1>__osGetTLBLo1</h1>
+
+<h3>Function</h3>
+
+<p>__osGetTLBASID, __osGetTLBPageMask, __osGetTLBHi,
+__osGetTLBLo0, __osGetTLBLo1</p>
+
+<p><i>Internal routines that the N64 operating system uses to access translation lookaside buffer (TLB) registers</i></p>
+
+<h3>Syntax</h3>
+<p>
+<blockquote>
+    <pre>#include &lt;ultra64.h&gt;
+#include &lt;os_internal.h&gt;
+u32 __osGetTLBASID(void);
+u32 __osGetTLBPageMask(s32 index);
+u32 __osGetTLBHi(s32 index);
+u32 __osGetTLBLo0(s32 index);
+u32 __osGetTLBLo1(s32 index);</pre>
+</blockquote></p>
+
+<h3>Description</h3>
+
+<p>The Nintendo 64 operating system contains internal routines that provide access to MIPS R4300 Translation Lookaside Buffer (TLB) registers. To reduce potential duplicate effort from developers, these routines are described in this article. Note that these routines were designed for internal use only; that's why their names have a double-underscore (__) prefix notation. For more information on the use of the R4300 registers, please refer to the MIPS R4300 User's Manual.</p>
+
+<p>The __osGetTLBASID routine returns the current TLB Address Space ID in the R4300 EntryHi register. </p>
+
+<p>Based on the index, __osGetTLBPageMask reads the appropriate TLB entry and returns the value of the R4300 PageMask register. </p>
+
+<p>Based on the index, __osGetTLBHi reads the appropriate TLB entry and returns the value of the R4300 EntryHi register. </p>
+
+<p>Based on the index, __osGetTLBLo0 reads the appropriate TLB entry and returns the value of the R4300 EntryLo0 register.</p>
+
+<p>Based on the index, __osGetTLBLo1 reads the appropriate TLB entry and returns the value of the R4300 EntryLo1 register. </p>
+
+<h3>See Also</h3>
+
+<p><A HREF="../os/osGetTLBASID.htm">__osGetTLBASID</A>, 
+<A HREF="../os/osGetTLBPageMask.htm">__osGetTLBPageMask</A>, 
+<A HREF="../os/osGetTLBHi.htm">__osGetTLBHi</A>, and <a href="osGetCause.htm">__osGetCause</a></p>
+</body>
+</html>

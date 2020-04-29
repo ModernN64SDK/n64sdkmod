@@ -1,0 +1,83 @@
+<HTML>
+<HEAD>
+<TITLE>n64prev Quick Preview</TITLE>
+</HEAD>
+<BODY LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff">
+
+<font face="arial" size="-1">
+<b><font size="3">n64prev Quick Preview</font></b>
+<HR size=3>
+
+<p>
+<b> 1. Summary of Quick Previewer</b>
+<p>
+  The conventional n64prev Previewer compiles the C source file created by the niff2gfx converter, in the /64prev directory, in order to create a Nintendo 64 ROM image. The ROM image is then loaded to the emulator board or IS-VIEWER. With Quick Previewer, the ROM image for drawing is already loaded, and can be previewed by simply loading the binary data of the model created by niff2gfx to a determined address.  Since compiling is not necessary, far less time is spent when previewing.<p>
+
+<i>[Note]<br>
+  To run Quick Previewer with IS-VIEWER, please obtain the new version of nload, which can handle data that does not perform makemask.<p></i>
+
+<b>2. Creating a ROM Image for Drawing </b>
+<p>
+
+  A ROM image for drawing can be created by compiling the model.c in the /n64prev directory in the same manner as with n64prev Previewer. By default, the ROM image created by compiling is named nuprev.n64 for the Win version and rom for the SGI version. Please rename the ROM image appropriately and use it as the ROM image for drawing.<p>
+
+  Since model.c is niff2gfx-generated data, please create it using sample niff data.  The model.c data is displayed when Quick Previewer model data is initialized and when Quick Previewer fails.<p>
+
+  Make sure to update the ROM image every time nd (the drawing object manager) is "tuned up."<p>
+
+The release version of NIFFeditor has a directory named quickprev under the n64prev directory.  Inside that directory is a ROM image named quickprev.n64 created from star.niff, which is also in that directory.  This is used when Quick Previewer is run from NIFFeditor.
+It is also possible to create a ROM image by opening any arbitrary NIFF data with NIFFeditor and executing Quick Previewer from the menu.<p>
+
+<b>3. Executing Quick Previewer</b>
+<p>
+  The process for executing Quick Previewer is described below.<p>
+<dl>
+ <dt>    (1) Load the ROM image for drawing.
+ <dt>    (2) Convert the niff data that you want to draw into binary model data.
+ <dt>    (3) Load the binary model data created in Step (2) to address 0x200000.
+</dl>
+
+Step (1) (loading the ROM image) has to be executed only the first time.  After that, previewing can be performed by carrying out only Steps (2) and (3).<p>
+
+  Shown below are examples of commands to execute Quick Previewer from both the emulator board and IS-VIEWER.  quickprev.n64 is the ROM image for drawing, niffprev.nif is the niff data to be previewed, and model.bin is the binary model data.    <p>
+ 
+[Emulator Board]
+<dl>
+ <dt>    (1) gload -s quickprev.n64
+ <dt>    (2) niff2gfx -b niffprev.nif model.bin
+ <dt>    (3) gload -s -o0x200000 model.bin
+</dl>
+<p>
+
+[IS-VIEWER]
+<dl>
+ <dt>    (1) nload -n -v quickprev.n64
+ <dt>    (2) niff2gfx -b niffprev.nif model.bin 
+ <dt>    (3) nload -n -v -s0x200000 model.bin
+</dl>
+
+ ( Note: Arguments added to niff2gfx vary according to individual situations.)<p>
+
+  When "IMPORT" is displayed in the upper right-hand corner of the screen, the Quick Previewer display is in process.<p>
+
+<b>4. Initializing Quick Previewer</b>
+<p>
+
+  When doing a quick preview it is still possible to continue to output model.c and compile and preview in the conventional way as with n64prev Previewer.  However, when previewing in the conventional way , if model data exists in address 0x200000, that model data will be previewed and it will not be possible to preview the model.c model data.  Therefore, to compile and preview in the conventional way, you must delete the model data at address 0x200000 before previewing.  This operation of deleting the model data is called initializing Quick Previewer. 
+<p>
+  The Previewer recognizes the data at address 0x200000 as model data when the 4 bytes from address 0x200000 are the character string "niff".  Therefore, it is possible to initialize Quick Previewer by loading different data in place of this character string.  For example, Quick Previewer can be initialized so that the model.c model data can be previewed by using the binary file clean.bin, which is just 8-bytes of 0xff.<p>
+
+<p>The initialization described above is performed automatically when either of these commands is executed from NIFFeditor.
+<p>
+[Emulator Board]
+<dl>
+ <dt>   gload -s -o0x200000 clean.bin
+</dl> 
+[IS-VIEWER]
+<dl>
+ <dt>            nload -n -v -s0x200000 clean.bin  
+</dl> 
+
+<hr>
+</body>
+</html>

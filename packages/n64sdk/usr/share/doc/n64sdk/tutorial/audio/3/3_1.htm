@@ -1,0 +1,105 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Audio-Chapter  3 USING MULTIPLE BANKS</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/16/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<BR>
+<font style="font-size:16pt"><B>CHAPTER 3  USING MULTIPLE BANKS</B></FONT>
+<BR>
+<HR SIZE=3 NOSHADE>
+<P>
+ Up until now, all the explanations we have given have involved the use of only one Sound Effect Bank and Sample Bank.  However, in actual practice, sometimes sample banks are divided into files for songs and files for sound effects, and sometimes sound-effect banks are switched depending on the circumstances.  In this chapter we explain several ways to use bank files.
+</P>
+<BR>
+<font style="font-size:12pt"><B>3.1  Using Multiple Sample Banks</B></FONT>
+<P>
+ In this section we explain how to use a number of sample banks.<BR><BR>
+     As explained in "Section 1.5, Preparations for Audio Playback," all of the sample banks must be initialized ahead of time.  It does not matter how many sample banks are going to be initialized with <TT>MusPtrBankInitialize</TT>.  At the time of initialization, the sample bank specified the first time by <TT>MusPtrBankInitialize</TT> is automatically set as the default sample bank.  Sample banks initialized on the second and subsequent times are not set as the default, but this can be changed and one of these sample banks can be set as the default using <TT>MusPtrBankSetCurrent</TT>.  When a bank is set as the default, any song or sound effect started after that point will make use of that bank.
+<BR>
+<HR>
+<P><B>
+Set initialized sample bank as the default</B>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Function name:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP COLSPAN=2 NOWRAP><TT>MusPtrBankSetCurrent</TT></TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Syntax:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP COLSPAN=2 NOWRAP>void MusPtrBankSetCurrent(void *ipbank)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Arguments:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP><B>ipbank</B>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Address of the initialized sample bank</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Return value:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>None</TD>
+</TR></TABLE>
+<HR>
+</P>
+<P>
+You can make use of a number of sample banks with just <tt>MusPtrBankSetCurrent</tt>, but there is another function with different characteristics called, <tt>MusPtrBankSetSingle</tt>, that you can also use.  This function sets an override that is different from the default.  The override has higher priority than the default, but it is cleared after one use.  Thus, you can utilize this function to make temporary use of a different sample bank when the need arises.
+<BR>
+<HR>
+<p><b>Temporarily set the next sample bank to use</B>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Function name:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP COLSPAN=2 NOWRAP><TT>MusPtrBankSetSingle</TT></TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Syntax:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP COLSPAN=2 NOWRAP>void MusPtrBankSetSingle(void *ipbank)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Arguments:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP><B>ipbank</B>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Address of an initialized sample pointer bank</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Return value: </TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>None</TD>
+</TR></TABLE>
+<HR>
+</P>
+<P>
+The following is an example of how these two functions can be combined to make use of multiple sample banks.</P>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0><TR><TD>&nbsp;</TD><TD>
+<TABLE BORDER=1 CELLSPACING=0 CELLPADDING=4><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP><FONT COLOR="#000080"><PRE><CODE>MusPtrBankInitialize(A_ptr,A_wbk);  // Initialize A and set as default
+MusPtrBankInitialize(B_ptr,B_wbk);   // Initialize B
+MusPtrBankInitialize(C_ptr,C_wbk);  // Initialize C
+
+MusStartSong(song1);            // Use the default, A  (there is no override)
+
+MusPtrBankSetCurrent(B_ptr);    // Change the default to B
+MusStartSong(song2);            // Use the default, B (there is no override)
+
+MusPtrBankSetSingle(C_ptr);    // Set the override to C
+MusStartSong(song3);           // Use the override, C (override gets cleared)
+
+MusStartSong(song4);           // Use the default, B (there is no override)</CODE></PRE></FONT></TD>
+	</TR></TABLE>
+</TD></TR></TABLE>
+<P>
+There is one point you need to be careful about, as the next example demonstrates:</P>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0><TR><TD>&nbsp;</TD><TD>
+<TABLE BORDER=1 CELLSPACING=0 CELLPADDING=4><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP><FONT COLOR="#000080"><PRE><CODE>MusPtrBankInitialize(A_ptr,A_wbk);   // Initialize A and set as default
+MusPtrBankInitialize(B_ptr,B_wbk);   // Initialize B
+MusPtrBankInitialize(C_ptr,C_wbk);   // Initialize C
+
+MusStartSong(song1);            // Use the default, A (there is no override)
+
+MusPtrBankSetSingle(C_ptr);    // Set the override to C 
+
+MusPtrBankSetCurrent(B_ptr);   // Change the default to B
+MusStartSong(song2);           // Use the override, C (override gets cleared)</CODE></PRE></FONT></TD>
+	</TR></TABLE>
+</TD></TR></TABLE>
+<P>
+ The override is released when the song or sound effect begins, but not if the only function that is executed is <tt>MusPtrBankSetCurrent</tt>.  For this reason, you should execute <tt>MusPtrBankSetSingle</tt> immediately before starting the song or sound effect.  You can forcefully clear the override by setting NULL in the argument of <tt>MusPtrBankSetSingle</tt>.
+</P>
+<BR>
+<BR>
+<BR>
+</BODY>
+</HTML>

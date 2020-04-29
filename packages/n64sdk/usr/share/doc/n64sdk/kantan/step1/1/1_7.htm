@@ -1,0 +1,262 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<title>STEP1 [What is N64?] - Chapter 1 Introduction to the N64</title>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Ron Daring 7/20/1999, -->
+</head>
+
+<body bgcolor="#FFFFFF">
+<base target="keywords">
+
+<p><font style="font-size:12pt"><b>1-7 Basic Terminology (thread, message, etc)</b></font></p>
+<p>
+In N64 game development, various technical terms appear. Here, we will describe some of the basic terms. In addition, the glossary is attached as a separate volume. </p>
+
+<p><b>Thread</b></p>
+
+<p>
+A thread is a single processing unit operating in the CPU.  A <a
+href="../../../keywords/index/data/system.htm#thread"
+target="keywords">thread</a> at any one time can have any one of the following four states:</p>
+<br>
+
+<p><b>((state of thread))<br>
+      *execution state<br>
+      *ready state<br>
+      *halt state<br>
+      *queued state</b>
+</p>
+<br>
+<br>
+<table border="1" cellspacing="0">
+    <tr>
+        <td><img src="img00037.gif" width="180" height="233"> </td>
+    </tr>
+</table>
+
+
+<p><br><b>Figure 1-7-1 The thread is a process unit on CPU.</b></p>
+<br>
+<br>
+<p>All threads execute in RDRAM under the management of the CPU.</p>
+
+<p>In a standard game system, in addition to the threads created by game programmers, the following threads are reserved:</p>
+
+<ul>
+      <li>Threads used by the N64 Operating System (PI manager, SI manager, and so on)
+      <li>The <a
+href="../../../keywords/index/data/system.htm#idle thread">idle thread</a><br>
+<br>
+<br>
+<br>
+<p><b>Message</b></p>
+
+<p>
+<a
+href="../../../keywords/index/data/system.htm#message"
+target="keywords">Messages</a> are sent from and received by threads for the purpose of synchronizing information throughput between threads. Messages are managed by the message queue.</p>
+
+<table border="1" cellspacing="0">
+    <tr>
+        <td><img src="img00038.gif" width="371" height="249"> </td>
+    </tr>
+</table>
+
+
+<p><br><b>Figure 1-7-2 Messages provide synchronizion and information throughput between threads and is managed by the queue.</b></p>
+<br>
+<br>
+<br>
+<p><b>Task</b></p>
+
+<p>
+A task is a single processing unit operating in the RSP. The RSP in the RCP executes graphics and audio processes. Each process is called a task.</p>
+
+<table border="1" cellspacing="0">
+    <tr>
+        <td><img src="img00039.gif" width="180" height="233"> </td>
+    </tr>
+</table>
+
+<p><br>
+<p><br><b>Figure 1-7-3 The task is the process provided by RSP</b></p>
+<br>
+<br>
+<br>
+<p><b>Scheduler</b></p>
+
+<p>
+The Scheduler is a high-priority thread that manages all the other threads. It sends messages to registered threads to coordinate their efforts in the CPU. It can also pass control to another thread that manages or decides how to allocate tasks executed on the RCP.</p>
+
+<table border="1" cellspacing="0">
+    <tr>
+        <td><img src="img00040.gif" width="226" height="268"> </td>
+    </tr>
+</table>
+
+<p><br>
+<p><br><b>Figure 1-7-4 Scheduler manages threads</b></p>
+<br>
+<br>
+<br>
+<p><b>Event</b></p>
+
+<p>
+A hardware interrupt is called an <a
+href="../../../keywords/index/data/system.htm#event"
+target="keywords">event</a>.  The application recognizes the event by sending messages to the threads to tell them which event has occurred.  The following are the main events:</p>
+
+<ul>
+      <li>RSP
+      <li>RDP
+      <li>VI(Video Interface)
+      <li>AI(Audio Interface)
+      <li>SI(Serial Interface)
+      <li>PI(Parallel Interface)</ul></p>
+
+<table border="1" cellspacing="0">
+    <tr>
+        <td><img src="img00041.gif" width="343" height="244"> </td>
+    </tr>
+</table>
+
+<p><br>
+<p><br><b>Figure 1-7-5 The events manages the interruption or exceptions</b></p>
+<br>
+<br>
+<br>
+<p><b>Microcode</b></p>
+
+<p>
+<a
+href="../../../keywords/index/data/system.htm#microcode"
+target="keywords">Microcode</a>
+is executed by RSP concurrently (simultaneously) with CPU processing.  There are two basic types of microcode, graphics microcode and audio microcode. </p>
+
+<p><b>*Graphics Microcode</b></p>
+<p>
+Graphics microcde executes the graphics.There is graphics microcode for 2D and for 3D graphics.  Graphics microcode analyzes graphics instructions, <a
+href="../../../keywords/index/data/graphics.htm#GBI"
+target="keywords">GBI</a>(Graphics Binary Interface) commands, in 64-bit format and executes them. Two graphics microcodes are provided for 3D. These are for <a
+href="../../../keywords/index/data/graphics.htm#polygon"
+target="keywords">polygon</a> and for line types of graphics. They should be used as appropriate.</p>
+<p>It also depends upon how precise the drawing is.</p>
+<br>
+<img src="img00042.gif" width="218" height="130"> <br>
+<br>
+<p><br><b>Figure1-7-6 Example of Graphics Microcode</b></p>
+<br>
+<br>
+<p><b>*Audio microcode</b></p>
+
+<p>Audio microcode executes the waveform synthesis.It analyzes audio instructions (ABI commands) in 64-bit format, and executes them.</p>
+<br>
+<img src="img00043.gif" width="208" height="124"> <br>
+<br>
+<p><br><b>Figure1-7-7 Example of Audio Microcode</b></p>
+<br>
+<br>
+<br>
+<p><b>GBI Command</b> (Graphic Binary Interface Command)</p>
+
+<p>
+A GBI command is the pseudo-instruction code for drawing graphics.</p>
+<br>
+<br>
+<br>
+<p><b>Display List</b></p>
+
+<p>
+The display list is just another name for the graphics command list.  It is a string of GBI commands. </p>
+
+<table border="1" cellspacing="0">
+    <tr>
+        <td><img src="img00044.gif" width="297" height="189"> </td>
+    </tr>
+</table>
+
+
+<p><br><b>Figure1-7-8 GBI Command and </b><a
+href="../../../keywords/index/data/graphics.htm#display list"
+target="keywords"><b>Display List</b></a></p>
+<br>
+<br>
+<p>
+<a href="../../../keywords/index/data/audio.htm#ABI command"
+target="keywords"><b>ABI Command</b></a></p>
+
+
+<p>
+An ABI command is the pseudo-instruction code for synthesizing waveforms.</p>
+<br>
+<br>
+<br>
+<p><b>Audio Command List</b></p>
+
+<p>
+The audio command list is a string of ABI commands used to synthesize waveforms. (It is also called the ABI command list.)</p>
+
+<table border="1" cellspacing="0">
+    <tr>
+        <td><img src="img00045.gif" width="294" height="187"> </td>
+    </tr>
+</table>
+
+
+<p><br><b>Figure1-7-9 ABI Command and Audio Command List</b></p>
+<br>
+<br>
+<br>
+<p><b>Z-Buffer</b></p>
+
+<p>
+The Z-<a
+href="../../../keywords/index/data/system.htm#buffer"
+target="keywords">buffer</a> stores the depth (z coordinate in an x,y,z coordinate system) information.  By using the information in the Z-buffer, N64 can draw just those items that are in view; that is, all blocked views are not drawn.  In N64, pixels are updated when the Z value is small. In the following illustration, because the Z value of the background is 9, the Z value of the letter B is 7, and the Z value of the letter A is 1, N64 knows that A is in front of (partially blocking) B.</p>
+
+<table border="1" cellspacing="0">
+    <tr>
+        <td><img src="img00046.gif" width="462" height="277"> </td>
+    </tr>
+</table>
+
+
+<p><br><b>Figure1-7-10 Image of <a
+href="../../../keywords/index/data/graphics.htm#Z buffer"
+target="keywords">Z-buffer</b></a></p>
+
+<p>(Note that this is just a conceptual illustration. In actual practice, the Z-buffer takes a value between -1.0 and 1.0.)</p>
+<br>
+<br>
+<br>
+<p><b>Pixel</b></p>
+
+<p>
+A pixel is a dot on the screen. It is the minimum unit of drawing. A set of these dots becomes image data (the visual image).</p>
+<br>
+<img src="img00047.gif" width="431" height="226"> <br>
+<p><br><b>Figure1-7-11 A pixel is the minium unit of drawing</b></p>
+<br>
+<br>
+<br>
+<p><b>DMA (Direct Memory Access)</b></p>
+
+<p>
+DMA is used to directly transfer data from a device to memory (or from memory to a device) without using the CPU. It is an effective way to transfer a lot of data. The advantage of this is that after DMA starts, the CPU can do other processing until the data transfer ends.</p>
+
+<table border="1" cellspacing="0">
+    <tr>
+        <td><img src="img00048.gif" width="453" height="202"> </td>
+    </tr>
+</table>
+
+<p><br>
+<p><br><b>Figure 1-7-12 The flow of the DMA transfer</b></p>
+<br>
+<br>
+<br>
+
+</body>
+</html>

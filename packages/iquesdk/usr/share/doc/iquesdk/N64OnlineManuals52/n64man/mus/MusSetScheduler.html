@@ -1,0 +1,58 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../n64man.css">
+<title>MusSetScheduler()</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check-->
+</head>
+
+<h1>MusSetScheduler()</h1>
+
+<h2>Syntax</h2>
+
+<pre>
+void MusSetScheduler(musSched *sched_list);
+</pre>
+
+<h2>Arguments</h2>
+
+<dl>
+  <dt><b>sched_list</b>
+  <dd>the address of scheduler callback function list 
+</dl>
+
+<h2>Description</h2>
+
+<p>It configures the music library to use an external scheduler. The library relies on three functions related to the graphic/audio task scheduler.</p>
+
+
+<p>The sched_list argument takes the address of the callback function list structure.</p>
+
+<p>Note: This function must be called before the library is initialized  the <a href="MusInitialize.html">MusInitialize()</a> function.</p>
+
+<h2>Return Value</h2>
+
+<p>None</p>
+
+<h2>Example</h2>
+
+<pre>/* prototypes for NN scheduler support functions */
+static void NnSchedInstall(void);
+static void NnSchedWaitFrame(void);
+static void NnSchedDoTask(musTask *task);
+
+/* music library scheduler callback structure */
+static musSched nn_mus_sched =
+{
+  NnSchedInstall, NnSchedWaitFrame, NnSchedDoTask
+};
+
+void InitMusicDriver(musConfig *init)
+{
+  MusSetScheduler(&amp;nn_mus_sched);
+  <a href="MusInitialize.html">MusInitialize</a>(&amp;init);
+}
+</pre>
+
+</body>
+</html>

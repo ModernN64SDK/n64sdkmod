@@ -1,0 +1,80 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 16 - N64 Sprite Library</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. -->
+</head>
+
+<h1>16.1 Application Programmers Interface (API)</h1>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="01"><h2>16.1.1 Making Sprites</h2></a>
+
+<p><a href="../../keywords/index/data/graphics.htm#sprite" target="keywords">Sprites</a> are usually used to draw images onto the screen. For these simple cases, a few scripts are provided to automatically take a specified image and generate an appropriate sprite data structure. The generated sprite may then be edited manually or modified at run time to create dynamic behavior. </p>
+
+<dl>
+  <dt><a href="../../n64man/tool/mksprite.htm">mksprite</a> name imgfile.rgb tileX tileY overlap &gt; sp_name.h
+  <dd>This program takes a Silicon Graphics image file and generates a sprite. This sprite consists of a number of individual bitmaps (tiles) that are tileX apart in the x direction and tileY apart in the y direction. If overlap is &QUOT;0&QUOT;,  then these bitmaps are exactly tileX by tileY in size and should not be scaled (see <a href="../../n64man/sp/spScale.htm">spScale()</a>). If overlap is &QUOT;1&QUOT;, then the tiles are (tileX+1) by (tileY+1) in size. These sprites may be scaled and the textures will be properly interpolated. This extra pixel of overlap, or &QUOT;border&QUOT;, provides the required data to create smooth transitions between tiles. The generated file may be included in an application and the sprite may be
+manipulated with the name &QUOT;name&QUOT;.
+</dl>
+
+<dl>
+  <dt><a href="../../n64man/tool/mkisprite.htm">mkisprite</a> name imgfile.rgb tileX tileY overlap &gt; sp_name.h
+  <dd>This <a href="../../n64man/tool/mkisprite.htm">mkisprite</a> command is just like <a href="../../n64man/tool/mksprite.htm">mksprite</a>, except  that it converts the image to an 8-bit Color Index format, computes the <a href="../../keywords/index/data/graphics.htm#TLUT" target="keywords">TLUT</a>, and generates the sprite with all the appropriate changes to support this format. 
+</dl>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="02"><h2>16.1.2 Manipulating Sprites</h2></a>
+
+<dl>
+  <dt>void <a href="../../n64man/sp/spInit.htm">spInit</a>(Gfx **glistp)
+  <dd>This routine is called at the beginning of sprite drawing. Some <a href="../../keywords/index/data/graphics.htm#graphics binary interface" target="keywords">GBI</a> <a href="../../keywords/index/data/graphics.htm#display list" target="keywords">display list</a> commands are added to the specified glistp to get the RCP into the correct mode for sprite <a href="../../keywords/index/data/graphics.htm#rendering" target="keywords">rendering</a>. This sets default texturing modes. 
+</dl>
+
+<dl>
+  <dt>void <a href="../../n64man/sp/spFinish.htm">spFinish</a>(Gfx **glistp)
+  <dd>This routine is called at the end of sprite drawing. Some GBI display list commands are added to the specified glistp to get the RCP to complete all pending drawing operations and reset the RCP to its regular state. It also tacks on a gEndDisplayList( ). 
+</dl>
+
+<dl>
+  <dt>void <a href="../../n64man/sp/spMove.htm">spMove</a>(Sprite *sp, s32 x, s32 y)
+  <dd>This routine sets the screen position of the upper left-hand corner of the sprite.
+</dl>
+
+<dl>
+  <dt>void <a href="../../n64man/sp/spScale.htm">spScale</a>(Sprite *sp, f32 sx, f32 sy)
+  <dd>This routine sets the resizing amount for this sprite. Scales may be less than 1.0 to produce a smaller image, or greater than 1 to create an expanded image. 
+</dl>
+
+<dl>
+  <dt>void <a href="../../n64man/sp/spColor.htm">spColor</a>(Sprite *sp, u8 red, u8 green, u8 blue, u8 alpha)
+  <dd>This routine sets the color of the sprite. Based on how the sprite is to be drawn, this could be either the PRIMITIVE_COLOR or the FILL_COLOR. 
+</dl>
+
+<dl>
+  <dt>void <a href="../../n64man/sp/spSetAttribute.htm">spSetAttribute</a>(Sprite *sp, s32 attr)
+  <dd>This routine sets the indicated <a href="../../keywords/index/data/graphics.htm#attribute" target="keywords">attribute</a>. &QUOT;attr&QUOT; can be the bit-wise OR of many attributes. 
+</dl>
+
+<dl>
+  <dt>void <a href="../../n64man/sp/spClearAttribute.htm">spClearAttribute</a>(Sprite *sp, s32 attr)
+  <dd>This routine clears the indicated attributes. &QUOT;attr&QUOT; can be the bit-wise OR of many attributes. 
+</dl>
+
+<dl>
+  <dt>void <a href="../../n64man/sp/spScissor.htm">spScissor</a>(s32 xmin, s32 xmax, s32 ymin, s32 ymax)
+  <dd>This routine specifies the bounding region in which sprites will be drawn. By default, this region is initialized with xmin=0, xmax=319, ymin=0, and ymax=239.
+</dl>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="03"><h2>16.1.3 Drawing Sprites</h2></a>
+
+<dl>
+  <dt>Gfx *<a href="../../n64man/sp/spDraw.htm">spDraw</a>(Sprite *sp)
+  <dd>This routine constructs a display list starting at sp-&GT;rsp_dl_next that draws the sprite into the framebuffer in the indicated way. This display list is terminated with an gEndDisplayList( ) entry, and the sp-&GT;rsp_dl_next entry is updated to point to the next entry. The pointer to the start of this display list is returned when it completes to construct a display list.. 
+</dl>
+
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+</body> </html>

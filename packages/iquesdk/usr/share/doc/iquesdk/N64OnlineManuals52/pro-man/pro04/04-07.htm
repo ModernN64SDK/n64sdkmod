@@ -1,0 +1,36 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 4 - Runtime Software Architecture</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check.-->
+</head>
+
+<h1>4.7 RCP Task Management </h1>
+
+<p>Both the audio and graphics libraries provide support for generating command lists to be executed on the RCP, but they do not handle the command list execution.  It is therefore necessary for the application to manage the <A target="keywords" HREF="../../keywords/index/data/system.htm#scheduling">scheduling</A> and execution of RCP tasks (command lists and <A target="keywords" HREF="../../keywords/index/data/system.htm#microcode">microcode</a>) on the RCP. To facilitate this, the development package includes an example RCP scheduler. </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="01"><h2>4.7.1 The Scheduler of "Simple" Application</h2></a>
+
+<p>The structure of the scheduler included with the &QUOT;Simple&QUOT;application is described briefly below.  Please refer to the example code in the &QUOT;Simple&QUOT;directory for additional details. </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="01-01"><h3>4.7.1.1 The Scheduler Thread </h3></a>
+
+<p>The scheduler thread is responsible for collecting display/command lists from other <A target="keywords" HREF="../../keywords/index/data/system.htm#thread">threads</A> and assigning them to RCP tasks for scheduling and execution so that real-time constraints are met.  This thread has the highest priority of the application threads, to insure that scheduling occurs periodically. </p>
+
+<p>The scheduler executes a task on the RCP based on the <A target="keywords" HREF="../../keywords/index/data/system.htm#retrace interrupt">retrace interrupt</a> and then monitors the progress, yielding the graphics tasks periodically to interleave audio tasks if necessary. </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="01-02"><h3>4.7.1.2 Other Application Threads </h3></a>
+
+<p>The next highest priority application thread is the Audio Manager thread. It is responsible for creating audio <a href="../../keywords/index/data/graphics.htm#display list" target="keywords">display lists</a>, sending them to the scheduler for execution, and transferring the finished audio to the codecs.  It has a higher priority than the game thread to prevent audio clicks caused when the audio thread cannot meet its real-time constraints. </p>
+
+<p><strong>Note:</strong>  The Audio Manager thread is essentially a low-level wrapper around the <a href="../../n64man/al/alAudioFrame.htm">alAudioFrame</a> call.  (Please see <a href="../pro17/17-04.htm"> "17.4 The Synthesis Driver"</a> for details).  Higher-level Audio Library calls are made from the game thread.  </p>
+
+<p>The game thread is responsible for generating graphics display lists and sending them to the scheduler for execution. In addition, the game thread handles the controller input, makes calls to the Audio Library, and performs other tasks.</p>
+
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+</body> </html>

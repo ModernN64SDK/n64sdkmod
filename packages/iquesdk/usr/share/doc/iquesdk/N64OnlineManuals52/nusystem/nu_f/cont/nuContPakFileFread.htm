@@ -1,0 +1,83 @@
+<HTML>
+<HEAD>
+<TITLE>nuContPakFileFread</TITLE>
+</HEAD>
+
+<BODY bgcolor="#FFFFFF">
+<font face="arial" size="-1">
+
+<P>
+<FONT size="5"><b><IMG src="../nusystem2.gif" height="30" width="176">Function</b></FONT>
+
+<HR>
+<P>
+<FONT size="3"><b>nuContPakFileFread</b></FONT>
+<p>
+<HR>
+<P>
+<b>Syntax</b>
+<font face="courier" size="2">
+<pre>s32 nuContPakFileFread(NUContPakFile *file, s32 offset, s32 size, u8* buf)</pre>
+</font>
+
+<p><b>Arguments</b>
+<font face="courier" size="2">
+<pre>
+*file      Controller Pak structure
+offset     offset position
+size       size of read
+*buf       buffer where read data is stored</pre>
+</font>
+
+<p><b>Return Value</b>
+<font face="courier" size="2">
+<pre>Error</pre>
+</font>
+
+<p><b>Description</b>
+
+<p><i>Reads game data from the Controller Pak game note</i>
+
+<p>The "size" bytes of game note game data in the specified "file" starting from the "offset" position is read into "buf." Neither offset nor size needs to be a multiple of 32. When these values are not multiples of 32, the function makes the adjustment internally for the read process.
+
+<p><b>Errors</b>
+<p>
+<table border="1" cellspacing="1">
+    <tr>
+        <td><font face="arial" size="-1">PFS_ERR_NOPACK</font></td>
+        <td><font face="arial" size="-1">Nothing is inserted in the specified Controller.</font></td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">PFS_ERR_NEW_PACK</font></td>
+        <td><font face="arial" size="-1">The Controller Pak may have been changed. Please perform the Open process again.</font></td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">PFS_ERR_INCONSISTENT</font></td>
+        <td><font face="arial" size="-1">There is an inconsistency in the file system management area.</font></td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">PFS_ERR_CONTRFAIL</font></td>
+        <td><font face="arial" size="-1">Data transfer with Controller has failed.</font></td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">PFS_ERR_INVALID</font></td>
+        <td><font face="arial" size="-1">Invalid parameter or the game note does not exist.</font></td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">PFS_ERR_BAD_DATA</font></td>
+        <td><font face="arial" size="-1">An attempt was made to read from a game note containing no data.</font></td>
+    </tr>
+</table>
+
+<p><b>See Also</b>
+<p><a href="nuContPakFileFwrite.htm">nuContPakFileFwrite</a>, <a href="nuContPakFileReadWrite.htm">nuContPakFileReadWrite</a>, <a
+href="nuContPakFileRead.htm">nuContPakFileRead</a>, and <a
+href="nuContPakFileWrite.htm">nuContPakFileWrite</a>
+
+<p>
+<hr>
+
+<p align="right"><a href="index.htm"><img src="../../../gif/index.gif"
+border="0" width="65" height="17"></a>
+</body>
+</html>

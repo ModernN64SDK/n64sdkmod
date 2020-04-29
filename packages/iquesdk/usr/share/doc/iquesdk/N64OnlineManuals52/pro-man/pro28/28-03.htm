@@ -1,0 +1,71 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 28 - Flash ROM</title>
+<!-- Editor: PWC
+      Notes: Created from Word Doc-->
+</head>
+<body bgcolor=#ffffff>
+
+<h1>28.3 Precautionary Statements Regarding the Use of Flash ROM</h1>
+<hr>
+
+<h2><a name="01">28.3.1 Possible Number of Rewrites</a></h2>
+
+<p>The possible number of guaranteed rewrites with the 1M Flash is 100,000 times. This is because the guaranteed number of erasures for each sector is 100,000. Please be careful that the number of rewrites do not exceed this value during game play.
+<p>For example, when data is written to the same page every second, the guaranteed number will be exceeded within 30 hours. In such cases, please reduce the number of times a page is rewritten by extending the intervals between rewriting data or write to several pages in sequence and not just to the same page. 
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a><hr>
+
+<h2><a name="02">28.3.2 Error Processing When Writing</a></h2> 
+
+<p>When there are errors while writing data, try erasing and rewriting several times. If there are still errors after at least 3 attempts, display an error message on the television screen and encourage the user to refer to the User's Manual. Please include descriptions on how to handle errors in the User's Manual. 
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a><hr>
+
+<h2><a name="03">28.3.3 Data Duplication</a></h2>
+
+<p>We recommend duplicating written data whenever there is extra flash capacity in case of a loss of power while writing data. 
+<p>Recording the same data onto separate pages will make it possible to use one set of data to restore to the previous state if the other set of data has been damaged. 
+<p><b>Note:</b> In order to detect errors caused by processing interruptions while writing, it would also be necessary for the application itself to run a comparison check on the data. 
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a><hr>
+
+<h2><a name="04">28.3.4 Reserved Pages</a></h2>
+
+<p>Pages 0x3fe and 0x3ff have been reserved by Nintendo and there should be no read/write processing during a game. However, erase processes on pages <font style="font-family: courier new, courier;">0x3fe</font> and <font style="font-family: courier new, courier;">0x3ff</font> (such as <font style="font-family: courier new, courier;">osFlashAllErase</font>, or using <font style="font-family: courier new, courier;">osFlashSectorErase</font> on page number <font style="font-family: courier new, courier;">0x380</font> or subsequent pages) pose no problems.
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a><hr>
+
+<h2><a name="05">28.3.5 Issuing Commands While Executing Commands</a></h2>
+
+<p>There are times when errors will result if a command other than a status read command (<font style="font-family: courier new, courier;">osFlashCheckEraseEnd</font> and <font style="font-family: courier new, courier;">osFlashReadStatus</font>) is issued while executing a command to 1M Flash. 
+
+<p>After executing <font style="font-family: courier new, courier;">osFlashSectorEraseThrough</font> or <font style="font-family: courier new, courier;">osFlashAllEraseThrough</font>, this type of problem could occur if you execute other osFlash functions, or if you execute osFlash functions asynchronously from multiple threads before confirming the data erase has been completed using <font style="font-family: courier new, courier;">osFlashCheckEraseEnd</font>.
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a><hr>
+
+<h2><a name="06">28.3.6 ID</a></h2>
+
+<p>The Following Types of ID Are Currently Used
+<p><b>&lt;flash_type&gt;</b><br>
+<font style="font-family: courier new, courier;">0x11118001 :</font> This indicates a 1 Mbit type of flash ROM. 
+
+<p><b>&lt;flash_maker&gt;</b><br>
+Macronix Units<Br>
+<font style="font-family: courier new, courier;">0x00c2001e :</font> This is the flash ROM known as the "C Version." This type of flash is used in the Macronix units. 
+
+<p><b>Matsushita</b><br>
+<font style="font-family: courier new, courier;">0x003200f1 :</font> The existing Matsushita flash ROMs all have this ID. The Matsushita flash ROMs could have an ID added at some point in the future. 
+
+<p><b>Other</b><br>
+<font style="font-family: courier new, courier;">0x00c20000 :</font> This is an old type of flash ROM. It is not used in products. <br>
+<font style="font-family: courier new, courier;">0x00c20001 :</font> This is an old type of flash ROM. It is not used in products.<br>
+<font style="font-family: courier new, courier;">0x00c2001d :</font> This is the flash ROM known as the "D Version." It is not presently used. 
+
+<p>In addition to the above, there are other experimental types of flash ROM. None are used in products. 
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a><hr>
+
+</body>
+</html>

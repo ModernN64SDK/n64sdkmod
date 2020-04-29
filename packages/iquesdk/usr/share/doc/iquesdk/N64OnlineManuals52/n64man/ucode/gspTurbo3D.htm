@@ -1,0 +1,348 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<!--
+Editors Notes:
+  PWC- updated formatting
+-->
+<TITLE>gspTurbo3D</TITLE>
+</HEAD>
+
+<BODY bgcolor="#FFFFFF">
+
+<H1>gspTurbo3D</H1>
+<P>
+<i>Currently not supported. Please use F3DEX microcode</i>
+</P>
+<H2>Function</H2>
+<P>
+<STRONG>gspTurbo3D, gspTurbo3D.dram, gspTurbo3D.fifo</STRONG>
+</P>
+<P>
+<i>Reduced-feature, reduced-precision, and simplified 3D polygon geometry RSP microcode</i>
+</P>
+<H2>Description</H2>
+<P>
+This is a reduced-feature simplified 3D polygon geometry RSP microcode that work effectively for &quot;characters&quot; and objects that are always displayed near the center of the view area.
+</P>
+<P>
+The DRAM version writes its output (RDP display list) into a memory buffer instead of transferring it to the RDP. 
+</P>
+<P>
+The FIFO version transfers data to the RDP by using DRAM FIFO.
+</P>
+<P>
+All processing is done with low accuracy to increase speed. However, this low degree of accuracy is reflected in the objects. 
+</P>
+<P>
+The features not supported by gspTurbo3D are:
+</P>
+<DL>
+  <DT><STRONG>Clipping</STRONG>
+  <DD>Game programs must not send any geometric objects that will not be displayed on the screen. Scissoring is supported by using the DP command.
+</DL>
+<DL>
+  <DT><STRONG>Lighting</STRONG>
+  <DD>Calculation of dynamic lighting is not executed in this microcode. 
+</DL>
+<DL>
+  <DT><STRONG>Perspective Correction in Textures</STRONG>
+  <DD>Perspective correction in textures coordinates is not done. 
+</DL>
+<DL>
+  <DT><STRONG>Matrix Stack</STRONG>
+  <DD>There is no matrix stack. A single matrix is a part of the object state. It is used for vertex transformation. 
+</DL>
+<DL>
+  <DT><STRONG>Anti-aliasing</STRONG>
+  <DD>Game programs cannot use anti-aliasing with this microcode because low accuracy calculations are used. (Anti-aliasing is applied to all edges, but it does not work well because of low accuracy vertex positioning.)
+</DL>
+<H2>Turbo Display List</H2>
+<P>
+Turbo microcode uses a simpler format for the display list, which is not compatible with other microcode.
+</P>
+<P>
+The turbo display list is a linear list of object structures that ends with a NULL object (the object state is a NULL object).
+</P>
+<BLOCKQUOTE>
+
+<PRE>
+#include &quot;gt.h&quot;
+
+/*
+ * The following structure is a turbo object,
+ * and the turbo display list is a simple list like this.
+ *(4 pointers = 16 bytes)
+ */
+
+typedef struct {
+        gtGlobState *gstatep; /* global state, usually NULL */
+        gtState     *statep;  /* when NULL, object processing is finished */
+        Vtx         *vtxp;    /* when NULL, point in buffer is used */
+        gtTriN      *trip;    /* when NULL, nothing is drawn */
+} gtGfx_t;
+
+typedef union {
+        gtGfx_t       obj;
+        long long int force_structure_alignment;
+} gtGfx;
+</PRE>
+</BLOCKQUOTE>
+<P>
+Each object structure includes 4 pointers (global state, object state, vertex list, and triangle list).
+</P>
+<P>
+When a global state pointer or vertex list pointer is NULL, the one in current DMEM is used. When the triangle list pointer is NULL, the triangle is not generated. When the object state pointer is NULL, the end of display list is assumed.
+</P>
+<H2>Turbo Global State</H2>
+<P>
+Following is the turbo global state structure.
+</P>
+<BLOCKQUOTE>
+
+<PRE>
+#include &quot;gt.h&quot;
+/*
+ * This is a global state structure.
+ * Because this is paired with the microcode,
+ * you must change the microcode when you change the structure. 
+ */
+
+typedef struct {
+        u16 perspNorm;    /* normalization of perspective */
+        u16 pad0;
+        u32 flag;
+        Gfx rdpOthermode;
+        u32 segBases[16]; /* segment base address(see the note) */
+        Vp viewport;      /* view-port */
+        Gfx *rdpCmds;     /* RDP data block, when not NULL, block
+                           * ended by gDPEndDisplayList
+                           */
+} gtGlobState_t;
+
+/* Note
+ * Although there are 16 segment
+ * table entries, the first segment (segment 0)
+ * is reserved for physical memory mapping. 
+ * Therefore, segment 0 cannot be used. */
+
+typedef union {
+        gtGlobState_t sp;
+        long long int force_structure_alignment;
+} gtGlobState;
+</PRE>
+</BLOCKQUOTE>
+<P>
+The global state includes data that is unlikely to change and that is also the prime of each object. A format of the global state structure is exactly the same as DMEM and this structure is simply copied to DMEM. 
+</P>
+<P>
+The perspNorm field is used while transforming a vertex (see gSPPerspNormalize). 
+</P>
+<P>
+The rdpOthermode field includes the DP command SetOtherMode which is sent before sending any other DP commands.
+</P>
+<P>
+The segBases array includes a 16-segment base address. Its entry 0 is reserved for physical memory mapping, so it cannot be used.
+</P>
+<P>
+The viewport is used while transforming a vertex (see gSPViewport).
+</P>
+<P>
+The rdpCmds points to a DP command block. When this pointer is not NULL, the macros in the DP command block are transferred to the RDP. Some DP macros (given later on this page) cannot use the DP command block. The list of DP macros in the DP command block must end with the gDPEndDispley macro. 
+</P>
+<H2>Turbo Object State</H2>
+<P>
+The turbo object state structure is shown below. 
+</P>
+<BLOCKQUOTE>
+
+<PRE>
+#include &quot;gt.h&quot;
+/*
+ * This is 'state' structure, which is
+ * linked to each object to be rendered.
+ * This is limited to microcode. When you change its structure,
+ * you must also change the gtoff.c tool and microcode. 
+ */
+ 
+typedef struct {
+        u32 renderState;  /* render state */
+        u32 textureState; /* texture state */
+        u8  vtxCount;     /* number of vertex */
+        u8  vtxV0;        /* vertex load address */
+        u8  triCount;     /* number of triangles */
+        u8  flag;
+        Gfx *rdpCmds;
+        Gfx rdpOthermode;
+        Mtx transform;    /* transformation matrix */
+} gtState_t;
+
+typedef union {
+        gtState_t     sp;
+        long long int force_structure_alignment;
+} gtState;
+
+/* gtStateLite : same as gtState, but not matrix (see flags below) */
+/* This structure must go through gtState */
+
+typedef struct {
+        u32 renderState;  /* render state */
+        u32 textureState; /* texture state */
+        u8  vtxCount;     /* number of vertex  */
+        u8  vtxV0;        /* vertex load address */
+        u8  triCount;     /* number of triangles */
+        u8  flag;
+        Gfx *rdpCmds;     /* Pointer to RDP DL (segment address) */
+        Gfx rdpOthermode;
+} gtStateL_t;
+
+typedef union {
+        gtStateL_t    sp;
+        long long int force_structure_alignment;
+} gtStateL;
+</PRE>
+</BLOCKQUOTE>
+<P>
+The gtStateL version of the state structure can be used when a new matrix is not necessary. This is good for large objects that need to be placed among some turbo objects. The same transformation matrix can be used for all of its parts. Refer to GT_FLAG_NOMTX described later.
+</P>
+<P>
+The renderState field is similar to geometry mode in gbi.h. It uses the following flags which are bit OR'd together: 
+</P>
+<DL>
+  <DT><STRONG>GT_ZBUFFER</STRONG>
+  <DD>to set Z buffering 
+</DL>
+<DL>
+  <DT><STRONG>GT_TEXTURE</STRONG>
+  <DD>to set texture mapping 
+</DL>
+<DL>
+  <DT><STRONG>GT_CULL_BACK</STRONG>
+  <DD>to perform back-face culling 
+</DL>
+<DL>
+  <DT><STRONG>GT_SHADING_SMOOTH</STRONG>
+  <DD>to perform smooth shading
+</DL>
+<P>
+The textureState field has a texture tile number in the lower three bits of its field. All primitives in an object are drawn by using the same tile.
+</P>
+<P>
+The vtxCount field is the vertex list size.
+</P>
+<P>
+The vtxV0 field loads a vertex that begins with index v0(0-63) in the vertex buffer.
+</P>
+<P>
+The triCount field is the triangle list size.
+</P>
+<P>
+The flag field holds a group of bits to control execution. GT_FLAG_NOMTX flag needs to be set when you use gtStateL structure. In that case, the matrix will not be loaded, but the previous matrix will be used for vertex transformation.
+</P>
+<P>
+The rdpCmds field points to the DP command block. When this pointer is a NULL character, these commands are transferred to the RDP. For the DP commands that cannot be used in this command block, see the list described later. This list must end with gDPEndDisplay command.
+</P>
+<P>
+The rdpOthermode field includes the DP command SetOtherMode which is sent prior to other DP commands.
+</P>
+<P>
+The transform matrix is used for vertex transformation.
+</P>
+<H2>Turbo Vertex</H2>
+<P>
+The vertex list is an aggregation of vertex structures. It uses the same format as the vertex format in gbi.h. Please see gSPVertex for details.
+</P>
+<P>
+The vertex cache in the turbo microcode can read 64 vertices. The vertex is transformed when it is loaded.
+</P>
+<H2>Turbo Triangle List</H2>
+<P>
+The triangle list is an aggregation of the following structure. 
+</P>
+<BLOCKQUOTE>
+
+<PRE>
+#include &quot;gt.h&quot;
+/*
+ * The following structure represents a single triangle,
+ * which is one of a list of triangle objects to be rendered.
+ * Note: The triangle list must be 8-byte-aligned.
+ * This structure is only 4-bytes, so it is assumed 
+ * that this triangle is an element in an array. 
+ * It is also assumed that the array is aligned
+ * in 8-byte units in MIPS C compiler.
+ */
+typedef struct {
+        u8 v0, v1, v2, flag; /* flag for flat shading */
+} gtTriN;
+</PRE>
+</BLOCKQUOTE>
+<P>
+This array must be aligned to an 8-byte boundary.
+</P>
+<H2>GBI</H2>
+<P>
+The turbo microcode uses a completely different display list format, so the GBI DL command is not supported.
+</P>
+<P>
+However, the global and object states of the DP command block are supported. These commands are the same format (and same microcode) as the one in gbi.h. Some DP commands are not supported because the DP state operation is not appropriate for the interface between turbo geometry and turbo display list processes. 
+</P>
+<P>
+The turbo microcodes do not support the following DP GBI commands: 
+</P>
+<UL>
+  <LI>gDPPipelineMode
+  <LI>gDPSetCycleType
+  <LI>gDPSetTexturePersp
+  <LI>gDPSetTextureDetail
+  <LI>gDPSetTextureLOD
+  <LI>gDPSetTextureLUT
+  <LI>gDPSetTextureFilter
+  <LI>gDPSetTextureConvert
+  <LI>gDPSetCombineKey
+  <LI>gDPSetColorDither
+  <LI>gDPSetAlphaDither
+  <LI>gDPSetAlphaCompare
+  <LI>gDPSetDepthSource
+  <LI>gDPSetRenderMode
+</UL>
+<P>
+Most of these can be set by using the gtStateSetOthermode interface (as some of the functionalities have been reduced).
+</P>
+<H2>Performance</H2>
+<P>
+This microcode generates the following triangle types in order of speed, beginning with the fastest: 
+</P>
+<UL>
+  <LI>Fill flat shading (it is necessary to store primitive color to the DP) 
+  <LI>Gouraud shading 
+  <LI>Texturing and gouraud shading 
+  <LI>Z buffering and gouraud shading 
+  <LI>Texturing, Z buffering, and gouraud shading
+</UL>
+<P>
+Because vectors are used efficiently for a calculation of the triangle attributes, you can calculate the gouraud shading attributes without limitations when other attributes are also generated. 
+</P>
+<P>
+Z buffering the triangle needs a few additional processes.
+</P>
+<P>
+Because vectors are used for efficient vertex transformation, it is the best to operate as many vertices as possible. Loading vertices in a multiple of four is the most effective method.
+</P>
+<P>
+The RCP is designed to be able to draw high-quality texture primitives. Texture mapping should be used where possible (instead of additional geometry) in order to achieve more complicated graphics. 
+</P>
+<H2>Known Issue</H2>
+<P>
+This is first release of this microcode. Its functions and display list format will be changed in the future.
+</P>
+<P>
+Cracks and tears sometimes appear because the calculation of the edge slope is simplified. 
+</P>
+<H2>See Also</H2>
+<P>
+gtStateSetOthermode, gDPClearOtherMode, gDPEndDisplayList, gspFast3D, gspLine3D
+</P>
+</BODY>
+</HTML>

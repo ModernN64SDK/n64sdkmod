@@ -1,0 +1,231 @@
+<HTML>
+<HEAD>
+<TITLE>DDRomBuilder</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff" link="#0000ff" vlink="#800080">
+
+<font face="arial" size="3">
+<a name="1"><b>1.	What is N64DD ROM Builder?</b></a></font>
+
+<font face="arial" size="-1">
+
+<p>N64 Disk Drive ROM Builder is a tool for creating image files for the 64DD ROM File System.</p>
+
+<hr>
+<font face="arial" size="3">
+<a name="2"><b>2. 	Names of Each Part</b></a></font>
+
+
+<font face="arial" size="-1">
+<p>  The window that is displayed when N64 Disk Drive ROM Builder is started is called the Main Window.  Here we give the name and provide a general explanation for each control located in the Main Window.</p>
+
+<a name="f020000"><img src="gifs/f020000.gif" alt="image" width="480" height="255"></a>
+
+<hr>
+<font face="Arial" size="3">
+<a name="3"><b>3.	Work Flow</b></a></font>
+
+<font face="Arial" size="-1">
+<p>  The overall work flow can be divided into three steps:</p>
+
+<ol>
+  <li>Edit the directory structure
+  <li>Edit the ID area
+  <li>Generate a disk image file.
+</ol>
+
+<p>  The following sections describe these steps in detail.</p>
+
+<hr>
+<a name="3-1"><b>3-1. Editing the Directory Structure</b></a>
+
+<hr>
+<a name="3-1-1"><u>3-1-1.	Creating Directories</u></a>
+
+<p>  First, select the directory in which the new directory will be created from the directory tree.  Next, select "Create Directory" from "Edit" on the menu.   An "Enter Name" dialog window will appear.  Enter the name of the directory being created click OK .  Confirm that the new directory has been created by looking for its name in the directory tree.</p>
+
+<hr>
+<a name="3-1-2"><u>3-1-2.	Creating Files</u></a>
+
+<p>  First, select the directory in which the new file will be created from the directory tree.  Next, select "Create File" from "Edit" on the menu.   An "Enter Name" window will appear.  Enter the name of the file being created here and click the OK button.  Confirm that the new file has been created by looking for its name in the entry list.</p>
+
+<p>  At this point a file entry has been created, but you must now specify the file on the PC side.  Select the file from the entry list, then select "Properties" from "Edit" on the menu to open the "Entry Properties" window.   Click the Browse button to the right of the Source File item.  This opens the "Select Source File" dialog box.  Use this dialog to select the corresponding file.   Mark the checkbox in the Source File item in the Entry Properties window to view and confirm the path name for the selected file. Click OK to close the Entry Properties window.</p>
+
+<hr>
+<a name="3-1-3"><u>3-1-3.	Copying the PC Directory Structure</u></a>
+
+<p>  You can create a group of directories and files if the structure you want to create in the N64 Disk Drive ROM file system is the same as the structure on the PC.  Start Explorer, and drag & drop the pertinent directories onto N64 Disk Drive ROM Builder.  The entire directory structure under the directory you have dropped will be created under the currently selected directory.  At the same time, the files corresponding to the files on the PC will be set.  This is the recommended method.</p>
+
+<hr>
+<a name="3-1-4"><u>3-1-4.	Changing Entry Names</u></a>
+
+<p>  Select the entry you want to rename from the directory tree and the entry list, then select "Change Name" from the Edit menu.   When this is done, the name of the selected file becomes editable on the screen.  Type in the name change and press the Enter key.</p>
+
+<p><a name="f030104"><img alt="editing mode" src="gifs/f030104.gif" width="106" height="70"></a><br>
+ File Name iin Editable State </p>
+
+<hr>
+<a name="3-1-5"><u>3-1-5.	Deleting Unnecessary Entries</u></a>
+
+<p>  Select the unnecessary entry from the directory tree and the entry list, then select "Delete" from the Edit menu.  A window appears to confirm the command, so press OK and the selected file will be deleted.</p>
+
+<hr>
+<a name="3-1-6"><u>3-1-6.	Moving Entries</u></a>
+
+<p>  In the directory tree or in the entry list, select the entry you want to move and then drag & drop it onto the new parent directory.</p>
+
+<p><a name="f030106"><img alt="Moving an Entry" src="gifs/f030106.gif" width="159" height="74"></a><p>
+ Moving an Entry </p>
+
+<hr>
+<a name="3-1-7"><u>3-1-7.	Changing Entry Attributes</u></a>
+
+<p>  Attributes such as the various flags and the game code and company code can be set for each separate entry.  When an entry is created, the attributes are set with the default values.</p>
+
+<p>   To change the attributes of an entry, first select the entry from the directory tree or entry list, and then select "Properties" from the Edit menu.  Set the various items to the values you want in the "Entry Properties" window that opens up.  Put a checkmark next to the items you want to change, then click the Update or OK button.  Only the items that were checked will be changed.</p>
+
+<p>  If the selected entry has sub direcotries, "Change all sub directories" will be enabled.  Changed will be applied to all the sub directories when this check box is checked on.</p>
+
+<hr>
+<a name="3-2"><b>3-2.	Editing the ID Area</b></a>
+
+<p>  Place the focus on the ID Area.  To do this, click anywhere inside the ID Area.   Next, select "Properties" from the Edit menu to open the "ID Area Properties" window.  Here you can set the various attributes of the ID Area, but if at all possible set the "File Management Area Block Size" to the recommended value.  If you set a larger value, disk area will be wasted. If you set a smaller value, the image file will fail to be generated.  This recommended value changes, depending on the number of entries, so if you do something to change the number of entries, please reset this value.</p>
+
+<p><a name="f030200"><img alt="Recommended File Management Area block size value" src="gifs/f030200.gif" width="292" height="73"></a><br>
+ Recommended File Management Area block size value 
+
+<hr>
+<a name="3-3"><b>3-3.	Generating Image Files</b></a>
+
+<p>  Select "Generate Image" from the "Run" menu.   You can then use the "Generate Image" window which opens to set the output file settings.</p>
+
+<p>  "Files Output from System Area" refers to the files output by the ID area and the Directory Entry area.  "File Output from Data Area" refers to the file output from the actual data area of the file.   Here you can specify the LBA range to be output and set numerous settings.</p>
+
+<p>  Move the mouse cursor to the list view below the "File Output from Data Area" item and click the right mouse button.  Then select "Add" from the pop-up menu to display the "File Output from Data Area" window.   Specify the file's path name and the LBA range in which the file is registered.  Click OK, then verify that the file has been added to the list under the "File Output from Data Area" item.   To the right of the "File Output from Data Area" item is a sentence in parenthesis which reads: "Specify between XX ~ XX"   Please specify the LBA range  in accordance with the indicated values.  These indicated values will change when the disk type changes, so be careful when the disk type is changed.</p>
+
+<p>  After "Files Output from System Area" and "File Output from Data Area" have been specified, click the Run button.  When this is done, a window with the caption "Creating" will open, indicating the progress of the process.  At the end, "Normal Termination" will be displayed and the caption will change to "End."  Congratulations!  Creation is complete.</p>
+
+<p><a name="f030300"><img alt="Restriction on the LBA Specification" src="gifs/f030300.gif"></a><br>
+Restriction on the LBA Specification
+
+<hr>
+<a name="3-4"><b>3-4.	Loading and Saving Project Files</b></a>
+
+<p>  The data concerning the directory structure created on N64DD ROM Builder and the entry attributes can be saved to a file and recreated by reading from a file.  This file is called the Project File.</p>
+
+<p>  At startup,  an "empty" Project File is targeted. Since this Project File has no name (actually, it has the name &quot;&lt;NONAME&gt;&quot;, but this is ignored as a file name), please select "Save As..." from the File menu when saving the file.</p>
+
+<p>  To read a saved Project File in order to recreate a certain work environment, select "Open" from the File menu.</p>
+
+<p>  After saving a Project File with "Save As..." or after you have loaded an existing Project File with the Open command, then saving the file with Save from the File menu will overwrite the present Project File and save the current environment.</p>
+
+<hr>
+<font face="arial" size="3">
+<a name="4"><b>4.	Setting the Default Values</b></a></font>
+
+<font face="arial" size="-1">
+
+<p>  Attributes such as the game code for entries made with the Drag & Drop function take on the already-set default values.  However, these default values can be changed.</p>
+
+<p>  To do this, select "Set Default Values" from the Settings menu.   Set the default values in the window that opens.  After making the settings click the OK button to end the process.</p>
+
+<hr>
+<font face="arial" size="3">
+<a name="5"><b>5.	Setting the Root Path</b></a></font>
+
+<font face="arial" size="-1">
+
+<p>  Each file has a corresponding source file on the PC.  The source file path is specified by the file path, but when the path is handled as a relative path it can be more convenient, such as when sharing source files on a network.</p>
+
+<p>For example, the source files could be collected under "c:/project/game" on Machine 1, and this could become a shared folder that is designated as the F: drive on Machine 2.  Then if Machine 2  wants to read a Project File created on Machine 1,  you simply substitute f:/  for the path c:/project/game. The "Set Root Path" function is designed specifically for this purpose
+</p>
+
+<p>  To use this function, select "Set Root Path" from the Settings menu.  A window opens, enabling you to set the root path.  Since numerous root paths can be set, a number of columns are provided, starting with path 0.   Insert "c:/project/game" in the open space and push the Update button.  Next, push the "Remove References" button in order to delete all source file root path references.  Now press the "Restore References" button.  When this is done, all source files under the root path registered in the current Project are handled relative to this root path.   Thus, if you substitute "f:/" for "c:/project/game" and press the Update button, then all the source files which up to this point were located under "c:/project/game" are now handled as if they were located under "f:/".</p>
+
+<hr>
+<font face="Arial" size="3">
+<a name="6"><b>6.	Reflecting Only Specified Files in the Image File</b></a></font>
+
+<font face="arial" size="-1">
+
+<p>  As the number of files increases, the  time needed to generate the image file also increases.  If you only make changes to one or two files, it would be a waste of time to go back and redo the entire image file again.  Thus, a function has been provided to rewrite only those files that have been changed in the image file.</p>
+
+<p>  To do this, first select the files you want to rewrite from the directory tree and the entry list.  Next, right-click on either the directory tree or the entry list to open the pop-up menu.  Now select "Update."  The same window opens that is displayed when an image file is generated, indicating the progress of the process.  At the end, "Normal Termination" is displayed, and the changes are complete when the caption changes to "End."</p>
+
+<p>  This function cannot be used if the file that is to be updated is larger than it was before the changes were made.  But the function is useful when handling files with graphics data etc. which is frequently changed but does not change the file size.</p>
+
+<hr>
+<font face="Arial" size="3">
+<a name="7"><b>7.	File and Directory Names</b></a></font>
+
+<font face="arial" size="-1">
+
+<p>  File names have the format name.ext, where name is a string of 1 to 20 characters and the extension is a string of 0 to 5 characters.  If the filename has no extension, then the dot delimiting the name and extension can be omitted.</p>
+
+<p>  Directory names comprise a string of 1 to 20 characters.  These names have no extension.</p>
+
+<p>  Nearly all of the characters in the DD's internal font can be utilized for file and directory names, with the exception of the forward slash ("/").  In addition, the dot (".") cannot be used for the extension.  Also note that N64DD does not support some symbols.</p>
+
+<table border="1" cellpadding="3">
+  
+  <tr valign="bottom" cellpadding="3">
+    <td><font face="Arial" size="-1">Characters</td>
+    <td><font face="Arial" size="-1">Decimal</td>
+    <td><font face="Arial" size="-1">Hexadecimal</td>
+  </tr>
+  <tr valign="bottom">
+    <td><font face="Arial" size="-1">2-byte characters<br>1st byte range<br>2nd byte range</td>
+    <td><font face="Arial" size="-1">129~152<br> 64~126, 128~252</td>
+    <td><font face="Arial" size="-1">81~98<br>40~7e, 80~FC</td>
+  </tr>
+  <tr valign="bottom">
+    <td><font face="Arial" size="-1">Single-byte katakana<br>	Byte range</td>
+    <td><font face="Arial" size="-1">161~223</td>
+    <td><font face="Arial" size="-1">A1~DF</td>
+  </tr>
+  <tr valign="bottom">
+   <td><font face="Arial" size="-1">ASCII/JIS Romanji<br>Byte range</td>
+   <td><font face="Arial" size="-1">32~126</td>
+    <td><font face="Arial" size="-1">20~7E</td>
+  </tr>
+</table>
+<br>
+The Range of Usable Characters for Entry Names
+
+<hr>
+<font face="arial" size="3">
+<a name="8"><b>8.	Errors</b></a></font>
+
+<hr>
+
+<font face="arial" size="-1">
+<a name="8-1"><b>8-1. "Incorrect name"</b></a>
+
+<p>  This error occurs when the name of the file you want to change or the directory name does not conform to the rules of the N64 Disk Drive ROM File System.  Please use a correct name.</p>
+
+<hr>
+<a name="8-2"><b>8-2. "Cannot open management information file"</b></a>
+
+<p>  This error arises when either the output file is not specified or the image file does not exist when updating.</p>
+
+<p>  The first thing to do when this error occurs is to select "Generate Image" from the Run menu, open the Generate Image window, and confirm that files are specified in the "Files Output from System Area" item and in the "File Output from Data Area" item.  If either is missing an image cannot be generated.</p>
+
+<p>  Updating can only be performed for an image that has already been generated one time.  So if specified output file is not there, generate the image file again.</p>
+
+<hr>
+<a name="8-3"><b>8-3. "Data file is not defined"</b></a>
+
+<p>  The Data Area output file has not been specified.  When this specification is not made, the system does not know which LBA to create data in, and the image data cannot be generated.</p>
+
+<p> Select "Generate Image" from the Run menu, open the Generate Image window, and right-click inside the list view below the "File Output from Data Area" item.  Select "Add" from the pop-up menu to specify the output file.</p>
+
+<hr>
+<a name="8-4"><b>8-4.  "No space in data area" </b></a>
+
+<p>  This error can occur when the image is being generated, or when the system tries to add a new file during updating.</p>
+
+<p>  Select "Generate Image" from the Run menu to open the Generate Image window, and then increase the space between the Register Start LBA and the Register End LBA in the "File Output from Data Area" item.  You cannot specify a range larger than that indicated in the "Specify between XX ~ XX" message, so if you get the same error even after specifying the maximum value, that means you have insufficient disk space.</p>
+
+</BODY>
+</HTML>

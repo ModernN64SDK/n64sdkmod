@@ -1,0 +1,66 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<!--
+Editors Notes:
+  JLR made reformating and copy edits.
+  PWC- updated formatting
+-->
+
+<TITLE>gDPLoadBlock</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>gDPLoadBlock [Macro]</H1>
+<h2>Function</h2>
+<p>gDPLoadBlock<br><br><i>
+Loads a texture image</i></P>
+
+<p><b>Syntax</b></p>
+
+<p><PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gbi.htm">gbi.h</A> */
+gDPLoadBlock(Gfx *gdl, u32 tile, u32 uls, u32 ult, u32 lrs, u32 dxt )
+gsDPLoadBlock(         u32 tile, u32 uls, u32 ult, u32 lrs, u32 dxt )</CODE></PRE></p>
+
+<p><b>Arguments</b></p>
+<p><DL>
+  <DT><B>gdl</B>
+  <DD>Display list pointer
+  <DT><B>tile</B>
+  <DD>Tile descriptor index (3-bit precision, 0~7)
+  <DT><B>uls</B>
+  <DD>The texture tile's upper-left s coordinate (10.2, 0.0~1023.75)
+  <DT><B>ult</B>
+  <DD>The texture tile's upper-left t coordinate (10.2, 0.0~1023.75)
+  <DT><B>lrs</B>
+  <DD>The texture tile's lower-right s coordinate (10.2, 0.0~1023.75)
+  <DT><B>dxt</B>
+  <DD>The amount of change in value of t per scan line (12-bit precision, 0~4095)
+</DL></p>
+<p><b>Description</b></p>
+<P>
+Loads a texture from DRAM into texture memory (TMEM).  The texture image is loaded into memory in a single transfer.  This is a low-level macro that is not used in regular programs.
+</P>
+<p><b>Note</b></p>
+<P>
+The maximum number of texels that can be loaded with this command is 2048 texels.  To load into the full 4 KB of TMEM, you must load the texture using G_IM_SIZ_16b (16 bits per texel) and then change the tile to the correct texel size.  This is normally performed by g*DPLoadTextureBlock, so if you make direct use of this low-level macro, then you will need to do this tile manipulation in the application.
+</P>
+<P>
+Also, note that this macro does not perform 64-bit alignment on every line, so the data must be aligned in advance.
+</P>
+<p><b>Comment</b></p>
+<P>
+The <B>uls</B>, <B>ult</B> and <B>lrs</B> coordinates are only used for the loading of tiled textures.  They specify the coordinates in texel space of the corners of the subtile loaded into TMEM.  For details, see Section 13.9.3 "LoadBlock Command" in the N64 Programming Manual.
+</P>
+<p><b>See Also</b></p>
+<P>
+<A HREF="gDPLoadTextureBlock.htm">gDPLoadTextureBlock</A>, <A HREF="gDPLoadTextureBlock_4b.htm">gDPLoadTextureBlock_4b</A>,  <A HREF="gDPLoadTextureTile.htm">gDPLoadTextureTile</A>, <A HREF="gDPLoadTextureTile_4b.htm">gDPLoadTextureTile_4b</A>, <A HREF="gDPLoadTLUT_pal16.htm">gDPLoadTLUT_pal16</A>, <A HREF="gDPLoadTLUT_pal256.htm">gDPLoadTLUT_pal256</A>, and <A HREF="../gu/guLoadTextureBlockMipMap.htm">guLoadTextureBlockMipMap</A>
+</P>
+
+<p><b>Revision History</p></b>
+<p>02/01/99&nbsp;&nbsp;&nbsp;Completely rewritten</p>
+
+</BODY>
+</HTML>

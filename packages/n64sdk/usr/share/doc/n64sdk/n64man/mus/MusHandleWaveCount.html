@@ -1,0 +1,58 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../n64man.css">
+<title>MusHandleWaveCount()</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check-->
+</head>
+
+<h1>MusHandleWaveCount()</h1>
+
+<h2>Syntax</h2>
+
+<pre>
+int MusHandleWaveAddress(musHandle handle);
+</pre>
+
+<h2>Arguments</h2>
+
+<dl>
+  <dt><b>handle</b>
+  <dd>the sound handle
+</dl>
+
+<h2>Description</h2>
+
+<p>It gets the number of entries in the wave lookup table being used for the sound channels associated with the specified sound handle. The wave lookup table is used by the library to convert internal sample numbers in songs and sound effect banks to sample bank indexes.</p>
+
+<p>The handle must be a sound handle returned by <a href="MusStartSong.html">MusStartSong()</a>, <a href="MusStartSongFromMarker.html">MusStartSongFromMarker()</a>, <a href="MusStartEffect.html">MusStartEffect()</a>, or <a href="MusStartEffect2.html">MusStartEffect2()</a>.  If a handle of zero is supplied, this function will always return zero.</p>
+
+<h2>Return Value</h2>
+
+<p>Wave table lookup size.</p>
+
+<h2>Example</h2>
+
+<pre>unsigned short *DuplicateLookUp(musHandle handle)
+{
+  int i, count;
+  unsigned short *src, *dest;
+
+  count = MusHandleWaveCount(handle);
+  dest = MemMalloc(sizeof(unsigned short)*count);
+  src = <a href="MusHandleWaveAddress.html">MusHandleWaveAddress</a>(handle);
+
+  for (i=0; i&lt;count; i++)
+    dest[i]=src[i];
+
+  return (dest);
+}
+</pre>
+
+<h2>See Also</h2>
+<p>
+<a href="MusHandleWaveAddress.html">MusHandleWaveAddress()</a>
+</p>
+
+</body>
+</html>

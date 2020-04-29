@@ -1,0 +1,385 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../n64man.css">
+<title>How to Use the Library</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check-->
+</head>
+
+<h1>How to Use the Library</font></h1>
+
+<h2><a name="files">Files From Tools</a></font></h2>
+
+<p>The programmer receives the following types of files from the musician: soundfx<strong>.bfx</strong>, filename<strong>.ptr</strong>, filename<strong>.wbk</strong>, and tune<strong>.bin</strong>. (Here we use soundfx to indicate the name of a sound effect, filename the name of a sample bank, and tune the name of a song name. The musician would make their own names for these files.) In most projects, the number of <strong>.bin</strong> files is the same as the number of actual songs created by the musician using the sequencer.</p>
+
+<table border="1">
+  <tr>
+    <th>
+      File extension
+    </th>
+    <th>
+      Description
+    </th>
+  </tr>
+  <tr>
+    <td valign="top">
+      <strong>.bfx</strong>
+    </td>
+    <td>
+      Binary sound effects created with Nintendo 64 Sound Tools.<br><br>
+      <small>The sound effects must be placed in RAM when the sound effect data is being used. This file contains the list of offsets for the sound effects. When the bank is initialized, this list is converted into pointers and the list of default priority settings for each sound effect. </small>
+    </td>
+  </tr>
+  <tr>
+    <td valign="top">
+      <strong>.bin</strong>
+    </td>
+    <td>
+      Binary song created with Nintendo 64 Sound Tools.<br><br>
+      <small>The song file must be placed in RAM when the song data is being executed. The list of offsets in the song file are converted to pointers when the song is initialized. </small>
+    </td>
+  </tr>
+  <tr>
+    <td valign="top">
+      <strong>.ptr</strong>
+    </td>
+    <td>
+      Sample pointer bank created with Nintendo 64 Sound Tools.<br><br>
+      <small>This pointer bank file must be stored in RAM during execution of sound data that makes use of samples referenced by the file. The pointers to the offset list and the corresponding wave bank file at the time of initialization are set in this pointer bank file.</small>
+    </td>
+  </tr>
+  <tr>
+    <td valign="top">
+      <strong>.wbk</strong>
+    </td>
+    <td>
+      Sample wave bank created with Nintendo 64 Sound Tools.<br><br>
+      <small>When the wave bank file is executed, it is stored in either RAM or ROM, as determined by the configuration when the library is initialized. </small>
+    </td>
+  </tr>
+</table>
+
+<p>All files that are accessed from RAM and include offsets that are converted to pointers are directly accessed from the library. Therefore, these files must not be moved (for example, by the relocating memory manager) while they are being used. If these files need to be moved, they should be sent again from RAM or 64DD. This is done in order to reset the original offset value.</p>
+
+<p><strong>Note: </strong>All files, when placed in RAM, must be 32-bit aligned at the very least. If a sample wave bank file is stored in RAM, this must be data-cache aligned. (We recommend cache-aligning all RAM-based sound files and data.)
+</p>
+
+
+<h2><a name="initialisation">Initializing the Library</a></font></h2>
+
+<p>You must call the library initialization function <a href="MusInitialize.html">MusInitialize()</a> before using any of the API functions. The one exception is the <a href="MusSetScheduler.html">MusSetScheduler()</a> function, which is only effective when called before initialization, and which is used in order to make use of a specific, external scheduler. The programmer should pass the address of the configuration structure to the initialization function. The initialization function configures both the music player and the audio manager.</p>
+
+<p>The current configuration structure is shown below.</p>
+
+<pre>typedef struct
+{
+  unsigned long   <a href="chapter_libuse.html#control_flag">control_flag</a>;
+
+  int             <a href="chapter_libuse.html#channels">channels</a>;
+  OSSched         <a href="chapter_libuse.html#sched">*sched</a>;
+  int             <a href="chapter_libuse.html#thread_priority">thread_priority</a>;
+  unsigned char   <a href="chapter_libuse.html#heap">*heap</a>;
+  int             <a href="chapter_libuse.html#heap_length">heap_length</a>;
+
+  unsigned char   <a href="chapter_libuse.html#ptr">*ptr</a>;
+  unsigned char   <a href="chapter_libuse.html#wbk">*wbk</a>;
+
+  void            <a href="chapter_libuse.html#default_fxbank">*default_fxbank</a>;
+
+  int             <a href="chapter_libuse.html#fifo_length">fifo_length</a>;
+
+  int             <a href="chapter_libuse.html#syn_updates">syn_updates</a>;
+  int             <a href="chapter_libuse.html#syn_output_rate">syn_output_rate</a>;
+  int             <a href="chapter_libuse.html#syn_rsp_cmds">syn_rsp_cmds</a>;
+  int             <a href="chapter_libuse.html#syn_retraceCount">syn_retraceCount</a>;
+  int             <a href="chapter_libuse.html#syn_num_dma_bufs">syn_num_dma_bufs</a>;
+  int             <a href="chapter_libuse.html#syn_dma_buf_size">syn_dma_buf_size</a>;
+  OSPiHandle      <a href="chapter_libuse.html#diskrom_handle">*diskrom_handle</a>;
+} musConfig;</pre>
+
+<p>The contents of this structure determines the memory size required from the audio heap. Each element of the structure is explained below:</p>
+
+
+<table border="0" cellpadding="2" cellspacing="0" width="100%">
+  <tr>
+    <td width="230" bgcolor="#c0c080">
+      <big><strong><a name="control_flag">control_flag</a></strong></big>
+    </td>
+    <td width="480" bgcolor="#000000">
+      <font color="#ffffff">Library control flag.</font>
+    </td>
+  <tr>
+</table>
+
+<p><em>control_flag</em> entry is a switching flag for controlling the characteristics of the music library. A sample bank stored in ROM is used for normal playback. For this, the entry is set to 0.
+</p>
+
+<p>The following characteristic is currently defined by a macro</p>
+
+<table>
+  <tr>
+    <td valign="top">
+      <strong>MUSCONTROL_RAM</strong>
+    </td>
+    <td>
+      Specifies a sample stored in RAM. 
+    </td>
+  <tr>
+</table>
+
+<p>The values can be OR'ed so the required characteristics can be used.
+</p>
+
+
+<table border="0" cellpadding="2" cellspacing="0" width="100%">
+  <tr>
+    <td width="230" bgcolor="#c0c080">
+      <big><strong><a name="channels">channels</a></strong></big>
+    </td>
+    <td width="480" bgcolor="#000000">
+      <font color="#ffffff">The number of channels.</font>
+    </td>
+  <tr>
+</table>
+
+<p><em>channels</em> entry represents the number of channels made available to the music player. In calculating the number of channels, one needs to consider how many sounds and sound effects the application might possibly trigger at the same time, and thus how many channels need to be supported. The greater the number of channels, the longer are the CPU time, the RSP time and the DMA time (only when each channel is playing back a different sample), and the more memory is required for the library.</p>
+
+<p>Typical settings for the number of channels are 16, 20 and 24.</p>
+
+
+<table border="0" cellpadding="2" cellspacing="0" width="100%">
+  <tr>
+    <td width="230" bgcolor="#c0c080">
+      <big><strong><a name="sched">sched</a></strong></big>
+    </td>
+    <td width="480" bgcolor="#000000">
+      <font color="#ffffff">Address of the scheduler structure. </font>
+    </td>
+  <tr>
+</table>
+
+<p><em>sched</em> entry includes the address of the scheduler structure initialized by the Nintendo 64 library function osCreateScheduler(). That is to say, it includes the initial parameters of that function. The <em>sched</em> entry is ignored when an external scheduler is used.</p>
+
+<p>Suppose the scheduler starts with this code:</p>
+
+<pre>osCreateScheduler(&amp;scheduler,
+                  scheduler_stack+(OS_SC_STACKSIZE/8),
+                  SCHEDULER_PRIORITY, OS_VI_NTSC_LAN1, 1);
+</pre>
+
+<p>In this case, the configuration structure's <em>sched</em> entry should include the address of the scheduler structure.</p>
+
+
+<table border="0" cellpadding="2" cellspacing="0" width="100%">
+  <tr>
+    <td width="230" bgcolor="#c0c080">
+      <big><strong><a name="thread_priority">thread_priority</a></strong></big>
+    </td>
+    <td width="480" bgcolor="#000000">
+      <font color="#ffffff">Thread priority of the music player.</font>
+    </td>
+  <tr>
+</table>
+<p><em>thread_priority</em> entry contains the priority of the required thread related to the scheduler,  for the music player and the audio manager. The priority should be higher than that of any other application thread, and as close as possible to the priority of the scheduler.</p>
+
+
+<table border="0" cellpadding="2" cellspacing="0" width="100%">
+  <tr>
+    <td width="230" bgcolor="#c0c080">
+      <big><strong><a name="heap">heap</a></strong></big>
+    </td>
+    <td width="480" bgcolor="#000000">
+      <font color="#ffffff">The address of the audio heap. </font>
+    </td>
+  <tr>
+</table>
+
+<p><em>heap</em> entry represents the address of the memory reserved for the audio heap. We recommend that the memory be cache-aligned.</p>
+
+<p>The audio heap must be large enough to meet the memory requirements of the music player and the audio manager. Unfortunately, there is no easy way to determine what that required amount is. (Moreover, there are clear differences between NTSC/MPAL applications and PAL applications.)</p>
+
+<p>When the library is initialized, the programmer must note the size of the heap used by the library and change the heap size accordingly. The programmer can determine what size heap is being used by noting the value returned by the <a href="MusInitialize.html">MusInitialize()</a> function. The audio heap allocation function alHeapAlloc() returns a value for the aligned memory cache, but note that this is based on the audio heap's base address, so the amount of heap used can differ slightly (it can vary by as much as 15 bytes). In the same way, the debug version of the Nintendo 64 library (libultra_d) will allocate slightly more memory. This isis because the alHeapAlloc() function stores information inside the heap that is used to check the validity of the heap. </p>
+
+
+<table border="0" cellpadding="2" cellspacing="0" width="100%">
+  <tr>
+    <td width="230" bgcolor="#c0c080">
+      <big><strong><a name="heap_length">heap_length</a></strong></big>
+    </td>
+    <td width="480" bgcolor="#000000">
+      <font color="#ffffff">The size of the audio heap. </font>
+    </td>
+  <tr>
+</table>
+
+<p><em>heap_length</em> entry indicates the size of the audio heap in units of bytes. If the audio heap is cache-aligned, this should ideally be a multiple of 16.
+</p>
+
+<p>The audio heap must be large enough to meet the memory requirements of the music player and the audio manager. Unfortunately, there is no easy way to determine what that required amount is. (Moreover, there are clear differences between NTSC/MPAL applications and PAL applications.)</p>
+
+<p>When the library is initialized, the programmer must note the size of the heap used by the library and change the heap size accordingly. The programmer can determine what size heap is being used by noting the value returned by the <a href="MusInitialize.html">MusInitialize()</a> function. The audio heap allocation function alHeapAlloc() returns a value for the aligned memory cache, but note that this is based on the audio heap's base address, so the amount of heap used can differ slightly (it can vary by as much as 15 bytes). In the same way, the debug version of the Nintendo 64 library (libultra_d) will allocate slightly more memory. This isis because the alHeapAlloc() function stores information inside the heap that is used to check the validity of the heap. </p>
+
+
+<table border="0" cellpadding="2" cellspacing="0" width="100%">
+  <tr>
+    <td width="230" bgcolor="#c0c080">
+      <big><strong><a name="fifo_length">fifo_length</a></strong></big>
+    </td>
+    <td width="480" bgcolor="#000000">
+      <font color="#ffffff">The size of the library's FIFO buffer.</font>
+    </td>
+  <tr>
+</table>
+
+<p><em>fifo_length</em> entry holds the number of commands that  be used for each music update in the music library FIFO buffer. The FIFO buffer is used to execute commands that should be processed on the player thread instead of on the application thread. Currently it is used by the pause/unpause functions and the function to change the FX type of the audio library.
+</p>
+
+<p>Currently, the minimum setting for this entry is 64. The memory needed for the FIFO buffer is obtained from the audio heap.</p>
+
+
+<table border="0" cellpadding="2" cellspacing="0" width="100%">
+  <tr>
+    <td width="230" bgcolor="#c0c080">
+      <big><strong><a name="ptr">ptr</a></strong></big>
+    </td>
+    <td width="480" bgcolor="#000000">
+      <font color="#ffffff">The address of the default sample pointer bank.</font>
+    </td>
+  <tr>
+</table>
+
+<p><em>ptr</em> entry is the default sample pointer file. That is to say, it contains the address to the Nintendo 64 Sound Tools .ptr file located with 32-bit alignment (or better yet, cache-aligned) in RAM. During the initialization process, the list of offsets in this file is converted to pointers. If the <em>ptr</em> entry or the wbk entry is set to NULL, then the library is initialized without a sample bank.</p>
+
+
+<table border="0" cellpadding="2" cellspacing="0" width="100%">
+  <tr>
+    <td width="230" bgcolor="#c0c080">
+      <big><strong><a name="wbk">wbk</a></strong></big>
+    </td>
+    <td width="480" bgcolor="#000000">
+      <font color="#ffffff">The address of the default sample wave bank.</font>
+    </td>
+  <tr>
+</table>
+
+<p><em>wbk</em> entry is the default sample waveform file. That is to say, it contains the address to the Nintendo 64 Sound Tools .wbk file located in ROM or in RAM (if configured for RAM-based samples). This is the actual sample data: the data copied to RAM (if located in ROM) via the DMA buffer when sound output is generated. If the <em>wbk</em> entry or the ptr entry is set to NULL, then the library is initialized without a sample bank.</p>
+
+
+<table border="0" cellpadding="2" cellspacing="0" width="100%">
+  <tr>
+    <td width="230" bgcolor="#c0c080">
+      <big><strong><a name="default_fxbank">default_fxbank</a></strong></big>
+    </td>
+    <td width="480" bgcolor="#000000">
+      <font color="#ffffff">The address of the sound effect bank. </font>
+    </td>
+  <tr>
+</table>
+
+<p><em>default_fxbank</em> entry is the default sound effect bank file. That is to say, it contains the address to the Nintendo 64 Sound Tools .bfx file located with 32-bit alignment (or better yet, cache-aligned) in RAM. During the initialization process, the list of offsets in this file is converted to pointers, and the sample bank override (the region temporarily set as the sample bank) is cleared. If this entry is set to NULL, then the library is initialized without a default sound effect bank.</p>
+
+
+<table border="0" cellpadding="2" cellspacing="0" width="100%">
+  <tr>
+    <td width="230" bgcolor="#c0c080">
+      <big><strong><a name="syn_updates">syn_updates</a></strong></big>
+    </td>
+    <td width="480" bgcolor="#000000">
+      <font color="#ffffff">The number of synthesizer updates. </font>
+    </td>
+  <tr>
+</table>
+
+<p><em>syn_updates</em> entry contains the number of times the synthesizer can be updated. This entry is passed to the alInit() function as the maxUpdates parameter of the configuration structure.</p>
+
+
+<table border="0" cellpadding="2" cellspacing="0" width="100%">
+  <tr>
+    <td width="230" bgcolor="#c0c080">
+      <big><strong><a name="syn_output_rate">syn_output_rate</a></strong></big>
+    </td>
+    <td width="480" bgcolor="#000000">
+      <font color="#ffffff">The playback rate. </font>
+    </td>
+  <tr>
+</table>
+
+<p><em>syn_output_rate</em> entry contains the hardware output rate of the synthesizer. This entry is passed to the alInit() function as the outputRate parameter of the configuration structure.</p>
+
+<p>The hardware playback rate must be the same rate as the sound data created with Nintendo 64 Sound Tools.</p>
+
+
+<table border="0" cellpadding="2" cellspacing="0" width="100%">
+  <tr>
+    <td width="230" bgcolor="#c0c080">
+      <big><strong><a name="syn_rsp_cmds">syn_rsp_cmds</a></strong></big>
+    </td>
+    <td width="480" bgcolor="#000000">
+      <font color="#ffffff">The number of RSP commands. </font>
+    </td>
+  <tr>
+</table>
+
+<p><em>syn_rsp_cmds</em> entry contains the size of the buffer to be allocated for the placement of RSP commands created by the library. We recommend that this value be at least 2048 per video frame. (For example, if syn_retraceCount is 1, then it should be at least 2048. If syn_retraceCount is 2, then the value should be at least 4096.)</p>
+
+
+<table border="0" cellpadding="2" cellspacing="0" width="100%">
+  <tr>
+    <td width="230" bgcolor="#c0c080">
+      <big><strong><a name="syn_retraceCount">syn_retraceCount</a></strong></big>
+    </td>
+    <td width="480" bgcolor="#000000">
+      <font color="#ffffff">The number of frames per VSYNC message. </font>
+    </td>
+  <tr>
+</table>
+
+<p><em>syn_retraceCount</em> entry contains the number of V-Syncs per retrace message sent by the scheduler. This value must be the same as the retraceCount sent to the osCreateScheduler() function (or the number of video frames set to be processed by an external scheduler). We recommend the value be set to 1.</p>
+
+<p>If this value is not set to 1, then the programmer should consider increasing the number of DMA buffers, the number of RSP commands and the number of updates in the configuration structure.</p>
+
+
+<table border="0" cellpadding="2" cellspacing="0" width="100%">
+  <tr>
+    <td width="230" bgcolor="#c0c080">
+      <big><strong><a name="syn_num_dma_bufs">syn_num_dma_bufs</a></strong></big>
+    </td>
+    <td width="480" bgcolor="#000000">
+      <font color="#ffffff">The number of DMA buffers. </font>
+    </td>
+  <tr>
+</table>
+
+<p><em>syn_num_dma_bufs</em> entry contains the number of DMA buffers made available to the audio manager. The programmer should include in the calculation a consideration of how many DMAs will be needed to supply sample data to the channels supported by the music player.</p>
+
+<p>This value should not be smaller than the number of channels, and if possible we recommend making it a little larger. If the audio manager cannot allocate a DMA buffer, then there will be "gaps" in the sound when the buffer is required.</p>
+
+
+<table border="0" cellpadding="2" cellspacing="0" width="100%">
+  <tr>
+    <td width="230" bgcolor="#c0c080">
+      <big><strong><a name="syn_dma_buf_size">syn_dma_buf_size</a></strong></big>
+    </td>
+    <td width="480" bgcolor="#000000">
+      <font color="#ffffff">The length of each DMA buffer. </font>
+    </td>
+  <tr>
+</table>
+
+<p><em>syn_dma_buf_size</em> entry contains the size of each buffer made available to the audio manager. The larger the buffer size, the less necessary DMAs become, but then much more memory is required. We recommend never setting this value below 0x400.</p>
+
+<table border="0" cellpadding="2" cellspacing="0" width="100%">
+  <tr>
+    <td width="230" bgcolor="#c0c080">
+      <big><strong><a name="diskrom_handle">diskrom_handle</a></strong></big>
+    </td>
+    <td width="480" bgcolor="#000000">
+      <font color="#ffffff">Information regarding the 64DD ROM hardware settings. </font>
+    </td>
+  <tr>
+</table>
+
+<p><em>diskrom_handle</em> entry contains the hardware information needed to use the ROM in the 64DD drive. If the 64DD ROM will not be used, then nothing needs to be specified for this setting. But if the 64DD ROM is to be used, then pass the value returned by the osDriveRomInit() function.</p>
+
+</body>
+</html>

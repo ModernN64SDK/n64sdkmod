@@ -1,0 +1,199 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Graphics-Chapter 9  Advanced Texture Mapping</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/22/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<font style="font-size:16pt"><B>CHAPTER 9  ADVANCED TEXTURE MAPPING</B></FONT>
+<br><br>
+<HR SIZE=3 NOSHADE>
+<BR>
+<font style="font-size:12pt"><B>9.1  Tiles</B></FONT>
+<P>
+ The RDP's TMEM has a memory capacity of 4KB, but this can be thought of as being divided into a number of blocks.  Each block is called a tile, and up to 8 tiles can be utilized.  Each tile can take parameters describing such things as the texture's starting position in TMEM, the texture format and the size.  Together, these parameters are called the texture tile descriptor.   
+</P>
+<P>
+<IMG SRC="image28.gif">
+</P>
+<P>
+<B>Figure 9-1  Tile descriptors and TMEM</B>
+</P>
+<P>
+The N64 can perform advanced texture processes like positioning two highlight light sources, and texture mapping with mipmaps corresponding to the model's LOD.  However, to realize these kinds of processes you need to understand the concept of tiles.
+     Thus far, all of the sample programs have made use of only one texture, so we could put programs together without paying any attention to texture tiles.   Next, we will look at ways of expressing images with texture tiles, but before that we will explain a little about tiles.
+<br><br>
+     You set the tile descriptor using the gDPSetTile command.
+</P>
+<TABLE BORDER=0 CELPADDING=0><TR>
+<TD WIDTH=10>&nbsp;</TD><TD>
+	<TABLE BORDER=0 CELPADDING=0 WIDTH=500>
+	<TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP COLSPAN=2>gDPSetTile(</TD>
+	</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP ROWSPAN=13 WIDTH=45>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP WIDTH=500>Gfx *gdl,</TD>
+	</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP WIDTH=500>u32 fmt,</TD>
+	</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP WIDTH=500>u32 siz,</TD>
+	</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP WIDTH=500>u32 line,</TD>
+	</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP WIDTH=500>u32 tmem,</TD>
+	</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP WIDTH=500>u32 tile,</TD>
+	</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP WIDTH=500>u32 palette,</TD>
+	</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP WIDTH=500>u32 cmt,</TD>
+	</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP WIDTH=500>u32 cms,</TD>
+	</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP WIDTH=500>u32 maskt,</TD>
+	</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP WIDTH=500>u32 masks,</TD>
+	</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP WIDTH=500>u32 shiftt,</TD>
+	</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP WIDTH=500>u32 shifts)</TD>
+	</TR></TABLE>
+<br>
+	<TABLE BORDER=0 CELPADDING=0 WIDTH=500><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>gdl&nbsp;&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP WIDTH=440>Display list pointer</TD>
+	</TR></TABLE>
+<br>
+	<TABLE BORDER=0 CELPADDING=0 WIDTH=500><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>fmt&nbsp;&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP WIDTH=440 NOWRAP>Texture image format</TD>
+	</TR><TR>
+	<TD ROWSPAN=6 WIDTH=60>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP WIDTH=440>&nbsp;G_IM_FMT_RGBA(RGBA format)</TD>
+	</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP WIDTH=440>&nbsp;G_IM_FMT_YUV(YUV<SUP>*5</SUP>Format)</TD>
+	</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP WIDTH=440>&nbsp;G_IM_FMT_CI(CI Format)</TD>
+	</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP WIDTH=440>&nbsp;G_IM_FMT_IA(IA format)</TD>
+	</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP WIDTH=440>&nbsp;G_IM_FMT_I(I format)</TD>
+	</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP WIDTH=440><SUP>&nbsp;&nbsp;*5</SUP>&nbsp;The operation of YUV textures cannot be guaranteed at this time.</TD>
+	</TR></TABLE>
+	<BR>
+	<TABLE BORDER=0 CELPADDING=0 WIDTH=500><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>siz&nbsp;&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP WIDTH=440>Size of pixel components</TD>
+	</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP ROWSPAN=4 WIDTH=60>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP WIDTH=440>&nbsp;G_IM_SIZ_4b(4bits/1texel)</TD>
+	</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP WIDTH=440>&nbsp;G_IM_SIZ_8b(8bits/1texel)</TD>
+	</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP WIDTH=440>&nbsp;G_IM_SIZ_16b(16bits/1texel)</TD>
+	</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP WIDTH=440>&nbsp;G_IM_SIZ_32b (32bits/1texel)</TD>
+	</TR></TABLE>
+	<BR>
+	<TABLE BORDER=0 CELPADDING=0 WIDTH=500><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>line&nbsp;&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP WIDTH=440>Size of 1 line (s-axis) of texture tile (9bit precision, 0 - 511)</TD>
+	</TR></TABLE>
+	<BR>
+	<TABLE BORDER=0 CELPADDING=0 WIDTH=500><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>tmem&nbsp;&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP WIDTH=440>Address of texture tile origin (9bit precision, 0 - 511)</TD>
+	</TR></TABLE>
+	<BR>
+	<TABLE BORDER=0 CELPADDING=0 WIDTH=500><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>tile&nbsp;&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP WIDTH=440>Index of parameter-setting tile descriptor (3bit precision, 0 - 7)</TD>
+	</TR></TABLE>
+	<BR>
+	<TABLE BORDER=0 CELPADDING=0 WIDTH=500><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>palette&nbsp;&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP WIDTH=440>Position of palette for 4bit color index textures (4bit precision, 0 - 15)
+</TD>
+	</TR></TABLE>
+	<BR>
+	<TABLE BORDER=0 CELPADDING=0 WIDTH=500><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>cms&nbsp;&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP WIDTH=440>s-axis mirror, wrap, clamp flags</TD>
+	</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP ROWSPAN=4 WIDTH=60>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP WIDTH=440>&nbsp;G_TX_MIRROR(Enable mirroring)</TD>
+	</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP WIDTH=440>&nbsp;G_TX_NOMIRROR(Disable mirroring)</TD>
+	</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP WIDTH=440>&nbsp;G_TX_WRAP(Enable wrapping)</TD>
+	</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP WIDTH=440>&nbsp;G_TX_CLAMP(Enable clamping)</TD>
+	</TR></TABLE>
+	<BR>
+	<TABLE BORDER=0 CELPADDING=0 WIDTH=500><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>cmt&nbsp;&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP WIDTH=440>t-axis mirror, wrap, clamp flags</TD>
+	</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP ROWSPAN=4 WIDTH=60>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP WIDTH=440>&nbsp;G_TX_MIRROR(Enable mirroring)</TD>
+	</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP WIDTH=440>&nbsp;G_TX_NOMIRROR(Disable mirroring)</TD>
+	</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP WIDTH=440>&nbsp;G_TX_WRAP(Enable wrapping)</TD>
+	</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP WIDTH=440>&nbsp;G_TX_CLAMP(Enable clamping)</TD>
+	</TR></TABLE>
+	<BR>
+	<TABLE BORDER=0 CELPADDING=0 WIDTH=500><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>masks&nbsp;&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP WIDTH=440>s-axis mask  (4bit precision, 0 - 15)</TD>
+	</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP ROWSPAN=4 WIDTH=60>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP WIDTH=440>&nbsp;G_TX_NOMASK  (Do not mask, 0)</TD>
+	</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP WIDTH=440>&nbsp;Numerical value n  (Mask, 1 - 15)</TD>
+	</TR></TABLE>
+	<BR>
+	<TABLE BORDER=0 CELPADDING=0 WIDTH=500><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>maskt&nbsp;&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP WIDTH=440>t-axis mask  (4bit precision, 0 - 15)</TD>
+	</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP ROWSPAN=4 WIDTH=60>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP WIDTH=440>&nbsp;G_TX_NOMASK  (Do not mask, 0)</TD>
+	</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP WIDTH=440>&nbsp;Numerical value n  (Mask, 1 - 15)</TD>
+	</TR></TABLE>
+	<BR>
+	<TABLE BORDER=0 CELPADDING=0 WIDTH=500><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>shifts&nbsp;&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP WIDTH=440>s-coordinate shift value</TD>
+	</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP ROWSPAN=4 WIDTH=60>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP WIDTH=440>&nbsp;(For low-level detail textures, 4bit precision, 0 - 15)</TD>
+	</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP WIDTH=440>&nbsp;G_TX_NOLOD  (Do not shift, 0)</TD>
+	</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP WIDTH=440>&nbsp;Numerical value n  (Shift, 1 - 15)</TD>
+	</TR></TABLE>
+	<BR>
+	<TABLE BORDER=0 CELPADDING=0 WIDTH=500><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>shiftt&nbsp;&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP WIDTH=440>t-coordinate shift value</TD>
+	</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP ROWSPAN=4 WIDTH=60>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP WIDTH=440>&nbsp;(For low-level detail textures, 4bit precision, 0 - 15)</TD>
+	</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP WIDTH=440>&nbsp;G_TX_NOLOD(Do not shift, 0)</TD>
+	</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP WIDTH=440>&nbsp;Numerical value n  (Shift, 1 - 15)</TD>
+	</TR></TABLE>
+</TR></TABLE>
+<P>
+   Many different arguments were set in the gDPLoadTextureBlock and gDPLoadTextureTile commands used in the sample programs we have seen up to now, but items like the wrapping flag and the mask value and shift value are actually set as tile descriptors.
+</P>
+</BODY>
+</HTML>

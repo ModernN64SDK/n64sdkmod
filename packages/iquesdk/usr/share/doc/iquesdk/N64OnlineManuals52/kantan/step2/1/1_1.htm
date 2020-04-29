@@ -1,0 +1,78 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<title>STEP2 [A Guide to the N64 Programming] - Chapter 1 N64 Programming</title>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!--
+Editors Notes:
+  PWC- updated formatting
+-->
+<base target="keywords">
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<p><font style="font-size:12pt"><b>1-1 Basics of the N64 Program</b></font></p>
+<br>
+<p>N64 game applications are written in the C programming language. However, an N64 game program is structured somewhat differently from a general C language program.  Here, we will explain the differences between the general C language program and the N64 program.</p>
+<br>
+<p><b>1-1-1 Different Programming Styles</b></p>
+<br>
+<p>In the flow of an ordinary C program, each process executes sequentially to ensure that no processes are executed simultaneously. However, in the flow of an N64 C program, several processes may execute in parallel.<sup>*</sup></p>
+
+<p><sup><b>*</b></sup><b>Processes are not executing simultaneously they are executing together by taking turns -- pausing and restarting. </b><p>
+
+<p>The flow of an ordinary C program continues as if one person is doing the whole job by completing several tasks in a series. The N64 C program flow continues as if several people are working on different parts of the job at the same time by sharing the tools. Because of this, you must design your N64 game programs carefully to manage all the workers and to manage the tool sharing process. </p>
+
+<table border="1" cellspacing="0" cellpadding="4"><tr><td><img src="img00010.gif"></td></tr></table>
+
+<p><br><b>Figure 1-1-1 Standard C program and N64 game program</b></p>
+<br>
+<br>
+
+<p><b>1-1-2 No main() Function in N64 Programs</b></p>
+<br>
+
+<p>A typical C program starts from the beginning of the main() function and proceeds by calling library functions or originally defined functions. An N64 C program, on the other hand, has no main() function.  The boot function (a function specified in the <a href="../../../keywords/index/data/system.htm#ROM spec file" target="keywords">spec file</a>) begins the processing.  The boot function may or may not call all the other functions the program uses.  After providing various initializations and settings, the boot function may turn control over to a  <a href="../../../keywords/index/data/system.htm#thread" target="keywords">thread</a> that takes charge of the main part of the program. In the case of calling the order of the boot function -> thread A -> thread B, thread A continues to process during the thread B process because, in N64 programming, threads appear to be parallel processed.</p>
+
+<table border="1" cellspacing="0"><tr><td><img src="img00011.gif"></td></tr></table>
+
+<p><br>
+<b>Figure 1-1-2 The parallel processing of threads</b></p>
+<br>
+<br>
+<p><b>1-1-3 No Standard Output (stdout)</b></p>
+<br>
+<p>N64 does not have a standard output device that can use functions like printf(). Instead, it has the <a href="../../../n64man/os/osSyncPrintf.htm">osSyncPrintf()</a> function that outputs on the debugger console.</p>
+<br>
+<br>
+<p><b>1-1-4 No Memory Control Functions</b></p>
+<br>
+<p>The N64 operating system supports some, but not all, of the functionality for the malloc() and free() standard C library functions. All of their functionality will be supported in the future. </p>
+<br>
+<br>
+<p><b>1-1-5 Initialization Is Always Required</b></p>
+<br>
+<p>In N64 C programming, you must initialize all variables and arguments; defining them without initializing them is not sufficient. Even if an initial value was previously set, do not create a program that assumes the initialization has already occurred, because once an initialized value is assigned, it changes. You need to initialize all variables in each and every program. Also, it is impossible to guess when a low priority thread will be paused to allow a higher priority thread to execute. It is possible that a referenced working value has changed by the time the low-priority thread resumes execution. 
+Therefore, it is crucial that you initialize each and every variable. Even though a typical C program can rely on the system to handle initializations, an N64 C program must specifically provide all variable initialization and control.</p>
+
+<table border="1" cellspacing="0"><tr><td><img src="img00012.gif"></td></tr></table>
+
+<br>
+<br><b>Figure 1-1-3 Initialization Is Always Required</b>
+<br>
+<br>
+<b><br>1-1-6 Data Cache &amp; RDRAM Consistency</b>
+<br>
+<br><br><li>In the N64, the program data in the N64 Game Pak ROM is moved to RDRAM overwriting whatever is  already there. The code is then executed there in RDRAM.  As a result, if you've written the data in the program area incorrectly, there is a very high possibility that processing will enter an endless loop and your program will hang. With N64 programming, you need to keep track of addresses carefully.</li><br>
+
+<br><li>Writeback Data Cache</li><br>
+In N64 processing, the CPU prepares the GBI command, which the RSP provides to the graphics process in RDRAM.  Because of this and the fact that the N64 cache adopts the write back method, it is possible that the data will remain in the cache and never be written to RDRAM even if the CPU writes the data. If this happens, the RSP cannot gain access to the data written by the CPU. Therefore, after writing the data, you need to move the data cache contents to RDRAM as occasion demands by using the <a href="../../../n64man/os/osWritebackDCache.htm">osWritebackDCache</a> or the <a href="../../../n64man/os/osWritebackDCacheAll.htm">osWritebackDCacheAll</a> function.  This ensures that RDRAM holds the current contents of the data cache.<br><br>
+
+<br>In the other direction, new RDRAM contents put there by a DMA transfer are not automatically reflected to the cache.
+Therefore, before doing a DMA transfer to RDRAM, you need to nullify the data cache by using the <a href="../../../n64man/os/osInvalDCache.htm">osInvalDCache</a> function and newly make the state of data transferable from the memory to the cache.<br>
+
+<br><b>If you think your program code is correct but it is not working correctly, make sure the cache and the memory are not working with different data. </b>
+</body>
+</html>

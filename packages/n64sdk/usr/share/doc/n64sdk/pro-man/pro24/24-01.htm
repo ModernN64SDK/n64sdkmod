@@ -1,0 +1,51 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 24 - Performance Tuning Guide</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. -->
+</head>
+
+<h1>24.1 Data Reduction</h1>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="01"><h2>24.1.1 Game World Organization </h2></a>
+
+<p>1.1 Game World Organization </p>
+
+<dl>
+  <dt><a name="f24-01"><strong>Figure 24-1 Fixed Size Grid Database Organization</strong></a>
+  <dd><img alt="[Figure 24-1]" src="gif/f24-01.gif">
+</dl>
+
+<p>You could also build a hierarchy of different-sized <A HREF="../../keywords/index/data/system.htm#grid" target="keywords">grids</A> to give you a <A HREF="../../keywords/index/data/system.htm#quad tree" target="keywords">quadtree</A>: </p>
+
+<dl>
+  <dt><a name="f24-02"><strong>Figure 24-2 Quadtrees </strong></a>
+  <dd><img alt="[Figure 24-2]" src="gif/f24-02.gif">
+</dl>
+
+<p>You can extend this into 3D and get either a fixed size cube organization or <A HREF="../../keywords/index/data/system.htm#oct tree" target="keywords">oct trees</A>. Keep in mind that you are trying to eliminate work; not just graphics <a href="../../keywords/index/data/graphics.htm#rendering" target="keywords">rendering</a>, but also texture loads and animation processing such as collision detection. </p>
+
+<p>The grid need not be regular either, you could also use other boundaries if it suits your data.  One example of this is a "portal connectivity" organization inside of a building.  In a building with rooms and hallways, the possible list of things that you can see can be represented by a portal connectivity description, which lists the rooms of the building that are visible. </p>
+
+<p>You can further reject more data by testing a list of screen projected portal rectangles against visibility to determine whether to consider data in a particular room or hallway. </p>
+
+<dl>
+  <dt><a name="f24-03"><strong>Figure 24-3 Portals Connectivity Visibility </strong></a>
+  <dd><img alt="[Figure 24-3]" src="gif/f24-03.gif">
+</dl>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="02"><h2>24.1.2 Hierarchical Culling </h2></a>
+
+<p>Throwing away geometry to eliminate processing does not have to stop at the top level. A common organization at the object level is a bounding <a href="../../keywords/index/data/audio.htm#volume" target="keywords">volume</a> test to eliminate objects (see <a href="../../n64man/gsp/gSPCullDisplayList.htm">gSPCullDisplayList()</a>). </p>
+
+<dl>
+  <dt><a name="f24-04"><strong>Figure 24-4 Bounding Sphere Test </strong></a>
+  <dd><img alt="[Figure 24-4]" src="gif/f24-04.gif">
+</dl>
+
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+</body> </html>

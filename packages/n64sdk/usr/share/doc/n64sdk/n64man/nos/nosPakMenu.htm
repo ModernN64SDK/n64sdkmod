@@ -1,0 +1,58 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<!--Editor's Notes: JLR made reformating and copy edits.
+MAP- added links, updated format-->
+<title>nosPakMenu</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>nosPakMenu</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p><i>Simple Controller Pak menu</i></p>
+
+<h3>Syntax</h3>
+<p><pre><code>#include &lt;libnos.h&gt;     
+int  nosPakMenu (OSMesgQueue *siMessageQ,  OSMesgQueue *retraceMessageQ);</pre></code>
+</p>
+<h3>Description</h3>
+
+<p><tt>nosPakMenu</tt> is a Controller Pak menu application. The game player can use this menu to check game notes registered in a Controller Pak, to check how any pages are being used and how many are left over, and to delete unnecessary game notes.</p>
+
+<p>siMessageQ must be an initialized message queue associated with OS_EVENT_SI events, and retraceMessageQ must be an initialized message queue associated with vertical retraces.  To learn how to make these associations, see <A HREF="../os/osSetEventMesg.htm">osSetEventMesg</A> and <A HREF="../os/osViSetEvent.htm">osViSetEvent</A>.</p>
+
+<p>The user must press the START button on the Controller in order to activate this menu.  The menu will not open if the START button is not pressed or if a Controller Pak is not inserted in the Controller.</p>
+
+<p>The values returned as error codes for this function are shown in the table below:</p>
+
+<table border="1">
+    <tr>
+        <th>Situation</th>
+        <th>Returned value</th>
+    </tr>
+    <tr>
+        <td>When the Controller Pak is not inserted</td>
+        <td align="center">0</td>
+    </tr>
+    <tr>
+        <td>When an error occurs in the Controller Pak menu</td>
+        <td align="center">1</td>
+    </tr>
+    <tr>
+        <td>When the Controller Pak is OK, but the START button is not pressed</td>
+        <td align="center">2</td>
+    </tr>
+    <tr>
+        <td>When "Exit" is selected in the Controller Pak menu</td>
+        <td align="center">3</td>
+    </tr>
+</table>
+<br>
+<H3>Revision History</H3>
+<P>
+04/30/1999 Changed Format
+</P>
+<br><br>
+</body>
+</html>

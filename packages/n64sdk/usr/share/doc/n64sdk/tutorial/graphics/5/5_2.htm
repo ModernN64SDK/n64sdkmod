@@ -1,0 +1,46 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Graphics-Chapter 5 Semi-Transparent Objects & the Alpha Value</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/23/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<font style="font-size:12pt"><B>5.2  Texture Formats with Alpha Values</B></FONT>
+<br>
+<P>
+With the exception of the YUV<SUP>*4</SUP> format, all texture formats that can be used by the N64 contain alpha value information.  Below we look at the advantages and disadvantages of each format from the point of view of the use of alpha values.
+<br><BR>
+  <SUP>*4</SUP>The operation of YUV textures cannot be guaranteed at this time.
+</P>
+<P>
+<B>RGBA32</B><BR>
+The most expressive texture format, but also the one that requires the most data.  The alpha value can express a 256-step scale, meaning you can achieve anti-aliasing-like effects by setting the alpha value a little lower for the outline of the texture.
+</P>
+<P>
+<B>RGBA16</B><BR>
+ Considering its balance of expressive capability and data volume, this texture format is used most often.  However, RGBA16-format textures only have 1bit of alpha information.  As a result, texels can only be expressed as completely transparent or completely opaque.
+</P>
+<P>
+<B>IA16</B><BR>
+ This texture format allocates 8bits for intensity and 8bits for alpha value information.
+</P>
+<P>
+<B>IA8</B><BR>
+ This format is similar to IA16, but only 4bits each are allocated for intensity and alpha value information.  Each texel can be expressed with 1byte, so you decrease the data size. </P>
+<P>
+<B>IA4</B><BR>
+ This texture format has 3bits of intensity and 1bit of alpha value information.</P>
+<P>
+<B>I8</B><BR>
+This texture format has only 8bits of intensity information.  Yet, the intensity is automatically used for the alpha value, so this format is useful when creating special effects with textures.  It caries enough information to express gradations, etc.
+
+</P>
+<P>
+<B>I4</B><BR>
+ This is an extremely compact texture format designed for image data, likes fonts that do not need a number of colors.  Since the intensity is automatically used for the alpha value, this format can also be used to handle background (i.e., black texels) as transparent parts.
+</P>
+</BODY>
+</HTML>

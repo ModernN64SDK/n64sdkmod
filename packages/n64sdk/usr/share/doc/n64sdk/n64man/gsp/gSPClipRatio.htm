@@ -1,0 +1,81 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.>
+<TITLE>gSPClipRatio</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>gSPClipRatio [Macro]</H1>
+
+<p><b>Function</b></p>
+
+<p>gSPClipRatio</p>
+<P>
+<i>Specifies the size ratio between the clipping box and the scissoring box</i>
+</P>
+
+<p><b>Syntax</b></p>
+<p>
+<PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gbi.htm">gbi.h</A> */
+gSPClipRatio(Gfx *gdl, r)
+gsSPClipRatio(         r)</CODE></PRE></p>
+
+<p><b>Arguments</b></p>
+<p>
+<DL>
+  <DT><B>gdl</B>
+  <DD>the display list pointer. 
+  <DT><B>r</B>
+  <DD> the relative size (Clipping box : scissoring box). 
+  <DD><B>FRUSTRATIO_1</B>(1:1)
+  <DD><B>FRUSTRATIO_2</B>(2:1)
+  <DD>    :
+  <DD><B>FRUSTRATIO_6</B>(6:1)
+</DL></p>
+<p><b>Description</b></p>
+<P>
+This macro specifies the size ratio between the clipping box and the scissoring box in order to boost performance. This explanation assumes that the scissoring box is the same size as the viewport region (see <A HREF="../gdp/gDPSetScissor.htm">gDPSetScissor</A> and <A HREF="gSPViewport.htm">gSPViewport</A>).
+</P>
+<P>
+Scissoring is performed by rasterizing the entire triangle and then deleting pixels which lay outside the screen. (This consumes processing time in the RDP.) 
+</P>
+<P>
+Clipping is performed by converting a large triangle that protrudes out of the clipping box, into a number of small triangles, all of which fit inside the clipping box. (This consumes RSP processing time in the RSP.) For details, please see Section 12.3.1, Figure 12-4 "Scissoring/Clipping/Screen Rectangles" in the N64 Online Programming Manual. 
+</P>
+<P>
+When the clipping box is near in size to the scissoring box there are more occasions for clipping, which places a greater burden on the RSP. In addition, RDP processing speed declines because there is also more rendering, due to the increase in the number of polygons that results from the clipping process, where a large triangle is divided up into many small ones, as explained above. (The rendering of two small triangles generally requires more RDP processing time than one large triangle.) 
+</P>
+<P>
+Conversely, when the clipping box is much larger than the scissoring box, there are few occasions for clipping so the burden on the RSP declines. However, RDP processing speed will also decline because there are more occasions for scissoring (which is performed by the RDP). 
+</P>
+<P>
+The performance of the RSP was improved significantly with the release of F3DEX2. Thus, you should place greater regard on the above-mentioned influences on the RDP when determining the optimal size ratio. 
+
+</P>
+<P>
+Since the most effective ratio will differ depending on the model, try various values and choose the one that works best. For details, please see Section 11.6 "Clipping and Culling" in the N64 Programming Manual. 
+
+</P>
+
+<p><b>Note</b></p>
+<P>
+The initial value in F3DEX2 is FRUSTRATIO_2.
+</P>
+<p><b>Example</b></p>
+<P>
+<PRE><CODE>// Makes the clipping box five times larger than the scissoring box
+gSPClipRatio(glist++, FRUSTRATIO_5);</CODE></PRE>
+</P>
+<p><b>See Also</b></p>
+<P>
+<A HREF="../gdp/gDPSetScissor.htm">gDPSetScissor</A>, <A HREF="gSPViewport.htm">gSPViewport</A>
+</P>
+<p><b>Revision History</b></p>
+<P>
+02/01/99  Entirely revised.
+</P>
+</BODY>
+</HTML>

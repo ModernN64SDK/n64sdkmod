@@ -1,0 +1,234 @@
+<html>
+<title>
+TexNode
+</title>
+<body bgcolor="ffffff">
+
+<h1>
+<font color="ff0000">
+<i>
+Nintendo Confidential
+</i>
+</font>
+</h1>
+<hr size="3">
+
+
+<h2>
+10. TexNode
+
+</h2>
+<hr size="3">
+<h3>
+(1) TexNode
+</h3>
+<blockquote>
+
+
+<table border width="600">
+
+<tr>
+<td nowrap>
+u32 tex_filter
+</td>
+<td>
+N64のテクスチャフィルタリングに関するマクロを設定します。下記のフラグが定義されています。
+<pre>
+<b>
+NIFF2_TEX_FILTER_POINT&#9;&#9;0x00000000
+NIFF2_TEX_FILTER_BILERP&#9;&#9;0x00000001
+NIFF2_TEX_FILTER_AVERAGE&#9;0x00000002
+</b>
+</pre>
+デフォルトではTEX_FILTER_BILERPを設定してください。
+</td>
+</tr>
+
+
+<tr>
+<td nowrap>
+u32 use_perspective_correction
+</td>
+<td>
+テクスチャのパースペクティブ補正をON/OFFします。下記のフラグが定義されています。
+<pre>
+<b>
+NIFF2_NO_PERSPECTIVE_CORRECTION&#9;0x00000000
+NIFF2_PERSPECTIVE_CORRECTION&#9;0x00000001
+</b>
+</pre>
+デフォルト値としてPERSPECTIVE_CORRECTIONを設定してください。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 mipmap_level
+</td>
+<td>
+MipMapテクスチャのレベル数を記述します。<p>
+0 ≦ mipmap_level ≦ 7<p>
+MipMapを使用しない場合は下記のフラグを記述してください。
+<pre>
+<b>
+NIFF2_NO_MIPMAP&#9;0x00000000
+</b>
+</pre>
+尚、NIFF -> N64コンバータ上で生成されるMipMapイメージの最大level数はTexImg -> mipmap_max_levelで指定されます。
+</td>
+</tr>
+
+
+
+<tr>
+<td nowrap>
+u32 use_color_palette
+</td>
+<td>
+カラーインデックステクスチャを使用する場合に、NIFF1.0と同様にNIFF→N64コンバータでカラーインデックステクスチャを自動生成するか、NIFF2.0で追加されたインデックステクスチャイメージ及びカラーパレットを使用するかを指定します。下記のフラグが定義されています。
+<pre>
+<b>
+NIFF2_NO_USE_COLOR_PALETTE&#9;0x00000000
+NIFF2_USE_COLOR_PALETTE&#9;&#9;0x00000001
+</b>
+</pre>
+NIFF1.0と同様にテクスチャイメージを使用する場合はNIFF2_NO_USE_COLOR_PALETTEを指定してください。<p>
+NIFF2.0で新たに追加されたカラーインデックステクスチャイメージとカラーパレットを使用する場合はNIFF2_USE_COLOR_PALETTEを指定してください。この場合、TexDataArea内のtex_tile_img_indexはCiImgList内のインデックス番号を指し、tex_tile_img_numは使用するCiImg数を示します。
+</td>
+</tr>
+
+
+<tr>
+<td nowrap>
+u32 external_tex_img_num
+</td>
+<td>
+外部ファイル参照するTexImg数を記述します。<p>
+TexImgを外部ファイル参照する場合、すべてのTexImgを外部ファイル参照しなければなりません。<p>
+その場合、tex_img_index = 0xffffffff, tex_tile_img_num = 0x0に指定してください。<p>
+また、カラーインデックステクスチャを使用している場合はColorPaletteも外部ファイル参照されます。<p>
+外部ファイル参照しない場合は0x0を指定してください。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 color_palette_index
+</td>
+<td>
+use_color_palette = NIFF2_USE_COLOR_PALETTEの場合に、使用するカラーパレットをColorPaletteList内のインデックス番号で指定します。<p>
+use_color_palette = 0の場合、このエリアは記述されません。
+
+<!..
+-- ADD START --
+1998/09/30
+..>
+
+<p>
+TEX_ANIM_OFFの場合、color_palette_index(0)のみ記述します。
+
+<!..
+-- ADD END --
+..>
+
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 tlut_palette_number
+</td>
+<td>
+4bitのカラーインデックステクスチャを使用し、256色のカラーパレットを指定する場合に、16分割されたパレットのオフセット値を記述します。通常は0x0を記述してください。<p>
+NIFF2_NO_USE_COLOR_PALETTE = 0x00000000の場合、このフィールドは記述されません。<p>
+また、8bitCIテクスチャ(256色)をTexImgとして使用する場合はこのフィールドは必ず0x0になります。<p>
+4bitCIテクスチャと16色パレットを使用する場合はこのフィールドには0x0の値を記述してください。
+
+<!..
+-- ADD END --
+1998/09/30
+..>
+
+<p>
+TEX_ANIM_OFFの場合、tlut_palette_number(0)のみ記述します。
+
+<!..
+-- ADD END --
+..>
+
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 external_tex_img_file_name_index
+</td>
+<td>
+Texture Imageを外部ファイル参照する場合、参照するファイル名をExternalNameList内のインデックス番号で記述します。<p>
+ファイル名はディレクトリ名などを含まない形で記述してください。<p>
+外部ファイル参照しない場合は、このエリアは記述されません。
+</td>
+</tr>
+
+
+<tr>
+<td nowrap>
+u32 external_tex_img_name_index
+</td>
+<td>
+Texture Imageを外部ファイル参照する場合、参照するTexImg名をExternalNameList内のインデックス番号で記述します。<p>
+外部ファイル参照しない場合は、このエリアは記述されません。
+</td>
+</tr>
+
+
+<tr>
+<td nowrap>
+u32 external_color_palette_file_name_index
+</td>
+<td>
+ColorPaletteを外部ファイル参照する場合、参照するファイル名をExternalNameList内のインデックス番号で記述します。<p>
+ファイル名はディレクトリ名などを含まない形で記述してください。<p>
+外部ファイル参照しない場合は、このエリアは記述されません。<p>
+NIFF2_NO_USE_COLOR_PALETTE = 0x00000000の場合、このフィールドは記述されません。
+</td>
+</tr>
+
+
+<tr>
+<td nowrap>
+u32 external_color_palette_name_index
+</td>
+<td>
+ColorPaletteを外部ファイル参照する場合、参照するColorPalette名をExternalNameList内のインデックス番号で記述します。<p>
+外部ファイル参照しない場合は、このエリアは記述されません。<p>
+NIFF2_NO_USE_COLOR_PALETTE = 0x00000000の場合、このフィールドは記述されません。
+
+</td>
+</tr>
+
+
+
+</table>
+
+
+<p>
+<a href="./tex_C.htm">
+Go to the data chunk
+</a>
+<p>
+<a href="./index.htm">
+Go back to the index
+</a>
+
+</blockquote>
+
+<hr>
+<i>
+Copyright 1998,1999 NINTENDO Co.,Ltd. All rights reserved.<br>
+Copyright 1998,1999 MONEGI CORPORATION All rights reserved.
+</i>
+
+
+</body>
+</html>

@@ -1,0 +1,24 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 25 - Graphics Microcode</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. -->
+</head>
+
+<h1>25.2 RSP to RDP Command Passing</h1>
+
+<p>All types of RSP <A target="keywords" HREF="../../keywords/index/data/system.htm#microcode">microcode</a> generate commands for the RDP. The method used to pass the commands from the RSP to the RDP determines the suffix used to name the microcode object.  In the "regular" method the commands are written to a buffer in DMEM, which can hold up to six RDP commands.  If the buffer fills, the next time the RSP tries to write a command it will stall until there is space in the buffer.  Microcode versions that use this type of command passing have no special suffix, just a .o appended to
+their name. </p>
+
+<p>Alternatively, the RSP can write all the commands to a larger FIFO buffer in RDRAM. This helps to prevent the RSP from stalling when the RDP gets bound by processing large triangles. Microcode that uses this method has the .fifo.o suffix appended to its name.</p>
+
+<p>When using the FIFO version of a microcode, the application must pass a pointer to a buffer to be used as the FIFO buffer, in the task output_buff field.  The size of the FIFO buffer can be set in output_buff_size field.  The buffer size should be above 1K byte so that FIFO can significantly increase its performance.</p>
+
+<p>The microcode also provides another option for the RSP to write all of the RSP commands to an RDRAM buffer.  In this case the application must start the RDP task separately with a call to <a href="../../n64man/os/osDpSetNextBuffer.htm">osDpSetNextBuffer()</a>.  (This form of command passing is very useful for debugging in conjunction with the tool <a href="../../n64man/tool/dlprint.htm">dlprint</a> which can print <a href="../../keywords/index/data/graphics.htm#display list" target="keywords">display lists</a> in a human readable form.) Microcode designed to use this method has the .dram.o suffix appended to its name. </p>
+
+<p>Tasks using the .dram microcode need a pointer to a buffer in the output_buff field of the task structure, and a size in the output_buff_size. Because RSP commands usually expand when converted into RDP commands, this buffer needs to be larger than the size of the RSP display list. </p>
+
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+</body> </html>

@@ -1,0 +1,140 @@
+<html>
+<head>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<!--
+Editors Notes:
+  PWC- updated formatting
+  MAP added links, updated format
+  -->
+<title>uhWriteRamrom</title>
+</head>
+<body bgcolor="#FFFFFF">
+<body>
+<font style="font-size: 12pt"><b>uhWriteRamrom</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p>uhOpenGame, uhCloseGame<br>
+uhReadGame, uhWriteGame<br>
+uhReadRamrom, uhWriteRamrom</p>
+
+<p><i>Transfers data from the host to the game and vice versa</i></p>
+
+<h3>Syntax</h3>
+
+<p>#include &lt;ultrahost.h&gt;     /* <A HREF="../../header/ultrahost.htm">ultrahost.h</A> */<br>
+
+int uhOpenGame(const char *device);</p>
+
+<p>int uhReadGame(int fd, void *addr, int nbytes);<br>
+int uhWriteGame(int fd, void *addr, int nbytes);</p>
+
+<p>int uhReadRamrom(int fd,void *ramrom_addr,void *local_addr,int nbytes);<br>
+int uhWriteRamrom(int fd,void *ramrom_addr,void *local_addr,int 
+nbytes);</p>
+
+<p>int uhCloseGame(int fd);</p>
+
+<p>* For information on PARTNER functions, see uhPatnerCmd.</p>
+
+<h3>Return Value</h3>
+
+<p><A HREF="uhOpenGame.htm">uhOpenGame</A>
+</p>
+
+<p>On success, uhOpenGame returns a valid file descriptor. Otherwise, it returns -1 and sets errno to indicate the error.</p>
+
+<p><A HREF="uhReadGame.htm">uhReadGame</A></p>
+
+<p>It returns the number of bytes the function successfully read.</p>
+
+<p><A HREF="uhWriteGame.htm">uhWriteGame</A></p>
+
+<p>On success, it returns the number of bytes the function successfully wrote. Otherwise, it returns -1 and sets errno to indicate the error.</p>
+
+<p><A HREF="uhReadRamrom.htm">uhReadRamrom</A></p>
+
+<p>On success, it returns zero. Otherwise, it returns -1 and sets errno to indicate the error.</p>
+
+<p><strong>uhWriteRamrom</strong></p>
+
+<p>On success, it returns zero. Otherwise, it returns -1 and sets errno to indicate the error.</p>
+
+<p><a href="uhCloseGame.htm">uhCloseGame</a></p>
+
+<p>On success, it returns zero. Otherwise, it returns -1 and sets errno to indicate the error.</p>
+
+
+<h3>Description</h3>
+
+<p>The host-to-target IO routines allow a host application to set up a communications channel for the transfer of raw data between the host and the game. They work in concert with OS routines on the game side. (For information on other routines called from the game, please see <A HREF="../os/osReadHost.htm">osReadHost</A>.)</p>
+
+<p>The uhOpenGame routine performs initialization that allows communication events to be received by the specified device(&quot;/dev/u64_data&quot;,&quot;PARTNER-N64&quot;). It returns a handler that enables the device to be operated. If the device is successfully opened, the handler returned by uhOpenGame is passed to uhReadGame, uhWriteGame, uhReadRamrom, uhWriteRamrom, and  uhCloseGame</p>
+
+<p>The uhReadGame routine attempts to read nbytes of data from the RDRAM on game side and copy it to the memory region beginning at addr. The uhWriteGame routine sends  nbytes of data from the host beginning at addr to the osReadHost function on game side. Please make sure to match the number of bytes to be transferred between the pairing functions that include osReadHost and uhWriteGame, and osWriteHost and uhReadGame for accurate synchronization.</p>
+
+<p>When the procedures for both functions are called, the corresponding instructions on game side will be executed, and the originating process will be blocked until the transfer ends. </p>
+
+<p>If the uhReadGame has been executed, the process on the host side will be blocked until the osWriteHost gets executed on the game side. Conversely, if the osReadHost has been executed on the game side, the thread on the game side will be blocked until the WriteGame gets executed on the host side.</p>
+
+<p>The uhReadRamrom routine attempts to copy nbytes of data from the 64 cartridge ROM emulation memory (it's called ramrom memory on development board), beginning at ramrom_add to local_addr on the host side.</p>
+
+<p>uhWriteRamrom routine attempts to copy nbytes of data from local_addr on the host side to ramrom_addr.</p>
+
+<p>The uhCloseGame procedure can be used if desired to close the given file descriptor.</p>
+
+<p>These routines are provided by the NINTENDO 64 host communication library (e.g., libultrahost.a). Using them requires a makefile entry that links these libraries (e.g.,-lultrahost). </p>
+
+<p>When using PARTNER, PARTNER must have been started when the host application is executed.</p>
+
+<h3>Example</h3>
+
+<p>The following is an example of using uh functions for the development cassette.<br>
+(An example of their use with PARTNER is in <A HREF="uhPartnerCmd.htm">uhPartnerCmd</A>)</p>
+
+<pre>        main(int argc, char **argv) /* Host side code */
+          {
+                  pid_t pid;
+                  int fd, status;
+                  if ((fd = uhOpenGame(&quot;/dev/u64_data&quot;)) == -1) {
+                          perror(&quot;uhOpenGame&quot;);
+                          return(-1);
+                  }
+                  if ((pid = fork()) == -1) {
+                          perror(&quot;fork&quot;);
+                          return(-1);
+                  } else if (pid == 0) {
+                          (void)execl(&quot;/usr/sbin/gload&quot;, &quot;/usr/sbin/gload&quot;, 0);
+                          fprintf(stderr, &quot;host: execl(\&quot;gload\&quot;) failed\n&quot;);
+                          return(-1);
+                  }
+                  if (uhReadGame(fd, hostBuffer, 4) == -1) {
+                          fprintf(stderr, &quot;uhReadGame %s\n&quot;, sys_errlist[errno]);
+                          return(1);
+                  }
+                  if (uhCloseGame(fd) != 0) {
+                          perror(&quot;uhCloseGame&quot;);
+                          return(-1);
+                  }
+                  if (waitpid(pid, &amp;status, WUNTRACED) == -1) {
+                          perror(&quot;waitpid&quot;);
+                          return(-1);
+                  }
+          }
+
+        mainproc(void *arg) /* Game side code */
+          {
+                  osWriteHost(gameBuffer, 4);
+                  osExit();
+          }</pre>
+
+
+<h3>See Also</h3>
+
+<p><a href="../os/osReadHost.htm">osReadHost</a>,  <a href="../os/osWriteHost.htm">osWriteHost</a>, 
+<a href="uhPartnerCmd.htm">uhPartnerCmd</a>, and <a href="uhGLoad.htm">uhGLoad</a></p>
+<H3>Revision History</H3>
+<P>
+1999/04/30 Changed format
+</P>
+
+</body>
+</html>

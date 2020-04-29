@@ -1,0 +1,142 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD><link rel=stylesheet type="text/css" href="gif/style.css">
+<TITLE>Microcodes</TITLE>
+</HEAD>
+
+
+<BODY>
+
+<A name="index"></A>
+
+<IMG src="../../gif/n64_logo2.gif" height="21" width="136">
+<h3>
+<FONT color="#FF8000">Q&A</FONT>- Microcode</h3>
+
+<P>
+<TABLE border="0">
+  <TR>
+    <TD valign="top" width="50"><A href="#01"><b>QA1</b></A></TD>
+    <TD>What is a suitable FIFO buffer size?</TD></TR>
+  <TR>
+    <TD valign="top" width="50"><A href="#02"><b>QA2</b></A></TD>
+    <TD>What happened to the Z-sort microcode?</TD></TR>
+  <TR>
+    <TD valign="top" width="50"><A href="#03"><b>QA3</b></A></TD>
+    <TD>Which microcodes are not supported?</TD></TR>
+  <TR>
+    <TD valign="top" width="50"><A href="#04"><b>QA4</b></A></TD>
+    <TD>How do I use the JPEG microcode?</TD></TR>
+  <TR>
+    <TD valign="top" width="50"><A href="#05"><b>QA5</b></A></TD>
+    <TD>My microcode rendering processing is hanging up...</TD></TR>
+</TABLE>
+
+<HR>
+<P>
+<A name="01"><FONT  color="#FF0000"><b>Q1</b></FONT></A>
+<b> What is a suitable FIFO buffer size for the FIFO microcode?
+</b>
+ 
+<P>
+<FONT   color="#008000"><b>A1</b></FONT>  The larger the size, the less time is wasted between SP and DP, making it possible to increase the overall speed of the RCP. However, the speed stops changing past a certain size.  Since the suitable size differs depending on the application, it must be determined while viewing the balance between processing time in the RSP and idle RAM space.  Depending on the circumstances, sometimes 128KB are taken, but there are also times when 10KB is enough. The minimum required size is 0x300 bytes for F3DEX series, and 0x800 bytes for S2DEX.  In addition, around 100Kbytes are reserved for Mario. 
+ 
+<P align="right">
+<A href="ucode.htm#index">top</A>
+</P>
+<HR>
+<P>
+<A name="02"><FONT   color="#FF0000"><b>Q2</b></FONT></A>
+<b> What is the current status of the Z-sort microcode?</b>
+</P>
+<P>
+<FONT   color="#008000"><b>A2</b></FONT>  Its release has been announced, and it is only a matter of distributing the Z-sort Microcode. However, the Z-sort microcode libraries are still not completed.  Consequently, it currently has not been officially released. 
+<P>
+An official release date for the Z-sort microcode has not yet been determined.  There are several reasons for this, including the following: 
+ 
+<OL>
+  <LI>Its incorporation into games is not easy because it is not compatible with F3D GBI's
+  <LI>Preprocessing in the CPU is required to run the microcode
+  <LI>Minimum scheduling samples for the RSP and CPU (including audio processing) to make them usable in games have not been established
+  <LI>There are no tools for outputting with a Z-sort structure
+</OL>
+<P>
+The latest version, Version 0.34, has been uploaded to NTSC-ONLINE as a beta Version for evaluation. 
+</P>
+<P>
+<b>Precautions</b>  
+<P>Using this microcode and its libraries may or may not have an effect on games in which the RDP currently is a bottleneck. However, please be aware that it has no effect on those games in which the CPU and/or RSP are a bottleneck.  In addition, even though there is an effect on RDP processing, it cannot be guaranteed to improve the overall performance of game applications.  Please evaluate this microcode keeping these facts in mind.
+ 
+<P>
+Since the current version 0.34 is a beta test version, please understand that the specifications are subject to substantial change.  While the majority of this microcode is beyond the scope of support, it would be helpful if you would contact us, attn: NTSC, regarding bugs, etc. 
+</P>
+<P align="right">
+<A href="ucode.htm#index">top</A>
+</P>
+<HR>
+<P>
+<A name="03">
+<FONT color="#FF0000"><b>Q3</b></FONT></A>
+<b>Which microcodes are currently supported?</b>
+ 
+<P>
+<FONT  color="#008000"><b>A3</b></FONT> As of February 1, 1999
+</P>
+<P>
+<b>Officially Supported Microcodes</b>
+</P>
+<UL>
+  <LI>F3DEX(2), L3DEX(2) microcodes
+  <LI>S2DEX(2) microcode
+  <LI>aspMain, n_aspMain microcodes
+  <LI>Fast3D and Line3D microcodes are within the scope of support for the purposes of "bug fixes," but it is recommended that you use F3DEX2. 
+</UL>
+<P>
+<b>Not Supported</b>
+<UL>
+  <LI>Turbo3D microcode
+  <LI>Sprite2D microcode
+  <LI>Fast3D and Line3D microcodes are within the scope of support for the purposes of "bug fixes," but it is recommended that you use F3DEX or L3DEX microcodes or S2DEX2. 
+</UL>
+<P>
+<b>Supported as a beta test version</b>
+<br>Currently accepting test reports, bugs and requests:
+<UL>
+  <LI>JPEG microcode
+  <LI>Z-sort microcode
+</UL>
+<P align="right">
+<A href="ucode.htm#index"><top</A>
+</P>
+<HR>
+<P>
+<A name="04"><FONT  color="#FF0000"><b>Q4</b></FONT></A>
+<b> What's happening with the "JPEG microcode" mentioned in the Allman Manual?</b>
+</P>
+<P>
+<FONT  color="#008000"><b>A4</b></FONT> The JPEG microcode is currently in the beta test version.  You can use the SGI version which has been uploaded to NTSC-ONLINE.
+
+<P align="right">
+<A href="ucode.htm#index">top</A>
+</P>
+<HR>
+<P>
+<A name="05"><FONT  color="#FF0000"><b>Q5</b></FONT></A>
+<b> By slightly changing the program, rendering processing by the microcode will either work fine or may hang up. </b>
+</P>
+<P>
+<FONT  color="#008000"><b>A5</b></FONT>     There are two causes for a program stopping while waiting for microcode processing to end. 
+<ol>
+<li>There may be a problem with the contents of the display list which has been created, which may cause the RCP to crash. 
+<P>-Or-
+<P>
+<li>The contents of the display list have been changed before rendering processing by the RSP has been completed, causing an illegal display list to be processed. 
+</P></ol>
+<P>
+Write the program so that the vertex data and matrix data, etc. used by the display list are held until the RSP finishes its processing. 
+<P align="right">
+<A href="ucode.htm#index">top</A>
+</P>
+<HR>
+</BODY>
+</HTML>

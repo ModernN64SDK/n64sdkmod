@@ -1,0 +1,59 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<link rel=stylesheet type="text/css" HREF="../N64man.css">
+<!--
+Editors Notes:
+  JLR made formating edits for 4.1.
+  PWC- updated formatting
+  MAP- added links, updated format
+-->
+
+<title>alSeq</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<h1>alSeq </h1>
+
+<p><i>
+Nintendo 64 MIDI sequence routines</i>
+
+<p><b>Syntax</b></p>
+<p>
+<blockquote>
+    <pre>#include &lt;libaudio.h&gt;     /* <a href="../../header/libaudio.htm">libaudio.h</a> */
+void alSeqNew(ALSeq *seq, u8 *ptr, s32 len);
+void alSeqNextEvent(ALSeq *seq, ALEvent *event);
+void alSeqNewMarker(ALSeq *seq, ALSeqMarker *m, u32 ticks);
+f32 alSeqTicksToSec(ALSeq *seq, s32 ticks, u32 tempo);
+u32 alSeqSecToTicks(ALSeq *seq, f32 sec, u32 tempo);</pre>
+</blockquote>
+</p>
+<p><b>Description</b></p>
+
+<p>The Nintendo 64 Audio Library supports the playback of musical sequences that conform to the Standard MIDI Files 1.0 specification for Type 0 MIDI files. The Type 0 MIDI file format contains a time-ordered MIDI event list that describes music and is described in detail in the "Standard MIDI Files 1.0" specification published by the MIDI manufacturers association.</p>
+
+<p>To use a MIDI sequence in your game, you must first call the <a href="alSeqpNew.htm">alSeqNew</a> function to initialize a runtime ALSeq structure to represent the MIDI sequence.</p>
+
+<p>After initializing the sequence structure, you can perform sequence operations.</p>
+
+<p>The alSeqNextEvent call returns the next MIDI event from the sequencer's current location. Usually, you will not call <a href="alSeqNextEvent.htm">alSeqNextEvent</a> directly because it is used by the Sequence Player in sequence playback.</p>
+
+<p>The alSeqNewMarker call creates a sequence position marker that can be used in conjunction with the Sequence Player to set playback time and loop points. </p>
+
+<p>The two functions <a href="alSeqTicksToSec.htm">alSeqTicksToSec</a> and <a href="alSeqSecToTicks.htm">alSeqSecToTicks</a> are convenient to use to convert between time formats. The "ticks" format is in units of time relative to the MIDI clock at the resolution specified in the MIDI sequence header.</p>
+
+<p><b>See Also</b></p>
+
+<p><a href="alSeqNew.htm">alSeqNew</a>, <a
+href="alSeqNextEvent.htm">alSeqNextEvent</a>, <a
+href="alCSeqNewMarker.htm">alCSeqNewMarker</a>, <a
+href="alSeqTicksToSec.htm">alSeqTicksToSec</a>, and <a
+href="alSeqSecToTicks.htm">alSeqSecToTicks</a></p>
+<h3>Revision History</h3>
+<p>1999/04/30  Changed Format</p>
+<br><br>
+
+</body>
+</html>

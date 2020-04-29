@@ -1,0 +1,86 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 30 - Video Interface (VI)</title>
+<!-- Editor: Paula W
+      Notes: Converted from Word format, performed spell check. 
+             MAP- 10/26/99 edited content, updated format-->
+</head>
+
+<H1>30.4 Other Precautions</H1>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H2><A name="01"></A>30.4.1 Differences in the Timing for Setting and Acquiring the VI Display Mode</H2>
+<P>
+There are functions, such as <tt>osViSetMode</tt>, etc., for setting the VI display mode, but this is enabled at the next vertical retrace interrupt.  This can be said to be generally true for all osViSet-type functions. 
+However, when <tt>osViSetMode</tt> or <tt>osViSetSpecialFeature</tt> has been executed immediately before <tt>osViGetCurrentMode</tt> or <tt>osViGetStatus</tt>, which are osViGet-type functions for acquiring the current status, the expected value may not be returned.  This is dependent on the timing.  If you wish to get a value that has been set with an osViSet-type function, wait for the VI vertical retrace.  
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H2><A name="02"></A>30.4.2 Safe Frame</H2>
+<P>
+When N64 is used at low-resolution, it is 320x240 dots, but it is designed so that the effective display area of the screen becomes larger with an actual television video signal (overscan format).  Due to this fact, you must pay attention to the position in which important data are displayed as the game progresses.
+</P>
+<P> 
+The display area that can be displayed without any problems on most television screens is called the "safe frame."  The safe frame is expressed as the number of dots from the top, bottom, left, and right edges of the display area. 
+</P>
+<P>
+The area outside of the safe frame may be visible depending on the model and capacities of the television.  For this reason, rather than avoiding drawing in this area, simply be sure to render screens so that important data are not drawn there.  It is impossible to define an absolutely safe frame, but some examples that have been used in our software are noted below.  Game development can be done while referencing these.
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H3><A name="02-01"></A>30.4.2.1 Safe Frame Used in Mario 64</H3>
+<P>
+<table border=0 width=430>
+<tr>
+  <td>(Horizontal)</td>
+  <td>X-axis	22 dots inside the left and right edges</td>
+</tr>
+<tr>
+  <td>(Vertical)</td>
+  <td>Y-axis	16 dots inside the top and bottom edges</td>
+</tr>
+</table>
+<dl>
+  <dt><a name="Image124"><strong>Figure 30-2 Safe frame used in Mario 64</strong></a>
+  <dd><img alt="[Figure 30-2]" src="Image124.gif">
+</dl>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H3><A name="02-02"></A>30.4.2.2 Safe Frame Used in Wave Race 64</H3>
+<P>
+<table border=0 width=430>
+<tr>
+  <td>(Horizontal)</td>
+  <td>X-axis	24 dots inside the left and right edges</td>
+</tr>
+<tr>
+  <td>(Vertical)</td>
+  <td>Y-axis	21 dots inside the top edge and 23 dots inside the bottom edge</td>
+</tr>
+</table>
+<dl>
+  <dt><a name="Image125"><strong>Figure 30-3  Safe frame used in Wave Race 64</strong></a>
+  <dd><img alt="[Figure 30-3]" src="Image125.gif">
+</dl>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H2><A name="03"></A>30.4.3 VI Processing with PreNMI Events</H2>
+<P>
+There are cases in which depending on how the video interface is set up, a game will not properly restart when it is reset.  In order to avoid this, processing such as setting <tt>osViSetYScale</tt> to 1 when a PreNMI is received, must be performed.  See <a href="../pro07/07-10.htm">Section 7.10 "Non-maskable Interrupts and PreNMI"</a> and <a href="../../caution/caution/index6.htm">Programming Cautions, Section 6 "Reset(NMI)"</a> for details.
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+</BODY>
+</HTML>

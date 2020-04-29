@@ -1,0 +1,71 @@
+<HTML>
+<HEAD>
+<TITLE>bsearch</TITLE>
+<link rel=stylesheet type="text/css" href="../../n64man/n64man.css">
+<!-- Editor's Notes: 9/8/1999 Ron Daring -->
+</HEAD>
+
+<BODY bgcolor="#FFFFFF">
+
+
+<P>
+<h1>Standard C Functions</h1>
+
+<HR>
+<P>
+<h2>bsearch</h2>
+<p>
+<HR>
+<P>
+<b>Syntax</b>
+<font face="courier" size="2">
+<pre>
+#include &lt;stdlib.h&gt;
+void *bsearch(const void *key, const void *base, size_t num, size_t width, 
+              int (*compare)(const void *, const void *));</pre>
+</font>
+
+<b>Arguments</b>
+<font face="courier" size="2">
+<pre>
+<B>key</B>        key to be found
+<B>base</B>       pointer to the array to be found
+<B>num</B>        number of elements in the array to be found
+<B>width</B>      size of one element in the array (byte unit) to be found
+<B>compare</B>    pointer to the comparison function created by the user</pre>
+</font>
+
+<p><b>Return Value</b>
+<font face="courier" size="2">
+<pre>A pointer to the elements that were found, or NULL if nothing is found </pre>
+</font>
+
+<p><b>Description</b>
+
+<p>Using a binary search, it finds an element that matches the key argument in
+an array sorted in ascending order.  If the array is not in ascending order,
+the key can't be found. 
+
+<p>The <TT>compare</TT> argument points to the comparison function that you create
+in the following form:</p>
+
+<blockquote>
+<font face="courier" size="2">
+<pre>int compare(const void *elem1, const void *elem2);</pre>
+</font>
+</blockquote>
+
+<p>The value returned  by the comparison function is: </p>
+
+<blockquote>
+<font face="courier" size="2">
+<pre>
+less than zero    --> elem1 is less than elem2
+equal to zero     --> elem1 is equal to elem2
+greater than zero --> elem1 is greater than elem2</pre>
+</font>
+</blockquote>
+<p>
+<hr>
+</body>
+</html>

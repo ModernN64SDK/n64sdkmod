@@ -1,0 +1,102 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 13 - Texture Mapping</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. -->
+</head>
+
+<h1>13.9 Texture Loading</h1>
+
+<p>Loading a texture actually consists of several steps. Internally, the RDP treats loading a texture as if it were <a href="../../keywords/index/data/graphics.htm#rendering" target="keywords">rendering</a> a textured rectangle into TMEM.  To load a texture, you must describe the texture tile to be loaded, render (load) it into TMEM, and describe the tile to be rendered.   An important consequence of these steps is that you can load a texture in one way and render it in completely different way. </p>
+
+<p>For example, the <a href="../../keywords/index/data/graphics.htm#GBI" target="keywords">GBI</a> macro <a href="../../n64man/gdp/gDPLoadTextureTile.htm">gsDPLoadTextureTile</a> performs all the tile and load commands necessary to load a texture tile. The sequence of commands is shown below (macros shown without parameters):</p>
+
+<blockquote><pre>
+<a href="../../n64man/gdp/gDPSetTextureImage.htm">gsDPSetTextureImage</a>
+<a href="../../n64man/gdp/gDPSetTile.htm">gsDPSetTile</a>         /* G_TX_LOADTILE */
+<a href="../../n64man/gdp/gDPLoadSync.htm">gsDPLoadSync</a>
+gsDPLoadTile         /* G_TX_LOADTILE */
+<a href="../../n64man/gdp/gDPSetTile.htm">gsDPSetTile</a>         /* G_TX_RENDERTILE */
+<a href="../../n64man/gdp/gDPSetTileSize.htm">gsDPSetTileSize</a>     /* G_TX_RENDERTILE */
+</pre></blockquote>
+
+<p>This sequence of commands loads a texture tile using the tile descriptor G_TX_LOADTILE (tile 7) and renders using G_TX_RENDERTILE (tile 0).  Since the tile descriptor used to load the tile is different from the one used to render the texture, there is no possibility of tile usage conflict, so a TileSync command is unnecessary.  The TileSync command is used in situations where you may want to use the same tile for both loading and rendering a texture.   It basically inserts a bubble in the RDP pipeline to guarantee that the load tile descriptor isn't changed by the render tile before the load is actually done. </p>
+
+<p>The <a href="../../n64man/gdp/gDPSetTextureImage.htm">gsDPSetTextureImage</a> command sets a pointer to the location of the image.  Then the <a href="../../n64man/gdp/gDPSetTile.htm">gsDPSetTile</a> is used to indicate where in TMEM you want to place the image, how wide each line is, and the format and size of the texture.  A <a href="../../n64man/gdp/gDPLoadSync.htm">gsDPLoadSync</a> command makes sure that any previous load is completely finished before this texture is loaded.  Then the actual gsDPLoadTile command is issued, which loads the texture into TMEM.  The final <a href="../../n64man/gdp/gDPSetTile.htm">gsDPSetTile</a> and <a href="../../n64man/gdp/gDPSetTileSize.htm">gsDPSetTileSize</a> are used to set the tile descriptors correctly for the tile used when rendering. </p>
+
+<p>The textures are stored <A target="keywords" HREF="../../keywords/index/data/system.htm#big-endian, little-endian">big-endian</a> in memory and should obey the following format for a 64-bit word in memory.</p>
+
+<dl>
+  <dt><a name="f13-18"><strong>Figure 13-18 <a href="../../keywords/index/data/graphics.htm#texel" target="keywords">Texel</a> Formats in DRAM</strong></a>
+  <dd><img alt="[Figure 13-18]" src="gif/f13-18.gif">
+</dl>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="01"><h2>13.9.1 Load Tile </h2></a>
+
+<p>The LoadTile command allows a programmer to load an arbitrary rectangular region of a larger texture in DRAM into TMEM. The following examples assume a 16-bit texel type. </p>
+
+<dl>
+  <dt><a name="f13-19"><strong>Figure 13-19 Example of LoadTile Command Parameters </strong></a>
+  <dd><img alt="[Figure 13-19]" src="gif/f13-19.gif">
+</dl>
+
+<p>When textures are loaded as a tile, it means that (at least) each line of the texture is a separate DRAM transfer.  Each line's transfer may be broken into multiple smaller transfers, depending on how big it is and whether it crosses DRAM page boundaries. Since the DRAMs are block transfer type devices, there is a fixed amount of overhead for each transfer, so long transfers are desirable. For this reason, you should try to load your texture using the longest dimension of the tile.  Also, each line of a tile is <a href="../../keywords/index/data/graphics.htm#padding" target="keywords">padded</a> automatically to TMEM word (64-bit) boundaries.   If your tile line size is not a multiple of 64-bits, some TMEM space is being wasted.  Also when tiling a larger texture image into multiple tiles, an extra row and column are usually loaded to allow proper filtering of the texels along the border of the tile (to avoid seams). </p>
+
+<p><strong>Note:</strong>  The RDP commands LoadTile, LoadBlock, and LoadTLUT set the tile parameters SL,TL,SH,TH when they are executed. After the load command, it may be necessary to use the SetTileSize command to restore these parameters if you want parameters other than were used in the Load command. In the gbi.h texture load macros, the
+SetTileSize command is always used following a Load command. </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="02"><h2>13.9.2 Wrapping a Large Texture Using Load Tile </h2></a>
+
+<p>It is possible to effectively "<a href="../../keywords/index/data/graphics.htm#wrap" target="keywords">wrap</a>" large textures (textures too large to fit entirely in TMEM) by careful loading using the LoadTile command. There are (at least two) methods for doing this. Figure  13-2-0 shows a large texture in memory. We want to load a tile as if the texture had been wrapped in the S direction, and the tile straddles the wrap region. </p>
+
+<dl>
+  <dt><a name="f13-20"><strong>Figure 13-20 Wrapping a Large Texture Using Two Tiles</strong></a>
+  <dd><img alt="[Figure 13-20 part1]" src="gif/f13-20.gif">
+</dl>
+<dl>
+  <dt><a name="f13-20-00"></a>
+  <dd><img alt="[Figure 13-20 part2]" src="gif/f13-20-00.gif">
+</dl>
+
+<p>One way to effectively load the wrapped tile is to actually load two interleaved tiles. To interleave two tiles in TMEM, load tile 1 but set the tile's Line parameter to n+m TMEM words, where n is the number of words in a line of Tile 1 and m is the number of words in tile 2. SL,SH,TL,TH should be set to load Tile 1.  Now load Tile 2, setting the tile's TMEM Address to n. Also set the SL,TL,SH,TH for Tile 2. After the loads, reset the render tile's TMEM Address to 0. Set SL,SH,TL,SH to be the total composite tile size.  Note that only Tile 1's width must be a multiple of TMEM words. Tile 2's width can be any number of texels and the remainder of the last TMEM word for each line will simply be undefined. </p>
+
+<p>Another, possibly more straightforward method, relies on the fact that at the end of each line of the large texture, the addresses will naturally roll into the next line. </p>
+
+<dl>
+  <dt><a name="f13-21"><strong>Figure 13-21 Wrapping a Large Texture Using One Tile </strong></a>
+  <dd><img alt="[Figure 13-21]" src="gif/f13-21.gif">
+</dl>
+
+<p>As shown in the figure above(13-20), you can load a single tile starting at address 60 minus m words. The tile's Line parameter should equal m+n.  Set the TMEM Address parameter to 0 during the load. Make sure to load T+1 lines.  After the load, set TMEM Address to m, and set the SL,SH,TL,TH to the actual tile size.  This method wastes m words at the beginning of TMEM and n words at the end of TMEM but has the advantage of using only one load. </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="03"><h2>13.9.3 Load Block</h2></a>
+
+<p>A more memory-bandwidth efficient way to load textures is the LoadBlock command. This command essentially treats each texture as a single long line of data. This allows the MI to transfer the maximum amount of data for each transfer. </p>
+
+<dl>
+  <dt><a name="f13-22"><strong>Figure 13-22  Example of LoadBlock Command Parameters</strong></a>
+  <dd><img alt="[Figure 13-22]" src="gif/f13-22.gif">
+</dl>
+
+<p>The LoadBlock command uses the parameter dxt to indicate when it should start the next line. Dxt is basically the reciprocal of the number of words (64-bits) in a line.  The texture coordinate unit increments a counter by dxt for each word transferred to TMEM.  When this counter rolls over into the next integer value, the line count is incremented.  The line count is important because the data in odd lines is swapped to allow interleaved access when rendering.   This works great when dxt is a power of two.  However, if dxt is not a power of two, the line counter can be corrupted due to  accumulated error. Appendix A contains a table that indicates how many lines for a certain size can be in a load block for a tile before the line count is corrupted. </p>
+
+<p>It is possible to load a set of texture tiles using a single LoadBlock command (<a href="../../keywords/index/data/graphics.htm#MIP map" target="keywords">MIP maps</a>, for example). However, if the tiles have different widths, the single dxt parameter is not enough to do proper interleaving. In these cases, the data must be pre-interleaved and the dxt parameter should be set to zero. </p>
+
+<p>The LoadTlut command is an efficient way of loading texture look-up tables into the high half of TMEM. System memory is conserved using this command as each 16-bit color value is quadrupled as it is read in and written to the TMEM. In other words, it isn't necessary to store four times the data in memory.  The load hardware will expand it out into a 64-bit word during the load. This saves system memory as well as memory <A target="keywords" HREF="../../keywords/index/data/system.htm#bandwidth">bandwidth</A>.  Two types of <a href="../../keywords/index/data/graphics.htm#TLUT" target="keywords">TLUT</a>s are supported: 16-bit RGBA and 16-bit IA.  TLUT depth can range from 16 words (4-bit <a href="../../keywords/index/data/graphics.htm#CI" target="keywords">CI</a>) to 256 words (8-bit CI). LoadTile or LoadBlock can still be used for loading the TLUT, however the data will have to be quadrupled in system memory first. </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="04"><h2>13.9.4 Loading Notes </h2></a>
+
+<p>4-bit types should be loaded as 16-bit types and then rendered as 4-bit types. This does not restrict 4-bit types in any way and still allows for rows with an odd number of 4-bit texels. </p>
+
+<p>When using LoadBlock, no more than 2048 texels can be loaded at once. So for example if you wanted to load 4K 8-bit texels, load them as 2K 16-bit texels and then render them as 8-bit texels. If you're using 16-bit or 32-bit there is no need for a special case since TMEM cannot hold more than 2K 16-bit or 1K 32-bit texels. </p>
+
+<p>To improve performance by minimizing the number of syncs required, the user can interleave the tile loads and renders with different tile indices. For example, load using tile 7 while rendering using tile 0. </p>
+
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+</body> </html>

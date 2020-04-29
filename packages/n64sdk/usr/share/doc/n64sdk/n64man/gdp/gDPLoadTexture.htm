@@ -1,0 +1,174 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.
+<title>gDPLoadTexture</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<h1>gDPLoadTexture</h1>
+
+<p><font size=4><b>Function</b></font></p>
+
+<p>gDPLoadTexture, gDPLoadTextureBlock,
+gsDPLoadTextureBlock, gDPLoadTextureBlock_4b,
+gsDPLoadTextureBlock_4b, gDPLoadTextureTile, gsDPLoadTextureTile,
+gDPLoadTextureTile_4b, gsDPLoadTextureTile_4b, gDPLoadBlock,
+gsDPLoadBlock</p>
+
+<p><i>Loads a contiguous texture block or subtitles of a large texture image onto RDP texture memory</i></p>
+
+<p><font size=4><b>Syntax</b></font></p>
+<p>
+<blockquote>
+    <pre>#include &quot;gbi.h&quot;
+gDPLoadTextureBlock(Gfx *gdl, 
+        unsigned int timg,
+        unsigned int fmt, 
+        unsigned int siz, 
+        unsigned int width, height, 
+        unsigned int pal, 
+        unsigned int cms, cmt, 
+        unsigned int masks, maskt, 
+        unsigned int shifts, shiftt )
+gDPLoadTextureBlock_4b(Gfx *gdl, 
+        unsigned int timg, 
+        unsigned int fmt, 
+        unsigned int width, height, 
+        unsigned int pal, 
+        unsigned int cms, cmt, 
+        unsigned int masks, maskt, 
+        unsigned int shifts, shiftt )
+gDPLoadTextureTile(Gfx *gdl,
+        unsigned int timg, 
+        unsigned int fmt, 
+        unsigned int siz, 
+        unsigned int width, height, 
+        unsigned int uls, ult, lrs, lrt, 
+        unsigned int pal, 
+        unsigned int cms, cmt, 
+        unsigned int masks, maskt, 
+        unsigned int shifts, shiftt )
+gDPLoadTextureTile_4b(Gfx *gdl, 
+        unsigned int timg, 
+        unsigned int fmt, 
+        unsigned int width, height, 
+        unsigned int uls, ult, lrs, lrt, 
+        unsigned int pal, 
+        unsigned int cms, cmt, 
+        unsigned int masks, maskt, 
+        unsigned int shifts, shiftt )
+gDPLoadBlock(Gfx *gdl, 
+        unsigned int tile, 
+        insigned int uls, 
+        insigned int ult, 
+        insigned int lrs, 
+        insigned int dxt )</pre>
+</blockquote>
+</p>
+<p><font size=4><b>Arguments</b></font></p>
+<p>
+<dl>
+    <dt><strong>*gdl</strong></dt>
+    <dd>Pointer to graphics display <br>
+        <br>
+        </dd>
+    <dt><strong>timg</strong></dt>
+    <dd>Position of a texture image in DRAM
+        It must be 64 bit border.<br>
+        <br>
+        </dd>
+    <dt><strong>fmt</strong></dt>
+    <dd>Texture image format. G_IM_FMT_RGBA,
+        G_IM_FMT_YUV, G_IM_FMT_CI, G_IM_FMT_IA, G_IM_FMT_I<br>
+        <br>
+        </dd>
+    <dt><strong>siz</strong></dt>
+    <dd>Texel size. G_IM_SIZ_4b, G_IM_SIZ_8b,
+        G_IM_SIZ_16b, G_IM_SIZ_32b<br>
+        <br>
+        </dd>
+    <dt><strong>width, height</strong></dt>
+    <dd>Width and height of a texture image (texel).
+        Width and height of a (large) original texture image
+	 in DRAM needs to be specified to load texture tile.<br>
+        <br>
+        </dd>
+    <dt><strong>uls, ult, lrs, lrt</strong></dt>
+    <dd>s and t coordinates on the upper left and lower right corner of texture tile in source image.<br>
+        <br>
+        </dd>
+    <dt><strong>pal</strong></dt>
+    <dd>Indicates which texture look-up table palette the index texture should use.<br>
+        <br>
+        </dd>
+    <dt><strong>cms, cmt</strong></dt>
+    <dd>s and t-axis clamp, wrap, and mirror flags. G_TX_NOMIRROR, G_TX_WRAP , G_TX_MIRROR, G_TX_CLAMP<br>
+        <br>
+        </dd>
+    <dt><strong>masks, maskt</strong></dt>
+    <dd>s and t-axis mask. G_TX_NOMASK
+        Value that specifies the wordwrap location.<br>
+        <br>
+        </dd>
+    <dt><strong>shifts, shiftt</strong></dt>
+    <dd>s and t coordinate shift values.
+        Detailed texture for low-level use. G_TX_NOLOD is used when not shifted.<br>
+        <br>
+        </dd>
+    <dt><strong>tile</strong></dt>
+    <dd>Tile number for g*DPLoadBlock<br>
+        <br>
+        </dd>
+    <dt><strong>dxt</strong></dt>
+    <dd>Amount of change of t value per scan line for g*DPLoadBlock<br>
+        <br>
+        </dd>
+</dl>
+</p>
+<p><font size=4><b>Description</b></font></p>
+
+<p>These commands load textures to on-tip texture memory(TMEM) from DRAM. gDPLoadBlock* command loads a contiguous texture image onto memory, which is the most efficient loading mechanism. DRAM transfer would be most efficient when handling large blocks. gDPLoadTile* loads the subtitles of a large texture image from memory.
+</p>
+
+<p>When calculating the size of GBi display list to obtain conditions of memory, these commands consist of 64-bit commands.
+</p>
+
+<p>
+There are several numbers of texture image formats to choose from, depending upon what kind of texture to use, or compression method to use. 4/8/16/32 bits in texel size are supported. For index, 1/2/4 bit component textures are supported. I stands for intensity texture. IA, RGBA, and CI stand for intensity alpha texture, true color texture, and color index texture, respectively.</p>
+
+<p>Macros that have a suffix_b need to be used when loading a texture of 4 bits regardless of the type. The size is not included in the parameter list, hence it is hidden. 4 bit texture must be byte-border aligned.</p>
+
+<p>Width and height refer to the texel space. It indicates the size of source texture image on DRAM.</p>
+
+<p>ul (s,t) and lr (s, t) coordinates are only be used to load tiled textures. In the texel space, these specify the corners of a subtitle that loads in TMEM.</p>
+
+<p>cms and cmt set clamp, mirror, and wrap flags for s and t axis. These flags are bitORed to specify the desired texture property. Mirror texture can used for a symmetrical texture. Clamp texture repeatedly operates texel edge color when sampling the exterior of a texture map. Wrap texture requests mask necessary for wrapping. The number n of masks and maskt indicates low n bits of s and t coordinates used to sample texture. Set 5 to masks and maskt to wrap at the edge when 32x32 texture is used.</p>
+
+<p>Shift values shift the texel coordinates, s and t, to left and right, enabling proper sampling between the low-level LOD map and detail texture. Several steps are necessary to create mip map texture. So, the shift values might not be used in these commands.</p>
+
+<p>Alternative formats to gDPLoadTextureBlock have been provided to support the maximum range for width and height. These formats end with &quot;S&quot; to indicate that the texture will swap in advance. (Therefore, odd lines of the texture will be wordwrapped.) For information on &quot;-S&quot; flag, see <a href="../tool/rgb2c.htm">rgb2c(1)</a>.</p>
+
+<p>The pixel addresses of four corners of a tile must be byte-aligned when loading a texture. However, when line width of a tile is not 64 bit-aligned, hardware will adjust the right side of each line automatically to 64-bit aligned in TMEM. (This is limited to LoadTextureTile command.)</p>
+
+<p>gDPLoadBlock() and gsDPLoadBlock() are low-level macros that the program normally doesn't use. These macros perform one-time transfer to load TMEM, and there are some restrictions. The maximum number of texels that these commands can load is 2048. It is necessary to load a texture of G_IM_SIZ_16b type to load all TMEM of 4K, and the commands calculate the appropriate texel size after loading. g*DPLoadTextureBlock() always does this by itself, however, if you use these low-level macros directly, the application needs to handle the tile operation.</p>
+
+<p>LoadBlock command itself does not do debugging. Data adjustment needed before loading blocks.
+</p>
+
+<p>The additional texture macros are defined in gbi.h; see gbi.h for details.</p>
+
+<p><font size=4><b>Note</b></font></p>
+
+<p>For how to use &quot;S&quot; format for these macros, please see the chapter on texture mapping in Appendix A of the N64 Programming Manual.</p>
+
+<p><font size=4><b>See Also</b></font></p>
+
+<p><a href="gDPLoadTLUT_pal16.htm">gDPLoadTLUT_pal16</a>, <a
+href="gDPLoadTLUT_pal256.htm">gDPLoadTLUT_pal256</a>, <a
+href="../gu/guLoadTextureBlockMipMap.htm">guLoadTextureBlockMipMap</a>, and 
+<a href="../tool/rgb2c.htm">rgb2c</a></p>
+</body>
+</html>

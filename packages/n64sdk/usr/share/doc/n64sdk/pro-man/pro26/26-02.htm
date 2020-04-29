@@ -1,0 +1,435 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 26 - SI Devices</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. 
+             MAP- 10/22/99 edited content, updated format-->
+</head>
+
+<H1>26.2 Standard N64 Controller</H1>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H2><A name="01"></A>26.2.1 What is the Standard Controller?</H2>
+<P>
+The standard N64 Controller, illustrated below, is a controller standard used by the N64 Control Deck. Please connect the Controller to the Controller Socket to use it.  This chapter addresses common questions asked by software developers concerning the standard N64 Controller.
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H2><A name="02"></A>26.2.2 Standard Controller Recognition</H2>
+<P>
+The Standard Controller is illustrated below with names for each button.
+</P>
+<P>
+
+</P>
+<P>
+<IMG src="gif/f26-02-00.gif">
+</P>
+<P>
+<IMG src="gif/f26-02-01.gif">
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H2><A name="03"></A>26.2.3 How to Build the Program for the Standard Controller</H2>
+<P>
+The chart below outlines the flow for a program used to handle the Standard Controller. An explanation of each step follows. 
+</P>
+<P>
+<IMG src="gif/f26-02-02.gif">
+</P>
+<P>
+
+</P>
+<P>
+Make the initial settings in order to use the serial interface (SI). Execute the <tt>osContInit()</tt> function. This need only be done once. With the Controller, there is no need to initialize the SI device itself. 
+</P>
+<P>
+Verify that the Standard Controller is plugged in. This is done by checking the status that is returned after execution of the <tt>osContInit()</tt> function. To be specific, you need to verify that the value of the "type" member variable of the OSContStatus structure, which is an argument of the <tt>osContInit()</tt> function, is equal to CONT_TYPE_NORMAL when the value of "type" is masked with CONT_TYPE_MASK. When the Standard Controller is connected, both the CONT_ABSOLUTE bit and the CONT_JOYPORT bit are set in "type." CONT_TYPE_NORMAL incorporates the bits for both CONT_ABSOLUTE and CONT_JOYPORT. 
+</P>
+<P>
+After the first two steps are performed, execute the <tt>osContStartReadData()</tt> function to begin reading the data from the Controller Pak. Executing this function starts the reading of data from the control stick and the buttons. 
+</P>
+<P>
+As the final step, return the data read from the control stick and the buttons of the
+     Controller to the structure used for storing the data. Execute the <tt>osContGetReadData()</tt>
+     function. This returns the data read from the Controller's control stick and the buttons
+     to the function's OSContPad structure argument. 
+</P>
+<P>
+By repeating these steps to read and get data, you can build a program which responds to the Controller in real time. 
+</P>
+<P>
+For a concrete example, see the sample program in <A href="#04-01">Section 26.2.4.1 "Obtain Data from the Controller"</A>.
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H2><A name="04"></A>26.2.4 Standard Controller Function Specifications</H2>
+<P>
+Following are descriptions of the the library functions used to handle the Standard Controller in an N64 program. 
+</P>
+<UL>
+  <LI>Start reading data from the Controller (<tt>osContStartReadData()</tt>)
+  <LI>Obtain data from the Controller (<tt>osContGetReadData()</tt>)
+</UL>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H3><A name="04-01"></A>26.2.4.1 Obtain data from the Controller</H3>
+<P>
+<B>Function</B>
+</P>
+<P>
+<tt>osContStartReadData, osContGetReadData</tt>
+</P>
+<p><i>Obtain Data from the Controller</i></p>
+<P>
+<B>Syntax</B>
+</P>
+<pre>
+#include &lt;ultra64.h&gt;
+s32 osContStartReadData(OSMesgQueue *mq);
+void osContGetReadData(OSContPad *pad);
+</pre>
+<P>
+<B>Description</B>
+</P>
+<P>
+The <tt>osContStartReadData</tt> function issues a read data command to obtain the current position of 3D stick and button settings from Controller. The <tt>osContGetReadData</tt> function returns these data to the location pointed to by the <b>pad</b> argument. You can obtain such information that A button of Controller is pressed down or that how much 3D stick is tilted. These two functions must be paired to use. 
+</P>
+<P>
+The message queue pointed to by the <b>mq</b> argument must be an initialized message queue associated with the OS_EVENT_SI event. Please see the <A href="../../n64man/os/osSetEventMesg.htm">osSetEventMesg()</A> function in the N64 Online Function Reference Manual, for details on how to create this association. 
+</P>
+<P>
+The <tt>osContStartReadData</tt> function is called only to issue read command, and the message for completed data reading is returned to the message queue mq. Therefore, the <tt>osContGetReadData</tt> function should be called to obtain data after the <tt>osContStartReadData</tt> function is called, and osRecvMesg receives a message indicating data reading is completed. The <tt>osContStartReadData</tt> function takes around 2 milliseconds to complete its data reading and for <tt>osRecvMesg</tt> to receive a final message. Other processes such as re-drawing the screen can be performed while you are waiting. 
+</P>
+<P>
+You must supply a block of memory large enough for MAXCONTROLLERS structures of type OSContStatus. <SUP><A href="#kome8">*8</A></SUP>. OSContPad structure is shown below.
+</P>
+<P>
+<A name="kome8"></A>*8 If the <tt>osContSetCh()</tt> function (please see <A href="26-01.htm#06-04">Sectopm 26.1.6.4 "Set the Number of SI Devices to be Accessed"</A>) sets the number of direct-type SI devices accessed at a value less than the MAXCONTROLLERS number, then the area secured can be smaller than the MAXCONTROLLERS number, provided more devices are not added later. 
+</P>
+<PRE>
+typedef struct {
+        u16     button;         /* Controller button data */
+        s8      stick_x;        /* Control stick's X coordinate position */
+        s8      stick_y;        /* Control stick's Y coordinate position */
+        u8      errno;          /* Error values returned from the Controller */
+} OSContPad;
+</PRE>
+<P>
+The Control Stick's coordinate positions stick_x and stick_y are signed characters with the range of -128 ~ 127. However, for the actual program we recommend using values within the ranges shown below: 
+</P>
+<UL>
+  <LI>Left/right X axis +/- 61
+  <LI>Up/down Y axis +/- 63
+  <LI>X axis incline +/- 45
+  <LI>Y axis incline +/- 47
+</UL>
+<P>
+(See <A href="#05">Section 26.2.5 "Programming Cautions"</A> (5) for more information.)
+</P>
+<P>
+button and the following static variables are ANDed to check which mouse button has been clicked. For instance, button is ANDed with START_BUTTON to check if the bit is ON in order to check if the start button has been clicked.
+</P>
+<BLOCKQUOTE>
+<pre>
+START_BUTTON is the start button
+A_BUTTON is the A Button
+B_BUTTON is the B Button
+U_CBUTTONS is the C Button Up
+D_CBUTTONS is the C Button Down
+L_CBUTTONS is the C Button Left
+R_CBUTTONS is the C Button Right
+U_JPAD is the Control Stick Up
+D_JPAD is the Control Stick Down
+L_JPAD is the Control Stick Left
+R_JPAD is the Control Stick Right
+Z_TRIG is the Z Button
+L_TRIG is the L Button
+R_TRIG is the R Button
+</pre>
+</BLOCKQUOTE>
+<P>
+If an error occurs when reading data from the Controller, the following error numbers are returned to errno of OSContPad structure. If it is successful, 0 is returned.
+</P>
+<P>
+<B>CONT_NO_RESPONSE_ERROR</B>
+</P>
+<P>
+The controller does not respond. The controller is not inserted. 
+</P>
+<P>
+<B>CONT_OVERRUN_ERROR</B>
+</P>
+<P>
+A communication error has occurred between the N64 Controller Deck and the SI devices. Ignore the data when this error is detected.
+</P>
+<P>
+<B>Sample</B>
+</P>
+<PRE>
+void mainproc(void)
+{
+        OSMesgQueue     intMesgQueue;
+        OSMesg          intMesgBuf[1];
+        OSContStatus    sdata[MAXCONTROLLERS];
+        OSContPad       rdata[MAXCONTROLLERS];
+        u8              pattern;
+        int             I;
+        int             cont_exist = 0;
+
+        osCreateMesgQueue(&amp;intMesgQueue, intMesgBuf, 1);
+        osSetEventMesg(OS_EVENT_SI, &amp;intMesgQueue, NULL);
+        osContInit(&amp;intMesgQueue, &amp;pattern, &amp;sdata[0]);
+
+        /* Confirm if controller is inserted */
+        for(I = 0; I &lt; MAXCONTROLLERS; I++){
+                if(((pattern &gt;&gt; I) &amp; 1) &amp;&amp; (sdata[I].errno == 0)){
+                        if((sdata[I].type &amp; CONT_TYPE_MASK) == CONT_TYPE_NORMAL){
+                                osSyncPrintf(&QUOT;controller is inserted in port %d\n&QUOT;, I);
+                                cont_exist = 1;
+                        }
+                }
+        }
+
+        /* if controller is inserted */
+        if(cont_exist){
+                /* start reading controller data */
+                osContStartReadData(&amp;intMesgQueue);
+
+
+                /* Confirm the end of reading */
+                osRecvMesg(&amp;intMesgQueue, NULL, OS_MESG_BLOCK);
+                /* get controller data */
+                osContGetReadData(&amp;rdata[0]);
+        }
+}
+</PRE>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H2><A name="05"></A>26.2.5 Programming Cautions</H2>
+<P>
+<B>(1) The Control Stick Reset Function</B>
+</P>
+<P>
+<B>Description</B>
+</P>
+<P>
+Do not create a command during game play that involves simultaneously pressing the Left, Right, and Start button.
+</P>
+<P>
+<B>Reason</B>
+</P>
+<P>
+Simultaneously pressing these three buttons resets the neutral position of the Standard Controller's Control Stick. Thus, make sure that no essential control actions inside the game reset the Control Stick. Conversely, make sure that resetting the Control Stick creates no unexpected operations in the game. 
+</P>
+<P>
+<B>(2) Simultaneously Pressing Up/Down or Left/Right on the Control Pad</B>
+</P>
+<P>
+<B>Description</B>
+</P>
+<P>
+ Be sure the game does not hang or other problems arise when either the Up/Down, or Left/Right are pressed simultaneously on the Control Pad. 
+</P>
+<P>
+<B>Reason</B>
+</P>
+<P>
+Depending upon the situation, the user might press Up/Down or Left/Right at the same time. 
+</P>
+<P>
+<B>Reference</B>
+</P>
+<P>
+As countermeasures to such an occurrence you can:
+</P>
+<P>
+ * Establish the priority for input from Up/Down and Left/Right
+</P>
+<P>
+ * Ignore this kind of input
+</P>
+<P>
+<B>(3) Manipulation of Unused Buttons</B>
+</P>
+<P>
+<B>Description</B>
+</P>
+<P>
+Be sure the game does not hang or other problems arise when the user presses unused buttons during a game. The same goes for manipulation of other Controllers when a game is only designed to play from Controller 1. 
+</P>
+<P>
+<B>Reason</B>
+</P>
+<P>
+Players sometimes press unused buttons during game play. Unexpected input might also come from peripheral devices. 
+</P>
+<P>
+<B>Reference</B>
+</P>
+<P>
+Please be especially careful about buttons that are not used during normal game play but are used when the game is run in debug mode.
+</P>
+<P>
+<B>(4) Playing with the Control Stick</B>
+</P>
+<P>
+<B>Description</B>
+</P>
+<P>
+Set some lower value for play with the Control Stick in order to avoid detecting input when the stick has not been touched.
+</P>
+<P>
+<B>Reason</B>
+</P>
+<P>
+The coordinates of the Control Stick when it is not being touched are not necessarily set back to the origin. Moreover, the actual position will vary from device to device, and even within the same device from one time to the next. 
+</P>
+<P>
+<B>(5) Upper Limit Value for the Control Stick</B>
+</P>
+<P>
+<B>Description</B>
+</P>
+<P>
+The upper limit value which can be input with the Control Stick varies from Controller to Controller. For important manipulations be careful not to set values which cannot be input. 
+</P>
+<P>
+<B>Reason</B>
+</P>
+<P>
+Control Stick resolution differs from Controller to Controller. Moreover, as a Controller gets old, the uppermost value that can be input with the Control Stick declines. To handle the variation between Control Sticks, we recommend you set the actual usable range to the values shown below. 
+</P>
+<UL>
+  <LI>Left/right X axis +/- 61
+  <LI>Up/down Y axis +/- 63
+  <LI>X axis incline +/- 45
+  <LI>Y axis incline +/- 47
+</UL>
+<P>
+<B>Reference</B>
+</P>
+<P>
+Control Stick resolution is described below in detail.
+</P>
+<P>
+<B>Explanation of Symbols</B>
+</P>
+<pre>
+XA    : Maximum horizontal center stop width (MAX)
+XB    : Minimum horizontal counts left (MIN)
+XB'   : Minimum horizontal counts right (MIN)
+XC    : Minimum horizontal counts with Control Stick in the up/right direction (MIN)
+XC'   : Minimum horizontal counts with Control Stick in the up/left direction (MIN)
+XC''  : Minimum horizontal counts with Control Stick in the down/left direction (MIN)
+XC''' : Minimum horizontal counts with Control Stick in the down/right direction (MIN)
+YA    : Maximum vertical center stop width (MAX)
+YB    : Minimum vertical counts up (MIN)
+YB'   : Minimum vertical counts down (MIN)
+YC    : Minimum vertical counts with Control Stick in the up/right direction (MIN)
+YC'   : Minimum vertical counts with Control Stick in the up/left direction (MIN)
+YC''  : Minimum vertical counts with Control Stick in the down/left direction (MIN)
+YC''' : Minimum vertical counts with Control Stick in the down/right direction (MIN)
+</pre>
+<P>
+<IMG src="gif/f26-02-03.gif">
+</P>
+<P>
+<B>Initial Values</B>
+</P>
+<TABLE border="1">
+  <TR>
+    <TD>XA :</TD>
+    <TD>MAX : 7 Count</TD></TR>
+  <TR>
+    <TD>XBM : minimum guaranteed value of XB, XB'</TD>
+    <TD>MIN : 70 Count</TD></TR>
+  <TR>
+    <TD>XCM : minimum guaranteed value of XC, XC', XC'', XC'''</TD>
+    <TD>MIN : 54 Count</TD></TR>
+  <TR>
+    <TD>YA :</TD>
+    <TD>MAX : 7 Count</TD></TR>
+  <TR>
+    <TD>YBM : minimum guaranteed value of YB, YB'</TD>
+    <TD>MIN : 74 Count</TD></TR>
+  <TR>
+    <TD>YCM : minimum guaranteed value of YC, YC', YC'', YC'''</TD>
+    <TD>MIN : 56 Count</TD></TR>
+</TABLE>
+
+<P>
+<B>A Controller which has been used for approximately 5 million direction changes will present these values. </B>
+</P>
+<TABLE border="1">
+  <TR>
+    <TD>XA :</TD>
+    <TD>MAX : 7 Count</TD></TR>
+  <TR>
+    <TD>XBM : minimum guaranteed value of XB, XB'</TD>
+    <TD>MIN : 68 Count</TD></TR>
+  <TR>
+    <TD>XCM : minimum guaranteed value of XC, XC', XC'', XC'''</TD>
+    <TD>MIN : 52 Count</TD></TR>
+  <TR>
+    <TD>YA :</TD>
+    <TD>MAX : 7 Count</TD></TR>
+  <TR>
+    <TD>YBM : minimum guaranteed value of YB, YB'</TD>
+    <TD>MIN : 70 Count</TD></TR>
+  <TR>
+    <TD>YCM : minimum guaranteed value of YC, YC', YC'', YC'''</TD>
+    <TD>MIN : 54 Count</TD></TR>
+</TABLE>
+
+<P>
+Given the above values, the program's actual range can be calculated, as follows.
+</P>
+<BLOCKQUOTE>
+<p>
+Horizontal direction of X axis (one side) = XBM - XA = 68 - 7 = 61 Count<BR>
+Vertical direction of Y axis (one side) = YBM - YA = 70 - 7 = 63 Count<BR>
+Diagonal direction of X axis (one side) (45 degree) = XCM - XA = 52 - 7 = 45 Count<BR>
+Diagonal direction of Y axis (one side) (45 degree) = YCM - YA = 54 - 7 = 47 Count
+</p>
+</BLOCKQUOTE>
+<P>
+If resolution is required, then calibration will need to be performed for every game (and for every Controller). However, correcting the Controller every time can create problems related to the fairness of a game. Additionally, if you do not need to worry about the type of game and the central dead zone width (for example knocking down blocks), then the XBM, XCM, YBM, YCM values can act as the actual range in the program. 
+</P>
+<P>
+In short, you'll need to adjust the central dead zone width on the application side in accordance with the nature of the game. 
+
+</P>
+<P>
+<B>(6) Control Stick Input Values</B>
+</P>
+<P>
+<B>Description</B>
+</P>
+<P>
+Make sure that nothing unusual happens no matter what value in the range from -128 to 127 is input, either Up/Down or Left/Right with the Control Stick. 
+</P>
+<P>
+<B>Reason</B>
+</P>
+<P>
+If the neutral position of the Control Stick is off center, then these values could be input as the maximum (minimum) values.
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+</BODY>
+</HTML>

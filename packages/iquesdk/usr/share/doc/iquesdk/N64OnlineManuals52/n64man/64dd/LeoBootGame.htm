@@ -1,0 +1,63 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Author's Comments: JLR made formating edits.
+MAP updated format, links 9/28/99>
+<TITLE>LeoBootGame</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+<font style="font-size: 12pt"><b>LeoBootGame</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p><i>Executes a reboot</i></p>
+
+<h3>Syntax</h3>
+<pre>#include &lt;PR/leo.h&gt;     /* <A HREF="../../header/leo.htm">leo.h</A> */
+void LeoBootGame(void *<u>entry</u>);</pre>
+
+<h3>Description</h3>
+<p>
+Note: None of the N64 Disk Drive-related instructions involve ROM DMA (including DMA to the drive's built-in ROM),
+and in fact, the instructions are designed on the assumption that ROM DMA will not be performed. Please 
+refer to "Section 12: Prohibitions and Precautions" in the N64 Disk Drive Programming Manual to learn more about this.</p>
+<p>
+Reboot refers to the booting of one game from a different game which has already been started up.  The game 
+that does the rebooting is called "the activating game," while the game that is rebooted is called the 
+"the activated game".  The activated game must be stored on the disk, but the activating game can be stored 
+on either the disk or on a game pak.</p>
+<p>
+The activating game uses the <a href="LeoReadDiskID.htm">LeoReadDiskID</a> function to check the disk on which the activated game is stored.
+It then uses the <a href="LeoReadWrite.htm">LeoReadWrite</a> function to read the boot segment of the activated game into the RDRAM buffer,
+and passes that game's start address to entry.</p>
+<p>
+The address passed to entry is the value specified for the boot segment "address" in the activated 
+game's spec file (when omitted, the value becomes 0x80000400).  Please note that this value is different from
+  _**SegmentStart (where ** is the name of the boot segment).</p>
+<p>
+To learn about the errors that can occur when loading an activated game, as well as how to handle those 
+errors, please see "Chapter 10: Error Handling Sequences" in the N64 Disk Drive Programming Manual.</p>
+<p>
+For details on rebooting, please see Chapter 15 of the N64 Disk Drive Programming Manual.
+</P>
+<h3>Note</h3>
+<p>
+There are certain restrictions concerning the use of <tt>LeoBootGame</tt>. For a detailed discussion, please see Chapter 15 of the N64 Disk Drive Programming Manual.
+<ul><li>An activated game cannot use the <tt>LeoBootGame</tt> function.</li>
+<li>When executing "make" on an activating game, you must specify the option.</li>
+<li>B 0 in makedisk (NW version) or in mild (PC version).</li>
+<li>When executing "make" on an activated game, you must specify the option.</li>
+<li>B 1 in makedisk (NW version) or in mild (PC version).</li>
+<li>You cannot locate an activated game at LBA0.</li></ul></p>
+
+
+  
+<h3>See Also</h3>
+
+<p><a href="LeoReadWrite.htm">LeoReadWrite</a>, <a href="LeoReadDiskID.htm">LeoReadDiskID</a></p>
+<h3>Revision History</h3>
+<p>04/30/1999  Changed Format</p>
+<br><br>
+
+</BODY>
+</HTML>

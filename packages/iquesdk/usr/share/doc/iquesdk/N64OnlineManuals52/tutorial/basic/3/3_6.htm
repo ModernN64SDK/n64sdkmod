@@ -1,0 +1,46 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-N64 Programming Basics-Chapter 3  The Display List and Tasks</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/20/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<FONT Style="font-size:12pt"><B>3.6  Executing the Display List - Tasks</B></FONT>
+<br>
+<P>
+In our explanation of how to construct a display list there was one important point that was not covered.  Telling the N64 to perform rendering in accordance to the display list just made was not described.  This is where the concept of "tasks" comes in to play.  If you use NuSystem, you can write N64 programs without giving much thought to tasks, so we will keep our explanation simple, using a metaphor.<br><br>
+
+     Assume that a certain company has only one extremely fast computer(think of this as a work station).  This computer is not connected to a network, so only one person can use it at a time.  People who want to use the computer must write their "name" and the "work description" on a "reservation sheet" and then submit this to the manager.  When a person's turn comes, they can use the computer until their work is completed.<br><br>  
+     In this example, the "reservation sheet" is the task.  This task contains both the name of the person doing the work and a description of the work being done.  The "computer" in this example is the RSP processor in the N64.  Since the RSP can perform only one job at a time, everybody must wait in turn to use it.  The "work description" in this example is the display list.  The display list is basically an instruction booklet, and rendering is performed by the RSP's execution of these instructions.  
+</P>
+<P>
+<br><br>
+<IMG SRC="image06.gif">
+</P>
+<P>
+<B>Figure 3-3  Conceptual Drawing of Tasks</B>
+</P>
+<br>
+<P>
+Additionally, the "person performing the work" is the microcode.  Think of the microcode as a small program that executes the display list.  With people, efficiency and the quality of the results will vary from person to person, even when they perform the same work.  The same thing applies to microcode.  Older microcode executes the display list slower, while newly developed microcode has expanded high-level functions.  To give an actual example, the F3DEX2 series microcode puts a lighter load on the system during rendering compared to the older F3DEX series. 
+     As mentioned above, NuSystem makes task management far less complex.  The only thing the programmer has to do to activate a task is call the <tt>nuGfxTaskStart</tt> function.  An example of this can be found in the <tt>Draw</tt> function in graphic.c.  
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=5><TR>
+	<TD NOWRAP COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE><B>List 3-5</B>  <B>See basic3 "graphic.c"</b>
+</TR><TR>
+	<TD NOWRAP BGCOLOR="666666" WIDTH="4" ALIGN=LEFT VALIGN=TOP><HR NOSHADE SIZE=0></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>
+<FONT COLOR="#000080"><PRE><CODE> /* Activate the task */
+ nuGfxTaskStart(glist,(s32)(glistp - glist) * sizeof(Gfx),
+ NU_GFX_UCODE_F3DEX, NU_SC_SWAPBUFFER);
+</CODE></PRE></FONT>
+	</TD>
+</TR></TABLE>
+<P>
+<tt>nuGfxTaskStart</tt> activates the task internally after receiving the pointer to the start of the display list, the size of the display list, and flags for the type of microcode and whether or not to swap the framebuffer.
+</P>
+</BODY>
+</HTML>

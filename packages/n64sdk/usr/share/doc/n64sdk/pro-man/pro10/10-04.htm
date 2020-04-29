@@ -1,0 +1,38 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 10 - Advanced Memory Management</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. -->
+</head>
+
+<h1>10.4 Using Multiple Waves </h1>
+
+<p>The previous example linked both <A target="keywords" HREF="../../keywords/index/data/system.htm#overlay">overlays</A> into a single, fully relocated binary.  This binary is used for two purposes.  First, the text and data sections are extracted from this binary and packed on the ROM.  Second, this binary can be sent to the Nintendo 64 debugger, <a href="../../n64man/tool/gvd.htm">gvd()</a>.  However, this can cause problems.  Although the specification file will create an operationally correct ROM
+image, the binary will confuse the debugger.  This is because multiple symbols will <A target="keywords" HREF="../../keywords/index/data/system.htm#map">map</a> to the same address, and <a href="../../n64man/tool/gvd.htm">gvd</a> may error when it tries to find the correct source line for a given program counter value, for example. </p>
+
+<p>This problem can be circumvented by creating multiple binaries, or <A target="keywords" HREF="../../keywords/index/data/system.htm#wave">waves</A>, each with a distinct symbol table. The following specification file excerpt illustrates this:</p>
+
+<blockquote><pre>
+beginwave
+    name    "plain_wave"
+    include "kernel"
+    include "plain"
+endwave
+
+beginwave
+    name    "texture_wave"
+    include "kernel"
+    include "texture"
+endwave
+</pre></blockquote>
+
+<p>Using this technique, <A target="keywords" HREF="../../keywords/index/data/system.htm#procedure">procedure</a> and variable names from the plain <A target="keywords" HREF="../../keywords/index/data/system.htm#segment">segment</A> are kept distinct from those of the texture segment.  The "Switch Executable" menu entry from the <a href="../../n64man/tool/gvd.htm">gvd</a> "Admin" menu can be used to select the symbol to use while debugging. </p>
+
+<p>There is one significant caveat when using multiple waves.  The contents of each segment must be identical in each of the waves the segment is included in.  For example, the kernel segment above is included in both plain_wave and texture_wave, so its relocated image must be identical in both.  The usual consequence of this rule is that the
+segment procedure entry point in both of the overlay segments must be at the same location.  This requirement can be easily met by ensuring that the segment procedure is always the first procedure of the first relocatable that comprises the overlay segment.   Then the calling segment code can always jump to the beginning address of the
+overlay segment(s) and execute valid code there. </p>
+
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+</body> </html>

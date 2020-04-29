@@ -1,0 +1,58 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 26 - SI Devices</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. 
+             MAP- 10/25/99 edited content, updated format-->
+</head>
+
+<H1>26.5 N64 Mouse</H1>
+<HR>
+<H2><A name="01"></A>26.5.1 What is the N64 Mouse?</H2>
+<P>
+A mouse is scheduled to be sold in the near future (as of December,1998).  The mouse will be connected to the N64 Controller port.  This section explains the use of the mouse. 
+</P>
+<P>
+There are no special N64 functions for use with a mouse.  When creating applications which utilize a mouse, use the same set of functions which are used with the Standard N64 Controller. 
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H2><A name="02"></A>26.5.2 How to Use the N64 Mouse</H2>
+<P>
+First execute the <tt>osContInit()</tt> function in order to make the initial settings for using the SI.  Next check the value of the <tt>type</tt> member variable of the OSContStatus structure to confirm that the mouse has been attached.   You know the mouse is attached when b12~b8 of "type" are all 0, the CONT_RELATIVE bit is raised, and the CONT_ABSOLUTE and CONT_JOYPORT bits are not raised. 
+</P>
+<P>
+A macro has been defined in OS 2.0I and after, so check using the following method: 
+</P>
+<P>
+osContInit(&amp;siMessageQ, &amp;pattern, contstat);
+</P>
+<PRE>
+for (i = 0 ; i &lt; MAXCONTROLLERS ; i ++) {
+	if ((pattern &gt;&gt; i) &amp; 1) {
+		if ((contstat[i].type &amp; CONT_TYPE_MASK) == CONT_TYPE_MOUSE){
+			osSyncPrintf(&quot;Mouse\n&quot;);
+		} else {
+			osSyncPrintf(&quot;Some other device\n&quot;);
+		}
+	} else {
+		osSyncPrintf(&quot;Nothing is inserted\n&quot;);
+	}
+}
+</PRE>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H2><A name="03"></A>26.5.3 How to Read the Data </H2>
+<P>
+To read data from the mouse, use the Controller read functions, <tt>osContStartReadData()</tt> and <tt>osContGetReadData()</tt>.  The data read about the movement of the mouse is placed in the "stick_x" and "stick_y" member variables of the OSContPad structure, while the data read about clicking the mouse buttons is placed in the <tt>button</tt> member variable.  The Left Mouse Button corresponds to the A Button, and Right Mouse Button corresponds to the B Button.  The <tt>button</tt> member variable is ANDed with A Button or B Button to check which mouse button has been clicked.  
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+</BODY>
+</HTML>

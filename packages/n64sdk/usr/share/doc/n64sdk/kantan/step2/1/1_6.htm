@@ -1,0 +1,30 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!--
+Editors Notes:
+  PWC- updated formatting
+-->
+<title>STEP2 [A Guide to the N64 Programming] - Chapter 1 N64 Programming</title>
+<base target="keywords">
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<p><font style="font-size:12pt; font-weight:bold">1-6 Scheduler</font></p>
+<br>
+<p>The biggest job of the Scheduler is to coordinate between audio and graphics processing.</p>
+<br>
+<p><b>1-6-1 RSP Scheduling</b></p>
+<br>
+<p>The RSP executes both graphics and audio processes. A graphics process sometimes extends over one frame, but an audio process must be provided in each frame to prevent inappropriate pausing.  Therefore, in each frame, if the graphics task is executing, the Scheduler suspends it and saves the task state.  Then it starts the audio task executing and prepares the RSP for the restart of the graphics task execution when the audio task finishes.  This series of breaks and process restarts is called the yield process.</p>
+<p>Other jobs managed by the Scheduler include:
+<ul>
+<li><a href="../../../keywords/index/data/system.htm#scheduling" target="keywords">Scheduling</a> graphics.</li>
+<li>Sending a <a href="../../../keywords/index/data/system.htm#message" target="keywords">message</a> to a client (a <a href="../../../keywords/index/data/system.htm#thread" target="keywords">thread</a> waiting for the message) by using the timing of a VI retrace.</li>
+<li>Processing messages for hardware <a href="../../../keywords/index/data/system.htm#event" target="keywords"> events</a>.</li></ul>
+</p>
+</body>
+</html>

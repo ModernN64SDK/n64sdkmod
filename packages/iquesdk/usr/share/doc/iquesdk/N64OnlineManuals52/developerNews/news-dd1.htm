@@ -1,0 +1,216 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<META name="GENERATOR" content="IBM HomePage Builder V3.0.7  for Windows">
+<TITLE>Developers News 64DD issue 1.0</TITLE>
+</HEAD>
+
+<BODY bgcolor="#FFFFFF">
+
+<HR>
+<P align="center">
+<STRONG><FONT size="6"><IMG src="gif/devnews.gif" height="44" width="453"></FONT><BR>
+<FONT color="#8000FF"><BIG><BIG>64DD issue 1.0</BIG></BIG></FONT></STRONG>
+</P>
+<HR>
+<P>
+We sincerely appologize for providing incorrect or insufficient information in Chapter 9 of 64Disk Drive programmers' guide.
+</P>
+<TABLE border="0" cellpadding="3">
+  <TR>
+    <TD width="100%" bgcolor="#FFFF00"><FONT color="#FF0000"><STRONG>[Note] this correction has already been reflected to the manual you have.</STRONG></FONT></TD></TR>
+</TABLE>
+
+<P>
+1. The table in "9.2.1 ROM map" will be corrected as described below.
+</P>
+<P>
+When you use EPi functions to DMA transfer the following data from DDROM, Use DDROM_WAVEDATA_START+offset (however, offset address from the table) to specify an address for EPi functions.
+</P>
+<TABLE width="660" border="1" cellspacing="1" cellpadding="8">
+  <TR>
+    <TD valign="top" width="43%" height="30">
+    <P>
+Description
+    </P>
+</TD>
+    <TD valign="top" width="57%" height="30">
+    <P>
+<FONT color="#FF0000">Offset from the top of the sound waveform data</FONT>
+    </P>
+</TD></TR>
+  <TR>
+    <TD valign="top" width="43%" height="268">
+    <P>
+Header:
+    </P>
+    <P>
+Header
+    </P>
+</TD>
+    <TD valign="top" width="57%" height="268">
+    <P>
+0x000000-0x00001F
+    </P>
+    <P>
+int Version code (0x19970123)
+    </P>
+    <P>
+int Number of waveforms to be stored (0x00000124 = 292)
+    </P>
+    <P>
+unsigned int *WavePointer
+    </P>
+    <P>
+unsigned int *BookPointer
+    </P>
+    <P>
+unsigned int *LoopPointer
+    </P>
+    <P>
+Book_Table *BookData
+    </P>
+    <P>
+Loop_Table *LoopData
+    </P>
+    <P>
+Info_Table *Information
+    </P>
+</TD></TR>
+  <TR>
+    <TD valign="top" width="43%" height="55">
+    <P>
+WaveData:
+    </P>
+    <P>
+ADPCM waveform data
+    </P>
+</TD>
+    <TD valign="top" width="57%" height="55">
+    <P>
+0x000020-0x2B3D5F
+    </P>
+    <P>
+Waveform (32Khz &amp; 16Khz)
+    </P>
+</TD></TR>
+  <TR>
+    <TD valign="top" width="43%" height="57">
+    <P>
+BookData:
+    </P>
+    <P>
+ADPCM predictor data
+    </P>
+</TD>
+    <TD valign="top" width="57%" height="57">
+    <P>
+0x2<FONT color="#FF0000">B</FONT>4000-0x2<FONT color="#FF0000">B</FONT>88FF
+    </P>
+    <P>
+64 bytes/waveform
+    </P>
+</TD></TR>
+  <TR>
+    <TD valign="top" width="43%" height="55">
+    <P>
+LoopData:
+    </P>
+    <P>
+ADPCM loop data
+    </P>
+</TD>
+    <TD valign="top" width="57%" height="55">
+    <P>
+0x2<FONT color="#FF0000">B</FONT>9000-0x2<FONT color="#FF0000">B</FONT>AFFF
+    </P>
+    <P>
+32bytes/waveform
+    </P>
+</TD></TR>
+  <TR>
+    <TD valign="top" width="43%" height="58">
+    <P>
+WavePointer:
+    </P>
+    <P>
+Waveform data pointer table
+    </P>
+</TD>
+    <TD valign="top" width="57%" height="58">
+    <P>
+0x2<FONT color="#FF0000">B</FONT>B000-0x2<FONT color="#FF0000">B</FONT>B48F
+    </P>
+    <P>
+4 bytes/waveform
+    </P>
+</TD></TR>
+  <TR>
+    <TD valign="top" width="43%" height="61">
+    <P>
+BookPointer:
+    </P>
+    <P>
+Predictor pointer table
+    </P>
+</TD>
+    <TD valign="top" width="57%" height="61">
+    <P>
+0x2<FONT color="#FF0000">B</FONT>B500-0x2<FONT color="#FF0000">B</FONT>B98F
+    </P>
+    <P>
+4 bytes/waveform
+    </P>
+</TD></TR>
+  <TR>
+    <TD valign="top" width="43%" height="60">
+    <P>
+LoopPointer:
+    </P>
+    <P>
+Loop pointer table
+    </P>
+</TD>
+    <TD valign="top" width="57%" height="60">
+    <P>
+0x2<FONT color="#FF0000">B</FONT>BA00-0x2<FONT color="#FF0000">B</FONT>BE8F
+    </P>
+    <P>
+4 bytes/waveform
+    </P>
+</TD></TR>
+  <TR>
+    <TD valign="top" width="43%" height="62">
+    <P>
+Information:
+    </P>
+    <P>
+Additional waveform information
+    </P>
+</TD>
+    <TD valign="top" width="57%" height="62">
+    <P>
+0x2<FONT color="#FF0000">B</FONT>C000-0x2<FONT color="#FF0000">B</FONT>E47F
+    </P>
+    <P>
+32 bytes/waveform
+    </P>
+</TD></TR>
+</TABLE>
+
+<HR>
+<P>
+2. The last sentence in "9.2.2 Details" has been modified as follows.
+</P>
+<TABLE border="1">
+  <TR>
+    <TD width="100%">Also, 0x002<FONT color="#FF0000">B</FONT>8FFF is stored for non-loop sound in the loop pointer table.</TD></TR>
+</TABLE>
+
+<HR>
+<P>
+2. The sentence that states "Please use stic because Nintendo64 Sound Tools are not supported for 64Disk Drive sound development." was included in "9.2.3 Usage". However, Sound Tools version 2.0 or later support Nintendo64 Disk Drive Sound development.
+</P>
+<HR>
+</BODY>
+</HTML>

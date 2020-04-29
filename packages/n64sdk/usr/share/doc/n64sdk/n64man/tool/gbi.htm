@@ -1,0 +1,52 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<!--
+Editors Notes:
+  PWC- updated formatting
+  MAP- updated format
+-->
+<title>gbi</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>gbi</b></font>
+
+<p><i>The graphics binary interface</p></i>
+
+<h3>Syntax</h3>
+
+<p>The graphics binary interface (GBI) manual pages describe the collection of macros in gbi.h that build the graphics display list.
+</p>
+
+<p>Macro format (g*, gs*)</p>
+
+<h3>Description</h3>
+
+<p>The GBI interface is a collection of 64-bit commands that are interpreted by either the geometry engine of the RSP or the RDP hardware directly. The macros that are presented as an API, are really just a convenient tool for packing the bitstream of the actual GBI.
+</p>
+
+<p>There are two macros for each command (g* and gs* macros). The gs* macros represent the graphics static macros. These macros are used to define the static graphics display list that uses initialized C data structures.
+</p>
+
+<p>The g* macros are for display list construction at runtime. The g* macros have a display list pointer as the first argument followed by the identical arguments as the gs* macros. This display list pointer should always be of the form glistp++. For macros that produce a single word, the increment operator moves the pointer to the next free position. Macros which generate multiple words (expanding into multiple GBI commands) depend on the rules that the display list pointer is incremented by the caller.
+</p>
+
+<p>There is a third type of macro, gd*. These macros are used for defining GBI data structures.
+</p>
+
+<p>The macros hide many optimizations for the RSP geometry engine. This N64 Functions Reference describes these macros as an API for an application program; In order to completely understand the GBI bitstream (to program in a language other than C/C++, for example), it is necessary to study the details of all of the macros to determine the precise bit packing required for each command.
+</p>
+
+<h3>Comments</h3>
+
+<p>The data of the predefined gbi data structure need to be 64-bit aligned. All of the DMA engines, including the one inside the RSP that the microcode uses to receive the display list, require 64-bit aligned addresses. 
+</p>
+<h3>Revision History</h3>
+<p>1999/04/30  Changed Format</p>
+<br><br>
+
+</body>
+</html>

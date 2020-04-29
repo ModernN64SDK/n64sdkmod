@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Author's Comments: JLR made formating edits.
+MAP updated format, links 9/28/99>
+<title>LeoReadDiskID</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>LeoReadDiskID</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p><i>Obtains the disk ID</i>
+</p>
+
+<h3>Syntax</h3>
+
+<pre>
+#include &lt;PR/leo.h&gt;     /* <A HREF="../../header/leo.htm">leo.h</A> */
+
+s32 LeoReadDiskID(LEOCmd *cmdBlock, LEODiskID *id, OSMesgQueue *mq);
+
+typedef struct
+{
+   u8 pad;
+   u8 yearhi;
+   u8 yearlo;
+   u8 month;
+   u8 day;
+   u8 hour;
+   u8 minute;
+   u8 second;
+} LEODiskTime;
+
+typedef struct
+{
+   u64 lineNumber;
+   LEODiskTime time;
+} LEOSerialNum;
+
+typedef struct
+{
+   u8 gameName[4];
+   u8 gameVersion;
+   u8 diskNumber;
+   u8 ramUsage;
+   u8 diskUsage;
+   LEOSerialNum serialNumber;
+   u64 reserve;
+} LEODiskID;
+</pre>
+<h3>Description</h3>
+
+<p><b>Note:</b> None of the N64 Disk Drive-related instructions involve ROM DMA (including DMA to ROM in the drive). In fact, the instructions are designed on the assumption that ROM DMA will not be carried out. Please see the "Programming Cautions" section of the N64 Disk Drive Programming Manual to learn more about this. 
+</p>
+
+<p><tt>LeoReadDiskID</tt> gets the disk ID of the current N64 Disk Drive disk from the system area of the disk.<br>Each disk has its own personal number. For details, please see the "Chapter 6: Disk ID" section of the N64 Disk Drive Programming Manual.
+</p>
+
+<p>Whenever a MEDIUM_MAY_HAVE_CHANGED error is returned upon execution of any function, you must call the <tt>LeoReadDiskID</tt> function to check the disk ID. For details about the processing sequence, please the "Chapter 10: Error-Handling" section of the N64 Disk Drive Programming Manual.
+</p>
+
+<p>Nothing needs to be set for the command block <b>cmdBlock</b> argument. When processing of this function ends, an error code is returned to the message queue mq. An error could arise, so the programmer needs to check this error code.
+
+<p>For more information about the errors that may be returned, their causes, and ways to deal with them, please see  "Chapter 10: Error-Handling" of the N64 Disk Drive Programming Manual. </p>
+
+<p>The return value is -1 if Leo Manager has not been created, and 0 if it has. Usually no check is necessary. <br>
+</p>
+<h3>Example</h3>
+<pre>
+<font face="Courier">LEOCmd cmdBlock;</font>
+<font face="Courier">LEODiskID diskID;</font>
+<font face="Courier">u32 error;</font>
+<font face="Courier">.....</font>
+<font face="Courier">LeoReadDiskID(&amp;cmdBlock, &amp;diskID, &amp;diskQ);</font>
+<font face="Courier">osRecvMesg(&amp;diskQ, (OSMesg *)&amp;error, OS_MESG_BLOCK);
+</font></pre>
+<h3>See Also</h3>
+
+<p><a href="LeoCreateLeoManager.htm">Leo*CreateLeoManager</a>
+</p>
+<h3>Revision History</h3>
+<p>04/30/1999  Changed Format</p>
+<br><br>
+
+</body>
+</html>

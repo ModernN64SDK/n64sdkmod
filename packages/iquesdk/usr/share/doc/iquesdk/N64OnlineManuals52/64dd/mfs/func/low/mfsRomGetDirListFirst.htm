@@ -1,0 +1,76 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>mfsRomGetDirListFirst</title>
+</head>
+
+<body>
+
+<font face="arial" size="-1">
+<b><font size="3">mfsRomGetDirListFirst<br>
+mfsRamGetDirListFirst</b></font>
+
+<hr>
+
+<strong>Syntax</strong>
+<font face="courier" size="2">
+<pre>s32 mfsRomGetDirListFirst(MfsDirID upDirID, MfsDirList* dirList, u16 attr)
+s32 mfsRamGetDirListFirst(MfsDirID upDirID, MfsDirList* dirList, u16 attr)</pre></font>
+
+<P>
+<b>Arguments</b>
+<dl><dd>upDirID		&nbsp; Directory ID of directory
+<dd>dirList		&nbsp; MfsDirList structure buffer
+<dd>attr		&nbsp; Attribute
+</dl></dd>
+
+<P>
+<b>Return value</b>
+<dl><dd>Directory ID (a negative value is an error)
+</dl></dd>
+
+<P>
+<b>Function</b>
+<dl><dd>Obtains contents of directory
+</dl></dd>
+
+<P>
+<b>Description</b>
+<P>
+This function searches the contents of the directory specified by upDirID and returns the directory ID of a directory or file having an attribute that matches the attribute specified by attr.
+The following values can be specified for attr.
+<P>
+<P>
+<table border="0" cellpadding="3" cellspacing="3">
+<tr><td><font face="arial" size="-1">MFS_FILE_ATTR_FORBID_W</td>
+<td><font face="arial" size="-1">0x2000</td>
+<td><font face="arial" size="-1">Write protected</td></tr>
+<tr><td><font face="arial" size="-1">MFS_FILE_ATTR_FORBID_R	</td>
+<td><font face="arial" size="-1">0x1000</td>
+<td><font face="arial" size="-1">Read protected</td></tr>
+<tr><td><font face="arial" size="-1">MFS_FILE_ATTR_HIDDEN</td>
+<td><font face="arial" size="-1">0x0800</td>
+<td><font face="arial" size="-1">Hidden file</td></tr>
+<tr><td><font face="arial" size="-1">MFS_FILE_ATTR_ENCODE</td>
+<td><font face="arial" size="-1">0x0400</td>
+<td><font face="arial" size="-1">Encoded file</td></tr>
+<tr><td><font face="arial" size="-1">MFS_FILE_ATTR_COPYLIMIT</td>
+<td><font face="arial" size="-1">0x0200</td>
+<td><font face="arial" size="-1">Copy limited</td></tr>	</table>
+
+<P>		
+When the return value is MFS_ERR_SEARCHEND, no directory contents were found.  
+<P>
+When the return value is not an error, the next contents can be obtained by using the mfsR*mGetDirListNext function.
+
+  
+<P>
+<b>Main errors</b>
+<P>
+<table border="0" cellpadding="3" cellspacing="3">
+<tr><td valign="top"><font face="arial" size="-1">MFS_ERR_SEARCHEND</td>
+<td><font face="arial" size="-1">Content not in directory</td></tr></table>
+
+
+</body>
+</html>

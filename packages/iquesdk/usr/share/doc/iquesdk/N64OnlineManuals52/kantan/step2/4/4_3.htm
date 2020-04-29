@@ -1,0 +1,92 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!--
+Editors Notes:
+  PWC- updated formatting
+-->
+<title>STEP2 [A Guide to the N64 Programming] - Chapter 4 Tips and Techniques</title>
+<base target="keywords">
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<p><font style="font-size:12pt; font-weight:bold">4-3 Using Microcode</font><br>
+<br>
+<br>
+Currently, N64 has two types of <a
+href="../../../keywords/index/data/system.htm#microcode"
+target="keywords">microcode</a>, graphics microcode and audio microcode. <br>
+<br>
+<br>
+<b>4-3-1 Graphics Microcode</b><br>
+<br>
+<br>
+The commands used in the graphics microcode are called <a href="../../../keywords/index/data/graphics.htm#graphics binary interface" target="keywords">GBI</a> (Graphics binary interface) commands. Each GBI command uses 64 bits.<br>
+<br>
+<br>
+<b>(gspF3DEX Series)</b>
+<ul>
+<li>gspF3DEX.fifo.o/gspF3DEX.NoN.fifo.o:</li><br>
+spF3DEX.fifo.o and gspF3DEX.NoN.fifo.o both have an increased <a href="../../../keywords/index/data/graphics.htm#vertex cache" target="keywords">vertex cache</a> of 32 based on the Fast 3D microcode and have packaged the 2Triangles command. Also, the number of links in the <a href="../../../keywords/index/data/graphics.htm#display list" target="keywords">display list</a> has increased from 10 to 18.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;gspF3DEX.fifo.o&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: with near clip<br>
+&nbsp;&nbsp;&nbsp;&nbsp;gspF3DEX.NoN.fifo.o : without near clip<br>
+<br>
+<li>gspF3DLX.fifo.o/gspF3DLX.NoN.fifo.o:</li><br>
+spF3DLX.fifo.o and gspF3DLX.NoN.fifo.o both have improved performance. This was accomplished by simplifying the <a href="../../../keywords/index/data/graphics.htm#sub pixel" target="keywords">sub-pixel</a> calculation on F3DEX, so sometimes the texture has little creases.  The GBI in F3DLX is compatible with F3DEX.   Also, F3DLX has an additional feature in that it can turn <a href="../../../keywords/index/data/graphics.htm#clipping" target="keywords">clipping</a> on or off. When clipping is off, performance improves a little.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;gspF3DLX.fifo.o&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: with near clip<br>
+&nbsp;&nbsp;&nbsp;&nbsp;gspF3DLX.NoN.fifo.o : without near clip<br>
+<br>
+<li>gspF3DLX.Rej.fifo.o/gspF3DLP.Rej.fifo.o:</li><br>
+gspF3DLX.Rej.fifo.o and gspF3DLP.Rej.fifo.o  both omit the usual microcode clipping process and use the "reject" process instead. The reject process simply means that the microcode <b> [draws only triangles whose three vertices are within a fixed area inside the screen.  If one of the vertices lies outside the screen, the entire triangle is rejected (not drawn)].</b>    In the F3DLX.Rej and F3DLP.Rej microcode, the processing rate for the 2Triangles command has been significantly improved by adopting this reject process. Therefore, you should use the <a href="../../../n64man/gsp/gSP2Triangles.htm">gSP2Triangles</a> function as often as possible when creating the display list.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;gspF3DLX.Rej.fifo.o : with texture correction<br>
+&nbsp;&nbsp;&nbsp;&nbsp;gspF3DLP.Rej.fifo.o : without texture correction</ul>
+
+Note that the F3DLP.Rej microcode is slightly faster than the F3DLX.Rej microcode. However, this faster speed applies only to the RSP process. There is no effect on the RDP process. Therefore, the RDP process may not follow the RSP process, in which case, you may need to change the render mode to the RA mode (G_RM_RA_ZB_OPA_SURF). Also note that this microcode does not support G_CULL_BOTH or G_CULL_FRONT.
+
+<ul>
+<Li>gspL3DEX.fifo.o:</li><br>
+gspL3DEX.fifo.o is a modified version of the Line3D microcode adapted to a vertex cache size of 32. It is the same as gspLine3D and displays polygons (such as 1Triangle and 2Triangles) rendered by F3DEX series of microcode to be displayed using wireframe.</ul>
+<br><br>
+<b><li>GBI Compatibility</li></b><br>
+At the binary level, there is no compatibility between the GBI of the gspF3DEX series of microcode and the GBI of the usual Fast3D microcode. However, the gspF3DEX series has been designed so that the differences are absorbed by gbi.h. Even if both types of microcode are in the same display list, a compile option can distribute each command to its proper GBI. Specifically, you can ensure that the GBI corresponding to the gspF3DEX microcode is output by defining the &quot;F3DEX_GBI&quot; keyword before including the gbi.h file.<br>
+<br>
+After Release 0.96, all microcode of F3DEX, F3DLX, F3DLX.Rej, and F3DLP.Rej became compatible at the GBI binary level, so each display list was able to use it. However, because of the reject process, operations are slightly different even under the same command; as a result, you need to be careful that the same screen is not always drawn even when in the same display list.<br>
+<br>
+<b><li>Microcode of the Fast3D series</li></b><br>
+Although microcode of the Fast3D series is used in many samples, they are really obsolete now that the new and improved F3DEX series is out. You should use the improved F3DEX series for your actual game making. <br>
+<br>
+<br>
+<b>(Sprite Microcode)</b>
+<ul><li>S2DEX</li><br>
+S2DEX is the microcode that makes it possible to use <a href="../../../keywords/index/data/graphics.htm#sprite" target="keywords">sprites</a> in N64 development. This microcode makes it possible for you to manage drawn objects using the separate concepts of the sprite and the BG. This makes it easy for you to get used to the usual sprite game development methods.<br>
+<br><br>
+<b><li>Microcode of the Sprite2D Series</li></b><br>
+Although microcode of the Sprite2D series is used in many samples, you should use the S2DEX microcode in actual game development. The S2DEX microcode is an improved version of the Sprite2D microcode. </ul>
+<br>
+<br>
+<b>(JJPEG Microcode)</b><br>
+The N64_JPEG library has two types of microcode, one for encoding and one for decoding.<br>
+<ul>
+<li>njpgespMain.o</li><br>
+njpgespMain.o provides <a href="../../../keywords/index/data/graphics.htm#YUV-RGB conversion" target="keywords">YUV conversion</a>, culling, DCT, quantization, and a zigzag scan for RGBA image data. The output is entropy encodable data. <br>
+<br>
+<li>njpgdspMain.o</li><br>
+njpgdspMain.o provides a reverse zigzag scan, reverse quantization, and reverse DCT for entropy decoded data. The output is <a href="../../../keywords/index/data/graphics.htm#YUV" target="keywords">YUV</a> format data.</ul>
+<br>
+<br>
+<br>
+<b>4-3-2 Audio Microcode</b><br>
+<br>
+<br>
+The audio microcode is made up of ABI (audio binary interface) commands. These ABI commands are strung together to form the audio command list. Each ABI command uses 64 bits.<br>
+<br>
+<li>aspMain : audio microcode</li><br>
+Audio microcode is used only for waveform synthesis. This microcode makes the RSP operate as a waveform synthesis processor. The audio microcode processes each game application task and synthesizes the 16-bit sample data of an L/R stereo. <br>
+<br>
+<li>n_aspMain : audio microcode for n_audio</li><br>
+n_aspMain is an enhanced version of the original N64 audio library. This microcode helps speed up the audio process.</p>
+</body>
+</html>

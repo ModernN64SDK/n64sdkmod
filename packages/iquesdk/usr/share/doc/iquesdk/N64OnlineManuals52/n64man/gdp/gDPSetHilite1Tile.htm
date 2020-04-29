@@ -1,0 +1,71 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<!--Editor's Notes: Jackie R. made reformating and copy edits.
+    	        Matt P.,2/18/2000- added revisions-->
+<TITLE>gDPSetHilite1Tile</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>gDPSetHilite1Tile [Macro]</H1>
+<P>
+<i>Sets texture parameters in the RDP for rendering of a specular highlight</i>
+</P>
+<p><b>Syntax</p></b>
+<p>
+<PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gbi.htm">gbi.h</A> */
+gDPSetHilite1Tile(Gfx *gdl, s32 tile, Hilite *hilite, s32 width, s32 height)</CODE></PRE>
+</p>
+<p><b>Arguments</p></b>
+<p><DL>
+  <DT><B>gdl</B>
+  <DD>Display list pointer
+  <DT><B>tile</B>
+  <DD>Tile descriptor index (3-bit precision, 0-7).
+  <DT><B>hilite</B>
+  <DD>Address of texture offset structure for specular highlight.
+  <DT><B>width</B>
+   <DD>Width of texture for specular highlight (12-bit precision, -2048-2047 pixels).
+   <DT><B>height</B>
+   <DD>Height of texture for specular highlight (12-bit precision, -2048-2047 pixels).
+</DL></p>
+<p><b>Description</b></p>
+<P>
+Calls the <A HREF="gDPSetTileSize.htm">gDPSetTileSize</A>, passing the texture offset via the Hilite structure and the texture size via the <B>width</B> and <B>height</B> arguments.  The "1" in the command name indicates it is the first specular highlight in the scene.
+</P>
+<p><b>Note</b></p>
+<P>
+The Hilite structure is shown below:
+</P>
+<P>
+<PRE><CODE>typedef struct {
+     int          x1, y1, x2, y2;
+} Hilite_t;
+typedef union {
+     Hilite_t     h;
+     long int     force_structure_alignment[4];
+} Hilite;</CODE></PRE>
+</P>
+<P>
+The elements in this structure have the following meanings:</p>
+<p>
+<DL>
+  <DT><B>x1</B>, <B>y1</B>
+  <DD>The x,y values of the texture offset for the first highlight (12-bit precision, -2048-2047 pixels).
+  <DT><B>x2</B>, <B>y2</B>
+  <DD>The x,y values of the texture offset for the second highlight (12-bit precision, -2048-2047 pixels).
+</DL>
+</P>
+<p><b>See Also</b></p>
+<P>
+<A HREF="gDPSetHilite2Tile.htm">gDPSetHilite2Tile</A>, <A HREF="gDPSetTileSize.htm">gDPSetTileSize</A>, and <A HREF="../gu/guLookAtHilite.htm">guLookAtHilite</A>
+</P>
+<p><b>Revision History</b></p>
+<P>
+02/01/1999  Completely rewritten.
+</P>
+<P>09/02/1999 Deleted gsDP syntax.</P>
+</BODY>
+</HTML>

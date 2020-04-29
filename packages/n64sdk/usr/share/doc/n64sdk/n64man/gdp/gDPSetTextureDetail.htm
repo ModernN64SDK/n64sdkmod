@@ -1,0 +1,63 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<link rel=stylesheet type="text/css" HREF="../N64man.css">
+<!--
+Editors Notes:
+  JLR made reformating and copy edits.
+  PWC- updated formatting
+-->
+
+<TITLE>gDPSetTextureDetail</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>gDPSetTextureDetail [Macro]</H1>
+<h2>Function</h2>
+<p>gDPSetTextureDetail<br><br><i>
+Sets detail texture settings</i></P>
+
+<p><b>Syntax</b></p>
+<p>
+<PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gbi.htm">gbi.h</A> */
+gDPSetTextureDetail(Gfx *gdl, u32 type)
+gsDPSetTextureDetail(         u32 type)</CODE></PRE></p>
+
+<p><b>Arguments</p></b>
+<p><DL>
+  <DT><B>gdl</B>
+  <DD>Display list pointer
+  <DT><B>type</B>
+  <DD>Texture sampling type:
+  <DD><B>G_TD_CLAMP</B> (Clamp)
+  <DD><B>G_TD_SHARPEN</B> (Sharpen)
+  <DD><B>G_TD_DETAIL</B> (Detail)
+</DL></p>
+<p><b>Description</b></p>
+<P>
+Sets the texture sampling type to use when detail texture is enabled.  These texture sampling types are used by the RDP when LOD is less than 1.0 and during enlargement processes.</p>
+<p><DL>
+  <DT>The different texture sampling types are explained below:</p>
+<p><DL>
+  <DT><B>G_TD_CLAMP</B>
+  <DD>Uses and clamps the tile with the highest-level of detail from among a number of texture tiles.
+  <DT><B>G_TD_SHARPEN</B>
+  <DD>Estimates the texture from the two tiles with the highest-level of detail.  This can also create sharp textures when enlarging.
+  <DT><B>G_TD_DETAIL</B>
+  <DD>Adds detail when the highest level of detail starts to become blurry as it is enlarged.  The color combiner (CC) primitive color's minimum LOD limit value restricts the detail texture being used.
+  </DL>
+</DL></p>
+<p>Detail texture is enabled/disabled by <A HREF="gDPSetTextureLOD.htm">gDPSetTextureLOD</A>.  For more information, see Sections 12.4.6 "Texture Sampling Mode" and 13.7.5.1 "Detail Texture" in the N64 Programming Manual, and <A HREF="gDPSetTextureLOD.htm">gDPSetTextureLOD</A>.
+</P>
+
+<p><b>See Also</b></p>
+<P>
+<A HREF="gDPSetPrimColor.htm">gDPSetPrimColor</A>, <A HREF="gDPSetTextureLOD.htm">gDPSetTextureLOD</A>, <A HREF="gDPSetTextureLUT.htm">gDPSetTextureLUT</A>, and <A HREF="gDPSetTexturePersp.htm">gDPSetTexturePersp</A>
+</P>
+
+<p><b>Revision History</p></b>
+<p>02/01/99&nbsp;&nbsp;&nbsp;Completely rewritten</p>
+
+</BODY>
+</HTML>

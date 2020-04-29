@@ -1,0 +1,60 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.
+MAP- added link, updated format>
+<title>gdSPDefLookAt</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>gdSPDefLookAt</b></font><font style="font-size: 9pt"><b> (macro)</b></font>
+
+<p><i>Loads the x and y screen space coordinate directions into a LookAt structure.</i></p>
+
+<p><b>Syntax</b></font></p>
+<p>
+<blockquote>
+    <pre>#include &quot;gbi.h&quot;     /* <A HREF="../../header/gbi.htm">gbi.h</A> */
+typedef union {
+        Light l[2];
+} LookAt;
+
+LookAt gdSPDefLookAt(signed char rightx, signed char righty, signed char rightz,
+        signed char upx, signed char upy, signed char upz)</pre>
+</blockquote>
+</p>
+<p><b>Arguments</b></font></p>
+<p>
+<dl>
+    <dt><strong>rightx, righty, rightz</strong></dt>
+    <dd>x, y, z components in viewing space of x direction in screen space<br>
+        <br>
+        </dd>
+    <dt><strong>upx, upy, upz</strong></dt>
+    <dd>x, y, z components in viewing space of y direction in screen space<br>
+        <br>
+        </dd>
+</dl>
+</p>
+<p><b>Description</b></font></p>
+
+<p><tt>gdSPDefLookAt</tt> loads the x and y screen space coordinate directions into a LookAt structure. The x and y direction unit vectors, where components are expressed in the viewing space, must be converted to a signed 8-bit fixed-point representation. Each component c must undergo the conversion.</p>
+<p>
+<blockquote>
+    <pre>((int) MIN(((c) * (128.0)), 127.0) &amp; 0xff)</pre>
+</blockquote>
+</p>
+<p>The LookAt structure serves as input for the <a href="../gsp/gSPLookAt.htm">gSPLookAt</a> macro, used in the set up process for specular highlights or reflection mapping.</p>
+
+<p><b>See Also</b></font></p>
+
+<p><a href="../gsp/gSPLookAt.htm">gSPLookAt</a></p>
+<H3>Revision History</H3>
+<P>
+1999/04/30 Changed Format
+</P>
+<br><br>
+
+</body>
+</html>

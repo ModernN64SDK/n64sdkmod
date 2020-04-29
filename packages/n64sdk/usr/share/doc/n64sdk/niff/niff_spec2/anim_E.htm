@@ -1,0 +1,1342 @@
+<html>
+
+<!..
+-- CHANGE START --
+1998/10/07
+
+All softimage scale were changed to unique scale. 
+Changes all "softimage scale" to "unique scale"
+
+-- CHANGE END --
+..>
+
+<HEAD>
+<TITLE>AnimNode</TITLE>
+</HEAD>
+<BODY LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff">
+
+<font face="arial" size="-1">
+<b><font size="3">12. AnimNode</font></b>
+<HR>
+
+<P>
+<b>(1) AnimGroup</b>
+<p>
+<blockquote>
+
+<table border="1" width="600">
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 use_animation_channel</font>
+</td>
+<td>
+<font face="arial" size="-1">When every channel has data, this is used instead of Anim, which was used by NIFF1.0. The following are the channels that are used:
+<font face="courier" size="2">
+<pre>
+<b>
+NIFF2_ANIM_CHANNEL_NO_USE                        0x00000000
+NIFF2_ANIM_CHANNEL_ROTATE_AXIS                   0x00000001
+NIFF2_ANIM_CHANNEL_ROTATE_X                      0x00000002
+NIFF2_ANIM_CHANNEL_ROTATE_Y                      0x00000004
+NIFF2_ANIM_CHANNEL_ROTATE_Z                      0x00000008
+NIFF2_ANIM_CHANNEL_ORIENTATION_XY                0x00000010
+NIFF2_ANIM_CHANNEL_TRANSLATION                   0x00000020
+NIFF2_ANIM_CHANNEL_UNIQUE_SCALE                  0x00000040
+NIFF2_ANIM_CHANNEL_CLASSICAL_SCALE               0x00000080
+NIFF2_ANIM_CHANNEL_ORIENTATION_CONSTRAINT        0x00000100
+NIFF2_ANIM_CHANNEL_DIRECTION_CONSTRAINT          0x00000200
+NIFF2_ANIM_CHANNEL_UPVECTOR_CONSTRAINT           0x00000400
+NIFF2_ANIM_CHANNEL_PREFERRED_AXIS_CONSTRAINT     0x00000800
+NIFF2_ANIM_CHANNEL_POSITION_CONSTRAINT           0x00001000
+NIFF2_ANIM_CHANNEL_UNIQUE_SCALE_CONSTRAINT       0x00002000
+NIFF2_ANIM_CHANNEL_CLASSICAL_SCALE_CONSTRAINT    0x00004000
+</b>
+</pre>
+</font>
+If the conventional Anim is used, please set ANIM_CHANNEL_NO_USE.<p>
+NIFF2_ANIM_CHANNEL_ROTATE_AXIS is the animation channel for rotation around the axis.<p>
+NIFF2_ANIM_CHANNEL_ROTATE_X is the animation channel specifying the angle of rotation around  the X axis.<p>
+NIFF2_ANIM_CHANNEL_ROTATE_Y is the animation channel specifying the angle of rotation around  the Y axis.<p>
+NIFF2_ANIM_CHANNEL_ROTATE_Z is the animation channel specifying the angle of rotation around  the Z axis.<p>
+NIFF2_ANIM_CHANNEL_ORIENTATION_XY is the animation channel specifying rotation along the X axis and Y axis.<p> 
+If the X axis and the Y axis are not orthogonal, please create software on the N64 side so the Y axis can be adjusted.<p>
+NIFF2_ANIM_CHANNEL_TRANSLATION is the animation channel specifying the translating value.<p>
+NIFF2_ANIM_CHANNEL_UNIQUE_SCALE is the animation channel specifying the unique scale used by Unique.<p>
+NIFF2_ANIM_CHANNEL_CLASSICAL_SCALE is the animation channel specifying the scale used by normal CG tools.<p>
+NIFF2_ANIM_CHANNEL_ORIENTATION_CONSTRAINT is the animation channel constraining the orientation value for the specified object.<p>
+NIFF2_ANIM_CHANNEL_DIRECTION_CONSTRAINT is the animation channel directing the X axis toward the specified object.<p>
+NIFF2_ANIM_CHANNEL_UPVECTOR_CONSTRAINT is the animation channel directing the Y axis toward the specified object.<p>
+NIFF2_ANIM_CHANNEL_PREFERRED_AXIS_CONSTRAINT is the animation channel directing the Z axis toward the specified object.<p>
+NIFF2_ANIM_CHANNEL_POSITION_CONSTRAINT is the animation channel which constrains translating to the specified object.<p>
+NIFF2_ANIM_CHANNEL_UNIQUE_SCALE_CONSTRAINT is the animation channel which constrains the unique scale to the specified object.<p>
+NIFF2_ANIM_CHANNEL_CLASSICAL_SCALE_CONSTRAINT is the animation channel which constrains the classical scale to the specified object.<p>
+If multiple animation channels are used simultaneously, please describe each with bitOR.  However, there are some impossible combinations as shown below:<p>
+RotateAxis, (RotateX, RotateY, RotateZ), OrientationXY cannot be used simultaneously.  However, RotateX, RotateY and RotateZ can be used in combination.<p>
+UniqueScale and ClassicalScale cannot be used simultaneously.<p>
+OrientationConstraint cannot be used simultaneously with RotateAxis, RotateY, RotateZ, OrientationXY.<p>
+UpVectorConstraint cannot be used simultaneously with RotateAxis, RotateX, RotateZ, OrientationXY.<p>
+PreferredAxisConstraint cannot be used simultaneously with RotateAxis, RotateX, RotateY, OrientationXY.<p>
+PositionConstraint and Translation cannot be used simultaneously.<p>
+UniqueScaleConstraint cannot be used simultaneously with UniqueScale, ClassicalScale, ClassicalScaleConstraint.<p>
+ClassicalScaleConstraint cannot be used simultaneously with uniqueScale, ClassicalScale, UniqueScaleConstraint.<p>
+
+DirectionConstraint cannot make use of RotateAxis, RotateX,
+RotateY and OrientationXY at the same time.
+A number of the same kinds of constraint cannot be used at the same
+time for moving, rotating, and scaling. </font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 rotate_axis_num</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the RotateAxis number.  If the RotateAxis channel is not used, please describe 0x0.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 rotate_x_num</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the RotateX number.  If the RotateX channel is not used, please describe 0x0.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 rotate_y_num</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the RotateY number.  If the RotateY channel is not used, please describe 0x0.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 rotate_z_num</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the RotateZ number.  If the RotateZ channel is not used, please describe 0x0.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 orientation_xy_num</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the OrientationXY number.  If the OrientationXY channel is not used, please describe 0x0.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 translation_num</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the Translation number.  If the Translation channel is not used, please describe 0x0.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 unique_scale_num</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the UniqueScale number.  If the UniqueScale channel is not used, please describe 0x0.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 classical_scale_num</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the ClassicalScale number.  If the ClassicalScale channel is not used, please describe 0x0.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 kind_of_orientation_constraint_node</font>
+</td>
+<td>
+<font face="arial" size="-1">The tags shown below describe the type of node that performs Orientation Constraint.
+<font face="courier" size="2">
+<pre>
+<b>
+TAG_OBJ_LIST            0x00020000
+TAG_CHAIN_ROOT_LIST     0x00240000
+TAG_JOINT_LIST          0x00250000
+TAG_EFFECTOR_LIST       0x00260000
+</b>
+</pre>
+</font>
+If not using Orientation Constraint or for an external file reference, please describe with 0xffffffff.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 orientation_constraint_node</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the node index number that performs Orientation Constraint.<p>
+If not using Orientation Constraint or for an external file reference, please describe with 0xffffffff.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 kind_of_direction_constraint_node</font>
+</td>
+<td>
+<font face="arial" size="-1">The tags shown below describe the type of node that performs Direction Constraint.
+<font face="courier" size="2">
+<pre>
+<b>
+TAG_OBJ_LIST            0x00020000
+TAG_CHAIN_ROOT_LIST     0x00240000
+TAG_JOINT_LIST          0x00250000
+TAG_EFFECTOR_LIST       0x00260000
+</b>
+</pre>
+</font>
+If not using Direction Constraint or for an external file reference, please describe with 0xffffffff.</font>
+</td>
+</tr>
+
+
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 direction_constraint_node</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the node index number that performs Direction Constraint.<p>
+If not using Direction Constraint or for an external file reference, please describe with 0xffffffff.</font>
+</td>
+</tr>
+
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 kind_of_upvector_constraint_node</font>
+</td>
+<td>
+<font face="arial" size="-1">The tags shown below describe the type of node that performs Upvector Constraint.
+<font face="courier" size="2">
+<pre>
+<b>
+TAG_OBJ_LIST            0x00020000
+TAG_CHAIN_ROOT_LIST     0x00240000
+TAG_JOINT_LIST          0x00250000
+TAG_EFFECTOR_LIST       0x00260000
+</b>
+</pre>
+</font>
+If not using Upvector Constraint or for an external file reference, please describe with 0xffffffff.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 upvector_constraint_node</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the node index number that performs UpVector Constraint.<p>
+If not using Upvector Constraint or for an external file reference, please describe with 0xffffffff.</font>
+</td>
+</tr>
+
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 kind_of_preferred_axis_constraint_node</font>
+</td>
+<td>
+<font face="arial" size="-1">The tags shown below describe the type of node that performs Preferred Axis Constraint.
+<font face="courier" size="2">
+<pre>
+<b>
+TAG_OBJ_LIST            0x00020000
+TAG_CHAIN_ROOT_LIST     0x00240000
+TAG_JOINT_LIST          0x00250000
+TAG_EFFECTOR_LIST       0x00260000
+</b>
+</pre>
+</font>
+If not using Preferred Axis Constraint or for an external file reference, please describe with 0xffffffff.</font>
+</td>
+</tr>
+
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 preferred_axis_constraint_node</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the node index number that performs Preferred Axis Constraint.<p>
+If not using Preferred Axis Constraint or for an external file reference, please describe with 0xffffffff.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 kind_of_position_constraint_node</font>
+</td>
+<td>
+<font face="arial" size="-1">The tags shown below describe the type of node that performs Position Constraint.
+<font face="courier" size="2">
+<pre>
+<b>
+TAG_OBJ_LIST            0x00020000
+TAG_CHAIN_ROOT_LIST     0x00240000
+TAG_JOINT_LIST          0x00250000
+TAG_EFFECTOR_LIST       0x00260000
+</b>
+</pre><BR>
+</font>
+If not using Position Constraint or for an external file reference, please describe with 0xffffffff.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 position_constraint_node</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the node index number that performs Position Constraint.<p>
+If not using Position Constraint or for an external file reference, please describe with 0xffffffff.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 kind_of_unique_scale_constraint_node</font>
+</td>
+<td>
+<font face="arial" size="-1">The tags shown below describe the type of node that performs Unique Scale Constraint.
+<font face="courier" size="2">
+<pre>
+<b>
+TAG_OBJ_LIST            0x00020000
+TAG_CHAIN_ROOT_LIST     0x00240000
+TAG_JOINT_LIST          0x00250000
+TAG_EFFECTOR_LIST       0x00260000
+</b>
+</pre>
+</font>
+If not using Unique Scale Constraint or for an external file reference, please describe with 0xffffffff.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 unique_scale_constraint_node</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the node index number that performs Unique Scale Constraint.<p>
+If not using Unique Scale Constraint or for an external file reference, please describe with 0xffffffff.</font>
+</td>
+</tr>
+
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 kind_of_classical_scale_constraint_node</font>
+</td>
+<td>
+<font face="arial" size="-1">The tags shown below describe the type of node that performs Classical Scale Constraint.
+<font face="courier" size="2">
+<pre>
+<b>
+TAG_OBJ_LIST            0x00020000
+TAG_CHAIN_ROOT_LIST     0x00240000
+TAG_JOINT_LIST          0x00250000
+TAG_EFFECTOR_LIST       0x00260000
+</b>
+</pre><BR>
+</font>
+If not using Classical Scale Constraint or for an external file reference, please describe with 0xffffffff.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 classical_scale_constraint_node</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the node index number that performs Classical Scale Constraint.<p>
+If not using Classical Scale Constraint or for an external file reference, please describe with 0xffffffff.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 external_orientation_constraint_file_name_index </font>
+</td>
+<td>
+<font face="arial" size="-1">If the Obj that performs Orientation Constraint references an external file, that file name is described with an ExternalNameList index number.<p>
+Please do not include the directory name etc. when describing this file name.<p>
+If there is no external reference, please describe with 0xffffffff.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 external_orientation_constraint_obj_name_index</font>
+</td>
+<td>
+<font face="arial" size="-1">If the Obj that performs Orientation Constraint references an external file, that Obj name is described with an ExternalNameList index number.<p>
+If there is no external reference, please describe with 0xffffffff.</font>
+</td>
+</tr>
+
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 external_direction_constraint_file_name_index </font>
+</td>
+<td>
+<font face="arial" size="-1">If the Obj that performs Direction Constraint references an external file, that file name is described with an ExternalNameList index number.<p>
+Please do not include the directory name etc. when describing this file name.<p>
+If there is no external reference, please describe with 0xffffffff.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 external_direction_constraint_obj_name_index</font>
+</td>
+<td>
+<font face="arial" size="-1">If the Obj that performs Direction Constraint references an external file, that Obj name is described with an ExternalNameList index number.<p>
+If there is no external reference, please describe with 0xffffffff.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 external_upvector_constraint_file_name_index</font> 
+</td>
+<td>
+<font face="arial" size="-1">If the Obj that performs Upvector Constraint references an external file, that file name is described with an ExternalNameList index number.<p>
+Please do not include the directory name etc. when describing this file name.<p>
+If there is no external reference, please describe with 0xffffffff.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 external_upvector_constraint_obj_name_index</font>
+</td>
+<td>
+<font face="arial" size="-1">If the Obj that performs Upvector Constraint references an external file, that Obj name is described with an ExternalNameList index number.<p>
+If there is no external reference, please describe with 0xffffffff.</font>
+</td>
+</tr>
+
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 external_preferred_axis_constraint_file_name_index </font>
+</td>
+<td>
+<font face="arial" size="-1">If the Obj that performs Preferred Axis Constraint references an external file, that file name is described with an ExternalNameList index number.<p>
+Please do not include the directory name etc. when describing this file name.<p>
+If there is no external reference, please describe with 0xffffffff.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 external_preferred_axis_constraint_obj_name_index</font>
+</td>
+<td>
+<font face="arial" size="-1">If the Obj that performs Preferred Axis Constraint references an external file, that Obj name is described with the ExternalNameList index number.<p>
+If there is no external reference, please describe with 0xffffffff.</font>
+</td>
+</tr>
+
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 external_position_constraint_file_name_index </font>
+</td>
+<td>
+<font face="arial" size="-1">If the Obj that performs Position Constraint references an external file, that file name is described with the ExternalNameList index number.<p>
+Please do not include the directory name etc. when describing this file name.<p>
+If there is no external reference, please describe with 0xffffffff.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 external_position_constraint_obj_name_index</font>
+</td>
+<td>
+<font face="arial" size="-1">If the Obj that performs Position Constraint references an external file, that Obj name is described with the ExternalNameList index number.<p>
+If there is no external reference, please describe with 0xffffffff.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 external_unique_scale_constraint_file_name_index </font>
+</td>
+<td>
+<font face="arial" size="-1">If the Obj that performs Unique Scale Constraint references an external file, that file name is described with the ExternalNameList index number.<p>
+Please do not include the directory name etc. when describing this file name.<p>
+If there is no external reference, please describe with 0xffffffff.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 external_unique_scale_constraint_obj_name_index</font>
+</td>
+<td>
+<font face="arial" size="-1">If the Obj that performs Unique Scale Constraint references an external file, that Obj name is described with the ExternalNameList index number.<p>
+If there is no external reference, please describe with 0xffffffff.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 external_classical_scale_constraint_file_name_index </font>
+</td>
+<td>
+<font face="arial" size="-1">If the Obj that performs Classical Scale Constraint references an external file, that file name is described with the ExternalNameList index number.<p>
+Please do not include the directory name etc. when describing this file name.<p>
+If there is no external reference, please describe with 0xffffffff.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 external_classical_scale_constraint_obj_name_index</font>
+</td>
+<td>
+<font face="arial" size="-1">If the Obj that performs Classical Scale Constraint references an external file, that Obj name is described with the ExternalNameList index number.<p>
+If there is no external reference, please describe with 0xffffffff.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">RotateAxis</font>
+</td>
+<td>
+<font face="arial" size="-1">This is the RotateAxis area.  This channel describes rotation by specifying the axis of rotation.   When rotate_axis_num = 0, this area is not described.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">RotateX</font>
+</td>
+<td>
+<font face="arial" size="-1">This is the channel that describes rotation around the X axis.  When rotate_x_num = 0, this area is not described.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">RotateY</font>
+</td>
+<td>
+<font face="arial" size="-1">This is the channel that describes rotation around the Y axis.  When rotate_y_num = 0, this area is not described.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">RotateZ</font>
+</td>
+<td>
+<font face="arial" size="-1">This is the channel that describes rotation around the Z axis.  When rotate_z_num = 0, this area is not described.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">OrientationXZ</font>
+</td>
+<td>
+<font face="arial" size="-1">This is the channel that describes rotation when it is expressed by orientation.  When orientation_xy_num = 0, this area is not described.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">Translation</font>
+</td>
+<td>
+<font face="arial" size="-1">This is the area that describes translating.  When translation_num = 0, this are is not described.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">UniqueScale</font>
+</td>
+<td>
+<font face="arial" size="-1">This is the area that describes UniqueScale.  When unique_scale_num = 0, this area is not described.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">ClassicalScale</font>
+</td>
+<td>
+<font face="arial" size="-1">This is the area that describes ClassicalScale scaling used by normal CG tools.  When classical_scale_num = 0, this area is not described.</font>
+</td>
+</tr>
+</table>
+
+<p>
+<a href="./appendix/unique_scale_E.htm">Appendix ... about Unique Scale</a>
+<p>
+<a href="./anim_C.htm">Go to the data chunk</a>
+<p>
+</blockquote>
+
+<b>(2) RotateAxis</b>
+<blockquote>
+
+<table border="1" width="600">
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 interpolation_type</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the interpolation type between this key and the next key.  The following flags have been defined:
+<font face="courier" size="2">
+<pre>
+<b>
+NIFF2_INTERPOLATION_TYPE_CONST&#9;&#9;0x00000000
+NIFF2_INTERPOLATION_TYPE_FULL&#9;&#9;0x00000001
+NIFF2_INTERPOLATION_TYPE_LINEAR&#9;&#9;0x00000002
+NIFF2_INTERPOLATION_TYPE_HERMITE&#9;0x00000003
+</b>
+</pre>
+</font>
+NIFF2_INTERPOLATION_TYPE_CONST retains data from this key to the next key.  In this case, all acceleration data is ignored.<p>
+NIFF2_INTERPOLATION_TYPE_FULL expresses full frame animation.  Please describe data for all keys.  In this case, all acceleration data is ignored.<p>
+NIFF2_INTERPOLATION_TYPE_LINEAR performs linear interpolation from this key to the next key.  In this case, all acceleration data is ignored.<p>
+NIFF2_INTERPOLATION_TYPE_HERMITE uses the Hermite function to perform 3D interpolation from this key to the next key.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 key</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the Key value.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">float axis_x</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the X component of the direction vector of the normalized rotation axis.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">float axis_y</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the Y component of the direction vector of the normalized rotation axis.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">float axis_z</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the Z component of the direction vector of the normalized rotation axis.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">float rotation_angle</font>
+</td>
+<td>
+<font face="arial" size="-1">Uses radians to describe the angle around the rotation axis.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">float differential_axis_x</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the X component of the connection vector for Hermite interpolation concerning the direction vector of the rotation axis.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">float differential_axis_y</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the Y component of the connection vector for Hermite interpolation concerning the direction vector of the rotation axis.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">float differential_axis_z</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the Z component of the connection vector for Hermite interpolation concerning the direction vector of the rotation axis.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">float differential_rotation_angle</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the connection vector for Hermite interpolation concerning the angle around the rotation axis.</font>
+</td>
+</tr>
+</table>
+<p>
+<a href="./anim_C.htm">Go to the data chunk</a>
+<p>
+</blockquote>
+
+<b>(3) RotateX</b>
+<blockquote>
+<table border="1" width="600">
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 interpolation_type</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the interpolation type from this key to the next key.  The following flags  have been defined:
+<font face="courier" size="2">
+<pre>
+<b>
+NIFF2_INTERPOLATION_TYPE_CONST&#9;&#9;0x00000000
+NIFF2_INTERPOLATION_TYPE_FULL&#9;&#9;0x00000001
+NIFF2_INTERPOLATION_TYPE_LINEAR&#9;&#9;0x00000002
+NIFF2_INTERPOLATION_TYPE_HERMITE&#9;0x00000003
+</b>
+</pre>
+</font>
+NIFF2_INTERPOLATION_TYPE_CONST retains data from this key to the next key.  In this case, all acceleration data is ignored.<p>
+NIFF2_INTERPOLATION_TYPE_FULL expresses full frame animation.  Please describe data for all keys.  In this case, all acceleration data is ignored.<p>
+NIFF2_INTERPOLATION_TYPE_LINEAR performs linear interpolation from this key to the next key.  In this case, all acceleration data is ignored.<p>
+NIFF2_INTERPOLATION_TYPE_HERMITE uses the Hermite function to perform 3D interpolation from this key to the next key.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 key</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the Key value.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">float rotate_angle</font>
+</td>
+<td>
+<font face="arial" size="-1">Uses radians to describes the rotation angle around the X axis.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">float differential_rotate_angle</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the connection vector for Hermite interpolation concerning the rotation angle around the X axis.</font>
+</td>
+</tr>
+</table>
+
+<p>
+<a href="./anim_C.htm">Go to the data chunk</a>
+<p>
+</blockquote>
+
+<b>(4) RotateY</b>
+<blockquote>
+
+<table border="1" width="600">
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 interpolation_type</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the interpolation type from this key to the next key.  The following flags have been defined:
+<font face="courier" size="2">
+<pre>
+<b>
+NIFF2_INTERPOLATION_TYPE_CONST&#9;&#9;0x00000000
+NIFF2_INTERPOLATION_TYPE_FULL&#9;&#9;0x00000001
+NIFF2_INTERPOLATION_TYPE_LINEAR&#9;&#9;0x00000002
+NIFF2_INTERPOLATION_TYPE_HERMITE&#9;0x00000003
+</b>
+</pre>
+</font>
+NIFF2_INTERPOLATION_TYPE_CONST retains data from this key to next key.  In this case, all acceleration data is ignored.<p>
+NIFF2_INTERPOLATION_TYPE_FULL expresses full frame animation.  Please describe data for all keys.  In this case, all acceleration data is ignored.<p>
+NIFF2_INTERPOLATION_TYPE_LINEAR performs linear interpolation from this key to the next key.  In this case, all acceleration data is ignored.<p>
+NIFF2_INTERPOLATION_TYPE_HERMITE uses the Hermite function to perform 3D interpolation from this key to the next key.  </font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 key</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the Key value.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">float rotate_angle</font>
+</td>
+<td>
+<font face="arial" size="-1">Uses radians to describe the rotation angle around the Y axis.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">float differential_rotate_angle</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the connection vector for Hermit interpolation concerning the rotation angle around the Y axis.</font>
+</td>
+</tr>
+</table>
+<p>
+<a href="./anim_C.htm">Go to the data chunk</a>
+<p>
+</blockquote>
+
+<b>(5) RotateZ</b>
+<blockquote>
+
+<table border="1" width="600">
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 interpolation_type</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the interpolation type from this key to the next key.  The following flags have been defined:
+<font face="courier" size="2">
+<pre>
+<b>
+NIFF2_INTERPOLATION_TYPE_CONST&#9;&#9;0x00000000
+NIFF2_INTERPOLATION_TYPE_FULL&#9;&#9;0x00000001
+NIFF2_INTERPOLATION_TYPE_LINEAR&#9;&#9;0x00000002
+NIFF2_INTERPOLATION_TYPE_HERMITE&#9;0x00000003
+</b>
+</pre>
+</font>
+NIFF2_INTERPOLATION_TYPE_CONST retains data from this key to the next key.  In this case, all acceleration data is ignored.<p>
+NIFF2_INTERPOLATION_TYPE_FULL expresses full frame animation.  Please describe data for all keys.  In this case, all acceleration data is ignored.<p>
+NIFF2_INTERPOLATION_TYPE_LINEAR performs linear interpolation from this key to the next key.  In this case, all acceleration data is ignored.<p>
+NIFF2_INTERPOLATION_TYPE_HERMITE uses the Hermite function to perform 3D interpolation from this key to the next key. </font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 key</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the Key value.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">float rotate_angle</font>
+</td>
+<td>
+<font face="arial" size="-1">Uses radians to describe the rotation angle around the Z axis.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">float differential_rotate_angle</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the connection vector for Hermite interpolation concerning the rotation angle around the Z axis.</font>
+</td>
+</tr>
+</table>
+<p>
+<a href="./anim_C.htm">Go to the data chunk</a>
+<p>
+</blockquote>
+
+<b>(6) OrientationXY</b>
+<blockquote>
+
+<table border="1" width="600">
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 interpolation_type</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the interpolation type from this key to the next key.  The following flags have been defined:
+<font face="courier" size="2">
+<pre>
+<b>
+NIFF2_INTERPOLATION_TYPE_CONST&#9;&#9;0x00000000
+NIFF2_INTERPOLATION_TYPE_FULL&#9;&#9;0x00000001
+NIFF2_INTERPOLATION_TYPE_LINEAR&#9;&#9;0x00000002
+NIFF2_INTERPOLATION_TYPE_HERMITE&#9;0x00000003
+</b>
+</pre>
+</font>
+NIFF2_INTERPOLATION_TYPE_CONST retains data from this key to the next key.  In this case, all acceleration data is ignored.<p>
+NIFF2_INTERPOLATION_TYPE_FULL expresses full frame animation.  Please describe data for all keys.  In this case, all acceleration data is ignored.<p>
+NIFF2_INTERPOLATION_TYPE_LINEAR performs linear interpolation from this key to the next key.  In this case, all acceleration data is ignored.<p>
+NIFF2_INTERPOLATION_TYPE_HERMITE uses the Hermit function to perform 3D interpolation from this key to the next key.  </font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 key</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the Key value.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">float x_axis_x</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the X component of the normalized X axis.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">float x_axis_y</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the Y component of the normalized X axis.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">float x_axis_z</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the Z component of the normalized X axis.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">float y_axis_x</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the X component of the normalized Y axis.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">float y_axis_y</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the Y component of the normalized Y axis.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">float y_axis_z</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the Z component of the normalized Y axis.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">float differential_x_axis_x</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the connection vector for Hermite interpolation concerning the X component of the X axis.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">float differential_x_axis_y</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the connection vector for Hermite interpolation concerning the Y component of the X axis.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">float differential_x_axis_z</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the connection vector for Hermite interpolation concerning the Z component of the X axis.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">float differential_y_axis_x</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the connection vector for Hermite interpolation concerning the X component of the Y axis.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">float differential_y_axis_y</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the connection vector for Hermite interpolation concerning the Y component of the Y axis.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">float differential_y_axis_z</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the connection vector for Hermite interpolation concerning the Z component of the Y axis.</font>
+</td>
+</tr>
+</table>
+<p>
+<a href="./anim_C.htm">Go to the data chunk</a>
+<p>
+</blockquote>
+
+<b>(7) Translation</b>
+<blockquote>
+
+<table border="1" width="600">
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 interpolation_type</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the interpolation type from this key to the next key.  The following flags have been defined:
+<font face="courier" size="2">
+<pre>
+<b>
+NIFF2_INTERPOLATION_TYPE_CONST&#9;&#9;0x00000000
+NIFF2_INTERPOLATION_TYPE_FULL&#9;&#9;0x00000001
+NIFF2_INTERPOLATION_TYPE_LINEAR&#9;&#9;0x00000002
+NIFF2_INTERPOLATION_TYPE_HERMITE&#9;0x00000003
+</b>
+</pre>
+</font>
+NIFF2_INTERPOLATION_TYPE_CONST retains the data from this key to the next key.  In this case, all acceleration data is ignored.<p>
+NIFF2_INTERPOLATION_TYPE_FULL expresses full frame animation.  Please describe the data for all keys.  In this case, all acceleration data is ignored.<p>
+NIFF2_INTERPOLATION_TYPE_LINEAR performs linear interpolation from this key to the next key.  In this case, all acceleration data is ignored.<p>
+NIFF2_INTERPOLATION_TYPE_HERMITE uses the Hermite function to perform 3D interpolation from this key to the next key.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 key</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the Key value.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">float translate_x</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the X component of the translation.</font>
+</td>
+</tr>
+<tr>
+<td nowrap>
+<font face="arial" size="-1">float translate_y</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the Y component of the translation.</font>
+</td>
+</tr>
+<tr>
+<td nowrap>
+<font face="arial" size="-1">float translate_z</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the Z component of the translation.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">float differential_translate_x</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the connection vector for Hermite interpolation concerning the X component of the translation.</font>
+</td>
+</tr>
+<tr>
+<td nowrap>
+<font face="arial" size="-1">float differential_translate_y</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the connection vector for Hermite interpolation concerning the Y component of the translation.</font>
+</td>
+</tr>
+<tr>
+<td nowrap>
+<font face="arial" size="-1">float differential_translate_z</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the connection vector for Hermite interpolation concerning the Z component of the translation.</font>
+</td>
+</tr>
+</table>
+<p>
+<a href="./anim_C.htm">Go to the data chunk</a>
+<p>
+</blockquote>
+
+<b>(8) UniqueScale</b>
+<blockquote>
+
+<table border="1" width="600">
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 interpolation_type</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the interpolation type from this key to the next key.  The following flags have been defined:
+<font face="courier" size="2">
+<pre>
+<b>
+NIFF2_INTERPOLATION_TYPE_CONST&#9;&#9;0x00000000
+NIFF2_INTERPOLATION_TYPE_FULL&#9;&#9;0x00000001
+NIFF2_INTERPOLATION_TYPE_LINEAR&#9;&#9;0x00000002
+NIFF2_INTERPOLATION_TYPE_HERMITE&#9;0x00000003
+</b>
+</pre>
+</font>
+NIFF2_INTERPOLATION_TYPE_CONST retains the data from this key to the next key.  In this case, all acceleration data is ignored.<p>
+NIFF2_INTERPOLATION_TYPE_FULL expresses full frame animation.  Please describe the data for all keys.  In this case, all acceleration data is ignored.<p>
+NIFF2_INTERPOLATION_TYPE_LINEAR performs linear interpolation from this key to the next key.  In this case, all acceleration data is ignored.<p>
+NIFF2_INTERPOLATION_TYPE_HERMITE uses the Hermite function to perform 3D interpolation from this key to the next key.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 key</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the Key value.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">float scale_x</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the scale value in the X axis direction.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">float scale_y</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the scale value in the Y axis direction.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">float scale_z</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the scale value in the Z axis direction.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">float differential_scale_x</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the connection vector for Hermite interpolation concerning the scale value in the X axis direction.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">float differential_scale_y</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the connection vector for Hermite interpolation concerning the scale value in the Y axis direction.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">float differential_scale_z</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the connection vector for Hermite interpolation concerning the scale value in the Z axis direction.</font>
+</td>
+</tr>
+</table>
+<p>
+<a href="./appendix/unique_scale_E.htm">Appendix ... about Unique Scale</a>
+<p>
+<a href="./anim_C.htm">Go to the data chunk</a>
+<p>
+</blockquote>
+
+<b>(9) ClassicalScale</b>
+<blockquote>
+
+<table border="1" width="600">
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 interpolation_type</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the interpolation type from this key to the next key.  The following flags have been defined:
+<font face="courier" size="2">
+<pre>
+<b>
+NIFF2_INTERPOLATION_TYPE_CONST&#9;&#9;0x00000000
+NIFF2_INTERPOLATION_TYPE_FULL&#9;&#9;0x00000001
+NIFF2_INTERPOLATION_TYPE_LINEAR&#9;&#9;0x00000002
+NIFF2_INTERPOLATION_TYPE_HERMITE&#9;0x00000003
+</b>
+</pre>
+</font>
+NIFF2_INTERPOLATION_TYPE_CONST retains the data from this key to the next key.  In this case, all acceleration data is ignored.<p>
+NIFF2_INTERPOLATION_TYPE_FULL expresses full frame animation.  Please describe the data for all keys.  In this case, all acceleration data is ignored.<p>
+NIFF2_INTERPOLATION_TYPE_LINEAR performs linear interpolation from this key to the next key.  In this case, all acceleration data is ignored.<p>
+NIFF2_INTERPOLATION_TYPE_LINEAR uses the Hermite function to perform 3D interpolation from this key to the next key.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 key</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the Key value.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">float scale_x</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the scale value in the X axis direction.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">float scale_y</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the scale value in the Y axis direction.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">float scale_z</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the scale value in the Z axis direction.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">float differential_scale_x</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the connection vector for Hermite interpolation concerning the scale value in the X axis direction.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">float differential_scale_y</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the connection vector for Hermite interpolation concerning the scale value in the Y axis direction.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">float differential_scale_z</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the connection vector for Hermite interpolation concerning the scale value in the Z axis direction.</font>
+</td>
+</tr>
+</table>
+
+<p>
+<a href="./anim_C.htm">Go to the data chunk</a>
+<p>
+</blockquote>
+
+<hr>
+
+</body>
+</html>

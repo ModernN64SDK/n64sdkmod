@@ -1,0 +1,35 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Graphics-Chapter 9  Advanced Texture Mapping</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/22/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<font style="font-size:12pt"><B>9.2  Multi-tile Textures</B></FONT>
+<br>
+<P>
+ The simplest example of the use of multi-tile textures is for the mapping of a number of textures.  If you can load a collection of textures together at once in TMEM, then when you map different textures to different polygons you do not need to reload the texture data each time.
+     In this way, the programmer can also manage textures as tiles.  Therefore, in order to make use of the N64's advanced texture functionality, you need a firm grasp of the concept of tiles.<br><br>
+
+     There are a number of effects you cannot produce on the N64 without the use of multi-tile textures.  The various effects can be broadly grouped into the two following categories:
+</P>
+<DL>
+<DT>1. The use of different textures in cycle 1 and cycle 2.
+<DD>   (We will call these no-LOD multi-tile textures)
+<DT>2. The use of different textures that comply to the LOD
+<DD>  (We will call these LOD multi-tile textures)
+</DL>
+<P>
+Morphing is a good example of this first class of effects.  It is used in Super Mario 64 to gradually change the portrait of Princess Peach into Bowser.  To achieve this special effect, the textures for Princess Peach and Bowser are loaded into two tiles, and the combine mode is set for a linear interpolation between the two.  By changing the interpolation coefficient in each frame, you can smoothly morph between the two textures.  There is a sample program in Chapter 10 that employs this idea to morph texture rectangles.
+<br><br>
+     Mipmapping is a perfect example of this second classification of effects.  In mipmapping, the texture used for mapping is changed(interpolation of the textures is also done) to match the size of the polygon being rendered in order to reduce texture aliasing which occurs when the polygon becomes smaller. 
+<br><br>
+     The use of LOD with multi-tile textures is determined by whether G_TL_TILE (no LOD) or G_TL_LOD is set in the gDPSetTextureLOD command.
+<br><br>
+Although morphing can be done with no-LOD multi-tile textures, the example we gave from Super Mario 64 was actually done with multi-tile textures corresponding to the LOD of the portrait.
+</P>
+</BODY>
+</HTML>

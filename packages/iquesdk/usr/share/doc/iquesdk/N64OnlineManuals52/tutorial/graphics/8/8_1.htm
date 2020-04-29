@@ -1,0 +1,90 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Graphics-Chapter 8  Advanced Rendering Techniques</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/23/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<font style="font-size:16pt"><B>CHAPTER 8  ADVANCED RENDERING TECHNIQUES</B></FONT>
+<br><br>
+<HR SIZE=3 NOSHADE>
+<P>
+In all of the sample programs we have seen up to this point, we have used Fill mode to clear the framebuffer and Z buffer, and we have used 1-Cycle mode for the rendering of polygons.  The N64 system also has a 2-Cycle mode which is useful for more complicated kinds of rendering.  In this chapter, we will focus on an explanation of 2-Cycle mode, covering both the special features and points of caution regarding each pipeline mode (cycle type).
+</P>
+
+<font style="font-size:12pt"><B>8.1  Pipeline Mode (Cycle Type)</B></FONT>
+<P>
+  The RDP has four pipeline modes, which we will describe in separate sections below.  Switching between pipeline modes alters the structure of the RDP pipeline, changing the complexity of rendering and the richness of functionality.
+     In simple rendering mode, processing is fast but there is little functionality, whereas in high-function mode some rendering processes can take a lot of time.  Thus, you need to fully appreciate the different characteristics of each pipeline mode so you can use them efficiently.
+     When we talk about the rendering speed for each pipeline mode in the sections below, please remember that these are strictly the peak values.  The actual rendering efficiency will vary depending on whether or not you are using anti-aliasing and Z buffering, and where in RDRAM the framebuffer and Z buffer are located.
+</P>
+<p>
+<B>8.1.1  Fill Mode</B>
+<P>
+   When you set the RDP pipeline to Fill mode, you can fill (clear) the framebuffer and the Z buffer at the efficient rate of 64bits per clock tick.  That means if you have a 16bit framebuffer, you can fill 4 pixels per clock tick.  In Fill mode, pixels are filled so quickly that the processes in the other units of the RDP cannot keep up.  For this reason, the majority of the RDP calculation pipeline is not used in Fill mode.<br><br>
+     As the name implies, Fill mode is used to fill (clear) the color framebuffer and Z buffer.  In the sample programs we have seen up to now, Fill mode is set in the display list for initialization of the framebuffer and Z buffer.  As you can see from the schematic in Figure 8-1, the RDP pipeline has a very simple form when in Fill mode.
+</P>
+<P>
+<br>
+<IMG SRC="image24.gif">
+</P>
+<P>
+<B>Figure 8-1  The RDP pipeline in Fill mode</B>
+</P>
+<P>
+In Fill mode, absolutely no Combiner and Blender processes are performed.  There is a danger of the RDP hanging up if you access the Z buffer in the Blender when in Fill mode, so you should set the rendering mode as shown below so the Blender is kept in a safe state.
+</P>
+<P>
+  gDPSetRenderMode(G_RM_NOOP,G_RM_NOOP2);
+</P>
+<p>
+<B>8.1.2  Copy Mode</B>
+<P>
+ Copy mode lets you copy an image at the rate of 64bits per clock tick (4 pixels per clock for a 16bit framebuffer).  Pixels are copied quickly, so like Fill mode, the majority of the RDP calculation pipeline is not utilized in Copy mode.
+     Copy mode is used for the efficient copying (rendering) of 2D images.  In the sample program in Chapter 10, polygons are rendered in 1-Cycle mode and 2D images are rendered in Copy mode.  Of course, 2D images can also be rendered in 1-Cycle mode, and you can even set 2-Cycle mode if you are making use of multi-tile textures.<br><br>
+     Figure 8-2 is a schematic of the RDP pipeline in Copy mode.  As you can see, if you exclude the alpha compare write enable/disable function, the only ability Copy mode has is to copy data from texture memory to the framebuffer.
+</P>
+<P>
+<br>
+<IMG SRC="image25.gif">
+</P>
+<P>
+<B>Figure 8-2  The RDP pipeline in Copy mode</B>
+</P>
+<P>
+ No processes are performed in the Combiner and the Blender when in Copy mode, just like when in Fill mode. There is a danger of the RDP hanging if you access the Z buffer in the Blender when in Copy mode, so you should set the rendering mode as shown below so the Blender is kept in a safe state.
+</P>
+<P>
+  gDPSetRenderMode(G_RM_NOOP,G_RM_NOOP2);
+</P>
+<p>
+<B>8.1.3  1-Cycle Mode</B>
+<P>
+1-Cycle mode is the mode for creating images at the rate of 1 pixel per clock tick.  When rendering polygons you must use 1-Cycle mode (or 2-Cycle mode).
+     Unlike Fill mode and Copy mode, in 1-Cycle mode all of the functional blocks of the RDP come into play, including the Texture Unit and the Combiner and Blender, as schematized in Figure 8-3.
+</P>
+<P>
+<br>
+<IMG SRC="image26.gif">
+</P>
+<P>
+<B>Figure 8-3  The RDP pipeline in 1-Cycle mode</B>
+</P>
+<p>
+<B>8.1.4  2-Cycle Mode</B>
+<P>
+ In 2-Cycle mode, each pixel is created in two passes down the same kind of pipeline seen in 1-Cycle mode.  As the name implies, rendering in 2-Cycle mode is performed at the rate of 1 pixel every 2 clock ticks.
+     Figure 8-4 shows a schematic of the RDP pipeline in 2-Cycle mode.  As you can see, it is not simply two of the 1-Cycle pipelines linked end-to-end.  Rather, it is structured as if the Texture Units and Combiners were operating in parallel.
+</P>
+<P>
+<br>
+<IMG SRC="image27.gif">
+</P>
+<P>
+<B>Figure8-4  The RDP pipeline in 2-Cycle mode</B>
+</P>
+</BODY>
+</HTML>

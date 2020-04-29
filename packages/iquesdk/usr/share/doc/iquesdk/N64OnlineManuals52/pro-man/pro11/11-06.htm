@@ -1,0 +1,76 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 11 - RSP Graphics Programming</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. -->
+</head>
+
+<h1>11.6 Clipping and Culling</h1>
+
+<p>3D <a href="../../keywords/index/data/graphics.htm#clipping" target="keywords">clipping</a> is automatically enabled all the time. There are two modes which can be adjusted for performance and appearance: ClipRatio and NearClipping. Please see <a href="../pro12/12-03.htm#01">Section 12.3.1, "Scissoring."</a></p>
+
+<p>3D clipping is expensive and should be avoided.   Methods employed by the host application which can reduce the amount of <a href="../../keywords/index/data/graphics.htm#geometry" target="keywords">geometry</a> that gets clipped are a good idea.  Crude visibility determination algorithms, geometric level-of-detail, and careful scene construction can help improve clipping performance dramatically. </p>
+
+<p>The clipping algorithm is sensitive to large numbers and overflows.  Refer to <a href="11-03.htm#04">11.3.4 "Note on Coordinate Systems and Big Numbers"</a> in the Matrix State section for notes on how to avoid clipping problems.</p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="01"><h2>11.6.1 ClipRatio</h2></a>
+
+<p>The Clip Ratio feature helps the application to clip less. 
+
+<p>Generally (when ClipRatio is set to FRUSTRATIO_1) the RSP clips to the <a href="../../keywords/index/data/graphics.htm#clipping pyramid" target="keywords">clipping pyramid</a> which is defined by the projection and viewing <a href="../../keywords/index/data/graphics.htm#matrix" target="keywords">matrices</a> (often created using <a href="../../n64man/gu/guPerspective.htm">guPerspective</a> and guLookAt respectively).  This is the area which is <A target="keywords" HREF="../../keywords/index/data/system.htm#map">mapped</a> by the <a href="../../n64man/gsp/gSPViewport.htm">gSPViewport</a> command and usually corresponds to the entire frame buffer. Objects outside this area are scissored by the RDP, so clipping them is not necessary.  The ClipRatio command can set the area which is clipped between 1 and 6 times the size of the <a href="../../keywords/index/data/graphics.htm#viewing pyramid" target="keywords">viewing frustum</a>.  <a href="../../keywords/index/data/graphics.htm#polygon" target="keywords">Polygons</a> which are completely on the screen are drawn without clipping.   Polygons which are partially onscreen but completely within the enlarged frustum are drawn without clipping (the extra portions are scissored away).  Polygons which are entirely offscreen are trivially rejected (whether they are inside or outside the frustrum).  The only polygons which are clipped are the large polygons which stretch all the way from onscreen to outside the enlarged clipping boundary.  There is some overhead for drawing sections of polygons which are then scissored away, but it is
+much smaller than the time to draw actual onscreen pixels and is usually faster than clipping.  Different values of ClipRatio can be tried to obtain the best performance.  High values of ClipRatio are suspected to be associated with "texture shuffle" bugs, so if you see the texture shuffling you could try lower values of ClipRatio.   
+</p>
+
+<p>To set the ClipRatio so that the clipping frustrum is 3x the size of the screen: </p>
+
+<blockquote><pre>
+<a href="../../n64man/gsp/gSPClipRatio.htm">gSPClipRatio</a>(FRUSTRATIO_3),
+</pre></blockquote>
+
+<p>You can use values of FRUSTRATIO_1, FRUSTRATIO_2, ..., FRUSTRATIO_6.</p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="02"><h2>11.6.2 Near Clipping and <a href="../../n64man/ucode/gspFast3D.htm">gspF3DNoN</a> microcode</h2></a>
+
+<p>3D clipping causes geometry which is outside of a 3D box called the "Clipping Frustrum" to be clipped away (i.e., not <a href="../../keywords/index/data/graphics.htm#rendering" target="keywords">rendered</a>). The left, right, top and bottom of this <a href="../../keywords/index/data/graphics.htm#clipping pyramid box" target="keywords">clipping frustum box</a> correspond to the left, right, top, and bottom of the screen.  However the side facing towards the viewer and the side facing away from the viewer do not correspond to physical parts of the screen.  The "far plane" is the side of the box farthest from the viewer.  Objects which are farther away than this plane are not rendered.  Likewise the "near plane" is the side of the box closest to the viewer.  Objects which are closer to the viewer than this plane are not rendered.  The near and far clipping planes can cause visual problems.  Objects which get too far away will suddenly disappear as they cross the far clipping plane.  Also, objects which get too close to the viewer will suddenly disappear as they cross the near clipping plane. </p>
+
+<p>There is a solution to these problems. The near plane problem can be partially solved by using the <a href="../../n64man/ucode/gspFast3D.htm">gspF3DNoN</a> <A target="keywords" HREF="../../keywords/index/data/system.htm#microcode">microcode</a> (which is an acronym for Fast 3D No Near clipping).  The <a href="../../n64man/ucode/gspFast3D.htm">gspF3DNoN</a> microcode will not clip objects between the viewer and the near clipping plane (objects which would have been clipped away by the <a href="../../n64man/ucode/gspFast3D.htm">gspFast3D</a> microcode).  However, Z buffering will not work correctly in this area. Objects between the viewer and the near plane will hide objects which are behind the near plane, but objects between the viewer and the near plane will not correctly hide other objects between the viewer and the near plane.  For this reason it is important for the application to
+ensure that only one object at a time comes closer to the viewer than the near plane.  </p>
+
+<p>There is a solution to the far plane problem too. Objects which get farther away from the viewer than the far plane visually <a href="../../keywords/index/data/graphics.htm#pop-out and pop-in" target="keywords">"pop" out</a> out of view, and objects approaching the viewer "pop" into view.  The Fog effect can be used to make objects gradually fade into a distant fog, or slowly appear through a distant fog, instead of popping into and out of view. Please see <a href="../pro11/11-08.htm">Section 11.8, "Vertex Fog State"</a> for details. </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="03"><h2>11.6.3 Back-Face Polygon Culling</h2></a>
+
+<p>The geometry engine of the RSP implements a flexible polygon <a href="../../keywords/index/data/graphics.htm#culling" target="keywords">culling</a> algorithm; either the front-facing, the back-facing, neither, or both types of polygons can be culled before rasterization.  This offers the programmer the most database flexibility. Geometry can be ordered in any direction or re-used with different culling flags in order to achieve effects such as interior <a href="../../keywords/index/data/graphics.htm#surface" target="keywords">surfaces</a>, 2-sided polygons, etc. </p>
+
+<table border=1 align="center">
+  <caption><a name="t11-09"><strong>Table 11-9 <a href="../../n64man/gsp/gSPSetGeometryMode.htm">gsSPSetGeometryMode</a>(unsigned int n)</strong></a></caption>
+  <tr><th>Parameter</th><th>Values</th></tr>
+  <tr><td align="center">n</td><td>G_CULL_FRONT<br>
+      G_CULL_BACK<br>
+      G_CULL_BOTH<br></td></tr>
+</table>
+
+<p></p>
+
+<table border=1 align="center">
+  <caption><a name="t11-10"><strong>Table 11-10 <a href="../../n64man/gsp/gSPClearGeometryMode.htm">gsSPClearGeometryMode</a>(unsigned int n)</strong></a></caption>
+  <tr><th>Parameter</th><th>Values</th></tr>
+  <tr><td align="center">n</td><td>G_CULL_FRONT<br>
+      G_CULL_BACK<br>
+      G_CULL_BOTH<br></td></tr>
+</table>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="04"><h2>11.6.4 Volume Culling</h2></a>
+
+<p>The RCP can perform <a href="../../keywords/index/data/graphics.htm#volume culling" target="keywords">volume culling</a>.  The volume of an object is described to the RCP and the RCP only draws the object if the described volume is entirely or partially onscreen.   If the volume is entirely offscreen then the <a href="../../keywords/index/data/graphics.htm#display list" target="keywords">display list</a> is quickly skipped.</p>
+
+<p>The volume of an object is described with a number of vertices surrounding the object. The vertices may be part of the object or not.  They can be 4 vertices describing a pyramidal volume, 8 points describing a cube, or any other convex shape.  These vertices should be sent to the RCP using a <a href="../../n64man/gsp/gSPVertex.htm">gSPVertex</a> command just like regular vertices (note: you may want to turn lighting and fog off when these vertices are sent for better performance).  Then the <a href="../../n64man/gsp/gSPCullDisplayList.htm">gsSPCullDisplayList</a> command is sent.  If the volume is entirely off the screen then the command acts like <a href="../../n64man/gsp/gSPEndDisplayList.htm">gsSPEndDisplayList</a> and the rest of the display list is skipped.   Otherwise the command acts as a NO OP and the display list processing continues. </p>
+
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+</body> </html>

@@ -1,0 +1,211 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.
+  PWC- updated formatting
+-->
+<TITLE>guLoadTextureBlockMipMap</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>guLoadTextureBlockMipMap<FONT size="+0"> [Function]</FONT> </H1>
+
+<p><h3>Function</h3></p>
+
+<P>guLoadTextureBlockMipMap<br>
+
+<p><i>Creates MIP map texture and display list</P></i>
+
+<H3>Syntax</H3>
+<p>
+<PRE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gu.htm">gu.h</A> */
+int guLoadTextureBlockMipMap(
+        Gfx           **glist,
+        unsigned char *tbuf,
+        Image         *im, 
+        unsigned char startTile,
+        unsigned char pal,
+        unsigned char cms,
+        unsigned char cmt,
+        unsigned char masks,
+        unsigned char maskt, 
+        unsigned char shifts,
+        unsigned char shiftt,
+        unsigned char cfs,
+        unsigned char cft);
+</PRE></p>
+<H3>Arguments</H3>
+<p><DL>
+  <DT><B>glist</B>
+  <DD>Address of pointer of resulting display list (the pointer is incremented to point to end of display list)
+  <DD>
+  <DT><B>tbuf</B>
+  <DD>RSP segment address of buffer holding the MIP-map tiles. Make sure it is no bigger than TMEM - tbuf is an RSP segment address
+  <DD>
+  <DT><B>im</B>
+  <DD>Pointer to the Image structure containing the source image information
+  <DD>
+  <DT><B>startTile</B>
+  <DD>Tile descriptor index (0 ~ 7)
+  <DD>
+  <DT><B>pal</B>
+  <DD>Location of color index texture palette (0 ~ 15)
+  <DD>
+  <DT><B>cms</B>
+  <DD>s-axis mirror and wrap flags
+  <DD><B>G_TX_MIRROR</B> (Enable mirror operations)
+  <DD><B>G_TX_NOMIRROR</B> (Disable mirror operations)
+  <DD><B>G_TX_WRAP</B> (Enable wrap operations)
+  <DD>
+  <DT><B>cmt</B>
+  <DD>t-axis mirror and wrap flags
+  <DD><B>G_TX_MIRROR</B> (Enable mirror operations)
+  <DD><B>G_TX_NOMIRROR</B> (Disable mirror operations)
+  <DD><B>G_TX_WRAP</B> (Enable wrap operations)
+  <DD>
+  <DT><B>masks</B>
+  <DD>s-axis masks (0 ~ 15)
+  <DD><B>G_TX_NOMASK</B> (Do not mask, 0)
+  <DD><B>Numeric value n</B> (Mask, 1 ~ 15)
+  <DD>
+  <DT><B>maskt</B>
+  <DD>t-axis masks (0 ~ 15)
+  <DD><B>G_TX_NOMASK</B> (Do not mask, 0)
+  <DD><B>Numeric value n</B> (Mask, 1 ~ 15)
+  <DD>
+  <DT><B>shifts</B>
+  <DD>s-coordinate shift value (for lower level of detail textures, 0 ~ 15)
+  <DD><B>G_TX_NOLOD</B> (Do not shift, 0)
+  <DD><B>Numerical value n</B> (Shift, 1 ~ 15)
+  <DD>
+  <DT><B>shiftt</B>
+  <DD>t-coordinate shift value (for lower level of detail textures, 0 ~ 15)
+  <DD><B>G_TX_NOLOD</B> (Do not shift, 0)
+  <DD><B>Numerical value n</B> (Shift, 1 ~ 15)
+  <DD>
+  <DT><B>cfs</B>
+  <DD>s-axis clamp flag
+  <DD><B>G_TX_CLAMP</B> (Enable clamp operations)
+  <DD>
+  <DT><B>cft</B>
+  <DD>t-axis clamp flag
+  <DD><B>G_TX_CLAMP</B> (Enable clamp operations)
+</DL></p>
+<H3>Returned Value</H3>
+<P>
+Termination flag
+<TABLE BORDER="0" CELLSPACING="0" CELLPADDING="5">
+<TR>
+<TD ALIGN="left" VALIGN="middle">
+<TABLE BORDER="1" CELLSPACING="0" CELLPADDING="3">
+<TR>
+<TD NOWRAP ALIGN="left" VALIGN="middle">
+<B>0</B>
+</TD>
+<TD NOWRAP ALIGN="left" VALIGN="middle">
+Done
+</TD>
+<TD ALIGN="left" VALIGN="middle">
+Normal termination.
+</TD>
+</TR>
+<TR>
+<TD NOWRAP ALIGN="left" VALIGN="middle">
+<B>1</B>
+</TD>
+<TD NOWRAP ALIGN="left" VALIGN="middle">
+Size Error
+</TD>
+<TD ALIGN="left" VALIGN="middle">
+MIP map too big for loading in texture memory (TMEM).  When not a fatal error, only the part that can be stored in the space is loaded.
+</TD>
+</TR>
+<TR>
+<TD NOWRAP ALIGN="left" VALIGN="middle">
+<B>2</B>
+</TD>
+<TD NOWRAP ALIGN="left" VALIGN="middle">
+Format Error
+</TD>
+<TD ALIGN="left" VALIGN="middle">
+The texel format is not supported.  (All N64 texel formats are supported except RGBA32 and YUV)
+</TD>
+</TR>
+</TABLE>
+</TD>
+</TR>
+</TABLE>
+</P>
+<H3>Description</H3>
+<P>
+This function calculates a MIP map pyramid from the source texture array, and returns to <B>glist</B> the display list that is needed for loading and rendering of the MIP map texture.  Texture images are extracted from system memory and the MIP map pyramid is created in <B>tbuf</B>.  Each level of the pyramid is created from the previous level by filtering using a box filter.  The display list for loading the tiles and setting the tile parameters is inserted into the display list specified by <B>glist</B>.
+<DL>
+  <DT>Concerning the <B>glist</B> argument:
+    <DL>
+      <DD>After the function is terminated, the pointer is incremented to the end of the inserted display list.
+    </DL>
+  <DT>
+  <DT>Concerning the <B>cfs</B>, <B>cft</B> arguments:
+    <DL>
+      <DD>When <B>cfs</B> and <B>cft</B> are set, the part that overhangs the filter kernel picks up the same texels as the edge of the texture.  When the arguments are not set, then the kernel overhang wraps to the opposite end of the texture array.
+</DL>
+</DL>
+For details about the other arguments, see <A HREF="../gdp/gDPLoadTextureBlock.htm">gDPLoadTextureBlock</A>.  For details about MIP maps, see Section 13.7.4 "MIP Mapping" in the N64 Programming Manual.
+</P>
+<H3>Note</H3>
+<P>
+The MIP map texture must be smaller than the size of TMEM.
+</P>
+<P>
+The alpha channel is used for trees and other cutout-like textures.  Note that the cutout shapes of the MIP map textures used by the alpha channel will change, depending on the LOD.  This is especially prone to happen with 1-bit alpha texel formats (i.e., RGBA16, IA4, etc.)
+</P>
+<H3>Comment</H3>
+<P>
+The Image structure is shown below:
+<PRE><CODE>typedef struct {
+     unsigned char  *base;
+     int            fmt, siz;      // Texture image format, pixel component size
+     int            xsize, ysize;  // x,y size of source image 
+     int            lsize;         // Line size of source image
+     /* Current tile information */
+     int            addr;          // Storage buffer offset ( = 0)
+     int            w, h;          // Width, height of rectangular section of image (tile)
+     int            s, t;          // s,t offset of source image
+} Image;
+</CODE></PRE>
+</P>
+<H3>Example</H3>
+<P>
+The following is for a 32 x 32 16-bit RGBA source image
+<PRE><CODE><B>im</B>-&gt;base = (unsigned char *)&RGBA16grid_32[0];
+<B>im</B>-&gt;fmt = G_IM_FMT_RGBA;
+<B>im</B>-&gt;siz = G_IM_SIZ_16b;
+/* source image 'x' size */
+<B>im</B>-&gt;xsize= 32;  
+/* source image 'y' size */
+<B>im</B>-&gt;ysize= 32;  
+/* size of a source image row */
+<B>im</B>-&gt;lsize= 32* sizeof(unsigned short);   
+/* offset into storage buffer. Must be zero */
+<B>im</B>-&gt;addr = 0; 
+/* width of rectangular section of image(tile) to be extracted for MIP mapping Extract for MIP mapping */
+<B>im</B>-&gt;w = 32;
+/* height of rectangular section of image to be extracted for MIP mapping */
+<B>im</B>-&gt;h = 32;
+/* 's' and 't' offsets into source image to */
+<B>im</B>-&gt;s = 0;
+/* Define rectangular tile */
+<B>im</B>-&gt;t = 0;
+</CODE></PRE>
+</P>
+<H3>See also</H3>
+<P>
+<A HREF="../gdp/gDPLoadTextureBlock.htm">gDPLoadTextureBlock</A>
+</P>
+<H3>Revision History</H3>
+<P>
+03/01/99 Completely rewritten
+</BODY>
+</HTML>

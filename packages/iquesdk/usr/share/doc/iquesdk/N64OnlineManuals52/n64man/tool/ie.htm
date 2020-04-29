@@ -1,0 +1,413 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<!--
+Editors Notes:
+  PWC- updated formatting
+JLR-- Did reformating
+MAP- updated format
+-->
+<title>ie</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>ie</b></font><font style="font-size: 9pt"><b> (tool command)</b></font>
+
+<p><i>Functions as the audio instrument editor for Nintendo 64 audio</i></p>
+
+<h3>Syntax</h3>
+
+<p> ie [ -b &lt;.inst file&gt; ] [ -c &lt;.cnfg file&gt; ] [ -v ] </p>
+
+
+<h3>Description</h3>
+
+<p>The following information describes the initial release of this tool. Because it is an initial release, there are known problems and bugs, so use it with caution. Please refer to the known bug list at the end of this article to help you prevent any loss of work.
+</p>
+
+<p>The ie tool has three primary uses: </p>
+
+<ul>
+    <li>It allows real-time editing and auditioning of bank components contained in .inst files. <br>
+        <br>
+        </li>
+    <li>It allows real-time editing and auditioning of effects. <br>
+        <br>
+        </li>
+    <li>It allows external MIDI devices to play back MIDI on the Nintendo 64 and profiles the system and Audio Library resources that are being used. <br>
+        <br>
+        </li>
+</ul>
+
+<p>Command Line Options </p>
+
+<dl>
+    <dt><strong>-b &lt;.inst file&gt;</strong> </dt>
+    <dd>Specifies the .inst file to be edited. If this option is not used, the editor opens with a new .inst file. <br>
+        <br>
+        </dd>
+    <dt><strong>-c &lt;.cnfg file&gt; </strong></dt>
+    <dd>Specifies a .cnfg file. A .cnfg file contains configuration information that is used to configure the Nintendo 64's Audio Library resources (such as the output rate, virtual voices, and so on). It also can contain a description of an effect that will be loaded into the editor for editing and into the Nintendo 64 for auditioning. 
+        <br>
+        <br>
+        </dd>
+    <dt><strong>-v</strong></dt>
+    <dd>Turns on verbose mode. This is mainly used for debugging. 
+        <br>
+        <br>
+        </dd>
+</dl>
+
+<h3>Editor</h3>
+
+<p>The editor portion of the ie tool is a simple application for editing .inst files as well as effects. 
+</p>
+
+<p>A Nintendo 64 development board does not have to be present to open and edit files. However, you will not be able to audition your changes without the Nintendo 64, so editing certain parameters, such as effects parameters, becomes difficult. 
+</p>
+
+<h3>Bank Editing</h3>
+
+<p>The ie tool can read, write, and edit .inst files. The .inst files contain a description of a Nintendo 64 bank that can be compiled into an actual Nintendo 64 bank file by using the <a href="ic.htm">ic</a> tool (the instrument compiler). 
+</p>
+
+<p>The .inst bank description is made up of several components such as instruments, sounds, envelopes, and so on. Each of these bank components, or assets, have one or more parameters associated with it. Bank assets also reference each other in a sort of parent-child relationship. For example, bank assets reference instrument assets, so instruments are children of a bank parent. Similarly, instrument assets reference sound assets so sounds are children of an instrument. Furthermore, if a child asset is never referenced by another asset, it is called an orphan. So if an envelope asset is never used by a sound asset, the envelope is an orphan and can be deleted from the .inst file without affecting the bank. 
+</p>
+
+<h3>Viewing Assets</h3>
+
+<p>The editor displays all these bank assets and supports viewing and editing the parent-child relationships within a bank. The editor's view contains several folders for each type of bank asset. Each folder contains a list of all the assets of the given type. For example, to view a bank's instruments, simply select the instrument's folder tab to open up the instrument folder.
+</p>
+
+<p>The folder contains a list of all the names of the instruments as well as columns for each of an instrument's parameters, such as volume, pan, priority, and bend range. Each asset also contains an icon column which helps identify the type of asset. 
+</p>
+
+<h3>Editing Assets</h3>
+
+<p>To edit the value of an asset's parameters, simply click the corresponding column to activate the default editing for the parameter. Names are always text edited. Numbers can be scrolled up or down to increase or decrease their value. References to other child assets are edited with pop-up menus. However, all assets can be text edited by clicking on them with the Alt key held down. This pops up a text edit field that can be moved around from field to field by using the arrow keys and the Alt key. (If you don't hold the Alt key down, the arrow keys move the cursor within the text field.) Values won't be accepted if the value is out of range or is illegal. Press the Esc key to cancel any text editing. Note that some fields (such as a wavetable's sample rate) cannot be edited; they only display information. Icon fields are used for a variety of purposes such as asset selection, asset audition, and others. Integer fields can be double-clicked to set the value to a preset default value. 
+</p>
+
+<h3>Viewing and Editing Children</h3>
+
+<p>Some of the assets contain a # column. This column displays the number of children that the asset has. If the asset has one or more children, double-clicking the # column opens up the parent and display its children.
+</p>
+
+<p>Because the children have different parameters than the parent, only the common fields such as the name field are displayed for children. Double-clicking the # column again closes the asset. The # field can be edited by clicking the field. This brings up a pop-up menu showing a list of assets that are currently not children of the selected asset. Choosing one of these assets adds it to parent's list of children. Double-clicking the icon of a child automatically opens up the children's folder so you can edit their parameters. For example, double-clicking an instrument's sound opens up the sound folder for editing. Likewise, double-clicking a sound's envelope opens up the envelope folder for editing. 
+</p>
+
+<h3>Auditioning Assets</h3>
+
+<p>Before you can audition assets, the current bank being edited must be "valid" and must be "online" on the Nintendo 64. For a description of what it means for a bank to be valid and online, see the section 18.5.2.2 "Nintendo 64 MIDI Playback" section of this article. When a bank is online, bank assets can be auditioned by clicking their icon. Pressing the button down sends a MIDI note on event. Releasing the button sends a MIDI note off event. This makes it easy to audition the sustain portion of a sound. Currently, auditioning instrument assets always plays a C4 note. Auditioning sounds, keymaps, envelopes, and wavetables plays the asset's parent instrument at the sound's key base. Note that if the keymaps for an instrument's sounds are not specified and ordered properly, an auditioned asset may not get mapped to the correct sound. This is a potential source of confusion when auditioning non-instrument assets. Please confirm if the keymap of the sound is properly set before auditioning.
+</p>
+
+<h3>The File Menu</h3>
+
+<p>The File menu contains commands for opening, closing, and saving .inst files. The Open command on the File menu brings up a dialog for selecting an .inst file to edit. Only one .inst file can be open at a time. The Close command removes all bank assets and allows a new file to be edited. The Save and Save As commands write the file to disk. 
+</p>
+
+<h3>The Edit Menu</h3>
+
+<p>The Edit menu commands are currently not supported. </p>
+
+<h3>The Asset Menu</h3>
+
+<p>The Asset menu contains commands for inserting and deleting assets. The Insert command creates a new asset and places it at the end of the list. The asset automatically has default parameter values. To insert an asset in the middle of the list, select the asset located where you want the new asset to appear, and then choose the Insert command from the Asset menu. The selected asset will appear below the newly created one. To delete assets, select one or more assets, and then choose the Delete command from the Asset menu. A short cut for creating an asset and adding it to a parent is provided by the &quot;Insert Child&quot; command. This command inserts a new child asset to the selected parent. The &quot;Remove Child&quot; command removes the selected child(ren) from the parent, but does not delete them. Choose the &quot;Delete command&quot; to remove and delete them. Finally, use the &quot;Import command&quot; to import other .inst files as well as .aiff and .aiff-c files. This is currently the only way to create wavetable assets. 
+</p>
+
+<h3>The Select Menu</h3>
+
+<p>The Select menu contains useful commands for selecting certain types of assets. The &quot;Select Parents&quot; command selects all the parents of the currently selected asset. This command works only if exactly one asset is selected. For example, if a keymap is selected, the &quot;Select Parents&quot; command selects all the sound assets that use the given keymap and will automatically display the sound folder. The &quot;Select Orphans&quot; commands selects all the folder's assets that do not have any parents. This is useful for determining which assets aren't being used anywhere -- so they can be deleted. 
+</p>
+
+<h3>Effects</h3>
+
+<p>The ie tool supports creating, editing, and auditioning effects on the Nintendo 64. Effects are tightly coupled to the N64 Audio Library, so they appear for editing only if an N64 development system board is present. Otherwise, only bank components can be edited. If an N64 development system board is present, the ie tool automatically creates five built-in effects for auditioning and editing. These effects are small room, big room, chorus, flange, and echo. To add to the built-in effects, you can create custom effects from scratch as well. 
+</p>
+
+<h3>Effects Viewing</h3>
+
+<p>Similar to banks, effects are made up of two components, the effect asset and the effect section asset. Simple effects may contain only one or two sections, while more complicated effects may contain eight or more sections. Similar to banks, effects are parents to effect section children. As a result, effects can be viewed just like bank assets can be viewed. All effects parameter values are displayed in their raw data format except for the delay fields (length, input, and output). The delay parameters are displayed in msecs. They must be converted to samples and aligned to an 8 sample boundary before being used to configure a game. (The ie tool does this automatically when it loads to hear effects.) 
+</p>
+
+<p>Gloss description: Sample is a smallest unit for the aspMain audio microcode to interpret. It is mainly used when synthesized driver generates audio command lists. 
+</p>
+
+<h3>Effects Editing</h3>
+
+<p>Effects and effects sections can be edited just like editing bank assets. However, there are some special consideration for editing effects:
+</p>
+
+<p>The delay parameters (length, input, output) are displayed and editing in msecs. The N64 requires that these values occur at 8 sample boundaries and that the length be greater than input/output delays by 160 samples. The ie tool automatically enforces the 8 sample boundary rule when it loads the effect on the N64, however it does not enforce the 160 sample rule. 160 sample rule depends on the chorus rate. Be careful when editing input/output delays so that it does not approach within 160 samples of the delay line's length. If it exceeds the limit, normally it creates artificial sounds such as click and pop.
+</p>
+
+<p>When an effect is "online" (that is, it is loaded into the N64), the effect's length parameter cannot be edited. In addition, you cannot insert or delete sections to an online effect. To make these changes to an online effect, you must "offline" the effect first. 
+</p>
+
+<p>Effect sections can have only one parent. Once it is being used by a parent effect, it will not be available for other effects to use it. 
+</p>
+
+<p>To use chorus or the low pass filter, you must make sure that the respective parameters are non-zero before loading the effect. The Audio Library will not allocate the required memory to implement chorus or the low pass filter if the parameters are initially zero. (This saves unnecessary memory.) 
+</p>
+
+<h3>Effects Auditioning</h3>
+
+<p>Initially, no effects are loaded onto the N64. To load an effect and make it online, double-click the desired effect's icon. To offline the effect, double-click it again or double-click another effect. When an effect is placed online, the N64 must be fully reconfigured because the Audio Library must be initialized with an effect. This may take a few seconds because it must reload the entire bank to the N64. Once the effect is online, its icon should appear in red to indicate that it is online. From now on, auditioning bank assets will be played through the effect. Note that the wet/dry amount can be controlled for each MIDI channel by sending an FX1 control message to the channel. 
+</p>
+
+<h3>Effects Saving and Restoring</h3>
+
+<p>Currently, effect assets can not be saved to disk. This is because there is no standard .fx file like there is a standard .inst file for bank assets. However, effects can be restored from disk with a configuration (.cnfg) file. This will be described in detail later. The Audio Library treats effects as part the configuration data, so you can edit the configuration file to include a custom effect. An effect is indicated with the keyword REVERB_PARAMS and is followed by a bracketed {...} set of parameters describing the effect and its sections. (Delay values are in msecs.) For an example of an effect definition, see the following file.
+</p>
+
+<blockquote>
+    <pre>/$ROOT/usr/src/PR/assets/banks/ie.cnfg </pre>
+</blockquote>
+
+<h3>NINTENDO 64</h3>
+
+<p>When ie is launched, it automatically looks for an N64 development board and if it finds one, it will boot it up with MIDI playback code and profiling code. If it can't find the N64 board or if it fails to boot it up, it will report an error and ie will not be able to audition any instruments or edit effects. In addition, ie will also boot up the <a href="gload.htm">gload</a> tool to act as a print server for any error or debugging messages. This is useful for catching when an audio library resource has been exceeded. If another gload is running at the time ie is launched, ie will fail to run. 
+</p>
+
+<h3>NINTENDO 64 Configuration</h3>
+
+<p>The Nintendo 64 Audio Library is configured using default configuration information. This default configuration can be edited either by using the configuration dialog or by specifying a configuration file on the command line when the tool is run. For information on how to use the configuration dialog see the section on the Nintendo 64 Menu. To configure the tool using a configuration file, simply specify the file on the command line. The configuration file should contain reserved words that specify the values of certain configuration parameters.
+</p>
+
+<p>For an example of a .cnfg file and its reserved words, see this file: 
+</p>
+
+<blockquote>
+    <pre>/$ROOT/usr/src/PR/assets/banks/ie.cnfg </pre>
+</blockquote>
+
+<h3>NINTENDO 64 MIDI Playback with the development board</h3>
+
+<p>Once it is up and running, the Nintendo 64 waits for incoming MIDI messages. MIDI messages can be sent from an external MIDI device or from the ie tool itself. In order for the Nintendo 64 code to respond to the MIDI messages, it needs to have a valid bank downloaded to it by ie. When ie is launched with a new file, there is no bank in the editor and the Nintendo 64 will be offline, which means it does not have a bank installed. The profiling screen on the Nintendo 64 monitor indicates the state of the bank at the top of the screen. As soon as ie has a valid bank in the editor, it will download the bank data and the Nintendo 64 will then be online and it will be able to respond to MIDI events. As the bank is edited, it continually checks to see whether the bank is still valid and as soon as the bank fails to be valid, it will take the bank offline. The reason for this is simply that the Audio Library requires complete and correct bank data in order to work properly. A bank is determined to be valid if all of the following conditions are met: 
+</p>
+
+<ol>
+    <li>A bank asset exists </li>
+    <li>The bank contains at least one instrument 
+    </li>
+    <li>The bank's instruments contain at least one sound 
+    </li>
+    <li>The bank's sounds must all have keymaps, envelopes, and wavetables
+    </li>
+</ol>
+
+<p>When a bank is online, bank assets can be auditioned from the editor by clicking their icon. MIDI messages can also be sent from external devices. To use external devices, a MIDI interface must be properly attached to one of the host computer's serial ports and it must be properly configured by the startmidi tool. 
+</p>
+
+<h3>Nintendo 64 Profiling</h3>
+
+<p>The Nintendo 64 screen displays current readings for various system resources. These readings are useful to monitor when playing back a sequence targeted for the Nintendo 64 from an external MIDI sequencer. The readings will measure how much of each resource is used in order to play back the sequence. The profiler keeps track of the following resources:
+</p>
+
+<dl>
+    <dt><strong>1) cmds:</strong></dt>
+    <dd>the number of audio commands used to synthesize a frame of samples. It displays both the current and the maximum values. 
+        <br>
+        <br>
+        </dd>
+    <dt><strong>2) syn upds:</strong></dt>
+    <dd>the number of parameter update blocks used by the synthesis driver to store changes in control parameters. The number of available update blocks is specified during the Audio Library configuration. It displays both the current and the maximum values. 
+        <br>
+        <br>
+        </dd>
+    <dt><strong>3) seq evts:</strong></dt>
+    <dd>the number of event message blocks used by the sequence player. The number of available message blocks is specified during the Audio Library configuration. It displays both the current and the maximum values. 
+        <br>
+        <br>
+        </dd>
+    <dt><strong>4) DMAs:</strong></dt>
+    <dd>the number of DMA requests made during an audio frame. It displays both the current and the maximum values. 
+        <br>
+        <br>
+        </dd>
+    <dt><strong>5) DMA bufs:</strong></dt>
+    <dd>the number of DMA buffers needed during an audio frame. The number of available DMA buffers is specified during the Audio Library configuration. It displays both the current and the maximum values. 
+        <br>
+        <br>
+        </dd>
+    <dt><strong>6) vcs:</strong></dt>
+    <dd>this profiles virtual voice usage during playback. Each pixel represents one used virtual voice. The number of available virtual voices is specified during the Audio Library configuration. The maximum number of virtual voices used is displayed in the corner of the voice graph. 
+        <br>
+        <br>
+        </dd>
+    <dt><strong>7) RSP:</strong></dt>
+    <dd>this graph profiles the percentage of a frame period used to execute the audio synthesis microcode on the RSP. 
+        <br>
+        <br>
+        </dd>
+    <dt><strong>8) CPU:</strong></dt>
+    <dd>this profiles the percentage of a frame period used during the call to <A HREF="../al/alAudioFrame.htm">alAudioFrame</A>. 
+        <br>
+        <br>
+        </dd>
+    <dt><strong>9) L/R:</strong></dt>
+    <dd>this profiles the peak output levels of the final output samples that are sent to the audio DACs.
+    </dd>
+</dl>
+
+<p>The scale is in dBs with the top of the meter at 0 dB and then decreasing in 3 dB increments per LED.
+</p>
+
+<p>Signal levels above -3 dB are indicated by a yellow caution LED. Signal presence is indicated by the bottom LED being turned on (that is, any non-zero sample will turn on the bottom LED).
+</p>
+
+<p>Signal clipping is indicated by a red LED that appears above the meter. Note that the clip detector does not detect true clipping, rather it detects when a sample magnitude value of 0x7fff appears. This could be a legitimate value from a normalized sound or it could be a limited value caused by overflow. 
+</p>
+
+<p>Be aware that the resource demands for audio synthesis varies on a frame by frame basis. This is because it must share the processing resources with the other parts of the system. This means that the profile values will vary each time a given sequence is played. Therefore, the readings should be used as an approximation, not as an accurate measurement of resource usage. Also note that the CPU measurements can be affected by any debugging messages produced by the audio library. Also the N64 code was not optimized by gcord and so is not displaying best case performance. 
+</p>
+
+<h3>The Nintendo 64 Menu</h3>
+
+<p>If the N64 development board is available, an N64 menu will appear in the editor. This menu provides control over some of the N64 functionality. The &quot;Clear Profile Values&quot; item resets the MIDI player and causes all the maximum values to be reset to zero. The &quot;Configure Hardware&quot; menu brings up a dialog which can be used to set some of the Audio Library configuration parameters. A description of the various configuration parameters is listed below. After setting the configuration parameters, press the okay or apply button to make the changes take affect. Reconfiguration may take a few seconds as any open bank file must be fully reloaded to the N64. Configurations can be saved and reloaded at a later time using the &quot;Save Configuration...&quot; and &quot;Load Configuration...&quot; commands. </p>
+
+<p>These commands ask you to name the configuration file you want to save or load before proceeding. Lastly, the &quot;Reset Hardware&quot; command resets the entire N64 hardware forcing the N64 code to be reloaded and the audio reconfigured. Use this command to try to recover the N64 if it crashes for any reason. 
+</p>
+
+<p>Following is a description of each of the configuration parameters: 
+</p>
+
+<p><strong>&lt;Audio Frame Preferences&gt;</strong></p>
+
+<dl>
+    <dt><strong>output rate:</strong></dt>
+    <dd>the requested sampling rate of the audio interface in Hz. 
+        <br>
+        <br>
+        </dd>
+    <dt><strong>samples per frame:</strong></dt>
+    <dd>the requested number of samples to be synthesized per audio frame. For maximum efficiency use a value that is a multiple of 160 samples (for example, 640). A larger number means a slower frame rate while a smaller number means a faster frame rate. This number, along with the output rate can be used to simulate a game running at 60 Hz or 30 Hz. For example, at an output rate of 44100 Hz, setting this value to be 735 will produce an frame rate of 60 Hz. 
+        <br>
+        <br>
+        </dd>
+    <dt><strong>max commands per frame:</strong></dt>
+    <dd>the maximum number of ABI commands that can be executed per audio frame. This directly corresponds to the size of the audio command list buffer that stores the ABI commands. 
+        <br>
+        <br>
+        </dd>
+</dl>
+
+<p><strong>&lt;Audio DMA Preferences&gt;</strong></p>
+
+<p>Note that audio sample DMA is implemented by the game application, so the following configuration parameters may not be applicable to your game. Keep this in mind when setting these parameters. 
+</p>
+
+<dl>
+    <dt><strong>DMA buffers: </strong></dt>
+    <dd>the number of available buffers for performing DMA requests. 
+        <br>
+        <br>
+        </dd>
+    <dt><strong>DMA buffer size: </strong></dt>
+    <dd>the size of each DMA buffer. Smaller buffer sizes usually require more DMA requests while larger buffer sizes usually require fewer DMA requests. 
+        <br>
+        <br>
+        </dd>
+    <dt><strong>max DMA requests: </strong></dt>
+    <dd>the maximum number of DMA requests that can be made. This value directly affects the size of the DMA message queue set up by the N64 code. 
+        <br>
+        <br>
+        </dd>
+    <dt><strong># frames to hold DMA buffers: </strong></dt>
+    <dd>the number of frames that must elapse before the N64 code will free a DMA buffer for reuse. 
+    </dd>
+</dl>
+
+<p>While the buffer is being held, its samples remain available for other requests that may ask for the same samples. In some cases, the same samples may be used over again just like a local cache so holding them in memory is faster than performing a DMA from ROM to RDAM. 
+</p>
+
+<p><strong>&lt;Synthesizer Preferences&gt;</strong></p>
+
+<dl>
+    <dt><strong>max virtual voices</strong></dt>
+    <dd>the maximum number of virtual voices available to both the synthesis driver and the MIDI player. 
+        <br>
+        <br>
+        </dd>
+    <dt><strong>max physical voices:</strong></dt>
+    <dd>the maximum number of physical voices available. If this is less than virtual voices then voice stealing is enabled. 
+        <br>
+        <br>
+        </dd>
+    <dt><strong>max control updates:</strong></dt>
+    <dd>the maximum number of control updates each physical voice is able to store. Control updates store data such as volume changes, pitch changes, and so on. This value directly affects the memory allocated for control data. 
+        <br>
+        <br>
+        </dd>
+</dl>
+
+<p><strong>&lt;MIDI Player Preferences&gt;</strong></p>
+
+<dl>
+    <dt><strong>max channels:</strong></dt>
+    <dd>the maximum number of channels available for MIDI messages. Normal MIDI systems support 16 channels. 
+    </dd>
+    <dd>This affects how much memory is allocated to store channel information. 
+        <br>
+        <br>
+        </dd>
+    <dt><strong>max events:</strong></dt>
+    <dd>the maximum number of event updates that the synthesizer is able to store. Event updates store sequence data such as start commands, MIDI commands, and so on. This value directly affects the memory allocated for event data. 
+        <br>
+        <br>
+        </dd>
+</dl>
+
+<h3>Note</h3>
+
+<p>The following is list of the currently known issues in version 2.0g.</p>
+
+<ul>
+    <li>If the Nintendo 64 crashes for any reason and the ie tool tries to communicate with it, the system will hang waiting for a reply. The only way to recover from this is to kill the tool. If you see that the Nintendo 64 has crashed (the processor bars on the Nintendo 64 monitor have stopped moving), try the &quot;Reset Hardware&quot; command from the N64 menu. If this fails, save your work immediately and relaunch the tool to reestablish communication. 
+        <br>
+        <br>
+        </li>
+    <li>When you're editing files with many assets, the pop-up menus may get too big to display all the assets. To work around this problem, hold the Alt key down and click the asset to text edit instead of using the pop-up menu edit. 
+        <br>
+        <br>
+        </li>
+    <li>Each time an asset is created, either by opening, importing, or inserting assets, memory on the Nintendo 64 is used up that cannot be released. To avoid running out of memory (which is difficult to do), use the Close command to remove all assets from the editor and from the Nintendo 64 memory space. 
+        <br>
+        <br>
+        </li>
+    <li>When naming assets, use only letters, numbers, and an underscore. Periods or other symbols are not recognized by ic so they are not recognized by ie either. 
+        <br>
+        <br>
+        </li>
+    <li>When importing assets, ie recognizes sound files only by the file extension which can either be .aiff or .aifc. Any other extension causes the file to be opened as an .inst file. Be sure your sound files have proper extensions. 
+        <br>
+        <br>
+        </li>
+    <li>Keymaps are not sorted before being downloaded to a bank. This may cause seemingly improper sound mapping when auditioning. It is up to the user to ensure that an instrument's keymaps are sorted properly for auditioning. Note, that ic will properly sort the keymaps (unless overridden with the -n option) so it is not necessary to have them sorted for compiling banks. 
+        <br>
+        <br>
+        </li>
+    <li>Sometimes the column widths do not get adjusted properly to fit in the field's value. Try editing the field, or for a temporary fix, edit the column edges by clicking the middle button on the edge while holding the Shift key down. 
+        <br>
+        <br>
+        </li>
+    <li>If two or more instruments share the same sound asset and the instruments are opened so that the same sound appears more than once in the display, the editor may be confused over which sound instance should be operated on. Be careful when the same sound is being shared. 
+        <br>
+        <br>
+        </li>
+    <li>When ie is initially launched with a new file, a harmless warning from XbaeMatrix (the list item) may appear. 
+        <br>
+        <br>
+        </li>
+</ul>
+
+<h3>See Also</h3>
+
+<p><a href="ic.htm">ic</a>, startmidi</p>
+<h3>Revision History</h3>
+<p>1999/04/30  Changed Format</p>
+<br><br>
+
+</body>
+</html>

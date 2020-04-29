@@ -1,0 +1,34 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 13 - Texture Mapping</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. -->
+</head>
+
+<h1>13.5 Tile Descriptor Loading</h1>
+
+<p>Tile descriptors must be loaded using the RDP command SetTile.  This command loads the format, size, line, <a href="../../keywords/index/data/graphics.htm#TMEM" target="keywords">TMEM</a> address, palette, <a href="../../keywords/index/data/graphics.htm#clamp" target="keywords">clamp</a>, <a href="../../keywords/index/data/graphics.htm#mirror" target="keywords">mirror</a>, mask, and shift parameters for the tile number specified.  The SL, TL, SH, and TH parameters are set by the RDP commands SetTileSize, LoadTile, LoadBlock, and LoadTLUT. </p>
+
+<p>One important point to keep in mind is that tile descriptors are used both when loading textures and when <a href="../../keywords/index/data/graphics.htm#rendering" target="keywords">rendering</a> textures.  In particular, when loading a texture, the texture coordinate unit uses the TMEM address, line, format, and size information from the tile specified in the LoadTile/Block/TLUT command.  Therefore, this information must be loaded into the tile descriptor prior to executing the LoadTile/Block/TLUT command.  Also, the LoadTile/Block/TLUT command automatically writes the SL,TL,SH,TH information into the tile descriptor.  In the case of a LoadTile command, this is probably the information you wanted.  In the case of a LoadBlock or LoadTLUT command, however, this information must be overwritten with a SetTileSize command after the texture load.</p>
+
+<p>The <a href="../../keywords/index/data/graphics.htm#GBI" target="keywords">GBI</a> commands for loading tile descriptors directly are:</p>
+
+<ul>
+  <li><a href="../../n64man/gdp/gDPSetTile.htm">g*DPSetTile</a>
+  <li><a href="../../n64man/gdp/gDPSetTileSize.htm">g*DPSetTileSize</a>
+</ul>
+
+<p>The GBI commands that effect tile descriptors are: </p>
+
+<ul>
+  <li>g*DPLoadTile*
+  <li><a href="../../n64man/gdp/gDPLoadTextureBlock.htm">g*DPLoadTextureBlock*</a>
+  <li><a href="../../n64man/gdp/gDPLoadTLUT_pal16.htm">g*DPLoadTLUT*</a>
+</ul>
+
+<p><strong>Note:</strong>  The load commands above use a <a href="../../keywords/index/data/graphics.htm#double buffer" target="keywords">double buffered</a> tile system for loading/rendering.  When loading, the tile G_TX_LOADTILE is used, and when rendering the tile G_TX_RENDERTILE is used.  This simple scheme avoids having to insert TileSyncs between loading and rendering.  However, if you need to use more than one tile for some reason, make sure that you use the <a href="../../n64man/gdp/gDPSetTile.htm">g*DPSetTile</a> and <a href="../../n64man/gdp/gDPSetTileSize.htm">g*DPSetTileSize</a> to set the tile descriptors properly. </p>
+
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+</body> </html>

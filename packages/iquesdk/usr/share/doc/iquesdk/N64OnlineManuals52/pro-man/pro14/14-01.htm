@@ -1,0 +1,169 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 14 - Texture Rectangles (Hardware Sprites)</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. -->
+</head>
+
+<h1>14.1 Sampling Overview</h1>
+
+<p>A texture is an array of values, where each value is a set of numbers (components) describing the <a href="../../keywords/index/data/graphics.htm#attribute" target="keywords">attributes</a> of a texture element, or <a href="../../keywords/index/data/graphics.htm#texel" target="keywords">texel</a>. For the Nintendo 64, the numbers representing a texel are fixed-point. The number of components per pixel and the number of bits per component is variable.  <a href="14-06.htm">Section 14-6 &QUOT;Color Index Frame Buffer&QUOT;</a>  describes the possible formats for texels. 
+</p>
+
+<p>When displaying a texture on the screen of a display, we must perform a mapping from the texture space to the display image space. In the case of texture rectangles, where the geometric operations are limited to scaling and translation, the main problem is how to sample
+and filter the source texture so that it is faithfully produced on the display. <a href="#f14-02">Figure 14-2</a> is one example of <a href="../../keywords/index/data/graphics.htm#aliasing" target="keywords">aliasing</a> artifacts that can effect image quality. In this example, 10 black bars are separated by 10 white bars with even spacing. The bars cover a width of 11 pixels on the screen. Because we are sampling at a lower frequency than the texture, our output image is aliased. Aliasing artifacts are caused by high-frequency information that is insufficiently sampled appearing as low-frequency information. Furthermore, if the beginning sample point is moved slightly, the sampled image can shift dramatically. During animations this causes the displayed image to scintillate or flash. <a href="../../keywords/index/data/graphics.htm#Nyquist's law" target="keywords">Nyquist's Law</a> indicates that the sampling frequency should be greater than twice the highest frequency component in the texture to avoid aliasing artifacts.</p>
+
+<dl>
+  <dt><a name="f14-02"><strong>Figure 14-2 Aliasing in a Sampled Image</strong></a>
+  <dd><img alt="[Figure 14-2]" src="gif/f14-02.gif">
+</dl>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="01"><h2>14.1.1 Point Sampling</h2></a>
+
+<p><a href="../../keywords/index/data/graphics.htm#point sampling" target="keywords">Point sampling</a> in the Nintendo 64 means that we assume that each texel <A target="keywords" HREF="../../keywords/index/data/system.htm#map">maps</a> to one pixel on the display, and we ignore any fractional overlap between texels and pixels. Execute the following commands to enable point sampling. </p>
+
+<dl>
+  <dt><a name="e14-03"><strong>Example 14-3  Enable Point Sampling</strong></a>
+  <dd><blockquote><pre>
+<a href="../../n64man/gdp/gDPSetTextureFilter.htm">gsDPSetTextureFilter</a>(G_TF_POINT)
+      </pre></blockquote>
+</dl>
+
+<p>Point sampling works well for mapping a rectangular texture to a screen-aligned rectangle of the same size on the display. Problems occur if the sampling ratio is not 1:1, however, as shown in <a href="#f14-03">Figure 14-3</a>. In the first case, we display 10 texels using 10 pixels. In the second case, we scale the image slightly by displaying 9 texels on 10 pixels. This results in the middle pixel having the same color as the previous bar. In general, point sampled images should be scaled by an integer power of two to avoid this problem. To achieve other scalings, it is necessary to use <a href="../../keywords/index/data/graphics.htm#bilinear filtering" target="keywords">bilinear filtering</a>. </p>
+
+<dl>
+  <dt><a name="f14-03"><strong>Figure 14-3 Point Sampling Scaling Problem</strong></a>
+  <dd><img alt="[Figure 14-3]" src="gif/f14-03.gif">
+</dl>
+
+<dl>
+  <dt><a name="e14-04"><strong>Example 14-4  Scaled, Point Sampled Textures</strong></a>
+  <dd><blockquote><pre>
+<a href="../../n64man/gdp/gDPSetTextureFilter.htm">gsDPSetTextureFilter</a>(G_TF_POINT),
+<a href="../../n64man/gsp/gSPTextureRectangle.htm">gsSPTextureRectangle</a>(50&lt;&lt;2,50&lt;&lt;2,150&lt;&lt;2,150&lt;&lt;2,
+        G_TX_RENDERTILE,
+        0,0,
+        1&lt;&lt;10,1&lt;&lt;10),
+<a href="../../n64man/gsp/gSPTextureRectangle.htm">gsSPTextureRectangle</a>(60&lt;&lt;2,60&lt;&lt;2,160&lt;&lt;2,160&lt;&lt;2,
+        G_TX_RENDERTILE,
+        0,0,
+        1&lt;&lt;9,1&lt;&lt;9),
+<a href="../../n64man/gsp/gSPTextureRectangle.htm">gsSPTextureRectangle</a>(70&lt;&lt;2,70&lt;&lt;2,170&lt;&lt;2,170&lt;&lt;2,
+        G_TX_RENDERTILE,
+        0,0,
+        1&lt;&lt;8,1&lt;&lt;8),
+      </pre></blockquote>
+</dl>
+
+
+<p>Point sampling also implies that animated <a href="../../keywords/index/data/graphics.htm#sprite" target="keywords">sprites</a> will have to move in one-pixel increments. Even though the rectangle can be positioned with 2 bits of <a href="../../keywords/index/data/graphics.htm#sub pixel" target="keywords">sub pixel</a> precision, and the texture can be offset to 5 bits of fractional precision, the point sampling only looks at the integer coordinate and so will not change until there is at least a one pixel change in position. Bilinear filtering allows for smoother motion of sprites. </p>
+
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="02"><h2>14.1.2 Bilinear Filtering</h2></a>
+
+<p>Instead of selecting a single texel for a given pixel, as in point sampling, bilinear filtering selects four texels surrounding the sample point and interpolates these points using fractional position information to determine the pixel color. The following command shows how to enable bilinear filtering. </p>
+
+<dl>
+  <dt><a name="e14-05"><strong>Example 14-5  Enable Bilinear Filtering</strong></a>
+  <dd><blockquote><pre>
+<a href="../../n64man/gdp/gDPSetTextureFilter.htm">gsDPSetTextureFilter</a>(G_TF_BILERP)
+      </pre></blockquote>
+</dl>
+
+<p>An example of bilinear filtering is shown in <a href="#f14-04">Figure 14-4</a>.</p>
+
+<dl>
+  <dt><a name="f14-04"><strong>Figure 14-4 Bilinear Filtering</strong></a>
+  <dd><img alt="[Figure 14-4]" src="gif/f14-04.gif">
+</dl>
+
+<p>In the Nintendo 64, rather than doing a full <a href="../../keywords/index/data/graphics.htm#bilinear interpolation" target="keywords">bilinear interpolation</a> using all four samples, a triangular interpolation is performed that uses only three points. The texture filter selects which three points to use depending on where the sample point lies inside the 2x2 grid of texels. In certain cases, the triangular filter can cause small anomalies. These cases occur when there are drastic intensity changes from one texel to another in the texture as shown in <a href="#f14-05">Figure 14-5</a>. In this example, if the sampling point moves slightly from one side of the diagonal to the other, the resulting color changes abruptly. In general, it is best to prefilter an image so that these sharp texture edges at least a slight <a href="../../keywords/index/data/graphics.htm#intensity ramp" target="keywords">intensity ramp</a>. </p>
+
+<dl>
+  <dt><a name="f14-05"><strong>Figure 14-5 Triangular Filtering</strong></a>
+  <dd><img alt="[Figure14-5]" src="gif/f14-05.gif">
+</dl>
+
+<p>With bilinear filtering, it is possible to scale a texture without the problems of point sampling. Example 14-6 shows a texture rectangle with the texture scaled by 1.5 in S and T: </p>
+
+<dl>
+  <dt><a name="e14-06"><strong>Example 14-6 Scaled, Bilerped Textures</strong></a>
+  <dd><blockquote><pre>
+<a href="../../n64man/gdp/gDPSetTextureFilter.htm">gsDPSetTextureFilter</a>(G_TF_BILERP),
+<a href="../../n64man/gsp/gSPTextureRectangle.htm">gsSPTextureRectangle</a>(50&lt;&lt;2,50&lt;&lt;2,150&lt;&lt;2,150&lt;&lt;2,
+        G_TX_RENDERTILE,
+        0,0,
+        3&lt;&lt;9,3&lt;&lt;9),
+      </pre></blockquote>
+</dl>
+
+
+<p>Smooth scrolling of texture rectangles is discussed in <a href="14-02.htm#05">Section 14.2.5  &QUOT;Smooth Scrolling&QUOT;</a>.</p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="03"><h2>14.1.3 Average mode for 1:1 Ratio Sampling</h2></a>
+
+<p>
+There is a special case in which the texture filter can perform an exact average using all four texels. This case occurs when the sample point lies exactly in the center, i.e. s_frac = t_frac = 0.5. To enable the average mode, use the command: </p>
+
+<dl>
+  <dt><a name="e14-07"><strong>Example 14-7 Enable Average Filtering</strong></a>
+  <dd><blockquote><pre>
+<a href="../../n64man/gdp/gDPSetTextureFilter.htm">gsDPSetTextureFilter</a>(G_TF_AVERAGE)
+      </pre></blockquote>
+</dl>
+
+<p>In order to force the sample point to be in the middle of the texel, set the start point to 0.5 and then proceed texture rendering by 1 texel per pixel. Example 14-8 demonstrates this: </p>
+
+<dl>
+  <dt><a name="e14-08"><strong>Example 14-8 Averaging Textures</strong></a>
+  <dd><blockquote><pre>
+<a href="../../n64man/gdp/gDPSetTextureFilter.htm">gsDPSetTextureFilter</a>(G_TF_AVERAGE),
+<a href="../../n64man/gsp/gSPTextureRectangle.htm">gsSPTextureRectangle</a>(50&lt;&lt;2,50&lt;&lt;2,150&lt;&lt;2,150&lt;&lt;2,
+        G_TX_RENDERTILE,
+        1&lt;&lt;4,1&lt;&lt;4,
+        1&lt;&lt;10,1&lt;&lt;10),
+      </pre></blockquote>
+</dl>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="04"><h2>14.1.4 Copy</h2></a>
+
+<p>Copy mode is a special pipeline mode that allows fast image copies to the framebuffer. Copy mode can be enabled as shown in the following command.</p>
+
+<dl>
+  <dt><a name="e14-09"><strong>Example 14-9 Enable Copy Mode</strong></a>
+  <dd><blockquote><pre>
+<a href="../../n64man/gdp/gDPSetCycleType.htm">gsDPSetCycleType</a>(G_CYC_COPY)
+      </pre></blockquote>
+</dl>
+
+<p>In copy mode, four horizontally adjacent texels are copied per clock as shown in <a href="#f14-06">Figure 14-6</a>. </p>
+
+<dl>
+  <dt><a name="f14-06"><strong>Figure 14-6 Copy Mode</strong></a>
+  <dd><img alt="[Figure 14-6]" src="gif/f14-06.gif">
+</dl>
+
+<p>In copy mode, since four texels are copied each clock, the step in S per clock must be set to four. The following example shows a texture rectangle using copy mode. </p>
+
+<blockquote><pre>
+<a href="../../n64man/gdp/gDPSetCycleType.htm">gsDPSetCycleType</a>(G_CYC_COPY),
+<a href="../../n64man/gsp/gSPTextureRectangle.htm">gsSPTextureRectangle</a>(50&lt;&lt;2,50&lt;&lt;2,150&lt;&lt;2,150&lt;&lt;2,
+        G_TX_RENDERTILE,
+        0,0,
+        4&lt;&lt;10,1&lt;&lt;10),
+</pre></blockquote>
+
+<p>Since copy mode bypasses most of the RDP pipeline, the filter settings are not used. However, it is still necessary to disable <a href="../../keywords/index/data/graphics.htm#perspective correction" target="keywords">perspective correction</a> as shown in <a href="index.htm#e14-02">Example 14-2</a>. Also, copy mode is not valid for all texture types.</p>
+
+<p>It is possible to scale textures in copy mode in the T(Y) direction only. Note that in this case, the rules for point sampled scaling apply, only integer power of two scalings. </p>
+
+<p>In copy mode, textures are copied directly to memory, so there is no opportunity for color combiner operations, filtering, transparency, etc. Copying is a write-only operation so transparency using the normal <a href="../../keywords/index/data/graphics.htm#blender" target="keywords">blending</a> hardware is impossible. However, you can achieve  &QUOT;cutout&QUOT; and &QUOT;<a href="../../keywords/index/data/graphics.htm#dither" target="keywords">dithered</a>&QUOT; types of transparency using the <a href="../../keywords/index/data/graphics.htm#alpha" target="keywords">alpha</a> compare logic. Please see <a href="../pro15/15-05.htm#04">Section 15.5.4 &QUOT;Alpha Compare Calculation&QUOT;</a>.</p>
+
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+</body> </html>

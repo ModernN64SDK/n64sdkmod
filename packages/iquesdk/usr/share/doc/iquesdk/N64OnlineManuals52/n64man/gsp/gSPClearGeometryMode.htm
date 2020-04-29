@@ -1,0 +1,73 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.>
+<TITLE>gSPClearGeometryMode</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>gSPClearGeometryMode [Macro]</H1>
+
+<p><b>Function</b></p>
+
+<P>gSPClearGeometryMode</p>
+
+<p><i>Disables the geometry pipeline modes</i></p>
+
+<p><b>Syntax</b></p>
+<p>
+<PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gbi.htm">gbi.h</A> */
+gSPClearGeometryMode(Gfx *gdl, u32 mode)
+gsSPClearGeometryMode(         u32 mode)</CODE></PRE></p>
+
+<p><b>Arguments</b></p>
+<p>
+<DL>
+  <DT><B>gdl</B>
+  <DD>the display list pointer. 
+  <DT><B>mode</B>
+  <DD>the Geometry pipeline mode: 
+  <DD><B>G_SHADE</B> (Calculate vertex color) 
+  <DD><B>G_LIGHTING</B> (Calculate lighting) 
+  <DD><B>G_SHADING_SMOOTH</B>(Gouraud shading) 
+  <DD><B>G_ZBUFFER</B> (Calculate Z buffer) 
+  <DD><B>G_TEXTURE_GEN</B>(Automatically generate texture s,t coordinates) 
+  <DD><B>G_TEXTURE_GEN_LINEAR</B> (Automatically generate texture s,t coordinates) 
+  <DD><B>G_CULL_FRONT</B> (Front-face culling) 
+  <DD><B>G_CULL_BACK</B> (Back-face culling) 
+  <DD><B>G_CULL_BOTH</B> (Front-face and back-face culling) 
+  <DD><B>G_FOG</B> (Generate vertex alpha coordinate fog parameters) 
+  <DD><B>G_CLIPPING</B> (Clipping) 
+</DL></p>
+<p><b>Description</b></p>
+<P>
+gSPClearGeometryMode disables the geometry pipeline modes for culling, lighting, specular highlights, reflection mapping, fog, etc. To enable these various modes, use <A HREF="gSPSetGeometryMode.htm">gSPSetGeometryMode</A>. For details about the different modes, see <A HREF="gSPSetGeometryMode.htm">gSPSetGeometryMode</A>. 
+</P>
+<p><b>Note</b></p>
+<P>
+By disabling G_CLIPPING, processing time can be reduced because the data required for clipping decisions does not need to be calculated by <A HREF="gSPVertex.htm">gSPVertex</A>. Also, clipping is not performed in <A HREF="gSP1Triangle.htm">gSP1Triangle</A>, <A HREF="gSP2Triangles.htm">gSP2Triangles</A>, and <A HREF="gSP1Quadrangle.htm">gSP1Quadrangle</A>. Note what effects can result: In the display list shown below, the data required for clipping cannot be obtained, so the behavior of <A HREF="gSP1Triangle.htm">gsSP1Triangle</A> cannot be guaranteed. 
+</P>
+<P>
+<DL><DT>
+  <DD><PRE><CODE><B>gsSPClearGeometryMode</B>(G_CLIPPING),  // Disable clipping.
+gsSPVertex(v, 3, 0),                   // Load 3 vertices.
+gsSPSetGeometryMode(G_CLIPPING),       // Enable clipping.
+gsSP1Triangle(0, 1, 2, 0),             // Draw a triangle.
+</CODE></PRE>
+</DL>
+</P>
+<P>
+In the same way, the process will not run correctly even if the vertices that were loaded when clipping was disabled were specified by <A HREF="gSPCullDisplayList.htm">gSPCullDisplayList</A>. 
+</P>
+<p><b>See Also</b></p>
+<P>
+<A HREF="../gdp/gDPSetPrimColor.htm">gDPSetPrimColor</A>, <A HREF="gSP1Triangle.htm">gSP1Triangle</A>, <A HREF="gSPFogPosition.htm">gSPFogPosition</A>, and <A HREF="gSPSetGeometryMode.htm">gSPSetGeometryMode</A>
+</P>
+</P><p><b>Revision History</b></p>
+<P>
+02/01/99 Completely rewritten.
+</P>
+</BODY>
+</HTML>

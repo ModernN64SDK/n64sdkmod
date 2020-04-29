@@ -1,0 +1,97 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 20 - Using the Audio Tools</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. -->
+</head>
+
+<H1>
+20.1 Overview of the Audio System </H1>
+
+<p>In order for the musician or sound designer to produce sounds and music for the Nintendo64, a short explanation of the audio system is helpful, though not necessary. To that end, a brief description of the audio system is included here.  In addition to a brief description of the audio system, several important items the musician should be aware of are listed below. </p>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="01"></A>
+<H2>
+20.1.1 Brief Description of the Audio System </H2>
+
+<p>The audio system for the N64 is composed of a <a href="../../keywords/index/data/audio.htm#sound player" target="keywords">Sound Player</a> (for playing single samples, such as sound effects) and a <a href="../../keywords/index/data/audio.htm#sequence player" target="keywords">Sequence Player</a> (for playing music).  When the game starts up, it creates and initializes (<A target="keywords" HREF="../../keywords/index/data/system.htm#thread">threads</A> of) a sound player and a sequence player.  It then assigns a <a href="../../keywords/index/data/audio.htm#bank" target="keywords">bank</a> of sound effects to the sound player, and assigns a bank of instruments and a bank of MIDI sequences to the sequence player.  To play a sound effect, the game sends a <A target="keywords" HREF="../../keywords/index/data/system.htm#message">message</a> to the sound player, telling it what sound effect to set as its target, and then sends another message to the sound player, telling it to play the target sound.  To play a MIDI sequence, the game must load the sequence data, then attach the sequence to the sequence player, and then send a message to the sequence player to start playing the music. </p>
+
+<P><strong>Note:</strong>  Musical sequences can be stored as either <a href="../../keywords/index/data/audio.htm#Type0, Type1 MIDI" target="keywords">type 0 MIDI</a> files, or in a <a href="../../keywords/index/data/audio.htm#compressed MIDI" target="keywords">compressed MIDI</a> format unique to the N64. It is very important that the programmer and the musician agree on which file format to use. </p>
+
+<P>There are several components to the sound system. First, there are the samples that are stored in ROM. Accompanying the samples are a group of parameters used for playback (<a href="../../keywords/index/data/audio.htm#key map" target="keywords">Key Mappings</a>, <a href="../../keywords/index/data/audio.htm#envelope" target="keywords">Envelopes</a>, <a href="../../keywords/index/data/audio.htm#root pitch" target="keywords">Root Pitch</a>, and so on). In order to process the sounds, a section of the RAM must be allocated for the audio system. However, N64 Audio System differs from many other systems that load grouped audio samples to RAM before playback.  It loads a part of samples as the need arises.</p>
+
+<P>In software, there are two main sections. One part runs on the CPU and the other part runs on the RSP.  The audio system must share the RSP with the graphics processing. The RSP is where most of the low-level processing takes place, and this is where the samples are <a href="../../keywords/index/data/audio.htm#mixing" target="keywords">mixed</a> into an output stream.  This output stream is then fed to a pair of DACs for stereo output. </p>
+
+<P>There are four types of files used by the game for audio production: .ctl, .tbl, .seq, and .sbk. Before the game can play back either <a href="../../keywords/index/data/audio.htm#sound effect" target="keywords">sound effects</a> or music, the musician and sound designer must create these files. The .tbl files contain the compressed samples.  The .ctl files contain the associated control information necessary for playback. .ctl files and .tbl files are always paired. </p>
+
+<P>The .seq files are <a href="../../keywords/index/data/audio.htm#MIDI" target="keywords">MIDI</a> files that have all unneeded <a href="../../keywords/index/data/audio.htm#event" target="keywords">events</a> removed, and the .sbk files are banks of .seq files.  Typically, there will be at least one pair of .ctl and .tbl files for music, and a separate pair for sound effects. (Although it would be possible to put all sounds into one pair, or alternatively, have numerous pairs.) </p>
+
+<P>The reason that banks are stored in two files is that then the raw audio data doesn't need to be loaded into RAM; only the information pointing to the samples, and the values for the playback parameters.  When a sound is to be played, only a small portion of the sample is loaded into a RAM buffer. After it has been used for playback, it can be discarded, and the buffer reused for the next portion of the sample.  The result is that a comparatively small amount of RAM is needed for sound. </p>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="02"></A>
+<H2>
+20.1.2 Typical Development Process </H2>
+
+<p>When creating audio for an N64 game, the musician typically follows these steps:</p>
+
+<OL>
+<LI>
+Create the samples as <a href="../../keywords/index/data/audio.htm#AIFF" target="keywords">AIFF</a> files. 
+<BR><BR></LI>
+
+<LI>
+Encode the samples into <a href="../../keywords/index/data/audio.htm#AIFC" target="keywords">AIFC</a> files.
+<BR><BR></LI>
+
+<LI>
+Create a .inst file. 
+<BR><BR></LI>
+
+<LI>
+Compile the .inst file, with the samples into the bank files. 
+<BR><BR></LI>
+
+<LI>
+Create the MIDI sequence files.
+<BR><BR></LI>
+
+<LI>
+Compile the MIDI sequence files into .seq files, and then compile the .seq files into a .sbk file. 
+<BR><BR></LI>
+
+<LI>
+Deliver the .tbl .ctl and .sbk files to the programmer. </u><BR><BR></LI>
+</OL>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="03"></A>
+<H2>
+20.1.3 Common Values</H2>
+
+<p>Throughout this document and when referring to .inst files, several things are kept constant: </p>
+
+<OL>
+<LI>
+Middle C (MIDI note 60) is referred to as C4.  (Some synthesizer and software manufactures refer to Middle C as C3.)
+<BR><BR></LI>
+
+<LI>
+<a href="../../keywords/index/data/audio.htm#pan" target="keywords">Pan</a> values range from 0 to 127, with 0 being full left, 64 center pan, and 127 full right. 
+<BR><BR></LI>
+
+<LI>
+<a href="../../keywords/index/data/audio.htm#volume" target="keywords">Volumes</a> are from 0 to 127, with 0 meaning there will be no sound, and 127 being full volume. 
+<BR><BR></LI>
+</OL>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR>
+</BODY>
+</HTML>

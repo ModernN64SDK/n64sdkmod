@@ -1,0 +1,81 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.>
+<TITLE>gSPLoadUcode</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>gSPLoadUcode [Macro]</H1>
+
+<p><b>Function</b></font></p>
+
+<p>gSPLoadUcode</p>
+<P>
+<i>Loads the specified microcode</i>
+</P>
+<p><b>Syntax</b></font></p>
+<p>
+<PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gbi.htm">gbi.h</A> */
+gSPLoadUcode(Gfx *gdl, u64 *uc_start, u64 *uc_dstart)
+gsSPLoadUcode(         u64 *uc_start, u64 *uc_dstart)</CODE></PRE></p>
+
+<p><b>Arguments</b></font></p>
+<p>
+<DL>
+  <DT><B>gdl</B>
+  <DD>the display list pointer. 
+  <DT><B>uc_start</B>
+  <DD>the starting physical address of microcode text section. 
+  <DT><B>uc_dstart</B>
+  <DD>the starting physical address of microcode data section. 
+</DL></p>
+<p><b>Description</b></font></p>
+<P>
+Loads the specified microcode. However, this macro can only load microcode in the F3DEX microcode group (F3DEX, F3DLX, F3DLX_Rej, F3DLP_Rej, and L3DEX). It cannot load Fast3D or Turbo3D microcode. Also, since loading microcode has its associated overhead, you should only load microcode when it is required for performance reasons. The <A HREF="gSPLoadUcodeL.htm">gSPLoadUcodeL</A> macro, which is simpler to use than gSPLoadUcode, also is available. For details, please see Section 25.3.1, "F3DEX Microcode Series Functions" in the N64 Programming Manual. 
+</P>
+<p><b>Note</b></font></p>
+<P>
+When microcode is loaded by this macro, the graphics and RSP internal states are initialized. Therefore, RSP-related settings must be set again after the microcode is loaded. Note that the display list link information is also initialized. This means that when this macro is used within a display list that was called by <A HREF="gSPDisplayList.htm">gSPDisplayList</A>, processing will not be able to return to the calling display list. (This specification is regrettably unavoidable for implementation reasons.) 
+</P>
+<P>
+To use this macro's g*SPLoadUcode function, the OS_TASK_LOADABLE flag must be set for the "flag" element in the OSTask structure, as shown below: 
+</P>
+<P>
+<PRE><CODE>        OSTask *tp;
+        tp-&gt;t.flag = OS_TASK_LOADABLE | OS_TASK_DP_WAIT;
+</CODE></PRE>
+</P>
+<P>
+To enable this flag process you must install a patch in the operating system. For information about how to install the patch, refer to F3DEX. The patched operating system is upward compatible with the pre-patched operating system. 
+</P>
+<P>
+Microcode that allows clipping such as F3DLX is loaded when drawing terrain, and high-speed microcode such as F3DLX_Rej is loaded for drawing people. This macro also enables the switch from F3DEX to L3DEX (conventionally done when drawing lines) to be made without CPU intermediation. 
+</P>
+<P>
+Accompanying the change from F3DEX to F3DEX2, when F3DEX2 microcode is self-loaded the following parameters are maintained: 
+<ul>
+  <li>DisplayList stack</li>
+  <li>Matrix stack</li>
+  <li>ModelView matrix</li>
+  <li>Projection matrix</li>
+  <li>Segment table</li>
+  <li>Scissor Box range</li>
+  <li>SetOtherMode parameter</li>
+  <li>PerspNormalize value</li>
+  <li>ViewPort parameter</li>
+</uL>
+The other GeometryMode, Light, and vertex buffer parameters are not preserved. Although the Model and Projection matrices are maintained, the MP matrix is not, so either the M or the P matrix must be loaded again and the MP matrix must be reconfigured. Accompanying these changes, self-loading with the old F3DEX and S2DEX microcode is no longer possible. Self-loading can only be done between microcode of the F3DEX2 series, and between the F3DEX2 and S2DEX2 microcodes. Self-loading is also possible between FIFO microcode and XBUS microcode. 
+</P>
+<p><b>See Also</b></font></p>
+<P>
+<A HREF="gSPLoadUcodeL.htm">gSPLoadUcodeL</A>
+</P>
+<p><b>Revision History</b></font></p>
+<P>
+02/01/99  Entirely revised.
+</P>
+</BODY>
+</HTML>

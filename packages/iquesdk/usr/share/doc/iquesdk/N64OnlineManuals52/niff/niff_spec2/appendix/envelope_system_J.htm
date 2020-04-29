@@ -1,0 +1,74 @@
+<html>
+<title>
+Envelope System
+</title>
+<body bgcolor="ffffff">
+
+<h1>
+<font color="ff0000">
+<i>
+Nintendo Confidential
+</i>
+</font>
+</h1>
+<hr size="3">
+
+
+<h2>
+Envelope System
+</h2>
+<hr size="3">
+<blockquote>
+
+NIFF2.0ではEnvelope System用のデータ領域があります。<p>
+Envelope Systemとは複数のノードから影響を受ける1 Skinのアニメーションを実現するためのシステムです。<p>
+NIFF2.0ではEnvelopeをおこなうジオメトリを下図のように3種類のパートに分けて登録します。<p>
+<center>
+<img src="./img/envelope_part.jpg">
+<p>
+<b>
+図　Envelopeのパート
+</b>
+<p>
+</center>
+Full Weightedパートは、そのパート内のすべての頂点は100%の影響を一つのノードから受けます。例えば上図で青い線で囲まれている部分の頂点の移動は一つのJointによって決定します。<p>
+すべての頂点をFull Weightedで作成したとすると、下図のようになります。<p>
+ここで、赤い頂点は赤いjointから100%の影響を受け、青い頂点は青いJointから100%の影響を受けます。<p>
+<center>
+<img src="./img/full_weighted.jpg">
+<p>
+<b>
+図　Full Weightedパート２つで構成されたスキン
+</b>
+<p>
+</center>
+Morphパートは、上図で赤い線で囲まれている部分のように２つのノードが１方向の回転のみでリンクされている場合にそれら２つのノードによってのみ変形の影響を受けるという場合に適用します。この場合、そのrotationから与えられるノード間のangle値を0から180度までで等分し、その場合の頂点の位置を出力することで、angle値をパラメータとする頂点アニメーションとして実現します。<p>
+<center>
+<img src="./img/morph.jpg">
+<p>
+<b>
+図　Morphパートのangle
+</b>
+<p>
+</center>
+angle = 0からangle = 180までの角度に応じて、下記のようにtableを作成し、table#0から順にデータを格納していきます。<p>
+<center>
+<img src="./img/table_for_morph_part.jpg">
+<p>
+<b>
+図　Morphパートのデータ作成
+</b>
+<p>
+</center>
+Weightedパートは複数のノードから受ける影響を各weight値によって算出する方法です。上図では緑の線で囲まれている部分がそれに該当します。この場合、同一ノードから受けるweight値が同じ頂点をまとめて一つのパートとして出力します。
+</blockquote>
+
+<hr>
+<i>
+Copyright 1998,1999 NINTENDO Co.,Ltd. All rights reserved.<br>
+Copyright 1998,1999 MONEGI CORPORATION All rights reserved.
+</i>
+
+
+</body>
+</html>

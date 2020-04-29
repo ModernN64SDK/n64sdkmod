@@ -1,0 +1,67 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../n64man.css">
+<title>MusPtrBankInitialize()</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check-->
+</head>
+
+<h1>MusPtrBankInitialize()</h1>
+
+<h2>Syntax</h2>
+
+<pre>
+void MusPtrBankInitialize(void *pbank, void *wbank);
+</pre>
+
+<h2>Arguments</h2>
+
+<dl>
+  <dt><b>pbank</b>
+  <dd>the address of sample pointer bank file 
+  <dt><b>wbank</b>
+  <dd>the address of sample wave bank file
+</dl>
+
+<h2>Description</h2>
+
+<p>It makes a sample bank available to the library. If the sample pointer bank has not already been initialized, the various offsets contained in the sample pointer bank, which reference both the sample pointer and sample wave bank files, are remapped to pointers. If a default sample bank is not currently set, then this sample bank is set as the default bank.</p>
+
+
+<p>The default sample bank is used when the <a href="MusStartSong.html">MusStartSong()</a> or the <a href="MusStartSongFromMarker.html">MusStartSongFromMarker()</a> functions are used to start songs, if no sample bank override has been defined with the <a href="MusPtrBankSetSingle.html">MusPtrBankSetSingle()</a> function.</p>
+
+<p>The default sample bank is used when the <a href="MusStartEffect.html">MusStartEffect()</a> or the <a href="MusStartEffect2.html">MusStartEffect2()</a> function is used to start sound effects, if no sample bank override is defined. The <a href="MusFxBankSetSingle.html">MusFxBankSetSingle()</a> function is used to specify the sound effect override for the sound effect that starts next.</p>
+
+<p>The pbank argument must be a Nintendo 64 Sound Tools .PTR file located with 32-bit alignment (cache alignment is best) in RAM.</p>
+
+<p>The wbank argument must be a Nintendo 64 Sound Tools .WBK file located in ROM or RAM (set when the library is initialized).</p>
+
+<h2>Return Value</h2>
+
+<p>None</p>
+
+<h2>Example</h2>
+
+<pre>void AudioSetSampleBank(int sample_bank)
+{
+  /* test if sample bank is already loaded */
+  if (sample_bank==last_sample_bank)
+      return;
+  last_sample_bank = sample_bank;
+  /* load sample bank */
+  AudioTransfer(ptr_address[sample_bank], ptr_buffer);
+  AudioTransfer(wbk_address[sample_bank], wbk_buffer);
+  /* initialise sample bank */
+  MusPtrBankInitialize(ptr_buffer, wbk_buffer);
+}
+</pre>
+
+<h2>See Also</h2>
+<p>
+<a href="MusPtrBankGetCurrent.html">MusPtrBankGetCurrent()</a>,
+<a href="MusPtrBankSetCurrent.html">MusPtrBankSetCurrent()</a>,
+<a href="MusPtrBankSetSingle.html">MusPtrBankSetSingle()</a>
+</p>
+
+</body>
+</html>

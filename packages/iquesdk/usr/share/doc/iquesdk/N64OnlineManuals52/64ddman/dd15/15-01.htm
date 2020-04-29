@@ -1,0 +1,253 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<TITLE>Chapter 15 Special Startup Methods</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+<font face="arial" size="-1">
+<b><font size="3">15.1 Restarting</b></font>
+<HR>
+<u><A name="01"></A>15.1.1 Overview of Restarting and its Uses</u>
+<P>
+In this case, restarting means to start another, separate game from the game that was initially started.  In the description that follows, the game initially started is called the "startup game," and the game newly started by restarting is called the "started game."  The started game must be stored on disk, while the startup game can be stored on either a cartridge or disk.
+</P>
+<P>
+Games on disk usually cannot be run while a cartridge is inserted.  However, they can be booted by calling game functions from the cartridge.
+
+</P>
+<P>
+An example of how this could be used would be for an expanded or later version of a game previously sold as a cartridge game.  The expanded or newer version could be sold on disk.
+</P>
+<P>
+However, not all games can be rebooted.  Several revisions for restarting must be made to both the startup game and started game when they are created.  There also are certain restrictions on restarting, such as the fact that the started game cannot reboot itself or another started game.  These restrictions are discussed in the following sections.
+</P>
+<P align="left">
+<A href="index.htm"><IMG src="../../gif/index.gif" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<b><A name="02"></A>15.1.2 Reboot Execution</b>
+<P>
+The function LeoBootGame( ) is used for restarting.
+</P>
+<TABLE border="1" bgcolor="#CBCEF8" cellpadding="3" cellspacing="3">
+  <TR>
+    <TD><font face="arial" size="-1"><B>LeoBootGame () function</B></TD></TR>
+  <TR>
+    <TD><CODE>#include &lt;PR/leo.h&gt;<BR>
+void LeoBootGame(void *<U>bootaddr</U>);</CODE></TD></TR>
+</TABLE>
+
+<P>
+bootaddr contains the starting address of the boot segment of the started game.
+</P>
+<P>
+The following is an example of the use of LeoBootGame( ).
+</P>
+<TABLE border="1">
+  <TR>
+    <TD><IMG src="f15-01.gif"></TD></TR>
+</TABLE>
+</P>
+<P align="left">
+<A href="index.htm"><IMG src="../../gif/index.gif" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<u><A name="03"></A>15.1.3 Disk Startup Processing</u>
+<P>
+The started game cannot be located at the start of a disk.  With a disk boot, however, the IPL attempts to start the game at the start of the disk.  Thus, the game placed at the start of the disk cannot be the started game.
+</P>
+<P>
+As with cassette startup, when a started game is to be played with disk startup (in cases such as when games on the same disk are to be played and a disk alone is used, or a cassette is also inserted), a reboot sequence is included in the game at the start of the disk.  
+</P>
+<P>
+The following describes the restarting process in this case.
+</P>
+<TABLE border="1">
+  <TR>
+    <TD><IMG src="f15-02.gif"></TD></TR>
+</TABLE>
+
+<P>
+<b>Note:</b> The above example differs from the example in 15.1.2 only at step (1).
+</P>
+<P align="left">
+<A href="index.htm"><IMG src="../../gif/index.gif" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<u><A name="04"></A>15.1.4 Restarting Method</u>
+<P>
+The following shows the sequence for restarting from the startup game.
+<P>
+
+<TABLE width="600">
+  <TR>
+    <TD><IMG src="f15-03.gif" height="346" width="295"></TD></tr>
+<tr><TD><font face="arial" size="-1">1. If plenty of memory is available, data other than the boot segment data can be loaded. <P>
+2. The means of obtaining the ID can be determined by the game creator.  No particular method is recommended.  One method is to first write these data to a specified block.  Another is to store them in ID.  Such processing is unnecesssary in cases where the storage location of the started game is known in advance by the startup game, such as when restarting from a disk-startup game, ( See 15.1.3, Disk Startup Processing) or when the cartridge and disk are sold together. </TD></TR>
+</TABLE>
+</P>
+<P align="left">
+<A href="index.htm"><IMG src="../../gif/index.gif" height="17" width="65" border="0"></A>
+ 
+<HR>
+<u><A name="05"></A>15.1.5 Points to Note at Compile Time (NW version)</u>
+<P>
+There are a few differences between compiling startup and started games and compiling normal games.  This section describes these differences.
+</P>
+<P>
+<b>Startup Game</b>
+</P>
+<UL>
+  <LI>Makefile
+</UL>
+<BLOCKQUOTE>
+Use the option -B 0 with makerom (or makedisk).
+</BLOCKQUOTE>
+<P>
+<b>Started Game</b>
+</P>
+<UL>
+  <LI>Makefile
+</UL>
+<BLOCKQUOTE>
+Use the option -B 1 with makedisk.
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+Store the size and disk storage location of the boot segment (segment loaded before restarting) of the started game to disk in a manner that allows these two pieces of information to be obtained by the game.
+</BLOCKQUOTE>
+<UL>
+  <LI>spec
+</UL>
+<BLOCKQUOTE>
+Set the boot segment LBA to a nonzero value.
+</BLOCKQUOTE>
+<P>
+For information on makedisk, see <A href="../dd03/03-01.htm">3.1 makedisk</A>.
+</P>
+<P align="left">
+<A href="index.htm"><IMG src="../../gif/index.gif" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<u><A name="06"></A>15.1.6 Points to Note at Compile Time (PC version)</u>
+<P>
+<b>Startup Game</b>
+</P>
+<UL>
+  <LI>Makefile
+</UL>
+<BLOCKQUOTE>
+Use the option -B 0 with mild.
+</BLOCKQUOTE>
+<P>
+<b>Started Game</b>
+</P>
+<UL>
+  <LI>Makefile
+</UL>
+<BLOCKQUOTE>
+Use the option -B 1 with mild.
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+Store the size and disk storage location of the boot segment (segment loaded before restarting) of the started game to disk in a manner that allows these two pieces of information to be obtained by the game.
+</BLOCKQUOTE>
+<UL>
+  <LI>spec
+</UL>
+<BLOCKQUOTE>
+Set the boot segment LBA to a nonzero value.
+</BLOCKQUOTE>
+<P>
+For information on mild, see <A href="../dd03/03-02.htm">3.2 mild</A>.
+</P>
+<P align="left">
+<A href="index.htm"><IMG src="../../gif/index.gif" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<u><A name="07"></A>15.1.7 Sample Program</u>
+<P>
+A sample with a restarting feature is installed in usr/src/PR/demos/reboot with the NW version and in ultra\usr\src\PR\demos\reboot with the PC version.  In this sample, onetri, which is stored on disk, is rebooted by topgun, which is on cartridge.  When initially booting the sample from disk, the following message appears:  "The included cartridge is required to play this sample." 
+</P>
+<P>
+<B>Procedure for Running the Sample Program</B>
+</P>
+<OL>
+  <LI>In the NW version this is run in usr/src/PR/demos/reboot; in the PC version it is run in ultra\usr\src\PR\demos\reboot.
+<P>
+  <LI>Type &lt;dwrite in the PARTNER command window to write to disk the disk image to be rebooted.
+<P>
+  <LI>Using l reboot, load the ROM image into emulation ROM.
+<P>  
+<LI>Type g.  topgun will start.  Press button A.  Selecting OK in response to the prompt asking whether startup should proceed starts the copy of onetri stored on disk.
+</OL>
+<P>
+Using resetdd and g in steps 3 and4, respectively, results in booting from the start of the disk.
+</P>
+<P>
+The directory structure below reboot/ is as follows.
+</P>
+<P>
+<B>ddproc/</B>
+</P>
+<P>
+A module containing items such as functions for disk processing and message display.  Its use is shared by the following three applications.
+</P>
+<P>
+<B>topgun/</B>
+</P>
+<P>
+A game started from cartridge; it reboots onetri.
+</P>
+<P>
+<B>onetri/</B>
+</P>
+<P>
+A started game; it is rebooted by topgun.
+</P>
+<P>
+<B>hello_world/</B>
+</P>
+<P>
+A game written to the start of the disk.
+</P>
+<P>
+<B>makefat/</B>
+</P>
+<P>
+An application that outputs to a file the size of the specification file and the specified storage location.
+</P>
+<P align="left">
+<A href="index.htm"><IMG src="../../gif/index.gif" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<u><A name="08"></A>15.1.8 Items to Note</u>
+<P>
+The following restrictions apply when using LeoBootGame( ).
+</P>
+<UL>
+  <LI>LeoBootGame( ) cannot be used by the started game.  Execution of LeoBootGame( ) is allowed only once, in the initial startup game.
+<P>
+
+  <LI>Before loading the started game, ensure that the disk ID is always checked to confirm that the disk is the desired one.
+<P>
+  <LI>The started game cannot be placed at LBA 0.  That is, the started game cannot be booted by normal disk startup using the IPL.   Another game should be stored starting at LBA 0.  This disk-startup game does not need to include
+LeoBootGame( ).  As described in 15.1.3, LeoBootGame( ) can be included in the started game to enable it to be booted.  With this structure, when a make is applied to the disk-startup game the -B 0 option should be used with makedisk for the NW version and with mild for the PC version.
+<P>
+
+  <LI>When passing data between the startup game and the started game, it is convenient to use osAppNMIBuffer.  This buffer is not cleared when booting with the 64-byte buffer.  Although other data in RDRAM are not cleared, it cannot be guaranteed that these data will be left unaltered.  When more than 64 bytes of data are passed, procedures such as writing the data to a predetermined RAM area on disk and reading it from the started game after booting are necessary.
+<P>
+  <LI>After restarting, the value of the global variable osResetType is 2.  Subsequent resetting makes its value 1 in the startup game (figure below).
+</UL>
+
+<P>
+<TABLE border="1">
+  <TR>
+    <TD><IMG src="f15-04.gif" align="left"></TD></TR>
+</TABLE>
+
+<P align="left">
+<A href="index.htm"><IMG src="../../gif/index.gif" height="17" width="65" border="0"></A>
+</P>
+<HR>
+</BODY>
+</HTML>

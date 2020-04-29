@@ -1,0 +1,89 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Audio-Chapter 2 AUDIO MANIPULATIONS BY THE PROGRAMMER</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/16/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<font style="font-size:12pt"><B>2.7  The Lookup Table</B></FONT>
+<br>
+<P>
+The lookup table, which is part of the header of the song or sound effect, is the list of sample waveform data types used by those sounds.  You can determine the address of the lookup table with <tt>MusHandleWaveAddress</tt> and the size of the lookup table (the number of listed samples) with <tt>MusHandleWaveCount</tt>.
+<BR>
+<HR>
+<p><b>
+Return the address of the lookup table</B><br>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Function name:</TD>
+	<TD COLSPAN=2 ALIGN=LEFT VALIGN=TOP NOWRAP><tt>MusHandleWaveAddress</tt></TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Syntax:</TD>
+	<TD COLSPAN=2 ALIGN=LEFT VALIGN=TOP NOWRAP>u16 *MusHandleWaveAddress(musHandle handle)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Arguments: </TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP><b>handle</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Sound handle</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Return value:</TD>
+	<TD COLSPAN=2 ALIGN=LEFT VALIGN=TOP NOWRAP>Address of lookup table</TD>
+</TR></TABLE>
+<HR><p>
+<b>Return the size of the lookup table</B><br>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Function name:</TD>
+	<TD COLSPAN=2 ALIGN=LEFT VALIGN=TOP NOWRAP><tt>MusHandleWaveCount</tt></TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Syntax:</TD>
+	<TD COLSPAN=2 ALIGN=LEFT VALIGN=TOP NOWRAP>s32 MusHandleWaveCount(musHandle handle)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Arguments: </TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP><b>handle</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Sound handle</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Return value:</TD>
+	<TD COLSPAN=2 ALIGN=LEFT VALIGN=TOP NOWRAP>Size of lookup table (number of entries)
+</TD>
+</TR></TABLE>
+<HR>
+</P>
+<P>
+The following example demonstrates how these functions can be used.<BR><br>
+<TABLE BORDER=0CELLSPACING=0 CELLPADDING=1><TR><TD>&nbsp;</TD><TD>
+<TABLE BORDER=1 CELLSPACING=0 CELLPADDING=4><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP><FONT COLOR="#000080"><PRE><CODE>void swap_sample(musHandle handle, s32 swap1, s32 swap2)
+  {
+    s32 count;
+    u16 *lookup, swap;
+
+    count = MusHandleWaveCount(handle);     // Get size of lookup table
+    lookup = MusHandleWaveAddress(handle);  // Get lookup table pointer                                            
+
+     // If swap1 and swap2 are valid indexes of table
+    if(count&gt;=swap1 &amp;&amp; count&gt;=swap2)
+    {
+      // Store pointer corresponding to swap1
+        swap = lookup[swap1];
+      // Overwrite swap1 pointer with pointer corresponding to swap2
+      lookup[swap1] = lookup[swap2];
+      // Overwrite swap2 pointer with pointer corresponding to swap1
+      lookup[swap2] = swap;
+    }
+  }</CODE></PRE></FONT></TD>
+</TR></TABLE>
+</TD></TR></TABLE>
+</P>
+<P>
+ In this program, the samples numbered swap1 and swap2 in the specified sound handle are switched.  
+<BR>
+ This can be used in a two-instrument duet to swap parts based on specific timing.</P>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0><TR>
+        <TD NOWRAP ALIGN=CENTER VALIGN=TOP>(*)</TD>
+        <TD ALIGN=LEFT VALIGN=TOP>Be careful because the order can change when the data is edited.</TD>
+</TR></TABLE>
+<br>
+<br>
+</BODY>
+</HTML>

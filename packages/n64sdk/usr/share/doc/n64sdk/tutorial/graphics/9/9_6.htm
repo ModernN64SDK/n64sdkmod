@@ -1,0 +1,101 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Graphics-Chapter 9  Advanced Texture Mapping</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/22/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<font style="font-size:12pt"><B>9.6  Mipmaps</B></FONT><BR>
+<BR>
+<BR>
+<B>9.6.1  Tile Settings</B>
+<P>
+Next we will talk about techniques that make use of LOD multi-tile textures.  One typical example is mipmapping.  The gfx9lod.c sample program uses LOD multi-tile textures for mipmapping.<br><br>
+
+     When mipmapping is performed, the texture is switched (and then interpolated) according to the LOD, so you need to prepare a number of textures of differing resolution.<br><br>
+
+     The mipmap texture "rgb16brickmm" used in the gfx9lod.c sample program was created using the SGI development environment rgb2c, but you can create the mipmap texture using any general-purpose graphics editor.   In short, you need one maximum-size texture and a succession of increasingly reduced textures, each half the width and half the height of the previous one, ending with a 1x1 size texture.  This whole series of textures is collectively called a mipmap texture.<br><br>
+
+     In the gfx9lod.c sample program, the mipmap texture is loaded as one continuous texture, and the tile descriptor is set to indicate each separate texture.  The sample code shown below is taken from rgb16brickmm.h. <br><br>
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=5><TR>
+	<TD NOWRAP COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE><B>List 9-8</B>
+</TR><TR>
+	<TD NOWRAP BGCOLOR="666666" WIDTH="4" ALIGN=LEFT VALIGN=TOP><HR NOSHADE SIZE=0></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>
+<FONT COLOR="#000080"><PRE><CODE> /* tmem address (in tmem word)  */
+ #define   TOP_ADDR      128
+
+ Gfx rgba16brickmm_dl[] = {
+  gsDPSetTextureImage( 0, 2, 1, rgba16brickmm_buf),
+  gsDPSetTile( 0, 2, 0, 0 + TOP_ADDR, G_TX_LOADTILE, 0, 0, 0, 0, 0, 0, 0),
+  /* 1365 = 32 * 32 + 16 * 16 + 8 * 8 + 4 * 4 + 2 * 2 + 1 * 1 */
+  /* 1372 % 4 == 0 */
+  gsDPLoadBlock( G_TX_LOADTILE, 0, 0, 1372, 0),
+  gsDPSetTile(G_IM_FMT_RGBA,
+                G_IM_SIZ_16b,
+                8,                             /* line */
+                0 + TOP_ADDR,                  /* tmem */
+                1,                             /* tile */
+                0,                             /* palette */
+                0,                             /* cmt */
+                5,                             /* maskt */
+                0,                             /* shiftt */
+                0,                             /* cms */
+                5,                             /* masks */
+                0),                            /* shifts */
+  gsDPSetTileSize(0,                           /* tile */
+                  0,                           /* uls */
+                  0,                           /* ult */
+                  31 &lt;&lt; G_TEXTURE_IMAGE_FRAC,  /* lrs */
+                  31 &lt;&lt; G_TEXTURE_IMAGE_FRAC), /* lrt */
+  /* (From here, do gsDPSetTile, gsDPSetTileSize for the next tile) */</CODE></PRE></FONT>
+	</TD>
+</TR></TABLE>
+<P>
+  In this code, the pointer to the mipmap texture is set with the gsDPSetTextureImage command and then the starting address for G_TX_LOADTILE (Tile7) is set.  The gsDPLoadBlock command specifies that the texture be loaded into the G_TX_LOADTILE tile.  Because the starting address of the G_TX_LOADTILE tile is (0 + TOP_ADDR), the texture is loaded to the TMEM word address where TOP_ADDR is located.<br><br>  
+
+     The reason the G_TX_RENDERTILE and G_TX_LOADTILE macros have been prepared is so the tile used when rendering the tile used when loading can be differentiated and the two operations run at the same time.  These tile numbers are defined simply for convenience, and you do not necessarily have to load the texture to the G_TX_LOADTILE tile.<br><br>
+
+     Although it was not shown in the above sample source, you also need to use gsDPSetTile and gsDPSetTileSize to set the tile descriptors for the lower-resolution textures.  You know about the TMEM address, but also remember to set shifts and shiftt to the same value as the LOD (although for non-square textures sometimes values different from the LOD are inserted here).<br><br>
+</P>
+<p>
+<B>9.6.2  Other Settings</B>
+<P>
+   Once the tile settings have been properly made, the rest of the steps are relatively easy.  You simply make some changes to the settings in the commands we have been using up to now.<br><br>
+     First, use the gSPTexture command to specify the mipmap level and primitive tile.  The gfx9lod.c sample program uses a 32x32 texture, and since 32 = 25 the mipmap level is set to 5.<br><br>
+     Next, taking detail texture (explained in the next section) into consideration, you set the highest-resolution texture to the (G_TX_RENDER_TILE + 1) tile so G_TX_RENDERTILE (Tile0) is not used.  For this, the primitive tile must be (G_TX_RENDER_TILE + 1).
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=5><TR>
+	<TD NOWRAP COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE><B>List 9-9</B></FONT>
+</TR><TR>
+	<TD NOWRAP BGCOLOR="666666" WIDTH="4" ALIGN=LEFT VALIGN=TOP><HR NOSHADE SIZE=0></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>
+	<FONT COLOR="#000080"><PRE><CODE>    /* When detail texture not used, Tile0 is empty  */
+    gSPTexture(glistp++, 0x8000, 0x8000,
+               5,                     /* Mipmap level  */
+               G_TX_RENDERTILE + 1,   /* Tile number of highest-resolution mipmap  */
+               G_ON);</CODE></PRE></FONT>
+	</TD>
+</TR></TABLE>
+<P>
+Also, you insert the following command in order to notify the RDP that you are using LOD multi-tile textures and performing mipmapping.</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=5><TR>
+	<TD NOWRAP COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE><B>List 9-10</B>
+</TR><TR>
+	<TD NOWRAP BGCOLOR="666666" WIDTH="4" ALIGN=LEFT VALIGN=TOP><HR NOSHADE SIZE=0></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>
+<FONT COLOR="#000080"><PRE><CODE>    /* Specify selection of LOD-compliant texture  */
+    gDPSetTextureLOD(glistp++, G_TL_LOD);
+    /* Normal mipmapping  */
+    gDPSetTextureDetail(glistp++, G_TD_CLAMP);</CODE></PRE></FONT>
+	</TD>
+</TR></TABLE>
+<P>
+When you run gfx9lod.c you will see an animation of two somersaulting cubes moving toward and away from you on the screen.  One cube is mipmapped and one is not.  When the two cubes are far away, you can see the jagged edges in the pattern of the cube that has not been mipmapped.
+</P>
+</BODY>
+</HTML>

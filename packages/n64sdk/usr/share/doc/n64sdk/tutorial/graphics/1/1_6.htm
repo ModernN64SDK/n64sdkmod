@@ -1,0 +1,57 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Graphics-CHAPTER 1  The Basics of N64 Graphics-Introduction to RSP</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/22/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<font style="font-size:12pt"><B>1.6  View Port</B></FONT>
+<br>
+<P>
+   The RSP is in charge of coordinate transformations all the way to the screen coordinates, so you need to give the RSP view port information as well.<br><br>
+     Setting the view port is similar to loading arrays and vertices: first you set the parameters in the appropriate union, and then you tell the RSP about the pointer to that union using a display list command.  The Vp union used at this time has the following Vp_t structure as a member:
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=1><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><FONT COLOR="#000080"><PRE><CODE>  typedef struct {
+      short   vscale[4];  /* scale, 2 bits fraction */
+      short   vtrans[4];  /* translate, 2 bits fraction */
+    /* both the above arrays are padded to 64-bit boundary */
+  } Vp_t;
+</CODE></PRE></FONT>
+	</TD>
+</TR></TABLE>
+<P>
+vscale[0] and vtrans[0] are the scaling and offset values of the x component, while vscale[1], vtrans[1] are the comparable values for the y component, and vscale[2], vtrans[2] are those for the z component.  (The rest of the elements are defined for the purpose of padding.)
+<br><br>
+     This is probably still rather confusing, so a source sample will be used to explain more concretely.  SCREEN_WD and SCREEN_HT are values representing the height and width of the screen in pixels in a macro defined with the header file.
+
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=5><TR>
+	<TD NOWRAP COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE><B>List 1-7</B></TD>
+</TR><TR>
+	<TD NOWRAP BGCOLOR="666666" WIDTH="4" ALIGN=LEFT VALIGN=TOP><HR NOSHADE SIZE=0></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><FONT COLOR="#000080"><PRE><CODE>static  Vp  viewport = {
+  SCREEN_WD * 2, SCREEN_HT * 2, G_MAXZ / 2, 0,
+  SCREEN_WD * 2, SCREEN_HT * 2, G_MAXZ / 2, 0,
+};
+</CODE></PRE></FONT>
+	</TD>
+</TR></TABLE>
+<P>
+ This example defines a view port encompassing the whole screen.  After the RSP geometry engine performs the projection transformation on the vertex coordinates, it divides those x,y,z components by the homogeneous component values.  The result for each of the x,y,z components is a value between -1 and 1.<br><br>
+     The values in this [-1, 1] range are used for the scaling and offset values mentioned previously to convert to screen coordinates.
+     Below is an equation expressing how x coordinate is actually converted into a screen coordinate:
+</P>
+<P>(Equation 1)<BR>
+screen_x = x * (SCREEN_WD / 2) + SCREEN_WD / 2<BR>
+</P>
+<P>
+  If x = -1 then screen_x = 0.  If x = 1 then screen_x = SCREEN_WD.  In the same way, the y component changes to a value between 0 and SCREEN_HT.  In other words, the point is distributed over the entire screen.  The z component is explained in Chapter 7, which talks about the Z buffer, and will not be touched on now.<br><br>
+
+     The scaling & offset value written as "SCREEN_WD * 2" in the sample source becomes "SCREEN_WD / 2" in Equation 1.  This is because the Vp_t structure members are in s13.2 format, so it was multiplied by 4 in the sample source.
+</P>
+</BODY>
+</HTML>

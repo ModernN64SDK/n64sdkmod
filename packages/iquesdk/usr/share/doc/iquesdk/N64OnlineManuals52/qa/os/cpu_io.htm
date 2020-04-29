@@ -1,0 +1,128 @@
+<HTML>
+<HEAD>
+<TITLE>CPU, I/O</TITLE>
+<!PWC - 2/18/00 added stylesheet, corrected links, changed index buttons to top links>
+<link rel=stylesheet type="text/css" href="gif/style.css">
+</HEAD>
+<BODY>
+
+<A name=index></A>
+<IMG src="../../gif/n64_logo2.gif" height="21" width="136">
+
+<H3><FONT color="#FF8000">Q&A</FONT>- CPU, I/O</H3>
+
+<P>
+<TABLE border=0>
+  <TBODY>
+  <TR>
+    <TD vAlign=top width=50><A href="cpu_io.htm#01"><b>QA1</b></A></TD>
+    <TD>Alignment in CPU memory access...</TD></TR>
+  <TR>
+    <TD vAlign=top width=50><A href="cpu_io.htm#02"><b>QA2</b></A></TD>
+    <TD>osGetTime() and osGetCount()...</TD></TR>
+  <TR>
+    <TD vAlign=top width=50><A href="cpu_io.htm#03"><b>QA3</b></A></TD>
+    <TD>How do I overlay?</TD></TR>
+  <TR>
+    <TD vAlign=top width=50><A href="cpu_io.htm#04"><b>QA4</b></A></TD>
+    <TD>Overlap error...</TD></TR>
+  <TR>
+    <TD vAlign=top width=50><A href="cpu_io.htm#05"><b>QA5</b></A></TD>
+    <TD>Is there a way to do high-speed RAM-to-RAM memory transfers?</TD></TR>
+  <TR>
+    <TD vAlign=top width=50><A href="cpu_io.htm#06"><b>QA6</b></A></TD>
+    <TD>Is access by the byte/word prohibited?</TD></TR>
+  <TR>
+    <TD vAlign=top width=50><A href="cpu_io.htm#07"><b>QA7</b></A></TD>
+    <TD>I'd like a detailed explanation of the RDRAM page register.</TD></TR>
+  <TR>
+    <TD vAlign=top width=50><A href="cpu_io.htm#08"><b>QA8</b></A></TD>
+    <TD>Is there a library that is compatible with the high-resolution pak? (199907)</TD></TR>
+  <TR>
+    <TD vAlign=top width=50><A href="cpu_io.htm#09"><b>QA9</b></A></TD>
+    <TD>The device hangs up during floating decimal point multiplication and subtraction. (199910)</TD></TR></TBODY></TABLE>
+<HR>
+
+<P><A name=01><FONT color=#ff0000><b>Q1</b></A></font> <b>What is the alignment when the CPU accesses memory?</b>
+<P><FONT color=#008000><b>A1</b></font> R4300 has memory access commands which use 8-bit alignment for 8-bit access, 16 for 16, 32 for 32, and 64 for 64. Each is executed in one cycle. There are commands for 32 and 64-bit access which can access memory even if the alignment doesn't match, which are both executed in two cycles.
+<P>Since the compiler generates code in accordance with these commands, access on an alignment which corresponds with the access will be executed at high speed and will generate lower volumes of code. However, since access with mismatched alignment is executed through the CPU's internal cache, the overhead isn't that great.
+<P align=right><A href="cpu_io.htm#index">top</A>
+
+<HR>
+
+<P><A name=02><FONT color=#ff0000><b>Q2</b></A></font> <b>What is the content of the returned values from <A href="../../n64man/os/osGetTime.htm">osGetTime()</A> and <A href="../../n64man/os/osGetCount.htm">osGetCount()</A>?</b>
+<P><FONT color=#008000><b>A2</b></font> <A href="../../n64man/os/osGetCount.htm">osGetCount()</A> returns the CPU (R4300) count register, unaltered. This value is in u32 format and takes about 1.5 seconds per cycle. Therefore, processing is possible for a long time by using the OSTime type (same as u64) internal variable in OS and gradually adding the CPU counts taken by the frame in each retrace.
+<P><A href="../../n64man/os/osGetTime.htm">osGetTime()</A> uses this to return the time from the immediately previous cold reset.
+<P align=right><A href="cpu_io.htm#index">top</A>
+
+<HR>
+
+<P><A name=03><FONT color=#ff0000><b>Q3</b></A></font> <b>How do I assign two or more programs to the same address in RAM and then switch between them at run time.</b>
+<P><FONT color=#008000><b>A3</b></font> This can be accomplished by using multi-waves in the spec file.
+<P align=right><A href="cpu_io.htm#index">top</A>
+<HR>
+
+<P><A name=04><FONT color=#ff0000><b>Q4</b></A></font> <b>When I create a spec file according to the method of using overlays in the Programming Manual, I get an overlap error at the makerom command. </b>
+<P><FONT color=#008000><b>A4</b></font> The method for using multi-waves is explained in the <A href="../../pro-man/pro10/10-04.htm">N64 Programming Manual, Section 10-4</A>. When using overlays, the error should no longer occur if you divide the code between beginwave and endwave in two as described in the method for using multi-waves.
+<P align=right><A href="cpu_io.htm#index">top</A>
+<HR>
+
+<P><A name=05><FONT color=#ff0000><b>Q5</b></A></font> <b>Is there a way to do high-speed RAM-to-RAM memory transfers?</b>
+<P><FONT color=#008000><b>A5</b></font> There is no special high-speed memory function for RAM-to-RAM transfers. Memory transfers can only be done via the CPU. However, since transfers between different banks (RDRAM has a 1Mbyte unit bank structure) is faster than transfers within the same bank, it is recommended to do memory configuration when bottlenecks occur in the transfer speed.
+<P align=right><A href="cpu_io.htm#index">top</A> </P>
+<HR>
+
+<P><A name=06><FONT color=#ff0000><b>Q6</b></A></font> <b>Is byte/word access to non-cache areas prohibited? </b>
+<P><FONT color=#008000><b>A6</b></font> 8-bit/16-bit access to non-cache areas is prohibited.
+<P>Access to the various N64 control registers comprises access to non-cache areas (single transfer), where only 32-bit alignment access is supported.
+<P align=right><A href="cpu_io.htm#index">top</A>
+<HR>
+
+<P><A name=07><FONT color=#ff0000><b>Q7</b></A></font> <b>I noticed a passage in the manual stating that "since the RDRAM has a page register for every 1M, it is more efficient to divide the frame buffer and the Z buffer into banks," but it is not clear to me why this would be more efficient. It would be helpful if you could explain the flow of the memory access operation via the page register, or something similar.</b>
+<P><FONT color=#008000><b>A7</b></font> First, this is an internal structure of the N64 RDRAM, but the RDRAM used in the N64 handles each 2048 bytes in units called "rows" and one bank is made up of 512 rows. 
+<P>One bank has a capacity of 2048 bytes x 512 rows = 1 Mbyte, and one RDRAM is made from 2 banks. 
+<BLOCKQUOTE>1M x 2 = 2Mbytes </BLOCKQUOTE>
+and since there are two RDRAM chips in the N64 Control Deck,
+<BLOCKQUOTE>2Mbytes x 2 = 4Mbytes </BLOCKQUOTE>
+(more accurately, since 1 byte = 9 bits in the N64, there are 36Mbits).
+<P>The RDRAM has a "page" for each bank. This "page" describes the "rows" which are currently being accessed. When the RDRAM is accessed from the CPU (RCP), it is this page which is accessed. When the address being accessed is contained in the page, the data can be immediately accessed, but if it is not, it becomes necessary to wait for the "row" corresponding to the address being accessed to become accessible and to then access the data, which causes a delay.
+<P>Because of this feature of RDRAM, it is better to divide the Z buffer and the frame buffer into separate banks. 
+<P>When the RDP is rendering graphics under conditions in which the Z buffer is used, the Z buffer and frame buffer are alternately accessed as follows:
+<OL>
+  <LI>Read frame buffer 
+  <LI>Read Z buffer 
+  <LI>Write to frame buffer (if necessary) 
+  <LI>Write to Z buffer (if necessary) </LI></OL>
+<P>If the frame buffer and the Z buffer were situated in the same bank the page would have to be modified each time the memory was accessed, causing delays. However, if the Z buffer and frame buffer are divided into separate banks, changes to the pages are decreased, making it harder to decrease the memory access speed.
+<P>Additionally, the RDP has a span buffer. Therefore, the RDRAM does not need to be accessed pixel by pixel when the RDP accesses the frame buffer and Z buffer.
+<P align=right><A href="cpu_io.htm#index">top</A>
+<HR>
+
+<P><A name=08><FONT color=#ff0000><b>Q8</b></A></font> <b>Right now, games are being developed that are going to be compatible with Memory Expansion Paks, but are there any libraries available which are compatible with Memory Expansion Paks? Or, can they run on the OS2.0J which at this point is the newest version? </b>
+<P><FONT color=#008000><b>A8</b></font> It is called a Memory Expansion Pak, but these are simply 4M expansion RAM and it would be acceptable for you to continue with processing by checking the RAM capacity only.
+<P>Please refer to "<A href="../../caution/caution/index12.htm">12. RDRAM Capacity</A>" in the Programming Cautions.
+<P align=right><A href="cpu_io.htm#index">top</A>
+<HR>
+
+<P><A name=09><FONT color=#ff0000><b>Q9</b></A></font> <b>Recently when debugging, a hang-up happened at the following Assembler Code:</b>
+
+<PRE>MUL.S f0,f0,f2
+SUB.S f0,f0,f2</PRE>
+
+<b>I can understand a hang with division by zero, but I don't really understand why it would with multiplication or subtraction. Please tell me if there is anything that seems to be causing this. </b> 
+<P><FONT color=#008000><b>A9</b></font> Please look at the fixed decimal point register values f0, f2 if it hangs. On the Partner N64 you can view it with the fpu command or the menu window.
+<P>Single precision floating decimal point values have a minimum value of 1.17549435e-38, so if the value is less than this, the operand will be a denormalized number which will cause an unmounted operation exception and it is possible that it could hang.
+<P>Also, in the N64, with the floating decimal point control/status register values there are FS=1, V=1, that is, a flash permission on the value that could not be normalized and a permission for the invalid operating exception.
+<P>The exceptions under which these occur are:
+<UL>
+  <LI> Addition and Subtraction:  The addition or subtraction of two infinite values (+<img src=infinity.gif align=absmiddle width=11 height=5 alt="Infinity Symbol">) + (-<img src=infinity.gif align=absmiddle width=11 height=5 alt="Infinity Symbol">) or (-<img src=infinity.gif align=absmiddle width=11 height=5 alt="Infinity Symbol">) - (-<img src=infinity.gif align=absmiddle width=11 height=5 alt="Infinity Symbol">).
+  <LI> Multiplication: &plusmn; 0 x &plusmn;<img src=infinity.gif align=absmiddle width=11 height=5 alt="Infinity Symbol">
+  <LI> Division: &plusmn; 0 &divide;&plusmn;0 or  &plusmn; <img src=infinity.gif align=absmiddle width=11 height=5 alt="Infinity Symbol"> &divide;&plusmn;<img src=infinity.gif align=absmiddle width=11 height=5 alt="Infinity Symbol">
+  <LI> Arithmetic operations including S-NaN.
+  <LI> Comparison and conversion to a floating decimal point when the operand is S-NaN.
+  <LI> Square Roots:  When the operand is less than zero.</LI></UL>
+<P>Also, division by zero exceptions and overflow exceptions are not permitted by default, so when performing calculations which may generate such exceptions, the results will be   &plusmn;<img src=infinity.gif align=absmiddle width=11 height=5 alt="Infinity Symbol">, +0, or -0.
+<P>That is, in the above instances, it is possible to experience a lock up set off by multiplication. If division by zero exceptions and overflow exceptions are permitted it is possible to determine whether or not these operations were completed. The "fault" in the "demos" would be a good reference concerning methods with this.
+<P align=right><A href="cpu_io.htm#index">top</A> 
+<HR>
+</BODY></HTML>

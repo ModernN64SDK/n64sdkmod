@@ -1,0 +1,83 @@
+<HTML>
+<HEAD>
+<TITLE>nuGfxInit</TITLE>
+<link rel=stylesheet type="text/css" href="../../../n64man/n64man.css">
+<!-- Editor's Notes: 9/8/1999 Ron Daring -->
+</HEAD>
+
+<BODY bgcolor="#FFFFFF">
+
+
+<P>
+<FONT size="5"><b><IMG src="../nusystem2.gif" height="30" width="176">Function</b></FONT>
+
+<HR>
+<P>
+<FONT size="3"><b>nuGfxInit</b></FONT>
+<p>
+<HR>
+<P>
+<b>Syntax</b>
+<font face="courier" size="2">
+<pre>void nuGfxInit(void)</pre>
+</font>
+
+<b>Arguments</b>
+<font face="courier" size="2">
+<pre>None</pre>
+</font>
+
+<b>Return Value</b>
+<font face="courier" size="2">
+<pre>None</pre>
+</font>
+
+<b>Description</b>
+
+<P><I>Initializes and starts the graphics thread and the graphics task manager</i>
+<P>
+The following initialization and setup is performed by the <TT>nuGfxInit</TT> function. 
+<P>
+
+* Start the graphics thread 
+
+<blockquote>Create and start the thread which synchronizes with retrace and executes the retrace call back function. The call back function retrace is registered by the <TT>nuGfxFuncSet</TT> function. 
+
+<p> This thread is synchronized with the PRE_NMI event and executes the PRE_NMI call back function.  Register the PRE_NMI call back function with the <TT>nuGfxPreNMIFuncSet</TT> function. </blockquote>
+
+* Registration of the frame buffer, the Z-Buffer, <!--  -->FIFO buffer,<!--  --> and the graphics microcode
+
+<blockquote>Set addresses of the frame buffer and Z-Buffer in the graphics task manager.  <!--  -->Also, set the size and address of the FIFO buffer. And register the graphics microcodes.  By default, three frame buffers are reserved from 0x8038F800 of RDRAM by 320 x 240 16 bit. The Z-Buffer is reserved from  0x80000400 by 320x240. And FIFO buffer is reserved in nuRDPOutputBuf by 0x20000. F3D microcodes and L3DEX/S2DEX are reserved.<!--  --> The frame buffer can be reset using the <TT>nuGfxSetCfb</TT> function.  The Z-Buffer can be reset using the <TT>nuGfxSetZBuffer</TT> function. <!--  -->The FIFO buffer can be set using the nuGfxSetUcodeFifo function.<!--  --> The graphics microcode can be registered again using the <TT>nuGfxSetUcode</TT> function. </blockquote>
+
+* Registration of the call back function which is executed when completing the graphics task. 
+
+<blockquote>When <TT>NU_GFX_SWAPBUFFER</TT> is specified as an argument, if the <TT>nuGfxTaskStart</TT> function is executed, the <TT>nuGfxSwapCfb</TT> function is registered as the function which is called when completing the task.</blockquote>
+
+* Initialization of the RDP
+<blockquote>Initial setting of the RDP is performed by starting the graphics task since the value of RDP is not fixed.</blockquote>
+
+<p>The <TT>nuGfxTaskStart</TT> function can be used after calling this function.
+</p>
+
+
+<b>See Also</b>	
+<p>
+<a href="nuGfxFuncSet.htm">nuGfxFuncSet</a>, <a
+href="nuGfxSetCfb.htm">nuGfxSetCfb</a>, <a
+href="nuGfxSetZBuffer.htm">nuGfxSetZBuffer</a>, <a
+href="nuGfxSetUcode.htm">nuGfxSetUcode</a>, <a
+href="nuGfxSwapCfb.htm">nuGfxSwapCfb</a>, <a
+href="nuGfxSwapCfbFuncSet.htm">nuGfxSwapCfbFuncSet</a>, and <!--  --><a
+href="nuGfxSetUcodeFifo.htm">nuGfxSetUcodeFifo</a><!--  -->
+<p>
+<hr>
+<P><b><!--  -->Revision History</b>
+<P>
+<!--  -->8/4/99 Added the description of the setup function for FIFO buffer<!--  -->
+<p>
+<hr>
+
+<p align="right"><a href="index.htm"><img src="../index.gif" border="0"
+width="65" height="17"></a></p>
+</body>
+</html>

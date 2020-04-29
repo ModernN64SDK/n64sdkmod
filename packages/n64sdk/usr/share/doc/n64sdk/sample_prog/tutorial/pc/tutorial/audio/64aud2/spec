@@ -1,0 +1,66 @@
+#include  <nusys.h>
+
+/* code area */
+beginseg
+        name    "code"
+        flags   BOOT OBJECT
+        entry   nuBoot
+        address NU_SPEC_BOOT_ADDR
+        stack   NU_SPEC_BOOT_STACK
+        include "codesegment.o"
+        include "$(ROOT)/usr/lib/PR/rspboot.o"
+        include "$(ROOT)/usr/lib/PR/gspF3DEX2.fifo.o"
+        include "$(ROOT)/usr/lib/PR/gspL3DEX2.fifo.o"
+        include "$(ROOT)/usr/lib/PR/gspF3DEX2.Rej.fifo.o"
+        include "$(ROOT)/usr/lib/PR/gspF3DEX2.NoN.fifo.o"
+        include "$(ROOT)/usr/lib/PR/gspF3DLX2.Rej.fifo.o"
+        include "$(ROOT)/usr/lib/PR/gspS2DEX2.fifo.o"
+#ifdef    N_AUDIO
+        include "$(ROOT)/usr/lib/PR/n_aspMain.o"
+#else
+        include "$(ROOT)/usr/lib/PR/aspMain.o"
+#endif
+endseg
+
+
+/* sound data area */
+beginseg
+        name    "pbank1"
+        flags   RAW
+        include "../data/demo2_1.ptr"
+endseg
+
+beginseg
+        name    "wbank1"
+        flags   RAW
+        include "../data/demo2_1.wbk"
+endseg
+
+beginseg
+        name    "song1"
+        flags   RAW
+        include "../data/demo2_1.bin"
+endseg
+
+beginseg
+        name    "song2"
+        flags   RAW
+        include "../data/demo2_2.bin"
+endseg
+
+beginseg
+        name    "sebank1"
+        flags   RAW
+        include "../data/demo2_1.bfx"
+endseg
+
+
+beginwave
+        name    "64aud2"
+        include "code"
+        include "pbank1"
+        include "wbank1"
+        include "song1"
+        include "song2"
+        include "sebank1"
+endwave

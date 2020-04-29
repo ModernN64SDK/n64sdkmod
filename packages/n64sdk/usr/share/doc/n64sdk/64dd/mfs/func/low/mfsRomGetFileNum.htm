@@ -1,0 +1,60 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>mfsRomGetFileNum</title>
+</head>
+
+<body>
+
+<font face="arial" size="-1">
+<b><font size="3">mfsRomGetFileNum<br>
+mfsRamGetFileNum</b></font>
+
+<hr>
+
+<strong>Syntax</strong>
+<font face="courier" size="2">
+<pre>s32 mfsRamGetFileNum(MfsDirID dirID,u16 attr)
+s32 mfsRomGetFileNum(MfsDirID dirID,u16 attr)</pre></font>
+
+<P>
+<b>Arguments</b>
+<dl>
+<dd>dirID &nbsp; Directory ID of directory
+<dd>attr		&nbsp; File or directory specification (logical OR can be taken)
+			<br>MFS_FILE_ATTR_FILE		File
+			<br>MFS_FILE_ATTR_DIRECTORY		Directory
+</dl></dd>
+
+<P>
+<b>Return value</b>
+<dl><dd>Number of files (a negative value is an error)</dl></dd>
+
+<P>
+<b>Function</b>
+<dl><dd>Obtains the number of files belonging to the specified directory</dl></dd>
+
+<P>
+<b>Description</b>
+<P>
+This function obtains the number of files or directory files in the directory specified by dirID.
+When MFS_ALL_FILES is specified for dirID, this function returns the total number of files or directories in the RAM or ROM area.
+
+<P>					
+<b>Main errors</b>
+<table border="0" cellpadding="3" cellspacing="3">
+<tr><td valign="top"><font face="arial" size="-1">MFS_ERR_NOTMFSDISK</td>
+<td><font face="arial" size="-1">Not an MFS-format disk
+<br>The disk ID's disk use is not 1, or the header is different.</td></tr>
+<tr><td valign="top"><font face="arial" size="-1">MFS_ERR_VERSION</td>
+<td><font face="arial" size="-1">Different version disk</td></tr>
+<tr><td valign="top"><font face="arial" size="-1">MFS_ERR_PROTECT</td>
+<td><font face="arial" size="-1">Write protected
+<br>The medium is volume protected.</td></tr></table>
+                
+		
+			 
+
+<hr>
+</body>
+</html>

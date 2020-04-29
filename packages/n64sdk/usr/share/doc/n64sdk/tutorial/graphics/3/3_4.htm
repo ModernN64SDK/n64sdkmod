@@ -1,0 +1,101 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Graphics-Chapter 3  Simple Texture Mapping</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/22/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<font style="font-size:12pt"><B>3.4  Texture Coordinates</B></FONT>
+<br>
+<P>
+Next, an explanation of the texture coordinate system, a topic that plays an essential role in any understanding of textures, will be provided.<br><br>
+     The texture coordinate system describes the location in space of a texture, with the "s axis" in the horizontal direction, and the "t axis" in the vertical direction.  The s-axis component is called the S value and the t-axis component is called the T value.
+     The ST values, then, can be thought of as corresponding to the texel coordinates.
+The texture mapping of a polygon is merely a matter of deriving the ST values of each vertex.<br><br>
+     Figure 3-2, below, shows a texture with width (w) and height (h) being mapped to a square polygon.
+</P>
+<P>
+<IMG SRC="image06.gif">
+</P>
+<P>
+<B>Figure 3-2  Mapping a texture to a polygon</B>
+</P>
+<P>
+The correspondence between vertices and ST values is specified by the Vtx union describing the vertex information.  The Vtx union was talked about in Chapter 1.  Recall the fifth and sixth elements in this union, which we put off explaining in Chapter 1.
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=5><TR>
+	<TD NOWRAP COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE><B>List 3-2</B></TD>
+</TR><TR>
+	<TD NOWRAP BGCOLOR="666666" WIDTH="4" ALIGN=LEFT VALIGN=TOP><HR NOSHADE SIZE=0></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>
+<FONT COLOR="#000080">
+<PRE><CODE>static Vtx  cube_vtx[] = {
+  {-10, -10, -10, 0, 31 &lt;&lt; 6, 31 &lt;&lt; 6, 0, 0, 0, 255},
+  { 10, -10, -10, 0,  0 &lt;&lt; 6, 31 &lt;&lt; 6, 0, 0, 0, 255},
+   (omitted)
+</CODE></PRE>
+</FONT>
+	</TD>
+</TR></TABLE>
+<P>
+  In this example (gfx3.c edited for easy reading), the width and height of the texture are both 32 texels.  The first vertex corresponds to the lower-right corner of the texture (31, 31) while the second vertex corresponds to the lower-left corner (0, 31).<br><br>
+     The ST value elements are described in 10.5 fixed-point format in the Vtx union, so to store an integer value you should shift 5 bits to the left.  However, in the above example the integers are shifted by 6 bits.  To explain the reason for this, we will introduce the gSPTexture command and then clarify.<br><br>
+     Before you perform texture mapping, you need to use the gSPTexture command to enable the texture and to set the tile index that will be used for the texture coordinate scaling constants.
+</P>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD ALIGN=LEFT VALIGN=TOP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP COLSPAN=2 NOWRAP>gSPTexture(Gfx *gdl, s32 sc, s32 tc, s32 level, s32 tile, s32 on)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>&nbsp;sc</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Scaling value for texture coordinate s (16bit precision, .16)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>&nbsp;tc</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Scaling value for texture coordinate t (16bit precision, .16)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>&nbsp;level</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>&nbsp;Maximum number of mipmap levels -1</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>&nbsp;tile</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Tile descriptor index (3bit precision,  0-7)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>&nbsp;on</TD>
+	    <TD ALIGN=LEFT VALIGN=TOP>Texture flag 
+         <TABLE BORDER=0><TR>
+		<TD ALIGN=LEFT VALIGN=TOP>&nbsp;G_ON(texture on) </TD>
+	</TR><TR>
+		<TD ALIGN=LEFT VALIGN=TOP>&nbsp;G_OFF(texture off)</TD>
+	</TR></TABLE>
+</TR></TABLE>
+<P>
+The second and third arguments of this command get the scaling constants for texture mapping in 0.16 fixed-point format.  In other words, the ST values received by the RDP are the ST values computed by the RSP multiplied by these scaling values.<br><br>
+     The next argument is specified when texture mapping (mipmapping, etc.) is done in relation to level of detail (LOD).  We cover LOD textures in Chapter 9, so for now set this to 0.  The argument after that specifies the tile index, but this is also not brought up until Chapter 9.<br><br>
+     The final argument enables the functioning of the Texture Engine when it is set to G_ON.  If you set this to G_OFF the Texture Engine becomes unavailable.
+</P>
+<P>
+Next we will look at an actual example from gfx3.c
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=5><TR>
+	<TD NOWRAP COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE><B>List 3-3</B></TD>
+</TR><TR>
+	<TD NOWRAP BGCOLOR="666666" WIDTH="4" ALIGN=LEFT VALIGN=TOP><HR NOSHADE SIZE=0></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>
+<FONT COLOR="#000080">
+<PRE><CODE>  /* Enable texture and set scaling parameters  */
+  gSPTexture(glistp++, 0x8000, 0x8000, 0, G_TX_RENDERTILE, G_ON);
+</CODE></PRE>
+</FONT>
+	</TD>
+</TR></TABLE>
+<P>
+   In this example, the scaling constants take on the value of 0x8000, or 0.5 if written in floating point.  The technique of initially scaling the ST values with 0.5 is one of the techniques typically used in N64 programs.  Now recall how the ST values in the Vtx union were shifted 6 bits even though 5 bits would have been OK.  When the ST values are first doubled and then multiplied by a scaling constant of 0.5, they return to their original values.  The reason this is done is that the scaling constant does not have an integer component, so you cannot correctly express a value of 1.  That is why you do the more complicated method, and "first double, then halve."  However, instead of this complex process, you can assign many bits to the decimal portion, thereby boosting computational precision and also enabling two-stage scaling.
+</P>
+</BODY>
+</HTML>

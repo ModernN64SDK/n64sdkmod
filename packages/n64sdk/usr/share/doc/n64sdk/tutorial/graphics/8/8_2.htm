@@ -1,0 +1,33 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Graphics-Chapter 8  Advanced Rendering Techniques</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/23/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<font style="font-size:12pt"><B>8.2  1-Cycle Mode & 2-Cycle Mode</B></FONT>
+<br>
+<P>
+   There is really no need to go into further detail about Fill mode and Copy mode.  Both have a very simple pipeline structure and it should be clear how they are used.  For the rest of this chapter we will focus on an explanation of the differences between 1-Cycle mode and 2-Cycle mode.<br><br>
+
+     Actually, 1-Cycle mode is a richly functional mode that is sufficient for most of your rendering needs.  Processing takes longer in 2-Cycle mode, so think of it as the mode you only use when there is something you cannot achieve with 1-Cycle mode.
+     Next we will cover the things that 2-Cycle Mode can do that 1-Cycle Mode cannot.
+</P>
+<DL>
+<DT><B>-Use multi-tile textures (Combiner)</B>
+<DD>You need to set the RDP pipeline to 2-Cycle mode in order to put texels together from two textures in the Combiner, and to perform LOD-related texture mapping.  We talk more about multi-texture tiles in Chapters 9 and 10.
+</DL>
+<DL>
+<DT><B>-Combine a number of source colors (Combiner)</B>
+<DD> The Combiner can use the linear equation (a - b) * c + d to determine the pixel color and pixel alpha.  But this expression is not sufficient if you want to make a calculation that reflects many more source colors (alphas).  In this case, you would use 2-Cycle mode and perform (a - b) * c + d twice in order to calculate a more complicated pixel color (alpha).  Later in this chapter, we will give an example of how to use this type of 2-Cycle mode.
+</DL>
+<DL>
+<DT><B>-Fog function (Blender) & ordinary blending</B>
+<DD>You need to set the pipeline to 2-Cycle mode in order to enable the Fog function in the Blender and also perform blending.  We will talk about Fog later in this chapter.
+</DL>
+  In summary, you use 2-Cycle mode when you want to operate the Combiner and/or the Blender in 2 cycles.
+</BODY>
+</HTML>

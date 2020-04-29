@@ -1,0 +1,41 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Graphics-Chapter 5 Semi-Transparent Objects & the Alpha Value</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/23/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<font style="font-size:12pt"><B>5.5  Alpha Compare</B></FONT>
+<br>
+<P>
+A macro is available in the gfx5.c sample program that can be customized to use or disable the alpha compare function.
+     The alpha compare function is set using the gDPSetAlphaCompare command.  This command sets the mode of the alpha compare function.  The three following modes can be selected:
+</P>
+<OL>
+<LI>Disable the compare function(G_AC_NONE)
+<LI>Compare with the blend color(G_AC_THRESHOLD)
+<LI>Compare with a random dither value(G_AC_DITHER)
+</OL>
+<P>
+When you define __ALPHA_COMPARE__ on line 35 of the gfx5.c sample program (please undef __COLOR__), the mode is set to compare with the blend color.  The pipeline alpha and the blend alpha (the alpha value set in the color register in the Blender) are compared, and if the pipeline alpha is smaller, then that pixel is not written to the framebuffer.  In other words, pixels that have an alpha value smaller than the blend alpha are treated as completely transparent pixels.
+
+     Now try changing the value of __ALPHA_THRESHOLD__ on line 39 of gfx5.c from the default of 50 to a variety of different values.  You will see that the region of the intensity texture that is completely cut-off changes, with the value of __ALPHA_THRESHOLD__ acting as the boundary.
+
+     When the alpha compare mode is set to dither on line 294 of gfx5.c, the edges of the intensity texture will look like large collections of particles.
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=5><TR>
+	<TD NOWRAP COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE><B>List 5-4</B></FONT>
+</TR><TR>
+	<TD NOWRAP BGCOLOR="666666" WIDTH="4" ALIGN=LEFT VALIGN=TOP><HR NOSHADE SIZE=0></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>
+<FONT COLOR="#000080"><PRE><CODE>  gDPSetAlphaCompare(glistp++, G_AC_DITHER);</CODE></PRE></FONT>
+	</TD>
+</TR></TABLE>
+<P>
+  The alpha compare function lets you express transparency even in copy mode, where the Combiner and Blender processes are not performed.  This is a way to realize visual effects while controlling the load.  We will bring up this topic again when we explain texture rectangles in Chapter 10.
+</P>
+</BODY>
+</HTML>

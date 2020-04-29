@@ -1,0 +1,48 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Graphics-Chapter 5 Semi-Transparent Objects & the Alpha Value</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/23/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<font style="font-size:16pt"><B>CHAPTER 5  SEMI-TRANSPARENT OBJECTS & THE ALPHA VALUE</B></FONT>
+<br><br>
+<HR SIZE=3 NOSHADE>
+<P>
+  So far, none of the sample programs has touched on the concept of transparency when rendering models and textures.  But in real game programs, textures are often pasted onto polygons with parts that are transparent.<br><br>
+     The so-called alpha value plays a large role in such scenes, with the transparency of those pixels controlled according to the alpha value.  Strictly speaking, the alpha value does not define the transparency but rather the opacity of the pixels, so the higher the alpha value the greater the opaqueness.<br><br>
+     In this chapter, we explain texture mapping with regards to the alpha value so you know how to express transparent models and textures.  Then we will touch on the Blender, which is positioned after the Combiner in the RDP pipeline (see Figure 5-1), so you have a firm foundation for the explanations in and after Chapter 6.
+</P>
+<P>
+<br><br>
+<IMG SRC="image12.gif">
+</P>
+<P>
+<B>Figure 5-1  The RDP pipeline structure (1-Cycle mode)</B>
+</P>
+<font style="font-size:12pt"><B>5.1  The Alpha Combiner</B></FONT>
+<br>
+<P>
+ The Combiner can perform linear arithmetic on the alpha value to determine the output alpha in the same way that it performs calculations on RGB color.  Think of this process as being performed inside the Combiner by the Alpha Combiner.  
+     The Alpha Combiner, like the Color Combiner, performs linear arithmetic to calculate the output alpha from the various source alphas.  
+</P>
+<P>
+  Output alpha = (a - b) * c + d
+</P>
+<P>
+The source alphas that can be selected for each of these coefficients are shown in Figure 5-2.
+</P>
+<P>
+<IMG SRC="image13.gif">
+</P>
+<P>
+<B>Figure 5-2  Alpha Combiner input source</B>
+</P>
+<P>
+ The Alpha Combiner is remarkably similar to the Color Combiner in terms of operation and input source, so it should not be difficult to understand.  However, as touched on in the previous chapter, you need to remember that with intensity textures, the intensity is automatically used for the texel alpha.
+</P>
+</BODY>
+</HTML>

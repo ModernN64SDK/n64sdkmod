@@ -1,0 +1,112 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+
+<HTML>
+<HEAD>
+<TITLE>MPAL Manual</TITLE>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<!-- Editor Notes: Ron Daring 10/6/1999 -->
+</HEAD>
+
+<BODY bgcolor="#FFFFFF">
+
+<h1>MPAL Submission Requirements</h1>
+
+<H2>MPAL Development Equipment</H2>
+
+<P>
+No special equipment is needed for MPAL development. However, the following equipment is required for debugging MPAL version software:
+</P>
+
+<blockquote>
+<UL>
+<LI>MPAL (Brazilian specs) Nintendo 64 Control Deck
+<LI>A television which displays in MPAL format, (preferably a dedicated MPAL TV without multi-scan)
+</UL>
+</blockquote>
+
+<P>An N64 Control Deck, modified for MPAL, can be <a href="../../tools/parts.htm#mpal">purchased</a> through the NOA Parts Department.</P>
+
+<H2>MPAL Development</H2>
+<P>
+Use osTvType to auto-recognize MPAL then set the VI setting to MPAL. 
+</P>
+<P>
+&lt;Example&gt;
+</P>
+<BLOCKQUOTE>
+if (osTvType == 1)
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+osViSetMode( &amp;osViModeTable[OS_VI_NTSC_LAN1] );
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+else
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+osViSetMode( &amp;osViModeTable[OS_VI_MPAL_LAN1] );
+</BLOCKQUOTE>
+<P>
+By performing the above processing, no additional settings are necessary with regard to programming. Please note that osViClock will stay in the NTSC mode. 
+</P>
+
+<H2><A name="MPAL">MPAL Development Precautions</H2>
+<P>
+<h3>Calling osViAfterPreNMI</h3>
+</P>
+<P>
+<B>Note:</B> The following information was taken from Developer News 1.8.
+</P>
+<P>
+A problem was found that caused the application to halt when the reset button was pressed, when the n_audio microcode was used with MPAL. This occurred if the application was re-started without first initializing the RSP program counter (PC). To fix this problem, we have added the following function to this patch:</P>
+
+<pre>
+s32 osViAfterPreNMI (void);
+</pre>
+
+<P>This function initializes the RSP program counter (PC). 
+
+<h2>Explanation</h2>
+
+<P>
+When the application receives a pre-NMI event, halt all RSP tasks and then call this function.
+
+<P>If the function call is successful, 0 is returned. If the RSP is active, the call fails and a -1 is returned.
+In this case, wait for the executing RSP task to end and then call the function again.
+
+<P>When a pre-NMI event arrives, the application must halt GFX tasks and audio tasks. At the time that a pre-NMI event is received, confirm that the executing RSP task has ended and that no new RSP task has begun, and then call the osAfterPreNMI() function.
+
+<P>Please call the osAfterPreNMI() function whenever a pre-NMI event is received, even if you are using some mode other than MPAL (NTSC etc.).
+
+<HR>
+<H2>Questions/Answers</H2>
+<P>
+<b>Q) I've never really heard of MPAL. What is it? </b>
+</P>
+<P>
+A) M-PAL (PAL-M) is the Brazilian 60 Hz PAL format image reception system with 525 scan lines. Since it is a type of PAL, the color information is different, at 60 Hz, it has the same scanning format as NTSC.
+</P>
+<P>
+<b>Q) Well, why is it so &QUOT;necessary&QUOT; to get into a television reception format targeted at the Brazilian market?</b>
+</P>
+<P>
+A) Our American corporation Nintendo of America Inc. (NOA) has been marketing to South America and, with a slight correction, can be compatible with both NTSC and MPAL, and has requested all third parties to comply. </P>
+<P>
+<b>Q) How will the check system work?</b>
+</P>
+<P>
+A) Games which have been submitted to NOA are &QUOT;pre-checked&QUOT; before they are submitted to &QUOT;lot checks&QUOT;. Here precision MPAL checks are performed using oscilloscopes.
+</P>
+<P>
+<b>Q) I have absolutely no MPAL equipment. How can I write compatible programs? </b>
+</P>
+<P>
+A) Compatibility is possible simply by adding a branch with osTvType. However, you naturally would like to check your product before shipping it. If you do not have the necessary equipment, first, contact Developer Support. Pre-checks are also possible at Nintendo. 
+</P>
+<P>
+<b>Q) Can you give us some examples which have been encountered in lot check process?</b>
+</P>
+<P>
+A) There are many examples of programs were intended to be MPAL-compatible, but which werenot compatible. There are some examples in which the programmer forgot to initialize when the program changed due to a game menu or stage switching, where the format was NTSC on some aspects, but MPAL on other aspects. These are difficult to catch during debugging as they would not be apparent on an NTSC TV. 
+</P>
+</BODY>
+</HTML>

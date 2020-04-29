@@ -1,0 +1,115 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<link rel=stylesheet type="text/css" HREF="../N64man.css">
+<!--
+Editors Notes:
+  JLR made reformating and copy edits.
+  PWC- updated formatting
+-->
+
+<TITLE>gDPSetTextureImage</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>gDPSetTextureImage [Macro]</h1>
+<h2>Function</h2>
+<p>gDPSetTextureImage<br>
+<br><i>Sets the texture image area</i></P>
+
+<p><b>Syntax</b></p>
+<PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gbi.htm">gbi.h</A> */
+gDPSetTextureImage(Gfx *gdl, s32  fmt, s32  siz, s32  width, s32  img)
+gsDPSetTextureImage(         s32  fmt, s32  siz, s32  width, s32  img)</CODE></PRE></p>
+
+<p><b>Arguments</p></b>
+<p><DL>
+  <DT><B>gdl</B>
+  <DD>Display list pointer.
+  <DD>
+  <DT><B>img </B>
+  <DD>Image address (64-byte alignment).
+  <DD>
+  <DT><B>fmt </B>
+  <DD>Image format:
+  <DD><B>G_IM_FMT_RGBA</B> (RGBA format)
+  <DD><B>G_IM_FMT_CI</B> (CI format)
+  <DD><B>G_IM_FMT_IA</B> (IA format)
+  <DD><B>G_IM_FMT_I</B> (I format)
+  <DD>
+  <DT><B>siz </B>
+  <DD>Pixel component size:
+  <DD><B>G_IM_SIZ_4b</B> (4 bits/texel)
+  <DD><B>G_IM_SIZ_8b</B> (8 bits/texel)
+  <DD><B>G_IM_SIZ_16b</B> (16 bits/texel)
+  <DD><B>G_IM_SIZ_32b</B> (32 bits/texel)
+    <DD>
+  <DT><B>width </B>
+  <DD>Image width (1~4096 pixels).
+</DL></p>
+<p><b>Description</b></p>
+<P>
+Sets the frame buffer region for texture images.  This macro is used in order to utilize a number of textures.  The command is normally embedded in gDPLoadTexture* so it is not directly used.</p>
+<p><DL>
+<DT>The different image formats of the <B>fmt</B> argument are explained below:</p>
+<p> <DL>
+    <DT><B>G_IM_FMT_RGBA</B>
+    <DD>Each texel comprises four elements of information: RGB (red, green, blue) and alpha (opacity).
+    <DT><B>G_IM_FMT_CI</B>
+    <DD>Each texel is comprised of index information specifying palette data.
+    <DT><B>G_IM_FMT_IA</B>
+    <DD>Each texel is comprised of I (intensity) information and alpha information.
+    <DT><B>G_IM_FMT_I</B>
+    <DD>Each texel is a texture with only I information.  Since this is extremely compact, it is useful when only a few colors are being used.
+  <DT><BR>You can choose from among 7 different texture image formats.  The table shows the valid combinations of format and size.  Select the format that best suits the texture compression method and type.
+    <DT><BR>
+<TABLE BORDER="1" CELLSPACING="0" CELLPADDING="3">
+<TR>
+<TD COLSPAN=2 ROWSPAN=2></TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle" COLSPAN=4><B>G_IM_SIZ_</B> (Size)</TD>
+</TR><TR>
+<TD NOWRAP ALIGN="center" VALIGN="middle"><B>4b</B></TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle"><B>8b</B></TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle"><B>16b</B></TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle"><B>32b</B></TD>
+</TR><TR>
+<TD NOWRAP ALIGN="center" VALIGN="middle" ROWSPAN=4><B>G_IM_FMT_<BR></B> (Format)</TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle"><B>RGBA</B></TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">X<BR> (5/5/5/1) </TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">X<BR> (8/8/8/8) </TD>
+</TR><TR>
+<TD NOWRAP ALIGN="center" VALIGN="middle"><B>CI</B></TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">&nbsp;<BR>&nbsp;</TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">X</TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">&nbsp;</TD>
+</TR><TR>
+<TD NOWRAP ALIGN="center" VALIGN="middle"><B>IA</B></TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">X<BR> (3/1) </TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">X<BR> (4/4) </TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">X<BR> (8/8) </TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR><TR>
+<TD NOWRAP ALIGN="center" VALIGN="middle"><B>I</B></TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">&nbsp;</TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">X</TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">&nbsp;</TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">&nbsp;<BR>&nbsp;</TD>
+</TR>
+</TABLE>
+    </DL>
+</DL>
+</P>
+<p><b>See Also</b></p>
+<P>
+<A HREF="gDPSetColorImage.htm">gDPSetColorImage</A>, <A HREF="gDPSetDepthImage.htm">gDPSetDepthImage</A>
+</P>
+
+<p><b>Revision History</p></b>
+<p>02/01/99&nbsp;&nbsp;&nbsp;Completely rewritten</p>
+
+</BODY>
+</HTML>

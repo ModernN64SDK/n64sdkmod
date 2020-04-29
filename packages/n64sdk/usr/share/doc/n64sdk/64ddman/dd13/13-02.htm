@@ -1,0 +1,30 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>13-02</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font face="arial" size="-1">
+<p><strong>13.2 Changes Between 64DD Development Environment Versions 0.901 and 2.0H </strong>
+<hr>
+
+<ol>
+    <li>The arguments and return values of <a href="../../n64man/64dd/LeoCreateLeoManager.htm">LeoCreateLeoManager()</a> were changed.
+    <P>
+
+    <li>The global variable OSDiskExist was eliminated.  Whether the drive is connected can be determined at initialization by the return value of LeoCreateLeoManager() and subsequently by the error codes of the asynchronous functions.
+    <P>
+    <li>LeoModeSelect(), <a href="../../n64man/64dd/LeoReadRTC.htm">LeoSetRTC( )</a>, and L<a href="../../n64man/64dd/LeoReadRTC.htm">LeoReadRTC( )</a>were added.
+    <P>
+
+    <li>Changes were made so that the disk ID at startup is stored in RDRAM by the IPL and can be accessed as leoBootID.  Game programs should be designed so that the ID is always read after the leo manager is created, and the read ID is compared with leoBootID to determine whether the disk has been changed.  This is done because the leo manager cannot detect disk changes that take place before it is created.
+    <P>
+</ol>
+
+<p align="left"><a href="index.htm"><img
+src="../../gif/index.gif" border="0" width="65" height="17"></a></p>
+
+<hr>
+</body>
+</html>

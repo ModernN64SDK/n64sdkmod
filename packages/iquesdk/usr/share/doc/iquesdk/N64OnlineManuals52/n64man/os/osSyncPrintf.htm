@@ -1,0 +1,39 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.
+  PWC- updated formatting
+  MAP- added links, updated format
+-->
+<title>osSyncPrintf</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>osSyncPrintf</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p><i>Outputs formatted text to degbug port</i></p>
+
+<h3>Syntax</h3>
+<p>
+<blockquote>
+    <pre>#include &lt;os.h&gt;     /* <A HREF="../../header/os.htm">os.h</A> */
+void osSyncPrintf(const char *format, .../* args */);</pre></blockquote></p>
+
+<h3>Description</h3>
+<p>
+<tt>osSyncPrintf</tt> performs text formatting similar to the libc function printf. The text output is transmitted from the target system through the debug port to the <a href="../tool/gload.htm">gload</a> process running on the debug host workstation. The text is then written to the standard output device (normally a shell window) of the gload process. To make <tt>osSyncPrintf</tt> more efficient, set up an rdb output buffer first by calling <a href="osInitRdb.htm">osInitRdb</a>. The osSyncPrintf tool requires that the interrupt service handler be functional before it is used. Consequently, it should not be called from the boot thread. </p>
+
+<p>Because multiple threads can use the printing facility, it is possible for data to be mixed as threads swap in and out. Changes effective with release 2.0f cause <tt>osSyncPrintf</tt> to have significantly less impact on game performance. In the past, a call to <tt>osSyncPrintf</tt> would cause the interrupt processing and thread swapping to stop until all data had been transferred to the host Indy. This is no longer the case. </p>
+
+<p><b>Note</b><br><br>
+If a large amount of data gets printed at once, it is possible for the kernel's printf buffers to overflow. When this happens, the system will attempt to print a warning message to the console. If a continual stream of data is printed, it is possible to generate enough data to cause the Indy to spend all of its time servicing the interrupts associated with the <tt>osSyncPrintf</tt>. When this happens it will appear as if the Indy is frozen because interrupts have priority over processing user interaction. If the stream of <tt>osSyncPrintf</tt> can be stopped, the Indy should recover and resume normal functioning. </p>
+
+<h3>See Also</h3>
+<p>sprintf, <A HREF="osInitialize.htm">osInitalize</A>, printf
+<h3>Revision History</h3>
+<p>1999/04/30  Changed Format</p>
+<br><br>
+
+</body>
+</html>

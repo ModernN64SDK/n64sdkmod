@@ -1,0 +1,246 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<TITLE>07-03</TITLE>
+</HEAD>
+
+<BODY bgcolor="#FFFFFF">
+<font face="arial" size="-1">
+<P>
+<STRONG>7.3 Synchronous Functions</STRONG>
+<HR>
+<P>
+Synchronous functions are those whose processing is performed within the calling thread.  No values are returned from the function until processing is finished.
+<P>
+The following functions are specific examples.
+
+<UL>
+  <LI><A href="../../n64man/64dd/LeoByteToLBA.htm">LeoByteToLBA</A>(<A href="#01">section 7.3.1</A>)
+  <LI><A href="../../n64man/64dd/LeoByteToLBA.htm">LeoLBAToByte</A>(<A href="#01">section 7.3.1</A>)
+  <LI><A href="../../n64man/64dd/LeoReadCapacity.htm">LeoReadCapacity</A>(<A href="#02">section 7.3.2</A>)
+  <LI><A href="../../n64man/64dd/LeoInquiry.htm">LeoInquiry</A>(<A href="#03">section 7.3.3</A>)
+</UL>
+<P>
+<A href="index.htm"><IMG src="../../gif/index.gif" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<P>
+<A name="01"> <u>7.3.1 Converting between Byte Number and LBA Number</u></A>
+
+<P>
+<TABLE border="1">
+  <TR>
+    <TD><FONT face="arial" size="-1"><STRONG>LeoByteToLBA( )function </STRONG></FONT>
+    <P>
+<FONT face="Courier"><STRONG>#include &lt;PR/leo.h&gt;</STRONG></FONT><STRONG>
+</STRONG>
+    </P>
+    <P>
+<FONT  face="Courier"><STRONG>s32 LeoByteToLBA(s32 </STRONG><STRONG><U>startlba</U></STRONG><STRONG>,
+u32 </STRONG><STRONG><U>nbytes</U></STRONG><STRONG>, s32 *</STRONG><STRONG><U>lbas</U></STRONG><STRONG>);</STRONG><BR>
+</FONT>
+    </P>
+    <TABLE border="0">
+      <TR>
+        <TD><FONT face="Courier"><U>startlba</U></FONT></TD>
+        <TD>LBA</TD></TR>
+      <TR>
+        <TD><FONT face="Courier"><U>nbytes</U></FONT></TD>
+        <TD>number of bytes</TD></TR>
+      <TR>
+        <TD><FONT face="Courier"><U>lbas</U></FONT></TD>
+        <TD>calculation result</TD></TR>
+    </TABLE>
+
+</TD></TR>
+</TABLE>
+
+<P>
+Converts byte number to <FONT face="Century">LBA</FONT> number.  The function returns as <FONT face="Courier"><U>lbas</U></FONT> the number of <FONT face="Century">LBA</FONT>s in the area extending <FONT face="Courier"><U>nbytes</U></FONT> from the beginning of the block specified by <FONT face="Courier"><U>startlba</U></FONT>.  
+</P>
+<TABLE border="1">
+  <TR>
+    <TD><FONT face="arial" size="-1"><STRONG>LeoLBAToByte( )function </STRONG></FONT>
+    <P>
+<FONT face="Courier"><STRONG>#include &lt;PR/leo.h&gt;</STRONG></FONT><STRONG>
+</STRONG>
+    </P>
+    <P>
+<FONT face="Courier"><STRONG>s32 LeoLBAToByte(s32 </STRONG><STRONG><U>startlba</U></STRONG><STRONG>,
+u32 </STRONG><STRONG><U>nlbas</U></STRONG><STRONG>, s32 *</STRONG><STRONG><U>bytes</U></STRONG><STRONG>);</STRONG><BR>
+</FONT>
+    </P>
+    <TABLE border="0">
+      <TR>
+        <TD><FONT face="Courier"><U>startlba</U></FONT></TD>
+        <TD>LBA</TD></TR>
+      <TR>
+        <TD><FONT face="Courier"><U>nlbas</U></FONT></TD>
+        <TD>number of blocks</TD></TR>
+      <TR>
+        <TD><FONT face="Courier"><U>bytes</U></FONT></TD>
+        <TD>calculation result</TD></TR>
+    </TABLE>
+
+</TD></TR>
+</TABLE>
+
+<P>
+Converts <FONT face="Century">LBA</FONT> number to byte number.  The function returns as <FONT face="Courier"><U>bytes</U></FONT> the number of bytes in the area extending <FONT face="Courier"><U>nlbas</U></FONT> blocks from the beginning of the block specified by <FONT face="Courier"><U>startlba</U></FONT>.
+</P>
+<P>
+The meanings of the return values in both cases are the same as with asynchronous functions, with <FONT face="Century">0</FONT> returned when the <FONT face="Century">leo</FONT> manager has been started and <FONT face="Century">-1</FONT> returned if it has not been started.  Checking the return values is usually unnecessary.
+</P>
+<P>
+Because <FONT face="Century">LBA</FONT> calculations depend on the disk type, <A href="../../n64man/64dd/LeoByteToLBA.htm"><FONT face="Century">LeoByteToLBA()</FONT></A> and <A href="../../n64man/64dd/LeoByteToLBA.htm"><FONT face="Century">LeoLBAToByte()</FONT></A> tempororily uses the local variables of leo manager.  This means that if the disk is replaced by another disk immediately before this command is issued, the <FONT face="Century">LBA</FONT> number obtained will differ from that of the inserted disk.  Be particularly careful to ensure that a DISK_MAY_HAVE_CHANGED error is not returned with this command.  Please design the program so that if disk operations such as reading, writing, or seeking are performed based on values calculated with these functions and the commands for those operations return a DISK_MAY_HAVE_CHANGED error, the program is re-executed from the <FONT face="Century">LBA-Byte</FONT> conversion.  For specific processing sequences, please see <A href="../dd10/index.htm">"Chapter 10,   Error-Handling Sequences</A>." 
+</P>
+<P>
+<A href="index.htm#index"><IMG src="../../gif/index.gif" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<P>
+<A name="02"> <u>7.3.2 Checking the Writable and Readable Area</u></A>
+
+<P>
+<TABLE border="1">
+  <TR>
+    <TD><FONT face="arial" size="-1"><STRONG>LeoReadCapacity ( )function </STRONG></FONT>
+    <P>
+<FONT  face="Courier"><STRONG>#include &lt;PR/leo.h&gt;<BR>
+</STRONG></FONT>
+    </P>
+    <P>
+<FONT  face="Courier"><STRONG>typedef struct</STRONG></FONT><STRONG>
+</STRONG>
+    </P>
+    <P>
+<FONT   face="Courier"><STRONG>{</STRONG></FONT><STRONG> </STRONG>
+    </P>
+    <P>
+<FONT   face="Courier"><STRONG>u32 startLBA;</STRONG></FONT><STRONG>
+</STRONG>
+    </P>
+    <P>
+<FONT  face="Courier"><STRONG>u32 endLBA;</STRONG></FONT><STRONG>
+</STRONG>
+    </P>
+    <P>
+<FONT   face="Courier"><STRONG>u32 nbytes;</STRONG></FONT><STRONG>
+</STRONG>
+    </P>
+    <P>
+<FONT  face="Courier"><STRONG>} LEOCapacity;</STRONG></FONT><STRONG>
+</STRONG>
+    </P>
+    <P>
+<FONT   face="Courier"><STRONG>s32 LeoReadCapacity(LEOCapacity *</STRONG><STRONG><U>cap</U></STRONG><STRONG>,
+s32 </STRONG><STRONG><U>dir</U></STRONG><STRONG>);</STRONG><BR>
+</FONT>
+    </P>
+    <TABLE border="0">
+      <TR>
+        <TD><FONT face="Courier"><U>cap</U></FONT></TD>
+        <TD colspan="2">information on the readable/writable area</TD></TR>
+      <TR>
+        <TD><FONT face="Courier"><U>dir</U></FONT></TD>
+        <TD><FONT face="Courier">OS_READ</FONT></TD>
+        <TD>reading information</TD></TR>
+      <TR>
+        <TD> </TD>
+        <TD><FONT face="Courier">OS_WRITE</FONT></TD>
+        <TD>writing information</TD></TR>
+    </TABLE>
+
+</TD></TR>
+</TABLE>
+
+<P>
+If this function is called with <FONT face="Courier">OS_READ</FONT> inserted for <FONT face="Courier"><U>dir</U></FONT>, the initial <FONT face="Century">LBA</FONT> of the readable area is returned for <FONT face="Courier"><U>cap</U>-&gt;startLBA</FONT>, the final <FONT face="Century">LBA</FONT> of the readable area is returned for <FONT face="Courier"><U>cap</U>-&gt;endLBA</FONT>, and total number of readable bytes is returned for <FONT face="Courier"><U>cap</U>-&gt;nbytes</FONT>.  These values are the same regardless of the type of disk inserted:  <FONT face="Courier">startLBA=0, endLBA=4291, nbytes=64458560</FONT>.
+</P>
+<P>
+If this function is called with <FONT face="Courier">OS_WRITE</FONT> inserted for <FONT face="Courier"><U>dir</U></FONT>, the initial <FONT face="Century">LBA</FONT> of the writable area is returned for <FONT face="Courier"><U>cap</U>-&gt;startLBA</FONT>, the final <FONT face="Century">LBA</FONT> of the writable area is returned for <FONT face="Courier"><U>cap</U>-&gt;endLBA</FONT>, and total number of writable bytes is returned for <FONT face="Courier"><U>cap</U>-&gt;nbytes</FONT>.  The return values vary according to the disk type.  As with <A href="../../n64man/64dd/LeoByteToLBA.htm"><FONT face="Century">LeoByteToLBA()</FONT></A> and <A href="../../n64man/64dd/LeoByteToLBA.htm"><FONT face="Century">LeoLBAToByte( )</FONT></A>, locally recorded variables are used to store the type of disk inserted.  For a precautionary note on this subject, please see <a href="../../64ddman/dd07/07-03.htm#01">Section 7.3.1, Converting Between Byte Number and LBA"</a> Number.
+</P>
+<P>
+The meanings of the return values in both cases are the same as with asynchronous functions, with 0 returned when the <FONT face="Century">leo</FONT> manager has been started and -1 returned if it has not been started.  Checking the return values is usually unnecessary.
+</P>
+<P>
+<A href="index.htm#index"><IMG src="../../gif/index.gif" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<P>
+<A name="03"> <u>7.3.3 Checking the Hardware and Software Versions</u>u</A>
+ 
+<P>
+<TABLE border="1">
+  <TR>
+    <TD><FONT face="arial" size="-1"><STRONG>LeoInquiry ( )function </STRONG>
+    <P>
+<FONT face="Courier"><STRONG>#include &lt;PR/leo.h&gt;<BR>
+</STRONG></FONT>
+     
+    <P>
+<FONT  face="Courier"><STRONG>typedef struct</STRONG></FONT><STRONG>
+</STRONG>
+     
+    <P>
+<FONT   face="Courier"><STRONG>{</STRONG></FONT><STRONG> </STRONG>
+    
+    <P>
+<FONT   face="Courier"><STRONG>u8 drive; /* version of hw */</STRONG></FONT><STRONG>
+</STRONG>
+     
+    <P>
+<FONT  face="Courier"><STRONG>u8 driver; /* version of sw */</STRONG></FONT><STRONG>
+</STRONG>
+  
+    <P>
+<FONT   face="Courier"><STRONG>u8 deviceType; /* dev type, always
+00 */</STRONG></FONT> 
+    <P>
+<FONT   face="Courier"><STRONG>u8 ndevices; /* # of devices, always
+01 */</STRONG></FONT> 
+    <P>
+<FONT   face="Courier"><STRONG>} LEOVersion;</STRONG></FONT> 
+  
+    <P>
+<FONT   face="Courier"><STRONG>s32 LeoInquiry(LEOVersion *</STRONG><STRONG><U>ver</U></STRONG><STRONG>);
+</STRONG><BR>
+</FONT>
+    
+    <P>
+<FONT face="Courier"><U>ver</U></FONT> version information
+    </P>
+</TD></TR>
+</TABLE>
+
+<P>
+Returns the version numbers of the hardware and software(libraries) of the currently connected 64DD.  With commercial drives, the lower 4 bits of the hardware version number represent the number 3; with development drives, the lower 4 bits represent 4.  As of May 1998, the version number of the latest development drive hardware was 0x14.  The drive with a version number of 0x4 is the previous version.  When LEO_MOTOR_BRAKE is specified in LeoSpdlMotor, this version responds in the same manner as when LEO_MOTOR_SLEEP is specified.  Software version numbers are as shown in the following table.
+</P>
+<TABLE border="1" cellpadding="3" cellspacing="3">
+  <TR>
+    <Th width="228"><font face="arial" size="-1">Library</Th>
+    <Th width="84"><font face="arial" size="-1">Number</Th></TR>
+  <TR>
+    <TD width="228"><font face="arial" size="-1">Versions prior to 2.0H</TD>
+    <TD width="84"><font face="arial" size="-1">0</TD></TR>
+  <TR>
+    <TD width="228"><font face="arial" size="-1">2.0H</TD>
+    <TD width="84"><font face="arial" size="-1">1</TD></TR>
+  <TR>
+    <TD width="228"><font face="arial" size="-1">PatchN64dd_082297(NW version)<BR>
+PatchPC_083197(PC version)</TD>
+    <TD width="84"><font face="arial" size="-1">2</TD></TR>
+  <TR>
+    <TD><font face="arial" size="-1">2.0I or later</TD>
+    <TD><font face="arial" size="-1">See the release notes</TD></TR>
+</TABLE>
+
+<P>
+The meanings of the return values in both cases are the same as with asynchronous functions, with 0 returned when the <FONT face="Century">leo</FONT> manager has been started and -1 returned if it has not been started.  Checking the return values is usually unnecessary. 
+</P>
+<P>
+<A href="index.htm#index"><IMG src="../../gif/index.gif" height="17" width="65" border="0"></A>
+</P>
+<HR>
+</BODY>
+</HTML>

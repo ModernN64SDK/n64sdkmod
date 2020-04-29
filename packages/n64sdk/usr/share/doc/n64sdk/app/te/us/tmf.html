@@ -1,0 +1,129 @@
+<html>
+<head>
+<title>[N64 CITextureEditor] 2.6.2 TMF format</title>
+</head>
+<body><FONT FACE="Arial" SIZE="-1">
+<center>
+<h1><font color=#0000c0><font color=#ff0000>N64</font> <font color=#ff8000>CI</font><font color=#ff0000>T</font>exture<font color=#ff0000>E</font>ditor</font> <font color=#808080>TMF Format</font></h1>
+<!--#config timefmt="%Y %m/%d(%a) %X"-->
+<font size=-1><!--#echo var="LAST_MODIFIED"--></font><br>
+</center>
+<hr>
+<p align="right"><a href="../ja/tmf.html">Japanese</a></p>
+<ol>
+ <li><b>TMF</b>
+ <ul>
+  <p>
+This is the file that holds the texture image.
+There are 4bit index files as well as 8bit index files.
+Each is a binary file with the following configuration:
+
+  </p>
+  <table border=1>
+   <tr>
+    <th bgcolor=#c0c0c0>
+     Header area<br>
+     (64byte)
+    </th>
+    <td nowrap bgcolor=#f0c080>
+     u32 tex_img_tag<br>
+     u32 tex_img_width<br>
+     u32 tex_img_height<br>
+     u32 tex_pixel_depth<br>
+     (48byte reserved area)<br>
+    </td>
+   </tr>
+   <tr>
+    <th bgcolor=#c0c0c0>
+     Image area
+    </th>
+    <td nowrap bgcolor=#f0c080>
+     u32 pixel_index_array(0)<br>
+     u32 pixel_index_array(1)<br>
+           : <br>
+           : <br>
+    </td>
+   </tr>
+  </table>
+  <p>
+ </ul>
+ <li><b>Explanation</b>
+ <ul>
+  <p>
+  <li>[u32 tex_img_tag]
+  <ul>
+   <p>
+For convenience, this ID is used to identify whether the file is a TMF file.
+   </p>
+   <p>
+   For 4bitCI
+   TAG_TEX_IMG_4_CI = 0x00120200<br>
+   For 8bitCI
+   TAG_TEX_IMG_8_CI = 0x00120300<br>
+   </p>
+  </ul>
+  <li>[u32 tex_img_width]
+  <ul>
+   <p>
+Describes the number of pixels in a horizontal line of the texture image.
+   </p>
+  </ul>
+  <li>[u32 tex_img_height]
+  <ul>
+   <p>
+Describes the number of vertical lines in the texture image.
+   </p>
+  </ul>
+  <li>[u32 tex_pixel_depth]
+  <ul>
+   <p>
+Describes the number of bits used per pixel.
+   </p>
+   <p>
+   For 4bitCI
+   TEX_PIXEL_DEPTH_4_CI = 0x00000004<br>
+   For 8bitCI
+   TEX_PIXEL_DEPTH_8_CI = 0x00000008<br>
+   </p>
+  </ul>
+  <li>[u32 pixel_index_array]
+  <ul>
+   <p>
+The area describing which color in the palette to use for each pixel.
+   </p>
+   <p>
+The pixel data is basically described in order from the bottom-left of the image data.
+   </p>
+   <p>
+   For a 4bitCI, 8 pixels at a time are stored in pixel_index_array in order from the bottom-left of the image data.
+   u32, like NIFF, stores data using the big endian method.
+   </p>
+   <p>
+   For an 8bitCI, 4 pixels at a time are stored in pixel_index_array in order from the bottom-left of the image data.
+   </p>
+   <p>
+In either case, if the last data does not fill 32bits, the remainder is filled with 0x0.
+   </p>
+  </ul>
+ </ul>
+</ol>
+<p align="right"><a href="../ja/tmf.html">Japanese</a></p>
+<hr>
+<table width=100%>
+ <tr>
+  <td valign=top>
+  </td>
+  <td valign=top align=right nowrap>
+   <font size=-1>
+   Copyright (C) 1998-1999 NINTENDO Co.,Ltd.<br>
+   Copyright (C) 1998-1999 NINTENDO OF AMERICA, Inc.<br>
+   Copyright (C) 1998-1999 MONEGI CORPORATION.<br>
+   Copyright (C) 1998-1999 INTELLIGENT SYSTEMS Co.,Ltd.<br>
+   All rights reserved.<br>
+   </font>
+
+  </td>
+ </tr>
+</table>
+</body>
+</html>

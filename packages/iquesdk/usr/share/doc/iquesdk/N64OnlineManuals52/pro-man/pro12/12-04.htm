@@ -1,0 +1,173 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 12 - RDP Programming</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. -->
+</head>
+
+<h1>12.4 TX - Texture Engine</h1>
+
+<p>The Texture Engine takes s/w, t/w, 1/w, and <a href="../../keywords/index/data/graphics.htm#LOD" target="keywords">LOD</a> values for a pixel and fetches the onboard <a href="../../keywords/index/data/graphics.htm#texture memory" target="keywords">texture memory</a> (<a href="../../keywords/index/data/graphics.htm#TMEM" target="keywords">TMEM</a>:  special memory of texture built-in RDP) for the four nearest <a href="../../keywords/index/data/graphics.htm#texel" target="keywords">texels</a> to the screen pixel. The game application can manipulate TX states such as texture image types and formats, how and where to load texture images, and texture sampling <a href="../../keywords/index/data/graphics.htm#attribute" target="keywords">attributes</a>. </p>
+
+<dl>
+  <dt><a name="f12-05"><strong>Figure 12-5 TX State and Input/Output </strong></a>
+  <dd><img alt="[Figure 12-5]" src="gif/f12-05.gif">
+</dl>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="01"><h2>12.4.1 Texture Tiles</h2></a>
+
+<p>TX treats the 4 KB on-chip texture memory (TMEM) as general-purpose texture memory.  The texture memory is divided into four simultaneous accessible banks, giving output of four texels per clock. </p>
+
+<p>The game application can load various sizes of texture with different formats anywhere in the 4 KB <a href="../../keywords/index/data/graphics.htm#texture map" target="keywords">texture map</a>.  There are eight <a href="../../keywords/index/data/graphics.htm#texture tile descriptor" target="keywords">texture tile descriptors</a> that describe the location of texture images within the TMEM, the format of this texture, and the sampling parameters.  Therefore, you can load many texture maps in the TMEM at one time, but there are only eight tiles that are accessible at any time.  </p>
+
+<dl>
+  <dt><a name="f12-06"><strong>Figure 12-6 Tile Descriptors and TMEM</strong></a>
+  <dd><img alt="[Figure 12-6\" src="gif/f12-06.gif">
+</dl>
+
+<p><strong>Note:</strong>  There are some restrictions, depending on texel size and <A target="keywords" HREF="../../keywords/index/data/system.htm#64-bit boundary alignment">64-bit alignment</A> within the texture memory. Please see <a href="../pro13/13-11.htm#02">Section 13.11.2 "Alignment"</a> for additional information.</p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="02"><h2>12.4.2 Multiple Tile Textures </h2></a>
+
+<p>Given the eight texture tiles, you can use two-cycle pipeline mode to cycle TX twice and access eight texels (four from each of two tiles). This functionality, coupled with the use of up to eight texture tiles, allows the TX to perform <a href="../../keywords/index/data/graphics.htm#MIP map" target="keywords">mipmapping</a> and <a href="../../keywords/index/data/graphics.htm#detail texture" target="keywords">detailed textures</a>. </p>
+
+<p>Furthermore, there are no explicit restrictions requiring power of two tile-sized decrements for mipmaps.  <a href="../../keywords/index/data/graphics.htm#multi tile texture" target="keywords">Multi-tile texture</a> map sizes are all independently programmable.  Therefore, using these tiles and the color combiner block (please see <a href="12-06.htm">Section 12.6, "CC - Color Combiner"</a>, arithmetic logic can result in many special effects.  For example, sliding two different frequency band tiles across a <a href="../../keywords/index/data/graphics.htm#polygon" target="keywords">polygon</a> surface while combining them with a blue polygon can give a nice ocean wave effect.</p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="03"><h2>12.4.3 Texture Image Types and Format </h2></a>
+
+<p><a href="#t12-10">Table  12-10</a> shows the valid combinations of data types and pixel/texel sizes for the Color and Texture images.  For RGBA types, the 16-bit format is 5/5/5/1, and the 32-bit format is 8/8/8/8. </p>
+<p>The <a href="../../keywords/index/data/graphics.htm#intensity alpha" target="keywords">Intensity Alpha</a> type (IA) replicates the <a href="../../keywords/index/data/graphics.htm#I value" target="keywords">I value</a> on the RGB channels and places the <a href="../../keywords/index/data/graphics.htm#A value" target="keywords">A value</a> on the A channel.  The IA 16-bit format is 8/8, the 8-bit format is 4/4, and the 4-bit format is 3/1.</p>
+
+<table border=1 align="center">
+  <caption><a name="t12-10"><strong>Table  12-10 Texture Format and Sizes </strong></a></caption>
+  <tr><th nowrap>Type</th><th>4b</th><th>8b</th><th>16b</th><th>32b</th></tr>
+  <tr><td align="center">RGBA</td><td><br></td><td><br></td><td>X</td><td>X</td></tr>
+  <tr><td align="center"><a href="../../keywords/index/data/graphics.htm#YUV" target="keywords">YUV</a></td><td><br></td><td><br></td><td>X</td><td><br></td></tr>
+  <tr><td align="center">Color Index</td><td>X</td><td>X</td><td><br></td><td><br></td></tr>
+  <tr><td align="center">IA</td><td>X</td><td>X</td><td>X</td><td><br></td></tr>
+  <tr><td align="center">I</td><td>X</td><td>X</td><td><br></td><td><br></td></tr>
+</table>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="04"><h2>12.4.4 Texture Loading</h2></a>
+
+<p>Several steps are necessary to load a texture map into the TMEM.  You must block-load the texture map itself and set up the attributes for this tile. There are <a href="../../keywords/index/data/graphics.htm#GBI" target="keywords">GBI</a> macros that simplify all these steps into a single macro. </p>
+
+<p>There are two ways of loading textures: block or tile mode.  Block mode assumes that the texture map is a contiguous block of texels that represents the whole texture map.  Tile mode can lift a subrectangle out of a larger image. The following tables list block and tile mode texture-loading GBI commands respectively. </p>
+
+<table border=1 align="center">
+  <caption><a name="t12-11"><strong>Table  12-11 <a href="../../n64man/gdp/gDPLoadTextureTile.htm">gsDPLoadTextureTile</a>(timg,fmt,siz,width,height,uls,ult,lrs,lrt,pal,cms,cmt,masks,maskt,shifts,shiftt)</strong><br>
+  <a name="t12-12"><strong>Table  12-12 <a href="../../n64man/gdp/gDPLoadTextureTile_4b.htm">gsDPLoadTextureTile_4b</a>(pkt,timg,fmt,width,height,uls,ult,lrs,lrt,pal,cms,cmt,masks,maskt,shifts,shiftt)</strong></a></caption>
+  <tr><th nowrap>Parameter</th><th>Values</th></tr>
+  <tr><td align="center">timg</td><td>Texture DRAM address<td></tr>
+  <tr><td align="center">fmt</td><td>G_IM_FMT_RGBA<br>
+                        G_IM_FMT_YUV<br>
+                        G_IM_FMT_CI<br>
+                        G_IM_FMT_I<br>
+                        G_IM_FMT_IA</td></tr>
+  <tr><td align="center">siz</td><td>G_IM_SIZ_4b<br>
+                        G_IM_SIZ_8b<br>
+                        G_IM_SIZ_16b<br>
+                        G_IM_SIZ_32b</td></tr>
+  <tr><td align="center">width, height</td><td>Texture tile width and height in texel space</td></tr>
+  <tr><td align="center">pal</td><td><a href="../../keywords/index/data/graphics.htm#TLUT palette" target="keywords">TLUT palette</a></td></tr>
+  <tr><td align="center">cms, cmt</td><td>clamping/mirroring for s/t axis<br>
+                        G_TX_NOMIRROR<br>
+                        G_TX_MIRROR<br>
+                        G_TX_WRAP<br>
+                        G_TX_CLAMP</td></tr>
+  <tr><td align="center">masks, maskt</td><td>Bit mask for wrapping<br>
+      G_TX_NOMASK or a number: A wrapping bit mask is represented by (1&LT;&LT;number) - 1. </td></tr>
+  <tr><td align="center">shifts, shiftt</td><td>Shifts applied to s/t coordinate of each pixel.<br>
+      This is how you "sample" the lower levels of mipmap. <br>
+      G_TX_NOLOD or a number: (s or t coord &GT;&GT; number) = s/t to sample other mipmap levels.</td></tr>
+  <tr><td align="center">uls</td><td>upper left s index of the tile within the texture image</td></tr>
+  <tr><td align="center">ult</td><td>upper left t</td></tr>
+  <tr><td align="center">lrs</td><td>lower right s</td></tr>
+  <tr><td align="center">lrt</td><td>lower right t</td></tr>
+</table>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="05"><h2>12.4.5 Color-Indexed Textures</h2></a>
+
+<p>These are some restrictions on the size and placement of <a href="../../keywords/index/data/graphics.htm#CI" target="keywords">CI</a> texture maps within the TMEM.  The TMEM is actually partitioned into two halves.  Four texels are sampled from the first bank and fed into the second bank for texture/color/index table lookup (<a href="../../keywords/index/data/graphics.htm#TLUT" target="keywords">TLUT</a>). </p>
+
+<dl>
+  <dt><a name="f12-07"><strong>Figure 12-7 CI TMEM Partition</strong></a>
+  <dd><img alt="[Figure 12-7]" src="gif/f12-07.gif">
+</dl>
+
+<p>Four texels from the texture images are sent from first half banks to the second half banks.  The second half banks contain <a href="../../keywords/index/data/graphics.htm#color index palette" target="keywords">color index palettes</a>.  Each color map entry is replicated 4 times for four simultaneous bank lookups.  Therefore, 8-bit CI textures all require 2 KB (256 x 64 bits per entry) second half banks to hold the TLUT, while 4-bit CI texture can have up to 16 separate TLUTs.
+</p>
+
+<p><strong>Note:</strong>  TLUT must reside on the second half of TMEM; while CI texture cannot reside on the second half of TMEM. Non-CI texture can actually reside on the second half of TMEM in unused TLUT palette/entries.x</p>
+
+<table border=1 align="center">
+  <caption><a name="t12-13"><strong>Table  12-13 gsLoadTLUT(count,tmemaddr,dramaddr)</strong></a></caption>
+  <tr><th nowrap>Parameter</th><th>Values</th></tr>
+  <tr><td align="center">count</td><td>Number of entries in the TLUT. For example, a 4-bit texel TLUT would have 16 entries.</td></tr>
+  <tr><td align="center">tmemaddr</td><td>Where the TLUT goes in TMEM</td></tr>
+  <tr><td align="center">dramaddr</td><td>Where the TLUT is in DRAM</td></tr>
+</table>
+
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="06"><h2>12.4.6 Texture-Sampling Modes </h2></a>
+
+<p>Software can enable and disable TX to perform the following sampling modes: </p>
+<ol>
+  <li>perspective correction 
+  <li>detail or <a href="../../keywords/index/data/graphics.htm#Sharp texture" target="keywords">sharp textures</a> 
+  <li>LOD (mipmap) or bilinear textures
+  <li>RGBA or IA TLUT type
+</ol>
+
+<table border=1 align="center">
+  <caption><a name="t12-14"><strong>Table  12-14 <a href="../../n64man/gdp/gDPSetTexturePersp.htm">gsDPSetTexturePersp</a>(mode)</strong></a></caption>
+  <tr><th nowrap>Parameter</th><th>Values</th></tr>
+  <tr><td align="center">mode</td><td>G_TP_NONE<br>
+                G_TP_PERSP</td></tr>
+</table>
+
+<p></p>
+
+<table border=1 align="center">
+  <caption><a name="t12-15"><strong>Table  12-15 <a href="../../n64man/gdp/gDPSetTextureDetail.htm">gsDPSetTextureDetail</a>(mode)</strong></a></caption>
+  <tr><th nowrap>Parameter</th><th>Values</th></tr>
+  <tr><td align="center">mode</td><td>G_TD_CLAMP<br>
+                G_TD_SHARPEN<br>
+                G_TD_DETAIL</td></tr>
+</table>
+
+<p></p>
+
+<table border=1 align="center">
+  <caption><a name="t12-16"><strong>Table  12-16 <a href="../../n64man/gdp/gDPSetTextureLOD.htm">gsDPSetTextureLOD</a>(mode)</strong></a></caption>
+  <tr><th nowrap>Parameter</th><th>Values</th></tr>
+  <tr><td align="center">mode</td><td>G_TL_TILE<br>
+                G_TL_LOD</td></tr>
+</table>
+
+<p></p>
+
+<table border=1 align="center">
+  <caption><a name="t12-17"><strong>Table  12-17 <a href="../../n64man/gdp/gDPSetTextureLUT.htm">gsDPSetTextureLUT</a>(type)</strong></a></caption>
+  <tr><th nowrap>Parameter</th><th>Values</th></tr>
+  <tr><td align="center">type</td><td>G_TT_NONE<br>
+                G_TT_RGBA16<br>
+                G_TT_1A16</td></tr>
+</table>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="07"><h2>12.4.7 Synchronization</h2></a>
+
+<p>With TMEM and tile descriptor states, TX also requires explicit synchronization to <a href="../../keywords/index/data/graphics.htm#rendering" target="keywords">render</a> primitives with the proper attribute state.  Texture loads after primitive rendering must be preceded by a <a href="../../n64man/gdp/gDPLoadSync.htm">gsDPLoadSync()</a>, and tile descriptor attribute changes should be preceded by a <a href="../../n64man/gdp/gDPTileSync.htm">gsDPTileSync()</a>.</p>
+<p><strong>Note:</strong>  If you use the high-level programming macros <a href="../../n64man/gdp/gDPLoadTexture.htm">gsDPLoadTexture*</a> or <a href="../../n64man/gdp/gDPLoadTexture.htm">gsDPLoadTexture*_4b</a>, then you don't need to worry about load and tile syncs. They are embedded in the macro. </p>
+
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+</body> </html>

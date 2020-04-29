@@ -1,0 +1,41 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!--
+Editors Notes:
+  PWC- updated formatting
+-->
+<title>STEP2 [A Guide to the N64 Programming] - Chapter 3 N64 Audio Architecture and Samples</title></title>
+<base target="keywords">
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<p><font style="font-size:12pt; font-weight:bold">3-3 Software Processes</font><br>
+<br>
+<br>
+<b>3-3-1 Audio Library</b><br>
+<br>
+<br>
+The audio library interprets the sound data and constructs the audio command list. <br>
+<br>
+<br>
+<b>Library Types</b><br>
+<br>
+<li><b>Sound Player</li></b><br>
+Use the sound player library to interpret <a href="../../../keywords/index/data/audio.htm#sound effect" target="keywords">sound effects</a>.  It can reproduce <a href="../../../keywords/index/data/audio.htm#ADPCM"
+target="keywords">ADPCM</a> compression, 16-bit non-compression (linear PCM), looped sound, and so on.<br>
+<br>
+<b><li>Sequence Player</li></b><br>
+Use the sequence player to interpret <a href="../../../keywords/index/data/audio.htm#MIDI" target="keywords">MIDI</a> files. 
+It executes the allocation of the sequencer, <a href="../../../keywords/index/data/audio.htm#instrument" target="keywords">instrument</a> <a href="../../../keywords/index/data/audio.htm#bank" target="keywords">bank</a>, synthesizer <a href="../../../keywords/index/data/system.htm#resource" target="keywords">resource</a>, and sequence interpretation, and it <a href="../../../keywords/index/data/system.htm#scheduling" target="keywords">schedules</a> the MIDI messages.<br>
+<br>
+<b><li>Synthesizer Driver</li></b><br>
+Use the synthesizer driver library to make the audio command list. You can register several players in this driver.  Though you will usually register the <a href="../../../keywords/index/data/audio.htm#sound player" target="keywords">sound player</a> or the <a href="../../../keywords/index/data/audio.htm#sequence player" target="keywords">sequence player</a>, you can register a player of your own making.<br>
+<br>
+<b><li>Audio Microcode</li></b><br><br>
+Use the audio <a href="../../../keywords/index/data/system.htm#microcode" target="keywords">microcode</a> for waveform synthesis.  The data is DMA-transferred from the audio buffer to the RSP. Then the audio microcode operates the RSP as the processor for waveform synthesis.</p>
+</body>
+</html>

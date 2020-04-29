@@ -1,0 +1,70 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<!--
+Editors Notes:
+  JLR made reformating and copy edits.
+  PWC- updated formatting
+-->
+
+<TITLE>gDPSetCycleType</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>gDPSetCycleType [Macro]</h1>
+<h2>Function</h2>
+<p>gDPSetCycleType<br><br><i>
+Sets the RDP cycle type</i>
+</P>
+<p><b>Syntax</p></b>
+
+<p><PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gbi.htm">gbi.h</A> */
+gDPSetCycleType(Gfx *gdl, u32 type)
+gsDPSetCycleType(         u32 type)</CODE></PRE>
+
+<p><b>Arguments</p></b>
+<p><DL>
+  <DT><B>gdl</B>
+  <DD>Display list pointer.
+  <DT><B>type</B>
+  <DD>Cycle type.
+  <DD><B>G_CYC_1CYCLE</B> (1-cycle mode)
+  <DD><B>G_CYC_2CYCLE</B> (2-cycle mode)
+  <DD><B>G_CYC_COPY</B> (Copy mode)
+  <DD><B>G_CYC_FILL</B> (Fill mode)
+</DL></p>
+<p><b>Description</b></p>
+<P>
+Sets the RDP to one of four rendering cycle types.  To learn how to set the RDP, see Section 12 "RDP Programming" in the N64 Programming Manual. The cycle types are explained below:
+<DL>
+    <DT><B>G_CYC_1CYCLE (1-cycle mode)</B>
+    <DD>In this mode, each element in the RDP pipeline is used once, and you can write 1 pixel per cycle.
+    <DD>This mode can be used to generate high-quality pixels that have been perspective-corrected, bilinear-filtered, modulate-textured/decal-textured, made transparent and Z-buffered.
+    <DT><B>G_CYC_2CYCLE (2-cycle mode)</B>
+    <DD>In this mode, every element in the RDP pipeline except the rasterizer (RS) is used twice, and you can write 2 pixels per cycle.
+    <DD>This mode has all the features of 1-cycle mode, and it can also be applied to MIP-mapping and fog.
+    <DT><B>G_CYC_COPY (Copy mode)</B>
+    <DD>Transfers the pattern in texture memory (TMEM) at a rate of 4 pixels per cycle (in 16-bit mode) or 2 pixels per cycle (in 32-bit mode).
+    <DD>This mode can copy images as large as 4 Kbytes.
+    <DT><B>G_CYC_FILL (Fill mode)</B>
+    <DD>Writes at a rate of 4 pixels per cycle (when the value of the fill color register is set to 16-bit mode) or 2 pixels per cycle (when set to 32-bit mode).
+    <DD>This mode is used mainly to clear the color frame buffer and the Z buffer.
+    </DL>
+  </DL>
+</P>
+<p><b>Note</b></p>
+<P>
+For fill mode and copy mode, please use g*DPSetRenderMode (G_RM_NOOP,G_RM_NOOP2).  If you try to use the Z buffer with fill mode, the RDP pipeline might hang.
+</P>
+<p><b>See Also</b></p>
+<P>
+<A HREF="gDPSetRenderMode.htm">gDPSetRenderMode</A>
+</P>
+
+<p><b>Revision History</p></b>
+<p>02/01/99&nbsp;&nbsp;&nbsp;Completely rewritten</p>
+
+</BODY>
+</HTML>

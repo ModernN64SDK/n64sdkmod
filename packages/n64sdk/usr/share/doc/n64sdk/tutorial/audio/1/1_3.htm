@@ -1,0 +1,338 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Audio-Chapter 1 AUDIO PLAYBACK</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: MAP created file 9/15/1999
+-->
+</HEAD>
+<BODY BGCOLOR=#ffffff>
+<BASE TARGET="keywords">
+<br>
+<FONT Style="font-size:12pt"><B>1.3  Initializing the Library</B></FONT>
+<br>
+<P>
+Before initializing the library you set the external Scheduler.  Like with NuSystem, when using your own Scheduler you need to call the <tt>MusSetScheduler</tt> function and register it in the MUS library.  After that you initialize the library with the <tt>MusInitialize</tt> function.  In NuSystem, there is a special initialization function called <tt>nuAuStlMgrInit</tt>, and by simply calling this function the Scheduler is registered and the library is initialized (the <tt>MusSetScheduler</tt> and <tt>MusInitialize</tt> functions are called internally, so they do not need to be explicitly called.)
+<BR>
+<HR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Function name:</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP COLSPAN=2><tt>MusSetScheduler</tt></TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Syntax:</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP COLSPAN=2>void MusSetScheduler(musSched *sched_list)</TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Arguments:</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><b>sched_lsit</b>&nbsp;&nbsp;</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Address of the Scheduler function list</TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Return value: </TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP COLSPAN=2>None</TD>
+</TR></TABLE>
+<HR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Function name:</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP COLSPAN=2><tt>MusInitialize</tt></TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Syntax:</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP COLSPAN=2>s32 MusInitialize(musConfig *c)</TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Arguments:</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><b>c</b>&nbsp;&nbsp;</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Address of the Configuration structure</TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Return value: </TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP COLSPAN=2>Size of audio heap used by MusInitialize</TD>
+</TR></TABLE>
+<HR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Function name:</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP COLSPAN=2><tt>nuAuStlMgrInit</tt></TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Syntax:</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP COLSPAN=2>s32 nuAuStlMgrInit(musConfig *c)</TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Arguments:</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><b>c</b>&nbsp;&nbsp;</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Address of the Configuration structure</TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Return value: </TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP COLSPAN=2>Size of audio heap used by MusInitialize</TD>
+</TR></TABLE>
+<HR>
+</P>
+<P>
+Below is an example of the Configuration structure:
+</P>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0><TR>
+	<TD>&nbsp;</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP COLSPAN=3><FONT COLOR="#000080">#define AUDIO_HEAP_SIZE 0x40000</FONT></TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP COLSPAN=2>&nbsp;</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>&nbsp;</TD>
+</TR><TR>
+	<TD>&nbsp;</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP COLSPAN=2><FONT COLOR="#000080">musConfig init;</FONT></TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP COLSPAN=2>&nbsp;</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>&nbsp;</TD>
+</TR><TR>
+	<TD>&nbsp;</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><FONT COLOR="#000080">init.control_flag</FONT></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><FONT COLOR="#000080">= 0</FONT></TD>
+</TR><TR>
+	<TD>&nbsp;</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><FONT COLOR="#000080">init.channels</FONT></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><FONT COLOR="#000080">= 16;</FONT></TD>
+</TR><TR>
+	<TD>&nbsp;</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><FONT COLOR="#000080">init.sched</FONT></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><FONT COLOR="#000080">= NULL;</FONT></TD>
+</TR><TR>
+	<TD>&nbsp;</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><FONT COLOR="#000080">init.thread_priority</FONT></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><FONT COLOR="#000080">= NU_AU_MGR_THREAD_PRI;</FONT></TD>
+</TR><TR>
+	<TD>&nbsp;</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><FONT COLOR="#000080">init.heap</FONT></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><FONT COLOR="#000080">= (u8 *)(NU_GFX_FRAMEBUFFER_ADDR-AUDIO_HEAP_SIZE);</FONT></TD>
+</TR><TR>
+	<TD>&nbsp;</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><FONT COLOR="#000080">init.heap_length</FONT></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><FONT COLOR="#000080">= AUDIO_HEAP_SIZE;</FONT></TD>
+</TR><TR>
+	<TD>&nbsp;</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><FONT COLOR="#000080">init.ptr</FONT></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><FONT COLOR="#000080">= NULL;</FONT></TD>
+</TR><TR>
+	<TD>&nbsp;</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><FONT COLOR="#000080">init.wbk</FONT></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><FONT COLOR="#000080">= NULL;</FONT></TD>
+</TR><TR>
+	<TD>&nbsp;</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><FONT COLOR="#000080">init.default_fxbank</FONT></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><FONT COLOR="#000080">= NULL;</FONT></TD>
+</TR><TR>
+	<TD>&nbsp;</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><FONT COLOR="#000080">init.fifo_length</FONT></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><FONT COLOR="#000080">= 64;</FONT></TD>
+</TR><TR>
+	<TD>&nbsp;</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><FONT COLOR="#000080">init.syn_updates</FONT></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><FONT COLOR="#000080">= 128;</FONT></TD>
+</TR><TR>
+	<TD>&nbsp;</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><FONT COLOR="#000080">init.syn_output_rate</FONT></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><FONT COLOR="#000080">= 32000;</FONT></TD>
+</TR><TR>
+	<TD>&nbsp;</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><FONT COLOR="#000080">init.syn_rsp_cmds</FONT></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><FONT COLOR="#000080">= 0x800;</FONT></TD>
+</TR><TR>
+	<TD>&nbsp;</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><FONT COLOR="#000080">init.syn_retraceCount</FONT></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><FONT COLOR="#000080">= 1;</FONT></TD>
+</TR><TR>
+	<TD>&nbsp;</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><FONT COLOR="#000080">init.syn_num_dma_bufs</FONT></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><FONT COLOR="#000080">= 64;</FONT></TD>
+</TR><TR>
+	<TD>&nbsp;</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><FONT COLOR="#000080">init.syn_dma_buf_size</FONT></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><FONT COLOR="#000080">= 0x400;</FONT></TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP COLSPAN=2>&nbsp;</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>&nbsp;</TD>
+</TR><TR>
+	<TD>&nbsp;</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP COLSPAN=2><FONT COLOR="#000080">inuAuStlMgrInit(&init);</FONT></TD>
+	</TR></TABLE>
+<P>
+Here we explain the various parameters of the Configuration structure:
+</P>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><B>control_flag</B> : </TD>
+	<TD ALIGN=LEFT VALIGN=TOP COLSPAN=2>The library control flag</TD>
+</TR><TR>
+</TABLE>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD>&nbsp;&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP COLSPAN=3>Specifies where to place sample wave bank (wbk file).</TD>
+</TR><TR>
+	<TD>&nbsp;&nbsp;</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>0</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>DMA transfer from ROM whenever needed.</TD>
+</TR><TR>
+	<TD>&nbsp;&nbsp;</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>MUSCONTROL_RAM</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Put in RAM ahead of time and use without DMA transferring.</TD>
+</TR></TABLE>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD>&nbsp;&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP><br>0 is usually specified.<BR>
+You would specify MUSCONTROL_RAM in cases where you cannot DMA whenever needed, such as when the sample wave bank data is on a 64DD disk.  You could also use this specification when you cannot secure enough DMA time for audio because of graphics DMAs, but this requires a large amount of memory space.<br>
+     The explanations in this tutorial manual are based on the assumption that the sample wave bank data is located in ROM.
+</TD>
+</TR></TABLE>
+<BR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><B>channels</B> : </TD>
+	<TD ALIGN=LEFT VALIGN=TOP COLSPAN=2>The maximum number of channels</TD>
+</TR><TR>
+</TABLE>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD>&nbsp;&nbsp;</TD>
+<TD ALIGN=LEFT VALIGN=TOP>  Specifies a maximum value for the number of channels that can be secured by the Music Player.  When songs and sound effects start, the maximum number of channels is secured for use by each.  This parameter specifies a maximum value for the total number of channels secured for both.  If the number of channels actually needed is greater than this value, then some of the sounds will not be produced.
+</TD>
+</TR></TABLE>
+<BR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><B>sched</B> : </TD>
+	<TD ALIGN=LEFT VALIGN=TOP COLSPAN=2>The address of the Scheduler structure</TD>
+</TR><TR>
+</TABLE>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD>&nbsp;&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>When the default Scheduler is used (when <tt>MusSetScheduler</tt> is not used), the address of that Scheduler is passed.  NuSystem uses a special Scheduler, so in this case this parameter is set to NULL.
+</TD>
+</TR></TABLE>
+<BR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><B>thread_priority</B> : </TD>
+	<TD ALIGN=LEFT VALIGN=TOP COLSPAN=2>The priority of the Music Player thread.</TD>
+</TR></TABLE>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD>&nbsp;&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP> Specifies the priority of the audio task thread. In NuSystem, it is set with NU_AU_MGR_THREAD_PRI.
+</TD>
+</TR></TABLE>
+<BR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><B>heap</B> : </TD>
+	<TD ALIGN=LEFT VALIGN=TOP COLSPAN=2> The address of the audio heap</TD>
+</TR></TABLE>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD>&nbsp;&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP> Specifies the address of the audio heap area.  With the MUS library, the synthesizers and the players are secured from this heap area.  With NuSystem, the areas for the sample pointer bank (ptr file), song (bin file) and sound effect bank (bfx file) are also secured from this audio heap.  NuSystem specifies either (u8 *)NU_AU_HEAP_ADDR or the recalculated value (u8 *)(NU_GFX_FRAMEBUFFER_ADDR  - the size of the secured audio heap).</TD>
+</TR></TABLE>
+<BR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><B>heap_length</B> : </TD>
+	<TD ALIGN=LEFT VALIGN=TOP COLSPAN=2>The size of the audio heap</TD>
+</TR></TABLE>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD>&nbsp;&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Specifies the size in bytes of the audio heap area.  The required size is equal to the value returned by the nuAuStlMgrInit function plus the size explicitly set aside by the programmer for the data area.
+</TD>
+</TR></TABLE>
+<BR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><B>ptr</B> : </TD>
+	<TD ALIGN=LEFT VALIGN=TOP COLSPAN=2>The default address of the sample pointer bank</TD>
+</TR></TABLE>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD>&nbsp;&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Specifies the default address of the sample pointer bank (ptr file) in RAM.  In order to make the specification in this parameter, no transfer of data to RAM must take place at this time.  The default address cannot be specified here if the data area is to be secured from the audio heap.  You can specify the address later with <tt>MusPtrBankInitialize</tt>, so this is set to NULL.
+</TD>
+</TR></TABLE>
+<BR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><B>wbk</B> : </TD>
+	<TD ALIGN=LEFT VALIGN=TOP COLSPAN=2>The default address of the sample wave bank</TD>
+</TR></TABLE>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD>&nbsp;&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP> Specifies the default address of the sample wave bank (wbk file) in ROM (or in RAM when MUSCONTROL_RAM is set in control_flag). In order to make the specification in this parameter, no transfer of the companion sample pointer bank data to RAM must take place at this time.  The default address cannot be specified here if the data area is to be secured from the audio heap.  You can specify the address later with <tt>MusPtrBankInitialize</tt>, so this is set to NULL.
+</TD>
+</TR></TABLE>
+<BR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><B>default_fxbank</B> : </TD>
+	<TD ALIGN=LEFT VALIGN=TOP COLSPAN=2> The address of the sound effect bank</TD>
+</TR></TABLE>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD>&nbsp;&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Specifies the default address of the sound effect bank (bfx file) in RAM.  In order to make the specification in this parameter, no transfer of data to RAM must take place at this time.  The default address cannot be specified here if the data area is to be secured from the audio heap.  You can specify the address later with <tt>MusPtrBankInitialize</tt>, so this is set to NULL.</TD>
+</TR></TABLE>
+<BR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><B>fifo_length</B> : </TD>
+	<TD ALIGN=LEFT VALIGN=TOP COLSPAN=2>The size of the library's FIFO buffer</TD>
+</TR></TABLE>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD>&nbsp;&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Specifies the size of the FIFO buffer used for pausing (MusHandlePause) and for switching sound effects (MusSetFxType).  The value can be specified in the range of 64 to 1024, but 64 is normally sufficient.  You should increase the value if numerous commands are used in 1 frame.
+</TD>
+</TR></TABLE>
+<BR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><B>syn_updates</B> : </TD>
+	<TD ALIGN=LEFT VALIGN=TOP COLSPAN=2>The number of synthesizer updates</TD>
+</TR></TABLE>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD>&nbsp;&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Specifies the number of updates usable by the synthesizer.  It is used up by the volume and pan settings, etc.  In general, you should specify a value in the range of 96 to 256.
+</TD>
+</TR></TABLE>
+<BR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><B>syn_output_rate</B> : </TD>
+	<TD ALIGN=LEFT VALIGN=TOP COLSPAN=2> The playback rate</TD>
+</TR></TABLE>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD>&nbsp;&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Specifies the playback frequency (Hz).  A value of 32000Hz or less is recommended.  Lower values are also fine for balance with the graphics.  Set at the same rate as the sound data created with Sound Tools.</TD>
+</TR></TABLE>
+<BR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><B>syn_rsp_cmds</B> : </TD>
+	<TD ALIGN=LEFT VALIGN=TOP COLSPAN=2>The number of RSP commands</TD>
+</TR></TABLE>
+	<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD>&nbsp;&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>The number of RSP commands.  In other words, it is the maximum length of the audio command list.  A minimum value of around 2048( x syn_retraceCount) is required.
+</TD>
+</TR></TABLE>
+<BR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><B>syn_retraceCount</B> : </TD>
+	<TD ALIGN=LEFT VALIGN=TOP COLSPAN=2>The number of frames per retrace message</TD>
+</TR></TABLE>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD>&nbsp;&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Specifies the interval for calling the Audio Manager.  If the value is set to 1, the Audio Manager is called on every retrace.  If the value is 2, it is called on every other retrace.  The parameter is usually set to 1.</TD>
+</TR></TABLE>
+<BR>
+	<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><B>syn_num_dma_bufs</B> : </TD>
+	<TD ALIGN=LEFT VALIGN=TOP COLSPAN=2>The number of DMA buffers</TD>
+</TR></TABLE>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD>&nbsp;&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Specifies the number of buffers to be used by the Audio Manager for DMA from ROM.  Set to be at a minimum, larger than the value of the "channels" parameter.</TD>
+</TR></TABLE>
+<BR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><B>syn_dma_buf_size</B> : </TD>
+	<TD ALIGN=LEFT VALIGN=TOP COLSPAN=2>The length of each DMA buffer</TD>
+</TR></TABLE>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD>&nbsp;&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Specifies the size of each buffer used by the Audio Manager for DMA from ROM.  The actual buffer size is equal to (syn_num_dma_bufs x (sun_dma_buf_size  - buffer header size)).  The required size differs, depending on the values of syn_output_rate and channels.  For details, see the next section.
+</TD>
+</TR></TABLE>
+<BR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><B>diskrom_handle</B> : </TD>
+	<TD ALIGN=LEFT VALIGN=TOP COLSPAN=2>Information about the hardware settings for the 64DD built-in ROM</TD>
+</TR></TABLE>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD>&nbsp;&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP> Specifies the value returned by osDriveRomInit when using sample waves stored in the 64DD built-in ROM. This was not set in our example of the Configuration structure.  Nothing needs to be set for this parameter when such data is not used.</TD>
+</TR></TABLE>
+<BR>
+<BR>
+<BR>
+</BODY>
+</HTML>

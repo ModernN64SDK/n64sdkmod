@@ -1,0 +1,44 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.
+  PWC- updated formatting
+  MAP- added links, updated format
+-->
+<title>OS_DCACHE_ROUNDUP_ADDR</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>OS_DCACHE_ROUNDUP_ADDR</b></font><font style="font-size: 9pt"><b> (Macro)</b></font>
+
+<p>OS_DCACHE_ROUNDUP_ADDR, OS_DCACHE_ROUNDUP_SIZE</p>
+
+<p><i>Rounds up the address value to the size value/physical address, to match the data cache line size</i></p>
+
+<h3>Syntax</h3>
+<p>
+<blockquote>
+    <pre>#include &lt;ultra64.h&gt;     /* <A HREF="../../header/ultra64.htm">ultra64.h</A> */
+void *OS_DCACHE_ROUNDUP_ADDR(void *vaddr);
+u32 OS_DCACHE_ROUNDUP_SIZE(u32 nbytes);</pre>
+</blockquote>
+</p>
+<h3>Description</h3>
+
+<p>OS_DCACHE_ROUNDUP_ADDR is a cpp macro that rounds up an address to an alignment matching that of the R4300 data-cache line size (16 bytes). Similarly, the <a href="OS_DCACHE_ROUNDUP_SIZE.htm">OS_DCACHE_ROUNDUP_SIZE</a> macro rounds up an integer value to the data-cache line size.</p>
+
+<p>You can apply these macros on an address range given to an agent external to the CPU (such as the PI, SP, or DP) that modifies physical memory directly. If the affected memory region is not cache-aligned, there exists the possibility that a CPU program variable also shares the data-cache line. During normal operation of the CPU cache, the data cache line can be written back and overwrite the data written by the external agent. </p>
+
+<h3>See Also</h3>
+
+<p><a href="osPiRawStartDma.htm">osPiRawStartDma</a>, <a
+href="osPiStartDma.htm">osPiStartDma</a>, <a
+href="osSpTaskLoad.htm">osSpTaskLoad</a>, and <a
+href="osDpSetNextBuffer.htm">osDpSetNextBuffer</a></p>
+<H3>Revision history</H3>
+<P>
+1999/04/30  Changed format
+
+</body>
+</html>

@@ -1,0 +1,107 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Graphics-Chapter 3  Simple Texture Mapping</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/22/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<font style="font-size:12pt"><B>3.7  Other Commands Relating to Texture Settings</B></FONT>
+<br>
+<P>
+Here we introduce four other commands relating to textures.  The first three commands will be brought up again later in Chapters 9 and 10, so refer there for concrete examples of their use.
+</P>
+<p>
+<b>gDPSetTexturePersp(Gfx *gdl, u32 enable)</b><BR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP> Specifies whether or not to perform perspective correction on the texture.  When texture mapping to polygons this should be set to G_TP_PERSP.</TD>
+</TR></TABLE>
+<br>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>enable</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>The perspective correction flag</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;G_TP_NONE</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>(turns perspective correction off)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;G_TP_PERSP</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>(turns perspective correction on)</TD>
+</TR></TABLE>
+<p><b>gDPSetTextureLOD(Gfx *gdl, u32 mode)</b><BR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>This command sets the mode for multi-tile textures.  Specify G_TL_LOD for mipmapping and other LOD-compliant texture mapping.
+</TD>
+</TR></TABLE>
+<br>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>mode</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Texture mode</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;G_TL_TILE</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>(turns LOD tile selection off)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;G_TL_LOD</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>(turns LOD tile selection on)</TD>
+</TR></TABLE>
+<p><b>gDPSetTextureDetail(Gfx *gdl, u32 type)</b><BR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Specifies the texture sampling type when performing LOD-compliant texture mapping.  See Chapter 9 for details.
+</TD>
+</TR></TABLE>
+<br>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>type</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Texture sampling type</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;G_TD_CLAMP</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>(clamp)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;G_TD_SHARPEN</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>(sharp)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;G_TD_DETAIL</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>(detail)</TD>
+</TR></TABLE>
+<p><b>gDPSetTextureLUT(Gfx *gdl, u32 mode)</b><BR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Specifies whether or not the texture image will use a lookup table (LUT), and if so, what kind.
+</TD>
+</TR></TABLE>
+<br>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>mode</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Texture mode</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;G_TT_NONE</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>(Do not use TLUT)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;G_TT_RGBA16</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>(Use TLUT with entries in 16bit RGBA format)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;G_TT_IA16</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>(Use TLUT with entries in 16bit IA format)</TD>
+</TR></TABLE>
+<br>
+<br>
+</BODY>
+</HTML>

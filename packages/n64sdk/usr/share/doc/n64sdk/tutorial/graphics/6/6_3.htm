@@ -1,0 +1,100 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Graphics-Chapter 6   Rendering Mode and Anti-aliasing</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/23/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<font style="font-size:12pt"><B>6.3  Color Blender</B></FONT>
+<br>
+<P>
+Now that we have explained how the coverage value is calculated, next we will talk about the blending process with the Blender.
+     The Blender, like the Combiner, performs linear arithmetic on values obtained from a number of input sources to determine the color for output.
+</P>
+<P>
+  Color = (p * a + m * b) / (a + b)
+</P>
+<P>
+ In this expression, p and m are the colors for blending.  You can change the colors that will serve as the basis for mixing by selecting specific input sources.  The coefficients a and b are the alpha values.  The extent of blending of p and m is adjusted according to these values.<BR><BR>
+
+     The usable input source colors are the same for p and m.  The appropriate source is chosen from the list below:
+</P>
+<TABLE BORDER=0><TR>
+<TD>&nbsp;</TD><TD>
+	<TABLE BORDER=1 CELLSPACING=0 CELLPADDING=2><TR>
+		<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Mux Select</TD>
+		<TD ALIGN=LEFT VALIGN=TOP COLSPAN=2>&nbsp;&nbsp;Source</TD>
+	</TR><TR>
+		<TD ROWSPAN=2 ALIGN=CENTER VALIGN=MIDDLE NOWRAP>0</TD>
+		<TD ALIGN=LEFT VALIGN=TOP NOWRAP>First cycle-pixel's RGB</TD>
+	</TR><TR><TD ALIGN=LEFT VALIGN=TOP NOWRAP>Second cycle-the blended RGB from first cycle</TD>
+	</TR><TR>
+		<TD ALIGN=CENTER VALIGN=TOP NOWRAP>1</TD>
+		<TD ALIGN=LEFT VALIGN=TOP COLSPAN=2>RGB in memory</TD>
+	</TR><TR>
+		<TD ALIGN=CENTER VALIGN=TOP NOWRAP>2</TD>
+		<TD ALIGN=LEFT VALIGN=TOP COLSPAN=2>Blend(register's)RGB</TD>
+	</TR><TR>
+		<TD ALIGN=CENTER VALIGN=TOP NOWRAP>3</TD>
+		<TD ALIGN=LEFT VALIGN=TOP COLSPAN=2>Fog(register's)RGB</TD>
+	</TR></TABLE>
+</TD>
+</TR></TABLE>
+<P>
+In contrast, the usable input source for a and b are different from one another.  This is due to the fact that they are blend coefficients.  Often values of (b = 1 - a) are used.
+</P>
+<TABLE BORDER=0><TR>
+<TD>&nbsp;</TD><TD>A Mux input source</TD>
+</TR><TD>&nbsp;</TD><TD>
+	<TABLE BORDER=1 CELLSPACING=0 CELLPADDING=2><TR>
+		<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Mux Select</TD>
+		<TD ALIGN=LEFT VALIGN=TOP>&nbsp;&nbsp;Source</TD>
+	</TR><TR>
+		<TD ALIGN=CENTER VALIGN=TOP NOWRAP>0</TD>
+		<TD ALIGN=LEFT VALIGN=TOP>Color Combiner's output alpha</TD>
+	</TR><TR>
+		<TD ALIGN=CENTER VALIGN=TOP NOWRAP>1</TD>
+		<TD ALIGN=LEFT VALIGN=TOP>Fog (register's) alpha</TD>
+	</TR><TR>
+		<TD ALIGN=CENTER VALIGN=TOP NOWRAP>2</TD>
+		<TD ALIGN=LEFT VALIGN=TOP>Shade alpha</TD>
+	</TR><TR>
+		<TD ALIGN=CENTER VALIGN=TOP NOWRAP>3</TD>
+		<TD ALIGN=LEFT VALIGN=TOP>0.0</TD>
+	</TR></TABLE>
+</TD>
+</TR></TABLE>
+<TABLE BORDER=0><TR>
+<br>
+<TD>&nbsp;</TD><TD>B Mux input source</TD>
+</TR><TD>&nbsp;</TD><TD>
+	<TABLE BORDER=1 CELLSPACING=0 CELLPADDING=2><TR>
+		<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Mux Select</TD>
+		<TD ALIGN=LEFT VALIGN=TOP>&nbsp;&nbsp;Source</TD>
+	</TR><TR>
+		<TD ALIGN=CENTER VALIGN=TOP NOWRAP>0</TD>
+		<TD ALIGN=LEFT VALIGN=TOP>1.0 - a mux output</TD>
+	</TR><TR>
+		<TD ALIGN=CENTER VALIGN=TOP NOWRAP>1</TD>
+		<TD ALIGN=LEFT VALIGN=TOP>Alpha in memory (coverage value)</TD>
+	</TR><TR>
+		<TD ALIGN=CENTER VALIGN=TOP NOWRAP>2</TD>
+		<TD ALIGN=LEFT VALIGN=TOP>1.0</TD>
+	</TR><TR>
+		<TD ALIGN=CENTER VALIGN=TOP NOWRAP>3</TD>
+		<TD ALIGN=LEFT VALIGN=TOP>0.0</TD>
+	</TR></TABLE>
+</TD>
+</TR></TABLE>
+<P>
+ The difference between the Blender and the Combiner is that the Blender can use the framebuffer RGB and the framebuffer alpha as input sources.  In other words, with the Blender, a new polygon can be rendered and blended while another polygon is being drawn.
+     Also, the Blender output does not necessarily have to be written back to the framebuffer, but sometimes can be removed if there is no need to write back the result of Z buffering. The blend result can also be removed sometimes when alpha comparing.<br><br>
+
+     In the case of the Combiner, the linear arithmetic coefficients are in essence the combine mode.  In the same way, it would seem plausible that you could call these linear coefficient settings the rendering mode.  Actually, the rendering mode is more complicated than the combine mode, and the term refers to not only the p, m, a, and b input sources, but also a number of flag settings relating to anti-aliasing and Z buffering.<br><br>
+     A review of the role of all of these flags is beyond the scope of this tutorial.  You can read the details in Chapter 15 of the Programming Manual.  Here we will only cover the number of rendering modes that have already been defined in &lt;gbi.h&gt;.
+</P>
+</BODY>
+</HTML>

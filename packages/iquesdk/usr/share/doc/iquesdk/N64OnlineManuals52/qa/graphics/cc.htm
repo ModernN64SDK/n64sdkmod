@@ -1,0 +1,145 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN"
+PWC 2/21/00>
+<HTML>
+<HEAD><link rel=stylesheet type="text/css" href="../style.css">
+<TITLE>CC (Color Combiner)</TITLE>
+</HEAD>
+
+<BODY>
+<A name="index"></a>
+<IMG src="../../gif/n64_logo2.gif" height="21" width="136"></STRONG></FONT>
+
+<h3><FONT color="#FF8000">Q&A</FONT>- CC (Color Combiner)</h3>
+
+
+<P>
+<TABLE>
+  <TR>
+    <TD><B><A href="#qa1">QA1</a></b></td>
+    <TD>How do I set the primitive color when the light source has been calculated?</td></tr>
+  <TR>
+    <TD><B><A href="#qa2">QA2</a></b></td>
+    <TD>What is a &quot;texel 1 color&quot;?</td></tr>
+  <TR>
+    <TD><B><A href="#qa3">QA3</a></b></td>
+    <TD>I want to add the colors of the front character and the background graphic...</td></tr>
+  <TR>
+    <TD><A href="#qa4"><B>QA4</B></A></TD>
+    <TD>What is the input source to the color combiner for lighting colors?</td></tr>
+  <TR>
+    <TD><A href="#qa4"><B>QA5</B></A></TD>
+    <TD>Can there be both texture and fog for translucent and missing objects?</td></tr>
+</TABLE>
+
+<HR>
+<P>
+<A name="qa1"></A><B><FONT color="#ff0000">Q1</FONT> Since the same area is used for the vertex color information and normal information in the current library, I can't use vertex color information with the primitive color information when the light source has been calculated.  How do I set the primitive color when the light source has been calculated?</B>
+
+<P>
+<B><FONT color="#008000">A1</FONT></B> The primitive color information specifies the primitive color register of the CC inside the DP, so specify the primitive color and shade color in the combine mode so that they are combined (multiplied).  Typically, the combine mode which combines the primitive and color can be defined in /usr/include/PR/gbi.h or in the application with 
+
+<BLOCKQUOTE>
+
+
+<PRE>
+#define (mode name) PRIMITIVE, 0, SHADE, 0, PRIMITIVE, 0, SHADE, 0
+</PRE>
+
+</BLOCKQUOTE>
+<P>
+the primitive color can be set with 
+
+<BLOCKQUOTE>
+
+
+<PRE>
+<A href="../../n64man/gdp/gDPSetPrimColor.htm">g*DPSetPrimColor()</A>
+</PRE>
+
+</BLOCKQUOTE>
+<P>
+and combination can be realized with 
+
+<BLOCKQUOTE>
+
+
+<PRE>
+<A href="../../n64man/gdp/gDPSetCombineMode.htm">g*DPSetCombineMode()</A>
+</PRE>
+
+</BLOCKQUOTE>
+<P>
+
+
+<P align="right">
+<A href="#index">top</A>
+
+<HR>
+<P>
+
+
+<B><A name="qa2"></A><FONT color="#ff0000">Q2</FONT> What is a &quot;texel 1 color&quot; in the color combiner input source? </B>
+
+<P>
+<B><FONT color="#008000">A2</FONT></B> This refers to the color of the second tile when two tiles have been prepared in the texture memory. 
+
+<P align="right">
+<A href="#index">top</A>
+
+<HR>
+<P>
+
+
+<B><A name="qa3"></A><FONT color="#ff0000">Q3</FONT> I want to combine the color of the front character and the background graphic, but I can't seem to be able to do it well using the color combiner.  What should I be using as the input source?</B>
+
+<P>
+<B><FONT color="#008000">A3</FONT></B> In this case, you would use the blender and not the combiner.  For details, refer to the section about the blender in Chapter 15.  Set the Render mode as follows: 
+
+<BLOCKQUOTE>
+
+
+<PRE>
+<A href="../../n64man/gdp/gDPSetRenderMode.htm">gsDPSetRenderMode</A>(G_RM_ADD,G_RM_ADD2)
+</PRE>
+
+</BLOCKQUOTE>
+<P>
+Please also note that it is also easy for the level of the ADD~ opn p256 to drop. 
+
+<P align="right">
+<A href="#index">top</A>
+
+<HR>
+<P>
+
+
+<B><A name="qa4"></A><FONT color="#ff0000">Q4</FONT> What is the input source to the color combiner for lighting colors when lighting is performed?</B>
+
+<P>
+<B><FONT color="#008000">A4</FONT></B> It is in the "shade color".  When lighting is not used, the shade color is used for shading of the vertex colors. 
+
+<P align="right">
+<A href="#index">top</A>
+
+<HR>
+<P>
+
+
+<B><A name="qa5"></A><FONT color="#ff0000">Q5</FONT> Can there be both texture and fog for translucent and missing objects?  How do I obtain fog effects while performing translucent processing on the texture which is spread on a polygon?</B>
+
+<P>
+<B><FONT color="#008000">A5</FONT></B> Of course it is possible.  However, since the fog function uses the alpha shading channel, please be aware that there will be unexpected results if the alpha combiner input source is "SHADE" (see gbi.h).  As an example, typical color combiner settings for when utilizing a missing texture and fog are given below.   
+
+<blockquote>
+<PRE>
+gsDPSetCombineMode(G_CC_DECALRGBA,G_CC_PASS2)
+gsDPSetCombineMode(G_CC_MODULATERGBDECALA,G_CC_PASS2)
+</pre>
+</blockquote>
+
+<P align="right">
+<A href="#index">top</A>
+
+<HR>
+</BODY>
+</HTML>

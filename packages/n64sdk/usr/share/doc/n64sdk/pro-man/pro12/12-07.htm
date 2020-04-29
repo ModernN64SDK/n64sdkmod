@@ -1,0 +1,176 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 12 - RDP Programming</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. -->
+</head>
+
+<h1>12.7 BL - Blender</h1>
+
+<p>The BL takes the combined pixels and blends them against the framebuffer pixels.  Transparency is accomplished by blending against the framebuffer color pixels.  <a href="../../keywords/index/data/graphics.htm#polygon" target="keywords">Polygon</a> edge <a href="../../keywords/index/data/graphics.htm#anti-aliasing" target="keywords">antialiasing</a> is performed, in part, by the BL using conditional color blending based on depth range.  The BL can also perform <a href="../../keywords/index/data/graphics.htm#fog process" target="keywords">fog operations</a> in two-cycle mode. </p>
+
+<dl>
+  <dt><a name="f12-12"><strong>Figure 12-12 <a href="../../keywords/index/data/graphics.htm#blender" target="keywords">Blender</a> State and Input/Output</strong></a>
+  <dd><img alt="[Figure 12-12]" src="gif/f12-12.gif">
+</dl>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="01"><h2>12.7.1 Surface Types</h2></a>
+
+<p>The BL can perform different conditional color-blending and <a href="../../keywords/index/data/graphics.htm#Z buffer" target="keywords">Z buffer</a> updating.  Therefore, it can handle semantically different <a href="../../keywords/index/data/graphics.htm#surface" target="keywords">surface</a> and line types.  <a href="#f12-13">Figure 12-13</a> illustrates these types. </p>
+
+<dl>
+  <dt><a name="f12-13"><strong>Figure 12-13 Surface Types <u>that BL handle</u> </strong></a>
+  <dd><img alt="[Figure 12-13]" src="gif/f12-13.gif">
+</dl>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="02"><h2>12.7.2 Antialiasing Modes</h2></a>
+
+<p>The most important feature of the BL is its participation in antialiasing.  Basically, the BL conditionally blends or writes pixels into the framebuffer based on depth range.  Then the <a href="../../keywords/index/data/graphics.htm#video display logic" target="keywords">video display logic</a> applies a spatial filter to account for surrounding background colors to produce antialiased silhouette edges. </p>
+
+<p>The antialiasing scheme properly antialiases most pixels; only a small set of corner cases have errors and are negligible.   This algorithm requires ordered <a href="../../keywords/index/data/graphics.htm#rendering" target="keywords">rendering</a> sorted by surface or line types. Here are the rendering order and surface/line types for Z buffer antialiasing mode: </p>
+
+<ol>
+  <li>All opaque surfaces are rendered. <br><br>
+  <li>All opaque <a href="../../keywords/index/data/graphics.htm#decal surface" target="keywords">decal surfaces</a> are rendered.<br><br>
+  <li>All opaque interpenetrating surfaces are rendered.<br><br>
+  <li>All of the translucent surface and lines are rendered last.  These can be rendered in any order. However, the proper depth order gives proper transparency.<br><br>
+</ol>
+
+<p><strong>Note:</strong>  There is an additional optimization discussed later; if Z-buffered surfaces in the scene are rendered in approximately front-to-back order, the fill rate is improved because the Z buffer test is a read only (no write) for obscured pixels. </p>
+
+<p>Besides the antialiased Z buffer rendering mode, the other three combinations also exist: antialiased/not Z-buffered, Z-buffered/not antialiased, not Z buffer/not antialiased. </p>
+
+<table border=1 align="center">
+  <caption><a name="t12-24"><strong>Table  12-24 One-Cycle Mode <a href="../../n64man/gdp/gDPSetRenderMode.htm">gsDPSetRenderMode</a>(mode1, mode2)</strong></a></caption>
+  <tr><th>Parameter</th><th>Values</th></tr>
+  <tr><td align="center">mode1</td><td>G_RM_FOG_SHADE_A<br>
+                G_RM_FOG_PRIM_A<br>
+                G_RM_PASS<br>
+                or one of the primitive rendering modes,<br>
+                e.g. G_RM_AA_ZB_OPA_SURF<br>
+</td></tr>
+  <tr><td align="center">mode2</td><td>e.g. G_RM_AA_ZB_OPA_SURF2</td></tr>
+</table>
+
+<p><strong>Note:</strong>  Even if you are only in one-cycle mode, mode2 should be programmed. Mode2 value is always mode1 appended with "2".</p>
+
+<table border=1 align="center">
+  <caption><a name="t12-25"><strong>Table  12-25 Two-Cycle Mode <a href="../../n64man/gdp/gDPSetRenderMode.htm">gsDPSetRenderMode</a>(mode1, mode2)</strong></a></caption>
+  <tr><th>Parameter</th><th>Values</th></tr>
+  <tr><td align="center">mode1</td><td>G_RM_FOG_SHADE_A<br>
+                G_RM_FOG_PRIM_A<br>
+                G_RM_PASS</td></tr>
+  <tr><td align="center">mode2</td><td>same as one cycle mode mode2 values</td></tr>
+</table>
+
+<p><strong>Note:</strong>  When setting the cycle type to G_CYC_FILL or G_CYC_COPY, make sure to use the command <a href="../../n64man/gdp/gDPSetRenderMode.htm">g*DPSetRenderMode</a>(G_RM_NOOP, G_RM_NOOP2), to guarantee that the blender is in a safe state. </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="03"><h2>12.7.3 BL Internal Color Registers </h2></a>
+
+<p>BL has two internal color registers, fog and blend color. These values are programmable and can be used for geometry with fog or constant transparency. </p>
+
+<table border=1 align="center">
+  <caption><a name="t12-26"><strong>Table  12-26 <a href="../../n64man/gdp/gDPSetFogColor.htm">gsDPSetFogColor</a>(r,g,b,a)<br>
+        <a href="../../n64man/gdp/gDPSetBlendColor.htm">gsDPSetBlendColor</a>(r,g,b,a)</strong></a></caption>
+  <tr><th>Parameter</th><th>Values</th></tr>
+  <tr><td align="center">r,g,b,a</td><td>color</td></tr>
+</table>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="04"><h2>12.7.4 Alpha Compare</h2></a>
+
+<p>BL can compare the incoming pixel <a href="../../keywords/index/data/graphics.htm#alpha value" target="keywords">alpha</a> with a programmable alpha source to conditionally update the framebuffer.  This has traditionally allowed nice tree-outlined billboards and other complex, outlined, billboard objects.  Besides thresholding against a value, the BL can also compare against a dithered value to give randomized <a href="../../keywords/index/data/graphics.htm#particle effect" target="keywords">particle effect</a>. </p>
+
+<table border=1 align="center">
+  <caption><a name="t12-27"><strong>Table  12-27 <a href="../../n64man/gdp/gDPSetAlphaCompare.htm">gsDPSetAlphaCompare</a>(mode)</strong></a></caption>
+  <tr><th>Parameter</th><th>Values</th></tr>
+  <tr><td align="center">mode</td><td>G_AC_NONE<br>
+                G_AC_THRESHOLD<br>
+                G_AC_DITHER</td></tr>
+</table>
+
+<p><strong>Note:</strong>  When using mode G_AC_THRESHOLD, alpha is thresholded against blend color alpha. </p>
+
+<p><strong>Note:</strong>  Another way to do billboard cutouts which often provides better antialiasing is to turn Alpha Compare off (G_AC_NONE) and instead use one of the TEX_EDGE render modes, such as G_RM_AA_ZB_TEX_EDGE. </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="05"><h2>12.7.5 Using Fog</h2></a>
+
+<p>The blender performs the fog operation.  Fog is described fully in <a href="../pro11/11-08.htm">Section 11.8, "Vertex Fog State"</a>.  Fog is performed by the RSP and the RDP in cooperation.  The RSP takes the z value and places it in the alpha channel of each pixel. The RDP then uses this alpha channel to blend the color from the color combiner with the fog color.  The larger the Z value (the farther the pixel is from the viewers eye) the closer the pixel's color gets to the fog color.  The RSP part of this operation is enabled with the <a href="../../n64man/gsp/gSPSetGeometryMode.htm">gsSPSetGeometryMode</a> and can be adjusted with gsSPFogPosition: </p>
+
+<blockquote><pre>
+<a href="../../n64man/gsp/gSPSetGeometryMode.htm">gsSPSetGeometryMode</a>(G_FOG),
+<a href="../../n64man/gsp/gSPFogPosition.htm">gsSPFogPosition</a>(FOG_MIN,FOG_MAX),
+</pre></blockquote>
+
+<p>The RDP part of fogging is enabled by telling the blender how to use Alpha. Fog can be used in one cycle mode for non-antialiased opaque surfaces only:</p>
+
+<blockquote><pre>
+/* 1cycle mode */
+<a href="../../n64man/gdp/gDPSetCycleType.htm">gsDPSetCycleType</a>(G_CYC_1CYCLE),
+/* blend fog in ZB mode (non-AA OPA_SURF modes only) */
+<a href="../../n64man/gdp/gDPSetRenderMode.htm">gsDPSetRenderMode</a>(G_RM_FOG_SHADE_A,G_RM_ZB_OPA_SURF2),
+/* set the fog color */
+<a href="../../n64man/gdp/gDPSetFogColor.htm">gsDPSetFogColor</a>(RED,GREEN,BLUE,ALPHA),
+/* setup the RSP */
+<a href="../../n64man/gsp/gSPFogPosition.htm">gsSPFogPosition</a>(FOG_MIN,FOG_MAX)
+<a href="../../n64man/gsp/gSPSetGeometryMode.htm">gsSPSetGeometryMode</a>(G_FOG),
+</pre></blockquote>
+
+<p>It can be used for other surface types (or with antialiasing) in 2 cycle mode:</p>
+
+<blockquote><pre>
+/* 2cycle mode */
+<a href="../../n64man/gdp/gDPSetCycleType.htm">gsDPSetCycleType</a>(G_CYC_2CYCLE),
+/* blend fog. Use any standard render mode for cycle 2 */
+<a href="../../n64man/gdp/gDPSetRenderMode.htm">gsDPSetRenderMode</a>(G_RM_FOG_SHADE_A,G_RM_AA_ZB_OPA_SURF2),
+/* set the fog color */
+<a href="../../n64man/gdp/gDPSetFogColor.htm">gsDPSetFogColor</a>(RED,GREEN,BLUE,ALPHA),
+/* setup the RSP */
+<a href="../../n64man/gsp/gSPFogPosition.htm">gsSPFogPosition</a>(FOG_MIN,FOG_MAX)
+<a href="../../n64man/gsp/gSPSetGeometryMode.htm">gsSPSetGeometryMode</a>(G_FOG),
+</pre></blockquote>
+
+<p>As an alternative to G_RM_FOG_SHADE_A (for the first cycle of <a href="../../n64man/gdp/gDPSetRenderMode.htm">gsDPSetRenderMode</a>) you can use G_RM_FOG_PRIM_A which will use the alpha value in PrimColor to set the fog value.  If you use this mode, then the RSP's part of the fog is unnecessary and the <a href="../../n64man/gsp/gSPFogPosition.htm">gsSPFogPosition</a> and <a href="../../n64man/gsp/gSPSetGeometryMode.htm">gsSPSetGeometryMode</a> macros are not necessary.   Instead set the fog value per primitive with the <a href="../../n64man/gdp/gDPSetPrimColor.htm">gsDPSetPrimColor</a> macro: </p>
+
+<blockquote><pre>
+<a href="../../n64man/gdp/gDPSetPrimColor.htm">gsDPSetPrimColor</a>(0,0,0,0,0,FOG_VALUE),
+</pre></blockquote>
+
+<p>where the FOG_VALUE is 0 for no fog and 0xff for full-fog. </p>
+
+<p>Objects with FOG can still be transparent. The alpha value used to modulate fog comes from the triangle renderer.  The alpha value that comes from the color combiner is independent of that renderer fog alpha.   For example the color combiner can be set to use the alpha value from a <a href="../../keywords/index/data/graphics.htm#texture map" target="keywords">texture map</a>, and fog will still work with the alpha value from the renderer.  You cannot, however, use <a href="../../keywords/index/data/graphics.htm#vertex alpha" target="keywords">vertex alpha</a> with fog. The per alpha supplied in the vertices will be ignored and if the color combiner selects a SHADE alpha, it will get the fog alpha value instead (not what was intended).</p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="06"><h2>12.7.6 Depth Source</h2></a>
+
+<p>The <a href="../../keywords/index/data/graphics.htm#depth value" target="keywords">depth value</a> used in the <a href="../../keywords/index/data/graphics.htm#depth buffer comparison" target="keywords">depth buffer compare</a> is generally taken from the Z value of the pixel, determined by interpolating the z values at the 3 <a href="../../keywords/index/data/graphics.htm#vertex" target="keywords">vertices</a> of the triangle containing the pixel.  However it is sometimes desirable to set the Z value which will be used for an entire primitive.  This is actually necessary when rendering Z-buffered rectangles (<a href="../../n64man/gdp/gDPFillRectangle.htm">gDPFillRectangle</a> and <a href="../../n64man/gsp/gSPTextureRectangle.htm">gSPTextureRectangle</a>) since these primitives do not have a Z value associated with them.   To use a single Z value for an entire primitive the Z value is placed in the PrimDepth register and the Z source Select is set to get Z from the PrimDepth register: </p>
+
+
+<blockquote><pre>
+<a href="../../n64man/gdp/gDPSetDepthSource.htm">gsDPSetDepthSource</a>(G_ZS_PRIM),
+<a href="../../n64man/gdp/gDPSetPrimDepth.htm">gsDPSetPrimDepth</a>(z, dz),
+</pre></blockquote>
+
+<p>The value to use for z is the screen Z position of the object you are rendering.  This is a value ranging from 0x0000 to 0x7fff, where 0x0000 usually corresponds to the near <a href="../../keywords/index/data/graphics.htm#clipping" target="keywords">clipping</a> plane and 0x7fff usually corresponds to the far clipping plane.  To synchronize Z for PrimDepth with a Z for a triangle it is important to understand how the triangle's Z gets computed.  The modeling coordinate vertex is multiplied by the modelview and projection matrices resulting in a 4 component homogeneous coordinate (x,y,z,w).  The screen Z value is computed by the RSP as </p>
+
+<blockquote><pre>
+screenZ=32*((z/w)*Viewport.vscale[2]+Viewport.vtrans[2])
+</pre></blockquote>
+
+<p><strong>Note:</strong>  Viewport.vscale and Viewport.vtrans[2] are usually both G_MAXZ/2 = 0x1ff, which makes the formula: screenZ=(z/w)*0x3fe0 + 0x3fe0.  Since (z/w) ranges from -1.0 to +1.0 the result will range from 0x0 to 0x7fc0. </p>
+
+<p><strong>Note:</strong>  For microcode programmers: The 32* part of this equation is done in the setup microcode. The other parts of this equation are done in the vertex processing microcode.
+
+
+<p>So if you want to position a rectangle at a specific modeling coordinate position, run the modeling coordinate of the position through the modelview and projection matrix, and then compute its screen z value based upon the formula above.  This is the value to use for z in the <a href="../../n64man/gdp/gDPSetPrimDepth.htm">gsDPSetPrimDepth</a> command.</p>
+
+<p>The <a href="../../keywords/index/data/graphics.htm#dz value" target="keywords">dz value</a> should be set to 0. This value is used for antialiasing and objects drawn in decal render mode and must always be a power of 2 (0, 1, 2, 4, 8, ... 0x4000).   If you are using decal mode and part of the decaled object is not being rendered correctly, try setting this to powers of 2. Otherwise use 0. </p>
+
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+</body> </html>

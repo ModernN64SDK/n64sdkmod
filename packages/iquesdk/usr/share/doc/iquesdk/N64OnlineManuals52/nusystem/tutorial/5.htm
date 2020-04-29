@@ -1,0 +1,123 @@
+<HTML>
+<HEAD>
+<TITLE>NuSystem Tutorial</TITLE>
+</HEAD>
+
+<BODY bgcolor="#FFFFFF">
+<font face="arial" size="-1">
+
+<P>
+<FONT size="3"><b>5 A Slightly More Complicated Main Routine</b></FONT>
+<p>
+
+In this section we look at a sample of a main routine that is a little more complicated. </p>
+
+<p>The source can be found in the nu2 directory below the sample directory.
+</p>
+
+<p align="right"><a href="index.htm"><img
+src="../../gif/index.gif" border="0" width="65" height="17"></a></p>
+
+<hr>
+
+<b><a name="1">5-1 Stage Variable and Main Routine</a></b>
+
+<p>The stage variable is used to manage the game scene. </p>
+
+<p>The main routine selects a registered callback function according to the value of stage, and this callback function then uses the stage value to learn in the main routine whether the scene needs to be updated.</p>
+
+<p>The sample we present here is unusually small, so it may not seem that this main routine is very important.</p>
+
+<p>But for larger software, when scenes are tied together in complicated ways, or when a number of people are doing the coding and testing, this type of organization becomes useful.
+</p>
+
+<blockquote>
+<font face="courier" size="2">
+    <pre>/*------------------------
+	main
+--------------------------*/
+void mainproc(void)
+{
+  /* initialize graphic */
+  nuGfxInit();
+
+  /* initialize controller manager */
+  nuContInit();
+	
+  /* set stage number to 0*/
+  stage = 0;
+
+  while(1)
+    {
+      switch(stage)
+	{
+	  /* register callback function corresponding to stage number. 
+	     When registration must be updated in another callback function, 
+	     set the value in stage on the callback function side
+	     */
+	case 0:
+	  /* set a value of -1 in stage so the callback function 
+	     will wait for the value to be set*/
+	  stage = -1;
+	  /* initialize stage 0  */
+	  initStage00();
+	  /*  register callback function*/
+	  nuGfxFuncSet((NUGfxFunc)stage00);
+	  /*  turn display on */
+	  nuGfxDisplayOn();
+	  break;
+	case 1:
+	  stage = -1;
+	  initStage01();
+	  nuGfxFuncSet((NUGfxFunc)stage01);
+	  nuGfxDisplayOn();
+	  break;
+	default:
+	  break;
+	}
+      
+      /* callback function waits for value  swap (scene swap) */
+      while(stage == -1)
+	;
+      /* turn display off */
+      nuGfxDisplayOff();
+    }
+}</pre>
+</font>
+</blockquote>
+
+<p>The stage variable is declared volatile. If this declaration is not made, then the reference to the stage variable will not perform correctly when compiled with the optimization option.</p>
+
+<p>The main routine and the callback function work on separate threads, so be sure to make a volatile declaration for the stage variable.</p>
+
+<p>In this sample, the stage is swapped when the START button is pushed.</p>
+
+<blockquote>
+<font face="courier" size="2">
+    <pre>/* game advance process for stage 0  */
+void updateGame00(void)
+{  
+  /*  read data from controller 1 */
+  nuContDataGetEx(contdata,0);
+	
+      .
+      .
+      .
+
+  /* move to stage 1 when START button is pushed */
+  if(contdata[0].trigger &amp; START_BUTTON){
+    /* remove callback function */
+    nuGfxFuncRemove();
+    /*  indicate next stage in main  */
+    stage = 1;
+  }
+}</pre>
+<font face="courier" size="2">
+</blockquote>
+
+<p align="right"><a href="index.htm"><img
+src="../../gif/index.gif" border="0" width="65" height="17"></a></p>
+
+<hr>
+</body>
+</html>

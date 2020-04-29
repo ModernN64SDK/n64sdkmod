@@ -1,0 +1,100 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 7 - Operating System Functionality</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check.
+             MAP- 11/15/99 edited content, updated format-->
+</head>
+
+<H1>7.10 Non-maskable Interrupts and PreNMI </H1>
+
+<p>
+When the console RESET switch is pushed, the hardware generates a HW2 interrupt to the R4300 CPU. The interrupt is serviced by the OS event handler which sends a <A target="keywords" HREF="../../keywords/index/data/system.htm#message">message</a> of type OS_EVENT_<A target="keywords" HREF="../../keywords/index/data/system.htm#PreNMI">PRENMI</A> to the <A target="keywords" HREF="../../keywords/index/data/system.htm#message queue">message queue</a> associated with that <A target="keywords" HREF="../../keywords/index/data/system.htm#event">event</A>. </p>
+
+<P>
+The HW2 interrupt will be followed in 0.5 seconds by a non-maskable interrupt (NMI) to the R4300 CPU (unless the RESET switch is pushed and held for more than 0.5 seconds, in which case the NMI will occur when the switch is released).</p>
+
+<P>After the NMI occurs, the hardware is reinitialized, and: </p>
+<UL>
+<LI>
+The first MB of the game in ROM is copied into the first megabyte of RAM after the <A target="keywords" HREF="../../keywords/index/data/system.htm#boot">boot</A> address <br><br></LI>
+
+<LI>
+The <A target="keywords" HREF="../../keywords/index/data/system.htm#Bss">BSS</A> for the boot segment is cleared<br><br></LI>
+
+<LI>
+The boot procedure is called<br><br></LI>
+</UL>
+<p><strong>Note:</strong>  There are some minor differences between power on reset and NMI reset. After power on reset, the caches are invalidated. After NMI reset, the caches are flushed and then invalidated. Also, the power on reset configures the RAM, while NMI reset leaves RAM alone. </p>
+
+<P>After NMI reset, the contents of memory, except for the 1 MB that is copied in, are the same as before the NMI occurred. The global variable, <A HREF="../../n64man/os/osResetType.htm">osResetType</A>, is set to 0 on a power up reset and to 1 on an NMI. </p>
+
+<P>If your game does not use the scheduler (please see <a href="../pro22/index.htm">Section 22, "Scheduling Audio and Graphics"</a>, it should set up to respond to the OS_EVENT_PRENMI event by associating a message queue with the event early in the game code.</p>
+<P>This is accomplished as follows:</P>
+<BLOCKQUOTE>
+<PRE><A HREF="../../n64man/os/osSetEventMesg.htm">osSetEventMesg</A>(OS_EVENT_PRENMI, &LT;some_message_queue&GT;)</PRE>
+</BLOCKQUOTE>
+<p>If your game does use the scheduler, it needs only to test for a message of type PRE_NMI_MSG on its client message queue. The scheduler performs the event initialization, and forwards the OS_EVENT_PRENMI message to the client message queue as soon as it is received. </p>
+
+<P>Exactly how a game should behave when it receives OS_EVENT_PRENMI is addressed in Nintendo's policies on game consistency (such as fading the screen to black or ramping the audio <a href="../../keywords/index/data/audio.htm#volume" target="keywords">volume</a> down), but from a technical standpoint, when the game receives the OS_EVENT_PRENMI message it should do the following: 
+<UL>
+<LI>
+Stop issuing graphics tasks to prevent the RDP from being stopped in a non-restartable state. <BR><BR></LI>
+
+<LI>
+Stop issuing audio tasks to prevent audio "pops"<BR><BR></LI>
+
+<LI>
+Stop issuing ROM (PI) DMAs<BR><BR></LI>
+</UL>
+<p>To test this, you can generate an NMI on the development board by running the following program on the Indy. This is equivalent to pushing the RESET switch on the Nintendo 64 machine. </p>
+<BLOCKQUOTE>
+<PRE>/*
+ * Program to simulate pressing and releasing the RESET
+ * switch on the Ultra 64.
+ *
+ * Copy this code to resetu64.c and type "make resetu64"
+ *
+ */
+#include &lt;unistd.h>
+#include &lt;fcntl.h>
+#include &lt;stdio.h>
+#include &lt;sys/mman.h>
+#include &lt;sys/u64gio.h>
+#include &lt;PR/R4300.h>
+
+#define GIOBUS_BASE     0x1f400000
+#define GIOBUS_SIZE     0x200000        /* 2 MB */
+
+main() 
+{
+    int mmemFd;
+    unsigned char *mapbase;
+    struct u64_board *pBoard;
+
+    if ((mmemFd = open("/dev/mmem", 2)) &lt; 0) {
+        perror("open of /dev/mmem failed");
+        return(1);
+    }
+
+    if ((mapbase = (unsigned char *)mmap(0, GIOBUS_SIZE,
+                    PROT_READ|PROT_WRITE,(MAP_PRIVATE),
+                    mmemFd, PHYS_TO_K1(GIOBUS_BASE))) ==
+                   (unsigned char *)-1) {
+        perror("mmap");
+        return(1);
+    }
+
+    pBoard = (struct u64_board *)(mapbase);
+    pBoard->reset_control = _U64_RESET_CONTROL_NMI;
+    sginap(10);
+    pBoard->reset_control = 0;
+}</PRE>
+</BLOCKQUOTE>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR>
+</BODY>
+</HTML>

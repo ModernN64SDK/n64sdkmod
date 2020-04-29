@@ -1,0 +1,76 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.
+  PWC- updated formatting
+  MAP- updated format
+-->
+<TITLE>osPfsIsPlug</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+<font style="font-size: 12pt"><b>osPfsIsPlug</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p><i>Detects which Controller contains a Controller Pak</i></P>
+
+<H3>Syntax</H3>
+
+<p><PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/os.htm">os.h</A> */
+s32 osPfsIsPlug(OSMesgQueue *mq,  u8 *bitpattern);</CODE></PRE></p>
+
+<H3>Description</H3>
+<P>
+The <tt>osPfsIsPlug</tt> detects which Controller contains a Controller Pak, and it returns the results as a bit pattern to the location pointed to by the <B>bitpattern</B> argument. Bits 0, 1, 2, and 3 of the bit pattern correspond to Controllers 1, 2, 3, and 4, respectively. A SI device has been inserted if a bit for each controller is on. If a bit is off that means 0, no device has been inserted for that controller.
+
+</P>
+<P>
+The message queue specified by the <B>mq</B> argument must be the initialization completion message waiting in the queue associated with the OS_EVENT_SI event. For information on how to make this association, please see <a href="osSetEventMesg.htm">osSetEventMesg</a>. Since <B>mq</B> is used by the function as an internal message queue, it is not necessary for the application to use mq for purposes such as queuing function-termination messages. 
+</P>
+<P>
+If the function is successfully called, a 0 is returned. Otherwise, -1 is returned. 
+</P>
+<H3>Features</H3>
+
+<P>In addition to <B>osPfsIsPlug</B>, some functions can be used to check the status of the Controller Pak which inculde <a href="osPfsInitPak.htm">osPfsInitPak</a>, <a href="osContStartQuery.htm">osContStartQuery</a>, and <a href="osContGetQuery.htm">osContGetQuery</a>. There are, however, differences described below.
+</P>
+<P>
+The <tt>osPfsIsPlug</tt> function issues a request command that checks the status of the Controller and Controller Pak. It checks all Controller sockets, converts the results to a bit pattern, and returns them.
+</P>
+<P>
+In contrast, <tt>osPfsInitPak</tt> performs processing for only a single Controller. In addition to performing the Controller and Controller Pak status check that <tt>osPfsIsPlug</tt> performs, it also performs processing such as initializing the OSPfs structure, acquiring the Controller Pak ID and label areas, and calling the <a href="osPfsChecker.htm">osPfsChecker</a> function. As a result, it is very time consuming to call osPfsInitPak, compared to <tt>osPfsIsPlug</tt>, to determine whether the Controller Pak is inserted.
+</P>
+<P>
+For simple status checking, the fastest approach is to use <tt>osContStartQuery</tt> and <tt>osContGetQuery</tt>. These functions perform the same processing as the <tt>osPfsIsPlug</tt> function does and they simplify the error checking process. Also they are a general-purpose function for all SI devices and can therefore also take parameters other than those used to detect whether a Pak-type SI device has been inserted. osPfsIsPlug should not be overused; <tt>osContStartQuery</tt> and <tt>osContGetQuery</tt> should be used instead whenever possible. 
+</P>
+
+<H3>Example</H3>
+
+<p><PRE><CODE>main()
+{
+    OSMesgQueue     intMesgQueue;
+    OSMesg          intMesgBuf[1];
+    OSContStatus    sdata[MAXCONTROLLERS];
+    u8              cont_pattern; 
+    u8              pak_pattern; 
+
+    osCreateMesgQueue(&amp;intMesgQueue, intMesgBuf, 1);
+    nosSetEventMesg(OS_EVENT_SI, &amp;intMesgQueue, NULL);
+    osContInit(&amp;intMesgQueue, &amp;cont_pattern, &amp;sdata[0]);
+    <B>osPfsIsPlug</B>(&amp;intMesgQueue, &amp;pak_pattern);
+}</CODE></PRE></p>
+
+
+<H3>See Also</H3>
+<P>
+<A HREF="osContStartQuery.htm">osContStartQuery</A>, <A HREF="osContGetQuery.htm">osContGetQuery</A>, <A HREF="osPfsInitPak.htm">osPfsInitPak</A>, <A HREF="osPfsAllocateFile.htm">osPfsAllocateFile</A>, <A HREF="osPfsChecker.htm">osPfsChecker</A>, <A HREF="osPfsFileState.htm">osPfsFileState</A>, <A HREF="osPfsFreeBlocks.htm">osPfsFreeBlocks</A>, <A HREF="osPfsInitPak.htm">osPfsInitPak</A>, <A HREF="osPfsReadWriteFile.htm">osPfsReadWriteFile</A>, <A HREF="osPfsSetLabel.htm">osPfsSetLabel</A>, and <A HREF="osSetEventMesg.htm">osSetEventMesg</A>
+</P>
+
+<H3>Revision History</H3>
+<P>
+1999/02/01 Completely revised<br>
+1999/04/30 Changed format
+</P>
+
+</BODY>
+</HTML>

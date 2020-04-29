@@ -1,0 +1,69 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.
+  PWC- updated formatting
+-->
+<TITLE>osViSetEvent</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+<font style="font-size: 12pt"><b>osViSetEvent</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p><i>Registers a vertical synchronization event message in the VI manager</i></P>
+
+<H3>Syntax</H3>
+<p><PRE><CODE>#include &lt;ultra64.h&gt;        /* <A href="../../header/os.htm">os.h</A> */
+void osViSetEvent(OSMesgQueue *mq, OSMesg msg, u32 retraceCount);</CODE></PRE></p>
+
+<H3>Arguments</H3>
+<p><DL>
+  <DT><B>mq</B>
+  <DD>Message queue address
+  <DT><B>msg</B>
+  <DD>Message announced when vertical retrace occurs
+  <DT><B>retraceCount</B>
+  <DD>Retrace count
+</DL></p>
+<H3>Return Value</H3>
+<P>
+None.
+</P>
+<H3>Description</H3>
+<P>
+This function registers the specified message queue and message in the VI manager.  The program can thus receive the message (<B>msg</B>) announced by the message queue (<B>mq)</B>) from the VI manager when a vertical retrace occurs.  The send cycle for the message is changed according to the value set in the retrace count (<B>retraceCount</B>).  For instance, while the cycle is 60Hz when this is set to 1, it becomes a low speed 30Hz when it is set to 2, decreasing the frequency at which the application receives the vertical retrace announcement (message send cycle = 60Hz/retrace count). 
+</P>
+<H3>Precautions</H3>
+<P>
+Execute this function after setting the display mode (see <A href="osViSetMode.htm">osViSetMode</A>). 
+</P>
+<H3>Example</H3>
+<PRE>
+<CODE>//      Define message queue
+OSMesgQueue     MessageQueue;
+OSMesg          MessageBuffer[1];
+
+//      Initialize message queue
+osCreateMesgQueue(&amp;MessageQueue,&amp;MessageBuffer[0],1);
+<B>osViSetEvent</B>(&amp;MessageQueue,(OSMesg)NULL,1);
+
+--------------------------------------------------------------------------------------
+
+//      Synchronize vertical retrace interrupt
+if (MessageQueue.validCount) osRecvMesg(&amp;MessageQueue,(OSMesg *)NULL,OS_MESG_BLOCK);
+osRecvMesg(&amp;MessageQueue,NULL,OS_MESG_BLOCK);
+</CODE>
+</PRE>
+<H3>See Also</H3>
+<P>
+<A href="osCreateViManager.htm">osCreateViManager</A>, <A href="osSetEventMesg.htm">osSetEventMesg</A>
+</P>
+
+<H3>Revision History</H3>
+<P>
+02/01/99 Completely revised.
+</P>
+
+</BODY>
+</HTML>

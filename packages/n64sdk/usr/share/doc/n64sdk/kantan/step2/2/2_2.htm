@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!--
+Editors Notes:
+  PWC- updated formatting
+-->
+<title>STEP2 [A Guide to the N64 Programming] - Chapter 2 Drawing Structure and Samples</title>
+<base target="keywords">
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<p><font style="font-size:12pt; font-weight:bold">2-2 Hardware Processes</font></p>
+<br>
+<p><b>2-2-1 RCP Process</b></p>
+<br>
+<ul>
+<li>Create the <a href="../../../keywords/index/data/graphics.htm#display list" target="keywords">display list</a> in RDRAM.</li>
+<li>Post the pointer to the display list to the RSP and load the graphics <a href="../../../keywords/index/data/system.htm#microcode" target="keywords">microcode</a> into the RSP.</li>
+<li>Designate the transfer of the data, transferred to the frame buffer from the RCP, to the VI.</li>
+</ul></p>
+<br>
+<p><b>2-2-2 RCP Process</b></p>
+<br>
+<p>Receive the necessary parameter for drawing from the CPU as the display list and execute the coordinate calculation and the drawing calculation. These drawing processes execute inside of the RCP separating into the following blocks:
+<ul><li>RSP (Reality Signal Processor)</li>
+<li>RDP (Reality Display Processor)</li>
+<li>VI (Video Interface)</li>
+</ul></p>
+<img src="img00004.gif" align="absmiddle"><br>
+<br>
+<b>Figure 2-2-1 RCP Process</b><br>
+<br>
+<br>
+<p><b>2-2-3 RSP Process</b></p>
+<br>
+<ul><li>Execute the graphics microcode transferred from RDRAM by the CPU.</li>
+<li>Accept the display list within RDRAM and perform vertex conversions and other calculations.</li>
+<li>Transfer the drawing instructions to the RDP.</li></ul>
+<br>
+<b><li>Subprocesses performed as part of the calculations and conversions:</li></b><br>
+<ul><li><a href="../../../keywords/index/data/system.htm#DRAM matrix stack" target="keywords">matrix stack</a> manipulation process</li>
+<li>3D <a href="../../../keywords/index/data/graphics.htm#geometry" target="keywords">geometry</a> conversion process</li>
+<li>Lighting process</li>
+<li><a href="../../../keywords/index/data/graphics.htm#clipping" target="keywords">Clipping</a> process to remove objects and parts of objects that lie outside the view and clipping the backs of objects</li>
+<li>Illumination and the <a href="../../../keywords/index/data/graphics.htm#reflection mapping" target="keywords">reflection mapping</a> process</li>
+<li>Setup process for <a href="../../../keywords/index/data/graphics.htm#polygon"
+target="keywords">polygons</a> and line <a href="../../../keywords/index/data/graphics.htm#rasterize" target="keywords">rasterization</a> process</li>
+</ul>
+<br>
+<br>
+<p><b>2-2-4 RDP Process</b></p>
+<br>
+<p>The RDP manipulates the data that the RSP converted to form the actual display data. Then it writes the display data to the frame buffer in RDRAM.<br>
+<br>
+<b><li>Subprocesses as part of its manipulation process:</li></b><br>
+<ul><li>Rasterizing</li>
+<li>Texturing</li>
+<li>Filtering</li>
+<li>Color blending</li>
+<li>Anti-aliasing</li>
+<li>Drawing translucent polygons</li>
+<li>Processing the <a href="../../../keywords/index/data/graphics.htm#surface" target="keywords">surfaces</a> that lie between polygons</li>
+<li>Applying fog</li>
+<li><a href="../../../keywords/index/data/graphics.htm#dither" target="keywords">Dithering</a></li>
+<li>Completing <a href="../../../keywords/index/data/graphics.htm#scissoring" target="keywords">scissoring</a> calculations</li>
+</ul>
+<br>
+<br>
+<p><b>2-2-5 VI Process</b></p>
+<br>
+<p>The VI process sends the data currently residing in the frame buffer to the video DAC.</p>
+
+<table border="1" cellspacing="0">
+    <tr>
+        <td><img src="img00005.gif"> </td>
+    </tr>
+</table>
+
+<p><br><b>Figure2-2-2 VI Process</b></p>
+<br>
+<br>
+<p><b>2-2-6 Video DAC Process</b></p>
+<br>
+<p>The video DAC is a piece of hardware that actually outputs the displayable video signal on the TV monitor by converting the digital data transferred from the VI into analog data that can be viewed on the screen. </p>
+
+<table border="1" cellspacing="0"><tr><td><img src="img00006.gif"></td></tr></table>
+
+<p><br>
+<b>Figure 2-2-3 Video DAC Process</b></p>
+</body>
+</html>

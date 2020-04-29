@@ -1,0 +1,1032 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<TITLE>niff2gfx Converter</TITLE>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<!-- Editor's Notes: 9/20/1999 Ron Daring -->
+</HEAD>
+<BODY LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff">
+<a name="top">
+
+<h1>niff2gfx Converter</h1>
+<hr>
+<P>
+
+<ol>
+<li><a href="#niff2gfx">Operation of niff2gfx</a>
+<br><a href="#tokuchou">Features</a>
+<br><a href="#usage">Usage</a>
+<br><a href="#option">Options</a>
+<br><a href="#filespec">Indirect Filename Specifications</a>
+ 
+<p>
+
+<li><a href="#output">Output Specifications</a>
+<br><a href="#gbi">GBI Output Specification</a>
+<br><a href="#seigen">Limitations</a>
+<br><a href="#typecc">Specification of CC Setting When mat_type is MAT_TYPE_NIFF</a> 
+
+<P>
+<li><a href="#bugs">Current Limitations</a>
+<P>    
+
+<li><a href="history.htm">Revision History</a>
+</ol>
+
+<hr>
+<p>
+<a name="niff2gfx">
+</a>
+<b>1. Operation of niff2gfx</b>
+<P>
+<a name="tokuchou"></a>
+<b>Features</b>
+<P>
+<ul>
+ <li>This converter converts NIFF data formatted source files to GBI display-list formatted C source files.<p>
+<P>
+ <li>In the display list, the texture that has the greatest effect on performance is placed at the top of the polygon sort for loading.<p> 
+<P>
+ <li>This converter applies a high-powered vertex cache algorithm so a higher performance display list is output using NINTENDO<sup>64</sup>.
+<P>
+ <li>Object management information is output for the conversion of numerous objects and objects with a hierarchical structure.
+<P>
+ <li>Object management information is analyzed by program contained in ISViewer, and is output normally(call Display List)
+<p>
+ <li>The corresponding microcode was created based on gspF3DEX. Therefore, related microcode (spF3DLX, gspF3DLX.Rej, gspF3DLP.Rej, gspL3DEX) can be employed.<p>
+ <li>The vertex buffer number can be specified with the -vtxcache option, so each microcode task can output better data.<p>
+ <li>Data generated with the so-called semi-transparent, decal map N64 functions can be displayed without conflicts so that the object structure + game machine display driver can display objects in accordance with the display order of obj_render_pri.<p>
+ <li> Gfx output is split into segments since outside resources such as animation are sometimes operated as resources used inside Gfx. References by those segments are allocated one-by-one to the four types Vtx, Texture Image and TLUT.<p>
+ <li>Binary files can be output for the <a href="../n64prev/quickprev.htm">Quick Preview</a><p>
+</ul>
+
+<p align="right"><a href="#top">
+<img src="../../gif/index.gif"
+border="0" width="65" height="17"></a></p>
+
+
+<P>
+<a name="usage"></a>
+<b>Usage</b><a>
+<P>
+When niff2gfx -h is executed from the command line, the following is displayed.
+
+<pre><font face="courier" size="2">
+NIFF to N64 GBI format convertor. version 1.3.6
+supported format revisions: NIFF 1.0
+usage: niff2gfx [option] infile outfile
+  infile  ... NIFF format file.
+  outfile ... N64 Displaylist C source file.
+option:
+  -q               quiet mode.
+  -verbose         verbose mode.
+  -header fname, -d fname
+                   set output header filename.
+  -label str       set label string.(label string = str)
+  -scale fval      set convert scale.(scale = (float)fval)
+  -niffinfo fname  NIFF information onto file fname.
+  -nocomdef        common define,typedef block no output.
+  -regmask val     prevent RDP register assignment.
+  -vtxshare val    vertex share on set minimum match length.
+  -vtxcache val    vertex cache size(default 32).
+  -vtxload val     vertex cache load limit(default 32).
+  -strictflat      flat normal output to 3 vertices at all times.
+  -noalignpad      prevent alignment of 8-byte order no padding.
+  -outobj name     output object by name.(default: all objects)
+  -outmask val     prevent output dataclass assignment.
+  -nogeomclr       geometry mode no clear.
+  -preview val     preview type value.(default: 0x1c)
+  -binary, -b      output gfx in binary file.
+  -rotorder val    default rotation order.(default: 0x010203)
+  -vtxseg val      Vtx segment number.(default: 5)
+  -imgseg val      image data segment number.(default: 6)
+  -tlutseg val     TLUT data segment number.(default: 7)
+  -nomodify        disable modify vertex.
+  -strictcidx      CIDX pixel/bits follow 'tex_type'.
+  -noreduct        CIDX no color reduction.
+  -nullanim        output null animation data.
+  -?, -h           help
+   fname           indirect option file.
+</font></pre>
+
+<p align="right"><a href="#top">
+<img src="../../gif/index.gif"
+border="0" width="65" height="17"></a>
+
+<P>
+<a name="option"></a>
+<b>Options</b>
+<p>
+<dl>
+ <dt><pre><font face="courier" size="2">
+-header fname    set output header filename.
+</pre></font>
+ <dd> 	This switch outputs definition parts of code such as #define and typedef as a separate header file.
+       Following -header, above, please specify a file name to hold the header to be output.
+ <dt><pre><font face="courier" size="2">
+-label str       set label string.(label string = str)
+</font >
+</pre>
+ <dd> The converter outputs all objects in the file that is given as the input.
+These objects are output as a table that becomes an interface to the game machine.
+The table is also used for the
+scale value, object total and other define macro names specified at the same time.
+That base label name is given.
+ <dt> 
+<pre><font face="courier" size="2">
+-scale fval      set convert scale.(svale = (float)fval)
+</font></pre>
+ <dd> 
+	This specifies the scale value at conversion time.<p>
+	In N64, the vertex value is described in the Vtx table as a signed 16-bit integer. So depending on the original model data, rounding off can destroy the original form. In this case, please specify the option. The default is set at 20x.
+<!-- Also, because niffdraw.c performs reverse scaling based on the scale -->
+<!-- value output to the header, use of the N64 Previewer (or other -->
+<!-- accessory viewer software) does not affect the scale of the displayed shape. -->
+
+ <dt> 
+<pre><font face="courier" size="2">
+-niffinfo fname NIFF infomation on to file fname.
+</font>
+</pre>
+
+ <dd> 
+	This outputs information when a NIFF file is read. Specify a hyphen ('-') as the filename to write to standard output.
+
+ <dt> 
+<pre><font face="courier" size="2">
+-nocomdef        common define,typedef block no output.
+</font >
+</pre>
+ <dd> The converter outputs a lot of header information at the front of the output file (or to the output header file specified with the -header option), but common information unrelated to the model data is suppressed.<p>
+This is convenient when using numerous conversion files in a single compiler environment.
+
+ <dt> 
+<pre><font face="courier" size="2">
+-regmask val     prevent RDP register assignment.
+</font >
+</pre>
+
+ <dd> 
+	This suppresses output of the RDP register settings in the display list to be output. A 6-bit integer is assigned to the parameter val. Each bit has the following function:<p>
+<blockquote>
+	  bit0 ... Suppresses CycleMode setting<br>
+	  bit1 ... Suppresses RenderMode setting<br>
+	  bit2 ... Suppresses ColorCombinerMode setting<br>
+	  bit3 ... Suppresses settings for Primitive color register<br>
+	  bit4 ... Suppresses settings for Environment color register<br>
+	  bit5 ... Suppresses register settings coming to the object header
+</blockquote>
+
+ <dt> 
+<pre><font face="courier" size="2">
+-vtxshare val    vertex shar on set minimum match length.
+</font>
+</pre>
+
+ <dd> This specifies a minimum for sharing a vertex buffer.<p>
+      In order to boost the vertex calculation performance in the RCP at conversion time, niff2gfx makes as much of a consecutive transfer of the vertex buffer as possible.  As a result, the same vertex information is output many times to the vertex table.  At this time, vertex buffers that have already been output are viewed to evaluate whether a continuous part can be shared.<p>
+      For example, say 10 vertices are to be output as a vertex table. Normally 10 Vtx are simply output, but when -vtxshare 5 is set if, previously, there was a continuous part of 5 of these 10 vertices, then a past vertex buffer is used to issue the vertex transfer instruction (gsSPVertex). Note that at this time the number of vertex transfer instructions increases to 2.
+
+ <dt> 
+<pre><font face="courier" size="2">
+-vtxcache val    vertex cache size(default 32).
+</font>
+</pre>
+ <dd> 
+	This changes the microcode vertex cache.<p>
+	With gspF3DEX the vertex cache size is 32. But it increases to 64 with gspF3DLX.Rej, and 80 with gspF3DLP. When these other microcodes are used, please use this option to increase the vertex cache size for conversions. The default size is 32.
+
+ <dt> 
+<pre><font face="courier" size="2">
+-vtxload val     set vertex cache load limit(default 32).
+</font >
+</pre>
+ <dd> This specifies the number of vertices that can be transferred, at once, with gsSPVertex.<p>
+<!-- This was done for compatibility with gsFast3D. Please do not use this option, because in the
+present version of the converter the gSPModifyVertex instruction cannot be suppressed. -->
+
+ <dt> 
+<pre><font face="courier" size="2">
+-strictflat      flat normal output to 3 vertices at all times.
+</font >
+</pre>
+ <dd> 
+	Usually the converter outputs 1 vertex with face normal, and outputs the other 2 vertices with just the normal for the vertex.<p>
+	According to the microcode specifications during flat shading,
+only one of the three vertices needs to express the normal, but for automatic creation of ST values for reflection mapping, all three vertices need to be normal.<p>
+	Thus, it is necessary to set
+normal to three vertices only when reflection mapping with flat shading. This option affects these settings.
+
+ <dt> 
+<pre><font face="courier" size="2">
+-noalignpad      prevent alignment of 8-byte order no padding.
+</font >
+</pre>
+
+ <dd> 
+	
+The converter normally inserts u64 size dummy words in order to maintain 64bit alignment when data is output. This option suppresses dummy word output.
+
+ <dt> 
+
+<pre><font face="courier" size="2">
+-outobj name     output object by name.(default: all objects)
+</font >
+</pre>
+
+ <dd> 
+	By default all objects are output by name, so you can use this option when you want to output only a specific object by name. You can also use this option to specify multiple objects to be
+output by name.
+
+ <dt> 
+<pre><font face="courier" size="2">
+-outmask val     prevent output dataclass assignment.
+</font >
+</pre>
+
+ <dd> 
+	
+This restricts the types of data that are output. An 8-bit integer is assigned to the parameter val. Each bit is mapped as follows:
+<blockquote>
+<!-- 	  bit0(0x01) ... Header<br> -->
+<!-- 	  bit1(0x02) ... TLUT<br> -->
+<!-- 	  bit2(0x04) ... Bitmap pattern<br> -->
+<!-- 	  bit3(0x08) ... Vertex list (Vtx structure array) <br> -->
+<!-- 	  bit4(0x10) ... Display list (Gfx structure array)<br> -->
+<!-- 	  bit5(0x20) ... Object structure<br> -->
+<!-- 	  bit6(0x40) ... Animation structure<br> -->
+<!-- 	  bit7(0x80) ... Scene structure<br> -->
+          bit0(0x001)   ... Header<br>
+	  bit1(0x002)   ... TLUT<br>
+	  bit2(0x004)   ... Bitmap pattern<br>
+	  bit3(0x008)   ... Data related to deforming<br>
+	  bit4(0x010)   ... Shape<br>
+	    bit5(0x020) ... Vertex list (Vtx structure array) <br>
+	    bit6(0x040) ... Display list (Gfx structure array)<br>
+
+	  bit7(0x080)   ... Object structure<br>
+	  bit8(0x100)   ... Animation structure<br>
+	  bit9(0x200)   ... Scene structure<br>
+</blockquote>
+	
+When each bit is 1, output of that bit's data class is prohibited. If bit4 is 1, then bit5 and bit6 are also always 1. <dt> 
+<pre><font face="courier" size="2">
+-nogeomclr       geometry mode no clear.
+</font >
+</pre>
+ <dd> 
+	The converter makes Gfx in Shape units, but the default always has gSPClearGeoMode(-1) in the beginning, so the geometry mode is initialized. This option prevents output of this initialization code.
+ <dt> 
+<pre><font face="courier" size="2">
+-binary, -b      output gfx in binary file.
+</font>
+</pre>
+ <dd> 
+	
+By default, the converter outputs a C source file for the file specified by "outfile." When this option is specified, a binary file for Quick Preview is output. 
+ <dt> 
+<pre><font face="courier" size="2">
+-preview val     preview type value.(default: 0)
+</font >
+</pre>
+ <dd> 
+	This option was previously used to change the view of the Previewer. However, with the introduction of version 1.30, this option is meaningless - since the Previewer no longer references
+this value. 
+<!-- 	<u>When output head file, specify the value for the macro PREVIEW_TYPE--><!-- 	<u>  Get assigned 5-bit-integer in standard 'n64prev'. -->
+<!-- 	<u>The contents are as follows:</u> -->
+<!-- <blockquote> -->
+<!-- 	  bit0(0x01) ... <u>Set Animation Link to NDR_OBJ together</u><br> -->
+<!-- 	  bit1(0x02) ... <u>Enter from Scene structure</u><br> -->
+<!-- 	  bit2(0x04) ... <u>Enter Vertex deform<br></u> -->
+<!-- 	  bit3(0x08) ... <u>Enter Vertex color deform</u><br> -->
+<!-- 	  bit4(0x10) ... <u>Enter Vertex normal deform</i><br> -->
+<!-- </blockquote> -->
+<!-- 	<u>If bit1 == 0, enter number 1 of the object list (not 0)</u> -->
+<!-- 	 -->
+ <dt> 
+<pre><font face="courier" size="2">
+-rotorder val    default rotation order.(default: 0x010203)
+</font >
+</pre>
+ <dd> 
+	In NIFF, when there is no animation link, no decision is made about the order of animation. The result is that rotation order can change for every object, and major restrictions are placed on application programming. This option can be used to set the rotation order for objects that do not hold animation.
+ <dt> 
+<pre><font face="courier" size="2">
+-vtxseg val      Vtx segment number.(default: 5)
+</font >
+</pre>
+ <dd> 
+	
+This specifies the segment number of the vertex buffer referenced by the output Gfx. The default is 5.
+ <dt> 
+<pre>
+<font face="courier" size="2">
+-imgseg val      image data segment number.(default: 6)
+</font >
+</pre>
+ <dd> 
+	
+This specifies the segment number of the texture image referenced by the output Gfx. The default value is 6. 
+ <dt> 
+<pre>
+<font face="courier" size="2">
+  -tlutseg val     TLUT data segment number.(default: 7)
+</font >
+</pre>
+ <dd> 
+	
+This specifies the segment number of the texture LUT that is referenced by the output Gfx. The default value is 7. 
+ <dt> 
+<pre>
+<font face="courier" size="2">
+-nomodify        disable modify vertex.
+</font >
+</pre>
+ <dd> 
+	
+Prevents gsSPModifyVertex from reusing the vertex buffer. This must be specified when deform is enabled. 
+ <dt> 
+<pre>
+<font face="courier" size="2">
+-strictcidx      CIDX pixel/bits follow 'tex_type'.
+</font >
+</pre>
+ <dd> 
+	When converting, if the image specified as an 8-bit color index texture is less than 16 colors, optimization is usually attempted as a 4-bit texture. However, by specifying this option, the optimization is prohibited and the texture pattern is output by the bit width specified by NIFF.
+ <dt> 
+<pre>
+<font face="courier" size="2">
+-noreduct        CIDX no color reduction.
+</font >
+</pre>
+ <dd> 
+        <br>On conversion, if the image specified as an 8-bit color 
+	index texture is more than 256 colors, and the image specified as a 4-bit color index texture is more than 16 colors, color 
+	reduction is attempted.  However, setting this option prohibits color reduction. 
+ <dt> 
+<pre>
+<font face="courier" size="2"><a name="NULLANIM">
+-nullanim        output null animation data.</a>
+</font >
+</pre>
+ <dd> 
+	If there is no effective animation data in the object, NULL is output to the Animation List. Links to the animation will be created by referring the NULL from the object. nullanim can be used when the animation data is taken from different files. However, it can not be used from the nd since it does not support the Animation List NULL. 
+ <dt> 
+<pre>
+<font face="courier" size="2">
+fname           indirect option file.
+</font >
+</pre>
+
+ <dd> 
+	fname is taken to be an indirect filename and interpreted as something described by a command line parameter. For details concerning indirect filenames, please see "Indirect Filename Specifications," below.
+
+ <dt> 
+<pre>
+<font face="courier" size="2">
+-?, -h          help
+</font >
+</pre>
+
+ <dd> 
+	This outputs simple explanations that describe command line settings and options.
+</dl>
+
+<p>
+<br>
+<a name="filespec"></a>
+<b>Indirect Filename Specifications</b>
+<P>
+<ul>
+ <li> Files are recognized as various processing system text files. 
+<P>
+ <li> For options described in a file, strings divided by one or more white space characters (space, tab, line feed, new page) are taken to be separate words. 
+<P> 
+<li> Options are interpreted the same as if they were specified in the command line, so any word with a hyphen placed in front is interpreted as an option. 
+<P> 
+<li> An indirect file is expanded and interpreted in the specified place in the command line just like a parameter. 
+<P>
+ <li> Numerous indirect files can be specified. 
+<P> 
+<li> When '#' is detected at the start of a word, everything from that character to the end of the line (line feed character) is treated as a comment and skipped. 
+</ul>
+<blockquote>
+<pre><font face="courier" size="2">
+
+  <b>Example 1</b>
+
+command line:
+  % niff2gfx @ind cube.niff mdl_a.c
+
+"ind" file:
+  -header a.h -strictflat
+
+converter parsing...:
+  % niff2gfx -header a.h -strictflat cube.niff mdl_a.c
+
+
+ <b>Example 2</b>
+command line:
+  % niff2gfx ind
+
+"ind" file:
+  # option
+  -header model.h
+  -regmask 0x5		# no CycleMode & CC mode
+  # input file
+  cube.niff
+  # output file
+  model.c
+
+converter parsing...:
+  % niff2gfx -header model.h -regmask 0x5 cube.niff model.c
+
+
+ <b>Example 3</b>
+command line:
+  % niff2gfx opt file
+
+"opt" file:
+  # option
+  -header model.h
+  -regmask 0x5		# no CycleMode & CC mode
+
+"file" file:
+  cube.niff model.c
+
+converter parsing...:
+  Same as in Example 2
+</pre></font>
+</blockquote>
+<P>
+<hr>
+<P><a name="output">
+</a>
+<b>2. Output Specification</b><p>
+
+<a name="gbi"></a>
+<b>GBI Output Specification</b><p>
+<ul>
+<!--  <li><u>The GBI output from one NIFF file creates Vtx  -->
+<!--   and Gfx by a unit of Shape</u><p> -->
+<!--  <li><u>Every Shape, evaluate vtx and gfx</u><p> -->
+
+<li>The GBI output from one NIFF file creates Vtx and Gfx by a unit of Shape. The texture image and TLUT are placed in a single buffer so that they can be used and shared by all Shapes. <p>
+<li>The texture read-in code is created based on the NIFF TextDataArea and the ST value of the attachable face of the texture.<p>
+<li>Because StData is dependent on the tile information used by N64, at conversion time ST values are scaled and Vtx buffers created in accordance to the size of the texture being applied.<p>
+<li> Because there are scenes where Tri and Prim colors are both present, Tri colors are set using the Environment Color Register.<p>
+<li>Because there are scenes where Tri and Prim colors are both present, Tri colors are set using the Environment Color Register. Both PrimColReg and EnvColReg can change the color value, irrespective of the material specification for their use.<p>
+<li>The texture image supports a total of 9 types: RGBA 32-bit, RGBA 16-bit, index color 8-bit, index color 4-bit, and 1A (16-bit, 8-bit, and 4-bit), and I (8-bit and 4-bit).<p>
+<li>To implement a hierarchical object, the object's transform matrix information and link information are stored using a unique data structure called 'nd' along with constant value-based independent data structures.<p>
+<li>The Anim node is used for the object structure's transform data only in the case of ANM_TYPE_STATIC.<p>
+<li>When the transform's rotation information is output by the converter, a Radian to Degree conversion is performed and output to pass the radian value from NIFF.<p>
+<li> The low-order 8 bits of the Obj area's obj_pri are evaluated and stored in the priority register of the object structure.<p>
+<li> Color reduction is automatically performed when the Tex area texture
+type is CI and the number of colors used by the image exceeds 256 for an 8-bit color index texture, or 16 for a 4-bit color index texture.<p>
+First, the colors used by the image are reduced to 16-bits (RGBA5551). The colors are then sorted in order from the most-used. either the first 256 colors are set in the palette for an 8-bit CI texture or the first 16 colors are set in the palette for a 4-bit CI texture. Since alpha is effective for only 1 bit, it is transparent when the original data is 0, and opaque when the original data is a value other than 0.
+<p>
+If there is no match for a color in the palette, the sum of the difference of squares is calculated for each RGB component and the smallest is selected.<p>
+
+
+If -noreduct is specified and there are too many colors, the conversion is aborted.<p>
+</ul>
+
+<P>
+<a name="seigen"></a>
+<b>Limitations</b><p>
+<ul>
+<li>The output display list does not comply with the gspFast3D microcode.<p>
+<li>RenderMode and ColorCombineMode are set in the display list, so please use the regmask option to mask the register settings for these RDP registers when converting object displays operated by the user. On the object manager side, please set these masked registers at Gfx expansion time.<p>
+<li>When ObjArea's obj_render_pri is OBJ_RENDER_FLAG_NIFF == 1 and OBJ_RENDER_NIFF_*_INTER, OBJ_RENDER_NIFF_*_DECAL, if ShapeArea's shape_area is SHAPE_TYPE_ZB==0, then forcibly change to SHAPE_TYPE_ZB==1. This is done so there is no Z buffer-invalid INTER, DECAL in RenderMode.
+<p>
+<li>Sometimes the character strings used for symbol names defined in NIFF are used as-is for symbols after conversion. If data does not compile well after conversion, take note of the symbol information in the NIFF data.
+<p>
+<li>The keyframe animation interpolation method only accommodates LINEAR, and no data outside of LINEAR is output. Light information, global light and local light are not output.<p>
+<li>Local light is not output in the light information.<p>
+<li>Lighting is assumed ON when MAT_SHADE_USE_HILGHT = 1 or MAT_SHADE_USE_REFLECT = 1 in the Mat area mat_type. These are given priority since highlight and reflection settings are not effective if lighting is not ON.
+<p>
+</ul>
+
+<p>
+<a name="typecc"></a>
+<hr>
+<p>
+<b>Specification of CC setting when mat_type is MAT_TYPE_NIFF</b>
+<p>
+<b>Resource Usage Rules</b><p>
+The converter analyzes NIFF data and uses a number of RDP registers.<p>
+The RDP register's Primitive Color register is allocated to PrimColor, while the Environment Color register is allocated to TriColor, and color changes are assigned to the registers. 
+
+<p>
+<b>Determining Color Combiner Mode</b>
+<p>
+The color combiner mode is determined based on the MAT_SHADE_LIGHT* of mat_shade_type and the following bits of mat_color_type0: 
+<pre><font face="courier" size="2">
+	MAT_CC_NIFF_VTX        = 0x00000001
+	MAT_CC_NIFF_TRI        = 0x00000002
+	MAT_CC_NIFF_PRIM       = 0x00000004
+	MAT_CC_NIFF_TEX0       = 0x00000008
+	MAT_CC_NIFF_TEX1       = 0x00000010
+	MAT_CC_NIFF_TRI_ALPHA  = 0x00020000
+	MAT_CC_NIFF_PRIM_ALPHA = 0x00040000
+	MAT_CC_NIFF_TEX0_ALPHA = 0x00080000
+</font>
+</pre>
+<P>
+The following bits are not referenced:
+<pre><font face="courier" size="2">
+	MAT_CC_NIFF_VTX_ALPHA  = 0x00010000
+	MAT_CC_NIFF_TEX1_ALPHA = 0x00100000
+</font >
+</pre>
+<P>
+Each bit is assigned separately, so there are a variety of modes. These are determined in the following way:<p>
+
+First, the color combiner expression is evaluated with the following formula: 
+<pre><font face="courier" size="2">
+		(Wch - Xch) * Ych + Zch
+</pre></font>
+
+<P>
+Wch, Xch, Ych, and Zch are virtual color channels, and they are determined by different bits in mat_color_type0.
+<p>
+Ych is determined by MAT_CC_NIFF_VTX, _TEX0_ALPHA, _PRIM_ALPHA, _TRI_ALPHA, and _VTX_ALPHA. 
+<p>
+
+<table border="1" cellpadding="3" cellspacing="3">
+<tr nowrap>
+ <td><font face="arial" size="-1">VTX_A</td>
+ <td><font face="arial" size="-1">TRI_A</td>
+ <td><font face="arial" size="-1">PRIM_A</td>
+ <td><font face="arial" size="-1">TEX0_A</td>
+ <td><font face="arial" size="-1">VTX</td>
+ <td><center><font face="arial" size="-1">Ych</center></td>
+</tr>
+<tr nowrap>
+<td><center><font face="arial" size="-1">0</center></td>
+<td><center><font face="arial" size="-1">0</center></td>
+<td><center><font face="arial" size="-1">0</center></td>
+<td><center><font face="arial" size="-1">0</center></td>
+<td><center><font face="arial" size="-1">0</center></td>
+<td bgcolor="#F1F3A3"><font face="arial" size="-1">Shade color</td>
+</tr>
+
+<tr nowrap>
+<td><center><font face="arial" size="-1">0</center></td>
+<td><center><font face="arial" size="-1">0</center></td>
+<td><center><font face="arial" size="-1">0</center></td>
+<td><center><font face="arial" size="-1">0</center></td>
+<td><center><font face="arial" size="-1">1</center></td>
+<td bgcolor="#F1F3A3"><font face="arial" size="-1">Vertex color</td>
+</tr>
+
+<tr nowrap>
+<td><center><font face="arial" size="-1">0</center></td>
+<td><center><font face="arial" size="-1">0</center></td>
+<td><center><font face="arial" size="-1">0</center></td>
+<td><center><font face="arial" size="-1">1</center></td>
+<td><center><font face="arial" size="-1">*</center></td>
+<td bgcolor="#F1F3A3"><font face="arial" size="-1">Texel0 alpha</td>
+</tr>
+
+<tr nowrap>
+<td><center><font face="arial" size="-1">0</center></td>
+<td><center><font face="arial" size="-1">0</center></td>
+<td><center><font face="arial" size="-1">1</center></td>
+<td><center><font face="arial" size="-1">*</center></td>
+<td><center><font face="arial" size="-1">*</center></td>
+<td bgcolor="#F1F3A3"><font face="arial" size="-1">Primitive alpha</td>
+</tr>
+
+<tr nowrap>
+<td><center><font face="arial" size="-1">0</center></td>
+<td><center><font face="arial" size="-1">1</center></td>
+<td><center><font face="arial" size="-1">*</center></td>
+<td><center><font face="arial" size="-1">*</center></td>
+<td><center><font face="arial" size="-1">*</center></td>
+<td bgcolor="#F1F3A3"><font face="arial" size="-1">Env alpha</td>
+</tr>
+
+<tr nowrap>
+<td><center><font face="arial" size="-1">1</center></td>
+<td><center><font face="arial" size="-1">*</center></td>
+<td><center><font face="arial" size="-1">*</center></td>
+<td><center><font face="arial" size="-1">*</center></td>
+<td><center><font face="arial" size="-1">0</center></td>
+<td bgcolor="#F1F3A3"><font face="arial" size="-1">Shade alpha</td>
+</tr>
+
+<tr nowrap>
+<td><center><font face="arial" size="-1">1</center></td>
+<td><center><font face="arial" size="-1">*</center></td>
+<td><center><font face="arial" size="-1">*</center></td>
+<td><center><font face="arial" size="-1">*</center></td>
+<td><center><font face="arial" size="-1">1</center></td>
+<td bgcolor="#F1F3A3"><font face="arial" size="-1">Vertex alpha</td>
+</tr>
+</table>
+<p>
+In the above table an asterisk (*) refers to an undefined value. In short, _VTX_ALPHA, _TRI_ALPHA, _PRIM_ALPHA, _TEX0_ALPHA, and _VTX are evaluated in order to set one of the above-mentioned modes. 
+<p>
+Shade color expresses the color value inferred from calculating SP from the lighting setting and the model's shade.<p>
+When G_LIGHTING is set to off in the GeometryMode settings, Vertex color is extracted from the color value used by the normal of the Vtx structure. 
+
+<p>
+When Ych is Shade Color, and when both LOCAL and GLOBAL are 0 (no lighting) in the MAT_SHADE_LIGHT_* settings of mat_shade_type, then the color combiner expression is changed to the following: 
+<pre><font face="courier" size="2">
+		(1.0 - Xch) * Wch + Zch
+</pre></font>
+
+<P>
+Also note that this special rule does not apply for the second cycle in 2 cycle mode.<p>
+
+Wch, Xch, and Zch are determined from MAT_CC_NIFF_TRI/_PRIM/_TEX0/_TEX1. 
+<p>
+
+<font face="courier" size="2">
+<table border="1" cellpadding="3" cellspacing="3">
+<tr nowrap>
+<td><font face="arial" size="-1">TRI</td>
+<td><font face="arial" size="-1">T1/PRIM</td>
+<td><font face="arial" size="-1">TEX0</td>
+<td bgcolor=#FFFFFF><center><font face="arial" size="-1">Wch</center></td>
+<td bgcolor=#FFFFFF><center><font face="arial" size="-1">Xch</center></td>
+<td bgcolor=#FFFFFF><center><font face="arial" size="-1">Zch</center></td>
+</tr>
+<tr nowrap>
+<td><center><font face="arial" size="-1">0</center></td>
+<td><center><font face="arial" size="-1">0</center></td>
+<td><center><font face="arial" size="-1">0</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">1.0</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">0.0</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">0.0</center></td>
+</tr>
+<tr nowrap>
+<td><center><font face="arial" size="-1">0</center></td>
+<td><center><font face="arial" size="-1">0</center></td>
+<td><center><font face="arial" size="-1">1</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">Tex0</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">0.0</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">0.0</center></td>
+</tr>
+<tr nowrap>
+<td><center><font face="arial" size="-1">0</center></td>
+<td><center><font face="arial" size="-1">1</center></td>
+<td><center><font face="arial" size="-1">0</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">T1/Prim</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">0.0</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">0.0</center></td>
+</tr>
+<tr nowrap>
+<td><center><font face="arial" size="-1">0</center></td>
+<td><center><font face="arial" size="-1">1</center></td>
+<td><center><font face="arial" size="-1">1</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">Tex0</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">T1/Prim</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">T1/Prim</center></td>
+</tr>
+<tr nowrap>
+<td><center><font face="arial" size="-1">1</center></td>
+<td><center><font face="arial" size="-1">0</center></td>
+<td><center><font face="arial" size="-1">0</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">Env</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">0.0</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">0.0</center></td>
+</tr>
+<tr nowrap>
+<td><center><font face="arial" size="-1">1</center></td>
+<td><center><font face="arial" size="-1">0</center></td>
+<td><center><font face="arial" size="-1">1</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">Tex0</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">Env</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">Env</center></td>
+</tr>
+<tr nowrap>
+<td><center><font face="arial" size="-1">1</center></td>
+<td><center><font face="arial" size="-1">1</center></td>
+<td><center><font face="arial" size="-1">0</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">T1/Prim</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">Env</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">Env</center></td>
+</tr>
+<tr nowrap>
+<td><center><font face="arial" size="-1">1</center></td>
+<td><center><font face="arial" size="-1">1</center></td>
+<td><center><font face="arial" size="-1">1</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">Tex0</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">T1/Prim</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">Env</center></td>
+</tr></table>
+<font face="arial" size="-1">
+<p>
+Tex0 indicates Texel0 color.<p>
+Prim indicates the Primitive Color Register.<p>
+Env indicates the Environment Color Register.<p>
+T1/Prim is determined from the states of TEXEL1/PRIMITIVE according to the following rule<p>
+
+
+
+<table border="1" cellpadding="3" cellspacing="3">
+<tr nowrap>
+<td><font face="arial" size="-1">TEXEL1</td>
+<td><font face="arial" size="-1">PRIM</td>
+<td><font face="arial" size="-1">T1/Prim</td>
+<td><font face="arial" size="-1">Contents</td>
+</tr>
+<tr nowrap>
+<td><center><font face="arial" size="-1">0</center></td>
+<td><center><font face="arial" size="-1">0</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">0</center></td>
+<td bgcolor="#F1F3A3"><center>----</center></td>
+</tr>
+<tr nowrap>
+<td><center><font face="arial" size="-1">0</center></td>
+<td><center><font face="arial" size="-1">1</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">1</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">Prim</center></td>
+</tr>
+<tr nowrap>
+<td><center><font face="arial" size="-1">1</center></td>
+<td><center><font face="arial" size="-1">*</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">1</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">TEXEL1</center></td>
+</tr>
+</table>
+
+<p>
+In 1 cycle mode, the above settings also apply to pipeline 2.<p>
+In 2 cycle mode, the above type of evaluation is not performed on mat_color_type1, and the values are substituted and output in the following way:
+<p>
+	<dd>Shade color is replaced by Combine color <br>
+	<dd>Shade Alpha is replaced by Combine Alpha<p>
+  </dd>  
+<P>
+
+<b>Determining Alpha Combiner Mode</b>
+<P>
+
+Alpha combiner mode is determined based on the following mat_alpha_type0 bits: 
+<pre><font face="courier" size="2">
+	MAT_CC_NIFF_VTX_ALPHA  = 0x00010000
+	MAT_CC_NIFF_TRI_ALPHA  = 0x00020000
+	MAT_CC_NIFF_PRIM_ALPHA = 0x00040000
+	MAT_CC_NIFF_TEX0_ALPHA = 0x00080000
+	MAT_CC_NIFF_TEX1_ALPHA = 0x00100000
+</font >
+</pre>
+
+    The following bits are not referenced:
+<pre><font face="courier" size="2">
+	MAT_CC_NIFF_VTX  = 0x00000001
+	MAT_CC_NIFF_TRI  = 0x00000002
+	MAT_CC_NIFF_PRIM = 0x00000004
+	MAT_CC_NIFF_TEX0 = 0x00000008
+	MAT_CC_NIFF_TEX1 = 0x00000010
+</font >
+</pre>
+The alpha combiner expression is defined in the same way as the color combiner expression: 
+<pre>
+<font face="courier" size="2">
+		(Wch - Xch) * Ych + Zch
+</font >
+</pre>
+    The Wch, Xch, Ych, and Zch channels are determined based on the five effective flags described above, and according to the following rule.<p>
+
+
+<table border="1" cellpadding="3" cellspacing="3">
+<tr nowrap>
+<td><center><font face="arial" size="-1">VTX_A</center></td>
+<td><center><font face="arial" size="-1">TRI_A</center></td>
+<td><center><font face="arial" size="-1">T1/PRIM</center></td>
+<td><center><font face="arial" size="-1">TEX0_A</center></td>
+<td bgcolor=#FFFFFF><center><font face="arial" size="-1">Wch</center></td>
+<td bgcolor=#FFFFFF><center><font face="arial" size="-1">Xch</center></td>
+<td bgcolor=#FFFFFF><center><font face="arial" size="-1">Ych</center></td>
+<td bgcolor=#FFFFFF><center><font face="arial" size="-1">Zch</center></td>
+</tr>
+<tr>
+<td><center><font face="arial" size="-1">0</center></td>
+<td><center><font face="arial" size="-1">0</center></td>
+<td><center><font face="arial" size="-1">0</center></td>
+<td><center><font face="arial" size="-1">0</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">0.0</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">0.0</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">0.0</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">1.0</center></td>
+</tr>
+<tr>
+<td><center><font face="arial" size="-1">0</center></td>
+<td><center><font face="arial" size="-1">0</center></td>
+<td><center><font face="arial" size="-1">0</center></td>
+<td><center><font face="arial" size="-1">1</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">0.0</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">0.0</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">0.0</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">Tex0</center></td>
+</tr>
+<tr>
+<td><center><font face="arial" size="-1">0</center></td>
+<td><center><font face="arial" size="-1">0</center></td>
+<td><center><font face="arial" size="-1">1</center></td>
+<td><center><font face="arial" size="-1">0</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">0.0</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">0.0</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">0.0</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">T1/Prim</center></td>
+</tr>
+<tr>
+<td><center><font face="arial" size="-1">0</center></td>
+<td><center><font face="arial" size="-1">0</center></td>
+<td><center><font face="arial" size="-1">1</center></td>
+<td><center><font face="arial" size="-1">1</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">Tex0</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">0.0</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">T1/Prim</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">0.0</center></td>
+</tr>
+<tr>
+<td><center><font face="arial" size="-1">0</center></td>
+<td><center><font face="arial" size="-1">1</center></td>
+<td><center><font face="arial" size="-1">0</center></td>
+<td><center><font face="arial" size="-1">0</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">0.0</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">0.0</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">Env</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">0.0</center></td>
+</tr>
+<tr>
+<td><center><font face="arial" size="-1">0</center></td>
+<td><center><font face="arial" size="-1">1</center></td>
+<td><center><font face="arial" size="-1">0</center></td>
+<td><center><font face="arial" size="-1">1</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">Tex0</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">0.0</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">Env</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">0.0</center></td>
+</tr>
+<tr>
+<td><center><font face="arial" size="-1">0</center></td>
+<td><center><font face="arial" size="-1">1</center></td>
+<td><center><font face="arial" size="-1">1</center></td>
+<td><center><font face="arial" size="-1">0</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">T1/Prim</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">0.0</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">Env</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">0.0</center></td>
+</tr>
+<tr>
+<td><center><font face="arial" size="-1">0</center></td>
+<td><center><font face="arial" size="-1">1</center></td>
+<td><center><font face="arial" size="-1">1</center></td>
+<td><center><font face="arial" size="-1">1</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">Tex0</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">Env</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">T1/Prim</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">Env</center></td>
+</tr>
+<tr>
+<td><center><font face="arial" size="-1">1</center></td>
+<td><center><font face="arial" size="-1">0</center></td>
+<td><center><font face="arial" size="-1">0</center></td>
+<td><center><font face="arial" size="-1">0</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">0.0</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">0.0</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">0.0</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">Shade</center></td>
+</tr>
+<tr>
+<td><center><font face="arial" size="-1">1</center></td>
+<td><center><font face="arial" size="-1">0</center></td>
+<td><center><font face="arial" size="-1">0</center></td>
+<td><center><font face="arial" size="-1">1</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">Shade</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">0.0</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">Tex0</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">0.0</center></td>
+</tr>
+<tr>
+<td><center><font face="arial" size="-1">1</center></td>
+<td><center><font face="arial" size="-1">0</center></td>
+<td><center><font face="arial" size="-1">1</center></td>
+<td><center><font face="arial" size="-1">0</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">Shade</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">0.0</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">T1/Prim</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">0.0</center></td>
+</tr>
+<tr>
+<td><center><font face="arial" size="-1">1</center></td>
+<td><center><font face="arial" size="-1">0</center></td>
+<td><center><font face="arial" size="-1">1</center></td>
+<td><center><font face="arial" size="-1">1</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">Shade</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">T1/Prim</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">Tex0</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">T1/Prim</center></td>
+</tr>
+
+<tr>
+<td><center><font face="arial" size="-1">1</center></td>
+<td><center><font face="arial" size="-1">1</center></td>
+<td><center><font face="arial" size="-1">0</center></td>
+<td><center><font face="arial" size="-1">0</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">Shade</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">0.0</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">Env</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">0.0</center></td>
+</tr>
+<tr>
+<td><center><font face="arial" size="-1">1</center></td>
+<td><center><font face="arial" size="-1">1</center></td>
+<td><center><font face="arial" size="-1">0</center></td>
+<td><center><font face="arial" size="-1">1</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">Shade</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">Env</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">Tex0</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">Env</center></td>
+</tr>
+<tr>
+<td><center><font face="arial" size="-1">1</center></td>
+<td><center><font face="arial" size="-1">1</center></td>
+<td><center><font face="arial" size="-1">1</center></td>
+<td><center><font face="arial" size="-1">0</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">Shade</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">Env</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">T1/Prim</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">Env</center></td>
+</tr>
+<tr>
+<td><center><font face="arial" size="-1">1</center></td>
+<td><center><font face="arial" size="-1">1</center></td>
+<td><center><font face="arial" size="-1">1</center></td>
+<td><center><font face="arial" size="-1">1</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">Shade</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">T1/Prim</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">Tex0</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">Env</center></td>
+</tr>
+
+</table>
+<p>
+VTX_ALPHA becomes a control flag for ShadeColor. 
+<p>
+T1/Prim is determined from the states of TEXEL1/PRIMITIVE according to the following rule:<p>
+
+
+<table border="1" cellpadding="3" cellspacing="3">
+<tr nowrap>
+<td><font face="arial" size="-1">TEXEL1_A</td>
+<td><font face="arial" size="-1">PRIM_A</td>
+<td><font face="arial" size="-1">T1/Prim</td>
+<td><font face="arial" size="-1">Contents</td>
+</tr>
+<tr nowrap>
+<td><center><font face="arial" size="-1">0</center></td>
+<td><center><font face="arial" size="-1">0</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">0</center></td>
+<td bgcolor="#F1F3A3"><center>----</center></td>
+</tr>
+<tr nowrap>
+<td><center><font face="arial" size="-1">0</center></td>
+<td><center><font face="arial" size="-1">1</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">1</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">Prim</center></td>
+</tr>
+<tr nowrap>
+<td><center><font face="arial" size="-1">1</center></td>
+<td><center><font face="arial" size="-1">*</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">1</center></td>
+<td bgcolor="#F1F3A3"><center><font face="arial" size="-1">TEXEL1</center></td>
+</tr>
+</table>
+<p>
+In 1 cycle mode, the above settings also apply to pipeline 2.<p>
+In 2 cycle mode, the above type of evaluation is not performed on mat_color_type1, and the output value for Shade Alpha is replaced by Combine alpha and output. 
+
+<p>
+<a name="bugs"></a>
+<hr>
+
+<p>
+<b>3. Known Problems</b>
+<ul>
+ <li>Because N64 can handle texture patterns that do not satisfy TMEM size by dividing them for loading, repeated drawing, and tile definition; this converter handles large texture patterns as-is. As a result, even when only part of a texture pattern can be used, the entire pattern is output. <p>
+ <li>When a large texture is divided and texture-mapped, texture wrapping (repeats) can no longer be performed. Sometimes the texture load for the border of the texture pattern requires four tile loads in order to create a single draw tile, and the draw tile settings can become extremely complicated. The tile load and tile settings alone take up a considerable amount of the display list, and it is too costly in terms of processing to properly map 4K bytes of TMEM. With this converter, wrapping cannot be carried out in compensation for texture mapping, provided the texture that do not finish in the size of TMEM (4K bytes) is divided well. <p>
+ <li>When setting a tile, a read-in range for the texture -- uls, ult, lrs, and lrt -- are determined from the texture coordinate value (S,T) of the polygon. At this time, lrs and lrt are obtained
+          from the lower right ST value. However, bilinear interpolation is a prerequisite for the converter. Therefore, a range 1 texel larger than the texel at the lower-right ST value is read into TMEM. If the user arbitrarily divides the texture exceeding the TMEM contents among polygons, and each division range maps ST in the maximum TMEM range, then a single texture read range will exceed the TMEM range, and the texture will be destroyed when displayed. <p>
+
+	A 64 x 32 texture that does not fit in TMEM is to be stretched over a square polygon while bilinear interpolation remains effective. Think of it as dividing the texture down the middle and stretching it over two 32 x 32 square polygons. <p>
+	You can think of a square polygon starting from the left at pixel 0 to pixel 31, and another polygon adjoining it from pixel 32 to 63. But because bilinear interpolation is necessary from the 31st to 32nd pixel, 33 x 33 pixels must be loaded for the texture. The converter can evaluate this, but it cannot evaluate whether the texture tiles fit in 4K of TMEM. <p>
+	When you prepare on the assumption of an exact fit in TMEM, sometimes the pattern will break down. 
+<P>
+ <li> Billboard objects are evaluated, but not tested. Also, the problem of hangups remains with the LookAt function when the upward vector and the direction of view are the same (or exactly opposite). 
+</ul>
+
+
+<hr>
+<p align="right"><a href="#top">
+<img src="../../gif/index.gif"
+border="0" width="65" height="17"></a></p>
+
+</body>
+</html>

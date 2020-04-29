@@ -1,0 +1,60 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<!--
+Editors Notes:
+  JLR made reformating and copy edits.
+  PWC- updated formatting
+-->
+
+<TITLE>gDPSetTextureFilter</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>gDPSetTextureFilter [Macro]</H1>
+<h2>Function</h2>
+<p>gDPSetTextureFilter<br><br><i>
+Sets the filter type for texture tile sampling</i></P>
+
+<p><b>Syntax</p></b>
+<p>
+<PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gbi.htm">gbi.h</A> */
+gDPSetTextureFilter(Gfx *gdl, u32 type)
+gsDPSetTextureFilter(         u32 type)</CODE></PRE></p>
+<p><b>Arguments</p></b>
+<p><DL>
+  <DT><B>gdl</B>
+  <DD>Display list pointer.
+  <DT><B>mode</B>
+  <DD>Texture sampling mode:
+  <DD><B>G_TF_POINT</B> (Point sampling mode).
+  <DD><B>G_TF_AVERAGE</B> (Box filtering mode).
+  <DD><B>G_TF_BILERP</B> (Bilinear filtering mode).
+</DL></p>
+<p><b>Description</b></p>
+<P>
+Sets the type of filter to use when sampling a texture tile.
+<p><DL>
+  <DT>The different texture sampling modes are explained below:
+  <DL>
+    <DT><B>G_TF_POINT</B>
+    <DD>Selects the texel nearest the pixel on the screen.
+    <DT><B>G_TF_AVERAGE</B>
+    <DD>Averages the 4 texels surrounding the pixel on the screen.
+    <DT><B>G_TF_BILERP</B>
+    <DD>Performs bilinear interpolation on the 4 texels surrounding the pixel on the screen.  Two bilinear interpolated tiles can be sent to the color combiner (CC) for linear interpolation in a MIP-map filtering process.
+  </DL></p>
+<p>For details, see Sections 12.5.1 "Filter Types," 13.7.5.2 "Bilinear Filtering and Point Sampling," and 14.1 "Sampling Overview" in the N64 Programming Manual.
+</P>
+<p><b>Note</b></p>
+<P>
+For reasons of optimization, the texture filter does not execute strict bilinear interpolation.  Rather, it performs linear interpolation on the three texels nearest the screen pixel.
+</P>
+
+<p><b>Revision History</p></b>
+<p>02/01/99&nbsp;&nbsp;&nbsp;Completely rewritten</p>
+
+</BODY>
+</HTML>

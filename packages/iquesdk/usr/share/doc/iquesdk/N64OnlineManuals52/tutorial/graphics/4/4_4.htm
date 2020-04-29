@@ -1,0 +1,58 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Graphics-Chapter 4  The Color Combiner</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/22/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<font style="font-size:12pt"><B>4.4  Review of Combine Mode</B></FONT>
+<br>
+<P>
+Thus far, we have been using combine mode without knowing much about it.  Next, we will look at the combine mode definitions and see how those definitions are realized.<br><br>
+
+     If you look at &lt;gbi.h&gt;, you'll see that the gDPSetCombineMode command macro is defined as follows:
+</P>
+<p>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=1><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>
+<FONT COLOR="#000080"><PRE><CODE>  #define gDPSetCombineMode(pkt, a, b)   gDPSetCombineLERP(pkt, a, b)</CODE></PRE></FONT>
+	</TD>
+</TR></TABLE>
+<P>
+ In other words, as previously mentioned, setting the combine mode is nothing more than using the gDPSetCombineLERP command to set the input source for linear arithmetic in the Combiner. <br><br>
+
+     So how are the definitions actually set for the combine mode used in the sample programs (gfx1.c to gfx3.c) we have been talking about up to now?
+     The G_CC_SHADE mode that colors the model using shading color is defined in &lt;gbi.h&gt; as follows:
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=1><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>
+<FONT COLOR="#000080"><PRE><CODE>  #define G_CC_SHADE   0, 0, 0, SHADE, 0, 0, 0, SHADE</CODE></PRE></FONT>
+	</TD>
+</TR></TABLE>
+<P>
+With this, the</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=1><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>  output color = (0 - 0) * 0 + shade color = shade color.</TD>
+</TR></TABLE>
+<P>
+In other words, the result of the shading calculation is output without being changed in any way.  The same is true for the alpha value.  Take a look at the definition for G_CC_PRIMITIVE mode:
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=1><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>
+<FONT COLOR="#000080"><PRE><CODE>  #define G_CC_PRIMITIVE   0, 0, 0, PRIMITIVE, 0, 0, 0, PRIMITIVE</CODE></PRE></FONT>
+	</TD>
+</TR></TABLE>
+<P>
+As you can see, this specifies that the primitive color & alpha be output unchanged.<br><br>
+
+     
+     These fall in the class of very simple combine modes, but many other combine modes have been prepared in &lt;gbi.h&gt;.  For details, see the section on gDPSetCombineMode in the Function Reference.<br><br>
+     What kinds of visual effects result from the use of these preset combine modes?  To gain a deeper understanding of combine mode, define a number of combine modes of your own at this point and see what happens.<br><br>
+
+     Flat shading is used for all coloring in this chapter's gfx4.c sample program. Thus, assuming that the Combiner performs no combining with texture color, etc., each surface of the cube will be colored with a single color.  In other words, you do not necessarily need to use smooth shading to produce interesting and beautiful visual effects.
+</P>
+</BODY>
+</HTML>

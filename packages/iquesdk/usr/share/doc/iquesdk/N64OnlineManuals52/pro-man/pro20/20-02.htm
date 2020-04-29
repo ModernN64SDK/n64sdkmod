@@ -1,0 +1,70 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 20 - Using the Audio Tools</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. -->
+</head>
+
+<H1>20.2 Dealing with Constraints and Allocating Resources </H1>
+
+<p>When you use the Nintendo 64 system, there are several choices that you must make. Most of these choices center around how to use the fewest system resources, while still maintaining a sufficient level of quality. Unconstrained by limits on available resources, the N64 system's audio is capable of rivaling top-of-the-line samplers. </p>
+
+<P>Most of the limits in the software system are easily changed. However, in most cases a great deal of time can be saved if the programmer, game designer, and musician all agree beforehand what these values are going to be set to.</p>
+
+<P>The limits on resources fall into the following four categories: </p>
+<OL>
+<LI>
+determining hardware <a href="../../keywords/index/data/audio.htm#playback rate" target="keywords">playback rate</a>
+</LI>
+
+<LI>
+limits of voices and processing time </LI>
+
+<LI>
+division of sounds and music into <a href="../../keywords/index/data/audio.htm#bank" target="keywords">banks</a></LI>
+
+<LI>
+limits of ROM space</LI>
+</OL>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="01"></A>
+<H2>
+20.2.1 Determining Hardware Playback Rate</H2>
+
+<p>The principle decision to make about software is deciding what playback rate the hardware should be set to. Typically, rates from 22050 Hz to 44100 Hz are chosen. Higher rates require the software to produce more samples, and consequently take more processing time. Although there are no hard rules to follow, values of 44100 Hz are ideal, but values of 32000 Hz and 22050 Hz do not produce a substantial loss of audio quality. Values below 22050 Hz quickly begin to degrade the quality of the audio.  Also of considerable importance is the fact that samples sound better if the output rate is as close as possible to their sample rate.   If all the samples in the game are <a href="../../keywords/index/data/audio.htm#sampling" target="keywords">sampled</a> at 22050 Hz, the output quality will be best with a playback rate of 22050 Hz. If there is uncertainty in the planning process, it is better to start with a higher rate, and resample down later, than to start with a lower rate and resample up later. </p>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="02"></A>
+<H2>
+20.2.2 Limits of Voices and Processing Time </H2>
+
+<p>The factor limiting the number of voices available for playback is the amount of time the audio will have for processing.  Obviously, the more voices, the more processing time needed, and the higher the audio playback rate, the more time needed.  As a rough guideline, it is estimated that 1% of RSP time is needed for each voice, when playing at
+44.1k.   So, if the audio is given 20% of RSP processing time, then fifteen to twenty voices will be possible.  However, if the audio is given 40% of processing time, then 30 to 40 voices will be possible.  Remember that a lower output playback rate reduces processing time, thus increasing the number of voices available for playback. </p>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="03"></A>
+<H2>
+20.2.3 Division of Sounds and Music Into Banks</H2>
+
+<p>There are no formal rules specifying how the sounds and music will be organized. However, in most cases it is best to organize the <a href="../../keywords/index/data/audio.htm#sound effect" target="keywords">sound effect</a> samples into a bank (or banks) separate from the music samples. </p>
+
+<P>There are two ways that the sequences may be stored in the game.  They may be stored as separate sequences, or they may be compiled into a .sbk file.   The music samples and <a href="../../keywords/index/data/audio.htm#MIDI" target="keywords">MIDI</a> files should be organized so that each sequence (or, if used, each bank of MIDI files) has a corresponding bank of music samples.  If samples are shared by different MIDI files, they should be stored in the same bank. If the sequences do not share the same sample bank, duplicates of the samples will be produced in the different <a href="../../keywords/index/data/audio.htm#bank file" target="keywords">bank files</a>.</p>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="04"></A>
+<H2>
+20.2.4 Limits of ROM </H2>
+
+<p>The amount of space available for audio is strictly up to the game developer. </p>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR>
+</BODY>
+</HTML>

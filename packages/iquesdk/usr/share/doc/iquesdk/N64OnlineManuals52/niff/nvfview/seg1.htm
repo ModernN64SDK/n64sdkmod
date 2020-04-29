@@ -1,0 +1,89 @@
+<HTML>
+<HEAD>
+<TITLE>nvf Previewer</TITLE>
+</HEAD>
+<BODY LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff">
+<a name="top">
+
+<font face="arial" size="-1">
+<b><font size="3">nvf Previewer</b></font>
+<hr>
+<P>
+
+<ul>
+ <li><a href="#MAP">Memory Map</a>
+ <li><a href="#MAIN">Main Flow of the Program</a>
+ <li><a href="./how2play.htm">Operating the Previewer</a>
+ <li><a href="#LIMITATION">Current Restrictions</a>
+ <li> <a href="./history.htm">Revision History</a> 
+</ul>
+
+<hr>
+<P>
+<a name="MAP"></a>
+<b>Memory Map</b>
+<p>
+The memory map of the nvfview Previewer is shown below.
+
+<p>
+<center>
+<img src="./memmap.gif">
+</center>
+
+<P>
+<ul>
+ <li>It does not matter whether or not expanded memory is installed. 
+<P>
+ <li>Allocate both the frame buffer and the Z buffer inside DynamicHeap. 
+</ul>
+
+<p>
+<hr>
+<p>
+<a name="MAIN"></a>
+<b>Main Flow of the Program</b>
+<p>
+When the previewer software plays graphics, the process flows as described below. 
+<p>
+<ol>
+ <li>Initialize.
+<P>
+ <li>Load the scene.
+<P>
+<b>From here on, the operations are repeated for each frame.</b>
+<P>
+ <li>Call back the game process.
+<P>
+ <li>Evaluate the hierarchy. 
+  <br>Resolve the dependency between nodes and generate drawing objects. 
+<P> 
+<li>Rearrange the drawing objects. 
+  <br>Rearrange the drawing objects according to texture and light to improve drawing performance. 
+<P> 
+<li>Generate Gfx.
+  <br>Convert the drawing objects to Gfx. 
+</ol>
+
+<P>
+<a name="LIMITATION"></a>
+<b>Current Restrictions</b>
+<p>
+<ul>
+ <li>Operation of point light source is not yet confirmed.
+<P>
+ <li>Vertex and fog can not be used at same time.
+<P> 
+<li>TriColor is reflected. 
+<P>
+ <li>IK supports only 2 joints.
+</ul>
+
+<p>
+
+<hr>
+<p align="right"><a href="../index.htm">
+<img src="../../gif/index.gif"
+border="0" width="65" height="17"></a>
+
+</body>
+</html>

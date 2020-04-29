@@ -1,0 +1,43 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 22 - Scheduling Audio and Graphics</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. -->
+</head>
+
+<H1>22.1 Scheduling Issues</H1>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="01"></A>
+<H2>
+22.1.1 Command List Generation</H2>
+
+<p>Command lists are usually generated during the frame before they are to be processed. Though command list generation should take less than a frame time to complete, there are infrequent occasions when it may take longer. When the host CPU misses its completion
+deadline, host overrun should occur. </p>
+
+<P>The effects of host overruns are usually undesirable. If an audio command list is not ready to be processed during the next frame time, clicks and pops will be introduced into the audio stream. If a graphics command list is not ready to be processed, the video frame buffer will not be updated until the following frame, which may cause the graphics stream to appear  &QUOT;jerky&QUOT;. </p>
+
+<P>The effects of host overruns on the audio stream can be minimized if the audio and graphics command lists are generated in separate <A target="keywords" HREF="../../keywords/index/data/system.htm#thread">threads</A>. Specifically, if the audio thread runs at a higher priority than the graphics thread, the host CPU can perform <A target="keywords" HREF="../../keywords/index/data/system.htm#scheduling">scheduling</A> of  the audio task even though the graphics task may not be completely generated, preventing clicks and pops from being introduced into the audio stream. </p>
+
+<P>Alternately, one could implement a dynamic buffering scheme to prevent overrun by dynamically varying the audio data buffer size to accommodate any graphics overrun. This approach would require somewhat larger buffers and is more difficult to implement since the cause of overrun is unpredictable until runtime. </p>
+
+<P><strong>Note:</strong>  Calls to <A HREF="../../n64man/al/alAudioFrame.htm">alAudioFrame()</A>  generate DMA requests, which are assumed to be complete when the audio command list is processed. The DMA latency depends on the operation of the audio <a href="../../keywords/index/data/audio.htm#DMA call back" target="keywords">DMA call back</a> which is implemented by the application. </p>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="02"></A>
+<H2>
+22.1.2 Command List Processing</H2>
+
+<p>While audio command list processing time is deterministic (based on the number of active voices), the graphics command list processing time is variable (based on the complexity of the scene and the perspective of the viewer). Unless great care is taken in the construction
+of the graphics command lists, they may require more than a frame time to process. This is called graphics (RCP) overrun. </p>
+
+<P>The effects of graphics overrun can be minimized by suspending the overrunning task and running the waiting audio task at the beginning of a video frame. Graphics tasks can be suspended with the <A HREF="../../n64man/os/osSpTaskYield.htm">osSpTaskYield()</A> function. See the <A HREF="../../n64man/os/osSpTaskYield.htm">osSpTaskYield()</A> man pages for more information. </p>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR>
+</BODY>
+</HTML>

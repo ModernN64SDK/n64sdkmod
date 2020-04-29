@@ -1,0 +1,53 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.
+  PWC- updated formatting
+  MAP- updated format
+-->
+<TITLE>osContSetCh</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+<font style="font-size: 12pt"><b>osContSetCh</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p><i>Set the number of SI devices to be accessed</i></p>
+
+<H3>Syntax</H3>
+
+<p><PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/os.htm">os.h</A> */
+s32 osContSetCh(u8 ch);</p></CODE></PRE>
+
+<H3>Description</H3>
+<P>
+The <tt>osContSetCh</tt> function specifies the number of devices for the functions to access when those functions access to multiple direct SI devices. Specifically, those functions are <a href="osContStartReadData.htm">osContStartReadData</a>, <a href="osContGetReadData.htm">osContGetReadData</a>, <a href="osContStartQuery.htm">osContStartQuery</a>, <a href="osContGetQuery.htm">osContGetQuery</a>, and <a href="osPfsIsPlug.htm">osPfsIsPlug</a>. By default, it is set for the system to read device data of the number specified in MAXCONTROLLERS.
+</P>
+<P>
+
+
+Direct SI devices that the system reads range from port 0 to port (ch -1). Note that it cannot be used to obtain the data for only the devices connected to Port 2 and Port 3. It must start with the first port which is Port 0 in this case. Also ch cannot be greater than the number of MAXCONTROLLERS.
+</P>
+<P>
+By setting ch to a number smaller than <FONT FACE="COURIER NEW,COURIER">MAXCONTROLLERS</FONT>, you can save time in reading for Controller data. For instance, it can take as much as 2 milliseconds for the the <tt>osContStartReadData</tt> function to issue read command and receive  a message for completed data reading and for the <tt>osContGetReadData</tt> function to obtain data from Controller when ch is set to MAXCONTROLLERS. However, you can save around 0.3 milliseconeds for every MAXCONTROLLERS you reduce.
+</P>
+
+<H3>Note</H3>
+
+<P>
+The function <a href="osContInit.htm">osContInit</a> must be called before the <tt>osContSetCh</tt> function is called. If the <tt>osContSetCh</tt> function is called before the <tt>osContInit</tt> function, the value specified for ch will be returned to "MAXCONTROLLERS".
+</P>
+
+<H3>See Also</H3>
+<P>
+<A HREF="osContInit.htm">osContInit</A>, <A HREF="osContStartQuery.htm">osContStartQuery</A>, <A HREF="osContStartReadData.htm">osContStartReadData</A>, <A HREF="osContGetQuery.htm">osContGetQuery</A>, <A HREF="osContGetReadData.htm">osContGetReadData</A>, and <A HREF="osPfsIsPlug.htm">osPfsIsPlug</A>
+</P>
+
+<H3>Revision History</H3>
+<P>
+1999/02/01 Completely revised<br>
+1999/04/30 Changed format
+</P>
+
+</BODY>
+</HTML>

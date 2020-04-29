@@ -1,0 +1,99 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<link rel=stylesheet type="text/css" HREF="../N64man.css">
+<!--
+Editors Notes:
+  PWC- updated formatting
+  MAP- updated format
+-->
+<title>HTML Document</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>gload</b></font><font style="font-size: 9pt"><b> (tool command)</b></font>
+
+<p><i>N64 tool that loads games for the N64 development system</p></i>
+
+<h3>Syntax</h3>
+<p>gload [-a &quot;appstring&quot;] [-f log format file] [-o rom offset] 
+        [-n] [-V] [-v] [-s] [romImage filename]</p>
+
+<h3>Description</h3>
+
+<p>gload is a utility that downloads a prepared ROM image into the "Game Pak memory" on the Nintendo 64 development board</p>
+
+<p>We refer to this as RAMROM memory because it is RAM memory that occupies 16MB of space where a Game Pak's ROM would ordinarily reside on the real game hardware. </p>
+
+<p>Command Line Options
+</p>
+
+<dl>
+    <dt><strong>-a
+        &lt;&quot;application-argument-string&quot;&gt;</strong></dt>
+    <dd>The ASCII contents of the quoted text string following the -a argument are loaded into RAMROM memory at the standard offset location RAMROM_APP_WRITE_ADDR, which is defined when &lt;<A HREF="../../header/ultra64.htm">ultra64.h</A>&gt; is loaded
+        <br>
+        <br>
+        </dd>
+    <dt><strong>-f &lt;log format file&gt;</strong></dt>
+    <dd>Is an alternate file for specifying the format of strings corresponding to logging events (see below). If this option is not specified, gload looks for the log.fmt file in the current directory. 
+        <br>
+        <br>
+        </dd>
+    <dt><strong>-o&lt;rom offset&gt;</strong></dt>
+    <dd>Overrides the default ROM load location of zero (this is intended for SGI internal debugging, not for the general user). <br>
+        <br>
+        </dd>
+    <dt><strong>-s</strong></dt>
+    <dd>Causes gload to exit immediately after loading and starting the game. <br>
+        <br>
+        </dd>
+    <dt><strong>-n</strong></dt>
+    <dd>Prevents loading or using a ROM image; it starts only the print server (it receives the output data from the application and outputs to the console with <a href="../os/osSyncPrintf.htm">osSyncPrintf</a>). 
+        <br>
+        <br>
+        </dd>
+    <dt><strong>-V</strong></dt>
+    <dd>Turns on verify mode; all downloaded RAMROM memories are read back and verified. <br>
+        <br>
+        </dd>
+    <dt><strong>-v</strong></dt>
+    <dd>Sets a verbose flag, which will print out any errors detected when the RAMROM memory is read back and verified. 
+    </dd>
+</dl>
+
+<p>By default, gload does not exit after loading the game image but acts as a server for error, print, and logging requests by the application to output to the console. The gload program reads the log format file (by default, log.fmt) to determine how to expand event log codes and their arguments into formatted strings. The log format file consists of a number of lines of this form:
+</p>
+
+<blockquote>
+    <pre>&lt;code&gt; &lt;printf-like format string&gt; </pre>
+</blockquote>
+
+<p>The format string is &quot;printf-like&quot; because it does not support 64-bit formats such as &quot;%ll&quot; and interprets the floating point formats as single precision, not double precision. See <a href="../os/osLogEvent.htm">osLogEvent</a> for more details.
+</p>
+
+<p>The default error handler for the debug version of the library also uses this mechanism for formatting of error strings; it uses the global format file /usr/lib/PR/error.fmt for this purpose. 
+</p>
+
+<h3>Note</h3>
+
+<p>After each memory image is loaded (ROM and application arguments), gload reads back the memory and verifies the contents. Once both memory images have been individually loaded, gload goes back and verifies the integrity of each section one more time to make sure that none of the memory images overlapped each another.
+</p>
+
+<p>All writes and reads to and from RAMROM memory are made through the N64 device driver, which must be installed and configured into your kernel; also, the /dev/u64 and /dev/u64_print special device files must exist with proper read/write permissions. 
+</p>
+
+<h3>See Also</h3>
+
+<p><a href="makerom.htm">makerom</a>, <a href="../os/osLogEvent.htm">osLogEvent</a>, and <a href="../os/osSyncPrintf.htm">osSyncPrintf</a></p>
+
+<h3>Files</h3>
+
+<p>/dev/u64, /dev/u64_print, /dev/u64_logging, /dev/u64_fault,
+/usr/lib/PR/error.fmt</p>
+<h3>Revision History</h3>
+<p>1999/04/30  Changed Format</p>
+<br><br>
+</body>
+</html>

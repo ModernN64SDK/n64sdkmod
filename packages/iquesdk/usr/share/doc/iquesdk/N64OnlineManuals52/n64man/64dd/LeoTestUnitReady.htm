@@ -1,0 +1,55 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Author's Comments: JLR made formating edits.
+MAP updated format, links 9/28/99>
+<title>LeoTestUnitReady</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>LeoTestUnitReady</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p><i>Checks the state of N64 Disk Drive</i></p>
+
+<h3>Syntax</h3>
+<pre>
+#include &lt;PR/leo.h&gt;     /* <A HREF="../../header/leo.htm">leo.h</A> */
+
+s32 LeoTestUnitReady(LEOStatus *status);
+
+typedef u8 LEOStatus;</font></pre>
+
+<h3>Description</h3>
+<p>
+<b>Note:</b> None of the N64 Disk Drive-related instructions involve ROM DMA (including DMA to ROM in the drive). In fact, the instructions are designed on the assumption that ROM DMA will not be carried out. To learn more about this, please see  "Chapter 12: Programming Cautions" in the N64 Disk Drive Programming Manual.</p>
+
+<p><tt>LeoTestUnitReady</tt>checks the state of the N64 Disk Drive. That is, it checks to see if a disk is inserted, if the head is retracted (parked) or down, and if the motor is spinning or stopped. Following is the meaning of each bit returned to the location pointed to by the <b>status</b> argument: </p>
+
+<p><b>LEO_TEST_UNIT_MR<br>
+</b>The disk is not inserted. 
+</p>
+
+<p><b>LEO_TEST_UNIT_RE<br>
+</b>The head is parked (retracted). 
+</p>
+
+<p><b>LEO_TEST_UNIT_SS<br>
+</b>The motor is stopped.<br>
+</p>
+
+<p>Error codes are returned as return values to the message queue. Check all error codes and take the appropriate measures when the operation does not terminate normally. 
+
+<p>For more information about the errors that may be returned, their causes, and ways to deal with them, please see "Chapter 10: Error-Handling" in the N64 Disk Drive Programming Manual. 
+</p>
+
+<h3>See Also</h3>
+
+<p><a href="LeoCreateLeoManager.htm">Leo*CreateLeoManager</a>
+</p>
+<h3>Revision History</h3>
+<p>04/30/1999  Changed Format</p>
+<br><br>
+
+</body>
+</html>

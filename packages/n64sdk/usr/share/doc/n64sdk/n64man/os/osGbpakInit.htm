@@ -1,0 +1,41 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<html>
+
+	<head>
+             <LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+             <!-- Editor's Notes: JLR made reformating and copy edits.
+                  MAP- added links, updated format -->
+             <title>osGbpakInit</title>
+	</head>
+
+	<body bgcolor="white">
+		<font style="font-size: 12pt"><b>osGbpakInit</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+		<p><i>Initializes the hardware and the structures pfs for controlling the N64 Transfer Pak</i></p>
+		<p><b>Syntax</b></p>
+		<pre>#include &lt;ultra64.h&gt;     /* <a href="../../header/ultra64.htm">ultra64.h</a> */
+s32 osGbpakInit(OSMesgQueue *siMessegeQ, OSPfs *pfs, int
+channel);</pre>
+		<p><b>Description</b></p>
+		<p><tt>osGbpakInit</tt> is the function for initializing the N64 Transfer Pak. It initializes the pfs structure and the hardware. To use the N64 Transfer Pak, you need to call this function first. If the N64 Transfer Pak is reinserted, please call the function again.</p>
+		<p>The OSPfs structure pfs is used for N64 Transfer Pak control. <tt>osGbpakInit</tt> initializes pfs. There is thus no need to initialize the pfs structure on the application side. siMessageQ is the initialized message queue connected to OS_EVENT_SI. Please refer to <a href="osSetEventMesg.htm">osSetEventMesg</a>, for information on how to make this connection. Channel specifies the channel number of the Controller. Before <tt>osGbpakInit</tt> is called, <a href="osContInit.htm">osContInit</a> must be called. This is necessary for internal OS initialization.</p>
+		<p>The <tt>osGbpakInit</tt> function performs an internal 0.2 second wait process because it takes a maximum of 0.2 second for the N64 Transfer Pak to stabilize after the power supply is turned ON. This wait process involves a 0.2s count using the CPU timer (<a href="osSetTimer.htm">osSetTimer</a> function). Thus, before calling this function, you need to call the <a href="osCreateViManager.htm">osCreateViManager</a> function.</p>
+		<p>Return value is an error code. If the function terminates normally, a value of 0 is returned. If an error occurs, one of the following error codes is returned:</p>
+		<p><b>PFS_ERR_NOPACK</b></p>
+		<blockquote>
+			<p>Nothing is inserted in the specified Controller.</p>
+		</blockquote>
+		<p><b>PFS_ERR_DEVICE</b></p>
+		<blockquote>
+			<p>Some device other than the N64 Transfer Pak is inserted in the Controller.</p>
+		</blockquote>
+		<p><b>PFS_ERR_CONTRFAIL</b></p>
+		<blockquote>
+			<p>Data transfers with the Controller have failed. The Controller may not be connected correctly, or there may be some problem with the N64 Transfer Pak or the Controller connector.</p>
+		</blockquote>
+		<p><strong>See Also</strong></p>
+		<p><a href="osContInit.htm">osContInit</a>, <a href="osGbpakGetStatus.htm">osGbpakGetStatus</a>, <a href="osGbpakPower.htm">osGbpakPower</a>, <a href="osGbpakReadWrite.htm">osGbpakReadWrite</a>, <a href="osGbpakReadId.htm">osGbpakReadId</a>, and <a href="osGbpakCheckConnector.htm">osGbpakCheckConnector</a></p>
+		<h3>Revision History</h3>
+		<p>1999/04/30 Changed format
+	</body>
+
+</html>

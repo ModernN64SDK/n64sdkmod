@@ -1,0 +1,75 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<link rel=stylesheet type="text/css" HREF="../N64man.css">
+<!--
+Editors Notes:
+  JLR made reformating and copy edits.
+  PWC- updated formatting
+-->
+<TITLE>gDPSetAlphaCompare</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>gDPSetAlphaCompare [Macro]</H1>
+
+<h3>Function</h3>
+
+<p>gDPSetAlphaCompare<br>
+
+<p><i>Sets the alpha compare mode</i></P>
+
+<h3>Syntax</h3>
+<p>
+<PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gbi.htm">gbi.h</A> */
+gDPSetAlphaCompare(Gfx *gdl, u32 mode)
+gsDPSetAlphaCompare(         u32 mode)</CODE></PRE></p>
+
+<h3>Arguments</h3>
+<p><DL>
+  <DT><B>gdl</B>
+  <DD>Display list pointer
+  <DT><B>mode</B>
+  <DD>Alpha compare mode:
+  <DD><B>G_AC_NONE</B> (Do not compare) 
+  <DD><B>G_AC_THRESHOLD</B> (Compare with the blend color alpha value) 
+  <DD><B>G_AC_DITHER</B> (Compare with a random dither value) 
+</DL></p>
+<h3>Description</h3>
+<P>
+Sets the mode for comparing the alpha value of the pixel input to the blender (BL) with an alpha source. The alpha compare modes are explained below:
+<DL>
+    <Dt><B>G_AC_NONE</B>
+    <Dd>No alpha compare is performed.
+    <Dt><B>G_AC_THRESHOLD</B>
+    <Dd>Conditionally overwrites the frame buffer when the alpha value of the input pixel is larger than the blend color alpha. This mode is used to delete transparent regions of a texture map and create objects with complicated outlines. This method is more efficient than first rendering a semi-transparent surface and then writing the actual transparent region. 
+    <Dt><B>G_AC_DITHER</B>
+    <Dd>Conditionally overwrites the frame buffer when the alpha value of the input pixel is larger than some random dither value. Attaching alpha gradation to a surface is an effective way of expressing particle fade out.
+    </DL>
+</DT>
+<P>
+For details, see Sections 15.5.4 "Alpha Compare Calculation" and 12.7.4 "Alpha Compare" in the N64 Programming Manual. 
+</P>
+<h3>Note</h3>
+<P>
+When you are using anti-aliasing rendering modes you cannot specify transparent regions. 
+</P>
+<p><b>Comment</p></b>
+<P>
+If you are going to perform alpha compares in 1-cycle or 2-cycle pipeline mode, please set appropriate rendering mode. In copy mode, you can use G_AC_THRESHOLD and G_AC_DITHER. Since normal alpha blending is prohibited, you cannot express transparency in any other way. For 16-bit RGBA (5/5/5/1), the alpha bit itself plays the write-enabling role, so no comparison is made with the blend color alpha value. For 8-bit color index (CI), the blend color alpha comparison is enabled. For 32-bit RGBA it cannot be used. 
+</P>
+<P>
+To learn more about the cycle type setting, see <A HREF="gDPSetCycleType.htm">gDPSetCycleType</A>.
+</P>
+<h3>See Also</h3>
+<P>
+<A HREF="gDPSetBlendColor.htm">gDPSetBlendColor</A>, <A HREF="gDPSetCycleType.htm">gDPSetCycleType</A>, and <A HREF="gDPSetRenderMode.htm">gDPSetRenderMode</A>
+</P>
+<p><b>Revision History</b></p>
+<P>
+02/01/99 Completely rewritten.<br>
+03/31/99 Modified the Comment.
+</P>
+</BODY>
+</HTML>

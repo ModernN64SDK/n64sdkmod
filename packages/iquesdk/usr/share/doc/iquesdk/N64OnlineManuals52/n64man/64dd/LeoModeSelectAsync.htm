@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Author's Comments: JLR made formating edits.
+MAP updated format, links 9/28/99>
+<title>LeoModeSelectAsync</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>LeoModeSelectAsync</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p><i>Alters the wait-time specified for changes between the N64 Disk Drive modes</i>
+</p>
+<h3>Syntax</h3>
+
+<pre>
+#include &lt;PR/leo.h&gt;     /* <A HREF="../../header/leo.htm">leo.h</A> */
+
+s32 LeoModeSelectAsync(LEOCmd *cmdBlock, u32 standby,
+                       u32 sleep, OSMesgQueue *mq)); 
+</pre>
+<h3>Description</h3>
+
+<p><b>Note: </b>None of the N64 Disk Drive-related instructions involve ROM DMA (including DMA to ROM in the drive). In fact, the instructions are designed on the assumption that ROM DMA will not be carried out. Please see "Chapter 12: Programming Restrictions and Cautions" in the N64 Disk Drive Programming Manual for more information about this.<br>
+</p>
+
+<p>The N64 Disk Drive has the following three modes concerning the motor and the head:
+</p>
+<p>
+<table border="1" cellpadding="4">
+    <tr>
+        <td width="144">Mode</td>
+        <td width="152">State of Motor</td>
+        <td width="184">State of Head</td>
+    </tr>
+    <tr>
+        <td width="144">Active mode</td>
+        <td width="152">Spinning </td>
+        <td width="184">Not parked</td>
+    </tr>
+    <tr>
+        <td width="144">Standby mode</td>
+        <td width="152">Spinning </td>
+        <td width="184">Parked</td>
+    </tr>
+    <tr>
+        <td width="144">Sleep mode</td>
+        <td width="152">Stopped </td>
+        <td width="184">Parked</td>
+    </tr></P>
+</table>
+
+<p>With the drive in active mode, if one of the mode-changing functions is not issued within a certain time (the default is 3 seconds), then the state automatically changes to standby mode in order to conserve power and protect the drive. Similarly, the state automatically changes from standby mode to sleep mode if a function is not issued within a default time of 1 second. (The functions <a href="LeoReadWrite.htm">LeoReadWrite</a>, <a href="LeoSeek.htm">LeoSeek</a>, <a href="LeoRezero.htm">LeoRezero</a>, and <a href="LeoReadDiskID.htm">LeoReadDiskID</a> change the state to active mode upon execution, while <a href="LeoSpdlMotor.htm">LeoSpdlMotor</a> forces the change when issued.)
+</p>
+
+<p>The <tt>LeoModeSelectAsync</tt> function alters the wait-time (3 and 1 seconds by default) specified for changes between active, standby, and sleep modes to meet the needs of the game.
+</p>
+
+<p>Both times can be modified in 1-second intervals to specify a time of anywhere from 0 seconds to 10 seconds.
+To modify the times, call the function and specify in the standby argument the number of seconds to wait before going from active mode to standby mode, and specify in the sleep argument the number of seconds to wait before going from standby mode to sleep mode.
+</p>
+
+<p><b>Note:</b> If the revised wait time is set to a long period, you could shorten the service life of the user's N64 Disk Drive. Please use the default times if possible. There is no problem if you want to set the wait times shorter than the defaults. This function is related to internal processes, so call it only once at the time in your game when you make the initial settings.</p>
+
+<p>Nothing needs to be set for the command block specified by the <b>cmdBlock</b> argument. When this function's processing finishes, an error code is returned to the mq queue. An error could arise, so the programmer needs to check this error code.
+</p>
+
+<p>For more information about the errors that may be returned, their causes and ways to deal with them, see "Chapter 10: Error-Handling Sequences" in the N64 Disk Drive Programming Manual.
+</p>
+
+<p>The return value is -1 if Leo Manager has not been created, and 0 if it has. Normally, it is not necessary to check the return value.<br>
+</p>
+
+<h3>Example</h3>
+
+<pre>
+<font face="Courier">LEOCmd cmdBlock;</font>
+<font face="Courier">u32 error;</font>
+<font face="Courier">.....</font>
+<font face="Courier">LeoModeSelectAsync(&amp;cmdBlock, 4, 1, &amp;diskQ);</font>
+<font face="Courier">osRecvMesg(&amp;diskQ, (OSMesg *)&amp;error, OS_MESG_BLOCK);
+</font>
+</pre>
+
+<h3>See Also</h3>
+
+<p><a href="LeoCreateLeoManager.htm">Leo*CreateLeoManager</a>, <a href="LeoSpdlMotor.htm">LeoSpdlMotor</a> <br>
+</p>
+<h3>Revision History</h3>
+<p>04/30/1999  Changed Format</p>
+<br><br>
+
+</body>
+</html>

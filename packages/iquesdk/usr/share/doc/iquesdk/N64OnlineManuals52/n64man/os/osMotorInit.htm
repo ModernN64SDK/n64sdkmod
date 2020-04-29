@@ -1,0 +1,63 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.
+  PWC- updated formatting
+  MAP- added links, updated format
+-->
+<TITLE>osMotorInit</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+<font style="font-size: 12pt"><b>osMotorInit</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p><i>Initializes the Rumble Pak</i></P>
+
+<H3>Syntax</H3>
+<p>
+<PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/os.htm">os.h</A> */
+s32 osMotorInit(OSMesgQueue *mq,  OSPfs *pfs,  int controller_no);</CODE></PRE></p>
+
+<H3>Description</H3>
+<P>
+<tt>osMotorInit</tt> is a Rumble Pak initialization function. <tt>osMotorInit</tt> should be used to perform the special Rumble Pak initialization procedure after all SI devices have been configured using <a href="osContInit.htm">osContInit</a>. When SI devices are used, configuration is required for SI use. Thus, <tt>osContInit</tt> should be called once at the start, before <tt>osMotorInit</tt> is called. 
+</P>
+<P>
+controller_no specifies the controller port number (0 - 3). The Rumble Pak inserted in the controller connected to the controller port specified by controller_no is initialized. 
+</P>
+<P>
+The OSPfs structure pfs is used to control the Rumble Pak. 
+pfs is initialized by <tt>osMotorInit</tt>. 
+
+mq is a message queue initialized by being associated with OS_EVENT_SI. For information how the association is formed, see the <a href="osSetEventMesg.htm">osSetEventMesg</a> function reference. Because mq is used by the function as an internal message queue, it is not necessary for the application to use mq for purposes such as queuing function-termination messages. 
+</P>
+<P>
+The return values are error codes. With normal termination, 0 is returned. The other error codes returned are as follows: 
+</P>
+<p>
+<DL>
+  <DT><B>PFS_ERR_NOPACK</B>
+  <DD>Nothing inserted in the specified controller. 
+      <BR><BR>
+  <DT><B>PFS_ERR_DEVICE</B>
+  <DD>A device other than a Rumble Pak is inserted in the controller. 
+      <BR><BR>
+  <DT><B>PFS_ERR_CONTRFAIL</B>
+  <DD>Data transmission failed between the N64 unit and Rumble Pak. The controller may not be properly connected, or there may be an abnormality in the Rumble Pak or controller connector. 
+      <BR><BR>
+</DL></p>
+
+<H3>See Also</H3>
+<P>
+<A HREF="osContInit.htm">osContInit</A>, <A HREF="osMotorStart.htm">osMotorStart</A>, <A HREF="osMotorStop.htm">osMotorStop</A>, and <A HREF="osSetEventMesg.htm">osSetEventMesg</A>
+</P>
+
+<H3>Revision History</H3>
+<P>
+1999/02/01 Completely revised<br>
+1999/04/30 Changed format
+</P>
+
+</BODY>
+</HTML>

@@ -1,0 +1,50 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.
+  PWC- updated formatting
+  MAP- added links, updated format
+-->
+<TITLE>osMotorStop</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+<font style="font-size: 12pt"><b>osMotorStop</b></font><font style="font-size: 9pt"><b> (macro)</b></font>
+
+<P>osMotorStart, osMotorStop</p>
+
+<p><i>Starts/Stops the Rumble Pak</i></P>
+
+<H3>Syntax</H3>
+<p>
+<PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/os.htm">os.h</A> */
+s32 osMotorStart(OSPfs *pfs);
+s32 osMotorStop(OSPfs *pfs);</CODE></PRE></p>
+
+<H3>Description</H3>
+<P>
+<a href="osMotorStart.htm">osMotorStart</a> is a function operates the Rumble Pak.  It takes OSPfs structure pfs, which is used to control the Rumble Pak, as an argument.  This pfs structure used should be one that has been initialized by <a href="osMotorInit.htm">osMotorInit</a>.  The motor is started by calling osMotorStart.
+</P>
+<P>
+The <tt>osMotorStart</tt> function starts the Rumble Pak motor.  Its argument is the OSPfs structure pointed to by pfs. Internally, it simple sends data to the Rumble Pak.  For increased processing speed, it does not perform processes such as Rumble Pak status checking.  Consequently, when the Rumble Pak is removed and reinserted, the motor cannot be operated without again calling <tt>osMotorInit</tt>.  Of course, osMotorStart also uses the serial interface (SI) and performs message waiting internally, which you should consider when calling it. (For more information, see Q3 of Rumble Pak Function Items to Note (Q&A format) in Section 4, Rumble Pak, of Chapter 26, SI Devices, in the programming manual.)
+</P>
+<P>
+Return value is an error code.  If the function terminates normally, a value of 0 is returned.  The error code PFS_ERR_CONTRFAIL is returned, communication has failed, and the motor cannot be operated.  Although the chance of a transmission error is small, this error code must be checked to confirm whether the motor is actually operating.
+</P>
+<P>
+The <tt>osMotorStop</tt> function stops the motor. Its argument is the OSPfs structure pointed by pfs.  By calling this function, the motor will stop.  Internally, it only sends the command data for stopping the motor.
+</P>
+<H3>See also</H3>
+<P>
+<A HREF="osContInit.htm">osContInit</A>, <A HREF="osMotorInit.htm">osMotorInit</A>
+</p>
+
+<H3>Revision History</H3>
+<P>
+1999/02/01 Completely revised<br>
+1999/04/30 Changed format
+</P>
+
+</BODY>
+</HTML>

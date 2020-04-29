@@ -1,0 +1,67 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.>
+<TITLE>gSPObjLoadTxRect</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>gSPObjLoadTxRect<FONT size="+0"> [Macro]</FONT></H1>
+
+<p><b>Function</b></font></p>
+
+<p>gSPObjLoadTxRect</p>
+<P>
+<i>Loads a texture and draws a non-rotating sprite in a compound process. </i>
+</P>
+<p><b>Syntax</b></font></p>
+<p>
+<PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gs2dex.htm">gs2dex.h</A> */
+gSPObjLoadTxRect(Gfx *gdl, uObjTxSprite *txsp)
+gsSPObjLoadTxRect(         uObjTxSprite *txsp)</CODE></PRE></p>
+
+<p><b>Arguments</b></font></p>
+<p>
+<DL>
+  <DT><B>gdl</B>
+  <DD>the pointer to the display list. 
+  <DT><B>txsp</B>
+  <DD>the prointer to the structure holding the texture-loading and sprite-drawing data. 
+</DL></p>
+<p><b>Description</b></font></p>
+<P>
+Loads a texture and then draws a non-rotating sprite. This macro performs the successive processes of g*SPObjLoadTxtr and g*SPObjRectangle as if they were a single macro. In other words, the results of process (A) below are the same as process (B): 
+<DL>
+  <DT>(A)
+  <DD><B>gsSPObjLoadTxRect</B>(txsp),
+  <DT>(B)
+  <DD>gsSPObjLoadTxtr(&amp;(txsp-&gt;txtr)),
+  <DD>gsSPObjRectangle(&amp;(txsp-&gt;sprite)),
+</DL>
+<p>
+The uObjTxSprite structure is a concatenation of the uObjTxtr structure and the uObjSprite structure, so it holds both texture load data and sprite drawing data. For details, see <A HREF="gSPObjLoadTxtr.htm">gSPObjLoadTxtr</A> and <A HREF="gSPObjRectangle.htm">gSPObjRectangle</A>. 
+</P>
+<p><b>Comment</b></font></p>
+<P>
+The uObjTxSprite structure is shown below:
+<PRE><CODE>typedef struct {
+  uObjTxtr      txtr;
+  uObjSprite    sprite;
+} uObjTxSprite;
+</CODE></PRE>
+</P>
+<P>
+The g*SPObjLoadTxRect does not reference the 2D matrix settings, so these settings do not affect the drawing results with this macro. Use g*SPObjLoadTxRectR if you want to reference the 2D matrix settings to change the screen coordinates for drawing. Use g*SPObjLoadTxSprite to draw a rotating sprite. 
+</P>
+<p><b>See Also</b></font></p>
+<P>
+<A HREF="gSPObjLoadTxRectR.htm">gSPObjLoadTxRectR</A>, <A HREF="gSPObjLoadTxSprite.htm">gSPObjLoadTxSprite</A>, <A HREF="gSPObjLoadTxtr.htm">gSPObjLoadTxtr</A>, and <A HREF="gSPObjRectangle.htm">gSPObjRectangle</A>
+</P>
+<p><b>Revision History</b></font></p>
+<P>
+02/01/99  Entirely revised.
+</P>
+</BODY>
+</HTML>

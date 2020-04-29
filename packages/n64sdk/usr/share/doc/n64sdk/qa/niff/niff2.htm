@@ -1,0 +1,174 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN"
+Editor Notes: MAP created file 9/29/99
+MAP edited content file 10/19/99
+PWC 2/23/00>
+
+<html>
+
+<head>
+<link rel="stylesheet" type="text/css" href="../style.css">
+<title>NIFF 2.0</title>
+</head>
+
+<body>
+
+<a name="index"></a><img src="../../gif/n64_logo2.gif" width="136" height="21">
+<h3><font color="#FF8000">Q&amp;A</font>- NIFF 2.0</h3>
+<p><b>More about NIFF: <a href="../../niff/niff_navi2/index.htm">NIFF Navigator
+2</a></b>
+<table>
+  <tr>
+  <td><a href="niff2.htm#01"><b>QA1</b></a></td>
+  <td>Will NIFF 1.0 still be supported now that NIFF 2.0 has been released?</td>
+</tr>
+<tr>
+  <td><a href="niff2.htm#02"><b>QA2</b></a></td>
+  <td>Are IK and envelope calculated in real time?</td>
+</tr>
+<tr>
+  <td><a href="niff2.htm#03"><b>QA3</b></a></td>
+  <td>How are diffuse, ambient, and emission constructed in NIFF 2.0?</td>
+</tr>
+<tr>
+  <td><a href="niff2.htm#04"><b>QA4</b></a></td>
+  <td>How big is the system library portion of the mgk library?</td>
+</tr>
+<tr>
+  <td><a href="niff2.htm#05"><b>QA5</b></a></td>
+  <td>What is NVF?</td>
+</tr>
+</table>
+<hr>
+<p><a name="01"><font color="#FF0000"><b>Q1</b></font></a><b> Now that NIFF 2.0
+has been released, will NIFF 1.0 no longer be supported?</b>
+<p><font color="#008000"><b>A1</b></font>Since NIFF 2.0 is an expansion of NIFF
+1.0, they are highly compatible. NIFF 1.0 is completely useable, except that the
+expanded NIFF 2.0 functions cannot be used, and it will of course continue to be
+supported.
+<p align="right"><a href="niff2.htm#index">top</a>
+<hr>
+<p><a name="02"><font color="#FF0000"><b>Q2</b></font></a><a name="04"></a><b>
+Are IK and envelope in NVF calculated in real time on the N64?</b>
+<p><font color="#008000"><b>A2</b></font>Yes, they are calculated in real time.
+<p align="right"><a href="niff2.htm#index">top</a>
+<hr>
+<p><a name="03"><font color="#FF0000"><b>Q3</b></font></a><b> What happens to
+the diffuse, ambient, and emission light settings in NIFF 2.0 when they are
+converted to GFX? Also, when should these settings be made?</b>
+<p><font color="#008000"><b>A3</b></font> These cannot be used to generate GFX
+until heirarchical evaluation is completed. This is because they are constructed
+to be read as light source settings, with no thought of material, in order to
+increase the speed in the RSP microcode. The material and light source settings
+are reflected in the RSP light source as follows:
+<p>RSP_ambient = mat_ambient * light_ambient + mat_emission<br>
+RSP_diffuse = mat_diffuse * light_color
+<p>However, there is a special flag in NVF to handle EnvironmentColor, and when
+it is set, EnvironmentColor is output to mat_emission or mat_ambient*light_ambient.
+The above equations are used when NIFF 2.0 data are converted by niff2nvf.
+<p align="right"><a href="niff2.htm#index">top</a>
+<hr>
+<p><a name="04"><font color="#FF0000"><b>Q4</b></font></a><b> How big is the
+system library portion of the mgk library?</b>
+<p><font color="#008000"><b>A4</b></font> Including OS and bss, etc., I think it
+is around 700KB. However, this does not include the frame buffer and audio
+library.
+<p align="right"><a href="niff2.htm#index">top</a>
+<hr>
+<p><a name="05"><font color="#FF0000"><b>Q5</b></font></a><b> What is the role
+of NVF here?</b>
+<p><font color="#008000"><b>A5</b></font> NVF is a data format for displaying
+the functions that are built into NIFF on the N64. Since this is a format which
+can be directly used on actual N64 control decks, and since there are also
+libraries available that use it, it is easy to incorporate NIFF into games. Of
+course, it is also compatible with the new NIFF 2.0 functions described above.
+The previewer nvfview is also constructed with these libraries.
+<p align="right"><a href="niff2.htm#index">top</a>
+<hr>
+<table cellpadding="4">
+  <tr>
+    <td></td>
+    <td bgcolor="#6699FF" colspan="3" align="center"><b>CG Tools</b></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td></td>
+    <td>
+      <p align="center"><b><img src="down.gif" width="5" height="13"></b></td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td colspan="3" align="center" bgcolor="#FFFF99"><b>N I F F</b></td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td bgcolor="#FFFF99">
+      <p align="center"><b>1.0</b></p>
+    </td>
+    <td bgcolor="#FFFFFF">&nbsp;</td>
+    <td bgcolor="#FFFF99">
+      <p align="center"><b>1.0 or 2.0</b></p>
+    </td>
+    <td></td>
+    <td bgcolor="#FFFF99"><b>Nintendo NIFF Tool Group</b></td>
+  </tr>
+  <tr>
+    <td><b><img src="down.gif" width="5" height="13"></b></td>
+    <td></td>
+    <td><b><img src="down.gif" width="5" height="13"></b></td>
+    <td bgcolor="#FFFF99"><b>NIFFAPI</b></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><b><img src="down.gif" width="5" height="13"></b> niff2gfx</td>
+    <td></td>
+    <td><b><img src="down.gif" width="5" height="13"></b> niff2nvf</td>
+    <td></td>
+    <td bgcolor="#FFFF99"><b>User-generated NIFF Tool Group</b></td>
+  </tr>
+  <tr>
+    <td><b><img src="down.gif" width="5" height="13"></b></td>
+    <td></td>
+    <td><b><img src="down.gif" width="5" height="13"></b></td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td colspan="2" bgcolor="#CC99FF">
+      <p align="center"><b>Output as GFX</b></p>
+    </td>
+    <td colspan="2" bgcolor="#66CCFF">
+      <p align="center"><b>Output as NVF</b></p>
+    </td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><b><img src="down.gif" width="5" height="13"></b></td>
+    <td>
+      <p align="center"><b><img src="down.gif" width="5" height="13"></b></p>
+    </td>
+    <td><b><img src="down.gif" width="5" height="13"></b></td>
+    <td>
+      <p align="center"><b><img src="down.gif" width="5" height="13"></b></p>
+    </td>
+    <td></td>
+  </tr>
+  <tr>
+    <td bgcolor="#99FF99"><b>Previewer</b><br>
+      n64prev</td>
+    <td bgcolor="#FF9999"><b>Game</b></td>
+    <td bgcolor="#99FF99"><b>Previewer</b><br>
+      nvfview</td>
+    <td bgcolor="#FF9999"><b>Game</b></td>
+    <td></td>
+  </tr>
+
+</table>
+<p align="right"><a href="niff2.htm#index">top</a>
+<hr>
+
+</body>
+
+</html>

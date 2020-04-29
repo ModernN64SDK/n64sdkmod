@@ -1,0 +1,150 @@
+<html>
+
+<head>
+<title>About Snake Tail Hack</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font face="arial" size="-1">
+
+<p><font size="3"><b>Special Features</b> - Special features of Snake Tail Hack</font></p>
+
+<hr>
+
+<p>This sample was created in order to meet the following requests. Please play with it and re-create it.</p>
+
+<p><b>I want to display 2D images as well.</b></p>
+
+<ul>
+<li>A 2D image was displayed in the center of the stage as a texture. 
+<li>Since the original size of the texture is 64dots X 64dots, it is not possible to map it to one surface as it is. In reality, it is mapped after data is divided into 32dots X 32dots.
+
+<blockquote>
+    <p><img src="material/mark04.gif" width="7" height="10">  Reference: DrawMovie() of <a href="source/mapc.htm">map.c</a>
+    </p>
+<font face="courier" size="2">
+<pre>
+  :
+  :
+  /* 64dots X 64dots texture is divided into 4 and read.   */
+  /*  In other words, 4 32dots X 32dots-textures are read. */
+  /* Read texture data (upper left portion)                */
+  gDPLoadTextureTile(glistp++,
+    bmp,
+    G_IM_FMT_RGBA,
+    G_IM_SIZ_16b,
+    64, 64,
+    0, 0, 31, 31,
+    0,
+    G_TX_WRAP | G_TX_NOMIRROR, G_TX_WRAP | G_TX_NOMIRROR,
+    0, 0,
+    G_TX_NOLOD, G_TX_NOLOD);
+    gSP2Triangles(glistp++,0,1,2,0,0,2,3,0);	    
+   :
+   :
+</pre>
+</font>
+</blockquote>
+
+</ul>
+
+<p><b>I want to try 3D display.</b></p>
+
+<ul>
+<li>The stage map is polygon-displayed.
+<li>By moving the C button of the Controller up and down, the position of image point can be changed.
+
+<blockquote>
+    <p><img src="material/mark04.gif" width="7" height="10">  Reference: DrawMapObj() of <a href="source/mapc.htm">map.c</a></p>
+    <font face="courier" size="2">
+    <pre>
+  Model data that was output by a modeling tool using gSPDisplayList() 
+  is actually output.  
+  :
+  the portion of gSPDisplayList(glistp++,kabe_mdl_model0);	
+    </pre>
+    </font>
+</blockquote>
+
+</ul>
+
+<p><b>I want to display a screen with sound.</b></p>
+
+<ul>
+<li>It can be done rather easily if NuSystem is used. Sequence and sound effect are emitted with screen display. 
+
+<blockquote>
+    <p><img src="material/mark04.gif" width="7" height="10">Reference: mainproc() of <a href="source/gamemainc.htm">gamemain.c</a></p>
+    <font face="courier" size="2">
+    <pre>
+  sequence
+  :
+  nuAuSeqPlayerSetNo(0,0);
+  nuAuSeqPlayerPlay(0);
+  :
+    </pre>
+    </font>
+    
+    <p><img src="material/mark04.gif" width="7" height="10">Reference: updateGame() of <a href="source/gamemainc.htm">gamemain.c</a></p>
+    <font face="courier" size="2">
+    <pre>
+  sound effect
+  :
+  nuAuSndPlayerPlay(EFF_PAUSE);
+  nuAuSndPlayerSetPitch(44100.0/32000);
+  :
+    </pre>
+    </font>
+</blockquote>
+</ul>
+
+<p><b> I want to use 4 Controllers and 4 Controller Paks.</b></p>
+
+<ul>
+<li>Created a game which uses 4 Controllers. Also, it uses 4 Controller Paks. It should be a reference as an error process sample, too.
+
+<blockquote>
+    <p><img src="material/mark04.gif" width="7" height="10">Reference: updateGame() of <a href="source/gamemainc.htm">gamemain.c</a></p>
+    <font face="courier" size="2">
+    <pre>
+  :
+  :
+  /* Updating process for each pad */
+  the portion of for(padnum = 0; padnum < NU_CONT_MAXCONTROLLERS; padnum++){
+  :
+  :
+	   </pre>
+    </font>
+</blockquote>
+
+</ul>
+
+<p><b>I want to proceed with a program while bringing a program or data from the ROM area.</b></p>
+
+<ul>
+<li>Reading to a fixed area as an example of not only the data that is read first, but also the data which I brought from the ROM later. Image data in the center of the screen is read one by one.
+
+<blockquote>
+    <p><img src="material/mark04.gif" width="7" height="10">Reference: ReadMovie() of <a href="source/gamemainc.htm">gamemain.c</a></p>
+    <font face="courier" size="2">
+    <pre>
+  :
+  /*  Actually copy data from ROM to RDRAM. */
+  the portion of nuPiReadRom( (u32)(_moviedataSegmentRomStart + onecutlen * MovieNum),
+    (void *)&MovieBuf[0],
+    onecutlen
+    );
+  :
+  :	
+    </pre>
+    </font>
+</blockquote>
+
+</ul>
+
+<p>
+<hr>
+
+<p align="right"><a href="index.htm">Back</a></p>
+</body>
+</html>

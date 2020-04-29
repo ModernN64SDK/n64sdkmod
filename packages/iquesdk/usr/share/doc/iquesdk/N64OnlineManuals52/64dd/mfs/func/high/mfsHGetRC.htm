@@ -1,0 +1,53 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>mfsHGetRC</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font face="arial" size="-1">
+<b><font size="3">mfsHGetRC</b></font>
+
+<hr>
+
+<p><strong>Syntax</strong> 
+<font face="courier" size="2">
+<pre>s32 mfsHGetRC(const u8* path)</pre></font>
+
+<p><strong>Arguments</strong></p>
+<dl>
+<dd>*path &nbsp; Pathname</dl></dd>
+
+<p><strong>Return value</strong>
+<dl>
+<dd>Update counter value (a negative value is an error)</dl></dd>
+
+<p><strong>Function</strong>
+<dl>
+<dd>Obtains update counter value of file or directory</dl></dd>
+
+<p>
+<b>Description</b>
+<P>This function obtains and returns the update counter value of the file or directory specified by path. Immediately after a file or directory is created, the update counter is set to 0.
+Whenever data is written to a file or the attribute is changed, the update counter is incremented.  The maximum value is 255, and the value cannot be incremented above 255.
+The update counter of the directory one level up is incremented at the same time.
+The rewriting of a file by another drive can be detected by checking the update counter.</p>
+
+<p><strong>Main errors</strong></p>
+<P>
+<table border="0" cellpadding="3" cellspacing="3">
+<tr><td valign="top"><font face="arial" size="-1">
+MFS_ERR_NO	<td><font face="arial" size="-1">Normal termination</td></tr>
+
+<tr><td valign="top"><font face="arial" size="-1">
+MFS_ERR_DEVICE<td><font face="arial" size="-1">Device error
+<br>An error occurred in an internally called Leo function.
+<br>Since a Leo function error is stored in the variable mfsError, check this variable to perform processing.</td></tr>
+
+<tr><td valign="top"><font face="arial" size="-1">
+MFS_ERR_NOTFOUND <td><font face="arial" size="-1">File not found
+<br>The file was not found, or the directory was not found.</td></tr></table>
+
+<hr>
+</body>
+</html>

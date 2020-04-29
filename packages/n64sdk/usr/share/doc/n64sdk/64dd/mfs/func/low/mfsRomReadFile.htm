@@ -1,0 +1,55 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>mfsRomReadFile</title>
+</head>
+
+<body>
+
+<font face="arial" size="-1">
+<b><font size="3">mfsRomReadFile<br>
+mfsRamReadFile</b></font>
+
+<hr>
+
+<strong>Syntax</strong>
+<font face="courier" size="2">
+<pre>s32 mfsRomReadFile(MfsDirID dirID, void* buf, s32 offset,u32 len)
+s32 mfsRamReadFile(MfsDirID dirID, void* buf, s32 offset,u32 len)</pre></font>
+
+<P>
+<b>Arguments</b><dl>
+<dd>dirID	&nbsp; Directory ID of file
+<dd>*buf	&nbsp; Buffer for storing data
+<dd>offset	&nbsp; Read starting position
+<dd>len	&nbsp; Size to be read
+</dl></dd>
+
+<P>
+<b>Return value</b>
+<dl><dd>Size of data that was read (a negative value is an error)</dl></dd>
+
+<P>
+<b>Function</b>
+<dl><dd>Reads data</dl></dd>
+
+<P>
+<b>Description</b>
+<P>
+This function reads data of the file specified by dirID.
+If the address specified by buf is not at a 16-byte boundary, the speed will decrease somewhat because the data is read to an internal buffer and copied.
+If the offset or len value is greater than the file size, an error will occur.
+An error will also occur if offset+len exceeds the file size.
+
+<P>					
+<b>Main errors</b>
+<table border="0" cellpadding="3" cellspacing="3">
+<tr><td valign="top"><font face="arial" size="-1">MFS_ERR_NOTFOUND</td>
+<td><font face="arial" size="-1">Specified file not found </td></tr>
+<tr><td valign="top"><font face="arial" size="-1">MFS_ERR_DEVICE</td>
+<td><font face="arial" size="-1">Device error
+<br>An error occurred in an internally called Leo function.
+<br>Since a Leo function error is stored in the variable mfsError, check this variable to perform processing.</td></tr></table>
+
+</body>
+</html>

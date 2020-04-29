@@ -1,0 +1,44 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<title>Sprite Microcode S2DEX document</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<FONT FACE="Arial" SIZE="-1">
+
+<h2>6. DEBUG Data Output Functions</h2>
+
+<p>Unlike normal microcodes which are assembled at the time of shipping, S2DEX provides a microcode for use during debugging.  The relationship between these two microcodes is the same as the relationship between libultra_rom.a and libultra_d.a.</p>
+
+<p>The debugging microcode S2DEX_D has a slower processing speed than the normal microcode, but has the following functions.</p>
+
+<ul>
+    <li>Outputs display list processing log</li>
+    <li>Stops the RSP and notifies the CPU when an improper input value or undefined command is encountered</li>
+</ul>
+
+<p>Checking the display list processing log makes it particularly easy to trace the causes of RSP breakdowns, etc.</p>
+
+<p>An output buffer for the RSP display list processing log must be prepared in order to use S2DEX_D.  This requires an area which is only the same length as the display list.  In addition, it must be aligned on 8 bytes.</p>
+
+<p>Once this area is reserved, set a pointer to the head of the area in the data_size member variable of the OSTask structure.  This member variable is not used by either the S2DEX or F3DEX series to mean the essential DL size.  Merely a vestigial remnant of the Ver. 1.0 of the N64 Development Library, it is commonly used as the output buffer for the log.</p>
+
+<p>This address must not be the Segment address.  If gspS2DEX.fifo_d.o is subsequently started as the microcode, the processing log will be stored in the specified address.
+</p>
+
+<p>As for the method of displaying the processing log, please refer to the function ucDebugGfxLogPrint() in the included sample program uc_assert.c.  In addition, please refer to ucCheckAssert() in the same file regarding determining whether the RSP has stopped.</p>
+
+<dl>
+    <dt><em>(NOTE)</em> </dt>
+    <dd>S2DEX versions 0.75 and earlier use the yield_data_size member variable of the OSTask structure for setting the log buffer, but this was changed so that data_size is used in Version 0.76 and later.  Please note that the function ucDebugGfxLogPrint() used for display was correspondingly corrected.</dd>
+</dl>
+
+<p align="right"><a href="index.htm"><img
+src="../../gif/index.gif" alt="[UP]" border="0"
+width="65" height="17"></a></p>
+
+<hr>
+</body>
+</html>

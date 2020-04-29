@@ -1,0 +1,55 @@
+<!doctype html "public">
+<html>
+<head>
+<title>niSaveAsNb2</title>
+</head>
+<body text="#000000" bgcolor="#FFFFFF" link="#0000EE" vlink="#551A8B" alink="#FF0000">
+
+<font face="arial" size="-1">
+<B><font size="3"><strong>
+niSaveAsNb2</strong></font></b>
+
+<P>
+Writes as NIFF1.0 data to a binary file
+
+<P>
+<b>Syntax</b>
+<font face="courier" size="2">
+<pre>#include&nbsp; "niffapi.h"
+<p>int niSaveAsNb2(Nis *nis, char *filename);</pre></font>
+
+<P>
+<b>Arguments</b>
+<dl><dd>nis &nbsp; Pointer to the Nis structure holding the data to write
+<dd>filename &nbsp; Name of the NIFF binary file to write to</dl></dd>
+
+<P>
+<b>Return Value</b>
+<P>
+TRUE(=1) if the data is written without error. 
+<P>
+FALSE(=0) if an error occurs. 
+
+<P>
+<b>Description</b>
+<P>
+Takes the data held in the Nis structure and writes it as binary data to the file specified by filename. 
+<p>NIFF 2.0 defines new data in the Nintendo expansion block defined by NIFF 1.0. Nis handles this by setting up separate structures for the Nintendo expansion block data and the NIFF 2.0 data. The structure for NIFF 2.0 data is called Nis2. When niOpenNb() reads a NIFF 2.0 file, data is held in the Nintendo expansion block, and at the same time data is also stored in the Nis2 structure. 
+With this function, the Nis2 structure corresponding to the expansion block is handled and the expansion block data is not referenced. 
+
+<P>
+<b>Note</b>
+<P>
+With this function, only data defined with Nis2 is handled for the Nintendo expansion block, so if the expansion block is used up to a region not defined with Nis2, then data cannot be written correctly. 
+
+<p>
+<b>See Also</b>
+<P>
+<a href="niopennb.htm">niOpenNb</a> 
+<br><a href="nisaveasnb.htm">niSaveAsNb</a>
+<br>For the Nis structure, see n64kit/niff/niffapi/nis.h, nis2.h.
+<p>
+<div align=right><a href="index.htm"><img SRC="../../gif/index.gif" BORDER=0></a></div>
+
+</body>
+</html>

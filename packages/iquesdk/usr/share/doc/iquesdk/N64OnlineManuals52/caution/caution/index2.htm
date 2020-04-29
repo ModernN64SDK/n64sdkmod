@@ -1,0 +1,111 @@
+<HTML>
+<HEAD>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<TITLE>Backup Memory</TITLE>
+<BASE target="contents">
+<!-- Editor Notes: Edited by Ron Daring 6/30/1999. Moved items listed under "Reference" for 2-1 and 2-2 to "Remarks". Added statement "(The data must be ...)" under 2-1 Description per Product Support's recommendation for clarification. The statement under 2-3 "Remarks" was revised per Product Support. -->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+
+<font face="arial" size="-1">
+<font size="3"><b><a name="p2"></a>2. Backup Memory</b></font>
+
+<p>
+2-1 <a href="#2-1">Dealing with Damaged Backup Data (Required)</a><br>
+2-2 <a href="#2-2">Backup Memory Initialization (Required)</a><br>
+2-3 <a href="#2-3">Life Span of EEPROM (in the write mode) (Required)</a>
+<p>
+
+<hr>
+
+<font size="3"><b><a name="2-1"></a>2-1 Dealing with Damaged Backup Data (Required)</b></font>
+<p>
+<b>Description</b>
+
+<p>Ensure that the program continues to function as intended even if the power switch is turned off while data is being saved.  (The data must be restored or memory must be re-initialized.)</p>
+
+<b>Reason</b>
+
+<p>It is impossible to prevent the destruction of data when power is turned off while data is being saved.</p>
+
+<b>Reference</b>
+
+<p>
+ 
+</p>
+
+<b>Remarks</b>
+<p>
+Examples of measures to take for back-up data which has been destroyed are:
+
+<ol>
+<li>Error detection  -------- Check-sum / CRC.
+<li>Detection of other than normal data by the game program.
+<li>Check the Controller Pak for new or destroyed data.
+<li>Use a flag which indicates completion of the data saving process.
+</ol>
+
+<P>For example:</P>
+
+<p>
+When initializing the saved data, an initialization finish flag (or dirty bit) should not be written until after the initialization is completed. Push the Reset Switch during the initialization process to make sure that no abnormalities occur during subsequent initialization attempts.</P>
+
+<p align="right"><a href="#p2"><img src="../../gif/index.gif"
+border="0" width="65" height="17"></a></p>
+
+<hr>
+
+<font size="3"><b><a name="2-2"></a>2-2 Backup Memory Initialization (Required)</b></font>
+<p>
+
+<b>Description</b>
+<p>
+Ensure that the initialization process works properly even when the content of the back-up memory is undefined. 
+</p>
+
+<b>Reason</b>
+
+<p>A specific value is stored in back-up memory when it is shipped from the factory. However, this value may be lost over time. 
+
+</p>
+
+<b>Reference</b>
+
+<p><br></p>
+
+<b>Remarks</b>
+
+<p><br></p>
+
+<p align="right"><a href="#p2"><img src="../../gif/index.gif"
+border="0" width="65" height="17"></a></p>
+
+<hr>
+
+<font size="3"><b><a name="2-3"></a>2-3 Life Span of EEPROM (in the write mode) (Required)</b></font>
+<p>
+
+<b>Description</b>
+
+<p>
+Do not write unnecessary data to EEPROM.</p>
+
+<b>Reason</b>
+
+<p>Memory cell deterioration may prevent data from being written normally.  Data can safely be stored on a EEPROM for up to ten years. However, if no new data have been written, the memory cells' charge gradually dies and data may not be readable beyond this period.  Thus, it is important to include check sum and parity bit data in order to check data reliability.
+</p>
+
+<b>Reference</b>
+
+<p><br></p>
+
+<b>Remarks</b>
+
+<p>Each EEPROM address 0~63 can normally be over-written around 100,000 times.</p>
+
+<p align="right"><a href="#p2"><img src="../../gif/index.gif"
+border="0" width="65" height="17"></a></p>
+
+<hr>
+</body>
+</html>

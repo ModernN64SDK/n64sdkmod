@@ -1,0 +1,264 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN"
+Editor notes: MAP added revisions 9/30/99
+PWC 2/23/00>
+<HTML>
+<HEAD><link rel="stylesheet" type="text/css" href="../style.css">
+<TITLE>SGI Development Environment</TITLE>
+</HEAD>
+
+<BODY>
+
+
+<A name="index"></A>
+<IMG src="../../gif/n64_logo2.gif" height="21" width="136">
+<h3><FONT color="#FF8000">Q&A</FONT>- SGI Development Environment</h3>
+
+
+<P>
+<TABLE border="0">
+  <TR>
+    <TD valign="top" width="50"><A href="sgi.htm#01"><b>QA1</b></A></TD>
+    <TD>I can't break with the gvd debugger</TD></TR>
+  <TR>
+    <TD valign="top" width="50"><A href="sgi.htm#02"><b>QA2</b></A></TD>
+    <TD>The multiplication warning "WARNING: fmul in delay slot at address XXX" appears</TD></TR>
+  <TR>
+    <TD valign="top" width="50"><A href="sgi.htm#03"><b>QA3</b></A></TD>
+    <TD>Functions not supported by the gvd debugger</TD></TR>
+  <TR>
+    <TD valign="top" width="50"><A href="sgi.htm#04"><b>QA4</b></A></TD>
+    <TD>"permission denied" appears and I can't do anything</TD></TR>
+  <TR>
+    <TD valign="top" width="50"><A href="sgi.htm#05"><b>QA5</b></A></TD>
+    <TD>The system won't recognize the 64 emulator board</TD></TR>
+  <TR>
+    <TD valign="top" width="50"><A href="sgi.htm#06"><b>QA6</b></A></TD>
+    <TD>SGI data, etc. can't be compiled.  How do I directly load a program that is operating on N64</TD></TR>
+  <TR>
+    <TD valign="top" width="50"><A href="sgi.htm#07"><b>QA7</b></A></TD>
+    <TD>When the development environment is a O2+IS-Viewer configuration, will there be any problems with the R10000 configuration and O2?</TD></TR>
+  <TR>
+    <TD valign="top" width="50"><A href="sgi.htm#08"><b>QA8</b></A></TD>
+    <TD>When OS2.01 was installed, the imgsize error comes up on spgame and the program won't compile</TD></TR>
+  <TR>
+    <TD valign="top" width="50"><A href="sgi.htm#09"><b>QA9</b></A></TD>
+    <TD>Can I develop using SRAM on the emulator board?</TD></TR>
+  <TR>
+    <TD valign="top" width="50"><A href="sgi.htm#10"><b>QA10</b></A></TD>
+    <TD>If I change to IRIX6.2, the emulator board isn't recognized</TD></TR>
+  <TR>
+    <TD valign="top" width="50"><A href="sgi.htm#11"><b>QA11</b></A></TD>
+    <TD>What is the actual size of the program?</TD></TR>
+<TR>
+    <TD><A href="sgi.htm#12"><b>QA12</b></A></TD>
+    <TD>Compatibility of OS with IRIX6.5 (199909)</TD>
+  </TR>
+  <TR>
+    <TD><A href="sgi.htm#13"><b>QA13</b></A></TD>
+    <TD>How can I use stacktool? (199908)</TD>
+  </TR>
+</TABLE>
+
+<HR>
+<P>
+<A name="01"></a><b><FONT  color="#FF0000">Q1</FONT> I wanted to apply a Write break at a certain address with <a href="../../n64man/tool/gvd.htm">gvd</a>, and I checked in the cvd manual and thought I'd try impressing a Write break using trap manager, but it didn't work very well.  Can't Write break be used with gvd?  If it can be used, how do I do it?</b>
+
+<P>
+<FONT  color="#008000"><b>A1</b></FONT>     Unfortunately, Write break is not supported by <a href="../../n64man/tool/gvd.htm">gvd</a>.  Future support has not been determined. 
+
+<P align="right">
+<A href="sgi.htm#index">top</A>
+
+<HR>
+<P>
+<A name="02"><FONT   color="#FF0000"><b>Q2</b></FONT></A>
+<b> When I perform <a href="../../n64man/tool/makerom.htm">makerom</a> using N64 Software, the message </b>
+
+<BLOCKQUOTE>
+
+<PRE>//usr/sbin/r4300_check
+WARNING: fmul in delay slot at address "address number"
+</PRE>
+</BLOCKQUOTE>
+<P>
+<b>appears and the rom file is not created. </b>
+
+<P>
+<FONT   color="#008000"><b>A2</b></FONT>    This can be resolved by installing patch 1118 included in OS2.01_N64_PAK (SGI version). 
+
+<P>
+However, this is true only for users using the MIPS compiler for IRIX 5.3 and early IRIX 6.2.  If you will be purchasing the compiler in the future, this doesn't need to be installed since the patch is included in the IRIX 6.2 and IRIX 6.3 MIPS compilers.
+
+<P align="right">
+<A href="sgi.htm#index">top</A>
+
+<HR>
+<P>
+<A name="03"><FONT  color="#FF0000"><b>Q3</b></FONT></A>
+<b> When I run the views Array Browser, the message </b>
+
+<BLOCKQUOTE>
+
+
+<PRE>
+Sorry, that view couldn*t start. A required execute couldn*t be found. Try reinstalling TeleShop
+</PRE>
+</BLOCKQUOTE>
+<P>
+<b>is displayed and I cant use the browser. </b>
+
+<P>
+<FONT   color="#008000"><b>A3</b></FONT>    TeleShop is inside Gameshop, but the symptom will not be resolved by re-installing the program.  the following 3 views are not currently supported by gvd.
+
+<OL>
+  <LI>Array Browser
+  <LI>Process Meter
+  <LI>System Call
+</OL>
+<P>
+The schedule for this support has not been determined.
+
+<P align="right">
+<A href="sgi.htm#index">top</A>
+
+<HR>
+<P>
+<A name="04"><FONT   color="#FF0000"><b>Q4</b></FONT></A>
+<b> When I install the N64 Software and try to use the sample, the following message is displayed and make will not run.</b>
+
+<BLOCKQUOTE>
+
+<PRE>
+<b>error Permission denied
+        .
+        .</b>
+</PRE>
+</BLOCKQUOTE>
+<P>
+<FONT  color="#008000"><b>A4</b></FONT>     There are access rights to various files on a UNIX system.  This kind of error will occur if the N64 Software is installed in the root account and make is performed in the sample program by a general user.  If you receive this error, change the access rights with the chmod command.  
+
+<P align="right">
+<A href="sgi.htm#index">top</A>
+
+<HR>
+<P>
+<A name="05"><FONT   color="#FF0000"><b>Q5</b></FONT></A>
+<b> When I insert the N64 emulator board connected to the INDY, it isn't recognized.</b>
+
+<P>
+<FONT   color="#008000"><b>A5</b></FONT>    Consider the following causes and countermeasures.
+
+<P>
+<b>1  Library is not installed.</b>
+
+<P>
+--> Install the library according to the <a href="../../pro-man/index.htm" target="index">N64 Programming Manual</a> or Chapter 5 of the <a href="../../kantan/step2/index.htm" target="index">N64 Introductory Manual, Step 2</a>.
+
+<P>
+<b>2  The board overheated making recognition impossible</b>
+
+<P>
+--> INDY boards are often susceptible to heat, so be sure to close the lid on the INDY when it is in use.  Closing the lid will lower the temperature of the chips inside the board to approximately 20 degrees.  In addition, recognition sometimes just misses, in which case, do not reboot, but turn the power OFF/ON a couple of times.  If the board recognition configuration is not started on a reboot, it could be that the board has been damaged.  If none of these measures works, you may try replacing the board.  If this still doesn't work, we will replace the emulator board free of charge.  In this case, describe the symptoms as clearly as possible and send the board to our Support Center.  If you are able somehow to use the board, but would like to get it repaired anyway, consult with us and we will lend you a board. Once the board arrives, we will replace the defective product.
+
+<P align="right">
+<A href="sgi.htm#index">top</A>
+
+<HR>
+<P>
+<A name="06"><FONT  color="#FF0000"><b>Q6</b></FONT></A>
+<b>I want to create a tool for previewing graphics data on the N64 development system, but in order to do that, it is necessary to load the data file output by the modeling tool to the N64 development system.  Is there a method for directly loading programs which operate on the N64 without compiling a file on the SGI disk or data in memory? </b>
+
+<P>
+<FONT   color="#008000"><b>A6</b></FONT>    There are functions, such as the <a href="../../n64man/uh/uhWriteRamrom.htm">uhWriteRamrom()</a> function, etc., which act between the Indy and the ramrom on the board.  See the description for uhWriteRamrom() for further details. 
+
+<P align="right">
+<A href="sgi.htm#index">top</A>
+
+<HR>
+<P>
+<A name="07"><FONT   color="#FF0000"><b>Q7</b></FONT></A>
+<b> Are there any problems with the configuration of R10000 models in O2 when the development environment structure is O2+IS-Viewer?</b>
+
+<P>
+<FONT   color="#008000"><b>A7</b></FONT> It works OK here.
+
+<P align="right">
+<A href="sgi.htm#index">top</A>
+
+<HR>
+<P>
+<A name="08"><FONT   color="#FF0000"><b>Q8</b></FONT></A>
+<b> After installing OS 2.0i in my newly purchased O2 (SGI Workstation) + PartnerNW environment, spgame won't compile. An error comes up saying that imgsize can't be found.</b>
+
+<P>
+<FONT   color="#008000"><b>A8</b></FONT>    "1.2.4 Software Installation Method for N64 Development" is explained for the IRIX5.3 in the Programming Manual, but if you are using O2, install the following programs. 
+
+<OL>
+  <LI>Prepare a CD-ROM (IRIX6.3 for O2 including RXXXX).<BR>
+<BR>
+  <LI>Start the Software Manager from the menu and select Custom.<BR>
+<BR>
+  <LI>Install the Graphics Library image Tools (and Man Pages) which are in the IRIX Execution Environment, 6.3 subdirectory.<BR>
+<BR>
+</OL>
+<P align="right">
+<A href="sgi.htm#index">top</A>
+
+<HR>
+<P>
+<A name="09"><FONT   color="#FF0000"><b>Q9</b></FONT></A>
+<b> Can applications be developed using the SRAM on the Indy+NUS Emulator Board?</b>
+
+<P>
+<FONT  color="#008000"><b>A9</b></FONT> No they can't.
+
+<P>
+It is also impossible to develop 64DD or 128Mbit or larger applications with the emulator board configuration.  Of course, it is possible to burn the resulting ROM image into a Flash Cartridge and then check its operation. 
+
+<P align="right">
+<A href="sgi.htm#index">top</A>
+
+<HR>
+<P>
+<A name="10"><FONT  color="#FF0000"><b>Q10</b></FONT></A>
+<b> After upgrading from IRIX 5.3 to IRIX 6.2, the 64 emulator board is no longer recognized.</b>
+
+<P>
+<FONT   color="#008000"><b>A10</b></FONT>   Re-install N64OS.  This must be re-installed for the device drivers.
+
+<P align="right">
+<A href="sgi.htm#index">top</A>
+
+<HR>
+<P>
+<A name="11"><FONT   color="#FF0000"><b>Q11</b></FONT></A>
+<b> I am developing on an SGI. Is there a way to find the actual program size?</b>
+
+<P>
+<FONT   color="#008000"><b>A11</b></FONT>   When the -d option is specified with 
+<A href="../../n64man/tool/makerom.htm">makerom</A>, an intermediate file is left in /tmp.  Try referring to this file.  The address for each segment is defined in /tmp/segment*.s. 
+
+<P align="right">
+<A href="sgi.htm#index">top</A>
+
+<HR>
+<P><A name="12"><FONT color="#FF0000"><b>Q12</b></FONT></A> <B>Is NINTENDO64 OS compatible with IRIX6.5 going to be released? </B>
+<P><B>An error occurs in <a href="../../n64man/tool/makerom.htm">makerom</a> with the current N64OS.</B>
+<P><FONT color="#008000"><b>A12</b></FONT> We did testing of operations with IRIX6.5 before.  Efforts towards compatibility were discontinued because we could not use the function to avoid the continuous multiplication bug when -o32 option was added.
+<P>You might want to use exeGCC for program development with IRIX6.5.
+<P>Not all of them, but some operations such as graphics preview, which don't require compiling were tested.  
+<P>Also, the driver of emulator board for IRIX6.5 tentatively exists.  
+
+<P align="right"><A href="sgi.htm#index">top</A>
+<HR>
+<P><A name="13"><FONT color="#FF0000"><b>Q13</b></FONT></A> <B>I tried to determine a secure stack size using <a href="../../n64man/tool/stacktool.htm">stacktool</a>, it did not work properly. Can I not use this?</B>
+<P><FONT color="#008000"><b>A13</b></FONT> 
+This does not work properly sometimes on such occasians as when a complex overlay process is going on.  And, if there are recursive calls or calls with a function pointer, sometimes it is difficult to find a correct value.
+<P>Though it may not be a correct value, you can obtain the rough size of the stack by running the program after filling out the stack area with patterns, and checking how much the stack is being used really.
+<P>Since the source of <a href="../../n64man/tool/stacktool.htm">stacktool</a> has not been upgraded since 1995, it is unknown how precise it is when used for the current N64 OS.  Regard the value that is output as just a reference even in case of an object <a href="../../n64man/tool/stacktool.htm">stacktool</a> runs.
+
+<P align="right"><A href="sgi.htm#index">top</A>
+<HR>
+
+</BODY>
+</HTML>

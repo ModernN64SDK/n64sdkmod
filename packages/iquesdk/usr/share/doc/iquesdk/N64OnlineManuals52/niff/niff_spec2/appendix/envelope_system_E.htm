@@ -1,0 +1,57 @@
+<html>
+<HEAD>
+<TITLE>Envelope System</TITLE>
+</HEAD>
+<BODY LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff">
+
+<font face="arial" size="-1">
+<b><font size="3">Appendix #4 - Envelope System</font></b>
+<HR>
+<blockquote>
+
+NIFF2.0 has a data area for use by the Envelope System.<p>
+The Envelope System is a system for the animation of 1 Skin receiving influence from multiple nodes.<p>
+In NIFF2.0, the geometry for the Envelope is divided and registered as three kinds of parts, as shown in the figures below.<p>
+<center>
+<img src="./img/envelope_part.jpg">
+<p>
+<b>
+Figure: Envelope part
+</b>
+<p>
+</center>
+In a Full Weighted part, all of the vertices inside the part receive 100% of their influence from a single node.  For example, in the above figure, the vertices within the parts surrounded by the blue lines move as a single joint.<p>
+When all vertices are created as Full Weighted, the result is as shown in the figure below.<p>
+Here, the red vertices receive 100% of their influence from the red joint, and the blue vertices receive 100% of their influence from the blue joint.<p>
+<center>
+<img src="./img/full_weighted.jpg">
+<p>
+<b>
+Figure: A Skin created from two Full Weighted parts.
+</b>
+<p>
+</center>
+The Morph part is used in situations where only two nodes will cause a part to deform, such as the area inside the red line in the top figure, where the part is linked to two nodes in only one direction of rotation.  The angle between the nodes which comes from this rotation has values equally spaced between 0 and 180 degrees.  The angle values act as the parameters to output vertex positions and realize vertex animation.<p>
+<center>
+<img src="./img/morph.jpg">
+<p>
+<b>
+Figure: Angle of the Morph part
+</b>
+<p>
+</center>
+A table like the one shown below is created for angles from 0 to 180.  The data is stored in order from table #0.<p>
+<center>
+<img src="./img/table_for_morph_part.jpg">
+<p>
+<b>
+Figure: Creating data for a Morph part
+</b>
+<p>
+</center>
+A Weighted part is calculated using the different weight values for each of the numerous nodes from which it receives influence.  In the top figure, the area within the green line falls under this category.  In this case, weight values from identical nodes are grouped at the same vertex and output as a single part.
+</blockquote>
+
+<hr>
+</body>
+</html>

@@ -1,0 +1,45 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Graphics-Chapter 4  The Color Combiner</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/22/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<font style="font-size:12pt"><B>4.7  Coloring with Noise</B></FONT>
+<br>
+<P>
+ As our final example of a custom combine mode, we will look at a very different type of visual effect.<br><br>
+
+     If you look again at Figure 4-1 you will notice that "noise" is one of the input sources for the a coefficient of (a - b) * c + d.  If you take that noise and multiply it by the shade color and use that as the source for a output by the Combiner, you can get an image like the static you might see on TV at the end of the broadcast day.
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=5><TR>
+	<TD NOWRAP COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE><B>List 4-3</B>
+</TR><TR>
+	<TD NOWRAP BGCOLOR="666666" WIDTH="4" ALIGN=LEFT VALIGN=TOP><HR NOSHADE SIZE=0></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>
+<FONT COLOR="#000080"><PRE><CODE>  /*
+   *  Shade color (single color) multiplied by noise is output from the Combiner 
+   *    color = (NOISE - 0) * SHADE + 0 = NOISE * SHADE
+   *  Only the a coefficient of (a - b) * c + d gets noise as the source
+   */
+  gDPSetCombineLERP(glistp++, NOISE,    0, SHADE,     0,
+                                  0,    0,     0, SHADE,
+                              NOISE,    0, SHADE,     0,
+                                  0,    0,     0, SHADE);</CODE></PRE></FONT>
+	</TD>
+</TR></TABLE>
+<P>
+Using this combine mode, random black noise covers the surfaces of the primitive colored with single shade colors.
+     The noise value does not have a very large dynamic range, so the shade color is either output as-is or it becomes 0 (black).
+</P>
+<P>
+<IMG SRC="image11.gif" WIDTH="294" HEIGHT="110">
+</P>
+<P>
+<B>Figure 4-5  Screen shots of sample program gfx4.c, with __NOISE__ ON</B>
+</P>
+</BODY>
+</HTML>

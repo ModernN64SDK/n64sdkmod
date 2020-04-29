@@ -1,0 +1,92 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN"
+Editor Notes: added revisions 9/30/99
+PWC - 2/18/00 added stylesheet, corrected links, changed index buttons to top links>
+<HTML>
+<HEAD>
+<link rel=stylesheet type="text/css" href="gif/style.css">
+<TITLE>VI</TITLE>
+</HEAD>
+
+<BODY>
+
+<A name="index"></A>
+<IMG src="../../gif/n64_logo2.gif" height="21" width="136"> 
+<h3><FONT color="#FF8000">Q&A</FONT>- VI</h3>
+
+<P>
+<TABLE border="0">
+  <TR>
+    <TD valign="top" width="50"><A href="vi.htm#01"><b>QA1</b></A></TD>
+    <TD>How do I use a single buffer?</TD></TR>
+  <TR>
+    <TD valign="top" width="50"><A href="vi.htm#02"><b>QA2</b></A></TD>
+    <TD>Safety Frame</TD></TR>
+  <TR>
+    <TD valign="top" width="50"><A href="vi.htm#03"><b>QA3</b></A></TD>
+    <TD>Screen seems brighter than it did when it was designed</TD></TR>
+  <TR>
+    <TD valign="top" width="50"><A href="vi.htm#04"><b>QA4</b></A></TD>
+    <TD>On the high resolution display screen, a noise appears.</TD></TR>
+  <TR>
+    <TD valign="top" width="50"><A href="vi.htm#05"><B>QA5</B></A></TD>
+    <TD>osViSetYScale (199908)</TD></TR>
+</TABLE>
+
+<HR>
+<P>
+<A name="01"><FONT color="#FF0000"><b>Q1</b></FONT></A> <b>A great deal of memory is required to use 640x480 resolution. Therefore, I'd like to use a single buffer, but is this possible? </b>
+ 
+<P>
+<FONT color="#008000"><b>A1</b></FONT> A single buffer will work if the combination is high-resolution and normal interlace. However, there will be snow on the screen.  
+<P align="right">
+<A href="#index">top</A>
+ 
+<HR>
+<P>
+<A name="02"><FONT color="#FF0000"><b>Q2</b></FONT></A>
+<b>Tell me about the N64 safety frame.</b>
+ 
+<P>
+<FONT  color="#008000"><b>A2</b></FONT> Please refer to examples of the safety frame adopted by our software in Chapter 29 of the N64 Programming Manual. 
+<P align="right">
+<A href="#index">top</A>
+ 
+<HR>
+<P>
+<A name="03"><FONT color="#FF0000"><b>Q3</b></FONT></A> <b>When I create a model with CG Tools and then try to display it on an actual N64 machine, the screen appears entirely white and bright.</b>
+ 
+<P>
+<FONT color="#008000"><b>A3</b></FONT> This is an effect of NINTENDO64's gamma correction function. Since the default is for gamma correction, the <tt>osViSetSpecialFeatures</tt> function, to be ON, it will give the impression of being entirely shifted to white. If this is the case, try turning it OFF. In addition, please note that even if it is initially set to OFF, when a function such as <tt>osViSetMode</tt> is called, it will be restored to its default "ON." 
+<P align="right">
+<A href="#index">top</A>
+ 
+<HR>
+<P>
+<A name="04"><FONT color="#FF0000"><b>Q4</b></FONT></A> <b>During high resolution display with the deflicker interlace mode, if BGM is played, a noise of one line being off on the screen appears sometimes. It seems that when no BGM is played, no noise appears.  How can I erase the noise on the screen?</b>
+ 
+<P>
+<FONT  color="#008000"><b>A4</b></FONT> When the deflicker interlace mode is used, due to the limit of memory band width, a noise could appear on the screen in cases of frequent memory access to the same memory bank as the frame buffer which is displayed (1MB unit). 
+
+<p>For normal audio library, necessary audio data is designed to DMA transfer from ROM to the RAM of Control Deck (audio heap) every frame. If a buffer such as audio heap which is used for DMA transfer is in the same memory bank as the frame buffer that is being displayed, a noise could appear depending upon the DMA timing. Also, a noise could appear if each frame buffer or Z buffer is assigned to the same memory bank.
+<p>Therefore, to prevent the screen noise, the buffer for DMA transfer must not be assigned to the same memory bank as that of frame buffer, and also each frame buffer and Z buffer must be assigned to different banks.
+<p>(As it is difficult to work on the programming in the initial stage while fulfilling these conditions, it is recommended to reassign the work memory after the programming is almost completed.) 
+<p>Even though the screen may flicker a little, if you change the deflicker interlace mode to the normal interlace mode, noise will not appear. 
+ 
+<P align="right">
+<A href="#index">top</A>
+</P>
+<HR>
+<P>
+<A name="05"><FONT color="#FF0000"><b>Q5</b></FONT></A>
+<b>The text of the "<a href="../../n64man/os/osViSetYScale.htm">osViSetYScale</a>" Function Reference says "Please only use the Y-scale with low resolution non-interlace modes like LAN1, LAN2, LPN1 and LPN2.  Is there some sort of method for using the "<a href="../../n64man/os/osViSetYScale.htm">osViSetYScale</a> / <a href="../../n64man/os/osViSetXScale.htm">osViSetXScale</a>" with "HAF1?"</b>
+</P>
+<P>
+<FONT color="#008000"><b>A5</b></FONT>
+The use of <a href="../../n64man/os/osViSetYScale.htm">osViSetYScale</a> at high resolutions is, as it says in the Function Reference, "not recommended."   (There is no problem with using <a href="../../n64man/os/osViSetXScale.htm">osViSetXScale</a>, though.) This is because there are often problems when using <a href="../../n64man/os/osViSetYScale.htm">osViSetYScale</a> at high resolutions.</P>
+<P>Actually, when both the X Scale and Y Scale are modified in normal interlace mode, the display image sometimes flows partly off to the side.  However, it can be displayed properly using the X Scale and Y Scale values and in deflicker mode, there are rarely any problems.</P>
+<P>There are some overseas games already being sold in which the Y Scale has already been adjusted.  While there is a record of successful results at present, this sort of use is still not guaranteed so please use this only after performing sufficient operational checks.</P>
+<P align="right">
+<A href="#index">top</A>
+</P>
+</BODY>
+</HTML>

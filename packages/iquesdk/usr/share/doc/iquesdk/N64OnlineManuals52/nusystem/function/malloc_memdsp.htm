@@ -1,0 +1,122 @@
+<HTML>
+<HEAD>
+<TITLE>malloc_memdsp</TITLE>
+<link rel=stylesheet type="text/css" href="../../n64man/n64man.css">
+<!-- Editor's Notes: 9/9/1999 Ron Daring -->
+</HEAD>
+
+<BODY bgcolor="#FFFFFF">
+
+
+<P>
+<h1>Memory Allocation Routines</h1>
+
+<HR>
+<P>
+<h2>malloc_memdsp<!--  -->, mt_malloc_memdsp<!--  --></h2>
+<p>
+<HR>
+<P>
+<b>Syntax</b>
+<font face="courier" size="2">
+<pre>
+#include &lt;malloc.h&gt;
+int malloc_memdsp(unsigned char *s, int size)
+<!--  -->int mt_malloc_memdsp(unsigned char *s, int size)<!--  --></pre>
+</font>
+
+<p><b>Arguments</b>
+<font face="courier" size="2">
+<pre>
+<B>s</B>         pointer to the character string 
+<B>size</B>      size of the character string divided by 60
+</pre>
+</font>
+
+<p><b>Return Value</b>
+<font face="courier" size="2">
+<pre>The size used divided by 60 </pre>
+</font>
+
+<p><b>Description</b>
+
+<p>Makes 60 digits into 1 line for the specified one-dimensional character
+string, and returns information on the memory allocation area as character
+information. Note that the character string must be a multiple of 60x2.
+
+<p><!--  --><TT>mt_malloc_memdsp</TT> is the multi-thread compatible version of <TT>malloc_memdsp</TT>. Interruption is inhibited when processing is being performed to prevent malfunction if used by more than one thread.<!--  -->
+
+<p>Example:  Displaying character information
+<font face="courier" size="2">
+<pre>
+#define MEMCHECK_STRINGLEN  10
+void dsp_memcheck(void)
+{
+   int i, j;
+   char s[MEMCHECK_STRINGLEN*60];
+
+   i = malloc_memdsp(s, MEMCHECK_STRINGLEN);
+   for (j=0; j&lt;i;j++)  
+      osSyncPrintf(&quot;%s\n&quot;,s+j*60);
+}
+</pre>
+</font>
+
+Character information is displayed in two lines:
+<p>
+Line One
+
+<blockquote>
+<font face="courier" size="2">
+<pre>
+&quot;########:$$$$$$$$-&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&quot;
+
+######## - the address to store head information
+$$$$$$$$ - the head address of ensured or freed memory block
+&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp; - the end address of ensured or freed memory block
+</pre>
+</font>
+</blockquote>
+
+<p>
+Line Two - displays the head information of the memory block
+
+<blockquote>
+<font face="courier" size="2">
+<pre>
+&quot;        (########)[$$$$$$$$] FREE&quot;
+&quot;        (########)[$$$$$$$$] USE&quot;
+&quot;        (########)[$$$$$$$$] ALIN&quot;
+
+######## - the size of memory block in bytes
+$$$$$$$$ - the address of the following head information
+FREE - Memory block is free and in the range of usage
+USE  - Memory block is in use
+ALIN - Memory block only with 0 as size of head to compensate alignment when using memalign function
+</pre>
+</font>
+</blockquote> 
+
+<p>
+If the content is invalid
+<blockquote>
+<font face="courier" size="2">
+<pre>
+&quot;malloc_memdsp error:######## over area $$$$$$$$-&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&quot;     
+Address to the next header information is over the range that is ensured with InitHeap() function.
+
+&quot;malloc_memdsp error:check InitHeap()&quot;
+malloc_memdsp() function is called without InitHeap() function being executed or the head information 
+in the first memory block is invalid.
+</pre>
+</font>
+</blockquote>
+<p>
+<hr>
+<P><b><!--  -->Revision History</b>
+<P>
+<!--  -->6/1/99  Added explanation of the multi-thread version<!--  -->
+<p>
+<hr>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.>
+<TITLE>osViFade</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>osViFade [Function]</H1>
+
+<h3>Function</h3>
+
+<p>osViFade</p>
+<P>
+<i>Sets the fade for the VI screen</i>
+</P>
+<H3>Syntax</H3>
+<p><PRE><CODE>#include &lt;ultra64.h&gt;        /* <A href="../../header/os.htm">os.h</A> */
+void osViFade(u8 active, u16 factor);</CODE></PRE></p>
+
+<H3>Arguments</H3>
+<p><DL>
+  <DT><B>active</B>
+  <DD>Fade flag
+  <DL>
+    <DT><B>TRUE</B>  (Fade) 
+    <DT><B>FALSE</B>  (Do not fade) 
+  </DL>
+  <DT><B>factor</B>
+  <DD>Fade interpolation coefficient (0~0x3ff)
+</DL></p>
+<H3>Return Value</H3>
+<P>
+None.
+</P>
+<H3>Description</H3>
+<P>
+<B>osViFade</B> enables you to perform fade-out processing of solid-color screens by changing the interpolation coefficient. <BR>
+When any value other than 0 is set in <B>active</B> to enable fading, the colors of the first and second lines in the frame buffer are taken and interpolated at the ratio specified by <B>factor</B>, and then embedded in the screen at that color. <BR>
+<BR>
+To show this in a concrete equation, where the RGB value of the first line is (r1,g1,b1), that of the second line is (r2,g2,b2), and the coefficient f=(factor/0x3ff), <BR>
+(R,G,B) = ((r1*(1-f)+r2*f),(g1*(1-f)+g2*f),(b1*(1-f)+ b2*f))<BR>
+becomes the fill color. <BR>
+<BR>
+<B>osViFade</B> can be used low resolution, point sampling, and noninterlaced modes (LPN1, LPN2, etc.).  
+</P>
+<H3>Precautions</H3>
+<P>
+When fading is enabled, fading must be returned to disabled before a PreNMI occurs or before executing <A href="osViBlack.htm">osViBlack</A>. 
+</P>
+<H3>See Also</H3>
+<P>
+<A href="osViGetCurrentMode.htm">osViGetCurrentMode</A>, <A href="osViSetMode.htm">osViSetMode</A>
+</P>
+<H3>Revision History</H3>
+<P>
+02/01/99  Completely rewritten. 
+</P>
+</BODY>
+</HTML>

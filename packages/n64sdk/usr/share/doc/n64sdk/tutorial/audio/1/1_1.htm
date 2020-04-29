@@ -1,0 +1,49 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Audio-Chapter 1 AUDIO PLAYBACK</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/15/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<p><font style="font-size:16pt"><b>CHAPTER 1  AUDIO PLAYBACK</b></FONT></p>
+<Hr size=3 noshade> 
+<P>
+In this chapter we explain the creation of audio.  There are any number of different development environments for audio, but for our explanations here we will assume N64 Sound Tools (henceforth called Sound Tools) is used, the most convenient development environment for audio.  Since all of the necessary data for audio playback can be created using this tool, its use helps development proceed more efficiently.</p>
+     <p>Sound Tools is comprised of the N64 Sequencer tool for MIDI file editing  and the N64 Waveform Editor tool for such jobs as  waveform data editing, together with the MUSIC Library (henceforth called the MUS library), which is a top-notch audio library for the N64.  These make it easy to divide the tasks of the musicians creating the music and the programmers doing the actual programming.</p>
+     <p>For details about how to use the tool, please see the tutorial guide that comes with Sound Tools.  Here we focus on an explanation of the work carried out by the programmer creating audio.</P>
+<BR>
+<FONT Style="font-size:12pt"><B>1.1  Creating  Audio</B></FONT>
+<P>
+In this section we explain how audio is created for the N64.  All of these processes are carried out within the library, so you do not need to understand the procedures in fine detail.  However, you should have a general idea about how the audio is created.  In the N64, the CPU and the RSP both play parts in the creation of audio data.  The flow of the process is diagrammed in Figure 1-1.
+</P><br>
+<P>
+<IMG SRC="image01.gif">
+</P>
+<P>
+<B>Figure 1-1  Structure of the Audio Synthesis Program</B>
+</P>
+<br>
+<P>
+ The synthesis driver (henceforth called the synthesizer) calls each pre-registered player and the players interpret the data.  There are some restrictions depending on the kind of synthesizer, but in general a number of players can be registered and used at the same time.  Each player ultimately creates an audio command list and passes it on to the audio synthesis microcode (henceforth called the audio microcode).  The audio microcode then conducts the actual waveform synthesis process.  If the audio microcode is different, the synthesizer will also be different.</p>
+     <p>At the present time there are two kinds of audio microcode: the conventional microcode and the modified version (henceforth n_audio).  Each kind of microcode has its own special features, but we recommend using n_audio because it is faster.</p>
+     <p>The MUS library is an all-purpose library that can handle numerous songs (sequences) and numerous sound effects at the same time.  Therefore, you can speed things up by modifying the library for the n_audio microcode so that only one player can be registered.</p>
+     <p>Audio can be created as outlined above, but because noise is generated when the data being played back is interrupted, the synthesizer needs to be called regularly and the
+audio data created without fluctuations.  This job falls to the Audio Manager.   The general flow of the Audio Manager is shown in Figure 1-2.
+</P>
+<br>
+<P>
+<IMG SRC="image02.gif">
+</P>
+<P>
+<B>Figure 1-2  Audio Manager Process Flow</B></P>
+<br>
+<P>
+The Audio Manager conducts two kinds of DMA transfers in order to create the audio data.  The first is the DMA transfer of the various sample waveform data (henceforth called the samples) from the Game Pak (ROM) to RAM prior to waveform synthesis via the PI.  The second is the DMA transfer of the synthesized data from RAM to the DAC via the AI.</p>
+     <p>The flow is thus as follows: at every retrace the necessary samples are prepared in RAM with DMA transfers from ROM, then the audio data is synthesized by the CPU and the RSP, and finally the waveform data created in RAM is DMA transferred to the AI in order to playback audio.
+</P>
+<br><br>
+</BODY>
+</HTML>

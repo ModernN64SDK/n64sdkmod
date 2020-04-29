@@ -1,0 +1,101 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../n64man.css">
+<title>MusStartEffect2()</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check-->
+</head>
+
+<h1>MusStartEffect2()</h1>
+
+<h2>Syntax</h2>
+
+<pre>
+musHandle MusStartEffect2(int number, int volume, int pan, int overwrite, int priority);
+</pre>
+
+<h2>Arguments</h2>
+
+<dl>
+  <dt><b>number</b>
+  <dd>the sound effect number
+  <dt><b>volume</b>
+  <dd>the volume scale 
+  <dt><b>pan</b>
+  <dd>the pan scale 
+  <dt><b>overwrite</b>
+  <dd>overwrites sound effects of the same number 
+  <dt><b>priority</b>
+  <dd>the priority level 
+</dl>
+
+<h2>Description</h2>
+
+<p>It starts a sound effect with control parameters. This function will start a sound effect allowing the programmer to specify volume and pan scale values, flag the channel allocation function to overwrite sound effects of the same number and specify a priority value.</p>
+
+<p>The sound effect started will use the default sound effect bank unless an override has been set with the <a href="MusFxBankSetSingle.html">MusFxBankSetSingle()</a> function. If a sound effect bank override has been specified, this function will use it and then clear the override.</p>
+
+<p>The sound effect started will use the default sample bank unless an override is defined in the sound effect bank with the <a href="MusFxBankSetPtrBank.html">MusFxBankSetPtrBank()</a> function or set with the higher priority sample bank override function <a href="MusPtrBankSetSingle.html">MusPtrBankSetSingle()</a>. If a sample bank override has been set using the <a href="MusPtrBankSetSingle.html">MusPtrBankSetSingle()</a> function, this function will use it and then clear the override.</p>
+
+<p>The number is a value in the range of 0 to the number of sound effects stored in the sound effect bank. The number of available sound effects can be found by using the <a href="MusFxBankNumberOfEffects.html">MusFxBankNumberOfEffects()</a> function. Currently, a list of "#defines" is located in the header files (included with Nintendo64 Sound Tools) associated with the sound effect bank. Those who prefer the sound effect names to the numbers to refer sound effects may want to use them.</p>
+
+<p>The volume should be within the range of 0 to 0x100 (256), with this range representing 0% to 200% of the value defined in the original sound data. The default volume scale value for all channels is 0x80 (100%). This value is the same as the volume value required by the <a href="MusHandleSetVolume.html">MusHandleSetVolume()</a> function.</p>
+
+<p>The pan value should be within the range of 0 to 0x100 (256), with this range representing 0% to 200% of the value defined in the original sound data. The default pan position scale value for all channels is 0x80 (100%). This value is the same as the pan value required by the <a href="MusHandleSetPan.html">MusHandleSetPan()</a> function.</p>
+
+<p>The overwrite flag influences the channel allocation process. If the flag is set to a value other than zero, and the sound effect number is currently playing, then its channels are used by the new sound effect.</p>
+
+<p>The priority value allows the programmer to supply a custom priority level. If this value is set to -1, then the sound effect is started with the priority value supplied in the sound data.</p>
+
+<h2>Return Value</h2>
+
+<p>Sound handle or 0 if sound effect could not be triggered.</p>
+
+<h2>Example</h2>
+
+<pre>unsigned long Start3DSfx(int effect, float distance, float angle)
+{
+  int scale;		/* distance scale 16-bit fraction */
+  int priority;	/* adjusted priority level */
+  int pan;		/* pan scale value */
+  int volume;	/* volume level */
+
+  /* calculate distance scale */
+  if (distance&gt;=MAX_DISTANCE)
+    return (0); /* sound is too far away! */
+  distance = (MAX_DISTANCE-distance)*(65536.0/MAX_DISTANCE);
+  scale = (int)distance;
+
+  /* calculate pan position */
+  if (angle&gt;180.0)
+    angle -= 180.0;
+  else
+  angle = 180.0-angle;
+  angle = angle*(256.0/180.0);
+  pan = (int)angle;
+
+  /* calculate priority value */
+  priority = Priority[effect]+((scale*MAX_PRI_CHANGE)>>16);
+
+  /* calculate volume level */
+  volume = (0x80*scale)&gt;&gt;16;
+
+  return (StartSoundEffect2(effect, volume, pan, 1, priority));
+}
+</pre>
+
+<h2>See Also</h2>
+<p>
+<a href="MusStartEffect.html">MusStartEffect()</a>,
+<a href="MusHandleAsk.html">MusHandleAsk()</a>,
+<a href="MusHandleSetFreqOffset.html">MusHandleSetFreqOffset()</a>,
+<a href="MusHandleSetPan.html">MusHandleSetPan()</a>,
+<a href="MusHandleSetVolume.html">MusHandleSetVolume()</a>,
+<a href="MusHandleStop.html">MusHandleStop()</a>,
+<a href="MusSetMasterVolume.html">MusSetMasterVolume()</a>,
+<a href="MusAsk.html">MusAsk()</a>,
+<a href="MusStop.html">MusStop()</a>
+</p>
+
+</body>
+</html>

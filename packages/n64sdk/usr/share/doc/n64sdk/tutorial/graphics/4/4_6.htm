@@ -1,0 +1,54 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Graphics-Chapter 4  The Color Combiner</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/22/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<font style="font-size:12pt"><B>4.6  Texture Inversion</B></FONT>
+<br>
+<P>
+If you change "undef" to "define" in line 27 of gfx4.c the texture color will be inverted for mapping.  In this case, 16bit RGBA color texture is used just like the sample program in the previous chapter.
+     To invert the texture color, you set the texture color to t and output 1-t.  You can carry out texture inversions by setting the combine mode as follows:
+</P>
+<P>
+  Output color  = (1 - texture color) * 1 + 0
+</P>
+<P>
+However, there is one point you need to keep in mind here.  You cannot specify a value of 1 as the source for the c coefficient in (a - b) * c + d.  There is always some source color prepared as 1, and this is what must be selected as the source for c.  In the gfx4.c sample program, the primitive color register is used for this purpose.
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=5><TR>
+	<TD NOWRAP COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE><B>List 4-2</B>
+</TR><TR>
+	<TD NOWRAP BGCOLOR="666666" WIDTH="4" ALIGN=LEFT VALIGN=TOP><HR NOSHADE SIZE=0></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>
+<FONT COLOR="#000080"><PRE><CODE>  /* Set it so the primitive color is used as the source of value 1 */
+  gDPSetPrimColor(glistp++, 0, 0, 255, 255, 255, 255);
+
+  /*
+   *  Inverted texture color components are output from the Combiner 
+   *    color = (1 - TEXEL0) * 1 + 0 = 1 - TEXEL0
+   *  (The primitive color is simply used as input for value 1)
+   */
+  gDPSetCombineLERP(glistp++, 1, TEXEL0, PRIMITIVE,     0,
+                              0,      0,         0, SHADE,
+                              1, TEXEL0, PRIMITIVE,     0,
+                              0,      0,         0, SHADE);
+</CODE></PRE></FONT>
+	</TD>
+</TR></TABLE>
+<P>
+  When this is done, the primitive color register (as well as the environment color register) can be used to not only specify the primitive color, but also as a general-purpose color register when the circumstances arise.  Figure 4-4 shows the kinds of results you get by inverse texture mapping using the  combine mode described above.
+
+</P>
+<P>
+<IMG SRC="image10.gif" WIDTH="448" HEIGHT="109">
+</P>
+<P>
+<B>Figure 4-4  Screen shots from gfx4.c sample program when __INVERT__ is ON</B>
+</P>
+</BODY>
+</HTML>

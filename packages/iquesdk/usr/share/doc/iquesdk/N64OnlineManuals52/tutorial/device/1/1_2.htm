@@ -1,0 +1,341 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Device-Chapter 1  How to Use Devices Connected to the SI</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/21/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<FONT style="font-size:12pt"><B>1.2  Standard Controller</B></FONT>
+<br>
+<P>
+   If you were to directly call N64 OS functions to perform Standard Controller processes, you would need to perform a number of transactions just to read the status of the Controller.  However, with the NuSystem, these low-level processes are encapsulated, thus making reading of the Controller easy. <br><br>
+
+    Below are the six representative Controller functions provided by the NuSystem: 
+</P>
+<b>nuContInit</b><br>
+Initializes the Controller and other SI devices
+<br><br>
+<b>nuContDataGet</b><br>
+Gets the Controller data
+<bR><bR>
+<b>nuContDataGetAll</b><br>
+Gets the data of all four Controllers<br>
+<br><br>
+<b>nuContDataGetEx</b><br>
+Expanded version of getting the Controller data
+<bR><bR>
+<b>nuContDataGetExAll</b><br>
+Expanded version of getting the data of 4 Controllers
+<bR><bR>
+<b>nuContQueryRead</b><br>
+Reads the Controller status<br><br>
+<P>
+   In most cases, these are the only functions you will need.  The NuSystem supports many other Controller functions as well, so except for some special processes you will not need to make direct use of the N64 OS Controller functions. 
+</P>
+<BR>
+<B>1.2.1  Initializing the Controller</B>
+<P>
+ To perform Controller processes, the first thing you need to do is call the SI device initialization function <tt>nuContInit</tt>.  
+<BR>
+<HR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Function name:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP><tt>nuContInit</tt></TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Syntax:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>u8&nbsp;nuContInit(void)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Arguments:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>None</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Return Value:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Bit pattern of the connected Controller</TD>
+</TR></TABLE>
+<HR>
+<p>
+Internally, the <tt>nuContInit</tt> function initializes the SI Manager (by calling the <tt>nuSiMgrInit</tt> function) and then initializes the Controller Manager, the Controller Pak Manager and the Rumble Pak Manager (by calling the <tt>nuContMgrInit</tt> function, <tt>nuContPakInit</tt> function and <tt>nuContRmbInit</tt> function).<br><br>
+     The bit pattern of the connected Controller is stored in the return value from the <tt>nuContInit</tt> function.  In order from the lowest bit, the return value corresponds to Controller 1, 2, 3 and 4.<br><br>  
+
+     The number of valid Controllers is set in the NuSystem global variable <tt>nuContNum</tt> when the Controller Manager is initialized, so you can reference this variable when necessary to check how many Controllers are connected.
+</P>
+<P>
+<HR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Variable name:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP><tt>nuContNum</tt></TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Definition:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>u32&nbsp;nuContNum</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Description:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>The number of connected Controllers</TD>
+</TR></TABLE>
+<HR>
+<p>
+ The <tt>nuContInit</tt> function is useful because it calls the representative Managers (for the Controller, Controller Pak and Rumble Pak).  However, it can also be wasteful because it may perform unnecessary processes.  Initializing and registering the Rumble Pak Manager even for a game that does not support the Rumble Pak is one such an example.
+     In reality, <tt>nuContInit</tt> is a function for beginning N64 programmers, and once you have gained an understanding of the operation of each Manager, you should create your own initialization routines based on the source of the function.  
+</P>
+<p>
+<B>1.2.2  Reading the Controller Data</B>
+<P>
+Once you have started up the Controller Manager, the Controller data is read in every other frame and stored in an internal buffer of NuSystem.  The contents of this internal buffer can be read out to the user area by calling such a function as <tt>nuContDataGet</tt>.  
+     If you want to read out the status of one Controller, call the <tt>nuContDataGet</tt> function.  If you want to read out the status of all Controllers, call the <tt>nuContDataGetAll</tt> function.  
+<BR>
+<HR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Function name:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP COLSPAN=2><tt>nuContDataGet</tt></TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Syntax:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP COLSPAN=2>void nuContDataGet(OSContPad *contpad, u32 cont_no)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Arguments:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP><b>contpad</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Controller data structure</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP><b>cont_no</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP>The number of the controller to read</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Return Value:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP COLSPAN=2>None</TD>
+</TR></TABLE>
+<HR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Function name:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP COLSPAN=2><tt>nuContDataGetAll</tt></TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Syntax:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP COLSPAN=2>void nuContDataGetAll(OSContPad *contpad)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Arguments:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP><b>contpad</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Controller data structure</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Return Value:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP COLSPAN=2>None</TD>
+</TR></TABLE>
+<HR>
+</P>
+<PRE><CODE><FONT COLOR=#000080>  typedef struct
+  {
+   u16 button;
+   s8  stick_x;
+   s8  stick_y;
+   u8  errno;
+  } OSContPad;</FONT></CODE></PRE>
+
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=2><TR>
+	<TD>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>button</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Bit pattern representing whether button is ON or OFF</TD>
+</TR><TR>
+	<TD>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Check by doing a bitwise AND with the constant, CONT_A etc.
+                       (see  <os_cont.h>) </TD>
+</TR><TR>
+	<TD>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>stick_x</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Horizontal tilt of the Control stick (-128 - 127)<SUP>*1</SUP></TD>
+</TR><TR>
+	<TD>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>stick_y</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Vertical tilt of the Control stick (-128 ~ 127)<SUP>*1</SUP></TD>
+</TR><TR>
+	<TD>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>errno</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Error number</TD>
+</TR></TABLE>
+<BR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=3>
+<TR><TD>&nbsp;</TD><TD ALIGN="LEFT" VALIGN="TOP"><SUP>*1</SUP>(Note) Since the Controllers vary, the upper-limit value that can be input is not the same.  To deal with this variation, please write your programs with the following values for the actual range of use:</TD>
+</TR></TABLE>
+<br>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=2><TR>
+	<TD>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Horizontal direction (X axis)</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>-61-61</TD>
+</TR><TR>
+	<TD>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Vertical direction (Y axis)</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>-63-63</TD>
+</TR><TR>
+	<TD>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>X-axis diagonal</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>-45-45</TD>
+</TR><TR>
+	<TD>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Y-axis diagonal</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>-47-47</TD>
+</TR></TABLE>
+<P>
+Depending on the game, you may want to get trigger data like whether OFF has changed to ON, rather than about whether a button is being pressed at the time.  The NuSystem defines the NUContData structure, which is the OSContPad structure with added trigger data.  You can get trigger data by using the <tt>nuContDataGetEx</tt> function, which is the expanded version of the <tt>nuContDataGet</tt> function. To get data from all Controllers, use the <tt>nuContDataExALL</tt> function.  
+<BR>
+<HR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Function name:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP COLSPAN=2><tt>nuContDataGetEx</tt></TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Syntax:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP COLSPAN=2>void nuContDataGetEx(NUContData *contdata, u32 padno)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Arguments:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP><b>contdata</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Pointer for storing the Controller data</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP><b>padno</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP>The pad number</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Return Value:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP COLSPAN=2>None</TD>
+</TR></TABLE>
+<HR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Function name:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP COLSPAN=2><tt>nuContDataGetExAll</tt></TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Syntax:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP COLSPAN=2>void nuContDataGetExAll(NUContData *contdata)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Arguments:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP><b>contdata</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Pointer for storing the Controller data</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Return Value:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP COLSPAN=2>None</TD>
+</TR></TABLE>
+<HR>
+</P>
+<PRE><CODE><FONT COLOR=#000080>typedef struct
+  {
+    u16 button;
+    s8  stick_x;
+    s8  stick_y;
+    u8  errno;
+    u16 trigger;
+  } NUContData;</FONT></CODE></PRE>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=2><TR>
+	<TD>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>button</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Bit pattern representing whether button is ON or OFF
+</TD>
+</TR><TR>
+	<TD>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Check by doing a bitwise AND with the constant, CONT_A etc. 
+                      (see  <os_cont.h>) </TD>
+</TR><TR>
+	<TD>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>stick_x</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Horizontal tilt of the Control stick <SUP>*2</SUP></TD>
+</TR><TR>
+	<TD>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>stick_y</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Vertical tilt of the Control stick <SUP>*2</SUP></TD>
+</TR><TR>
+	<TD>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>errno</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Error number</TD>
+</TR><TR>
+	<TD>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>trigger</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Bit pattern of the trigger data (the same order of "button")</TD>
+</TR></TABLE>
+<BR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=3>
+<TR><TD>&nbsp;</TD><TD ALIGN=LEFT VALIGN=TOP><SUP>*2</SUP>(Note) Since the Controllers vary, the upper-limit value that can be input is not the same.  To deal with this variation, please write your programs with the following values for the real range of use:
+</TD>
+</TR></TABLE>
+<br>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=2><TR>
+	<TD>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Horizontal direction (X axis) </TD>
+	<TD ALIGN=LEFT VALIGN=TOP>-61-61</TD>
+</TR><TR>
+	<TD>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Vertical direction (Y axis)</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>-63-63</TD>
+</TR><TR>
+	<TD>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>X-axis diagonal </TD>
+	<TD ALIGN=LEFT VALIGN=TOP>-45-45</TD>
+</TR><TR>
+	<TD>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Y-axis diagonal</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>-47-47</TD>
+</TR></TABLE>
+<P>
+   The trigger data is calculated with a logical operation involving the contents of the "contdata" argument passed to the function, and the Controller data read at that time, so be sure to make contdata a static variable.
+</P>
+<p>
+<B>1.2.3  Reading the Controller Status</B>
+<P>
+ When the Controller Manager is initialized, the Controller status (i.e., whether or not there is a Controller and the type) is stored in the NuSystem global variable <tt>nuContStatus</tt>.  
+     If you want to read out the current Controller status, call the <tt>nuContQueryRead</tt> function.  This result is also stored in <tt>nuContStatus</tt>, but it takes about 2 milliseconds to get the status this way.  
+<HR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Variable name:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP COLSPAN=2>nuContStatus</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Definition:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP COLSPAN=2>OSContStatus&nbsp;&nbsp;nuContStatus[NU_CONT_MAXCONTROLLERS]</TD>
+</TR></TABLE>
+<HR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Function name:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP><tt>nuContQueryRead</tt></TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Syntax:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>void nuContQueryRead(void)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Arguments:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>None</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Return Value:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>None</TD>
+</TR></TABLE>
+<HR>
+</P>
+<PRE><CODE><FONT COLOR=#000080>typedef struct
+  {
+    u16 type;
+    u8  status;
+    u8  errno;
+  } OSContStatus;</FONT></CODE></PRE>
+
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=2><TR>
+	<TD>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>type</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>The type of the Controller connected to the port</TD>
+</TR><TR>
+	<TD>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>This type and the constant CONT_JOYPORT etc. (see <os.h>) are 
+                      bit ORed  for the check.</TD>
+</TR><TR>
+	<TD>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>status</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Controller status</TD>
+</TR><TR>
+	<TD>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>For example, if the Controller Pak is connected, the CONT_CARD_ON 
+                      bit is ON</TD>
+</TR><TR>
+	<TD>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>errno</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Error number</TD>
+</TR></TABLE>
+<P>
+  To verify that the Standard Controller is inserted, mask with CONT_TYPE_MASK and then check whether equal to CONT_TYPE_NORMAL.  If the Controller is not connected to the port, then the CONT_NO_RESPONSE_ERROR bit is set in errno. 
+</P>
+<BR>
+<BR>
+<BR>
+</BODY>
+</HTML>

@@ -1,0 +1,84 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD><link rel=stylesheet type="text/css" href="gif/style.css">
+<TITLE>Controller</TITLE>
+</HEAD>
+
+<BODY>
+<A name="index"></A>
+
+
+<IMG src="../../gif/n64_logo2.gif" height="21" width="136"> 
+
+<h3><FONT color="#FF8000">Q&A</FONT>- Controller</h3>
+
+<P>
+<TABLE border="0">
+  <TR>
+    <TD valign="top" width="50"><A href="cont.htm#01"><b>QA1</b></A></TD>
+    <TD>What is the actual range width of a Control Stick?</TD></TR>
+  <TR>
+    <TD valign="top" width="50"><A href="cont.htm#02"><b>QA2</b></A></TD>
+    <TD>L&R&START on the controller</TD></TR>
+  <TR>
+    <TD valign="top" width="50"><A href="cont.htm#03"><b>QA3</b></A></TD>
+    <TD>Controller identification if fewer than 4 players play</TD></TR>
+<TR>
+      <TD><A href="#04"><STRONG>QA4</STRONG></A></TD>
+      <TD>Upper limit value of Control Stick (200003) <IMG src="../../gif/new52.gif"></TD>
+    </TR>
+</TABLE>
+
+<HR>
+<P>
+<A name="01"><FONT  color="#FF0000"><b>Q1</b></FONT></A>
+<b> What is the actual maximum range width of the Control Stick? </b>
+</P>
+<P>
+<FONT   color="#008000"><b>A1</b></FONT>  To account for variations in the Control Stick, program using the following values as the actual service ranges. <BR> 
+<BR> 
+ X axis left/right direction... &nbsp;&plusmn; 61 <BR> 
+ Y axis up/down direction... &nbsp;&plusmn; 63 <BR> 
+ X axis diagonal direction... &nbsp;&plusmn; 45 <BR> 
+ Y axis diagonal direction... &nbsp;&plusmn; 47 <BR> 
+<BR> 
+Please refer to the N64 Online Programming Manual, Chapter 26.2, "Standard Controller", for details.  
+</P> 
+<P align="right"> 
+<A href="cont.htm#index"><IMG src="../../gif/index.gif" height="17" width="65" border="0"></A> 
+</P> 
+<HR> 
+<P> 
+<A name="02"><FONT color="#FF0000"><b>Q2</b></FONT></A> 
+<b>L&R&START on the controller</b> 
+</P> 
+<P> 
+<FONT color="#008000"><b>A2</b></FONT>  Simultaneously pressing these three buttons will reset the Control Stick to a standard point.  This operation cannot be changed in the user program.  This is because, if the command is given on the IC level that is built into the controller, an operation is performed to return to the origin point.  
+ 
+<P> 
+If you wish to change the origin on the user side, in OS2.OH and later, this is possible by calling the osContReset function.  In past libraries, the origin was made neutral with the osContInit function, but please note that this function has been deleted.  
+ 
+<P align="right"> 
+<A href="cont.htm#index"><IMG src="../../gif/index.gif" height="17" width="65" border="0"></A> 
+</P> 
+<HR> 
+<P> 
+<A name="03"><FONT color="#FF0000"><b>Q3</b></FONT></A> 
+<b> If fewer than 4 people are playing a game, the controllers must be connected to the control deck without any gaps in the sequence from 1.  For instance, if two people are playing, the controllers must be connected to sockets 1 and 2 on the control deck.  If anything else is the case, the menu will not appear.  Have there been any problems with the above specification, or are there any standards regarding this at Nintendo? </b> 
+</P> 
+<P> 
+<FONT color="#008000"><b>A3</b></FONT>  Your question deals with the menu sequence, and theoretically there is no standard.  Consequently, the rules can be independently determined, but you should take note to make that standard clear in the menu (how the controllers should be inserted, etc.), and note that removal and insertion of controllers after the game has started is not allowed.  
+<P align="right"> 
+<P align="right"> 
+<A href="#index"><IMG src="../../gif/index.gif" height="17" width="65" border="0"></A> 
+</P> 
+<HR> 
+<P><A name="04"><FONT color="#FF0000"><b>Q4</b></FONT></A> <b> I have a question regarding "26.2.5 Programming 
+Cautions&quot; in the Programming Manual.    It says XA: center static width of X axis (MAX)-- 7 count; however, XA straddles the center in the diagram and it is ambiguous.  If the width of XA is 7 count, the count value should be &plusmn;3.5 count.  Am I wrong? If not, the upper limit value may change as well.</b></P> 
+<P><FONT color="#008000"><b>A4</b></FONT> Both the diagram and the table are correct. Let's suppose there is a true center.  Variation from the true center will be &plusmn;3.5.  When the neutral position of the Control Stick at the time of reset (the position when the counter value = 0) is shifted to the right +3.5 from the true center, the lowest value of XB will be 68.  Conversely, when the neutral position of the Control Stick at the time of reset is shifted to the left -3.5 from the true center , the lowest value of XB will be 68.</P> 
+<P>Also, there is a possibility that the neutral position of the Control Stick at the time of reset (the position when the counter value = 0) is shifted to the right +3.5 from the true center when the controller is activated, and the neutral position of the Control Stick is shifted to the left -3.5 from the true center during game play when the controller is stopped.  In such a case, the counter value will be -7.   Since it is unknown whether the position when th counter value is zero (neutral position at the time of reset) is left direction or right direction, it is necessary to regard all the ranges in which a counter value is within &plusmn;7 as zero in order to ensure the value becomes zero when the Control Stick is released. Therefore, absolute values for left/right count values are reduced by 7 respectively, and the valid range becomes only 68-7=61.</P> 
+<P align="right"><A href="#index"><IMG src="../../gif/index.gif" height="17" width="65" border="0"></A></P> 
+Å@ 
+<HR> 
+</BODY> 
+</HTML> 

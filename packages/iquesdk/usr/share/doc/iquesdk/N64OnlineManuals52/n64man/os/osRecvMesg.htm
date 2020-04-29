@@ -1,0 +1,49 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.
+  PWC- updated formatting
+-->
+<title>osRecvMesg</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<h1>osRecvMesg </h1>
+
+<h3>Function</h3>
+
+<p>osCreateMesgQueue, osSendMesg, osJamMesg, osRecvMesg</p>
+
+<p><i>Provides messaging and synchronization facilities</i></p>
+
+<h3>Syntax</h3>
+<p>
+<blockquote><pre>#include &lt;ultra64.h&gt;
+void osCreateMesgQueue(OSMesgQueue *mq, OSMesg *msg, s32 count);
+void osSendMesg(OSMesgQueue *mq, OSMesg msg, s32 flag);
+void osJamMesg(OSMesgQueue *mq, OSMesg msg, s32 flag);
+s32 osRecvMesg(OSMesgQueue *mq, OSMesg *msg, s32 flag);</pre></blockquote></p>
+
+<h3>Description</h3>
+
+<p>Message queues provide a highly flexible communication and synchronization mechanism. The facilities are useful among threads, as well as between threads and events (primarily interrupts). See <a href="osSetEventMesg.htm">osSetEventMesg</a> for a complete list of events.</p>
+
+<p>The osCreateMesgQueue call initializes a given OSMesgQueue structure (mq) to an empty state. The msg argument points to an OSMesg array that is used for storing messages in this queue. The count argument specifies the total number of messages the given queue can hold (the size of the array). </p>
+
+<p>The osSendMesg call copies the message (msg) to the end of the given message queue (mq). The flag argument specifies the blocking mode of this send operation. If flag is set to OS_MESG_BLOCK, the routine blocks on a full message queue; that is, the invoking thread yields the CPU until there is an empty slot in the queue for writing. This thread is enqueued onto a priority-linked list associated with the message queue behind other threads of the same priority. The osSendMesg call always returns 0 for a blocking send call. Setting flag to OS_MESG_NO_BLOCK allows the osSendMesg call to return immediately with a return value of -1 when the message queue is full. If the osSendMesg message queue is not full, the message is delivered and the call returns with a return value of 0. The osSendMesg call will resume the highest priority thread blocked in the osRecvMesg message queue that is waiting for the queue to become "not empty," if indeed one is blocked. </p>
+
+<p>The osJamMesg call works like osSendMesg except that the message (msg) is copied to the front of the given message queue (mq). You can call this function to deliver high priority messages. </p>
+
+<p>The osRecvMesg call copies the first message in the message queue (mq) into the address specified by the msg argument. If a NULL msg is passed to osRecvMesg, the message in the queue is discarded. This is useful in cases where you don't care about the value of the message, only the fact that a synchronization event occurred. If the flag argument is set to OS_MESG_BLOCK, the routine blocks on an empty message queue; that is, the current running thread yields the CPU until there is a message available for reading in the queue. This thread is enqueued onto a priority-linked list associated with the message queue behind other threads of the same priority. The osRecvMesg call always returns 0 for a blocking receive call. Setting the flag argument to OS_MESG_NOBLOCK allows the osRecvMesg call to return immediately with a return value of -1 when the message queue is empty. If the message queue is not empty, the message is received and the call returns with a return value of 0. Then the osRecvMesg call resumes the highest priority thread blocked in the osSendMesg or osJamMesg message queue that is waiting for a message queue slot to become available, if one is in fact blocked. </p>
+
+
+<h3>See Also</h3>
+<p><A HREF="../os/osCreateMesgQueue.htm">osCreateMesgQueue</A>, 
+<A HREF="../os/osSendMesg.htm">osSendMesg</A>, 
+<A HREF="../os/osJamMesg.htm">osJamMesg</A>, 
+<A HREF="../os/osCreateThread.htm">osCreateThread</A>, and <A HREF="../os/osSetEventMesg.htm">osSetEventMesg</A>
+</p>
+</body>
+</html>

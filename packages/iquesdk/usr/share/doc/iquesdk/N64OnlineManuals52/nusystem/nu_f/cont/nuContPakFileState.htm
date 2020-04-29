@@ -1,0 +1,97 @@
+<HTML>
+<HEAD>
+<TITLE>nuContPakFileState</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor's Notes: 9/7/1999 Ron Daring -->
+</HEAD>
+
+<BODY bgcolor="#FFFFFF">
+
+
+<P>
+<FONT size="5"><b><IMG src="../nusystem2.gif" height="30" width="176">Function</b></FONT>
+
+<HR>
+<P>
+<FONT size="3"><b>nuContPakFileState</b></FONT>
+<p>
+<HR>
+<P>
+<b>Syntax</b>
+<font face="courier" size="2">
+<pre>s32 nuContPakFileState(NUContPakFile* file, OSPfsState* state)</pre>
+</font>
+
+<p><b>Arguments</b>
+<font face="courier" size="2">
+<pre>
+<B>*file</B>      Controller Pak structure
+<B>*state</B>     Pointer to OSPfsState structure</pre>
+</font>
+
+<p><b>Return Value</b>
+<font face="courier" size="2">
+<pre>Error</pre>
+</font>
+
+<p><b>Description</b>
+
+<p><i>Gets Controller Pak game note information</i>
+
+<p>Gets information from the specified game note of the Controller Pak.  The obtained information is stored in "state".  "file" specifies the Controller Pak structure in the game note opened by the nuContPakFileOpen function and using the nuContPakOpen function to open the device.
+
+<p>To get all of the game note information from inside the Controller Pak, call the nuContPakFileState function 16 times, specifying the values 0 to 15 in order in file.file_no.
+
+<p>The OSPfsState structure indicated by "state" has the following contents.
+
+<font face="courier" size="2">
+<pre>
+typedef struct {
+	u32	file_size;	// Note size (in bytes)
+	u32	game_code;	// Game code
+	u16	company_code;	// Company code
+	char	ext_name[4];	// Note extension
+	char	game_name[16];	// Note name
+}
+</pre>
+</font>
+
+<p>The value returned by the osPfsFileState function is stored in file.error.
+
+<p><b>Errors</b>
+<p>
+<table border="1" cellspacing="1">
+    <tr>
+	<td><font face="arial" size="-1">PFS_ERR_NOPACK</font></td>
+	<td><font face="arial" size="-1">Nothing is inserted in the specified Controller.</font></td>
+    </tr>
+    <tr>
+	<td><font face="arial" size="-1">PFS_ERR_NEW_PACK</font></td>
+	<td><font face="arial" size="-1">The Controller Pak may have been changed. Please perform the Open process again.</font></td>
+    </tr>
+    <tr>
+ 	<td><font face="arial" size="-1">PFS_ERR_INCONSISTENT</font></td>
+ 	<td><font face="arial" size="-1">There is an inconsistency in the file system management area.</font></td>
+    </tr>
+    <tr>
+	<td><font face="arial" size="-1">PFS_ERR_CONTRFAIL</font></td>
+   	<td><font face="arial" size="-1">Data transfer with Controller has failed.</font></td>
+    </tr>
+    <tr>
+	<td><font face="arial" size="-1">PFS_ERR_INVALID</font></td>
+	<td><font face="arial" size="-1">Invalid parameter or the game note does not exist.</font></td>
+    </tr>
+</table>
+
+<p><b>See Also</b>
+<p><a href="nuContPakOpen.htm">nuContPakOpen</a>, <a
+href="nuContPakFileOpen.htm">nuContPakFileOpen</a>, and <a
+href="nuContPakFileOpenJis.htm">nuContPakFileOpenJis</a><br>
+
+<p>
+<hr>
+
+<p align="right"><a href="index.htm"><img src="../index.gif" border="0"
+width="65" height="17"></a>
+</body>
+</html>

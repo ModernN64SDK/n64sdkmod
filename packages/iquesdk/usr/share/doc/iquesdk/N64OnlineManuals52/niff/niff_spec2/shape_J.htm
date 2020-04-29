@@ -1,0 +1,139 @@
+<html>
+<title>
+ShapeNode
+</title>
+<body bgcolor="ffffff">
+
+<h1>
+<font color="ff0000">
+<i>
+Nintendo Confidential
+</i>
+</font>
+</h1>
+<hr size="3">
+
+
+<h2>
+7. ShapeNode
+
+</h2>
+<hr size=2>
+<h3>
+(1) ShapeNode
+</h3>
+
+<blockquote>
+
+<table border width="600">
+
+<tr>
+<td nowrap>
+u32 shape_type
+</td>
+<td>
+Shapeのタイプを指定します。現在下記のフラグが定義されています。
+<pre>
+<b>
+SHAPE_TYPE_CLEAR&#9;0x00000000
+SHAPE_TYPE_AA&#9;&#9;0x00000001
+SHAPE_TYPE_RA&#9;&#9;0x00000002
+SHAPE_TYPE_ZB&#9;&#9;0x00000004
+SHAPE_TYPE_CULL_BACK&#9;0x00000010
+SHAPE_TYPE_CULL_FRONT&#9;0x00000020
+SHAPE_TYPE_CULL_BOTH&#9;0x00000030
+</b>
+</pre>
+SHAPE_TYPE_CLEARはシェープタイプをクリアします。<p>
+SHAPE_TYPE_AAはアンチエイリアス処理を行います。<p>
+SHAPE_TYPE_RAはレデュースドエイリアス処理を行います。<p>
+SHAPE_TYPE_ZBはz-buffer処理を行います。<p>
+SHAPE_TYPE_CULL_BACKはバックフェイスカリングを行います。<p>
+SHAPE_TYPE_CULL_FRONTはフロントフェイスカリングを行います。<p>
+SHAPE_TYPE_CULL_BOTHは常にカリングを行います。<p>
+SHAPE_TYPE_AA、SHAPE_TYPE_RAフラグは両方同時に指定することはできません。また、SHAPE_TYPE_CULL_*フラグもいずれか一つを指定することになります。<p>
+たとえば、アンチエイリアス、z-buffer処理をし、バックフェイスカリングを行ったシェープデータの場合、下記のようにフラグをセットします。<p>
+<pre>
+<b>
+SHAPE_TYPE_AA | SHAPE_TYPE_ZB | SHAPE_TYPE_CULL_BACK
+</b>
+</pre>
+NIFF2.0から下記のフラグが追加されました。
+<pre>
+<b>
+SHAPE_TYPE_USE_VTX_ALPHA_FOR_FOG&#9;0x00000100
+</b>
+</pre>
+このフラグはFogを使用する場合に頂点アルファを使用する時にセットしてください。
+通常Fogを使用する場合はNIFF→N64コンバータで頂点アルファを出力しません。このフラグをセットするとFogを使用する場合でも強制的に頂点アルファを出力します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 kind_of_node_for_geometry
+</td>
+<td>
+NIFF2.0からshape_tri_linkでリンクできるノードはTriGroupノード、
+Envelopeノード、ClusterShapeノードの３種類になります。<p>
+このデータに下記のタグのうちのいずれかを設定することで、shape_tri_linkは該当するリスト中の
+インデックス番号を示します。<p>
+<pre>
+<b>
+TAG_TRI_GROUP           0x00080100
+TAG_ENVELOPE            0x00220100
+TAG_CLUSTER_SHAPE       0x00280100
+</b>
+</pre>
+TAG_TRI_GROUPの場合、shape_tri_linkはTriGroupのインデックス番号を記述します。<p>
+TAG_ENVELOPEの場合、shape_tri_linkはEnvelopeのインデックス番号を記述します。<p>
+TAG_CLUSTER_SHAPEの場合、shape_tri_linkはClusterShapeのインデックス番号を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 external_mat_file_name_index
+</td>
+<td>
+Matノードを外部ファイル参照する場合、そのファイル名をExternalNameListのインデックス番号で記述します。<p>
+ファイル名はディレクトリ名などを含まない形で記述してください。<p>
+その場合、shape_mat_link = 0xffffffffを指定してください。<p>
+外部ファイル参照しない場合は0xffffffffを記述してください。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 external_mat_name_index
+</td>
+<td>
+Matノードを外部ファイル参照する場合、Mat名をExternalNameList内のインデックス番号で記述します。<p>
+その場合、shape_mat_link = 0xffffffffを指定してください。<p>
+外部ファイル参照しない場合は0xffffffffを記述してください。
+</td>
+</tr>
+
+</table>
+
+
+<p>
+<a href="./shape_C.htm">
+Go to the data chunk
+</a>
+<p>
+<a href="./index.htm">
+Go back to the index
+</a>
+
+</blockquote>
+
+<hr>
+<i>
+Copyright 1998,1999 NINTENDO Co.,Ltd. All rights reserved.<br>
+Copyright 1998,1999 MONEGI CORPORATION All rights reserved.
+</i>
+
+
+</body>
+</html>

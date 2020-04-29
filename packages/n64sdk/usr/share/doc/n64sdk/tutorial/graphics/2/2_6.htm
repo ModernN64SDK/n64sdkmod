@@ -1,0 +1,67 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Graphics-CHAPTER 2  Adding Color to a Model</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/22/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<font style="font-size:12pt"><B>2.6  Geometry Mode</B></FONT>
+<br>
+<P>
+ Thus far, we have talked about how to change primitive color, how to set vertex color, and the procedure for positioning lights.  However, specifying rendering using these specific coloring methods is a separate matter.
+     To select a coloring method and to switch between flat shading and smooth shading you change the "geometry mode," which was brought up in a previous chapter, but not explained at the time.
+<br><br>
+The following two macros can be used to change the geometry mode: 
+</P>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP> gSPSetGeometryMode  </TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Set the specified geometry mode</TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP> gSPClearGeometryMode  </TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Clear the specified geometry mode</TD>
+</TR></TABLE>
+<P>
+These two commands pass the bit-OR of the following flags:
+</P>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP> G_SHADE</TD>
+	<TD ROWSPAN=10>  </TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Shading</TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP> G_SHADING_SMOOTH</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Smooth shading</TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP> G_LIGHTING</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Lighting</TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP> G_CULL_FRONT</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Front face culling</TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP> G_CULL_BACK</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Back face culling</TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP> G_CULL_BOTH</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>G_CULL_FRONT | G_CULL_BACK</TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP> G_ZBUFFER</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Z buffering (Chapter 7)</TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP> G_FOG</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Fog (Chapter 8)</TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP> G_TEXTURE_GEN</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Use highlights & reflection mapping (Chapter 9) </TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP> G_TEXTURE_GEN_LINEAR</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Use Reflection Mapping (Chapter 9)</TD>
+</TR></TABLE>
+<P>
+So, for example, to color a surface using primitive color you would turn off the G_SHADE, G_SHADING_SMOOTH and G_LIGHTING flags.  Then, as explained in the next section, by setting the combine mode to G_CC_PRIMITIVE you can add color using primitive color.<br><br>
+     To color a surface using vertex color, you turn on G_SHADE and turn off G_LIGHTING.  Then if G_SHADING_SMOOTH is turned off, flat shading is performed, and if it is turned on, smooth shading is performed.<br><br>
+     For lighting, you turn on both G_SHADE and G_LIGHTING.  As with vertex color, if G_SHADING_SMOOTH is turned off, then flat shading is used for rendering, and if it is turned on, then smooth shading is used.
+</P>
+</BODY>
+</HTML>

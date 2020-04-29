@@ -1,0 +1,70 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 8 - Input/Output Functionality</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check.
+             MAP- 11/15/99 edited content, updated format -->
+</head>
+
+<h1>8.1 Overview </h1>
+
+<p>The Input/Output (I/O) subsystem exists on most operating systems for three main reasons:</p>
+
+<ul>
+  <li>to hide device-specific details in <A target="keywords" HREF="../../keywords/index/data/system.htm#device driver">device drivers</A> through which the operating system transfers data and control <br><br>
+  <li>to provide an equal and safe access format to the devices, since most of them are shared resources <br><br>
+  <li>to provide a consistent, uniform, and flexible interface to all devices, allowing programs to reference devices by name and perform high-level operations without knowing the device configuration.<br><br>
+</ul>
+
+<p>Usually, the I/O software is structured in layers: </p>
+
+<ul>
+  <li><A target="keywords" HREF="../../keywords/index/data/system.htm#device independent system interface">device-independent system interface</A><br><br>
+  <li>device drivers<br><br>
+  <li>interrupt handlers<br><br>
+</ul>
+
+<p>The interrupt handler is mainly responsible for starting up a device driver after an I/O operation completes. The device driver performs device-specific operations, such as setting up registers for DMA and checking device status. The device-independent system interface provides a uniform interface to user-level software and common I/O functions (that is, protection, blocking, buffering) that can be performed across different devices. </p>
+
+<p>For the RCP, there are two modes of I/O operations: </p>
+<ul>
+  <li>DMA provides a minimum of 64-bit transfer between the RDRAM and any of the devices<br><br>
+  <li>IO provides a 32-bit transfer between the CPU and any of the devices<br><br>
+</ul>
+
+<p>The RCP consists of the following major devices and interfaces (see <a href="#f08-01">Figure 8-1</a> below): </p>
+<dl>
+  <dt><strong>Reality Signal Processor(RSP)</strong>
+  <dd>This internal processor supports both DMA and I/O operations between RDRAM and I/Dmem addresses.
+</dl>
+<dl>
+  <dt><strong>Reality Display Processor(RDP)</strong>
+  <dd>This internal processor supports only DMA from either RDRAM or Dmem addresses to its internal buffer. 
+</dl>
+<dl>
+  <dt><strong>Video Interface(VI)</strong>
+  <dd>This write-only interface connects to the video DAC. It supports only DMA from RDRAM to a specific video buffer address and allows you to change video modes and configurations. 
+</dl>
+<dl>
+  <dt><strong>Audio Interface(AI)</strong>
+  <dd>This write-only interface connects to the audio DAC. It supports only DMA from RDRAM to a specific audio buffer address and allows you to set the audio frequency. 
+</dl>
+<dl>
+  <dt><strong>Parallel Interface(PI)</strong>
+  <dd>This read-write interface connects to the ROM cartridge and other mass storage devices. It supports DMA as well as I/O Read/Write to ROM addresses. 
+</dl>
+<dl>
+  <dt><strong>Serial Interface(SI)</strong>
+  <dd>This read-write module interfaces to the PIF, which connects to the game controller and modem devices. It supports DMA as well as I/O Read/Write to PIF RAM addresses. 
+</dl>
+
+
+<dl>
+  <dt><a name="f08-01"><strong>Figure 8-1 Logical View of RCP Internal Major Devices and Interface Modules </strong></a>
+  <dd><img alt="[Figure 8-1]" src="gif/f08-01.gif">
+</dl>
+
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+</body> </html>

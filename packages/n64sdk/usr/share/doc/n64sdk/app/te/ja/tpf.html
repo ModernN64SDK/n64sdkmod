@@ -1,0 +1,95 @@
+<html>
+<head>
+<title>[N64 CITextureEditor] 2.6.1 TPF format</title>
+</head>
+<body>
+<center>
+<h1><font color=#0000c0><font color=#ff0000>N64</font> <font color=#ff8000>CI</font><font color=#ff0000>T</font>exture<font color=#ff0000>E</font>ditor</font> <font color=#808080>TPF Format</font></h1>
+<!--#config timefmt="%Y年%m月%d日(%a) %X"-->
+<font size=-1><!--#echo var="LAST_MODIFIED"--></font><br>
+<a href="https://ntsc.nintendo.co.jp/"><img src="../images/ntsc.gif" alt="NTSC-ONLINE" border=0></a>
+</center>
+<hr>
+<p align="right"><a href="../us/tpf.html">English</a></p>
+<ol>
+ <li><b>TPFとは</b>
+ <ul>
+  <p>
+  <a href="spec.html#FILE_TMF">テクスチャ・イメージ・ファイル (TMF)</a>と、
+  <a href="spec.html#FILE_TLF">テクスチャ・ルックアップテーブル・ファイル (TLF)</a>を
+  一対に登録した複数の「<a href="spec.html#OBJECT_PICTURE">ピクチャー</a>」を管理するファイルです。<br>
+  N64 CITextureEditorでは１つのTPFのみ編集可能です。<br>
+  </p>
+  <p>
+  Makefile風のテキストファイルで表現されています。<br>
+  </p>
+  <center>
+  <table border=1>
+   <caption><font color=red>例）</font>&lt;sample.tpf&gt;</caption>
+   <tr>
+    <td>
+<pre>
+<font color=green>#TPFのあるディレクトリ</font>
+<font color=red>TPF_DIR</font> = C:\nintendo\n64kit\texedit\user_data
+<font color=green>#TMFのあるディレクトリ</font>
+<font color=red>TMF_DIR</font> = $(TPF_DIR)
+<font color=green>#TLFのあるディレクトリ</font>
+<font color=red>TLF_DIR</font> = $(TPF_DIR)
+<font color=green>#登録されたピクチャーの数</font>
+<font color=red>PICT_NUM</font> = 2
+<font color=green>#ピクチャー（PICT.&lt;n&gt; = &lt;ピクチャー名&gt;,&lt;TMF&gt;,&lt;TLF&gt;,&lt;palette&gt;）</font>
+<font color=red>PICT.0</font> = Picture0, Texture0.tmf, Palette0.tlf, 0
+<font color=red>PICT.1</font> = Picture1, Texture1.tmf, Palette0.tlf, 0
+</pre>
+    </td>
+   </tr>
+  </table>
+  </center>
+  <p>
+  </p>
+ </ul>
+ <li><b>書式</b>
+ <ul>
+  <p>
+  基本的な書式のルールは
+  <ol>
+   <li><font color=red>#&lt;コメント&gt;</font>
+   <li><font color=red>&lt;マクロ名&gt; = &lt;値（文字列）&gt;</font>
+   <li>値（文字列）に<b>$(</b><font color=red>マクロ名</font><b>)</b>で他のマクロを参照する事が出来る。
+  </ol>
+  です。
+  </p>
+  <p>
+  TPFで予約されたマクロ名は以下の通りです。
+  <ol>
+   <li><font color=red>TPF_DIR</font> … TPFの格納したディレクトリを示す (パスの区切りは"/"も利用可能)
+   <li><font color=red>TMF_DIR</font> … TMFの格納したディレクトリを示す (パスの区切りは"/"も利用可能)
+   <li><font color=red>TLF_DIR</font> … TLFの格納したディレクトリを示す (パスの区切りは"/"も利用可能)
+   <li><font color=red>PICT_NUM</font> … 登録されたピクチャーの数(0～n)
+   <li><font color=red>PICT.</font>&lt;n&gt; … ピクチャの情報(&lt;n&gt;=0～PICT_NUM-1)
+   <ul>
+    PICT.&lt;n&gt; = &lt;ピクチャー名&gt,&lt;TMF&gt;,&lt;TLF&gt,&lt;palette&gt;
+   </ul>
+  </ol>
+  </p>
+ </ul>
+</ol>
+<p align="right"><a href="../us/tpf.html">English</a></p>
+<hr>
+<table width=100%>
+ <tr>
+  <td valign=top>
+  </td>
+  <td valign=top align=right nowrap>
+   <font size=-1>
+   Copyright (C) 1998-1999 <a href="https://ntsc.nintendo.co.jp/">NINTENDO Co.,Ltd.</a><br>
+   Copyright (C) 1998-1999 MONEGI CORPORATION.<br>
+   Copyright (C) 1998-1999 <a href="http://www.intsys.co.jp/">INTELLIGENT SYSTEMS Co.,Ltd.</a><br>
+   All rights reserved.<br>
+   </font>
+   <a href="https://ntsc.nintendo.co.jp/"><img src="../images/ntsc.gif" alt="NTSC-ONLINE" border=0></a>
+  </td>
+ </tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.
+  PWC- updated formatting
+-->
+<TITLE>osPfsGetLabel</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+<font style="font-size: 12pt"><b>osPfsGetLabel</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p><i>Reads the label of a Controller Pak</i></P>
+
+<H3>Syntax</H3>
+<p><PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/os.htm">os.h</A> */
+s32 osPfsGetLabel(OSPfs *pfs,  u8 *label,  int *length);</CODE></PRE></p>
+
+<H3>Description</H3>
+<P>
+A BLOCKSIZE (32 bytes) label area exists in the Controller Pak. <tt>osPfsGetLabel</tt> reads the label of a Controller Pak. The specification for this label area has not yet been defined (as of December, 1998.) <B>Therefore, do not use this function. </B>
+</P>
+<P>
+The OSPfs structure's handle pfs must be the handle initialized with from <a href="osPfsInitPak.htm">osPfsInitPak</a>. Please refer to <tt>osPfsInitPak</tt> for information on how to create this handle.
+</P>
+<P>
+The area specified by the label needs to have the size BLOCKSIZE to store label data.
+</P>
+<P>
+If this function is called successfully, 0 is returned and the length of the label is returned to the location pointed to by the <B>length</B> argument. If an error occurs, one of the following error codes is returned: 
+</P>
+<p>
+<DL>
+  <DT><B>PFS_ERR_NOPACK </B>
+  <DD>Either the Controller Pak is not inserted into the specified Controller or the Controller is not properly connected. To determine which is the case, use <a href="osContStartQuery.htm">osContStartQuery</a> or <a href="osContGetQuery.htm">osContGetQuery</a>. 
+      <BR><BR>
+  <DT><B>PFS_ERR_NEW_PACK </B>
+  <DD>A different Controller Pak has been inserted. To use the inserted Controller Pak, initialize it by calling <tt>osPfsInitPak</tt>.
+      <BR><BR>
+  <DT><B>PFS_ERR_CONTRFAIL </B>
+  <DD>Data transfer to or from the Controller has failed. If a transfer error occurs, up to three tries will be done internally. Therefore, it is rather rare to see this error. If this error has returned, it is possible that either the Controller is not connected properly, or the Controller Pak or Controller Socket is damaged. 
+      <BR><BR>
+</DL></p>
+
+<H3>See Also</H3>
+<P>
+<A HREF="osContInit.htm">osContInit</A>, <A HREF="osContStartQuery.htm">osContStartQuery</A>, <A HREF="osContGetQuery.htm">osContGetQuery</A>, <A HREF="osPfsChecker.htm">osPfsChecker</A>, <A HREF="osPfsInitPak.htm">osPfsInitPak</A>, <A HREF="osPfsIsPlug.htm">osPfsIsPlug</A>, and <A HREF="osPfsSetLabel.htm">osPfsSetLabel</A>
+</P>
+
+<H3>Revision History</H3>
+<P>
+1999/02/01 Completely revised<br>
+1999/04/30 Changed format
+</P>
+
+</BODY>
+</HTML>

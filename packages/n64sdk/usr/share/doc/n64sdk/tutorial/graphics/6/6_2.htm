@@ -1,0 +1,30 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Graphics-Chapter 6   Rendering Mode and Anti-aliasing</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/23/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<font style="font-size:12pt"><B>6.2  Coverage Value</B></FONT>
+<br>
+<P>
+ Thus far, we have used the term "coverage value", rather freely but if you do not know how this value is calculated, you cannot understand anti-aliasing on the N64.
+     When a polygon is rendered on the N64, each pixel is subdivided into a 4x4 grid of subpixels, and a determination is made about which subpixels are covered by the polygon, and which subpixels are not.<br><br>
+     However, because only 3bits are allocated for the coverage value, a dither mask is implemented as shown in Figure 6-4 so the coverage value can be limited to a value from 0 to 8.  Then 1 is subtracted from this coverage value and the result is stored in the framebuffer.
+</P>
+<P>
+<br>
+<IMG SRC="image19.gif">
+</P>
+<P>
+<B>Figure 6-4  Dither mask for coverage value</B>
+</P>
+<P>
+With gDPFillRectangle, the coverage values are all set to 1 at the time of initialization.  What this means is that an image in its initial state is treated as background.
+     To learn about the proper format for coverage values stored in the framebuffer, see Chapter 15.5.6, "Color Image Format" in the Programming Manual.
+</P>
+</BODY>
+</HTML>

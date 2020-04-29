@@ -1,0 +1,112 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<title>Sprite Microcode S2DEX document</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<FONT FACE="Arial" SIZE="-1">
+
+<h2>5. Emulation Functions</h2>
+
+<p>These S2DEX GBIs are functions for emulation in the CPU. 
+</p>
+
+<p align="right"><a href="index.htm"><img
+src="../../gif/index.gif" alt="[UP]" border="0"
+width="65" height="17"></a></p>
+
+<hr>
+
+<h3><a name="01">5.1 guS2DEmuBgRect1Cyc</a></h3>
+
+<hr>
+
+<p>void guS2DEmuBgRect1Cyc(Gfx **gdl_p, uObjBg *bg);</p>
+
+<dl>
+    <dt>Description:</dt>
+    <dd>Emulate the operation of gSPBgRect1Cyc GBI from the S2DEX microcode in the CPU by combining it with another GBI</dd>
+</dl>
+
+<table border="0" cols="3">
+    <tr>
+        <td valign="top" nowrap><FONT SIZE="-1">Arguments:</FONT></td>
+        <td valign="top" nowrap><FONT SIZE="-1">gdl_p </FONT></td>
+        <td valign="top" nowrap><FONT SIZE="-1">Pointer to display list pointer<br>
+        The value for *gdl_p is automatically added. </FONT></td>
+    </tr>
+    <tr>
+        <td valign="top" nowrap>&nbsp;</td>
+        <td valign="top" nowrap><FONT SIZE="-1">bg </FONT></td>
+        <td valign="top" nowrap><FONT SIZE="-1">Pointer to uObjBg structure
+        </FONT></td>
+    </tr>
+</table>
+
+<hr>
+
+<p>Calling gSPBgRect1Cyc(gdl ++, bg) can be replaced by guS2DEmuBgRect1Cyc(&gdl, bg).  See the section on gSPBgRect1Cyc for an explanation of the argument bg.</p>
+
+<p>In addition, in order to announce the setting of a scissoring box and the setting of texture filters to this routine, it is necessary to call the guS2DEmuSetScissor function described below prior to guS2DEmuBgRect1Cyc.</p>
+
+<p>This function generates GBIs which can be processed not only by S2DEX, but also by F3DEX.  Because of this, a scaled scrolling BG and a 3D model can both be processed by a single microcode, even when they are displayed together.</p>
+
+<p align="right"><a href="index.htm"><img
+src="../../gif/index.gif" alt="[UP]" border="0"
+width="65" height="17"></a></p>
+
+<hr>
+
+<h3><a name="02">5.2 guS2DEmuSetScissor</a></h3>
+
+<hr>
+
+<p>void guS2DEmuSetScissor(u32 ulx, u32 uly, u32 lrx, u32 lry, u8
+bilerp);</p>
+
+<dl>
+    <dt>Description:</dt>
+    <dd>Sets the scissoring parameters and texture filters referred to during processing of the function guS2DEmuBgRect1Cyc.</dd>
+    <dt>Arguments:</dt>
+    <dd>ulx<dl>
+            <dd>X coordinate at upper-left of scissor box (u10.0)</dd>
+        </dl>
+    </dd>
+</dl>
+
+<dl>
+    <dd>uly<dl>
+            <dd>Y coordinate at upper-left of scissor box (u10.0)</dd>
+        </dl>
+    </dd>
+    <dd>lrx<dl>
+            <dd>X coordinate at lower-right of scissor box (u10.0)</dd>
+        </dl>
+    </dd>
+    <dd>lry<dl>
+            <dd>Y coordinate at lower-right of scissor box (u10.0)</dd>
+        </dl>
+    </dd>
+    <dd>bilerp<dl>
+            <dd>If Bilerp interpolation processing is being done on an image, any value other than 0 is set, if PointSample is used, 0 is set. </dd>
+        </dl>
+    </dd>
+</dl>
+
+<hr>
+
+<p>Normally, the scissor box range set by g[s]DPSetScissor is conveyed to this function as an argument.  In addition, the default values for ulx, uly, lrx, lry, and bilerp are 0, 0, 320, 240, and 0, respectively, setting to render by PointSample in a 320x240 pixel frame buffer.  
+</p>
+
+<p>This function need only be called once prior to calling guS2DEmuBgRect1Cyc.  As long as there are no changes to the scissor box and the texture filter, this only needs to be called once when the game is initializing and there is no need to call it every time a frame is rendered.
+</p>
+
+<p align="right"><a href="index.htm"><img
+src="../../gif/index.gif" alt="[UP]" border="0"
+width="65" height="17"></a></p>
+
+<hr>
+</body>
+</html>

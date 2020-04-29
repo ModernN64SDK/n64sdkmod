@@ -1,0 +1,75 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 21 - Audio Memory Usage</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. -->
+</head>
+
+<H1>21.1 Overview of the Audio RDRAM Usage</H1>
+
+<p>The amount of RDRAM needed by the audio system is dependent on numerous factors. Most importantly, the number of sounds being played at any given time will determine the size of most buffers. Most buffers must be large enough to accommodate the worst case scenario. Applications with fewer voices will need fewer buffers. The <a href="../../keywords/index/data/audio.htm#sampling rate" target="keywords">sample rate</a> and <A target="keywords" HREF="../../keywords/index/data/graphics.htm#frame rate" target="keywords">frame rate</a> chosen will effect the size of several important buffers. </p>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="01"></A>
+<H2>
+21.1.1 Audio Buffers</H2>
+
+<p>The majority of memory used by the audio, that can be optimized, comes from the following buffers: </p>
+<UL>
+<LI>
+The Sample DMA Buffers</LI>
+
+<LI>
+The Command List Buffers</LI>
+
+<LI>
+The Audio Output Buffers</LI>
+</UL>
+
+<p>There are several other buffers, but the gains obtained by optimizing them are less significant. These include: </p>
+
+<UL>
+<LI>
+The Audio <A target="keywords" HREF="../../keywords/index/data/system.htm#thread">Thread</A> <A target="keywords" HREF="../../keywords/index/data/system.htm#stack">Stack</A> size</LI>
+
+<LI>
+The Synthesizer Update Buffers</LI>
+
+<LI>
+The Sequencer Event Buffers</LI>
+</UL>
+
+<p>In addition to optimizing the buffers listed above, it is important that several other buffers are no larger than they need to be. While you cannot optimize them per se, you should check to make sure that their size is no bigger than they need to be.</p>
+
+<UL>
+<LI>
+The Audio Heap </LI>
+
+<LI>
+The Sequence Buffer</LI>
+
+<LI>
+The Bank Control File Buffer</LI>
+</UL>
+<p>Because the <A target="keywords" HREF="../../keywords/index/data/system.htm#heap">heap</A> size is dependent on the size of the buffers allocated from the heap, it is important to optimize the other buffers first.</p>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="02"></A>
+<H2>
+21.1.2 Sample Rate, Frame Rate, and Other Factors</H2>
+
+<p>In order to determine the size of most of the buffers, you will need to determine several factors first. Most importantly, sample rate and frame rate. Higher sample rates will require larger output buffers, more DMA space, and larger command list buffers. Likewise, slower
+frame rates require larger output buffers, more DMA buffer space, and larger command list buffers. </p>
+
+<p><strong>Note:</strong>  Audio frame rate can be different from video frame rate. It is possible for the audio to be operating at 60 frames per second, while the graphics are operating at 30 frames per second. </p>
+
+<P>In addition to the sample rate and frame rate, the specific sounds, and how they are set up can effect the size and number of DMA buffers, as can the individual sequences used. </p>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR>
+</BODY>
+</HTML>

@@ -1,0 +1,61 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Graphics-Chapter 3  Simple Texture Mapping</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/22/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<font style="font-size:12pt"><B>3.5  Clamp, Wrapping & Mirror</B></FONT>
+<br>
+<P>
+When texture mapping, there is no rule that says the texture must cover the entire polygon.  For example, when mapping an orderly texture like bricks, it would be easier if you could do the mapping with a small texture that you could put down like sections of wallpaper.  In fact, there is a mapping method that works this way, called "wrapping."  You can specify this attribute using the gDPLoadTextureBlock command:
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=5><TR>
+	<TD NOWRAP COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE><B>List 3-4</B>
+</TR><TR>
+	<TD NOWRAP BGCOLOR="666666" WIDTH="4" ALIGN=LEFT VALIGN=TOP><HR NOSHADE SIZE=0></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>
+<FONT COLOR="#000080"><PRE><CODE>  /* Load texture (image rgba16sign1) */
+  gDPLoadTextureBlock(glistp++,
+          rgba16sign1,              /* pointer to texture image */
+          G_IM_FMT_RGBA,            /* texel format */
+          G_IM_SIZ_16b,             /* texel size */
+          32, 32,                   /* image width & height  */
+          0,                        /* LUT (palette) index (not used here)  */
+          G_TX_WRAP, G_TX_WRAP,     /* s, t direction clamp-wrap-mirror flags */
+          5, 5,                     /* s, t mask */
+          G_TX_NOLOD, G_TX_NOLOD);  /* shift (no shift here)  */
+</CODE></PRE></FONT>
+	</TD>
+</TR></TABLE>
+<P>
+  In this example, the G_TX_WRAP constant is specified in the 8th and 9th arguments.  When this is done, the wrapping attribute is set in the tile of the loaded texture.  The four following constants have been defined for specification here:
+
+</P>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=2><TR>
+	<TD>&nbsp;</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="110" NOWRAP>G_TX_WRAP</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">Enable wrapping</TD>
+</TR><TR>
+	<TD>&nbsp;</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="110" NOWRAP>G_TX_CLAMP</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">Do not wrap</TD>
+</TR><TR>
+	<TD>&nbsp;</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="110" NOWRAP>G_TX_MIRROR</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">Enable mirror-image wrapping</TD>
+</TR><TR>
+	<TD>&nbsp;</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="110" NOWRAP>G_TX_NOMIRROR</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">Do not mirror-image wrap</TD>
+</TR></TABLE>
+<P>
+ The next two arguments take the mask values carried out on the ST values.  That is, the ST values passed to the RDP and a bitwise AND is done with the mask values to get the final ST values, on which the selection of texels is based.<br><br>
+
+     In the gfx3.c sample program, you can change the wrapping flag (__CWS_S__, __CWS_T__) and mask value (__MASK_S__, __MASK_T__) as well as the maximum ST values for each face of the cube (__MAX_S__, __MAX_T__) with the macro definitions.  Therefore, make a variety of changes to the settings to see what happens.
+</P>
+</BODY>
+</HTML>

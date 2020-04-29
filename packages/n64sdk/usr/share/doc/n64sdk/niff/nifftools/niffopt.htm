@@ -1,0 +1,47 @@
+<!doctype html "public">
+<html>
+<head>
+  <title>niffopt</title>
+</head>
+<body text="#000000" bgcolor="#FFFFFF" link="#0000EE" vlink="#551A8B" alink="#FF0000">
+
+<font face="arial" size="-1">
+<B><font size="3"><strong>
+niffopt</strong></font></b>
+
+<P>Optimizes Vtx and VtxNv in the NIFF1.0 data 
+
+<P>
+<b>Syntax</b>
+<font face="courier" size="2">
+<blockquote><pre>niffopt &lt;input file&gt &lt;output file&gt;</pre></blockquote></font>
+
+<P>
+<b>Description</b>
+<P>
+  niffopt is a filter that compensates for the optimization process of the niff2gfx converter. It optimizes the NIFF1.0 data's Vtx and VtxNv data. 
+<p>
+Whith <a href="../niff2gfx/index.htm" >niff2gfx</a>,Shape animation data is output as Raw Data, and the NIFF data's Vtx (vertex coordinates) and VtxNv (normal vector of the vertex) data is output as-is. Because this data
+eats up a large amount of memory, the niffopt command can be used to optimize the data and thereby economize on memory. 
+<p>
+niffopt does not support NIFF 2.0 data, but there is no need to use the command in this case because the <a href="../niff2nvf/index.htm" >niff2nvf</a> converter executes this same kind of optimization during the conversion process. 
+
+<P>
+<b>Notes</b>
+<P>
+  niffopt works to minimize the Vtx and VtxNv data. It is particularly effective when VtxNv Raw Data is output for niff2gfx model data. But when the data does not have Shape animation, the output from the CG tool is often already optimized. In these cases, the model data does not change even when processed with niffopt. 
+<p>
+  Furthermore, at this stage, if there are too many vertices, then memory cannot be secured for the program and problems will arise. In the SGI version, the program will automatically terminate if enough memory cannot be secured. But in the Windows version, the program will continue to try to secure memory, and this will interfere with the operation of Windows. If this occurs, stop the program using Ctrl-C. 
+<P>
+<b>See Also</b>
+<P>
+
+<p><a href="../niff2gfx/index.htm" >niff2gfx</a>
+<br><a href="../niff2nvf/index.htm" >niff2nvf</a>
+
+<p>
+<hr>
+<div align=right><a href="index.htm"><img SRC="../../gif/index.gif" BORDER=0></a></div>
+
+</body>
+</html>

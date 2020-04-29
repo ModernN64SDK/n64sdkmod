@@ -1,0 +1,241 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<title>STEP3 [N64 3D Graphics] - Chapter 1 Basic of 3D Graphics</title>
+<base target="keywords">
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park 7/12/1999 
+reviewed PWC 7/16/99-->
+
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<p><font style="font-size:12pt"><b>1-8 Texture</b></font><br>
+<br>
+<br>
+There is a limit to the shading method. For example, when you try to draw the Earth, you find that there are an infinite number of <a href="../../../keywords/index/data/graphics.htm#surface" target="keywords">surfaces</a>; including sea, continents, mountains, rivers, and so on. It is impossible to draw just by shading these surfaces because there are so many of them.  There are not enough resources to be able to handle all of these surfaces in a real-time game. Therefore, you need to use texture. Texture is simply a two-dimensional image that you paste on a model.  In the case of the Earth, you paste a picture of the Earth on a sphere model to create a model as illustrated here:</p>
+
+<table border="1" cellspacing="0">
+    <tr>
+        <td><img src="img00235.gif" width="331" height="342"> </td>
+    </tr>
+</table>
+
+<p><br>
+<b>Figure 1-8-1 Shading Only and Texture</b><br>
+<br>
+<br>
+The actual technique used to paste a two-dimensional image on a three-dimensional object is called <a href="../../../keywords/index/data/graphics.htm#texture mapping" target="keywords">texture mapping</a>. The texture mapping process has three steps:
+<ol>
+<b><li>Prepare the image data for texture mapping.</li></b>
+<b><li>Select a texture mapping application method for each <a href="../../../keywords/index/data/graphics.htm#texel" target="keywords">texel</a> (one pixel of the texture).</li></b>
+<b><li>Set the ST value for each vertex and execute texture mapping.</li></b></ol>
+
+<br>
+</p>
+
+<table border="1" cellspacing="0" cellpadding="4">
+    <tr>
+        <td><b>Example N64 Functions (Texture)</b><br>
+        <br>
+          <a href="../../../n64man/gsp/gSPTexture.htm"><b>gSPTexture</b></a><br>
+          <a href="../../../n64man/gdp/gDPLoadTexture.htm"><b>gDPLoadTexture(3P)</b></a><br>
+          <a
+        href="../../../n64man/gdp/gDPLoadTextureBlock.htm"><b>gDPLoadTextureBlock(3P)</b></a><br>
+          <a
+        href="../../../n64man/gdp/gDPLoadTextureBlock_4b.htm"><b>gDPLoadTextureBlock_4b(3P)</b></a><br>
+          <a
+        href="../../../n64man/gdp/gDPLoadTextureTile.htm"><b>gDPLoadTextureTile(3P)</b></a><br>
+        </td>
+    </tr>
+</table>
+
+<p>
+<br>
+<br>
+<b>1-8-1 Prepare 2D Image</b><br>
+<br>
+<br>
+First of all, you need to prepare the two-dimensional picture for texture mapping.  The picture has various formats, but we will limit our discussion to the following main formats: <br>
+<br>
+<br>
+<b># Bitmap (RGBA) Format</b><br>
+
+   The bitmap format is composed of four elements of RGBA per each texel.<br>
+ A is for alpha value, which indicates the level of opacity (and therefore transparency). If all the texels are at full opacity (that is, none of them are translucent), the bitmap format may use just the RGB elements. <br>
+<br>
+<br>
+<b># Index Color Format</b><br>
+The <a
+href="../../../keywords/index/data/graphics.htm#color index" target="keywords">index color</a> format uses the <a href="../../../keywords/index/data/graphics.htm#TLUT" target="keywords">TLUT</a> (Texture Look-Up Table) and index texel data.  This method loads several colors on a color pallet, and then specifies the pallet number of the texel using the index.</p>
+
+<table border="1" cellspacing="0">
+    <tr>
+        <td><img src="img00236.gif" width="245" height="285"> </td>
+    </tr>
+</table>
+
+<p><br>
+<b>Figure 1-8-2 Pallet and Index</b><br>
+<br>
+<br>
+
+   This format generally requires less data than does the bitmap format. <br>
+<br>
+This becomes apparent if you compare the amount of data required by a bitmap picture that expresses 1 texel by using 4 bytes to hold the RGBA value (R: 8-bits, G: 8-bits, B: 8-bits, A:8-bits), with the amount of data required by an index color picture that expresses 1 texel by using 1 byte to hold the index (256 indexes), plus another 4 bytes to hold the color pallet (R: 8bit, G: 8bit, B: 8-bit, A: 8-bit). Both pictures are the same size (32x32 texels). <br>
+<br>
+The <b>bitmap picture</b> needs 4 bytes for every texel,<br>
+so it requires 32 x 32 x 4 bytes for a total of <b>4096 bytes</b>.<br>
+<br>
+The <b>index color</b> picture's index needs 1 byte for every texel,<br>
+thus it needs 32 x 32 x 1 bytes for a total of 1024 bytes for the index data.<br>
+In addition,the space needed to hold the index pallet, which is 256 X 4 bytes for a total of 1024 bytes, is required to hold the pallet data. (Add the two together and the index color picture requires only 1024 + 1024 bytes for a total of <b>2048 bytes</b>.<br>
+<br>
+
+   As you can see, the index color format can represent the same picture using fewer bytes.</p>
+
+<table border="1" cellspacing="0">
+    <tr>
+        <td><img src="img00237.gif" width="423" height="288"> </td>
+    </tr>
+</table>
+
+<p><br>
+<b>Figure 1-8-3 Comparison of the data size</b><br>
+<br>
+<br>
+However, you need to be careful because the color pallet in the index color format is limited. Because the maximum pallet number is 256, the number of colors is limited to 256. Therefore, if you have a large complex picture that requires more than 256 colors, you need to use the bitmap format if quality is important. <br>
+<br>
+</p>
+
+<table border="1" cellspacing="0" cellpadding="4"
+    <tr>
+        <td><b>Example N64 Functions (Loading the TLUT)</b><br>
+        <br>
+          <a href="../../../n64man/gdp/gDPLoadTLUT_pal16.htm"><b>gDPLoadTLUT_pal16</b></a><br>
+          <a
+        href="../../../n64man/gdp/gDPLoadTLUT_pal256.htm"><b>gDPLoadTLUT_pal256</b></a><br>
+        </td>
+    </tr>
+</table>
+
+<p><br>
+<br>
+<b># Intensity Format</b><br>
+
+
+   N64 has a format called &quot;intensity&quot; to express brightness. It is sometimes used as IA (<a href="../../../keywords/index/data/graphics.htm#intensity alpha" target="keywords">Intensity Alpha</a>) by combining intensity and alpha. Intensity holds information about brightness only; it has no color information. It can specify a color by using the color combiner, but this is like setting the color to the texture of the gray scale. As a result, it appears to be the gray scale of red or blue.  In practical application, it is used to show smoke or a flame by combining <a
+href="../../../keywords/index/data/graphics.htm#alpha value"
+target="keywords">alpha values.</a> The biggest distinctive feature of the Intensity format is its compact data size.   It needs the minimum three elements of RGB to have colors, but the intensity contains only information for brightness.  Thus, even if you compared RGBA with IA, the number of elements is only half.
+<br>
+<br>
+<br>
+<b>1-8-2 Choose Texturing Method</b><br>
+<br>
+<br>
+You have the option of simply drawing each texel's color information on the model, or adding special effects to the picture information.  The direct drawing method is called the &quot;decal mode&quot; or the &quot;sticker mode.&quot;<br>
+The addition of lighting and shading effects to texel colors is called the &quot;modulation mode.&quot;  Mixing texel colors with other arbitrary colors is called the &quot;blend mixing mode.&quot; <br>
+
+   The decal mode is not complicated, but it does not show the impact of lighting effects. Therefore, if you use it in excess you may ruin the stereoscopic effect of your scene.</p>
+
+<table border="1" cellspacing="0">
+    <tr>
+        <td><img src="img00238.gif" width="385" height="181"> </td>
+    </tr>
+</table>
+
+<p><br>
+<b>Figure 1-8-4 Choose Texturing Method</b>
+<br>
+<br>
+</p>
+
+<table border="1" cellspacing="0" cellpadding="4">
+    <tr>
+        <td><b>Example N64 Functions</b><br>
+        <br>
+          <a href="../../../n64man/gdp/gDPSetCombineMode.htm"><b>gDPSetCombineMode</b></a><b> (Setting for color information)</b><br>
+          <a href="../../../n64man/gdp/gDPSetRenderMode.htm"><b>gDPSetRenderMode</b></a><b> (Setting for <a
+        href="../../../keywords/index/data/graphics.htm#rendering"
+        target="keywords"><b>rendering</b> information)</b><br>
+        </td>
+    </tr>
+</table>
+
+<p>
+<br>
+<br>
+<b>1-8-3 Texture Coordinates</b><br>
+<br>
+<br>
+As a final step, you need to set the texture coordinates (S,T values) of the mapping data to each vertex and execute the texture mapping.</p>
+
+<table border="1" cellspacing="0">
+    <tr>
+        <td><img src="img00239.gif" width="311" height="207"> </td>
+    </tr>
+</table>
+
+<p><br>
+<b>Figure 1-8-5 Pasting a Texture</b><br>
+<br>
+<br>
+Then you can map the texture on the surface. <br>
+<br>
+</p>
+
+<table border="1" cellspacing="0" cellpadding="4">
+    <tr>
+        <td><b>Example N64 Functions</b><br>
+        <br>
+          <a href="../../../n64man/gsp/gSPVertex.htm"><b>gSPVertex</b></a><b>    (set the vertex information)</b><br>
+          <a href="../../../n64man/gsp/gSPModifyVertex.htm"><b>gSPModifyVertex</b></a><b> (modify the vertex information)</b><br>
+        </td>
+    </tr>
+</table>
+
+<p>
+<br>
+<br>
+<b>1-8-4 Mixing Process (Translucence)</b><br>
+<br>
+<br>
+In N64, it is possible to display translucence. We call the effect of seeing through to the rear of a scene, as if through jelly or cellophane, the mixing (blending or translucence)process.</p>
+
+<table border="1" cellspacing="0">
+    <tr>
+        <td><img src="img00240.gif" width="436" height="277"> </td>
+    </tr>
+</table>
+
+<p><br>
+<b>Figure 1-8-6 Example of the mixing process</b><br>
+<br>
+<br>
+There are many methods you can use to implement the mixing process. The following are two such examples:
+<Ol><b><li>Use the alpha value of the texture</li></b>
+<b><li>When drawing the surface, draw by multiplying the mixed coefficient</li></b>
+</ol>
+<br>
+
+<p>
+<b># Blending by Using the Alpha Value</b><br>
+By using this method when you create the mapping data, you can prepare the RGBA data to specify the alpha value for each texel. The alpha value shows the level of translucence(more transparent or more opaque). For example, if the alpha value is 3.0, that means blend 30% for the already drawn pixel data when you draw the mapping data. The advantage of this method is that you can implement right down to the <a href="../../../keywords/index/data/graphics.htm#sprite" target="keywords">sprite</a> (used in previous games) because it sets the alpha value for each pixel. <br>
+<br>
+<br>
+<b># Blending by Using the Mixed Coefficient</b><br>
+This method multiplies the mixed coefficient when you draw a surface. It blends without applying the alpha value in the mapping data, so it sets the level of transparency for the entire object. It therefore cannot be used to specify the transparency in units of texel. <br>
+<br>
+<br>
+When you provide the blend, you need to be careful of the drawing order of the translucent surfaces.  In short, you need to follow the drawing order below.
+<ol> <b><li>Draw the opaque surfaces</li></b>
+ <b><li>Draw the translucent surfaces from the rear forward</li></b></ol>
+<p>
+Basically, the translucent surfaces are implemented by applying the translucent process to the picture that has already been drawn.  Therefore, if you draw a translucent surface before drawing an opaque surface, the effect looks unnatural because there are no objects already drawn to be blended.  Also, if you start to draw the translucent surfaces from the front, the effect looks unnatural because the rear translucent surfaces are drawn on top of the translucent surfaces in front.<br>
+<br>
+<li>However, in reality this "unnatural look" is not very conspicuous, thus it is not absolutely necessary to draw starting from the rear.</li>
+<br><br><br>
+</body>
+</html>

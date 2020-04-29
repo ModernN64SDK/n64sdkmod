@@ -1,0 +1,59 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.>
+<TITLE>gSPLineW3D</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>gSPLineW3D [Macro]</H1>
+
+<p><b>Function</b></p>
+
+<p>gSPLineW3D</p>
+<P>
+<i>Generates one line with the specified width</i>
+</P>
+<p><b>Syntax</b></p>
+<p>
+<PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gbi.htm">gbi.h</A> */
+gSPLineW3D(Gfx *gdl, s32 v0, s32 v1, s32 wd, s32 flag)
+gsSPLineW3D(         s32 v0, s32 v1, s32 wd, s32 flag)</pre></code></p>
+
+<p><b>Arguments</b></p>
+<p>
+<DL>
+  <DT><B>gdl</B>
+  <DD>the display list pointer. 
+  <DT><B>v0</B>, <B>v1</B>
+  <DD>the vertex buffer indices (0~31). 
+  <DT><B>wd</B>
+  <DD>the line width (0~255, in half-pixel units). 
+  <DT><B>flag</B>
+  <DD>the line flat-shading index (0~1): 
+  <DD>0 (draws line using the <B>v0</B> color.)
+  <DD>1 (draws line using the <B>v1</B> color.)
+</DL></p>
+<p><b>Description</b></font></p>
+<P>
+Generates one line with the specified width using the vertices <B>v0</B>, <B>v1</B> loaded in the vertex buffer by the <A HREF="gSPVertex.htm">gSPVertex</A> macro. The line width <B>wd</B> is specified in half-pixel units. Note that when the line is actually generated, 1.5 pixel (the minimum line width) is added to this specified width. In other words, specifying 0 half-pixels draws a 1.5 pixel-wide line, specifying 1 half-pixel (0.5-pixel) draws a 2.0 pixel-wide line, specifying 2 half-pixels (1 pixel) draws a 2.5 pixel-wide line, etc. For other features of this macro, see <A HREF="gSPLine3D.htm">gSPLine3D</A>. This macro works only when line microcode (L3DEX, L3DEX2) is loaded. 
+</P>
+<P>
+For details, please see Section 11.9.2, "Lines" in the N64 Programming Manual. 
+</P>
+<p><b>Note</b></font></p>
+<P>
+Because lines are rendered as trapezoids, when you draw thick lines there is sometimes a notable difference in thickness at the two "caps" of the trapezoid (the two ends of the line). 
+</P>
+<p><b>See Also</b></font></p>
+<P>
+<A HREF="gSPLine3D.htm">gSPLine3D</A>, <A HREF="gSPVertex.htm">gSPVertex</A>
+</P>
+<p><b>Revision History</b></font></p>
+<P>
+02/01/98  Entirely revised.
+</P>
+</BODY>
+</HTML>

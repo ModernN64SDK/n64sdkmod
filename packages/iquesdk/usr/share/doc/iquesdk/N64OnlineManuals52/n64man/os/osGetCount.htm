@@ -1,0 +1,42 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.
+  PWC- updated formatting
+  MAP- added links, updated text
+-->
+<title>osGetCount</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>osGetCount</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p>osGetCount</p>
+
+<p><i>Returns CPU count register</i></p>
+
+<h3>Syntax</h3>
+<p>
+<blockquote>
+    <pre>#include &lt;ultra64.h&gt;     /* <A HREF="../../header/ultra64.htm">ultra64.h</A> */
+u32 osGetCount(void);</pre></blockquote></p>
+
+<h3>Description</h3>
+<p>
+<!--  -->The <tt>osGetCount</tt> routine returns the value of the MIPS R4300 count register, which is incremented at half the speed of the CPU clock.  Since this counter increments at 46.875 MHz, 1 cycle represents around 21.33 nanoseconds.  When the counter reaches its maximum value it returns to zero and continues to increment.  The counter has a length of 32 bits, so it will repeat approximately every  92 seconds.  Macros like <A href="OS_CYCLES_TO_NSEC.htm">OS_CYCLES_TO_NSEC</A> are available for converting between the counter and time units of nanoseconds or microseconds.<!--  -->
+</P>
+<P>
+The counter value may be used as a pseudo-random number generator or for short-duration timing purposes.
+
+<h3>See Also</h3>
+
+<p><a href="OS_CYCLES_TO_NSEC.htm">OS_CYCLES_TO_NSEC</a>, <a
+href="osTvType.htm">osTvType</a>, and <a href="osGetTime.htm">osGetTime</a></p>
+<H3>Revision History</H3>
+<P>
+1999/06/15  Completely rewritten
+</P>
+
+</body>
+</html>

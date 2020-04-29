@@ -1,0 +1,468 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN"
+Editor Notes: MAP added revisions  9/29/99
+PWC: Edited 2-21-00>
+<HTML>
+<HEAD><link rel=stylesheet type="text/css" href="gif/style.css">
+<TITLE>Controller Pak</TITLE>
+</HEAD>
+
+<BODY>
+
+<A name="index"></A>
+
+<IMG src="../../gif/n64_logo2.gif" height="21" width="136">
+<P>
+<h3><FONT color="#FF8000">Q&A</FONT>- Controller Pak</h3>
+
+
+<P>
+<TABLE border="0">
+  <TR>
+    <TD valign="top" width="50"><A href="pack.htm#01"><b>QA1</b></A></TD>
+    <TD>How can you distinguish between damage to the Controller Pak and insertion of the Rumble Pak?</TD></TR>
+  <TR>
+    <TD valign="top" width="50"><A href="pack.htm#02"><b>QA2</b></A></TD>
+    <TD>The number of characters in game titles in the Controller Pak Menu.</TD></TR>
+  <TR>
+    <TD valign="top" width="50"><A href="pack.htm#03"><b>QA3</b></A></TD>
+    <TD>Identity of Controller Pak after Rumble Pak.</TD></TR>
+  <TR>
+    <TD valign="top" width="50"><A href="pack.htm#04"><b>QA4</b></A></TD>
+    <TD>Every time I call osPfsInitPak() to initialize, the error PFS_ERR_CONTFAIL is returned. </TD></TR>
+  <TR>
+    <TD valign="top" width="50"><A href="pack.htm#05"><b>QA5</b></A></TD>
+    <TD>How can I intentionally destroy the ID area of the Controller Pak?</TD></TR>
+  <TR>
+    <TD valign="top" width="50"><A href="pack.htm#06"><b>QA6</b></A></TD>
+    <TD>How do I find the serial number?</TD></TR>
+  <TR>
+    <TD valign="top" width="50"><A href="pack.htm#07"><b>QA7</b></A></TD>
+    <TD>Does the Controller Pak Menu have to use the specified nosPak?</TD></TR>
+  <TR>
+    <TD valign="top" width="50"><A href="pack.htm#08"><b>QA8</b></A></TD>
+    <TD>What do the company code and the game code do?</TD></TR>
+  <TR>
+    <TD valign="top" width="50"><A href="pack.htm#09"><b>QA9</b></A></TD>
+    <TD>I can't restore the Controller Pak.</TD></TR>
+  <TR>
+    <TD valign="top" width="50"><A href="pack.htm#10"><b>QA10</b></A></TD>
+    <TD>When is PFS_ERR_NEW_PACK returned?</TD></TR>
+  <TR>
+    <TD valign="top" width="50"><A href="pack.htm#11"><b>QA11</b></A></TD>
+    <TD>I can't access the 64GB Pak.</TD></TR>
+  <TR>
+    <TD valign="top" width="50"><A href="pack.htm#12"><b>QA12</b></A></TD>
+    <TD>Will the motor absolutely stop on the third osMotrStop()?</TD></TR>
+<TR>
+    <TD valign="top" width="50"><A href="pack.htm#12"><b>QA13</b></A></TD>
+    <TD>Is a prompt necessary when only the Rumble Pak is being used?</TD></TR>
+<TR>
+    <TD valign="top"><A href="pack.htm#14"><B>QA14</B></A></TD>
+    <TD>How do I get a broken Controller Pak? (199906)</TD></TR>
+  <TR>
+    <TD valign="top"><A href="pack.htm#15"><B>QA15</B></A></TD>
+    <TD>Is it taking too long to process the osMotorInit function? (199907)</TD></TR>
+  <TR>
+    <TD valign="top"><A href="pack.htm#16"><B>QA16</B></A></TD>
+    <TD>Repairing Controller Paks whose batteries have been removed. (199911)</TD></TR>
+  <TR>
+    <TD valign="top"><A href="pack.htm#17"><B>QA17</B></A></TD>
+    <TD>Are the register area specifications in the GB ROM different overseas? (200001)</TD></TR>
+  <TR>
+    <TD valign="top"><A href="pack.htm#18"><B>QA18</B></A></TD>
+    <TD>How do I get an English version of the Controller Pak menu? (199912)</TD></TR>
+  <TR>
+    <TD valign="top"><A href="pack.htm#19"><B>QA19</B></A></TD>
+    <TD>Data registration area of the overseas Game Boy. (200003) <IMG src="../../gif/new52.gif"></TD></TR>
+  <TR>
+    <TD valign="top"><A href="pack.htm#20"><B>QA20</B></A></TD>
+    <TD>Using different controllers. (200003) <IMG src="../../gif/new52.gif"></TD></TR>
+</TABLE>
+
+<HR>
+<P><A name="01">
+<FONT  color="#FF0000"><b>Q1</b></FONT></A>
+<b> When the error code, "PFS_ERR_ID_FATAL" is returned, (when I call <A href="../../n64man/os/osPfsInitPak.htm">osPfsInitPak</A> while initializing the Controller Pak) how can I tell if the ID area has been destroyed or if a Rumble Pak has been inserted? </b>
+
+<P>
+<FONT  color="#008000"><b>A1</b></FONT> Since OS2.0i Patch 5, PFS_ERR_ID_FATAL will be returned only when the ID area has been destroyed, while PFS_ERR_DEVICE will be returned if any Pak other than a Controller Pak is inserted. <p>
+Regardless of the OS version, the only way to tell if a Rumble Pak has been inserted is to execute <A href="../../n64man/os/osMotorInit.htm">osMotorInit</A> and see if an error is returned. <p>
+Generally speaking, since there are no functions which find which kind of Pak has been inserted, this has to be determined by running the various initialization routines for those devices which will be used by the game. 
+
+<P align="right">
+<A href="pack.htm#index">top</A>
+
+<HR>
+<P><A name="02">
+<FONT  color="#FF0000"><b>Q2</b></FONT></A>
+<b> We are currently involved in localization work to sell overseas Nintendo 64 software domestically (in Japan).  We have encountered a problem with the current layout of the Controller Pak menu in which 16 characters cannot be displayed for game titles.</b>
+
+<P><b>
+In the original overseas version, game titles of other manufacturers are processed as "OTHER GAME", without a space to attach an extension.  Therefore, is it acceptable to list (for example, in the case of Mah Jong Master (10 characters in Japanese)) "Mah Jong Ma~" (8 characters in Japanese) and chop off the remaining characters which can't be displayed, representing them with a "~"?</b>
+
+<P>
+<FONT color="#008000"><b>A2</b></FONT>
+ The following items are listed in the Programming Cautions:
+<font face="courier" size="2">
+<PRE>
+&gt;10-8 Normalize the display items in the Pak Menu (Required)
+&gt;When the Controller Pak menu is started, display a list of 
+&gt;the game notes titles, game notes extension, the number of 
+&gt;pages used, and the blank pages.
+</PRE></font>
+<P>
+If this is not followed, it will result in a NG in the lot check.
+ 
+<P>
+While it is superfluous, rather than displaying OTHER GAME for the software titles of other companies in overseas versions, display the notes titles.  However, since there probably isn't a katakana font in the overseas versions when a katakana note title is entered, OTHER GAME may as well be displayed.
+
+<HR>
+<P><A name="03">
+<FONT color="#FF0000"><b>Q3</b></FONT></A>
+<b> I am developing software which is compatible with both the Controller Pak and the Rumble Pak.  Data are initially loaded with the Controller Pak, the game is played with the Rumble Pak, and then I'd like to have the data saved again with the Controller Pak.  However, since this would occur after inserting the Rumble Pak, it seems that I will have to execute <A href="../../n64man/os/osPfsInitPak.htm">osPfsInitPak()</A>.  If this is the case, it seems that if the Pfs structure is initialized, it will be impossible to distinguish between the Controller Pak before and after.  Is this the case?  Do I have any options? 
+</b>
+
+<P>
+<FONT  color="#008000"><b>A3</b></FONT>  When inserting and removing the Controller Pak and the Rumble Pak, it is necessary to initialize with <A href="../../n64man/os/osPfsInitPak.htm">osPfsInitPak()
+ </a>
+<P>
+As for the Controller Pak, just because the ID, for example, is the same, does not mean it is the same Controller Pak.  The Controller Pak is identified by checking the contents (where the individual ID is written) of the Controller Pak. 
+
+<P align="right">
+<A href="pack.htm#index">top</A>
+ 
+<HR>
+<P><A name="04">
+<FONT   color="#FF0000"><b>Q4</b></FONT></A>
+<b> Every time I call <A href="../../n64man/os/osPfsInitPak.htm">osPfsInitPak()</A> to initialize, PFS_ERR_CONTFAIL is returned. </b>
+
+<P>
+<FONT color="#008000"><b>A4</b></FONT> Check the connections for the base Controller Pak.  (Check the insertion location for debris, dirty contacts, etc.)
+
+<P>
+See if a test program, such as nosPak in demos, will run properly.  If there is a problem with this, there is probably a hardware problem. <p>
+If things seem to be running properly, there is probably a mistake in your code.
+
+<P align="right">
+<A href="pack.htm#index">top</A>
+
+<HR>
+<P><A name="05">
+<FONT   color="#FF0000"><b>Q5</b></FONT></A>
+<b> I would like to run a check for when the ID area of the Controller Pak has been destroyed, but how would I create a Controller Pak whose ID area has been destroyed? </b>
+
+<P>
+<b><font color="#008000">A5</b></FONT></A>  There is currently a program being distributed at NTSC-ONLINE which destroys the ID area of the Controller Pak.  Download it and use it. 
+
+<P>
+While it is not recommended, if you would like to write your own program, you may do the following.
+
+<P>
+There is an internal function in the OS called osContRamWrite().  You can use this function to write data to any area of the Controller Pak.  A Controller Pak with a destroyed ID area can be created by destroying the first page of data with this function. 
+
+<P>
+Following is the function specification for _osContRamWrite() (and the function to read it _osCountRamRead()). 
+
+<P>
+<b>Note:</b> This function is an internal function of the OS.  Its use for anything other than debugging is prohibited.
+
+<PRE>
+----------------------------------------------------------------------
+Function Name
+        __osContRamRead  - Reads 32 bytes from the Controller Pak
+        __osContRamWrite - Writes 32 bytes to the Controller Pak
+
+Syntax
+        #include &lt;ultra64.h&gt;
+        extern s32 __osContRamRead(OSMesgQueue *, int, u16, u8 *);
+        extern s32 __osContRamWrite(OSMesgQueue *, int, u16, u8 *, int);
+
+        s32 __osContRamRead(OSMesgQueue *mq, int channel, u16 address,
+                u8 *buffer);
+
+        s32 __osContRamWrite(OSMesgQueue *mq, int channel, u16 address,
+                u8 *buffer, int force);
+
+Description 
+        The __osContRamRead function is for reading 32 bytes of data from the Controller Pak.  The
+_osContRamWrite function is for writing 32 bytes of data to the Controller Pak.  *buffer indicates the buffer for reading/writing data.  Its size must be 32 bytes or greater.  channel specifies the port (0~3) of the Controller. 
+
+address is the value shifted 5 bits to the right of the address of the Controller Pak.  An example is shown below. 
+
+          address       CONTROLLER PAK real address
+                0               0x0000 - 0x001f
+                1               0x0020 - 0x003f
+                2               0x0040 - 0x005f
+                .                      .
+                .                      .
+                .                      .
+                .                      .
+        
+siMessageQ is the message queue initialized in association with OS_EVENT_SI.  See osSetEventMesg(3P) for how to set up this association. 
+
+force is the forced write flag.  When this value is 0 [zero], nothing will be written to the system area of the controller.  If 1 is specified, you can write to any area. 
+
+osContInit(3P) must be called before calling
+__osContRamRead or __osContRamWrite.  This for internal initialization of the OS.  
+
+A 0 [zero] will be returned as the return value if the function ends normally.  One of the following errors will be returned if this is not the case. 
+
+PFS_ERR_NOPACK          
+A Controller Pak is not inserted
+
+PFS_ERR_NEW_PACK        
+A new Controller Pak has been inserted
+
+PFS_ERR_CONTRFAIL       
+Controller data transfer failure
+
+Example
+        #define   CONTNO    0
+        main()
+        {
+          OSMesgQueue      intMesgQueue;
+          OSMesg           intMesgBuf[1];
+          OSContStatus     sdata[MAXCONTROLLERS];
+          u8               cont_pattern, pak_pattern;
+          OSPfs            pfs[MAXCONTROLLERS];
+          int              i;
+          u8               buffer[256];
+          u8               *addr;
+
+          osCreateMesgQueue(&amp;intMesgQueue, intMesgBuf, 1);
+          osSetEventMesg(OS_EVENT_SI, &amp;intMesgQueue, dummyMessage);
+          osContInit(&amp;intMesgQueue, &amp;cont_pattern, &amp;sdata[0]);
+
+          addr = buffer;
+          for(i = 0 ; i &lt; 8 ; i ++, addr+=32) {  /* 32 * 8 = 256 Bytes */
+            if  ((ret = __osContRamRead(&amp;intMessageQ, CONTNO, i,
+                                addr)) != 0) {
+            osSyncPrintf(&quot;Read Error in address %4x\n&quot;, i*32);
+          }
+          for (i = 0 ; i &lt; 256 ; i ++) {
+            osSyncPrintf(&quot;%2x &quot;, buffer[i]);
+          }
+        }
+</PRE>
+
+<P align="right">
+<A href="pack.htm#index">top</A>
+
+<HR>
+<P><A name="06">
+<FONT  color="#FF0000"><b>Q6</b></FONT></A>
+<b> Can I get the Controller Pak serial number from the application side?</b>
+
+<P>
+<FONT  color="#008000"><b>A6</b></FONT>   There is no function for getting the serial number in a form that can be incorporated into the game application. 
+
+<P align="right">
+<A href="pack.htm#index">top</A>
+
+<HR>
+<P><A name="07">
+<FONT   color="#FF0000"><b>Q7</b></FONT></A>
+<b> Does the Controller Pak menu have to use the nosPak in the OS?</b>
+
+<P>
+<FONT   color="#008000"><b>A7</b></FONT> If the Controller Pak menu has the identical function as nosPak, you may create your own.  Fonts and graphics are not specified. <p>
+As long as the game can be started by pressing RESET while holding down the START button, you may also use any other starting methods. 
+
+<P align="right">
+<A href="pack.htm#index">top</A>
+
+<HR>
+<P><A name="08">
+<FONT   color="#FF0000"><b>Q8</b></FONT></A>
+<b> What procedure should be used to obtain the "company code" and the "game code" for writing to the Controller Pak?
+</b>
+
+<P>
+<FONT  color="#008000"><b>A8</b></FONT>  The company code is a two-digit code assigned to your company.  We will provide you with a company code the first time you create software for our hardware. 
+
+<P>
+The game code is a 4-digit game original code which is registered in the "N64 Software Specification Sheet" which we will provide after you have entered into a contract with us.
+
+<P>
+The term "game code" is used in the manuals, but "initial code" is the official term, and "initial code" is used in the Master ROM Submission Checklist. 
+
+<P align="right">
+<A href="pack.htm#index">top</A>
+
+<HR>
+<P><A name="09">
+<FONT   color="#FF0000"><b>Q9</b></FONT></A>
+<b> Problems occur during Controller Pak recovery.</b>
+
+<BLOCKQUOTE>
+<A href="../../n64man/os/osPfsInitPak.htm"><PRE>osPfsInitPak()</PRE></A>
+<A href="../../n64man/os/osMotorInit.htm"><PRE>osMotorInit()</PRE></A>
+<A href="../../n64man/os/osGbpakInit.htm"><PRE>osGbpakInit()</PRE></A>
+</BLOCKQUOTE>
+
+<P><b>
+Call the above initialization functions using the variables for the same OSPfs structure.  During recovery, after waiting for the next button to be pressed, <A href="../../n64man/os/osPfsRepairId.htm">osPfsRepairId()</A> is called.  The same OSPfs variables are used here as well.  At this time, PFS_ERR_INVALID is returned as the return value and the recovery is not completed.</b>
+
+<P>
+<FONT  color="#008000"><b>A9</b></FONT> To execute a Controller Pak recovery, it is necessary to use the OSPfs structure which was initialized with <A href="../../n64man/os/osPfsInitPak.htm">osPfsInitPak()</A>.  PFS_ERR_INVALID will be returned after using any other initialization function (<A href="../../n64man/os/osMotorInit.htm">osMotorInit()</A>, <A href="../../n64man/os/osGbpakInit.htm">osGbpakInit()</A>). 
+
+<P align="right">
+<A href="pack.htm#index">top</A>
+
+<HR>
+<P><A name="10">
+<FONT  color="#FF0000"><b>Q10</b></FONT></A>
+<b>When the following kind of sequence is performed, PFS_ERR_NEW_PACK is not returned when <A href="../../n64man/os/osPfsInitPak.htm">osPfsInitPak()</A> is called.  Shouldn't PFS_ERR_NEW_PACK be returned in this case? 
+</b>
+
+<OL>
+  <LI><A href="../../n64man/os/osContInit.htm">osContInit()</A> 
+  <LI><A href="../../n64man/os/osPfsInitPak.htm">osPfsInitPak()</A> 
+  <LI><A href="../../n64man/os/osContGetQuery.htm">osContGetQuery()</A> until CONT_CARD_PULL is returned 
+  <LI><A href="../../n64man/os/osContGetQuery.htm">osContGetQuery()</A> until CONT_CARD_ON is returned
+  <LI><A href="../../n64man/os/osPfsInitPak.htm">osPfsInitPak()</A>
+</OL>
+<P>
+<b>In addition, PFS_ERR_NEW_PACK is returned if <A href="../../n64man/os/osPfsFreeBlocks.htm">osPfsFreeBlocks()</A>, etc., is called instead of <A href="../../n64man/os/osPfsInitPak.htm">osPfsInitPak()</A>.  Is this due to a difference in NEW_PACK determination methods?</b>
+
+<P>
+<FONT color="#008000"><b>A10</b></FONT> <A href="../../n64man/os/osPfsInitPak.htm">  osPfsInitPak()</A> performs the initial read of the Controller Pak ID.  PFS_ERROR_NEW_PACK will be returned if the Controllers' tasks are CONT_CARD_ON=1 and CONT_CARD_PULL=1 during this read processing.
+
+<P>
+Since the CONT_CARD_PULL flag is set to 0 by <A href="../../n64man/os/osContGetQuery.htm">osContGetQuery()</A> in the sequence in your question, PFS_ERROR_NEW_PACK would not be returned by <A href="../../n64man/os/osPfsInitPak.htm">osPfsInitPak()</A>.
+
+<P>
+The NEW_PACK criteria are slightly different for <A href="../../n64man/os/osPfsFreeBlocks.htm">osPfsFreeBlocks()</A>.  The initial read of the Controller Pak ID is the same, but instead of returning a NEW_PACK error when the status is CONT_CARD_ON=1 and CONT_CARD_PULL=1, the ID is simply read again.  The ID value during this read is compared with the ID value read when <A href="../../n64man/os/osPfsInitPak.htm">osPfsInitPak()</A> was called (the value in the pfs structure of the argument), and PFS_ERROR_NEW_PACK is returned if they are different. 
+
+<P>
+If <A href="../../n64man/os/osPfsFreeBlocks.htm">osPfsFreeBlocks()</A> is used instead of <A href="../../n64man/os/osPfsInitPak.htm">osPfsInitPak()</A>, you may think that you will be able to use PFS_ERR_NEW_PACK to determine if the Controller Pak has been replaced with a different one. However, since the same ID does not necessarily mean that the Controller Pak is the same, be sure to execute <A href="../../n64man/os/osPfsInitPak.htm">osPfsInitPak()</A> at the timing of 5, above. 
+Determination of whether or not the pak is the same must be done in the contents of the file.
+
+<P align="right">
+<A href="pack.htm#index">top</A>
+
+<HR>
+<P><A name="11">
+<FONT  color="#FF0000"><b>Q11</b></FONT></A>
+<b> I can't access the N64 Pak.</b>
+
+<P>
+<FONT  color="#008000"><b>A11</b></FONT>  Operation will become strange if another thread is accessing an SI device, such as the Controller.  Consequently, exclusive control is necessary.  This is the same for other SI device function, such the Rumble Pak functions. 
+
+<P align="right">
+<A href="pack.htm#index">top</A>
+
+<HR>
+<P><A name="12">
+<FONT  color="#FF0000"><b>Q12</b></FONT></A>
+<b> The Rumble Pak precautions state to</b>
+
+<BLOCKQUOTE>
+ "Execute <A href="../../n64man/os/osMotorStop.htm">osMotorStop()</A> 3 consecutive times to turn the motor OFF."
+</BLOCKQUOTE> 
+<P>
+<b>but isn't it possible that the motor won't turn off even if you execute <A href="../../n64man/os/osMotorStop.htm">osMotorStop()</A> 3 times?</b>
+
+<P>
+<FONT   color="#008000"><b>A12</b></FONT>  Contact defects develop in the connectors due to vibrations, and the motor frequently won't stop even if <A href="../../n64man/os/osMotorStop.htm">osMotorStop</A> is executed once.  It won't cause any problems to execute the function 3 times, but it may not stop the motor with 100% certainty. 
+
+<P align="right">
+<A href="pack.htm#index">top</A>
+ 
+<HR>
+<P><A name="13">
+<FONT  color="#FF0000"><b>Q13</b></FONT></A>
+<b>Is the message "Insert the Rumble Pak at this time..." required when other Paks are used together with a Rumble Pak necessary when only the Rumble Pak is being used?</b>
+
+<P>
+<FONT   color="#008000"><b>A13</b></FONT> It is not necessary.  Of course, having the message won't cause any problems either. 
+
+<P align="right">
+<A href="pack.htm#index">top</A>
+ 
+<HR>
+<P>
+<A name="14"><FONT color="#FF0000"><b>Q14</b></FONT></A>
+<b>I would like to get hold of a broken Controller Pak so that I can check programs when a broken Controller Pak is inserted.  What should I do to get one?</b>
+
+<P>
+<FONT color="#008000"><b>A14</b></FONT>
+You can break the content of a Controller Pak with software called "pakfatal" on the Developer's Kit CD.
+<P>It is located in n64kit/misc/pakfatal.
+<P align="right">
+<A href="pack.htm#index">top</A>
+
+<HR>
+<P>
+<A name="15"><FONT color="#FF0000"><b>Q15</b></FONT></A>
+<b>It takes as long as 7 ms for <A href="../../n64man/os/osMotorInit.htm">osMotorInit</a> to process.  Is that normal?</b>
+<P><b>On single-frame games with multiple Rumble Paks, I may be losing a key when I run <A href="../../n64man/os/osMotorInit.htm">osMotorInit</a> repeatedly during a game.</b>
+
+<P>
+<FONT color="#008000"><b>A15</b></FONT> About 7 ms is normal.  
+<P>When running <A href="../../n64man/os/osMotorInit.htm">osMotorInit</a> on multiple Rumble Paks, please set it so that the process takes place once for each frame.
+<P align="right">
+<A href="pack.htm#index">top</A>
+
+<HR>
+<P> <A name="16"><FONT color="#FF0000"><b>Q16</b></FONT></A>
+<b>When I call the <a href="../../n64man/os/osPfsInitPak.htm">osPfsInitPak</a> function with a Controller Pak inserted and the batteries removed, I get a PFS_ERR_ID_FATAL message.  Thus, when I initialized using <a href="../../n64man/os/osPfsRepairId.htm">osPfsRepairId</a>, the returned value becomes 0, the fix is considered successful and the program goes into operation. Is it acceptable to run the <a href="../../n64man/os/osPfsInitPak.htm">osPfsInitPak</a> a second time (after fixing it) and check the returned value in order to avoid this?</b>
+
+<P>
+<FONT color="#008000"><b>A16</b></FONT> We assume that you tried removing the batteries in order to test the "broken Controller Pak."
+However, there is no way to detect a Pak without batteries or a Pak with dead batteries, so we don't perform tests using these types of Paks even when we perform lot checks.
+<P>If you want to test a Pak in a broken state, please use the utility in /n64kit/misc/pakfatal/ to break the Pak data.
+<P align="right">
+<A href="pack.htm#index">top</A>
+
+<HR>
+<P>
+<A name="17"><FONT color="#FF0000"><b>Q17</b></FONT></A>
+<b>I am localizing software to North American specifications that was released in Japan and, for software, I refer to the Company Code and the Game Code on the GB Game Pak using the N64 Transfer Pak.
+When running the same specifications as an overseas edition, is the data in the register areas of the overseas edition of the GB the same as the Japanese one?</b>
+
+<P>
+<FONT color="#008000"><b>A17</b></FONT>
+The specifications of the data registered in the ROM are the same all over the world.
+Naturally, even for the same game, if the manufacturers are different in North America and Japan, the Company Code is going to be different too.  The Game Code is also going to be different if there is any sort of localization.
+<P align="right">
+<A href="pack.htm#index">top</A>
+
+<HR>
+<P>
+<A name="18"><FONT color="#FF0000"><b>Q18</b></FONT></A>
+<b>I am localizing software for the US that was developed in Japan and I heard that the English and Japanese Controller Pak menu libraries are different.
+Where can I get those libraries?</b>
+
+<P>
+<FONT color="#008000"><b>A18</b></FONT>
+If you are going to be using the library inside the nospak sample which is under demos, both the English and Japanese versions are in the directory, lib(if you are building nospak, you can have a nospak.a and a nospak_jpn.a) so when localizing, please change the linking libraries. 
+<P>If using one of the Pak Menus developed by your company without relying on nospak, even if there are files with katakana names, display the file names as "-----", as if you were using nospak.a. Make sure that the katakana is not displayed and that the lettering is not corrupted.
+<P align="right">
+<A href="pack.htm#index">top</A>
+
+<HR>
+<P>
+<A name="19"><FONT color="#FF0000"><b>Q19</b></FONT></A>
+<b>I am localizing software for Japan that was released in the U.S. The software uses N64 Transfer Pak to refer to the Company Code and Game Code for the Game Boy Game Pak. Similar specifications will be implemented for overseas versions. Is the data in the registration area of oversees Game Boy the same as the Japanese one?</b>
+
+<P>
+<FONT color="#008000"><b>A19</b></FONT>
+The specifications of ROM registration data are universal throught the world. Of course, even the same game could have different Company Codes if the U.S. and Japan have different manufacturers. The Game Code could be different if some localization is done.
+<P align="right">
+<A href="pack.htm#index">top</A>
+
+<HR>
+<P>
+<A name="20"><FONT color="#FF0000"><b>Q20</b></FONT></A>
+<b>When I inserted the Fishing Controller (only available in Japan) into the port and called <font face="courier, courier new">os ContInit()</font> the value <font face="courier, courier new">{type=5,status=1,errno=0}</font> is returned to the <font face="courier, courier new">osContStatus</font> type structure. Because the same value is returned from a standard controller as well, it is impossible to distinguish between the two values. I would like for a warning to be displayed if the fishing controller is used. Is it possible, or is such a warning unnecessary?</b>
+
+<P>
+<FONT color="#008000"><b>A20</b></FONT>
+As you said, it is impossible to distinguish when <font face="courier, courier new">os ContInit()</font> is called. Since it has a clear purpose, it is assumed the fishing controller will not be substituded for the standard controller. Hence, a warning is not necessary. The same applies to the Master Controller for "Densha de go!" for N64 (only available in Japan). You need to contact us if you plan to use it intentionally.
+<P align="right">
+<A href="pack.htm#index">top</A>
+
+<HR>
+</BODY>
+</HTML>

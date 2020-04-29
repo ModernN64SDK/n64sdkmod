@@ -1,0 +1,46 @@
+<HTML>
+<HEAD>
+<TITLE>msoderiv</TITLE>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../mobile/allman.css">
+<!-- Editor's Notes: 9/23/1999 Ron Daring -->
+</HEAD>
+  <BODY bgcolor="#FFFFFF">
+<h1>_msoDerive</h1>
+<p><i>Macro group for simple installation of an object succession</i></p>
+<pre>
+#include &lt;mso/Derive.h&gt;
+
+Macro
+* _msoDeriveFrom( basetype )
+  Defines the base member.  The name of the base member is, e.g.,  
+  _baseMxxObject for the MxxObject format.  This is used in the
+  structure. 
+
+* _msoBaseOffset( basetype, drvtype )
+  Returns the offset of the base member in u8 units
+
+* _msoDownCast( drvtype, basetype, ptr )
+  Casts the base type pointer "ptr" to the pointer for the derivative 
+  type "drvtype"
+
+* _msoUpCast( basetype, ptr )
+  Casts the derivative type pointer "ptr" to the base type pointer
+
+Usage Example
+* Derive MxxResource from MxxObject as follows.
+  typedef struct _MxxResource
+  {
+    _msoDeriveFrom( MxxObject );
+    ....
+  } MxxResource;
+
+* Obtain the pointer for the derivative type MxxResource from the base 
+  type MxxObject as follows.
+  res_ptr = _msoDownCast( MxxResource, MxxObject, obj_ptr );
+
+* Conversely, obtain the pointer for the base type MxxObject from the 
+  derivative type MxxResource as follows. 
+  obj_ptr = _msoUpCast( MxxObject, res_ptr );
+</pre>
+  </BODY>
+</HTML>

@@ -1,0 +1,119 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<title>STEP3  [N64 3D Graphics] - Chapter 1 Basic of 3D Graphics</title>
+<base target="keywords">
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park 7/9/1999 -->
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<p><font style="font-size:12pt"><b>1-3 Coordinate System</b></font><br>
+<br>
+<br>
+<b>1-3-1 Right/Left Hand Coordinate System</b><br>
+<br>
+<br>
+Next, the coordinate system for 3D graphics will be described. A three-dimensional coordinate system can be right-handed or left-handed.  The Z-axis direction compared to the X-axis and Y-axis directions, is different.  In the right-handed system, <b>the Z axis points out</b> toward the viewer.  In the left-handed coordinate system, <b>the Z axis points in</b> away from the viewer. N64 uses the right-handed coordinate system as do most others.<br>
+<br>
+<img src="img00026.gif"><br>
+<br>
+<b>Figure 1-3-1 Right/Left Hand Coordinate System</b><br>
+<br>
+<br>
+<br>
+<b>1-3-2 Model Coordinate System</b><br>
+<br>
+<br>
+The model coordinate system is the base system used when creating model data for a specific design of an object.  Generally, when modeling several objects, you define the coordinate origin, axes, scale, and so on individually so that it is easy to model each object.   For example, when modeling a robot's arm consisting of a forearm and an upper arm, you use an individual coordinate system for each of them. Depending on the modeler, the range used as a model coordinate, may be normalized to <!--<img src="img00027.gif">-->-1.0<u>&lt;</u> <font style="font-family: times new roman"><i>x</i></font> &lt; 1.0, <img src="img00028.gif" align=absmiddle>, <img src="img00029.gif">.  In this case, you have to create the model data within this limitation.<br>
+<br>
+You can use the model coordinate system to define each modeling object independently.  For example, when you model an airplane like the one shown above, you might define a length of 1 meter as 0.1 and do modeling in a space where one edge is 20 meters (because the range of each axis is from -1.0 to 1.0). When you model a human head, you could define 1 centimeter as 0.05, and then do the modeling in a space where one edge is 40 centimeters. The coordinates defined in the model coordinate system are expressed as <img src="img00030.gif" align="absmiddle">. Note that there is no uniform model coordinate system that all 3D modelers of each company use. Each 3D modeler is free to set up their own model coordinate system.<br>
+<br>
+<img src="img00031.gif"><br>
+<br>
+<b>Figure 1-3-2 Model Coordinate System</b><br>
+<br>
+<br>
+<br>
+<b>1-3-3 World Coordinate System</b><br>
+<br>
+<br>
+The world coordinate system is like the coordinate system of a photo studio where all the objects are placed together to prepare for a photograph to be taken of the model. In the world coordinate system each three-dimensional object is in a defined location.<br>
+The world coordinate system needs a very wide range depending on the world you want to render.   For example, in the case of a racing game, you might define 1 meter as 1.0 and render up to 1 kilometer (1,000 meters). In the case of a fighting game, you might define one edge of the world coordinate system to be only 10 meters. <br>
+Calculations are necessary when you place each object using a model coordinate system into the world coordinate system. For example, say you define 1 meter as 1.0 for your world coordinate system. When you place the previously illustrated airplane (which was defined with 1 meter as 0.1) into your world coordinate system, you need to reduce the size of the model data to 1/10th its previous size. When you place the human head which was defined with 1 centimeter as 0.05, into the same world coordinate system, you must reduce its size to 1/500th of its previous size. The world coordinate system's coordinates are expressed as <img src="img00032.gif" align="absmiddle">. <br>
+<br>
+<img src="img00033.gif"><br>
+<br>
+<b>Figure 1-3-3 World Coordinate System</b><br>
+<br>
+<br>
+<br>
+<b>1-3-4 View Coordinate System</b><br>
+<br>
+<br>
+The view coordinate system puts the view (camera) at the point of origin and places the direction of the view along the Z-axis. Sometimes it is called the <b>view point coordinate system</b>. Because the drawing processor (the RCP) is like a camera, this coordinate system is what the RCP hardware uses to view the virtual 3D world set up in the computer. The range actually seen is the part that falls inside the rectangular pyramid which is called the "view volume." This becomes the visual field, and a vertex of the rectangular pyramid is like the focus of a camera.  The distance between the screen and focus is equal to the focal distance.<br>
+<br>
+When the distance between the focus and screen is long, the angle of the visual field is narrow, and the image seems to be taken with a telephoto lens. When the distance is short, the angle of the visual field is wide and the image seems to be taken with a wide-angle lens. <img src="img00034.gif" align="absmiddle">.</p>
+
+<table border="1" cellspacing="0">
+    <tr>
+        <td><img src="img00035.gif"> </td>
+    </tr>
+</table>
+
+<p><br>
+<b>Figure 1-3-4 View Coordinate System</b><br>
+<br>
+<br>
+<br>
+<b>1-3-5 Screen Coordinate System</b><br>
+<br>
+<br>
+The normal screen coordinate system takes a picture of a view that is currently represented in the view coordinate system to place that view in much the same way as a camera takes a picture of a view to record on film.  In other words, the normal screen coordinate system converts a view volume of a quadrangular pyramid in the view coordinate system into a view volume of a rectangular solid screen by applying conversion algorithms. By using perspective transformation calculations, the conversion process ensures that objects that are located further away appear smaller. Thinking of the normal screen coordinate system as a device for displaying the virtual 3D space created inside your computer with less physical restrictions, such as the size for a frame buffer, makes it easier to comprehend. As with the view coordinate system, the direction of view is the Z-axis and the center of the screen is the origin. Coordinates in the normal screen coordinate system are expressed as <img
+src="img00036.gif" align="absmiddle">.</p>
+
+<table border="1" cellspacing="0">
+    <tr>
+        <td><img src="img00037.gif"> </td>
+    </tr>
+</table>
+
+<p><br>
+<b>Figure 1-3-5 Screen Coordinate System</b><br>
+<br>
+<br>
+<br>
+<b>1-3-6 Device Coordinate System</b><br>
+<br>
+<br>The device coordinate system is the coordinate system used to fit an image into the physical size of the frame buffer by using the pixel addresses in the frame buffer.  Generally, the physical size of the N64 frame buffer is 320 by 240.  The upper-left corner of the screen is (0,0) and the bottom-right is (319.75, 239.75). A Z value factor is also included. The deepest (furthest away) value is expressed as 65532 (0xfffc) and the closest value is expressed as 0.  The <a href="../../../keywords/index/data/graphics.htm#Z buffer" target="keywords">Z buffer</a> uses a macro that sets the initial value of the Z factor by using the macro-arguments G_MAXFBZ and GPACK_ZDZ. The macro converts an image currently in the normal screen coordinate system into the actual physical screen pixels so that it can be shown on the TV screen. Coordinates in the device coordinate system are expressed as <img
+src="img00038.gif" align="absmiddle">. </p>
+
+<table border="1" cellspacing="0">
+    <tr>
+        <td><img src="img00039.gif"> </td>
+    </tr>
+</table>
+
+<p><br>
+<b>Figure 1-3-6 Device Coordinate System</b><br>
+<br>
+<br>
+<br>
+<b>1-3-7 Coordinate Transformation Flow</b><br>
+<br>
+<br>
+A vertex defined in a model coordinate system is converted to other coordinate systems and displayed.  The following illustration gives a summary of the flow of this conversion process: Moving from one coordinate system to another is called "coordinate transformation." The coordinate transformation processes are represented by arrows in the illustration. The actual coordinate transformations are easily accomplished by using matrix calculations which will be described later.</p>
+
+<table border="1" cellspacing="0">
+    <tr>
+        <td><img src="img00040.gif"> </td>
+    </tr>
+</table>
+
+<p><br>
+<b>Figure 1-3-7 Coordinate Transformation</b><b><br>
+</p>
+</body>
+</html>

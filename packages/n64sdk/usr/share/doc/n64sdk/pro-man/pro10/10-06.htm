@@ -1,0 +1,68 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 10 - Advanced Memory Management</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. -->
+</head>
+
+<h1>10.6 Managing the Translation Lookaside Buffer </h1>
+
+<p>Although most applications will find the direct mapped KSEG0 address space of the CPU sufficient, it is possible to use the mapped address space by setting appropriate Translation Lookaside Buffer (<A target="keywords" HREF="../../keywords/index/data/system.htm#TLB">TLB</A>) entries. </p>
+
+<p>Perhaps the biggest restriction with using the TLB is that individual entries operate only on relatively large, aligned memory regions (pages).  Nevertheless, it may be helpful for memory protection or relocation of CPU addresses. In addition, TLBs can be used as yet another method to reconcile SP segment addresses with CPU addresses, since SP addresses fall within the range of the mapped CPU address space.  </p>
+
+<p>The translation lookaside buffer (TLB) of N64 CPU has 32 entries, each of which <A target="keywords" HREF="../../keywords/index/data/system.htm#map">maps</a> two physical pages.  The TLB is fully associative, which means each entry is essentially independent--the index number implies nothing about the mapping and any entry can hold any mapping.  A number of page sizes are supported: 4 KB, 16 KB, 64 KB, 256 KB, 1MB, and 16MB.  Each TLB entry may map a different page size. The following routines are used to manage the TLB:</p>
+
+<dl>
+  <dt><strong><a href="../../n64man/os/osMapTLB.htm">osMapTLB</a></strong>
+  <dd>This function sets the contents of a single TLB entry to the given <A target="keywords" HREF="../../keywords/index/data/system.htm#virtual address">virtual address</A>, even and odd physical address, page size, and <A target="keywords" HREF="../../keywords/index/data/system.htm#address space identifier">address space identifier</A>. 
+</dl>
+<dl>
+  <dt><strong><a href="../../n64man/os/osUnmapTLB.htm">osUnmapTLB</a></strong>
+  <dd>This function invalidates both the odd and even physical page mappings of a given TLB entry. 
+</dl>
+<dl>
+  <dt><strong><a href="../../n64man/os/osUnmapTLBAll.htm">osUnmapTLBAll</a></strong>
+  <dd>This function invalidates all mappings in the TLB. This should be done by the application prior to using the TLB. 
+</dl>
+<dl>
+  <dt><strong><a href="../../n64man/os/osSetTLBASID.htm">osSetTLBASID</a></strong>
+  <dd>This function sets the current address space identifier register.
+</dl>
+
+<p>Using the TLB requires some care.  The following paragraphs describe some problem areas.
+</p>
+
+<ul>
+  <li>Two TLB entries cannot map the same virtual address space.   If this occurs, accesses to the address will cause a TLB refill exception.  Any overlapping mapping creates this condition, even when a mapping with a smaller page size is a <A target="keywords" HREF="../../keywords/index/data/system.htm#subset">subset</A> of another mapping with a larger page size:
+      <blockquote><pre>
+      <a href="../../n64man/os/osMapTLB.htm">osMapTLB</a>(0,OS_PM_16K,(void *)0x0,0xa0000,-1,-1);
+      osMapTLB(1,OS_PM_4K,(void *)0x2000,0xb000,-1,-1);
+      </pre></blockquote>
+      Another case involves different TLB entries, each of which map different pages of an odd/even pair. The following mappings, which individually map an even and an odd physical page, will create an overlap condition: 
+      <blockquote><pre>
+      <a href="../../n64man/os/osMapTLB.htm">osMapTLB</a>(0,OS_PM_4K,(void *)0x2000,0xa000,-1,-1);
+      osMapTLB(1,OS_PM_4K,(void *)0x2000,-1,0xb000,-1);
+      </pre></blockquote>
+      Instead, the application should set a single entry with both mappings: 
+      <blockquote><pre>
+      <a href="../../n64man/os/osMapTLB.htm">osMapTLB</a>(1,OS_PM_4K,(void *)0x2000,0xa000,0xb000,-1);
+      </pre></blockquote>
+</ul>
+<ul>
+  <li>The mapped addresses must be aligned to the page size. This applies to both the virtual and physical pages mapped.<br>
+This implies that if one intends to map SP segment addresses via the TLB, the SP segment must be loaded at a page-aligned address. 	 <br>
+</ul>
+<ul>
+  <li>Multiple mappings of a cached address must be of the same "color." CPU caches are physically tagged, but virtually indexed, which introduces a situation in which more than one cache line references the same physical memory locations. Avoid the problem by using the same virtual address consistently for a particular physical address. <br>
+      If you cannot use the same virtual address, the mappings should all be the same color, where the "color" is defined as bits [14..6] of the <A target="keywords" HREF="../../keywords/index/data/system.htm#instruction address">instruction address</A> (for instruction fetches) or bits [15 ..5] of the data address (for data accesses).<br>
+</ul>
+
+<p>Finally, no support is provided for handling and recovering from TLB misses. A TLB miss is an unrecoverable fault to the Nintendo 64 system. </p>
+
+<p>More information about these topics can be found in the MIPS R4300 documentation.</p>
+
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+</body> </html>

@@ -1,0 +1,105 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<link rel=stylesheet type="text/css" HREF="../N64man.css">
+<!--
+Editors Notes:
+  JLR made formating edits.
+  PWC- updated formatting
+  MAP- added links, updated format
+-->
+
+<title>alCSeqPlayer</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<h1>alCSeqPlayer </h1>
+
+
+
+<p><i>
+Handles the Nintendo 64 Compressed MIDI sequence player routines</i>
+
+<h3>Syntax</h3>
+<p>
+<blockquote>
+    <pre>#include &lt;libaudio.h&gt;     /* <a href="../../header/libaudio.htm">libaudio.h</a> */</pre>
+    <pre>void   alCSPNew(ALCSPlayer *seqp, ALSeqpConfig *config);
+void   alCSPDelete(ALCSPlayer *seqp);
+void   alCSPSetSeq(ALCSPlayer *seqp, ALCSeq *seq);
+ALCSeq *alCSPGetSeq(ALCSPlayer *seqp);
+void   alCSPSetBank(ALCSPlayer *seqp, ALBank *b);
+s32    alCSPGetState(ALCSPlayer *seqp);
+void   alCSPPlay(ALCSPlayer *seqp);
+void   alCSPStop(ALCSPlayer *seqp);
+void   alCSPSetBank(ALCSPlayer *seqp, ALBank *b);
+void   alCSPSetTempo(ALCSPlayer *seqp, s32 tempo);
+s32    alCSPGetTempo(ALCSPlayer *seqp);
+s16    alCSPGetVol(ALCSPlayer *seqp);
+void   alCSPSetVol(ALCSPlayer *seqp, s16 vol);
+void   alCSPSetChlProgram(ALCSPlayer *seqp, u8 chan, u8 prog);
+s32    alCSPGetChlProgram(ALCSPlayer *seqp, u8 chan);
+void   alCSPSetChlFXMix(ALCSPlayer *seqp, u8 chan, u8 fxmix);
+u8     alCSPGetChlFXMix(ALCSPlayer *seqp, u8 chan);
+void   alCSPSetChlPan(ALCSPlayer *seqp, u8 chan, ALPan pan);
+ALPan  alCSPGetChlPan(ALCSPlayer *seqp, u8 chan);
+void   alCSPSetChlVol(ALCSPlayer *seqp,u8 chan, u8 vol);
+u8     alCSPGetChlVol(ALCSPlayer *seqp, u8 chan);
+void   alCSPSetChlPriority(ALCSPlayer *seqp, u8 chan, u8 priority);
+u8     alCSPGetChlPriority(ALCSPlayer *seqp, u8 chan);
+void   alCSPSendMidi(ALCSPlayer *seqp, long ticks, u8 status, u8 byte1, u8 byte2);</pre>
+</blockquote>
+</p>
+<h3>Description</h3>
+
+<p>The Nintendo 64 Audio Library supports the playback of MIDI sequences using either the Type 0 MIDI Sequence Player (function names that begin with alSeqp) or the Compressed MIDI Sequence Player (function names that begin with alCSP).</p>
+
+<p>This page details the Compressed MIDI Sequence Player. For details about the Type 0 MIDI Sequence Player, see the <tt>alSeqPlayer</tt> page. The principle differences between the two MIDI players are the handling of loops, and the compression of data. Details are discussed in the Audio Library and Audio Formats sections of the Nintendo 64 Programming Manual.</p>
+
+<p>The sequence player handles the playback of the sequence, but the actual sequence data is handled by a Sequence (see alCSeq).</p>
+
+<p>To use a Compressed Sequence Player, you must first initialize an ALCSPlayer structure to represent it. This is accomplished by calling the <a href="alCSPNew.htm">alCSPNew</a> function.</p>
+
+<p>After initializing the ALCSPlayer structure, you must set the bank and the sequence by calling <a href="alCSPSetBank.htm">alCSPSetBank</a> and <a href="alCSPSetSeq.htm">alCSPSetSeq</a> respectively.</p>
+
+<p>To start the sequence player, call <a href="alCSPPlay.htm">alCSPPlay</a>. To stop the sequence player, call <a href="alCSPStop.htm">alCSPStop</a>. The sequence player can only have one target sequence at a time. You must stop a sequence before setting and playing a new sequence. You should not attempt to switch banks while a sequence is playing. You can use <tt>alCSPGetSeq</tt> to determine if the sequence player is fully stopped. When you call <a href="alCSPStop.htm">alCSPStop</a>, all processing of the sequence will stop and all notes will be turned off.</p>
+<p>When a sequence is stopped, it will not rewind; it continues to point to its current location. This allows you to restart a sequence from where it was stopped by calling <a href="alCSPPlay.htm">alCSPPlay</a>. Sustained notes that were cut off by a call to <a href="alCSPStop.htm">alCSPStop</a> are not restarted, only new notes are processed.
+</p>
+
+<p>If you want to rewind the sequence or relocate to another point in the sequence, you can create an ALCSeqMarker at the desired location by calling the <a href="alCSeqNewMarker.htm">alCSeqNewMarker</a> function. Then call <a href="alCSeqSetLoc.htm">alCSeqSetLoc</a> to rewind or relocate the sequence. Note that these calls do not affect the channel playback state, so you must ensure that the channel arguments (such as program, volume, pan, and so on) are set to appropriate values for the given sequence location.</p>
+
+<p>Channel arguments can be set by calling their individual functions or by sending the appropriate MIDI data using the <tt>alCSPSendMidi</tt> function. Music can be created in real time and played back by calling the alCSPSendMidi function.</p>
+
+<p>The compressed MIDI sequence player does not support loops created by application programming interface (API) calls. To loop music using the Compressed MIDI Sequence Player, you must ensure that the sequences have loop points embedded in them. To learn how to embed loop points, see the Audio Library section of the Nintendo 64 Programming Manual. </p>
+
+<h3>See Also</h3>
+
+<p><a href="alCSeq.htm">alCSeq</a>, <a href="alCSPNew.htm">alCSPNew</a>,
+<a href="alCSPDelete.htm">alCSPDelete</a> , <a
+href="alCSPSetSeq.htm">alCSPSetSeq</a>, <a
+href="alCSPGetSeq.htm">alCSPGetSeq</a>, <a
+href="alCSPPlay.htm">alCSPPlay</a>, <a href="alCSPStop.htm">alCSPStop</a>,
+<a href="alCSPSetBank.htm">alCSPSetBank</a>, <a
+href="alCSPSetTempo.htm">alCSPSetTempo</a>, <a
+href="alCSPGetTempo.htm">alCSPGetTempo</a>, <a
+href="alCSPGetVol.htm">alCSPGetVol</a>, <a
+href="alCSPSetVol.htm">alCSPSetVol</a>, <a
+href="alCSPSetChlProgram.htm">alCSPSetChlProgram</a>, <a
+href="alCSPGetChlProgram.htm">alCSPGetChlProgram</a>, <a
+href="alCSPSetChlFXMix.htm">alCSPSetChlFXMix</a>, <a
+href="alCSPGetChlFXMix.htm">alCSPGetChlFXMix</a>, <a
+href="alCSPSetChlPan.htm">alCSPSetChlPan</a>, <a
+href="alCSPGetChlPan.htm">alCSPGetChlPan</a>, <a
+href="alCSPSetChlVol.htm">alCSPSetChlVol</a>, <a
+href="alCSPGetChlVol.htm">alCSPGetChlVol</a>, <a
+href="alCSPSetChlPriority.htm">alCSPSetChlPriority</a>, <a
+href="alCSPGetChlPriority.htm">alCSPGetChlPriority</a>, and 
+<a href="alCSPSendMidi.htm">alCSPSendMidi</a>
+</p>
+<h3>Revision History</h3>
+<p>1999/04/30  Changed Format</p>
+<br><br>
+
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<link rel=stylesheet type="text/css" HREF="../N64man.css">
+<!--
+Editors Notes:
+  JLR made reformating and copy edits.
+  PWC- updated formatting
+-->
+
+<TITLE>gDPSetTextureLOD</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>gDPSetTextureLOD [Macro]</H1>
+<h2>Function</h2>
+<p>gDPSetTextureLOD<br><br><i>
+Enables/disables LOD (MIP-map) textures</i></P>
+
+<p><b>Syntax</p></b>
+<p>
+<PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gbi.htm">gbi.h</A> */
+gDPSetTextureLOD(Gfx *gdl, u32 mode)
+gsDPSetTextureLOD(         u32 mode)</CODE></PRE></p>
+
+<p><b>Arguments</b></p>
+<p><DL>
+  <DT><B>gdl</B>
+  <DD>Display list pointer.
+  <BR><BR>
+  <DT><B>mode</B>
+  <DD>Texture mode.<BR>
+<B>G_TL_TILE</B>(LOD tile selection OFF)<BR>
+<B>G_TL_LOD</B>(LOD tile selection ON)
+  <BR><BR>
+</DL>
+<p><b>Description</b></p>
+<P>
+Enables/disables texture sampling of LOD (MIP-map) textures. The texture modes are explained below:
+  <DL>
+  <DT><B>G_TL_TILE</B>
+   <DD>Turns LOD tile selection OFF.<BR>
+In 1-cycle mode, the tile selected with <A HREF="../gsp/gSPTexture.htm">gSPTexture</A> is used for texture processing. In 2-cycle mode, the color combiner (CC) receives texels from both the tile selected with <A HREF="../gsp/gSPTexture.htm">gSPTexture</A> and from that tile + 1.  This pair of texture tiles can be used as a dual-texture tile.
+  <DT><B>G_TL_LOD</B>
+   <DD>Selects a pair of tiles from a series of texture tiles.<BR>
+LOD determines which pair of tiles will be selected.  The CC uses texels sampled from this pair of tiles to perform MIP-mapping.  Linear interpolation is performed on the two texel samples using the LOD factor in order to create the final MIP-mapped texel.
+  </DL>
+
+For details, please see Sections 12.4.6 "Texture Sample Mode," 13.7.2 "LOD Disable" and 13.7.3 "LOD Enable" in the N64 Programming Manual. 
+</P>
+<p><b>See Also</b></p>
+<P>
+<A HREF="gDPSetCombineMode.htm">gDPSetCombineMode</A>, <A HREF="gDPSetTextureDetail.htm">gDPSetTextureDetail</A>, <A HREF="gDPSetTextureLUT.htm">gDPSetTextureLUT</A>, <A HREF="gDPSetTexturePersp.htm">gDPSetTexturePersp</A>, and <A HREF="../gsp/gSPTexture.htm">gSPTexture</A>
+</P>
+
+<p><b>Revision History</p></b>
+<p>02/01/99&nbsp;&nbsp;&nbsp;Completely rewritten</p>
+
+</BODY>
+</HTML>

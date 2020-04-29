@@ -1,0 +1,59 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Author's Comments: JLR made formating edits.
+MAP updated format, links 9/28/99>
+<title>LeoInquiry</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>LeoInquiry</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p><i>Checks the version number of the N64 Disk Drive hardware and software</i>
+</p>
+
+<h3>Syntax</h3>
+
+<pre>
+#include &lt;PR/leo.h&gt;     /* <A HREF="../../header/leo.htm">leo.h</A> */
+
+s32 LeoInquiry(LEOVersion *version);
+
+typedef struct
+{
+   u8 drive;
+   u8 driver;
+   u8 deviceType;
+   u8 ndevices;
+} LEOVersion;
+</pre>
+
+<h3>Description</h3>
+
+<p>It checks the version of the N64 Disk Drive hardware and software.  The hardware (drive) version is stored in version-&gt;drive while the software (device driver) version is stored in version-&gt;driver. For specifics on these values, see "7.3.3 Checking the version numbers of hardware and software" of the N64 Disk Drive Programming Manual.
+</p>
+
+<p>The version-&gt;deviceType element is fixed at 0 for device type, and version-&gt;ndevices is fixed at 1 for the connected device number.</p>
+
+<p>One of the following is returned. A check is usually not necessary.
+</p>
+
+<p><b>-1</b> </p>
+
+<p>Leo Manager is not running.</p>
+
+<p><b>LEO_ERROR_GOOD</b> </p>
+
+<p>Normal termination.</p>
+
+<h3>See Also</h3>
+
+<p><a href="LeoCreateLeoManager.htm">Leo*CreateLeoManager</a>
+</p>
+<h3>Revision History</h3>
+<p>04/30/1999  Changed Format</p>
+<br><br>
+
+</body>
+</html>

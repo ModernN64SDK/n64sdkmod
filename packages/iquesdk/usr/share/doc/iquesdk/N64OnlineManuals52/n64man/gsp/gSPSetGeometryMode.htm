@@ -1,0 +1,98 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.
+  PWC- updated formatting
+-->
+<TITLE>gSPSetGeometryMode</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>gSPSetGeometryMode [Macro]</H1>
+
+<p><b>Function</b></p>
+
+<P>gSPSetGeometryMode</p>
+
+<p><i>Sets the geometry pipeline modes enabled</i></p>
+
+<p><b>Syntax</b></p>
+<p>
+<PRE><CODE>#include &lt;ultra64.h&gt;        /* <A href="../../header/gbi.htm">gbi.h</A> */
+gSPSetGeometryMode(Gfx *gdl, u32 mode)
+gsSPSetGeometryMode(         u32 mode)</CODE></PRE></p>
+
+<p><b>Arguments</b></p>
+<p>
+<DL>
+  <DT><B>gdl</B>
+  <DD>the display list pointer. 
+  <DT><B>mode</B>
+  <DD>the geometry pipeline mode: 
+  <DD><B>G_SHADE</B> (Calculate vertex color) 
+  <DD><B>G_LIGHTING</B> (Calculate lighting) 
+  <DD><B>G_SHADING_SMOOTH</B>  (Gouraud shading) 
+  <DD><B>G_ZBUFFER</B>  (Calculate Z buffer) 
+  <DD><B>G_TEXTURE_GEN</B> (Automatically generate texture s,t coordinates) 
+  <DD><B>G_TEXTURE_GEN_LINEAR</B> (Automatically generate texture s,t coordinates) 
+  <DD><B>G_CULL_FRONT</B>  (Front-face culling) 
+  <DD><B>G_CULL_BACK</B> (Back-face culling) 
+  <DD><B>G_CULL_BOTH</B> (Front-face and back-face culling) 
+  <DD><B>G_FOG</B> (Generate vertex alpha coordinate fog parameters) 
+  <DD><B>G_CLIPPING</B>  (Clipping) 
+</DL></p>
+<p><b>Description</b></p>
+<P>
+Sets the geometry pipeline modes for culling, lighting, specular highlights, reflection mapping, fog, etc. Use <A href="gSPClearGeometryMode.htm">gSPClearGeometryMode</A> to disable the modes. 
+</P>
+<P>
+Numerous specifications can be set for <B>mode</B> with a bit sum of the following flags: 
+</P>
+<DL>
+  <DT><B>G_SHADE</B>
+  <DD>Enables calculation of vertex color for a triangle. 
+  <DD>
+  <DT><B>G_LIGHTING</B>
+  <DD>Enables lighting calculations. 
+  <DT><B>G_SHADING_SMOOTH</B>
+  <DD>Enables Gouraud shading.
+  <DD>When this is not enabled, flat shading is used for the triangle, based on the color of one vertex (see <A href="gSP1Triangle.htm">gSP1Triangle</A>). G_SHADE must be enabled to calculate vertex color. 
+  <DT><B>G_ZBUFFER</B>
+  <DD>Enables Z buffer calculations. 
+  <DD>Other Z buffer-related parameters for the frame buffer must also be set.
+  <DT><B>G_TEXTURE_GEN</B>
+  <DD>Enables automatic generation of the texture's s,t coordinates. 
+  <DD>Spherical mapping based on the normal vector is used. 
+  <DT><B>G_TEXTURE_GEN_LINEAR</B>
+  <DD>Enables automatic generation of the texture's s,t coordinates. 
+  <DT><B>G_CULL_FRONT</B>
+  <DD>Enables front-face culling. 
+  <DD>* This does not support F3DLX.Rej but it does support F3DLX2.Rej. 
+  <DT><B>G_CULL_BACK</B>
+  <DD>Enables back-face culling. 
+  <DT><B>G_CULL_BOTH</B>
+  <DD>Enables both back-face and front-face culling. 
+  <DD>* This does not support F3DLX.Rej but it does support F3DLX2.Rej. 
+  <DT><B>G_FOG</B>
+  <DD>Enables generation of vertex alpha coordinate fog parameters. 
+  <DT><B>G_CLIPPING</B>
+  <DD>Enables clipping. 
+  <DD>This mode is enabled in the initial state. When disabled, clipping is not performed (see the Comment section in <A href="gSPClearGeometryMode.htm">gSPClearGeometryMode</A>). This mode can only be used with F3DLX and F3DLX.NoN.
+</DL>
+<p><b>Note</b></p>
+<P>
+Other elements which have their own commands also exist for the RSP rendering state. These involve changing the state with something more complicated than a single bit, or using other commands to optimize the RSP geometry engine. 
+</P>
+<p><b>See Also</b></p>
+<P>
+<A href="../gdp/gDPSetPrimColor.htm">gDPSetPrimColor</A>, <A href="gSP1Triangle.htm">gSP1Triangle</A>, 
+<A href="gSPFogPosition.htm">gSPFogPosition</A>, and <A href="gSPClearGeometryMode.htm">gSPClearGeometryMode</A>
+</P>
+</P><p><b>Revision History</b></p>
+<P>
+02/01/99 Completely rewritten.
+</P>
+</BODY>
+</HTML>

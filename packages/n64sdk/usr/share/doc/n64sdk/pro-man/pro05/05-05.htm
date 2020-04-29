@@ -1,0 +1,19 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 5 - Game Production Process</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check.-->
+</head>
+
+
+<H1>5.5 Wavetable Construction</H1>
+<p>The audio library can use either compressed or uncompressed <a href="../../keywords/index/data/audio.htm#wave table" target="keywords">wavetables</a> for sound reproduction.  In either case, the wavetables are first created using the digital recording/editing system of the sound designer's choice.  The wavetables are then stored as <a href="../../keywords/index/data/audio.htm#AIFF" target="keywords">AIFF</a> files.  If the samples are to be compressed, the first step is to produce a compression table using <A HREF="../../n64man/tool/tabledesign.htm">tabledesign</A>. After the compression table has been built, the wavetable is compressed using <A HREF="../../n64man/tool/vadpcm_enc.htm">vadpcm_enc</A>. This will generate a type of <a href="../../keywords/index/data/audio.htm#AIFC" target="keywords">AIFC</a> file that is unique to Nintendo. (AIFC files created with other software tools are not compatible with the compression scheme used by the N64.)</p>
+
+<P>After the wavetables have been converted to AIFC files, (or left as AIFF files if no data compression is desired) they need to be assembled into <a href="../../keywords/index/data/audio.htm#bank" target="keywords">banks</a> so that the Audio Library can reference them correctly.  To accomplish this, the sound designer must first create an .inst file, which is a text file that specifies the parameters for sound playback and the wavetable files.  The .inst file is then used by <A HREF="../../n64man/tool/ic.htm">ic</A> to create the bank files.  The bank files can then be included in the game by placing them in <A target="keywords" HREF="../../keywords/index/data/system.htm#segment">segments</A> in the applications spec file.  (For more information about creating .inst files and using  <A HREF="../../n64man/tool/ic.htm">ic</A>, please see <a href="../pro18/index.htm">Chapter 18, "Audio Tools"</A>.)</p>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR>
+</BODY>
+</HTML>
