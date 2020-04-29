@@ -23,6 +23,7 @@ sudo dpkg-deb --build packages/n64sdk
 sudo dpkg-deb --build packages/u64assets
 sudo dpkg-deb --build packages/root-compatibility-enviroment
 sudo dpkg-deb --build packages/rsp-tools
+sudo dpkg-deb --build packages/vadpcm-tools
 sudo dpkg-deb --build packages/libkmc
 sudo dpkg-deb --build packages/libhvqm
 
