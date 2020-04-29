@@ -17,5 +17,7 @@ sudo chown -R root:root ./packages
 sudo dpkg-deb --build packages/spicy
 sudo dpkg-deb --build packages/iquesdk
 sudo dpkg-deb --build packages/iquesdk-bin
+sudo dpkg-deb --build packages/n64sdk
+sudo dpkg-deb --build packages/u64assets
 
 sudo chown -R $USER:$USER ./packages
