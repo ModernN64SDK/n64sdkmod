@@ -2,4 +2,4 @@
 A libultra SDK for the modern era
 
 
-This is WIP and is not fully tested. In my opinion this is NOT production ready.
+This is WIP and has been tested. Expect documentation on how to use/install being released later.
