@@ -1,0 +1,190 @@
+<HTML><HEAD>
+<TITLE></TITLE>
+</HEAD></BODY>
+<PRE>
+<FONT COLOR="red">/*********************************************************
+
+  libmus.h : Nintendo 64 Music Tools Programmers Library
+  (c) Copyright 1997/1998, Software Creations (Holdings) Ltd.
+
+  Version 3.11
+
+  Music library header file.
+
+**********************************************************/</FONT>
+
+#ifndef _LIBMUS_H_
+#define _LIBMUS_H_
+
+#include &lt;ultra64.h&gt;
+
+#ifdef _LANGUAGE_C_PLUS_PLUS
+extern &quot;C&quot; {
+#endif
+
+<FONT COLOR="red">/* --------- MUSIC PLAYER API TYPEDEFS --------- */</FONT>
+
+<FONT COLOR="red">/* configuration */</FONT>
+typedef struct 
+{
+  unsigned long control_flag;
+
+  int 		channels;
+  void		*sched;
+  int		thread_priority;
+  unsigned char	*heap;
+  int		heap_length;
+
+  unsigned char	*ptr;
+  unsigned char	*wbk;
+
+  void		*default_fxbank;
+
+  int		fifo_length;
+
+  int		syn_updates;
+  int		syn_output_rate;
+  int		syn_rsp_cmds;
+  int 		syn_retraceCount;
+  int		syn_num_dma_bufs;
+  int		syn_dma_buf_size;
+
+<FONT COLOR="red">// Special Addition</FONT>
+
+  OSPiHandle	*diskrom_handle;
+} musConfig;
+
+<FONT COLOR="red">/* enabled/disable flag */</FONT>
+typedef enum
+{
+  MUSBOOL_OFF,
+  MUSBOOL_ON
+} musBool;
+
+<FONT COLOR="red">/* task descriptor */</FONT>
+typedef struct
+{
+	u64		*data;				<FONT COLOR="red">/* address of Acmd list			*/</FONT>
+	int		data_size;			<FONT COLOR="red">/* size of Acmd list			*/</FONT>
+	u64		*ucode;				<FONT COLOR="red">/* address of microcode code	*/</FONT>
+	u64		*ucode_data;		<FONT COLOR="red">/* address of microcode data	*/</FONT>
+} musTask;
+
+<FONT COLOR="red">/* handle type */</FONT>
+typedef unsigned long	musHandle;
+
+<FONT COLOR="red">/* marker callback function */</FONT>
+typedef void	(*LIBMUScb_marker)		(musHandle, int);
+
+<FONT COLOR="red">/* scheduler support callback functions */</FONT>
+typedef void	(*LIBMUScb_install)		(void);
+typedef void	(*LIBMUScb_waitframe)	(void);
+typedef void 	(*LIBMUScb_dotask)		(musTask *);
+
+<FONT COLOR="red">/* scheduler support callback list */</FONT>
+typedef struct
+{
+	LIBMUScb_install	install;		<FONT COLOR="red">/* called when thread starts		*/</FONT>
+	LIBMUScb_waitframe	waitframe;		<FONT COLOR="red">/* called to wait for vsync message */</FONT>
+	LIBMUScb_dotask		dotask;			<FONT COLOR="red">/* called to process RSP task		*/</FONT>
+} musSched;
+
+
+<FONT COLOR="red">/* --------- MUSIC PLAYER API MACROS --------- */</FONT>
+
+<FONT COLOR="red">/* control flags */</FONT>
+#define MUSCONTROL_RAM		(1&lt;&lt;0)
+
+<FONT COLOR="red">/* channel types flags */</FONT>
+#define MUSFLAG_EFFECTS	1
+#define MUSFLAG_SONGS	2
+
+
+<FONT COLOR="red">/* --------- MUSIC PLAYER API FUNCTION PROTOTYPES --------- */</FONT>
+
+<FONT COLOR="red">/* initialise */</FONT>
+extern int MusInitialize			(musConfig *config);
+
+<FONT COLOR="red">/* audio configuration */</FONT>
+extern int MusSetFxType			(int fxtype);
+extern int MusSetSongFxChange		(musBool onoff);
+
+<FONT COLOR="red">/* set master volume levels */</FONT>
+extern void MusSetMasterVolume		(unsigned long flags, int volume);
+
+<FONT COLOR="red">/* start songs and sound effects */</FONT>
+extern musHandle MusStartSong		(void *addr);
+extern musHandle MusStartSongFromMarker	(void *addr, int marker);
+extern musHandle MusStartEffect		(int number);
+extern musHandle MusStartEffect2		(int number, int volume, int pan , int restartflag, int priority);
+
+<FONT COLOR="red">/* stop and query sound types */</FONT>
+extern void MusStop				(unsigned long flags, int speed);
+extern int  MusAsk				(unsigned long flags);
+
+<FONT COLOR="red">/* handle based processing */</FONT>
+extern int MusHandleAsk			(musHandle handle);
+extern int MusHandleStop			(musHandle handle, int speed);
+extern int MusHandleSetVolume		(musHandle handle, int volume);
+extern int MusHandleSetPan			(musHandle handle, int pan);
+extern int MusHandleSetFreqOffset		(musHandle handle, float offset);
+extern int MusHandleSetTempo		(musHandle handle, int tempo);
+extern int MusHandleSetReverb		(musHandle handle, int reverb);
+extern int MusHandlePause			(musHandle handle);
+extern int MusHandleUnPause			(musHandle handle);
+extern void *MusHandleGetPtrBank		(musHandle handle);
+
+<FONT COLOR="red">/* sample bank support */</FONT>
+extern void MusPtrBankInitialize		(void *pbank, void *wbank);
+extern void *MusPtrBankSetSingle		(void *ipbank);
+extern void MusPtrBankSetCurrent		(void *ipbank);
+extern void *MusPtrBankGetCurrent		(void);
+
+<FONT COLOR="red">/* sound effect bank support */</FONT>
+extern void MusFxBankInitialize		(void *fxbank);
+extern void MusFxBankSetSingle		(void *ifxbank);
+extern void MusFxBankSetCurrent		(void *ifxbank);
+extern void *MusFxBankGetCurrent		(void);
+extern int  MusFxBankNumberOfEffects	(void *ifxbank);
+extern void MusFxBankSetPtrBank		(void *ifxbank, void *ipbank);
+extern void *MusFxBankGetPtrBank		(void *ifxbank);
+extern void MusFxBankSetSingle		(void *ifxbank);
+
+<FONT COLOR="red">/* scheduler support */</FONT>
+extern void MusSetScheduler			(musSched *sched_list);
+
+<FONT COLOR="red">/* marker callback support */</FONT>
+extern void MusSetMarkerCallback	(void *callback);
+
+<FONT COLOR="red">/* wave list lookup in song header */</FONT>
+extern int    			MusHandleWaveCount	(musHandle handle);
+extern unsigned short	*MusHandleWaveAddress(musHandle handle);
+
+
+<FONT COLOR="red">/* macros to support previous sample bank functions - use is not recommended! */</FONT>
+#define MusBankInitialize(pbank,wbank)	\
+	MusPtrBankInitialize(pbank,wbank)
+
+#define MusBankStartSong(ipbank, addr)	\
+	MusStartSong((addr)==(void *)MusPtrBankSetSingle(ipbank) ? (addr):(addr))
+
+#define MusBankStartEffect(ipbank, number) \
+	MusStartEffect((number)==(int)MusPtrBankSetSingle(ipbank) ? (number):(number))
+
+#define MusBankStartEffect2(ipbank, number, volume, pan, restartflag, priority) \
+	MusStartEffect2((number)==(int)MusPtrBankSetSingle(ipbank) ? (number):(number), \
+					volume, pan, restartflag, priority)
+
+
+
+<FONT COLOR="red">/* --- DEVELOPEMENT API FUNCTION PROTOTYPES --- */</FONT>
+
+
+
+#ifdef _LANGUAGE_C_PLUS_PLUS
+}
+#endif
+
+#endif <FONT COLOR="red">/* _LIBMUS_H_ */</FONT>
+</PRE>
+</BODY>

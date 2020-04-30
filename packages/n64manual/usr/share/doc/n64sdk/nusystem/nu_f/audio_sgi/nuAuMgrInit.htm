@@ -1,0 +1,72 @@
+<HTML>
+<HEAD>
+<TITLE>nuAuMgrInit and nuAuMgrInitEx</TITLE>
+</HEAD>
+
+<BODY bgcolor="#FFFFFF">
+<font face="arial" size="-1">
+
+<P>
+<FONT size="5"><b><IMG src="../nusystem2.gif" height="30" width="176">Function</b></FONT>
+
+<HR>
+<P>
+<FONT size="3"><b>nuAuMgrInit<br>nuAuMgrInitEx</b></FONT>
+<p>
+<HR>
+<P>
+<b>Syntax</b>
+<font face="courier" size="2">
+<pre>
+s32 nuAuMgrInit(void *heap_ptr, u32 size, ALSynConfig *synConfig)
+s32 nuAuMgrInitEx(void *heap_ptr, u32 size, ALSynConfig *synConfig)
+</PRE>
+</font>
+
+<p><b>Arguments</b>
+<font face="courier" size="2">
+<PRE>
+heap_ptr      pointer to buffer used as audio heap 
+size          heap size 
+synConfig     pointer to synthesizer driver setting structure 
+</PRE>
+</font>
+
+<p><b>Return Value</b>
+<font face="courier" size="2">
+<PRE>
+Heap size consumed 
+</PRE>
+</font>
+
+<p><b>Description</b>
+
+<P>
+Initializes the audio manager, creates and starts the audio manager thread. Also initializes and starts the synthesizer drivers. 
+
+<P>
+The return value is the size of the heap being used. 
+
+<P>
+The audio manager which is created and started by the nuAuMgrInit function plays back audio using retrace events. This is the method that has been used up until now. 
+<P>
+The audio manager created and started by the nuAuMgrInitEx function plays back audio using retrace events and AI events. This is a new audio manager. Since AI-DMA control can be reliably and efficiently accomplished when this audio manager is used, the AI buffer is empty and noise is unlikely to occur. In addition, two audio data buffers are sufficient. 
+
+<P>
+The difference between these two audio managers is the timing with which audio tasks are executed.  In the case of the conventional audio manager, audio tasks are executed immediately after a retrace event.  However, when AI events are used, audio tasks are executed when the AI-DMA register becomes empty.  In addition, due to restrictions on the smallest processing unit in the audio microcode, audio data cannot be created accurately in one-frame pieces.  Consequently, since the audio task execution timing changes for each frame, care is required as this may affect graphics tasks. 
+
+<p><b>See Also</b> 
+<p><A href="../../../n64man/al/alHeapInit.htm">alHeapInit</A> and <A href="../../../n64man/al/alInit.htm">alInit</A>
+<p>
+<hr>
+
+<p><b>Revision History</b>
+<P>
+2/1/99   Added description regarding nuAuMgrInitEx function. 
+<p>
+<hr>
+<P align="right">
+<A href="index.htm"><IMG src="../index.gif" height="17" width="65" border="0"></A>
+
+</BODY>
+</HTML>

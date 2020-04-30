@@ -1,0 +1,52 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.
+  PWC- updated formatting
+  MAP- added links, updated format
+-->
+<title>osInitialize</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>osInitialize</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p>osInitialize</p>
+
+<p><i>Performs hardware and software initialization procedures</i></p>
+
+<h3>Syntax</h3>
+<p>
+<blockquote>
+    <pre>#include &lt;ultra64.h&gt;     /* <A HREF="../../header/ultra64.htm">ultra64.h</A> */
+void osInitialize(void);</pre>
+</blockquote></p>
+
+<h3>Description</h3>
+
+<!--  --><p>The osInitialize function initializes the internal NINTENDO64 hardware and the N64OS work area. 
+</P>
+<P>
+This routine performs the following processes:
+</P>
+<OL>
+  <LI>Sets the CPU's floating point control/status register.  (Allows non-normalized values to be flushed to zero, and permits invalid operation exceptions to capture occurrences of Not-a-Numbers (NaNs))
+  <LI>Disables watch exceptions.
+  <LI>Sets exception vectors.
+  <LI>Frees all TLBs.  (Initializes TLB entry 31 for the SGI emulator board.)
+  <LI>Sets variables related to the PI.
+  <LI>References the value of osTvType and sets osViClock.
+  <LI>Checks whether a PRENMI event has already occurred, and if so, halts processing.
+  <LI>Permits AI-DMAs.
+</OL>
+<P>
+When the application is started up, this function must be called prior to any interrupt or exception process.<!--  -->
+</P>
+<H3>Revision history</H3>
+<P>
+1999/06/15 Completely rewritten.
+</P>
+
+</body>
+</html>

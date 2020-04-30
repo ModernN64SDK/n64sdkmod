@@ -1,0 +1,68 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>mfsRomGetVolumeAttr</title>
+</head>
+
+<body>
+
+<font face="arial" size="-1">
+<b><font size="3">mfsRomGetVolumeAttr<br>
+mfsRamGetVolumeAttr</b></font>
+
+<hr>
+
+<strong>Syntax</strong>
+<font face="courier" size="2">
+<pre>s32 mfsRomGetVolumeAttr(void)
+s32 mfsRamGetVolumeAttr(void)</pre></font>
+
+<P>
+<b>Arguments</b>
+<dl><dd>None</dl></dd>
+
+<P>
+<b>Return value</b>
+<dl><dd>Volume attribute (a negative value is an error)</dl></dd>
+
+<P>
+<b>Function</b>
+<dl><dd>Obtains volume attribute
+</dl></dd>
+
+<P>
+<b>Description</b>
+<P>This function obtains and returns the volume attribute of the ROM or RAM area.
+The volume attribute, which is represented by u8-type bits, can have the following contents.
+<P>
+<table border="0" cellpadding="3" cellspacing="3">
+<tr><td><font face="arial" size="-1">MFS_VOLUME_ATTR_VPROTECT_WRITE</td>
+<td>0x20<font face="arial" size="-1">
+<td><font face="arial" size="-1">Volume write protected</td></tr>
+<tr><td><font face="arial" size="-1">MFS_VOLUME_ATTR_VPROTECT_READ</td>
+<td>0x40<font face="arial" size="-1">
+<td><font face="arial" size="-1">Volume read protected</td></tr>		
+<tr><td><font face="arial" size="-1">MFS_VOLUME_ATTR_WPROTECT</td>
+<td>0x80<font face="arial" size="-1">
+<td><font face="arial" size="-1">	Write protected</td></tr></table>
+
+<P>				
+When the MFS_VOLUME_ATTR_VPROTECT_WRITE bit is 1, it indicates that the disk is write protected from other games. The disk can be written to only when the company code and game code specified by the mfsInit*() or mfsSetGameCode() function match the company code and game code written in the system ID area of the disk.
+<P>
+When the MFS_VOLUME_ATTR_VPROTECT_READ bit is 1, it indicates that the disk is read protected from other games. The disk can be read from only when the company code and game code specified by the mfsInit*Boot() or mfsSetGameCode() function match the company code and game code written in the system ID area of the disk.
+<P>
+When MFS_VOLUME_ATTR_WPROTECT is specified, the disk is write protected from all games.
+
+<P>					
+<b>Main errors</b>
+<table border="0" cellpadding="3" cellspacing="3">
+<tr><td valign="top"><font face="arial" size="-1">MFS_ERR_NOTMFSDISK</td>
+<td><font face="arial" size="-1">Not an MFS-format disk
+<br>The disk ID's disk use is not 1, or the header is different.</td></tr>
+<tr><td valign="top"><font face="arial" size="-1">MFS_ERR_VERSION</td>
+<td><font face="arial" size="-1">Different version disk</td></tr></table>
+                
+                          
+           
+</body>
+</html>

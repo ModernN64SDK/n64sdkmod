@@ -1,0 +1,79 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.>
+<TITLE>gSPBranchLessZrg</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>gSPBranchLessZrg [Macro]</H1>
+
+<p><b>Function</b></p>
+
+<p>gSPBranchLessZrg</p>
+<P>
+<i>Conditionally branches the display list (specifies minimum/maximum values of Z)</i>
+</P>
+<p><b>Syntax</b></p>
+<p>
+<PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gbi.htm">gbi.h</A> */
+gSPBranchLessZrg(
+        Gfx *gdl,
+        Gfx *branchdl,
+        u32 vtx,
+        f32 zval,
+        f32 near,
+        f32 far,
+        s32 flag,
+        s32 zmin,
+        s32 zmax)
+gsSPBranchLessZrg(
+        Gfx *branchdl,
+        u32 vtx,
+        f32 zval,
+        f32 near,
+        f32 far,
+        s32 flag,
+        s32 zmin,
+        s32 zmax)</CODE></PRE></p>
+
+<p><b>Arguments</b></p>
+<p>
+<DL>
+  <DT><B>gdl</B>
+  <DD>the display list pointer. 
+  <DT><B>branchdl</B>
+  <DD>the pointer to the display list branch. 
+  <DT><B>vtx</B>
+  <DD>the vertex (index in the vertex buffer). 
+  <DT><B>zval</B>
+  <DD>the Z value which becomes the branch condition. 
+  <DT><B>near</B>
+  <DD>the location of the near plane (a value specified  by either <A HREF="../gu/guPerspective.htm">guPerspective</A> or <A HREF="../gu/guOrtho.htm">guOrtho</A>)
+  <DT><B>far</B>
+  <DD>the location of the far plane (a value specified  by either <A HREF="../gu/guPerspective.htm">guPerspective</A> or <A HREF="../gu/guOrtho.htm">guOrtho</A>)
+  <DT><B>flag</B>
+  <DD> the projection method: 
+  <DD><B>G_BZ_PERSP</B> (Perspective projection). 
+  <DD><B>G_BZ_ORTHO</B> (Orthogonal projection). 
+  <DT><B>zmin</B>
+  <DD>the minimum value of Z (= vp.vtrans[2] - vp.vscale[2])
+  <DT><B>zmax</B>
+  <DD>the maximum value of Z (= vp.vtrans[2] + vp.vscale[2])
+</DL></p>
+<p><b>Description</b></p>
+<P>
+This macro can specify the minimum/maximum values of Z (<B>zmin</B>/<B>zmax</B>) and conditionally branch the display list. Most applications use a Z value that is greater than 0 and less than G_MAXZ/2. This macro is used when this range needs to be changed. When no change is necessary, please use g*SPBranchLessZ. For details, see <A HREF="gSPBranchLessZ.htm">gSPBranchLessZ</A>. 
+</P>
+<p><b>See Also</b></p>
+<P>
+<A HREF="gSPBranchLessZ.htm">gSPBranchLessZ</A>
+</P>
+<p><b>Revision History</b></p>
+<P>
+02/01/99  Entirely revised.
+</P>
+</BODY>
+</HTML>

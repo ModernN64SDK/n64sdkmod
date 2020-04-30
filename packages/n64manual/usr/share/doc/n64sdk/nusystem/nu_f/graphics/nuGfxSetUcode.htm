@@ -1,0 +1,74 @@
+<HTML>
+<HEAD>
+<TITLE>nuGfxSetUcode (Macro)</TITLE>
+</HEAD>
+
+<BODY bgcolor="#FFFFFF">
+<font face="arial" size="-1">
+
+<P>
+<FONT size="5"><b><IMG src="../nusystem2.gif" height="30" width="176">Function</b></FONT>
+
+<HR>
+<P>
+<FONT size="3"><b>nuGfxSetUcode</b> (Macro)</FONT>
+
+<HR>
+<P>
+<b>Syntax</b>
+<font face="courier" size="2">
+<pre>void nuGfxSetUcode(NUUCode* ucode)</pre>
+</font>
+
+<b>Arguments</b>
+<font face="courier" size="2">
+<pre>ucode      pointer to the graphics microcode structure</pre>
+</font>
+
+<b>Return Value</b>
+<font face="courier" size="2">
+<pre>None</pre>
+</font>
+
+<b>Description</b>
+
+<p><i>Registers the graphics microcode
+</i></p>
+
+<p>Registers an array of the graphics microcode structure in the Graphics Task Manager. The graphics microcode structure is defined as follows. 
+</p>
+<font face="courier" size="2">
+<pre>	
+	typedef struct  st_Ucode {
+	  u64*	ucode;	
+	  u64*	ucode_data;
+	} NUUcode;</pre>
+</font>
+
+<b>Example</b>
+<font face="courier" size="2">
+<pre>
+/* Arrays for the graphics microcode structure */
+static NUUcode gfxUcode[] = {
+  {(u64*)gspF3DEX_fifoTextStart, (u64*)gspF3DEX_fifoDataStart},
+  {(u64*)gspL3DEX_fifoTextStart, (u64*)gspL3DEX_fifoDataStart},
+};
+
+void gfxUcodeSet(void)
+{
+  /* Register the graphics microcode */
+  nuGfxUcodeSet(gfxUcode);
+  ......
+}</pre>
+</font>
+
+<p><b>See Also</b>
+<p><a href="nuGfxSetCfb.htm">nuGfxTaskStart</a>
+
+<p>
+<hr>
+
+<p align="right"><a href="index.htm"><img src="../index.gif" border="0"
+width="65" height="17"></a></p>
+</body>
+</html>

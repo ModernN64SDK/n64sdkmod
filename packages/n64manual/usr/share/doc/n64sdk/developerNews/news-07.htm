@@ -1,0 +1,234 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<META name="GENERATOR" content="IBM HomePage Builder V3.0.7  for Windows">
+<TITLE>Developers News 1.7</TITLE>
+</HEAD>
+
+<BODY bgcolor="#FFFFFF">
+
+<HR>
+<P align="center">
+<FONT size="6"><STRONG><IMG src="gif/devnews.gif" height="44" width="453">1.7</STRONG></FONT>
+</P>
+<P align="left">
+<B>* Bug information and programming guides for the N64 will hereafter be periodically sent out.</B>
+</P>
+<P>
+<B>All information that will become unnecessary with software (library, etc.) and hardware upgrades used in development will be noted together.  Please utilize this information after confirming that the information concerns your specific upgrade. <BR>
+</B>
+</P>
+<HR>
+<P>
+<FONT size="4"><STRONG>Contents:Overview of EEPROM(Electrical Erasable Programmable ROM) Part2</STRONG></FONT>
+</P>
+<P>
+1997-08-28
+</P>
+<P align="center">
+Nintendo Co., Ltd.<BR>
+<FONT size="4"><STRONG>Overview of EEPRom(Electrical Eraseable Programable ROM)</STRONG></FONT>
+</P>
+<P>
+EEPROM is built in a Game Pak and used to save data while the game is in progress.
+EEPROM is equipped with a circuit to communicate with a serial interface of a RCP.  EEPROM is equipped with a circuit to communicate with a serial interface of a RCP. 
+</P>
+<P>
+<IMG src="gif/img00008.gif" height="318" width="476">
+</P>
+<P>
+<FONT color="#FF0000"><STRONG>@ Capacity of EEPRom</STRONG></FONT>
+</P>
+<P>
+EEPROM has two types of capacity.
+</P>
+<P>
+One is 4k-EEPROM. Its capacity is 4k bit (64 words x 64 bit = 512 bytes).
+Another is 16k-EEPROM. Its capacity is 16k bit (256 words x 64 bit = 2048 bytes). 
+</P>
+<P>
+Previously, there was only 4k-EEPROM. So, EEPROM functions do not correspond to 16k-EEPROM for previous versions of NINTENDO OS 2.0H. When creating an application which uses 16k-EEPROM for a previous OS of 2.0H, a patch for 16k-EEPROM is necessary.
+</P>
+<P>
+<FONT color="#FF0000"><STRONG>@ Reliability of Data</STRONG></FONT>
+</P>
+<P>
+The current EEPROM is capable of rewriting 100,000 times. It can rewrite about 100,000 times for each EEPROM address (0 - 63 for 4k-EEPROM, 0 - 255 for 16k-EEPROM) correctly, however, there is a possibility that it won't rewrite correctly beyond that due to deterioration of memory cells. 
+</P>
+<P>
+It is also possible to store data for ten years. If it won't write anew for more than 10 years, an electric charge of memory cells may become weak gradually and it may become impossible to read data correctly. 
+
+</P>
+<P>
+To avoid these problems, it is recommended to maintain the reliability of data using supplementary data such as a check sum or a parity bit 
+</P>
+<P>
+<FONT color="#FF0000"><STRONG>@ Precautions when Writing Data</STRONG></FONT>
+</P>
+<P>
+When writing data (using osEepromWrite) is performed, it would take approximately 15 miliseconds to complete writing data onto a memory cell after the EEPRom interface circuit received a writing command. If the next call to osEepromWrite is executed before it completes the current writing, the function starts an extra poling loop inside the function process to read in the states until the current command completes writing onto a memory cell.
+</P>
+<P>
+If consecutive writings are executed, it is necessary to wait 15 miliseconds or more before the next command is executed.
+</P>
+<P>
+Also, to solve this problem, osEepromLongWrite is designed to count 15 miliseconds using the CPU timer. Timer interrupt is set to perform after 15 miliseconds passed, and the thread that called this function will be blocked for that period of time. 
+</P>
+<P>
+<FONT color="#FF0000"><STRONG>@ Explanations of EEPRom Functions</STRONG></FONT>
+</P>
+<BLOCKQUOTE>
+
+<PRE>
+s32 osEepromProbe(OSMesgQueue *mq) 
+</PRE>
+</BLOCKQUOTE>
+<P>
+This function will check if EEPROM is there. If it exists, this will check which type it is. 
+</P>
+<P>
+If a return value is 1 (defined by EEPROM_TYPE_4K), 4k-EEPROM is there. If a return value is 2 (defined by EEPROM_TYPE_16K), 16k-EEPROM is there. If a return value is 0,there is no EEPROM. Also, if there is a hardware-related (communication path) error, 0 will be returned.
+</P>
+<P>
+If EEPROM_TYPE_16K is returned when 4k-EEPROM is equipped, or
+EEPROM_TYPE_4k is returned when 16k-EEPROM is equipped, a wrong game pak may be used, or a game pak may be broken. The application program must be stopped. 
+</P>
+<BLOCKQUOTE>
+
+<PRE>
+s32 osEepromWrite(OSMesgQueue *mq, u8 address, u8 *buffer)
+</PRE>
+</BLOCKQUOTE>
+<P>
+This function will write an 8 byte data to an EEPROM address (if 4k-EEPROM, 0 - 63, and if 16k-EEPROM, 0 - 255). If the write command is sent to an interface circuit correctly, 0 will be returned. If the address is not a value within a correct range, -1 will be returned. If EEPROM is not there (due to a communication path related problem), or an interface circuit does not respond, 8(CONT_NO_RESPONSE_ERROR) will be returned.
+</P>
+<BLOCKQUOTE>
+
+<PRE>
+s32 osEepromRead(OSMesgQueue *mq, u8 address, u8 *buffer)
+</PRE>
+</BLOCKQUOTE>
+<P>
+This function will read an 8 byte data from an EEPROM address (if 4k-EEPROM, 0 - 63, and if 16k-EEPROM, 0 - 255). If the data is read correctly (if there is no communication path related error), 0 will be returned. If the address is not a value within a correct range, -1 will be returned. If EEPROM is not there or an interface circuit does not respond, 8 (CONT_NO_RESPONSE_ERROR) will be returned. </P>
+<BLOCKQUOTE>
+
+<PRE>
+s32 osEepromLongWrite(OSMesgQueue *mq, u8 address, u8 *buffer, int length)
+</PRE>
+</BLOCKQUOTE>
+<P>
+This function will write data of continuous 8 x length bytes to an EEPROM address (if 4k-EEPROM, 0 - 63, and if 16k-EEPROM, 0 - 255). As a matter of fact, it only calls osEepromWrite a length time within the function. However, it is designed to wait for 15 milli-seconds for each writing using a CPU timer. As for a return value, 0 will be returned when all the write commands (length times commands) are sent to an interface circuit correctly, just like with the case of osEepromWrite. If the address is not a value within a correct range, -1 will be returned. If EERPOM is not there or an interface circuit does not respond, 8(CONT_NO_RESPONSE_ERROR) will be returned. 
+</P>
+<BLOCKQUOTE>
+
+<PRE>
+s32 osEepromLongRead(OSMesgQueue *mq, u8 address, u8 *buffer, int length)
+</PRE>
+</BLOCKQUOTE>
+<P>
+This function will read data of continuous 8 x length bytes from an EEPROM address (if 4k-EEPROM, 0 - 63, and if 16k-EEPROM, 0 - 255). In fact, in only calls osEepromRead a length time within the function. As for a return value, 0 will be returned when all the commands (length times commands) are read correctly, just like with the case of osEepromRead. If the addess is not a value within a correct range, -1 will be returned. If EEPROM is not there or an interface circuit does not respond, 8(CONT_NO_RESPONSE_ERROR) will be returned. 
+</P>
+<PRE>
+#include &lt;ultra64.h&gt;
+#define NUM_MESSAGE 1
+OSMesgQueue siMesgQueue; /* Message queue for SI */
+OSMesg siMesgBuf[NUM_MESSAGE]; /* Message buffer for SI */
+OSMesg dummyMessage; /* Dummy message to put in queue */
+static OSContStatus sdata[MAXCONTROLLERS]; /* Controller port status */
+
+int save_eeprom(OSMesgQueue *mq, u8 *buffer)
+/* Write data to all 512 bytes of EEPRom. */
+{
+  int i,ret = 0;
+  if( osEepromProbe(mq) != 1 )
+  /* Confirm EEPROM communication */
+  return -1;
+
+  for(i = 0; i &lt; EEPROM_MAXBLOCKS ; i++) {
+    ret |= osEepromWrite(mq, i, buffer);
+    /* Write data to EEPROM  */
+
+    WAIT_15_M_SEC();
+    /* Wait 15msec */
+  }
+  return ret;
+}
+
+int load_eeprom(OSMesgQueue *mq, u8 *buffer)
+/* Read all 512 bytes of EEPRom. */
+{
+  int i,ret = 0;
+  if( osEepromProbe(mq) != 1 )
+    /* Confirm 4k-EEPROM communication */
+    return -1;
+
+  for(i = 0; i &lt; EEPROM_MAXBLOCKS ; i++)
+    ret |= osEepromRead(mq, i, buffer);
+  /* Read EEPROM data */
+  return ret;
+}
+
+void main_proc(void)
+{
+  u8 save_buffer[EEPROM_MAXBLOCKS * EEPROM_BLOCK_SIZE];
+  /* Buffer for writing 512 bytes */
+
+  u8 load_buffer[EEPROM_MAXBLOCKS * EEPROM_BLOCK_SIZE];
+  /* Buffer for reading 512 bytes */
+
+  static OSContPad rdata[MAXCONTROLLERS];
+  /* Controller data */
+
+  int ret = 0;
+  u8 p;
+  int i;
+
+  osCreateMesgQueue(&amp;siMesgQueue, siMesgBuf, NUM_MESSAGE);
+  /* Assign siMesgBuf as message queue's area. */
+
+  osSetEventMesg(OS_EVENT_SI, &amp;siMesgQueue, dummyMessage);
+  /* Set to send dummyMessage to si message queue at interrupt */
+  osContInit(&amp;siMesgQueue, &amp;p, &amp;sdata[0]);
+  /* Checks controller's connection status. */
+
+  while(1){
+    if(p) {
+    /* Controller connected. */
+
+      osContStartReadData(&amp;siMesgQueue);
+      /* Activate trigger to read data. */
+
+      osRecvMesg(&amp;siMesgQueue, NULL, OS_MESG_BLOCK);
+      /* Wait for message from si */
+
+      if(p &amp; 0x1) {
+      /* If No. 0 controller connected */
+
+        osContGetReadData(&amp;rdata[0]);
+        /* Copy data from controller to rdata */
+
+        if( rdata[0].button &amp; CONT_A ) {
+        /* A of No. 0 controller pressed */
+
+          ret = save_eeprom(&amp;siMesgQueue, save_buffer);
+          /* Saves save_buffer data to EEPROM */
+
+          if( ret )
+            ERROR_PROC_1(); /* Error processing */
+        }
+        if( rdata[0].button &amp; CONT_B ) {
+        /* B of No. 0 controller pressed */
+
+          ret = load_eeprom(&amp;siMesgQueue, load_buffer);
+          /* Load EEPROM data to load_buffer */
+
+          if( ret )
+            ERROR_PROC_2(); /* Error processing */
+        }
+      } /* if(p &amp; 0x1) */
+    } /* if(p) */
+  } /* while(1) */
+}
+</PRE>
+</BODY>
+</HTML>

@@ -1,0 +1,33 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 28 - Flash ROM</title>
+<!-- Editor: PWC
+      Notes: Created from Word Doc-->
+</head>
+<body bgcolor=#ffffff>
+
+<h1>28.1 Flash ROM</h1>
+<p>
+
+<p>A cartridge containing 1 Mbit Flash ROM (1M Flash) has been made available as a Nintendo64 back-up device to accommodate the increasing size of back-up data. 
+<p>The 1M Flash is accessed as a PI device, the same way as SRAMs have been accessed traditionally. It differs from SRAMs in the following ways. 
+
+<p><b>Differences in Writing Methods</b><br>
+One of the flash ROM characteristics of 1M Flash is that data must be erased before data can be written. Data are erased in one-sector units (16 Kbytes). 
+<p>After the data have been erased, the data are transferred temporarily into a 128-byte write buffer which is inside the flash ROM. Then they are actually written. For this reason, data are written in one-page units (128 bytes). 
+
+<p><b>Differences in Reading Methods</b><br>
+Depending upon the flash ROM version, it may be necessary to modify the data reading method of 1M Flash.  
+<p>Please use the flash read function available in the library to avoid this problem. 
+
+<p><b>Differences in Size</b><br>
+The size has been enlarged to 1 Mbit. 
+<p><b>Note:</b>  Please do not use <font style="font-family: courier new, courier;">0x3fe</font> and <font style="font-family: courier new, courier;">0x3ff</font>, which have been set aside for future use by Nintendo. (Sector erasures including pages <font style="font-family: courier new, courier;">0x3fe</font> and <font style="font-family: courier new, courier;">0x3ff</font> are not a problem.) 
+
+<p><b>Differences in Speed </b><br>
+The speed parameter of 1M Flash as a PI device (PI device access speed) is the same as an SRAM. However, there will be some extra processing that accompanies the actual writing and reading operations, which take place in one-page units. For this reason, the speed (especially when writing) can be much slower. 
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a><hr>
+</body> 
+</html>

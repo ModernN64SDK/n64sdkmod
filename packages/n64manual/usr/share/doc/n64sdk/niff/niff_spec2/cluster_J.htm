@@ -1,0 +1,607 @@
+<html>
+<title>
+ClusterNode
+</title>
+<body bgcolor="ffffff">
+
+<h1>
+<font color="ff0000">
+<i>
+Nintendo Confidential
+</i>
+</font>
+</h1>
+<hr size="3">
+
+<h2>
+16. ClusterList
+
+</h2>
+
+<hr size="3">
+
+<h3>
+(1) ClusterList
+</h3>
+
+<blockquote>
+
+
+
+
+<table border width="600">
+
+<tr>
+<td nowrap>
+u32 cluster_list_tag
+</td>
+<td>
+ClusterListを示すタグを記述します。下記のタグを設定してください。
+<pre>
+<b>
+TAG_CLUSTER_LIST        0x00280000
+</b>
+</pre>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 cluster_list_header_size 
+</td>
+<td>
+ClusterListHeaderのバイト数を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 cluster_list_size
+</td>
+<td>
+ClusterListのバイト数を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 cluster_shape_num
+</td>
+<td>
+ClusterShape数を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 cluster_shape_size
+</td>
+<td>
+ClusterShapeのバイト数を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+ClusterShape
+</td>
+<td>
+ClusterShapeエリアです。
+</td>
+</tr>
+
+</table>
+
+<p>
+<a href="./cluster_C.htm">
+Go to the data chunk
+</a>
+<p>
+<a href="./index.htm">
+Go back to the index
+</a>
+
+
+</blockquote>
+
+<h3>
+(2) ClusterShape
+</h3>
+
+<blockquote>
+
+
+
+<table border width="600">
+
+<tr>
+<td nowrap>
+u32 cluster_shape_tag
+</td>
+<td>
+ClusterShapeを示すタグを記述します。下記のタグを設定してください。
+<pre>
+<b>
+TAG_CLUSTER_SHAPE        0x00280100
+</b>
+</pre>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 this_cluster_shape_index
+</td>
+<td>
+ClusterShapeのインデックス番号を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 cluster_shape_size
+</td>
+<td>
+ClusterShapeのバイト数を記述します。
+</td>
+</tr>
+
+<tr>
+<td  nowrap>
+u32 cluster_shape_name_index
+</td>
+<td>
+ClusterShape名をNameList内のインデックス番号で指定します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 cluster_shape_type
+</td>
+<td>
+0x0
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 cluster_num
+</td>
+<td>
+Cluster数を記述します。<p>
+１つのシェープ内でClusterを割り当てられていない頂点がある場合、この頂点も１つのClusterとして登録してください。その場合、Cluster(0)に割り当ててください。
+</td>
+</tr>
+
+
+<tr>
+<td nowrap>
+u32 cluster_tri_num
+</td>
+<td>
+ClusterTri数を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+Cluster
+</td>
+<td>
+ある一つのノードに対する頂点の集合をClusterとして登録します。
+</td>
+</tr>
+
+
+<tr>
+<td nowrap>
+ClusterTri
+</td>
+<td>
+ClusterShape内のClusterに属する頂点を使用した1ポリゴンを表します。
+</td>
+</tr>
+
+
+
+
+</table>
+
+<p>
+<a href="./cluster_C.htm">
+Go to the data chunk
+</a>
+<p>
+<a href="./index.htm">
+Go back to the index
+</a>
+
+
+
+</blockquote>
+
+<h3>
+(3) Cluster
+</h3>
+
+<blockquote>
+
+
+
+<table border width="600">
+
+<tr>
+<td nowrap>
+u32 cluster_tag
+</td>
+<td>
+Clusterを示すタグを記述します。下記のタグを指定してください。
+<pre>
+<b>
+TAG_CLUSTER        0x00280110
+</b>
+</pre>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 this_cluster_index
+</td>
+<td>
+このClusterShape内でのClusterのインデックス番号を記述します。
+</td>
+</tr>
+
+<tr>
+<td  nowrap>
+u32 cluster_size
+</td>
+<td>
+Clusterのバイト数を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 cluster_name_index
+</td>
+<td>
+このCluster名をNameList内のインデックス番号で記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 kind_of_transform_node
+</td>
+<td>
+Clusterが影響を受けるノードの種類を下記のタグで記述します。
+<pre>
+<b>
+TAG_OBJ_LIST            0x00020000
+</b>
+</pre>
+外部参照する場合は0xffffffffを記述してください。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 transform_node_index
+</td>
+<td>
+Clusterが影響を受けるノードのインデックス番号を記述します。<p>
+外部参照する場合は0xffffffffを記述してください。
+</td>
+</tr>
+
+
+<tr>
+<td nowrap>
+u32 external_transform_obj_file_name_index
+</td>
+<td>
+Clusterが影響を受けるObjを外部ファイル参照する場合、そのファイル名をExternalNameListのインデックス番号で記述します。<p>
+ファイル名はディレクトリ名などを含まない形で記述してください。<p>
+外部参照しない場合は0xffffffffを記述してください。
+</td>
+</tr>
+
+
+<tr>
+<td nowrap>
+u32 external_transform_obj_name_index
+</td>
+<td>
+Clusterが影響を受けるObjを外部ファイル参照する場合、そのObj名をExternalNameList内のインデックス番号で記述します。<p>
+外部参照しない場合は0xffffffffを記述してください。
+</td>
+</tr>
+
+
+
+<tr>
+<td nowrap>
+u32 cluster_vtx_group_index
+</td>
+<td>
+このCluster内の頂点座標を指定するVtxGroupのインデックス番号を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 cluster_vtx_nv_group_index
+</td>
+<td>
+このCluster内の頂点の法線ベクトルを指定するVtxNvGroupのインデックス番号を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 cluster_tri_nv_group_index
+</td>
+<td>
+このCluster内のポリゴンの法線ベクトルを指定するTriNvGroupのインデックス番号を記述します。
+</td>
+</tr>
+
+
+<tr>
+<td nowrap>
+u32 cluster_vtx_color_group_index
+</td>
+<td>
+このCluster内の頂点カラーを指定するVtxColorGroupのインデックス番号を記述します。
+</td>
+</tr>
+
+
+<tr>
+<td nowrap>
+u32 cluster_tri_color_group_index
+</td>
+<td>
+このCluster内のポリゴンのカラーを指定するTriNvGroupのインデックス番号を記述します。
+</td>
+</tr>
+
+
+<tr>
+<td nowrap>
+u32 cluster_st_group_index
+</td>
+<td>
+このCluster内の頂点のST値を指定するStGroupのインデックス番号を記述します。
+</td>
+</tr>
+
+
+</table>
+
+<p>
+<a href="./cluster_C.htm">
+Go to the data chunk
+</a>
+<p>
+<a href="./index.htm">
+Go back to the index
+</a>
+
+
+</blockquote>
+
+<h3>
+(4) ClusterTri
+</h3>
+
+<blockquote>
+
+
+
+<table border width="600">
+
+<tr>
+<td nowrap>
+u32 cluster_tri_tag
+</td>
+<td>
+ClusterTriを示すタグを記述します。下記のタグを設定してください。
+<pre>
+<b>
+TAG_CLUSTER_TRI        0x00280180
+</b>
+</pre>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 this_cluster_tri_index
+</td>
+<td>
+ClusterTriのインデックス番号を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 cluster_tri_size
+</td>
+<td>
+ClusterTriのバイト数を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 kind_of_cluster_for_tri
+</td>
+<td>
+tri_nv_index, tri_color_indexに使用されるClusterの種類を下記のタグで記述します。
+<pre>
+<b>
+TAG_CLUSTER        0x00280110
+</b>
+</pre>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 cluster_index_for_tri
+</td>
+<td>
+tri_nv_index, tri_color_indexに使用されるClusterのインデックス番号を記述します。
+</td>
+</tr>
+
+
+<tr>
+<td nowrap>
+u32 tri_nv_index
+</td>
+<td>
+このtriangleの法線ベクトルのインデックス番号を記述します。<p>
+なお、CGツール上で４角形以上のpolygonを自動分割する場合、そのtriangleの法線ベクトルは各頂点の法線ベクトルを平均化した物を同一のデータとして出力してください。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 tri_color_index
+</td>
+<td>
+このtriangleのカラーを指定します。<p>
+なお、CGツール上で４角形以上のpolygonを自動分割する場合、そのtriangleのカラーは同一データを出力してください。
+</td>
+</tr>
+
+
+<tr>
+<td nowrap>
+ClusterVtx
+</td>
+<td>
+ClusterVtxエリアです。このtriangleを構成するVtxを記述します。
+</td>
+</tr>
+
+</table>
+
+<p>
+<a href="./cluster_C.htm">
+Go to the data chunk
+</a>
+<p>
+<a href="./index.htm">
+Go back to the index
+</a>
+
+
+</blockquote>
+
+<h3>
+(5) ClusterVtx
+</h3>
+
+
+<blockquote>
+
+<table border width="600">
+
+<tr>
+
+<td nowrap>
+u32 kind_of_cluster
+</td>
+
+
+<td>
+この頂点の属するClusterの種類を下記のタグで記述します。
+<pre>
+<b>
+TAG_CLUSTER        0x00280110
+</b>
+</pre>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 cluster_index
+</td>
+<td>
+Clusterのインデックス番号を記述します。
+
+
+
+
+
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 vtx_index
+</td>
+<td>
+頂点のインデックス番号を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 st_index
+</td>
+<td>
+頂点のST値のインデックス番号を記述します。
+</td>
+</tr>
+
+
+<tr>
+<td nowrap>
+u32 vtx_nv_index
+</td>
+<td>
+頂点の法線ベクトルのインデックス番号を記述します。<p>
+vtx_indexと同一になるように出力してください。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 vtx_color_index
+</td>
+<td>
+頂点カラーのインデックス番号を記述します。<p>
+</td>
+</tr>
+
+
+</table>
+
+<p>
+<a href="./cluster_C.htm">
+Go to the data chunk
+</a>
+<p>
+<a href="./index.htm">
+Go back to the index
+</a>
+
+
+</blockquote>
+
+<hr>
+<i>
+Copyright 1998,1999 NINTENDO Co.,Ltd. All rights reserved.<br>
+Copyright 1998,1999 MONEGI CORPORATION All rights reserved.
+</i>
+
+</body>
+</html>

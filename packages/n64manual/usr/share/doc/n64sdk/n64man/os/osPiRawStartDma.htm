@@ -1,0 +1,58 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.
+  PWC- updated formatting
+-->
+<TITLE>osPiRawStartDma</TITLE>
+</HEAD>
+
+<BODY bgcolor="#FFFFFF">
+
+<H1>osPiRawStartDma </h1>
+
+<h3>Function</h3>
+<P>
+osPiRawStartDma, osPiRawWriteIo, osPiRawReadIo, osPiGetStatus
+</p>
+
+<p><i>Accesses the parallel interface (PI) without PI management (Cannot be used beginning from os2.0I/patch5)</i></P>
+
+<h3>Syntax</h3>
+<BLOCKQUOTE><p><PRE>#include &lt;ultra64.h&gt;
+s32 osPiRawStartDma(s32 direction, u32 devAddr, void *vAddr, u32 nbytes);
+s32 osPiRawWriteIo(u32 devAddr, u32 data);
+s32 osPiRawReadIo(u32 devAddr, u32 *data);
+u32 osPiGetStatus(void);</PRE></BLOCKQUOTE></p>
+
+<h3>Description</h3>
+<P>
+The parallel interface (PI) serves to transfer data between RDRAM and devices such as ROM, RAM, and magnetic disks.  The functions shown above provide low-level PI access.  These functions should be used only when it can be guaranteed that operations that access the PI will not be performed. These operations include debugging, printing, logging, and profiling.  The reason for this is that the access routine that includes PI management can be used most efficiently in such cases. (For more information on this function, see <A href="osPiStartDma.htm">osPiStartDma</A>).  Although the Raw routines are easy to use, the procedures stop soon after the application boots and before the operating system is initialized. osPiRawStartDma sets up a DMA transfer between the RDRAM virtual address vaddr and the PI device address devAddr as the basic input designation (OS_READ or OS_WRITE). The total size, nbytes, should be set within the range of the number of transfer bytes, to a maximum of 16 MB, and should be a multiple of 2 bytes.  The PI device address vAddr should be at least 8 byte aligned, but a higher minimum is recommended for OS_READ_DMA operations.  For a detailed description of the types of problems that may occur when the transfer is not a multiple of the cache line, see <A href="OS_DCACHE_ROUNDUP_ADDR.htm">OS_DCACHE_ROUNDUP_ADDR</A>.  The osPiRawStartDma routine also polls the interface again before programming the DMA register.
+</P>
+<P>
+The osPiRawWriteIO routine performs a 32-bit programmed IO write to the PI device address specified by the devAddr argument.  It polls the interface for idleness before performing the operation.  The osPiRawReadIo routine performs a 32-bit programmed IO read from the PI device address specified by devAddr and returns the value in data. It also polls the interface for idleness before performing the operation. Note that the device address devAddr must be two-byte aligned.
+</P>
+<P>
+osPiGetStatus simply returns the PI hardware status.  The 32-bit values returned include the fllowing bit patterns.
+</P>
+<DL>
+  <DT><STRONG>PI_STATUS_TO_IO_BUSY</STRONG>
+  <DD>A previously issued program IO request has not been completed.<BR>
+<BR>
+  <DT><STRONG>PI_STATUS_DMA_BUSY</STRONG>
+  <DD>A previously issued DMGA request has not been completed.<BR>
+<BR>
+  <DT><STRONG>PI_STATUS_ERROR</STRONG>
+  <DD>An IO request was issued while DMA was busy.<BR>
+<BR>
+</DL>
+<P>
+The osPiGetStatus return is most often used to confirm that the last of the latest series of IO requests has been completed.
+</P>
+<h3>See Also</h3>
+<P>
+<A href="osPiStartDma.htm">osPiStartDma</A>
+</P>
+</BODY>
+</HTML>

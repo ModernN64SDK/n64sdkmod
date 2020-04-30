@@ -1,0 +1,62 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Device-Chapter 2 How to USE Devices Connected to the PI </TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/21/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<font style="font-size:16pt"><B>CHAPTER 2  HOW TO USE DEVICES CONNECTED TO THE PI </B></FONT>
+<br>
+<HR SIZE=3 NOSHADE>
+<P>
+The ROM built into the Game Pak, SRAM and the Disk Drive (64DD) are all devices that connect via the Parallel Interface (PI).  This chapter explains how to use each of these devices.
+</P>
+<BR>
+<font style="font-size:12pt"><B>2.1  ROM</B></FONT>
+<br>
+<P>
+  ROM stores data that the player cannot overwrite, such as the game program and character data. 
+     When data is sent from ROM to RDRAM via the PI, the data is directly transferred without CPU intermediation.  This is called a DMA transfer.<br><br>  
+     When you make direct use of N64 OS functions, you need to initialize and activate the PI Manager before performing DMA transfers from ROM.  However, when you use the NuSystem you do not need to call the initialization function because the PI is initialized by the NuSystem.<br><br>
+ 
+     To read data from ROM use the following function: 
+<HR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Function name:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP COLSPAN=2><tt>nuPiReadRom</tt></TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Syntax:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP COLSPAN=2>void nuPiReadRom(u32 rom_addr, void* buf_ptr, u32 size)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Arguments:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP><b>rom_addr</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Transfer origin ROM address</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP><b>buf_ptr</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Pointer to transfer destination buffer</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP><b>size</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Transfer size</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Return value:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP COLSPAN=2>None</TD>
+</TR></TABLE>
+<HR>
+<p>
+The <tt>nuPiReadRom</tt> function DMA transfers data from the ROM cartridge via the PI to RDRAM.  Note that the transfer origin ROM address "rom_addr" must have 2byte alignment and the transfer destination buffer pointer "buf_ptr" must have 8byte alignment. 
+
+     In the sample program (source file "rom.c"), the voice waveform data is DMA-transferred each time the A button is pressed and then sent to the Audio Interface (AI) for playback. 
+
+     In actual game programs, comparatively large sets of data like graphics data must be DMA transferred as well.  If a large set of data of this sort is DMA-transferred all at one time, the DMA transfer of the waveform data may be delayed, resulting in the generation of noise.  However, with the <tt>nuPiReadRom</tt> function, audio transfers are never delayed because data is split into 16Kbyte blocks for DMA transfer.  
+     When accessing ROM via the <tt>nuPiReadRom</tt> function, you can use the ROM symbols _nameSegmentRomStart and _nameSegmentRomEnd to compute the ROM address.  
+</P>
+<BR>
+<BR>
+<BR>
+</BODY>
+</HTML>

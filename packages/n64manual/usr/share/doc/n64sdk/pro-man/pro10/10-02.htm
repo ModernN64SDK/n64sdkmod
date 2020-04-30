@@ -1,0 +1,28 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 10 - Advanced Memory Management</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. -->
+</head>
+
+<h1>10.2 Mixing CPU and SP Data </h1>
+
+<p>In the previous chapter it was implied that CPU and SP data should be in separate <A target="keywords" HREF="../../keywords/index/data/system.htm#segment">segments</A> as they are addressed differently.  This is not mandatory, however, as the addressing can be easily reconciled.  Suppose the application defines a <a href="../../keywords/index/data/graphics.htm#display list" target="keywords">display list</a> and includes it in a segment given a CPU addressable KSEG0 address.  The physical address of this display list can be easily determined with the <a href="../../n64man/os/OS_K0_TO_PHYSICAL.htm">OS_K0_TO_PHYSICAL()</a> macro or the <a href="../../n64man/os/osVirtualToPhysical.htm">osVirtualToPhysical()</a> routine.  The resulting physical
+address corresponds to an SP address with segment number if 0, and a <A target="keywords" HREF="../../keywords/index/data/system.htm#segment offset">segment offset</A> equal to the physical address.  This is because the encoding of the SP segment address is as follows: </p>
+
+<dl>
+  <dt><a name="f10-00-00"></a>
+  <dd><img alt="[Figure]" src="gif/f10-00-00.gif">
+</dl>
+
+<p>If the application creates a mapping using segment 0 to a beginning physical address of 0x0, the SP can correctly access objects in DRAM when given a physical address. </p>
+
+<p>This simplifies the situation somewhat, but the SP <A target="keywords" HREF="../../keywords/index/data/system.htm#microcode">microcode</a> takes it a step further:  Since the upper four bits of a <A target="keywords" HREF="../../keywords/index/data/system.htm#segment address">segment address</A> are not used, they are ignored.  Thus, an implicit mapping is done from a KSEG0 address to a physical address, and no explicit conversion need be done by the application.</p>
+
+<p>To summarize, as long as an SP <A target="keywords" HREF="../../keywords/index/data/system.htm#segment table">segment table</A> mapping is done from segment number 0 to offset 0, CPU KSEG0 addresses can be interpreted correctly by the SP. 
+</p>
+
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+</body> </html>

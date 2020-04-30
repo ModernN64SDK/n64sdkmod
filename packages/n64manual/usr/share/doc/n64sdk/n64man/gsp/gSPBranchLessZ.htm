@@ -1,0 +1,99 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.>
+<TITLE>gSPBranchLessZ</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>gSPBranchLessZ [Macro]</H1>
+
+<p><b>Function</b></p>
+
+<p>gSPBranchLessZ</p>
+
+<P>
+<i>Conditionally branches the display list</i>
+</P>
+<p><b>Syntax</b></p>
+<p>
+<PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gbi.htm">gbi.h</A> */
+gSPBranchLessZ(
+        Gfx *gdl,
+        Gfx *branchdl,
+        u32 vtx,
+        f32 zval,
+        f32 near,
+        f32 far,
+        s32 flag)
+gsSPBranchLessZ(
+        Gfx *branchdl,
+        u32 vtx,
+        f32 zval,
+        f32 near,
+        f32 far,
+        s32 flag)</CODE></PRE></p>
+
+<p><b>Arguments</b></p>
+<p>
+<DL>
+  <DT><B>gdl</B>
+  <DD>the display list pointer. 
+  <DT><B>branchdl</B>
+  <DD>the pointer to the display list branch. 
+  <DT><B>vtx</B>
+  <DD>the vertex (index in the vertex buffer).
+  <DT><B>zval</B>
+  <DD>the Z value which becomes the branch condition. 
+  <DT><B>near</B>
+  <DD>the location of the near plane (a value specified by either <A HREF="../gu/guPerspective.htm">guPerspective</A> or <A HREF="../gu/guOrtho.htm">guOrtho</A>). 
+  <DT><B>far</B>
+  <DD>the location of the far plane (a value specified by either <A HREF="../gu/guPerspective.htm">guPerspective</A> or <A HREF="../gu/guOrtho.htm">guOrtho</A>). 
+  <DT><B>flag</B>
+  <DD>the projection method: 
+  <DD><B>G_BZ_PERSP</B> (Perspective projection)
+  <DD><B>G_BZ_ORTHO</B> (Orthogonal projection)
+</DL></p>
+<p><b>Description</b></p>
+<P>
+Conditionally branches the display list. When the depth value of the vertex specified by <B>vtx</B> is less than or equal to <B>zval</B>, the display list is branched to the display list indicated by <B>branchdl</B>. When it is more than <B>zval</B>, nothing is done. This provides an easy way to perform LOD processing on a model. 
+</P>
+<p><b>Note</b></p>
+<P>
+This macro assumes that the values of the two viewport Z-direction arguments <B>vp.vscale[2]</B> and <B>vp.vtrans[2]</B> (see g*SPViewport) are both G_MAXZ/2. When this is the case, the depth value is greater than 0 and less than G_MAXZ. Normally the depth value does not need to be changed in an application. However, if you are going to change this value, please use the g*SPBranchLessZrg macro. 
+</P>
+<p><b>Example</b></p>
+<p>
+<PRE><CODE>The following is an example of a model with 3-level LOD: 
+Gfx model_near[ ] = {		// Model's distance less than or equal to 200.
+	..........
+	gsSPEndDisplayList( ),
+};
+Gfx model_mid[ ] = {		// Model's distance between 201 and 800.
+	..........
+	gsSPEndDisplayList( ),
+};
+Gfx model_far[ ] = {		// Model's distance between 801 and 1600.
+	..........
+	gsSPEndDisplayList( ),
+};
+Gfx model[ ] = {
+	gsSPVertex(testvtx, 1, 0),
+	<B>gsSPBranchLessZ</B>(model_near, 0,  200, 32, 2000, G_BZ_PERSP),  // Model's distance less than or equal to 200.
+	<B>gsSPBranchLessZ</B>(model_mid,  0,  800, 32, 2000, G_BZ_PERSP),  // Model's distance between 201 and 800.
+	<B>gsSPBranchLessZ</B>(model_far,  0, 1600, 32, 2000, G_BZ_PERSP),  // Model's distance between 801 and 1600.
+	gsSPEndDisplayList( ),                                         // Model's distance greater than 1600.
+};</CODE></PRE></p>
+
+<p><b>See Also</b></p>
+<P>
+<A HREF="gSPBranchLessZrg.htm">gSPBranchLessZrg</A>
+</P>
+<p><b>Revision History</b></p>
+<P>
+02/01/99  Entirely revised.
+</P>
+</BODY>
+</HTML>

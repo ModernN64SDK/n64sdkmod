@@ -1,0 +1,288 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<link rel=stylesheet type="text/css" HREF="../N64man.css">
+<!--
+Editors Notes:
+  JLR made reformating and copy edits.
+-->
+
+<TITLE>gDPLoadTextureBlock</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>gDPLoadTextureBlock [Macro]</H1>
+
+<h2>Function</h2>
+
+<P>gDPLoadTextureBlock<br><br><i>
+Loads texture as a contiguous texture block</i></P>
+
+<p><b>Syntax</b></p>
+<p><PRE>
+<CODE>#include &lt;ultra64.h&gt;        /* <A href="../../header/gbi.htm">gbi.h</A> */
+gDPLoadTextureBlock(
+        Gfx *gdl,
+        u32 timg,
+        u32 fmt,
+        u32 siz,
+        u32 width,
+        u32 height,
+        u32 pal,
+        u32 cms,
+        u32 cmt,
+        u32 masks,
+        u32 maskt,
+        u32 shifts,
+        u32 shiftt )
+gsDPLoadTextureBlock(
+        u32 timg,
+        u32 fmt,
+        u32 siz,
+        u32 width,
+        u32 height,
+        u32 pal,
+        u32 cms,
+        u32 cmt,
+        u32 masks,
+        u32 maskt,
+        u32 shifts,
+        u32 shiftt ) </CODE></PRE></p>
+
+<p><b>Arguments</b></p>
+<p><DL>
+  <DT><B>gdl</B>
+  <DD>Display list pointer
+  <DD>&nbsp;
+  <DT><B>timg</B>
+  <DD>Address of the texture image (64-bit alignment)
+  <DD>&nbsp;
+  <DT><B>fmt</B>
+  <DD>Texture image format:
+  <DD><B>G_IM_FMT_RGBA</B> (RGBA format)
+  <DD><B>G_IM_FMT_YUV</B> (YUV format)
+  <DD><B>G_IM_FMT_CI</B> (CI format)
+  <DD><B>G_IM_FMT_IA</B> (IA format)
+  <DD><B>G_IM_FMT_I</B> (I format)
+  <DD>&nbsp;
+  <DT><B>siz</B>
+  <DD>Pixel component size:
+  <DD><B>G_IM_SIZ_8b</B> (8 bits/texel)
+  <DD><B>G_IM_SIZ_16b</B> (16 bits/texel)
+  <DD><B>G_IM_SIZ_32b</B> (32 bits/texel)
+  <DD>&nbsp;
+  <DT><B>width</B>
+  <DD>Texture image width
+  <DD>&nbsp;
+  <DT><B>height</B>
+  <DD>Texture image height
+  <DD>&nbsp;
+  <DT><B>pal</B>
+  <DD>Location of palette for 4-bit color index texture(4-bit precision, 0~15)
+  <DD>&nbsp;
+  <DT><B>cms</B>
+  <DD>s-axis mirror, no-mirror, wrap, and clamp flags
+  <DD><B>G_TX_MIRROR</B> (enable mirror operations) 
+  <DD><B>G_TX_NOMIRROR</B> (disable mirror operations) 
+  <DD><B>G_TX_WRAP</B> (enable wrap operations) 
+  <DD><B>G_TX_CLAMP</B> (enable clamp operations) 
+  <DD>&nbsp;
+  <DT><B>cmt</B>
+  <DD>t-axis mirror, no-mirror, wrap and clamp flags 
+  <DD><B>G_TX_MIRROR</B> (enable mirror operations) 
+  <DD><B>G_TX_NOMIRROR</B> (disable mirror operations) 
+  <DD><B>G_TX_WRAP</B> (enable wrap operations) 
+  <DD><B>G_TX_CLAMP</B> (enable clamp operations) 
+  <DD>&nbsp;
+  <DT><B>masks</B>
+  <DD>s-axis mask (4-bit precision, 0~15) 
+  <DD><B>G_TX_NOMASK</B> (do not mask, 0) 
+  <DD><B>numeric value n</B> (mask, 1~15) 
+  <DD>&nbsp;
+  <DT><B>maskt</B>
+  <DD>t-axis mask (4-bit precision, 0~15) 
+  <DD><B>G_TX_NOMASK</B> (do not mask, 0)
+  <DD><B>numeric value n</B> (mask, 1~15) 
+  <DD>&nbsp;
+  <DT><B>shifts</B>
+  <DD>s-coordinate shift value (4-bit precision, 0~15) 
+  <DD><B>G_TX_NOLOD</B> (do not shift, 0)
+  <DD><B>numeric value n</B> (shift, 1~15)
+  <DD>&nbsp;
+  <DT><B>shiftt</B>
+  <DD>t-coordinate shift value (4-bit precision, 0~15) 
+  <DD><B>G_TX_NOLOD</B> (do not shift, 0)
+  <DD><B>numeric value n</B> (shift, 1~15) 
+</DL></p>
+<p><b>Description</b></p>
+<P>
+Loads a texture from DRAM into texture memory (TMEM). Because this macro loads the texture image into a contiguous region in memory, it is the most efficient way to load a texture. DRAM transfers are also most efficient with large blocks. 
+</P>
+<P>
+This macro is actually comprised of a number of 64-bit GBI commands. Thus, if you need to find out the exact size of the display list, you need to consider how many GBI commands it is comprised of. 
+<p>Regarding the <B>fmt</B> argument:
+<p>
+  <DL>
+  <DT><B>G_IM_FMT_RGBA</B>
+  <DD>Each texel comprises four elements of information: RGB (red, green, blue) and alpha (opacity). 
+  <DT><B>G_IM_FMT_YUV</B>
+  <DD>Each texel comprises a Y (intensity) component and a UV (color difference) component. 
+  <DT><B>G_IM_FMT_CI</B>
+  <DD>Each texel is comprised of index information specifying palette data. 
+  <DT><B>G_IM_FMT_IA</B>
+  <DD>Each texel is comprised of I (intensity) information and alpha information. 
+  <DT><B>G_IM_FMT_I</B>
+  <DD>Each texel is a texture with only I information. Since this is extremely compact, it is useful when only a few colors are being used.
+  <DT>&nbsp;
+  <DT>You can choose from among 7 different texture image formats. The table shows the valid combinations of format and size. Select the format that best suits the texture compression method and type. 
+  <DT>&nbsp;
+  <DT>
+<TABLE border="1" cellspacing="0" cellpadding="3">
+  <TR>
+    <TD rowspan="2" colspan="2">&nbsp;</TD>
+    <TD nowrap colspan="3" align="center" valign="middle"><B>G_IM_SIZ_</B>(Size)</TD></TR>
+  <TR>
+    <TD nowrap align="center" valign="middle"><B>8b</B></TD>
+    <TD nowrap align="center" valign="middle"><B>16b</B></TD>
+    <TD nowrap align="center" valign="middle"><B>32b</B></TD></TR>
+  <TR>
+    <TD nowrap rowspan="5" align="center" valign="middle"><B>G_IM_FMT_<BR>
+</B>(Format)</TD>
+    <TD nowrap align="center" valign="middle"><B>RGBA</B></TD>
+    <TD nowrap align="center" valign="middle">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+    <TD nowrap align="center" valign="middle">X<BR>
+(5/5/5/1)</TD>
+    <TD nowrap align="center" valign="middle">X<BR>
+(8/8/8/8)</TD></TR>
+  <TR>
+    <TD nowrap align="center" valign="middle"><B>YUV</B></TD>
+    <TD nowrap align="center" valign="middle">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+    <TD nowrap align="center" valign="middle">X</TD>
+    <TD nowrap align="center" valign="middle">&nbsp;<BR>
+&nbsp;</TD></TR>
+  <TR>
+    <TD nowrap align="center" valign="middle"><B>CI</B></TD>
+    <TD nowrap align="center" valign="middle">X</TD>
+    <TD nowrap align="center" valign="middle">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+    <TD nowrap align="center" valign="middle">&nbsp;<BR>
+&nbsp;</TD></TR>
+  <TR>
+    <TD nowrap align="center" valign="middle"><B>IA</B></TD>
+    <TD nowrap align="center" valign="middle">X<BR>
+(4/4)</TD>
+    <TD nowrap align="center" valign="middle">X<BR>
+(8/8)</TD>
+    <TD nowrap align="center" valign="middle">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD></TR>
+  <TR>
+    <TD nowrap align="center" valign="middle"><B>I</B></TD>
+    <TD nowrap align="center" valign="middle">X</TD>
+    <TD nowrap align="center" valign="middle">&nbsp;</TD>
+    <TD nowrap align="center" valign="middle">&nbsp;<BR>
+&nbsp;</TD></TR>
+</TABLE>
+</p>
+  <p>Regarding the <B>cms</B> and <B>cmt</B> arguments, multitple specifications can be made with a bit sum of the following flags:
+<p>
+<DL>
+  <DT><B>G_TX_MIRROR</B>
+  <DD>Enables mirroring. Mirror textures can be used for textures with axial symmetry, like a tree. Symmetric textures are an effective way to reduce texture volume.
+  <DT><B>G_TX_NOMIRROR</B>
+  <DD>Disables mirroring.
+  <DT><B>G_TX_WRAP</B>
+  <DD>Enables wrapping. A wrapped texture repeats a texel. The wrapping cycle can be specified by a mask. 
+  <DT><B>G_TX_CLAMP</B>
+  <DD>Enables clamping. A clamped texture repeats the edge texel color when sampling outside of the texture map. Clamping is performed at the boundary of the texture tile. 
+  </DL></p>
+<p>Regarding the <B>masks</B> and <B>maskt</B> arguments:
+<p>
+  <DL>
+  <DT><B>G_TX_NOMASK</B>(0)
+  <DD>No mask is used.
+  <DT><B>numeric value n</B>(1~15)
+  <DD>Specifies the wrap position with the value of n. The low-order n bits of the s,t texel coordinates are used for texture sampling. 
+  <DT>&nbsp;
+  <DT>Texture sampling utilizes the low-order n bits of the s,t texture coordinates. You would set to 5 to wrap a texture with a boundary of 32x32 (2<SUP>5</SUP> x 2<SUP>5</SUP>). Set to 0 to perform clamping.
+  </DL>
+<p>Regarding the <B>shifts</B> and <B>shiftt</B> arguments:
+<p>
+  <DL>
+  <DT><B>G_TX_NOLOD</B>(0)
+  <DD>No shifting is performed.
+  <DT><B>numeric value n</B>(1~15)
+  <DD>Shifts the s,t texel coordinate by n bits. This enables the sampling of low-level LOD maps and detail textures. 
+  <DT>&nbsp;
+  <DT>Normally, use G_TX_NOLOD. Also, numeric value n is used, see <A HREF="gDPSetTile.htm">gDPSetTile</A> for more information.
+  </DL>
+</DL>
+
+<P>The values specified by <B>shifts</B> and <B>shiftt</B> (the shift parameter values) represent the amount by which the s,t coordinates are shifted to the left or to the right.  This is used for the MIP-mapping, detail, and sharp mode settings.  The values 0-10 are interpreted as right shifts, and the values 11-15 are interpreted as left shifts (see the table below).
+</p>
+
+<P>
+<TABLE border="1" cellspacing="0" cellpadding="3">
+  <TR>
+    <TD nowrap align="center" valign="middle" width="150"><font face="arial" size="-1"><B>Shift parameter value</B></TD>
+    <TD nowrap align="center" valign="middle" width="150"><font face="arial" size="-1"><B>Shift amount</B></TD></TR>
+  <TR>
+    <TD nowrap align="center" valign="middle"><font face="arial" size="-1">0</TD>
+    <TD nowrap align="center" valign="middle"><font face="arial" size="-1">No shift</TD></TR>
+  <TR>
+    <TD nowrap align="center" valign="middle"><font face="arial" size="-1">1</TD>
+    <TD nowrap align="center" valign="middle"><font face="arial" size="-1">&gt;&gt; 1</TD></TR>
+  <TR>
+    <TD nowrap align="center" valign="middle"><font face="arial" size="-1">2</TD>
+    <TD nowrap align="center" valign="middle"><font face="arial" size="-1">&gt;&gt; 2</TD></TR>
+  <TR>
+    <TD nowrap colspan="2" align="center" valign="middle"><font face="arial" size="-1">...</TD></TR>
+  <TR>
+    <TD nowrap align="center" valign="middle"><font face="arial" size="-1">9</TD>
+    <TD nowrap align="center" valign="middle"><font face="arial" size="-1">&gt;&gt; 9</TD></TR>
+  <TR>
+    <TD nowrap align="center" valign="middle"><font face="arial" size="-1">10</TD>
+    <TD nowrap align="center" valign="middle"><font face="arial" size="-1">&gt;&gt; 10</TD></TR>
+  <TR>
+    <TD nowrap align="center" valign="middle"><font face="arial" size="-1">11</TD>
+    <TD nowrap align="center" valign="middle"><font face="arial" size="-1">&lt;&lt; 5</TD></TR>
+  <TR>
+    <TD nowrap align="center" valign="middle"><font face="arial" size="-1">12</TD>
+    <TD nowrap align="center" valign="middle"><font face="arial" size="-1">&lt;&lt; 4</TD></TR>
+  <TR>
+    <TD nowrap align="center" valign="middle"><font face="arial" size="-1">13</TD>
+    <TD nowrap align="center" valign="middle"><font face="arial" size="-1">&lt;&lt; 3</TD></TR>
+  <TR>
+    <TD nowrap align="center" valign="middle"><font face="arial" size="-1">14</TD>
+    <TD nowrap align="center" valign="middle"><font face="arial" size="-1">&lt;&lt; 2</TD></TR>
+  <TR>
+    <TD nowrap align="center" valign="middle"><font face="arial" size="-1">15</TD>
+    <TD nowrap align="center" valign="middle"><font face="arial" size="-1">&lt;&lt; 1</TD></TR>
+</TABLE>
+</p>
+<p>
+
+For details about each argument, see Section 13.4 "Tile Attributes" in the N64 Programming Manual. Also, for information about using this macro, see Section 13.5 "Tile Descriptor Loading" in the N64 Programming Manual.
+</P>
+<p><b>Note</b></p>
+<P>
+To load a 4-bit texture, use the <A href="gDPLoadTextureBlock_4b.htm">gDPLoadTextureBlock4b</A> macro, no matter what the type.
+</P>
+<P>
+Also, note that operation is not currently guaranteed for G_IM_FMT_YUV (YUV format).
+</P>
+<p><b>Comment</p></b>
+<P>
+There are some restrictions regarding the loading of textures with this macro. To ignore the restrictions, use the gDPLoadTextureBlockS macro. However, that form of the macro requires that every 32 bits in the odd lines of the texture data be pre-swapped. This kind of texture data is created using <A href="../tool/rgb2c.htm">rgb2c</A> with the -S option. You enter a number after -S to indicate how many texels to swap at a time. That is to say, if the texture you are creating is 32bit or 16bit, you enter 2, 4 for 8bit, and 8 for 4bit. To learn about the restrictions on loading, see Section 13, Appendix A "LoadBlock Line Limits" and Section 13.8 "Texture Memory" in the N64 Programming Manual. Also, note that additional texture macros are defined in &lt;<A href="../../header/gbi.htm">gbi.h</A>&gt;
+</P>
+<p><b>See Also</b></p>
+<P>
+<A href="gDPLoadTextureBlock_4b.htm">gDPLoadTextureBlock_4b</A>, <A href="gDPLoadTextureTile.htm">gDPLoadTextureTile</A>, 
+<A href="gDPLoadTextureTile_4b.htm">gDPLoadTextureTile_4b</A>, <A href="gDPLoadTLUT_pal256.htm">gDPLoadTLUT_pal256</A>, 
+<A href="gDPSetTextureDetail.htm">gDPSetTextureDetail</A>, <A href="../gu/guLoadTextureBlockMipMap.htm">guLoadTextureBlockMipMap</A>, and <A href="../tool/rgb2c.htm">rgb2c</A>
+</P>
+<p><b>Revision History</b></p>
+<P>
+02/01/99 Completely rewritten.<br>
+03/31/99 Modified the Description.
+</P>
+</BODY>
+</HTML>

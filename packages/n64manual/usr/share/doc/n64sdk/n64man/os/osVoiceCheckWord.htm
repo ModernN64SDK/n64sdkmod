@@ -1,0 +1,96 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits
+MAP- added links, updated format>
+<TITLE>osVoiceCheckWord</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+<font style="font-size: 12pt"><b>osVoiceCheckWord</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p><i>Checks whether or not a word can be registered in the dictionary</p></i>
+</P>
+<P>
+<h3>Syntax</h3>
+</P>
+<P>
+#include &lt;ultra64.h&gt;     /* <A HREF="../../header/ultra64.htm">ultra64.h</A> */
+</P>
+<P>
+s32 osVoiceCheckWord(u8 *word);
+
+</P>
+<P>
+<h3>Description</h3>
+</P>
+<P>
+osVoiceCheckWord() function is for checking whether or not a specified word can be registered in the Voice Recognition System.  Use this when the words to be registered will be input during debugging or by the game player. 
+</P>
+<P>
+"word" specifies the word (SJIS) to be registered.
+</P>
+<P>
+An error will be returned if a word is specified which contains a character combination which does not satisfy the conditions listed in the table below.
+</P>
+<CENTER>
+<TABLE border="1">
+  <TR>
+    <TD align="center">Usage</TD>
+    <TD align="center">Character</TD></TR>
+  <TR>
+    <TD>No limitation on use</TD>
+    <TD>か、き、く、け、こ、さ、し、す、せ、そ、た、ち、つ、て、と、は、ひ、ふ、へ、ほ、が、ぎ、ぐ、げ、ご、ざ、じ、ず、ぜ、ぞ、だ、ぢ、づ、で、ど、ば、び、ぶ、べ、ぼ、ぱ、ぴ、ぷ、ぺ、ぽ、カ、キ、ク、ケ、コ、サ、シ、ス、セ、ソ、タ、チ、ツ、テ、ト、ハ、ヒ、フ、ヘ、ホ、ガ、ギ、グ、ゲ、ゴ、ザ、ジ、ズ、ゼ、ゾ、ダ、ヂ、ヅ、デ、ド、バ、ビ、ブ、ベ、ボ、パ、ピ、プ、ペ、ポ</TD></TR>
+  <TR>
+    <TD>Can be used only after specified characters<BR>
+（Combinable characters）</TD>
+    <TD>ぁ、ァ（ふ、フ、ヴ）<BR>
+ぃ、ィ（う、て、で、ふ、ウ、テ、デ、フ、ヴ）<BR>
+ぅ、ゥ（と、ど、ふ、ト、ド、フ、ヴ）<BR>
+ぇ、ェ（う、し、じ、ち、ぢ、つ、ふ、ウ、シ、ジ、チ、ヂ、ツ、フ、ヴ）<BR>
+ぉ、ォ（う、ふ、ウ、フ、ヴ）<BR>
+ゃ、ャ、ゅ、ュ、ょ、ョ（き、し、ち、に、ひ、み、り、ぎ、じ、ぢ、び、ぴ、キ、シ、チ、ニ、ヒ、ミ、リ、ギ、ジ、ヂ、ビ、ピ、ヴ）<BR>
+</TD></TR>
+  <TR>
+    <TD>Cannot be used at the beginning of a word</TD>
+    <TD>ー、ん、っ、ゎ、ン、ッ、ヮ、ヵ、ヶ</TD></TR>
+  <TR>
+    <TD>Cannot be used at the end of a word</TD>
+    <TD>っ、ッ</TD></TR>
+  <TR>
+    <TD>Cannot be used in front of "ー"</TD>
+    <TD>ん、っ、ン、ッ</TD></TR>
+  <TR>
+    <TD>Cannot be used after "tsu" or "tsu"</TD>
+    <TD>ー、あ、い、う、え、お、な、に、ぬ、ね、の、ま、み、む、め、も、や、ゆ、よ、ら、り、る、れ、ろ、わ、ゐ、ゑ、を、ん、ぁ、ぃ、ぅ、ぇ、ぉ、ゃ、ゅ、ょ、っ、ゎ、ア、イ、ウ、エ、オ、ナ、ニ、ヌ、ネ、ノ、マ、ミ、ム、メ、モ、ヤ、ユ、ヨ、ラ、リ、ル、レ、ロ、ワ、ヰ、ヱ、ヲ、ン、ァ、ィ、ゥ、ェ、ォ、ャ、ュ、ョ、ッ、ヮ、<BR>
+</TD></TR>
+  <TR>
+    <TD>Combinations which cannot be used</TD>
+    <TD>んん、んン、ンん、ンン</TD></TR>
+</TABLE>
+
+</CENTER>
+<P>
+The returned value is an error code.  A 0 (zero) is returned when processing ends normally.  If an error occurs, this function has the following error codes. <BR>
+</P>
+<P>
+<DL>
+  <DT><B>CONT_ERR_VOICE_WORD</B><br>
+  <DD>The word cannot be registered.  This word cannot be registered in the voice recognition dictionary. 
+</DL>
+</P>
+<p><b>See also</b><br><br>
+<A href="osVoiceClearDictionary.htm">osVoiceClearDictionary</A>,
+<A href="osVoiceControlGain.htm">osVoiceControlGain</A>, <A href="osVoiceCountSyllables.htm">osVoiceCountSyllables</A>,
+<A href="osVoiceGetReadData.htm">osVoiceGetReadData</A>, <A href="osVoiceInit.htm">osVoiceInit</A>,
+<A href="osVoiceMaskDictionary.htm">osVoiceMaskDictionary</A>, <A href="osVoiceSetWord.htm">osVoiceSetWord</A>,
+<A href="osVoiceStartReadData.htm">osVoiceStartReadData</A>, and <A href="osVoiceStopReadData.htm">osVoiceStopReadData</A>
+
+</P>
+<h3>Revision History</h3>
+<p>1999/04/30  Changed Format</p>
+<br><br>
+
+</BODY>
+</HTML>

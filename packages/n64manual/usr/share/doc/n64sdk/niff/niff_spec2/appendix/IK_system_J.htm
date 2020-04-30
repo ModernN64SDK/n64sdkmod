@@ -1,0 +1,86 @@
+<html>
+<title>
+IK System
+</title>
+<body bgcolor="ffffff">
+
+<h2>
+IK System
+</h2>
+<hr size="3">
+
+<blockquote>
+NIFF2.0でのIKシステムは下記のような2BoneのIKシステムが使用可能です。<p>
+Chain Root -> Joint0 -> Joint1 -> Effectorという形で構成されています。<p>
+Chain RootとEffectorの位置を決定することによりJoint0、Joint1の変換マトリクスを求めます。<p>
+<center>
+<img src="./img/2bone_ik.jpg">
+<p>
+<b>
+図　2Bone IK
+</b>
+<p>
+</center>
+IKのJointの軸は下記のように決定されます。<p>
+<center>
+<img src="./img/joint_axis.jpg">
+<p>
+<b>
+図　Jointの軸
+</b>
+<p>
+</center>
+また、IKの変形はレゾリューション・プレーンと呼ばれる平面上でおこなわれます。<p>
+この平面は基本的には下図のようなJoint0のZ軸を法線とし、joint0の原点を通る平面です。<p>
+<center>
+<img src="./img/ik_axis.jpg">
+<p>
+<b>
+図　Resolution Plane
+</b>
+<p>
+</center>
+ただし、レゾリューション・プレーンの法線を変更することができます。<p>
+下図のように変更されたレゾリューション・プレーンの軸を指定することで、本来のIKの動作を歪めることができます。<p>
+この場合、Joint0にPreferred Axis ConstraintやUp Vector Constraintをかけると、Constraintするオブジェクトは本来のレゾリューション・プレーンを決定し、Joint0、Joint1は変更されたレゾリューション・プレーン上で動作します。<p>
+<center>
+<img src="./img/resplane.jpg">
+<p>
+<b>
+図　Resolution Planeの変更
+</b>
+<p>
+</center>
+IKシステム上ではEffectorの移動により、Joint0とJoint1の変換マトリクスが決定します。その場合、Joint0に与えられたフラグによって、二通りの変形があります。<p>
+一つはNIFF2_JOINT_UPフラグがJoint0に設定されている場合です。この場合、下図のようにJoint0のY軸の向きにEffectorが移動した場合にIKは「曲がる」動作をします。<p>
+<center>
+<img src="./img/joint_up.jpg">
+<p>
+<b>
+図　NIFF2_JOINT_UP指定時
+</b>
+</center>
+<p>
+逆にNIFF2_JOINT_DOWNフラグがJoint0に設定されている場合は下図のようにJoint0のY軸と逆の向きにEffectorが移動した場合にIKが「曲がり」ます。
+<p>
+<center>
+<img src="./img/joint_down.jpg">
+<p>
+<b>
+図　NIFF2_JOINT_DOWN指定時
+</b>
+<p>
+</center>
+</blockquote>
+
+<hr>
+<i>
+Copyright 1998,1999 NINTENDO Co.,Ltd. All rights reserved.<br>
+Copyright 1998,1999 MONEGI CORPORATION All rights reserved.
+</i>
+
+
+
+</body>
+
+</html>

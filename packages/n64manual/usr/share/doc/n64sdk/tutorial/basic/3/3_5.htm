@@ -1,0 +1,38 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-N64 Programming Basics-Chapter 3  The Display List and Tasks</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/20/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<FONT Style="font-size:12pt"><B>3.5  Minor Note</B></FONT>
+<br>
+<P>
+The <tt>ClearBackground</tt> function is designed so you can specify the background color with the three arguments <b>r</b>, <b>g</b> and <b>b</b> at execution time.  Assume the background will be fixed to a specific color.  In this case, it might seem unnecessary to do a dynamic display list, and that the load at execution time could be reduced by defining this as a static display list.  However, there is a reason why this display list is defined dynamically.  In fact, it is impossible to substitute a static display list.
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=5><TR>
+	<TD NOWRAP COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE><B>List 3-4</B>  <B>See basic3 "graphic.c"</FONT>
+</TR><TR>
+	<TD NOWRAP BGCOLOR="666666" WIDTH="4" ALIGN=LEFT VALIGN=TOP><HR NOSHADE SIZE=0></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>
+<FONT COLOR="#000080"><PRE><CODE>void  ClearBackground(u8 r, u8 g, u8 b)
+{
+  gDPPipeSync(glistp++);
+  /* Set to fill mode (G_CYC_FILL) */
+  gDPSetCycleType(glistp++, G_CYC_FILL);
+  /* Specify the subject to fill (the next displayed framebuffer) */
+  gDPSetColorImage(glistp++, G_IM_FMT_RGBA,
+                   G_IM_SIZ_16b, SCREEN_WD,
+                   osVirtualToPhysical(nuGfxCfb_ptr));
+(The rest  is omitted)
+</CODE></PRE></FONT>
+	</TD>
+</TR></TABLE>
+<P>
+ If you look carefully at the contents of <tt>ClearBackground</tt>, you will see that the symbol nuGfxCfb_ptr is referenced.  nuGfxCfb_ptr is a pointer managed by NuSystem that is always set to point to the next framebuffer for rendering.  Since this pointer points to a different framebuffer in every rendering frame, it cannot be determined at compile time.  Consequently, it is impossible to implement <tt>ClearBackground</tt> as a static display list.  
+</P>
+</BODY>
+</HTML>

@@ -1,0 +1,258 @@
+<HTML>
+<HEAD>
+<TITLE>Chapter 3 Binary Format</TITLE>
+</HEAD>
+<BODY LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff">
+
+<font face="arial" size="-1">
+<b><font size="3">Chapter 3 Binary Format</b></font>
+<HR>
+
+<b>3-12. PartList</b>
+<P>
+<u>2. Part Area</u>
+
+<p>
+<table border="1" cellpadding="3" cellspacing="3">
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+part_tag
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+this_part_index
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+part_size
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+part_name_index
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+mat_index
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+tri_group_index
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+part_tri_num
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+nintendo_extension_block_size
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+user_extension_block_size
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+tri_index(0)
+</td>
+</tr>
+<tr>
+<td colspan="2"><font face="arial" size="-1">
+<center>
+...
+</center>
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+tri_index(part_tri_num - 1)
+</td>
+</tr>
+<tr>
+<td colspan="2"><font face="arial" size="-1">
+<center>
+NintendoExtensionBlock
+</center>
+</td>
+</tr>
+<tr>
+<td colspan="2"><font face="arial" size="-1">
+<center>
+UserExtensionBlock
+</td>
+</tr>
+</table>
+<p>
+Figure: Part Area Memory Map
+<p>
+<table border="1" cellpadding="3" cellspacing="3">
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 part_tag
+</td>
+<td>
+<font face="arial" size="-1">
+Tag indicating Part area. Set the following flag. <pre><font face="courier" size="2"><b>TAG_PART&#9;0x00090100</b></pre></font>
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 this_part_index
+</td>
+<td><font face="arial" size="-1">
+Index number of this Part area
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 part_size
+</td>
+<td>
+<font face="arial" size="-1">
+Size of Part area
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 part_name_index
+</td>
+<td>
+<font face="arial" size="-1">
+Index number contained in NameList
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 mat_index
+</td>
+<td>
+<font face="arial" size="-1">
+Index number of Mat<p>
+When material of Shape is used directly, specify;
+<pre><font face="courier" size="2"><b>USE_SHAPE_MAT&#9;0x80000000</b></pre></font>
+
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 tri_group_index
+</td>
+<td>
+<font face="arial" size="-1">
+TriList' s Index corresponded to TriGroup used in this part.  This data must be same as that of tri_group_index which is specified in Shape data linked from this Part.
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 part_tri_num
+</td>
+<td>
+<font face="arial" size="-1">
+Number of Tri in this part
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 nintendo_extensino_block_size
+</td>
+<td>
+<font face="arial" size="-1">
+Nintendo extension block size
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 user_extensino_block_size
+</td>
+<td>
+<font face="arial" size="-1">
+User extension block size
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 tri_index
+</td>
+<td>
+<font face="arial" size="-1">
+Index number of Tri to be referenced
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+NintendoExtensionBlock
+</td>
+<td>
+<font face="arial" size="-1">
+Nintendo extension block
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+UserExtensionBlock
+</td>
+<td>
+<font face="arial" size="-1">
+User extension block
+</td>
+</tr>
+</table>
+ 
+<p>
+
+
+<hr>
+
+
+<p align="right"><a href="../index.htm">
+<img src="../../../gif/index.gif"
+border="0" width="65" height="17"></a>
+&nbsp; <a href="./seg13.htm">
+<img src="../../../gif/next.gif"
+border="0" width="65" height="17"></a></p>
+
+</body>
+</html>
+
+

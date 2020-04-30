@@ -1,0 +1,185 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>NINTENDO64 SPEC</title>
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000" link="#CC0033"
+vlink="#0000CC" alink="#00CCCC">
+<font face="arial" size="-1">
+
+<b><font size="3">About the SPEC file</b></font>
+
+<hr>
+<p><font color="#0000A0">
+<strong>This document discusses the spec file.</strong></font>
+<P>
+
+<hr>
+<b><font color="#FF0000">Overall Structure</font></b>
+    
+
+    <p>The spec file is a file which contains various segment arrangement information used when linking object files.  There is a specific format for this file, but since it is also processed by the C language pre-processor, the C command <b>#define</b> can be used as a constant declaration. </p>
+    <p>When sharing constant declarations, such as the header file for the C source program, etc., it is effective to discriminate them by defining the symbol '_LANGUAGE_C'.  In other words, when run through the pre-processor as the header of a C source file, you would make it so that a conditional branching section was read in which _LANGUAGE_C was defined. </p>
+    <p>The spec file comprises a segment list and a wave list.  Normally, it is configured so that the segments are defined and then the waves are defined, as follows. 
+
+<P>
+<center><table border="0">
+        <tr>
+            <td><font face="arial" size="-1"><b>Segment List section</b></td>
+        </tr>
+        <tr>
+            <td><font face="arial" size="-1"><font face="arial" size="-1"><b>Wave List section</b></td>
+        </tr>
+    </table>
+    </center>
+
+<P>
+<hr>
+        <b><font color="#FF0000">Segment List</font></b>
+    
+ 
+    <p>The segment list contains segments which are noted, sandwiched between <b>`beginseg`</b> and <b>`endseg`</b>.  A sample segment is given below. 
+ 
+
+<font face="courier" size="2">
+<pre><b>          beginseg
+		name	&quot;program&quot;
+		flags	BOOT OBJECT
+		entry	mainproc
+		stack	mainThreadStack + 0x1000
+		include	&quot;rotate.o&quot;
+	endseg</pre></b></font>
+
+ 
+    <p>Information pertaining to the segment is listed between <b>`beginseg`</b> and <b>`endseg`</b>.  The following kinds of statements can be used here. 
+
+<ol>
+<b><li>name</b><segment name>
+<P>
+This defines the name of the segment.  This name is used when a segment is specified in wave data, and when indicating the names of variables for data concerning the segment in C programs.  (Example:  The start address for a segment called ABC would be <b>_ABCSegmentStart</b>.) 
+ 
+<P>
+<b><li>address</b>
+<p>
+This indicates the (actual) start address for the OBJECT segment.  Unlike <b>`number`</b>, <b>`address`</b> prioritizes the segments to be run by the CPU.
+<P>
+<b><li>after</b>
+<p>This indicates the (actual) start address for the OBJECT segment.  This arranges the segment after the other segments specified by <b>`after`</b>.
+
+<P>
+<b><li>after max</b>
+<P>
+This arranges the segment after the larger of the addresses among the two segments.
+        
+
+<P>
+<b><li>after min</b>
+<p>This arranges the segment after the smaller of the addresses among the two segments.
+
+<P>
+    <b><li>include</b>
+
+        <p>This specifies the file to be included in the segment.  If the segment will trip the OBJECT flag, the file must be an ELF file. 
+<P>
+    <b><li>maxsite</b>
+ 
+        <p>This lists the size limit for the segment. 
+<P>
+    <b><li>align</b>
+
+        <p>This places the segment in a byte boundary array.  The default is alignment on a 16-byte boundary.
+<P>
+    <b><li>flags</b>
+
+        <p>This indicates the various information in the segment as flags.  OBJECT is configured as an ELF file object.  RAW is all of the data which hasn't been interpreted by the processor.  The segment that will trip the BOOT flag must be the first segment.<P>
+
+    <b><li>number</b>
+
+        <p>This indicates the (actual) start address of the OBJECT segment.  Unlike <b>`address`</b>, <b>`number`</b> lists the segment number, and is for segments which are intended to prioritize access to the RSP. 
+<P>
+        <b><li>entry</b>
+
+        <p>This is the symbol name of the function to which the right of next execution is shifted immediately after the rom image has read the gload command.  The function is a void function, regardless of the argument.
+<P>
+<b><li>stack or symbol name + constant</b>
+  
+        <p>This indicates the start position of the stack address in the boot code.
+        <P></ol>
+
+
+<b><font color="#FF0000">Wave List</font></b>
+    <p>  The wave list is a list in which the waves are noted, sandwiched between <b>`beginwave`</b> and <b>`endwave`</b>.
+
+<blockquote>
+    <blockquote><font face="courier" size="2">
+        <pre><b>beginwave
+	name	&quot;rotate&quot;
+	include	&quot;program&quot;
+	include	&quot;static&quot;
+endwave
+</b></pre></font>
+    </blockquote>
+</blockquote>
+
+<P>There are two types of statements in a wave list, shown below. 
+
+<P>
+<ol>
+<b><li>name </b>
+    
+        <p>  The name defined here will be used as the filename for the ELF object.<br>
+    
+
+<P>
+<b><li>include</b>
+
+        <p>
+The specified segment will be included in the wave.  The definition of the segment must be placed before of this.
+</ol>
+
+<P>
+    <hr>
+    <b><font color="#FF0000">Example</font></b>
+    <p>The following spec file is one for a program comprising two segments called the program segment and the static segment.</p>
+    <blockquote><font face="courier" size="2">
+        <pre><b>beginseg
+	name	&quot;program&quot;
+	flags	BOOT OBJECT
+	entry	mainproc
+	stack	mainThreadStack + 0x1000
+	include	&quot;rotate.o&quot;
+endseg
+
+beginseg
+	name	&quot;static&quot;
+	flags	OBJECT
+	number	1
+	include	&quot;square.o&quot;
+endseg
+
+beginwave
+	name	&quot;rotate&quot;
+	include	&quot;program&quot;
+	include	&quot;static&quot;
+endwave</b></pre></font>
+    </blockquote>
+
+    <p>Since the BOOT flag is tripped by the first program segment, this becomes the boot segment.  since the OBJECT flag has been tripped, this segment will read a relocatable ELF object.  As indicated by include, rotate.o is the object that comprises the segment.</p>
+    <p>  Since entry specifies mainproc, the right of execution shifts first to the void function mainproc(void) when the program is executed.  As specified by the stack statement, the mainThreadStack address+0x1000 is the start address for the stack area. </p>
+    <p>  Since the number of the static segment is 1, this No. 1 segment will be given priority for access from the RSP.  This segment comprises the relocatable ELF object square.o.</p>
+    <p>  The ELF object which is ultimately created will be called rotate and will consist of the program segment and the static segment.</p>
+    
+
+<hr>
+    <B><font color="#FF0000">Appendix</font></b>
+    <p>As its name implies, a pre-processor processes macros and constant definitions, etc. for languages in a mechanism (processor) that performs processing that should be executed before (pre) other certain processing.</p>
+    <p>  It is referred to as a C object.  As for ELF objects, ELF is an acronym for the Executable and Linking Format required during execution, and since object files of this format are structures which allow dynamic linking between ELF-compatible library files, the size of the object itself can be somewhat small.</p>
+ 
+
+ 
+
+<p>
+</p>
+</body>
+</html>

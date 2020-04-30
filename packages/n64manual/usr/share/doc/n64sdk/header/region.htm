@@ -1,0 +1,128 @@
+<HTML><HEAD>
+<TITLE></TITLE>
+</HEAD></BODY>
+<PRE>
+<FONT COLOR="red">/**************************************************************************
+ *									  *
+ *		 Copyright (C) 1994, Silicon Graphics, Inc.		  *
+ *									  *
+ *  These coded instructions, statements, and computer programs  contain  *
+ *  unpublished  proprietary  information of Silicon Graphics, Inc., and  *
+ *  are protected by Federal copyright law.  They  may  not be disclosed  *
+ *  to  third  parties  or copied or duplicated in any form, in whole or  *
+ *  in part, without the prior written consent of Silicon Graphics, Inc.  *
+ *									  *
+ **************************************************************************/</FONT>
+
+<FONT COLOR="red">/**************************************************************************
+ *
+ *  Module: region.h
+ *
+ *  $Revision: 1.8 $
+ *  $Date: 1997/11/26 00:30:56 $
+ *  $Author: mitu $
+ *  $Source: /hosts/gate3/exdisk2/cvs/N64OS/Master/cvsmdev2/PR/include/region.h,v $
+ *
+ *  Description:
+ *      This file contains macros and structure definitions for the region
+ *	library.
+ *
+ **************************************************************************/</FONT>
+
+
+#ifndef _REGION_H_
+#define _REGION_H_
+
+
+#ifdef _LANGUAGE_C_PLUS_PLUS
+extern &quot;C&quot; {
+#endif
+
+#include &lt;PR/ultratypes.h&gt;
+
+
+<FONT COLOR="red">/***************************************
+ *
+ * Global defines 
+ *
+ */</FONT>
+					<FONT COLOR="red">/* Alignment sizes */</FONT>
+#define	ALIGNSZ			(sizeof(long long))	<FONT COLOR="red">/* 8 bytes */</FONT>
+#define	ALIGNOFFST		(ALIGNSZ-1)	
+
+				<FONT COLOR="red">/* size for storing index to free buffer */</FONT>
+#define	BUF_CTRL_SIZE		ALIGNSZ		
+
+				<FONT COLOR="red">/* Max bufcount = 32K */</FONT>
+#define	MAX_BUFCOUNT		0x8000	
+				<FONT COLOR="red">/* code for last free buffer */</FONT>
+#define	BUF_FREE_WO_NEXT	0x8000	
+
+<FONT COLOR="red">/*
+ * Global defines for alignment size (default is 8-byte alignment)
+ */</FONT>
+#define OS_RG_ALIGN_2B		2	<FONT COLOR="red">/*  2 bytes =  16-bit alignment */</FONT>
+#define OS_RG_ALIGN_4B		4	<FONT COLOR="red">/*  4 bytes =  32-bit alignment */</FONT>
+#define OS_RG_ALIGN_8B		8	<FONT COLOR="red">/*  8 bytes =  64-bit alignment */</FONT>
+#define OS_RG_ALIGN_16B		16	<FONT COLOR="red">/* 16 bytes = 128-bit alignment */</FONT>
+
+#define OS_RG_ALIGN_DEFAULT	OS_RG_ALIGN_8B
+
+
+<FONT COLOR="red">/***************************************
+ *
+ * Macro definitions
+ *
+ */</FONT>
+
+<FONT COLOR="red">/* Perform alignment on input 's' */</FONT>
+#define	ALIGN(s, align)	(((u32)(s) + ((align)-1)) &amp; ~((align)-1))
+
+
+<FONT COLOR="red">/***************************************
+ *
+ * Typedefs &amp; structure definitions
+ *
+ */</FONT>
+<FONT COLOR="red">/*
+ * Structure for region header/control area 
+ */</FONT>
+typedef struct _Region_s {
+	u8	*r_startBufferAddress;	<FONT COLOR="red">/* start address to data buffer */</FONT>
+	u8	*r_endAddress;		<FONT COLOR="red">/* end address of region */</FONT>
+	s32	r_bufferSize;		<FONT COLOR="red">/* size of buffers for this region */</FONT>
+	s32	r_bufferCount;		<FONT COLOR="red">/* up to 32K entries; MSB is used for 
+					   setting end-of-list/used */</FONT>
+	u16 	r_freeList;		<FONT COLOR="red">/* point to array index of first 
+					   available memory buffer */</FONT>
+	u16 	r_alignSize;		<FONT COLOR="red">/* alignment size (# of bytes) */</FONT>
+} OSRegion;
+
+<FONT COLOR="red">/*
+ * Macro to simplify accessing region header structure
+ */</FONT>
+#define	RP(x)		rp-&gt;r_##x
+
+
+<FONT COLOR="red">/***************************************
+ *
+ * Function prototypes
+ *
+ */</FONT>
+extern void	*osCreateRegion(void *, u32, u32, u32);
+extern void 	*osMalloc(void *); 
+extern void	osFree(void *, void *); 
+extern s32	osGetRegionBufCount(void *); 
+extern s32	osGetRegionBufSize(void *); 
+
+
+#ifdef _LANGUAGE_C_PLUS_PLUS
+}
+#endif
+
+
+#endif  <FONT COLOR="red">/* _REGION_H_ */</FONT>
+
+
+</PRE>
+</BODY>

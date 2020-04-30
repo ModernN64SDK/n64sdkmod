@@ -1,0 +1,101 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>mfsHFopen</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font face="arial" size="-1">
+<b><font size="3">mfsHFopen</b></font>
+
+<hr>
+
+<p><strong>Syntax</strong> 
+<font face="courier" size="2">
+<pre>s32 mfsHFopen(MfsFile* handle, u8* path, u16 mode)</pre></font>
+
+<p><strong>Arguments</strong> 
+<dl>
+<dd>*handle &nbsp; Pointer for storing file handle pointer
+<dd>*path	&nbsp; File pathname
+<dd>mode	&nbsp; Mode for opening the file</dl></dd>
+
+
+<p><strong>Return value</strong>
+<dl>
+<dd>Error</dl></dd>
+
+<p><strong>Function</strong>
+<dl>
+<dd>Opens file</dl></dd>
+
+<p><strong>Description</strong> 
+<P>This function opens the file specified by path and sets the file handle pointer to handle.</p>
+
+<p>"path" specifies the file name and its path with a character string.  The maximum length of the character string is 128 characters including the terminating NULL.</p>
+
+<p>The following access modes can be specified for mode.</p>
+
+<P>
+<table border="0" cellpadding="3" cellspacing="3">
+<tr><td valign="top"><font face="arial" size="-1">MFS_OPEN_READ	</td>
+<td><font face="arial" size="-1">0x0001</td>
+<td><font face="arial" size="-1">Read</td></tr>
+
+<tr><td valign="top"><font face="arial" size="-1">MFS_OPEN_WRITE		</td>
+<td><font face="arial" size="-1">0x0002</td>
+<td><font face="arial" size="-1">Write</td></tr>
+
+<tr><td><font face="arial" size="-1">MFS_OPEN_UPDATE	</td>
+<td><font face="arial" size="-1">0x0000</td>
+<td><font face="arial" size="-1">Update</td></tr>
+
+<tr><td><font face="arial" size="-1">MFS_OPEN_APPEND		</td>
+<td><font face="arial" size="-1">0x0010</td>
+<td><font face="arial" size="-1">Append</td></tr>
+
+<tr><td><font face="arial" size="-1">MFS_OPEN_CREATE			</td>
+<td><font face="arial" size="-1">0x0020</td>
+<td><font face="arial" size="-1"> Create</td></tr>
+</table>
+
+
+<p>MFS_OPEN_READ and MFS_OPEN_WRITE can be specified at the same time.
+<P>
+When MFS_OPEN_WRITE is specified, MFS_OPEN_APPEND can be specified.
+<P>
+When MFS_OPEN_APPEND is not specified, MFS_OPEN_UPDATE is assumed.
+<P>
+When MFS_OPEN_UPDATE is used, the existing file contents are lost.
+<P>
+When only MFS_OPEN_READ is specified, the MFS_OPEN_UPDATE and MFS_OPEN_APPEND specifications are ineffective.</p>
+
+<p><strong>Main errors</strong></p>
+<P>
+<table border="0" cellpadding="3" cellspacing="3">
+<tr><td><font face="arial" size="-1">MFS_ERR_NO</td>
+<td><font face="arial" size="-1">Normal termination</td>
+</tr>
+<tr><td valign="top"><font face="arial" size="-1">MFS_ERR_NO</td>
+<td><font face="arial" size="-1">File cannot be opened
+<br>There is no free file handle.</td>
+</tr>
+
+<tr><td valign="top"><font face="arial" size="-1">MFS_ERR_NOTFOUND	</td>
+<td><font face="arial" size="-1">File not found
+<br>The file was not found, or the directory was not found. </td>
+</tr>
+
+<tr><td valign="top"><font face="arial" size="-1">MFS_ERR_NAME 	</td>
+<td><font face="arial" size="-1">The pathname does not contain a file name, or there is no extension.</td>
+</tr>
+
+<tr><td valign="top"><font face="arial" size="-1">MFS_ERR_REFUSE</td>
+<td><font face="arial" size="-1">Illegal operation
+<br>A ROM area was opened in write mode.</td></tr>
+</table>
+
+
+<hr>
+</body>
+</html>

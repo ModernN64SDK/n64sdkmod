@@ -1,0 +1,59 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Graphics-CHAPTER 1  The Basics of N64 Graphics-Introduction to RSP</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/22/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<font style="font-size:12pt"><B>1.5  Defining Models</B></FONT>
+<br>
+<P>
+A 3D model on the N64 is defined as the planes or lines that connect the vertices stored in the vertex buffer.  Thus, you define a model after loading the vertices into the vertex buffer as explained in the previous section.<br><br>
+     Below are two typical commands used for defining a model:
+</P>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE> gSP1Triangle</TD>
+	<TD ROWSPAN=2> </TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE>Defines a single triangle</TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE> gSP2Triangles</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE>Defines two triangles at once</TD>
+</TABLE>
+<P>
+Here we explain the parameters of the gSP1Triangle command.
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=5><TR>
+	<TD NOWRAP COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE><B>List 1-5</B></TD>
+</TR><TR>
+	<TD NOWRAP BGCOLOR="666666" WIDTH="4" ALIGN=LEFT VALIGN=TOP><HR NOSHADE SIZE=0></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><FONT COLOR="#000080"><PRE><CODE>  /* Create one square from the loaded vertices  */
+  gSP1Triangle(glistp++, 0, 1, 2, 0);
+  gSP1Triangle(glistp++, 0, 2, 3, 0);
+</CODE></PRE></FONT>
+	</TD>
+</TR></TABLE>
+<P>
+ The three arguments following glistp are the indices in the vertex buffer for the three vertices of the triangle you want to define.  The order in which they are specified determines the front and back of the plane.  The method of specification follows the rules of the right-handed coordinate system, representing a surface with the vertices connected in the counter-clockwise direction.<br><br>
+     The final argument is used when you are performing flat shading to specify which vertex color to use to fill the surface.  It can take a value of 0, 1 or 2.  In the the next chapter, we cover shading and explain this argument again in greater detail, so even if you do not have a complete understanding proceed on to the next section.
+
+     If you understand gSP1Triangle, then gSP2Triangles will not be complicated; you simply specify two sets of the gSP1Triangle arguments in the same order. 
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=5><TR>
+	<TD NOWRAP COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE><B>List 1-6</B></TD>
+</TR><TR>
+	<TD NOWRAP BGCOLOR="666666" WIDTH="4" ALIGN=LEFT VALIGN=TOP><HR NOSHADE SIZE=0></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><FONT COLOR="#000080"><PRE><CODE>  /* Create one square from the loaded vertices  */
+  gSP2Triangles(glistp++, 0, 1, 2, 0, 0, 2, 3, 0);
+</CODE></PRE></FONT>
+	</TD>
+</TR></TABLE>
+<P>
+As you can see, gSP2Triangles has the same effect as calling gSP1Triangle twice, but you can accomplish the job with only one command, so using gSP2Triangles helps reduce the size of the display list.<br><br>
+     Furthermore, some special commands (e.g., F3DLP.Rej and F3DLX.Rej) have been optimized based on the assumption that you are using gSP2Triangles, so this command also has an advantage in terms of speed.
+     Massive numbers of triangles are handled in an actual game, so we recommend using gSP2Triangles as much as possible.
+</P>
+</BODY>
+</HTML>

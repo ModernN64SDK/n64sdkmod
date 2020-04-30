@@ -1,0 +1,242 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.>
+<TITLE>gSPObjRectangle</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>gSPObjRectangle [Macro]</FONT></H1>
+
+<p><b>Function</b></font></p>
+
+<p>gSPObjRectangle</p>
+<P>
+<i>Draws a sprite</i>
+</P>
+<p><b>Syntax</b></font></p>
+<p>
+<PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gs2dex.htm">gs2dex.h</A> */
+gSPObjRectangle(Gfx *gdl, uObjSprite *sp)
+gsSPObjRectangle(         uObjSprite *sp)</CODE></PRE></p>
+
+<p><b>Arguments</b></font></p>
+<p>
+<DL>
+  <DT><B>gdl</B>
+  <DD>the pointer to the graphics display list. 
+  <DT><B>sp</B>
+  <DD>the pointer to the sprite drawing data structure
+</DL></p>
+<p><b>Description</b></font></p>
+<P>
+Draws a non-rotating sprite. The data of the specified uObjSprite structure (see the Comment section below) is processed inside the RSP to create a TextureRectangle command which is sent to the RDP. For information about sprites, see "4.2 Sprite Drawing GBIs" in the latest version of the readme file of the S2DEX microcode. 
+</P>
+<p><b>Note</b></font></p>
+<P>
+This macro can be used in 1-cycle and 2-cycle mode, and in copy mode. When it is used in copy mode, the drawing speed is faster than in the other modes. However, bilinear interpolation, subpixel processing and x-direction enlargement/reduction processing are not supported. (Operation is not guaranteed if these functions are used, and in the worst case, RDP runaway may occur.) You should use the proper mode that corresponds to the needed functions. 
+</P>
+<P>
+The result of drawing with this macro varies, depending on the use of bilinear interpolation and the other render mode settings. For details, refer to the "4.4. Object render mode settings" in the ReadMe file of the latest version of the S2DEX microcode. For information about modes, see Section 2.2.7, "Drawing Cycle Modes" in the N64 Introductory Manual. For information about setting the cycle type, see <A HREF="../gdp/gDPSetCycleType.htm">gDPSetCycleType</A>. 
+</P>
+<P>
+Also, please note that operation is not currently guaranteed for G_IM_FMT_YUV (YUV format). 
+</P>
+<p><b>Comment</b></p>
+<P>
+The uObjSprite structure is shown below: 
+</P>
+
+<PRE>typedef struct {
+  s16 objX;        /* x-coordinate of upper-left corner of OBJ (s10.2) */
+  u16 scaleW;      /* Width-direction scaling (u5.10) */
+  u16 imageW;      /* Texture width (length in s direction, u10.5)   */
+  u16 paddingX;    /* Unused (always 0)  */
+  s16 objY;        /* y-coordinate of upper-left corner of OBJ (s10.2)  */
+  u16 scaleH;      /* Height-direction scaling (u5.10) */
+  u16 imageH;      /* Texture height (length in t direction, u10.5)  */
+  u16 paddingY;    /* Unused (always 0) */
+  u16 imageStride; /* Texel wrapping width (In units of 64-bit words)  */
+  u16 imageAdrs;   /* Texture starting position in TMEM (In units of 64-bit words)  */  
+  u8  imageFmt;    /* Texel format
+                      G_IM_FMT_RGBA (RGBA format)
+                      G_IM_FMT_YUV (YUV format)
+                      G_IM_FMT_CI (CI format)
+                      G_IM_FMT_IA (IA format)
+                      G_IM_FMT_I (I format)*/
+  u8  imageSiz;    /* Texel size
+                      G_IM_SIZ_4b (4 bits/texel)
+                      G_IM_SIZ_8b (8 bits/texel)
+                      G_IM_SIZ_16b (16 bits/texel)
+                      G_IM_SIZ_32b (32 bits/texel) */
+  u16 imagePal;    /* Position of palette for 4-bit color
+                      index texture  (4-bit precision, 0~7)   */
+  u8  imageFlags;  /* Display flag
+                      (*) Multiple flags can be specified as the bit sum of the flags: 
+                      0 (Normal display (no inversion))
+                      G_OBJ_FLAG_FLIPS (s-direction (x) inversion)
+                      G_OBJ_FLAG_FLIPT  (t-direction (y) inversion)  */
+} uObjSprite_t;    /* 24 bytes */
+
+typedef union {
+  uObjSprite_t    s;
+  long long int   force_structure_alignment;
+} uObjSprite;
+</PRE>
+
+<P>
+This macro draws a texture in the rectangular area with the upper-left corner screen coordinates (<B>objX</B>, <B>objY</B>) and the lower-right corner screen coordinates (<B>objX</B>+<B>imageW</B>/<B>scaleW</B>-1, <B>objY</B>+<B>imageH</B>/<B>scaleH</B>-1). (See the figure below.) The drawn texture region has its upper-left corner at (0, 0) and its lower-right corner at (<B>imageW</B>-1, <B>imageH</B>-1). When <B>scaleW</B> and <B>scaleH</B> are 1&lt;&lt;10, the texture will be drawn to the same proportions, without scaling. 
+</P>
+<P>
+<CENTER><IMG SRC="gSPObjRectangle00.gif"></CENTER>
+</P>
+<DL>
+  <DT>Concerning the <B>objX and objY</B> elements: 
+<br><br>
+  <DD>When a sprite is drawn, the scissoring box set by <A HREF="../gdp/gDPSetScissor.htm">gDPSetScissor</A> is referenced and the drawing area is clipped automatically. Therefore, negative values can also be set for <B>objX</B> and <B>objY</B>.
+<br><br>
+  <DT>Concerning the <B>imageAdrs</B> elements:
+<P>
+  <DD>You can use <B>imageAdrs</B> to specify the texture memory (TMEM) address that corresponds to the origin (0,0) of the texture region. Normally, <B>imageAdrs</B> is set to the start load position in TMEM specified by the texture load macro. It is convenient to use GS_PIX2TMEM when specifying this value. GS_PIX2TMEM, which is the macro that converts pixel units (a numeric value) into TMEM address units, is defined in &lt;<A HREF="../../header/gs2dex.htm">gs2dex.h</A>&gt;:
+
+<P>
+<PRE>GS_PIX2TMEM(u16 pix, u8 siz)
+</PRE>
+<br><br>
+The above arguments are explained below: 
+  <DL>
+    <DT><B>pix</B>
+    <DD>The numeric value (pixel units) to be converted to TMEM address units 
+    <DT><B>siz</B>
+    <DD>The size of one texel, specified by G_IM_SIZ_* 
+    <DD><B>G_IM_SIZ_4b</B> (4 bits/texel) 
+    <DD><B>G_IM_SIZ_8b</B> (8 bits/texel) 
+    <DD><B>G_IM_SIZ_16b</B> (16 bits/texel) 
+    <DD><B>G_IM_SIZ_32b</B> (32 bits/texel) 
+  </DL>
+<br><br>
+  <DT>Concerning the <B>imageStride</B> elements:
+<br><br>
+  <DD>Sets the horizontal width (wrapping width) to be used when loading a texture. This is set because the texture width when the texture is loaded may differ from the <B>imageW</B> value of the actual drawn sprite. Since this is specified in TMEM address units, the above-mentioned GS_PIX2TMEM macro can be used. 
+</P>
+</DL>
+<P>
+You can select the texture to be drawn by using the <B>imageAdrs</B> and <B>imageStride</B> specifications. To do this, load a number of small textures (sub-textures) in TMEM and set the following value for <B>imageAdrs</B>: 
+</P>
+<P>
+<PRE><CODE><B>imageW</B> =  Sub-texture width
+<B>imageH</B> = Sub-texture height
+<B>imageAdrs</B> = GS_PIX2TMEM ((s-coordinate in TMEM) + (t-coordinate in TMEM) * (texture width at the time of loading, G_IM_SIZ_*))
+<B>imageStride</B> = GS_PIX2TMEM (texture width at the time of loading, G_IM_SIZ_*)
+</CODE></PRE>
+</P>
+<P>
+To give a specific example, first prepare a large texture that combines four textures, like that shown in the figure below. Load this as a 64x32 texture, and when actually drawing a sprite, specify each texture as follows: 
+</P>
+<P>
+<CENTER><IMG SRC="gSPObjRectangle01.gif"></CENTER>
+</P>
+<P>
+<PRE><CODE>Sub-texture A:
+  imageW = 32;
+  imageH = 32;
+  imageAdrs = GS_PIX2TMEM(0+0*64, G_IM_SIZ_16b)
+  imageStride = GS_PIX2TMEM(64, G_IM_SIZ_16b);
+Sub-texture B:
+  imageW = 16;
+  imageH = 16;
+  imageAdrs = GS_PIX2TMEM(32+0*64, G_IM_SIZ_16b)
+  imageStride = GS_PIX2TMEM(64, G_IM_SIZ_16b);
+Sub-texture C:
+  imageW = 16;
+  imageH = 16;
+  imageAdrs = GS_PIX2TMEM(48+0*64, G_IM_SIZ_16b)
+  imageStride = GS_PIX2TMEM(64, G_IM_SIZ_16b);
+Sub-texture D:
+  imageW = 32;
+  imageH = 16;
+  imageAdrs = GS_PIX2TMEM(32+16*64, G_IM_SIZ_16b)
+  imageStride = GS_PIX2TMEM(64, G_IM_SIZ_16b);
+</CODE></PRE>
+</P>
+<P>
+There is one restriction on this method of specification, however. Because the storage format for texture data in TMEM differs for odd-numbered lines and even-numbered lines, you cannot specify for <B>imageAdrs</B> a TMEM address that corresponds to an odd-number line when the texture was loaded. In other words, you cannot set an odd number for (t-coordinate in TMEM) in the <B>imageAdrs</B> calculation formula shown above. 
+</P>
+<DL>
+  <DT>Concerning the <B>imageFmt</B> elements:
+<P>
+  <DL>
+    <DT><B>G_IM_FMT_RGBA</B>
+    <DD>Each texel comprises four elements of information: RGB (red, green, blue) and alpha (opacity). 
+    <DT><B>G_IM_FMT_YUV</B>
+    <DD>Each texel comprises a Y (intensity) component and a UV (color difference) component. 
+    <DT><B>G_IM_FMT_CI</B>
+    <DD>Each texel is comprised of index information specifying palette data. 
+    <DT><B>G_IM_FMT_IA</B>
+    <DD>Each texel is comprised of I (intensity) information and alpha information. 
+    <DT><B>G_IM_FMT_I</B>
+    <DD>Each texel is a texture with only I information. Since this is extremely compact, it is useful when only a few colors are being used. 
+  </DL>
+
+<P>
+  <DD>Specify the texture format and size by assigning G_IM_FMT_* and G_IM_SIZ_* for <B>imageFmt</B> and <B>imageSiz</B>, respectively. The texture image format can be selected from among eight types. Refer to the following table for valid combinations of format and size, and select the most suitable format for the texture compression method and type. Also, to use a 4-bit color index texture, specify a TLUT number in <B>imagePal</B>. 
+</P>
+<P>
+<TABLE BORDER="1" CELLSPACING="0" CELLPADDING="3">
+<TR>
+<TD COLSPAN=2 ROWSPAN=2> </TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle" COLSPAN=4><B>G_IM_SIZ_</B> (Size) </TD>
+</TR><TR>
+<TD NOWRAP ALIGN="center" VALIGN="middle"><B>4b</B></TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle"><B>8b</B></TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle"><B>16b</B></TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle"><B>32b</B></TD>
+</TR><TR>
+<TD NOWRAP ALIGN="center" VALIGN="middle" ROWSPAN=5><B>G_IM_FMT_<BR></B> (Format) </TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle"><B>RGBA</B></TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">&nbsp;</TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">&nbsp;</TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">X<BR>(5/5/5/1) </TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">X<BR>(8/8/8/8) </TD>
+</TR><TR>
+<TD NOWRAP ALIGN="center" VALIGN="middle"><B>YUV</B></TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">&nbsp;</TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">&nbsp;</TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">X</TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">&nbsp;</TD>
+</TR><TR>
+<TD NOWRAP ALIGN="center" VALIGN="middle"><B>CI</B></TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">&nbsp;</TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">X</TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">&nbsp;</TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">&nbsp;</TD>
+</TR><TR>
+<TD NOWRAP ALIGN="center" VALIGN="middle"><B>IA</B></TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">X<BR>(3/1)</TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">X<BR>(4/4)</TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">X<BR>(8/8)</TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">&nbsp;</TD>
+</TR><TR>
+<TD NOWRAP ALIGN="center" VALIGN="middle"><B>I</B></TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">&nbsp;</TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">X</TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">&nbsp;</TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">&nbsp;</TD>
+</TR></TABLE>
+</P>
+</DL>
+<P>
+This macro does not reference 2D matrix settings. For this reason, 2D matrix settings do not affect the drawing result of this macro. To reference 2D matrix settings and change the screen coordinate values for drawing, use g*SPObjRectangleR. Also, to rotate a sprite, use g*SPObjSprite. 
+</P>
+<p><b>See Also</b></font></p>
+<P>
+<A HREF="gSPObjMatrix.htm">gSPObjMatrix</A>, <A HREF="gSPObjRectangleR.htm">gSPObjRectangleR</A>, <A HREF="gSPObjSprite.htm">gSPObjSprite</A>, and <A HREF="gSPObjSubMatrix.htm">gSPObjSubMatrix</A>
+</P>
+<p><b>Revision History</b></font></p>
+<P>
+02/01/99  Entirely revised.
+</P>
+</BODY>
+</HTML>

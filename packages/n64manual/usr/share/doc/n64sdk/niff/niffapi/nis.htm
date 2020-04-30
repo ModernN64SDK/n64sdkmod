@@ -1,0 +1,1812 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
+   <meta name="GENERATOR" content="Mozilla/4.5 [ja] (WinNT; I) [Netscape]">
+   <meta name="Author" content="Yoshino Hiroshi">
+   <title>nis.h</title>
+</head>
+<body text="#000000" bgcolor="#FFFFFF" link="#0000EE" vlink="#551A8B" alink="#FF0000">
+<font face="MS Gothic">#ifndef _NIS_H_</font>
+<br><font face="MS Gothic">#define _NIS_H_</font>
+<br><font face="MS Gothic">/* $Id: nis.h,v 0.16 1998/10/22 08:57:16
+yoshino Exp $ */</font>
+<br><font face="MS Gothic">/**************************************************************************</font>
+<br><font face="MS Gothic">&nbsp;* NIS Definition NIS = NIff Structure&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+*</font>
+<br><font face="MS Gothic">&nbsp;*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+*</font>
+<br><font face="MS Gothic">&nbsp;*&nbsp; Copyright (C) 1998, NINTENDO
+Co.,Ltd.&nbsp;&nbsp;&nbsp;&nbsp; *</font>
+<br><font face="MS Gothic">&nbsp;*&nbsp; Copyright (C) 1998, MONEGI
+CORPORATION&nbsp;&nbsp;&nbsp;&nbsp; *</font>
+<br><font face="MS Gothic">&nbsp;*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+*</font>
+<br><font face="MS Gothic">&nbsp;**************************************************************************/</font>
+<br><font face="MS Gothic">#include&nbsp;&nbsp;&nbsp; "niffn64.h"</font>
+<br><font face="MS Gothic">#include&nbsp;&nbsp;&nbsp; "nis2.h"</font>
+<br><font face="MS Gothic">/*=======================================================*/</font>
+<br><font face="MS Gothic">/* NIS 1.0 definiton&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+*/</font>
+<br><font face="MS Gothic">/* Reference&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+*/</font>
+<br><font face="MS Gothic">/* 1997&nbsp; Nintendo Intermediate File
+Format&nbsp; version 1.00 */</font>
+<br><font face="MS Gothic">/*=======================================================*/</font>
+<br><font face="MS Gothic">/*---- File Header ----*/</font>
+<br><font face="MS Gothic">typedef struct _NisFileHeader</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 version;&nbsp;&nbsp;&nbsp;&nbsp;
+/* version number&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 file_size;&nbsp;&nbsp;&nbsp;&nbsp;
+/* (bytes)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 header_tag;</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 file_header_num;&nbsp;&nbsp;&nbsp;
+/* (bytes)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 scene_list_num;&nbsp;&nbsp;&nbsp;&nbsp;
+/* SceneList&nbsp; (bytes)&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 env_list_num;&nbsp;&nbsp;&nbsp;&nbsp;
+/* EnvList&nbsp;&nbsp;&nbsp; (bytes)&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 cam_list_num;&nbsp;&nbsp;&nbsp;&nbsp;
+/* CamList&nbsp;&nbsp; (bytes)&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 light_list_num;&nbsp;&nbsp;&nbsp;&nbsp;
+/* LightList&nbsp; (bytes)&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 obj_list_num;&nbsp;&nbsp;&nbsp;&nbsp;
+/* ObjList&nbsp;&nbsp; (bytes)&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 shape_list_num;&nbsp;&nbsp;&nbsp;&nbsp;
+/* ShapeList&nbsp; (bytes)&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 vtx_list_num;&nbsp;&nbsp;&nbsp;&nbsp;
+/* VtxList&nbsp;&nbsp; (bytes)&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 color_list_num;&nbsp;&nbsp;&nbsp;&nbsp;
+/* ColorList&nbsp; (bytes)&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 vector_list_num;&nbsp;&nbsp;&nbsp;
+/* VectorList (bytes)&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 st_list_num;&nbsp;&nbsp;&nbsp;&nbsp;
+/* StList&nbsp;&nbsp; (bytes)&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 tri_list_num;&nbsp;&nbsp;&nbsp;&nbsp;
+/* TriList&nbsp;&nbsp; (bytes)&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 part_list_num;&nbsp;&nbsp;&nbsp;&nbsp;
+/* PartList&nbsp;&nbsp; (bytes)&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 mat_list_num;&nbsp;&nbsp;&nbsp;&nbsp;
+/* MatList&nbsp;&nbsp; (bytes)&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 tex_list_num;&nbsp;&nbsp;&nbsp;&nbsp;
+/* TexList&nbsp;&nbsp; (bytes)&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 tex_img_list_num;&nbsp;&nbsp;
+/* TexImgList (bytes)&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 anim_list_num;&nbsp;&nbsp;&nbsp;&nbsp;
+/* AnimList&nbsp;&nbsp; (bytes)&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 coll_list_num;&nbsp;&nbsp;&nbsp;&nbsp;
+/* CollList&nbsp;&nbsp; (bytes)&nbsp;&nbsp; */</font>
+<br><font face="MS Gothci">&nbsp;&nbsp;&nbsp; u32 switch_list_num;&nbsp;&nbsp;&nbsp;
+/* SwitchList (bytes)&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 name_list_num;&nbsp;&nbsp;&nbsp;&nbsp;
+/* NameList&nbsp;&nbsp; (bytes)&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 nin_ext_blk_size;&nbsp;&nbsp;
+/* Nintendo Expansion data block&nbsp;&nbsp; (bytes) */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 usr_ext_blk_size;&nbsp;&nbsp;
+/* User Expansion data block (bytes) */</font>
+<br><font face="">&nbsp;&nbsp;&nbsp; u32 *n_ext;&nbsp;&nbsp;&nbsp;&nbsp;
+/* Nintendo Expansion data block */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *u_ext;&nbsp;&nbsp;&nbsp;&nbsp;
+/* User Expansion data block */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisFileHeaderExt *n2;&nbsp;&nbsp;
+/* extending in NIFF2.0 */</font>
+<br><font face="MS Gothic">} NisFileHeader;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">/*---- SceneList ----*/</font>
+<br><font face="MS Gothic">typedef struct _NisSceneList</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 scene_header_tag;
+/* Scene header tag&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 scene_header_size;
+/* The number of bytes in SceneHeader area &nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 scene_size;&nbsp;
+/* The number of bytes in the whole Scene are &nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 scene_cfg;&nbsp;
+/* Setting to draw a whole scene &nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 scene_name_index;
+/* Index number in NameList that describes scene name */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 scene_obj_link_num;
+/* The total number of linked Obj nodes */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 scene_env_link_num;
+/* The total number of linked Env nodes */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 scene_cam_link_num;
+/* The number of linked Cam nodes */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 scene_light_link_num;
+/* Then number of linked Light nodes*/</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 nin_ext_blk_size;
+/* Nintendo Expansion data block&nbsp;&nbsp; (bytes) */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 usr_ext_blk_size;
+/* User Expansion data block (bytes) */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *scene_obj_link_index;
+/* Obj link&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *scene_env_link_index;
+/* Env link&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *scene_cam_link_index;
+/* Cam link&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *scene_light_link_index;/*
+Light link */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *n_ext;&nbsp;&nbsp;
+/* Nintendo Expansion data block&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *u_ext;&nbsp;&nbsp;
+/* User Expansion data block */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisSceneListExt *n2;
+/* extending in NIFF2.0 */</font>
+<br><font face="MS Gothic">} NisSceneList;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">/*--------------------- EnvList ------------------------------------*/</font>
+<br><font face="MS Gothic">typedef struct _NisEnvListHeader</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 env_list_tag;&nbsp;
+/*  EnvList are tag &nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 env_list_header_size;
+/*  The number of bytes of EnvListHeader are &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 env_list_size;&nbsp;
+/*  The number of bytes of EnvList area &nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 env_num;&nbsp; /*
+ env_num is Env area number &nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 nin_ext_blk_size;&nbsp;&nbsp;
+/* Nintendo Expansiondata block&nbsp;&nbsp; (bytes) */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 usr_ext_blk_size;&nbsp;&nbsp;
+/* User Expansion data block (bytes) */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *env_num_byte; /*
+env_num_byte is the number of bytes for each Env area &nbsp; */</font>
+<br><font face="MS Gothic">} NisEnvListHeader;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">/* Env area */</font>
+<br><font face="MS Gothic">typedef struct _NisEnv</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 env_tag; /* Env area tag&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+*/</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 this_env_index; /*
+Index number of this Env &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 env_size; /* The number of bytes in this Env area &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+*/</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 env_name_index; /*
+Index number in NameList area that describes Env name*/</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 fog;&nbsp; /* Whether or not to use FOG &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+*/</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 fog_color; /* Set a FOG color as 0xRRGGBBAA when using FOG */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 fog_near; /* Position where it starts Fogging &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+*/</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 fog_far; /* Position where is stops Fogging &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+*/</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 fill_color; /* Color to clear a frame buffer &nbsp;&nbsp;&nbsp;&nbsp;
+*/</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 fill_depth; /* Color to clear the Z buffer &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+*/</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 bg_sprite_img; /* Specify an index number TexList when using a texture image for BG.
+</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 bg_sprite_depth;/*
+Specify an index number in TexList when using </font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+a depth image for BG  */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 nin_ext_blk_size;&nbsp;&nbsp;
+/* Nintendo Expansiondata block&nbsp;&nbsp; (bytes) */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 usr_ext_blk_size;&nbsp;&nbsp;
+/* User Expansion data block (bytes) */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *n_ext;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+/* Nintendo Expansiondata block&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *u_ext;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+/* User Expansion data block */</font>
+<br><font face="MS Gothic">} NisEnv;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">typedef struct _NisEnvList</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisEnvListHeader&nbsp;&nbsp;
+*h;</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisEnv *env;</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32&nbsp; *n_ext;&nbsp;
+/* Nintendo Expansiondata block&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32&nbsp; *u_ext;&nbsp;
+/* User Expansion data block */</font>
+<br><font face="MS Gothic">} NisEnvList;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">/*--------------------- CamList ------------------------------------*/</font>
+<br><font face="MS Gothic">typedef struct _NisCamListHeader</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 cam_list_tag;&nbsp;
+/* CamList area tag &nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 cam_list_header_size;
+/* The number of bytes in CamListHeader area &nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 cam_list_size;&nbsp;
+/* The number of bytes in CamList area &nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 cam_num;&nbsp; /*
+The total number of Cam area in CamList &nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 nin_ext_blk_size;&nbsp;&nbsp;
+/* Nintendo Expansiondata block&nbsp;&nbsp; (bytes) */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 usr_ext_blk_size;&nbsp;&nbsp;
+/* User Expansion data block (bytes) */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *cam_num_byte;&nbsp;&nbsp;&nbsp;&nbsp;
+/* The number of bytes in corresponding Cam area */</font>
+<br><font face="MS Gothic">} NisCamListHeader;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">/* Cam area */</font>
+<br><font face="MS Gothic">typedef struct _NisCam</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 cam_tag;&nbsp;&nbsp;&nbsp;&nbsp;
+/* Cam area tag &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 this_cam_index;&nbsp;&nbsp;&nbsp;&nbsp;
+/* Index number of thi Cam area &nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 cam_size;&nbsp;&nbsp;&nbsp;&nbsp;
+/* The number of bytes of this Cam area &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 cam_name_index;&nbsp;&nbsp;&nbsp;&nbsp;
+/* Index number in NameList that describes a camera name */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 cam_type;&nbsp;&nbsp;&nbsp;&nbsp;
+/* Specify a camera type &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float cam_near_clip;&nbsp;&nbsp;&nbsp;
+/* nearClipping plane&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float cam_far_clip;&nbsp;&nbsp;&nbsp;&nbsp;
+/* farClipping plane&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float cam_right_clip;&nbsp;&nbsp;
+/* rightClipping plane&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float cam_left_clip;&nbsp;&nbsp;&nbsp;
+/* leftClipping plane&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float cam_top_clip;&nbsp;&nbsp;&nbsp;&nbsp;
+/* topClipping plane&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float cam_bottom_clip;&nbsp;
+/* bottomClipping plane&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float cam_fovy;&nbsp;&nbsp;&nbsp;&nbsp;
+/* fovy value &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float cam_aspect;&nbsp;&nbsp;&nbsp;&nbsp;
+/* aspect proportion&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float cam_scale;&nbsp;&nbsp;&nbsp;&nbsp;
+/* scale value &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 cam_lookat_obj;&nbsp;&nbsp;&nbsp;&nbsp;
+/* Link a focal point of the camera to the object &nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 cam_eye_obj;&nbsp;&nbsp;&nbsp;&nbsp;
+/* Link upper direction vector of the camera to the object &nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 cam_up_obj;&nbsp;&nbsp;&nbsp;&nbsp;
+/* Link upper direction vector of the camera to the object */</font>
+<font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 nin_ext_blk_size;&nbsp;&nbsp;
+/* Nintendo Expansiondata block&nbsp;&nbsp; (bytes) */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 usr_ext_blk_size;&nbsp;&nbsp;
+/* User Expansion data block (bytes) */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *n_ext;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+/* Nintendo Expansiondata block&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *u_ext;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+/* User Expansion data block */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisCamExt *n2;&nbsp;&nbsp;&nbsp;&nbsp;
+/* extending in NIFF2.0 */</font>
+<br><font face="MS Gothic">} NisCam;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">typedef struct _NisCamList</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisCamListHeader&nbsp;&nbsp;
+*h;</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisCam *cam;</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32&nbsp; *n_ext;&nbsp;
+/* Nintendo Expansiondata block&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32&nbsp; *u_ext;&nbsp;
+/* User Expansion data block */</font>
+<br><font face="MS Gothic">} NisCamList;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">/*----------------------------- LightList
+----------------------------------*/</font>
+<br><font face="MS Gothic">typedef struct _NisLightListHeader</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 light_list_tag;&nbsp;&nbsp;
+/* LightList area tag &nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 light_list_header_size;&nbsp;
+/* The number of bytes in LightListHeader area &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 light_list_size;&nbsp;
+/* The number of bytes in LightList area &nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 light_num;&nbsp;&nbsp;
+/* The number of Light area in LightList &nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 nin_ext_blk_size;
+/* Nintendo Expansiondata block&nbsp;&nbsp; (bytes) */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 usr_ext_blk_size;
+/* User Expansion data block (bytes) */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *light_num_byte;
+/*  The number of bytes in the corresponding Light area &nbsp; */</font>
+<br><font face="MS Gothic">} NisLightListHeader;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">/* DirLight area */</font>
+<br><font face="MS Gothic">/* TYPE_DIRECTION */</font>
+<br><font face="MS Gothic">typedef struct _NisDirLightDirection</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32&nbsp;&nbsp; dir_light_tag;
+/* DirLight area tag  TAG_DIR_LIGHT_DIFFUSE */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32&nbsp;&nbsp; this_dir_light_index;
+/* Index number of this DirLight area  */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32&nbsp;&nbsp; dir_light_size;
+/* The number of this DirLight area &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float dir_color_r;&nbsp;
+/* Red component for directional light color */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float dir_color_g;&nbsp;
+/* Green component for directional light color */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float dir_color_b;&nbsp;
+/* Blue component for directional light color */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float dir_x;&nbsp; /*
+X directional vector of Diffuse light &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float dir_y;&nbsp; /*
+Y directional vector of Diffuse light &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float dir_z;&nbsp; /*
+Z directinal vector of Diffuse light &nbsp; */</font>
+<br><font face="MS Gothic">} NisDirLightDirection;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">/* TYPE_POSITION */</font>
+<br><font face="MS Gothic">typedef struct _NisDirLightPosition</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 dir_light_tag; /*
+ DirLight area tag  TAG_DIR_LIGHT_POSITION */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 this_dir_light_index;
+/* Index number of this DirLight area */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 dir_light_size;&nbsp;
+/* The number of bytes of this DirLight area &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float dir_color_r;&nbsp;
+/* Red component for directional light color */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float dir_color_g;&nbsp;
+/* Green component for directional light color */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float dir_color_b;&nbsp;
+/* Blue component for directional light color */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float pos_x;&nbsp; /*
+X coordinate of Positional light (absolute coordinate) */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float pos_y;&nbsp; /*
+Y coordinate of Positional light (absolute coordinate) */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float pos_z;&nbsp; /*
+Z coordiante of Positional light (absolute coordinate) */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float dir_a1;&nbsp; /*
+attenuation factor 1 for Positional light  &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float dir_a2;&nbsp; /*
+attenuation factor 2 for Positional light &nbsp; */</font>
+<br><font face="MS Gothic">} NisDirLightPosition;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">typedef union _NisDirLight</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisDirLightDirection&nbsp;&nbsp;&nbsp;
+dir;</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisDirLightPosition&nbsp;&nbsp;&nbsp;&nbsp;
+pos;</font>
+<br><font face="MS Gothic">} NisDirLight;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">/* Light area */</font>
+<br><font face="MS Gothic">typedef struct _NisLight</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 light_tag;&nbsp;&nbsp;&nbsp;&nbsp;
+/* Light area tag &nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 this_light_index;&nbsp;&nbsp;
+/* Index number of this Light area */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 light_header_size;&nbsp;
+/* The number of bytes of this LightHeader area &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 light_size;&nbsp;&nbsp;&nbsp;&nbsp;
+/* The number of bytes of this Light area &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 light_name_index;&nbsp;&nbsp;
+/* Index in NameList which describes Light name */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 light_type;&nbsp;&nbsp;&nbsp;&nbsp;
+/* light type &nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float ambient_r;&nbsp;&nbsp;&nbsp;&nbsp;
+/* Red component from ambient light &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float ambient_g;&nbsp;&nbsp;&nbsp;&nbsp;
+/* Green component from ambient light &nbsp */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float ambient_b;&nbsp;&nbsp;&nbsp;&nbsp;
+/* Blue component from ambient light &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 dir_light_num;&nbsp;&nbsp;&nbsp;&nbsp;
+/* The number of DirLight area  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 nin_ext_blk_size;
+/* Nintendo Expansiondata block&nbsp;&nbsp; (bytes) */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 usr_ext_blk_size;
+/* User Expansion data block (bytes) */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisDirLight&nbsp;&nbsp;&nbsp;&nbsp;
+*dirlight;</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32&nbsp;&nbsp; *n_ext;&nbsp;&nbsp;&nbsp;&nbsp;
+/* Nintendo Expansiondata block&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32&nbsp;&nbsp; *u_ext;&nbsp;&nbsp;&nbsp;&nbsp;
+/* User Expansion data block */</font>
+<br><font face="MS Gothic">} NisLight;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">typedef struct _NisLightList</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisLightListHeader *h;</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisLight *light;</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32&nbsp;&nbsp; *n_ext;&nbsp;&nbsp;&nbsp;&nbsp;
+/* Nintendo Expansiondata block&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32&nbsp;&nbsp; *u_ext;&nbsp;&nbsp;&nbsp;&nbsp;
+/* User Expansion data block */</font>
+<br><font face="MS Gothic">} NisLightList;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">/*------------------------- ObjList --------------------------------*/</font>
+<br><font face="MS Gothic">typedef struct _NisObjListHeader</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 obj_list_tag;&nbsp;
+/* ObjList tag &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 obj_list_header_size;
+/* The number of bytes of ObjListHeader area &nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 obj_list_size;&nbsp;
+/* The number of bytes of ObjList area &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 obj_num;&nbsp; /*
+The number of all the objects used in the scene */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 nin_ext_blk_size;
+/* Nintendo Expansiondata block&nbsp;&nbsp; (bytes) */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 usr_ext_blk_size;
+/* User Expansion data block (bytes) */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *obj_num_byte; /*
+The number of bytes for each Obj area */</font>
+<br><font face="MS Gothic">} NisObjListHeader;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">/*---- Obj area ----*/</font>
+<br><font face="MS Gothic">typedef struct _NisObj</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 obj_tag; /* Obj area tag &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+*/</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 this_obj_index;</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 obj_size; /* The number of bytes of this Obj area &nbsp;&nbsp;&nbsp;&nbsp;
+*/</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 obj_name_index; /*
+Index number of the object name */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 obj_state;</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 obj_type;</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 obj_group; /* Group ID &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+*/</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 obj_pri; /* Priority of this object &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+*/</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 obj_render_cycle_type;
+/* Cycle type of N64 Obj area &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 obj_render_pri;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+/* Cycle type of N64 RDP */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 obj_render_type0;&nbsp;&nbsp;&nbsp;
+/* Priority when rendeing object &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 obj_render_type1;&nbsp;&nbsp;&nbsp;
+/* Specify N64 render mode &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 have_link_billboard;
+/* Whether or not have fierarchical links to billboard object */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 obj_lod_num;&nbsp;&nbsp;&nbsp;&nbsp;
+/* LOD number &nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 obj_child_num;&nbsp;&nbsp;&nbsp;&nbsp;
+/* Child object number */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 obj_parent_link;</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 obj_shape_link;</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 obj_mat_link;</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 obj_anim_link;</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 obj_coll_link;</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 nin_ext_blk_size;&nbsp;&nbsp;
+/* Nintendo Expansiondata block&nbsp;&nbsp; (bytes) */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 usr_ext_blk_size;&nbsp;&nbsp;
+/* User Expansion data block (bytes) */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float *obj_lod_dist;&nbsp;&nbsp;&nbsp;
+/* Switching distance of LDD level of object */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32&nbsp;&nbsp; *obj_lod_link;&nbsp;&nbsp;&nbsp;
+/* Index number of Obj which links every LDD */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32&nbsp;&nbsp; *obj_child_link;&nbsp;
+/* Index number of child object &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32&nbsp;&nbsp; *n_ext;&nbsp;&nbsp;&nbsp;&nbsp;
+/* Nintendo Expansiondata block&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32&nbsp;&nbsp; *u_ext;&nbsp;&nbsp;&nbsp;&nbsp;
+/* User Expansion data block */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisObjExt *n2;&nbsp;&nbsp;&nbsp;&nbsp;
+/* extending in NIFF2.0 */</font>
+<br><font face="MS Gothic">} NisObj;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">typedef struct _NisObjList</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisObjListHeader *h;&nbsp;&nbsp;&nbsp;
+/* ObjListHeader */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisObj&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+*obj;&nbsp; /* Obj area */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32&nbsp;&nbsp;&nbsp;&nbsp;
+*n_ext;&nbsp;&nbsp;&nbsp;&nbsp; /* Nintendo Expansiondata block&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32&nbsp;&nbsp;&nbsp;&nbsp;
+*u_ext;&nbsp;&nbsp;&nbsp;&nbsp; /* User Expansion data block */</font>
+<br><font face="MS Gothic">} NisObjList;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">/*---------------------------- ShapeList
+-----------------------------------*/</font>
+<br><font face="MS Gothic">typedef struct _NisShapeListHeader</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 shape_list_tag;&nbsp;
+/* ShapeList tag &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 shape_list_header_size;
+/* The number of bytes of ShapeListHeader area &nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 shape_list_size;
+/* The number of bytes of ShapeList area &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 shape_num;&nbsp;
+/* The number of shapes described in ShapeList &nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 nin_ext_blk_size;
+/* Nintendo Expansiondata block&nbsp;&nbsp; (bytes) */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 usr_ext_blk_size;
+/* User Expansion data block (bytes) */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *shape_num_byte;
+/* The number of bytes of each Shape area */</font>
+<br><font face="MS Gothic">} NisShapeListHeader;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">/*---- Shape area ----*/</font>
+<br><font face="MS Gothic">typedef struct _NisShape</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 shape_tag;&nbsp;&nbsp;
+/* Shape area tag &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 this_shape_index;
+/* Index number of this Shape area &nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 shape_size;&nbsp;&nbsp;
+/* The number of bytes of this Shape ara &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 shape_name_index;
+/* Index number of shape name &nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 shape_type;&nbsp;&nbsp;
+/* Specify shape type Shape &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 shape_tri_link;&nbsp;&nbsp;
+/* Index number of TriGroup in TriList &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 shape_mat_link;&nbsp;&nbsp;
+/* Index number of in MatList &nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 shape_part_num;&nbsp;&nbsp;
+/* The number of parts included in shape &nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 nin_ext_blk_size;&nbsp;&nbsp;
+/* Nintendo Expansiondata block&nbsp;&nbsp; (bytes) */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 usr_ext_blk_size;&nbsp;&nbsp;
+/* User Expansion data block (bytes) */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *shape_part_link;&nbsp;&nbsp;
+/*  Index number of PartList &nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *n_ext;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+/* Nintendo Expansiondata block&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *u_ext;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+/* User Expansion data block */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisShapeExt *n2;&nbsp;&nbsp;&nbsp;&nbsp;
+/* extending in NIFF2.0 */</font>
+<br><font face="MS Gothic">} NisShape;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">typedef struct _NisShapeList</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisShapeListHeader *h;</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisShape&nbsp;&nbsp;&nbsp;&nbsp;
+*shape;</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32&nbsp;&nbsp;&nbsp;&nbsp;
+*n_ext;&nbsp;&nbsp;&nbsp;&nbsp; /* Nintendo Expansiondata block&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32&nbsp;&nbsp;&nbsp;&nbsp;
+*u_ext;&nbsp;&nbsp;&nbsp;&nbsp; /* User Expansion data block */</font>
+<br><font face="MS Gothic">} NisShapeList;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">/*---------------------------&nbsp; VtxList
+--------------------------------*/</font>
+<br><font face="MS Gothic">typedef struct _NisVtxListHeader</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 vtx_list_tag;&nbsp;
+/* VtxList area tag &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 vtx_list_header_size;
+/* The number of bytes of VtxListHeader area */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 vtx_list_size;&nbsp;
+/* The number of bytes of VtxList area &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 vtx_group_num;&nbsp;
+/* The total number of VtxGroup included in VtxList area */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 nin_ext_blk_size;
+/* Nintendo Expansiondata block&nbsp;&nbsp; (bytes) */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 usr_ext_blk_size;
+/* User Expansion data block (bytes) */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *vtx_group_num_byte;
+/*  The number of bytes of corresponding VtxGroup */</font>
+<br><font face="MS Gothic">} NisVtxListHeader;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">/*---- Vtx area &nbsp; ----*/</font>
+<br><font face="MS Gothic">typedef struct _NisVtx</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float x;&nbsp; /* x_coordinate;*/
+/*  X coordinate of vertex */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float y;&nbsp; /* y_coordinate;*/
+/*  Y coordinate of vertex */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float z;&nbsp; /* z_coordinate;*/
+/*  X coordinate of vertex  */</font>
+<br><font face="MS Gothic">} NisVtx;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">/*---- VtxGroup area ----*/</font>
+<br><font face="MS Gothic">typedef struct _NisVtxGroup</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 vtx_group_tag;&nbsp;
+/* VtxGroup area tag &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 this_vtx_group_index;
+/* Index number of this VtxGroup area */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 vtx_group_header_size;
+/* The number of bytes of this VtxGroupHeader area */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 vtx_group_size;&nbsp;
+/* The number of bytes of this VtxGroup area &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 vtx_group_name_index;
+/* Index number of VtxGroup name &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 vtx_num;&nbsp; /*
+The total number of Vtx included in this VtxGroup */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisVtx&nbsp;&nbsp;&nbsp;&nbsp;
+*vtx;</font>
+<br><font face="MS Gothic">} NisVtxGroup;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">typedef struct _NisVtxList</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisVtxListHeader *h;
+/* list header &nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisVtxGroup&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+*vtxg; /* Array of VtxGroup area */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *n_ext;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+/* Nintendo Expansiondata block&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *u_ext;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+/* User Expansion data block */</font>
+<br><font face="MS Gothic">} NisVtxList;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">/*------------------------ TriList ---------------------------------*/</font>
+<br><font face="MS Gothic">typedef struct _NisTriListHeader</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 tri_list_tag;&nbsp;
+/* TriList tag &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 tri_list_header_size;
+/* The number of bytes of TriListHeader area &nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 tri_list_size;&nbsp;
+/* The number of bytes of TriList area &nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 tri_group_num;&nbsp;
+/* The total number of TriGroup included in TriList &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 nin_ext_blk_size;
+/* Nintendo Expansiondata block&nbsp;&nbsp; (bytes) */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 usr_ext_blk_size;
+/* User Expansion data block (bytes) */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *tri_group_num_byte;
+/*&nbsp; The number of bytes of each TriGroup &nbsp; */</font>
+<br><font face="MS Gothic">} NisTriListHeader;</font>
+<br><font face="MS Gothic">&nbsp;</font>
+<br><font face="MS Gothic">/* ReferenceVtxData */</font>
+<br><font face="MS Gothic">typedef struct _NisRefVtxData</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 vtx_anim_key_num;&nbsp;&nbsp;
+/* The total number of keys in case of key frame animation */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *vtx_anim_key;&nbsp;&nbsp;&nbsp;&nbsp;
+/* Corresponding key frame value &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *vtx_group_index;&nbsp;&nbsp;
+/* Index number of referenced VtxGroup area &nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">} NisRefVtxData;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">/* ReferenceTriColorData */</font>
+<br><font face="MS Gothic">typedef struct _NisRefTriColorData</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 tri_color_anim_key_num;
+/* The total number of keys in case of key frame animation */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *tri_color_anim_key;
+/* Corresponding key frame value &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *tri_color_group_index;
+/* Index number of referenced TriColorGroup &nbsp; */</font>
+<br><font face="MS Gothic">} NisRefTriColorData;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">/* ReferenceVtxColorData */</font>
+<br><font face="MS Gothic">typedef struct _NisRefVtxColorData</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 vtx_color_anim_key_num;
+/* The total number of keys in case of key frame animation */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *vtx_color_anim_key;
+/* Corresponding key frame value &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *vtx_color_group_index;
+/* Index number of referenced VtxColorGroup &nbsp; */</font>
+<br><font face="MS Gothic">} NisRefVtxColorData;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">/* ReferenceTriNvData */</font>
+<br><font face="MS Gothic">typedef struct _NisRefTriNvData</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 tri_nv_anim_key_num;
+/* The total number of keys in case of key frame animation */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *tri_nv_anim_key;
+/* Corresponding key frame value &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *tri_nv_group_index;
+/* Index number of referenced TriNvGroup &nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">} NisRefTriNvData;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">/* ReferenceVtxNvData */</font>
+<br><font face="MS Gothic">typedef struct _NisRefVtxNvData</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 vtx_nv_anim_key_num;
+/* The total number of keys in case of key frame animation */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *vtx_nv_anim_key;
+/* Corresponding key frame value &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *vtx_nv_group_index;
+/* Index number of referenced VtxNvGroup &nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">} NisRefVtxNvData;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">/* ReferenceStData */</font>
+<br><font face="MS Gothic">typedef struct _NisRefStData</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 st_anim_key_num;&nbsp;&nbsp;&nbsp;
+/* The total number of keys in case of key frame animation &nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *st_anim_key;&nbsp;&nbsp;&nbsp;&nbsp;
+/* Corresponding key frame value &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *st_group_index;&nbsp;&nbsp;&nbsp;
+/* Index number of referenced StGroup area &nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">} NisRefStData;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">/* ---- Tri area ---- */</font>
+<br><font face="MS Gothic">typedef struct _NisTri</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 tri_tag; /* Tri area tag &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+*/</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 this_tri_index; /*
+Index number of this Tri area &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 tri_size; /* The number of this Tri area &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+*/</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 tri_nv_index; /*
+TriNv index in referenced TriNvGroup &nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 tri_color_index;/*
+TriColor index in referenced TriColorGroup */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 vtx_index0; /* Vtx index in referenced VtxGroup &nbsp;&nbsp;&nbsp;&nbsp;
+*/</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 st_index0; /* St index in referenced StGroup &nbsp;&nbsp;&nbsp;&nbsp;
+*/</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 vtx_nv_index0; /*
+VtxNv index in referenced VtxNvGroup &nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 vtx_color_index0;/*
+VtxColor index in referenced VtxColorGroup */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 vtx_index1;</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 st_index1; /* St index in referenced StGroup &nbsp;&nbsp;&nbsp;&nbsp;
+*/</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 vtx_nv_index1; /*
+VtxNv index in referenced VtxNvGroup */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 vtx_color_index1;/*VtxColor index referenced VtxColorGroup &nbsp;
+*/</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 vtx_index2; /* Vtx index in referenced VtxGroup &nbsp;&nbsp;&nbsp;
+*/</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 st_index2; /* St index in referenced StGroup &nbsp;&nbsp;&nbsp;&nbsp;
+*/</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 vtx_nv_index2; /*
+VtxNv index in referenced VtxNvGroup */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 vtx_color_index2;/*VtxColor index in referenced VtxColorGroup 
+*/</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 nin_ext_blk_size;&nbsp;&nbsp;
+/* Nintendo Expansiondata block&nbsp;&nbsp; (bytes) */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 usr_ext_blk_size;&nbsp;&nbsp;
+/* User Expansion data block (bytes) */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *n_ext;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+/* Nintendo Expansiondata block&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *u_ext;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+/* User Expansion data block */</font>
+<br><font face="MS Gothic">} NisTri;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">/*---- TriGroup area ----*/</font>
+<br><font face="MS Gothic">typedef struct _NisTriGroup</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 tri_group_tag;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+/* TriGroup area tag &nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 this_tri_group_index;&nbsp;
+/* Index number of this TriGroup &nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 tri_group_header_size;
+/* The number of bytes of this TriGroupHeader &nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 tri_group_size;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+/* The number of bytes of this TriGroup &nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 tri_group_name_index;&nbsp;
+/* Index number of TriGroup name */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 tri_anim_type;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+/* Specify shape animation type */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 tri_anim_frame_num;&nbsp;&nbsp;&nbsp;
+/* The number of shape animation frames */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 tri_num;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+/* The number of Tri areas in this TriGroup */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisRefVtxData *refVtx;</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisRefTriColorData *refTriColor;</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisRefVtxColorData&nbsp;
+*refVtxColor;</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisRefTriNvData&nbsp;&nbsp;&nbsp;&nbsp;
+*refTriNv;</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisRefVtxNvData&nbsp;&nbsp;&nbsp;&nbsp;
+*refVtxNv;</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisRefStData *refSt;</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisTri&nbsp; *tri;</font>
+<br><font face="MS Gothic">} NisTriGroup;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">typedef struct _NisTriList</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisTriListHeader *h;&nbsp;&nbsp;&nbsp;
+/* List header &nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisTriGroup&nbsp;&nbsp;
+*trig;&nbsp;&nbsp;&nbsp; /* Array of TriGroup area */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *n_ext;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+/* Nintendo Expansiondata block&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *u_ext;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+/* User Expansion data block */</font>
+<br><font face="MS Gothic">} NisTriList;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">/*---------------------- ColorList ------------------------*/</font>
+<br><font face="MS Gothic">typedef struct _NisColorListHeader</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 color_list_tag;&nbsp;
+/* ColorList tag &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 color_list_header_size;
+/* The number of bytes in ColorListHeader area &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 color_list_size;
+/* The number of bytes in ColorList area &nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 tri_color_group_num;
+/* TriColorGroup number */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 vtx_color_group_num;
+/* VtxColorGroup number */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 nin_ext_blk_size;
+/* Nintendo Expansiondata block&nbsp;&nbsp; (bytes) */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 usr_ext_blk_size;
+/* User Expansion data block (bytes) */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *tri_color_group_size;
+/* The number of bytes in corresponding TriColorGroup area */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *vtx_color_group_size;
+/* The number of bytes in corresponding VtxColorGroup area */</font>
+<br><font face="MS Gothic">} NisColorListHeader;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">/*---- TriColor area ----*/</font>
+<br><font face="MS Gothic">typedef struct _NisTriColor</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float red; /*_component;*/
+/* Red componet of polygon color &nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float green;/*_component;*/
+/* Green component of polygon color */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float blue; /*_component;*/
+/* Blue component of polygon color &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float alpha;/*_component;*/
+/* Alpha component of polygon color */</font>
+<br><font face="MS Gothic">} NisTriColor;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">/*---- TriColorGroup area ----*/</font>
+<br><font face="MS Gothic">typedef struct _NisTriColorGroup</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 tri_color_group_tag;&nbsp;&nbsp;&nbsp;&nbsp;
+/* TriColorGroup tag &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 this_tri_color_group_index;
+/* Index number of this TriColorGroup */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 tri_color_group_header_size;/*
+The number of bytes of this TriColorGroupHeader &nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 tri_color_group_size;&nbsp;&nbsp;&nbsp;&nbsp;
+/* The number of bytes of this TriColorGroup area &nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 tri_color_num;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+/* The number of TriColor areas */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisTriColor&nbsp; *tricolor;</font>
+<br><font face="MS Gothic">} NisTriColorGroup;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">/*---- VtxColor area  ----*/</font>
+<br><font face="MS Gothic">typedef struct _NisVtxColor</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float red;&nbsp;&nbsp;&nbsp;&nbsp;
+/*_component;*/&nbsp;&nbsp;&nbsp; /* Red component of polygon color &nbsp;&nbsp;
+*/</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float green;&nbsp;&nbsp;&nbsp;
+/*_component;*/&nbsp;&nbsp;&nbsp; /* Green component of polygon color */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float blue;&nbsp;&nbsp;&nbsp;&nbsp;
+/*_component;*/&nbsp;&nbsp;&nbsp; /* Blue component of polygon color &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float alpha;&nbsp;&nbsp;&nbsp;
+/*_component;*/&nbsp;&nbsp;&nbsp; /* Alpha component of polygon color */</font>
+<br><font face="MS Gothic">} NisVtxColor;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">/*---- VtxColorGroup area ----*/</font>
+<br><font face="MS Gothic">typedef struct _NisVtxColorGroup</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 vtx_color_group_tag;&nbsp;&nbsp;&nbsp;&nbsp;
+/* VtxColorGroup tag &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 this_vtx_color_group_index;
+/* Index number of this VtxColorGroup */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 vtx_color_group_header_size;/*
+The number of bytes of this VtxColorGroupHeader &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 vtx_color_group_size;&nbsp;&nbsp;&nbsp;&nbsp;
+/* The number of bytes of this VtxColorGroup area */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 vtx_color_num;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+/* The number of VtxColor areas in this VtxColorGroup */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisVtxColor&nbsp; *vtxcolor;</font>
+<br><font face="MS Gothic">} NisVtxColorGroup;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">typedef struct _NisColorList</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisColorListHeader *h;
+/* List header &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisTriColorGroup&nbsp;&nbsp;
+*tri_c_g;&nbsp;&nbsp;&nbsp; /* Array of TriColorGroup area */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisVtxColorGroup&nbsp;&nbsp;
+*vtx_c_g;&nbsp;&nbsp;&nbsp; /* Array of VtxColorGroup area */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *n_ext;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+/* Nintendo Expansiondata block&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *u_ext;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+/* User Expansion data block */</font>
+<br><font face="MS Gothic">} NisColorList;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">/*------------------------ VectorList -------------------------*/</font>
+<br><font face="MS Gothic">typedef struct _NisVectorListHeader</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 vector_list_tag;
+/* VectorList tag &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 vector_list_header_size;/*
+The number of bytes of VectorListHeader */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 vector_list_size;
+/* The number of bytes of VectorList &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 tri_nv_group_num;
+/* Total number of TriNvGroup area */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 vtx_nv_group_num;
+/* Total number of VtxNvGroup area */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 nin_ext_blk_size;
+/* Nintendo Expansiondata block&nbsp;&nbsp; (bytes) */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 usr_ext_blk_size;
+/* User Expansion data block (bytes) */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *tri_nv_group_size;
+/* The number of bytes of each TriNvGroup area */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *vtx_nv_group_size;
+/* The number of bytes of each VtxNvGroup area */</font>
+<br><font face="MS Gothic">} NisVectorListHeader;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">/*---- TriNv area ----*/</font>
+<br><font face="MS Gothic">typedef struct _NisTriNv</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float x;&nbsp; /*_vector;*/
+/* X component of normal vector */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float y;&nbsp; /*_vector;*/
+/* Y component of normal vector */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float z;&nbsp; /*_vector;*/
+/* X component of normal vector */</font>
+<br><font face="MS Gothic">} NisTriNv;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">/*---- TriNvGroup area ----*/</font>
+<br><font face="MS Gothic">typedef struct _NisTriNvGroup</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 tri_nv_group_tag;&nbsp;&nbsp;&nbsp;&nbsp;
+/* TriNvGroup area tag &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 this_tri_nv_group_index;&nbsp;&nbsp;&nbsp;
+/* Index number of this TriNvGroup area */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 tri_nv_group_header_size;&nbsp;&nbsp;
+/* The number of bytes of this TriNvGroupHeader area &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 tri_nv_group_size;&nbsp;&nbsp;&nbsp;&nbsp;
+/* The number of bytes of this TriNvGroup area &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 tri_nv_num;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+/* Total number of TriNv area &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisTriNv *trinv;</font>
+<br><font face="MS Gothic">} NisTriNvGroup;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">/*---- VtxNv area  ----*/</font>
+<br><font face="MS Gothic">typedef struct _NisVtxNv</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float x;&nbsp; /*_vector;*/
+/* X component of normal vector */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float y;&nbsp; /*_vector;*/
+/* Y compoent of normal vector */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float z;&nbsp; /*_vector;*/
+/* Z component of normal vector */</font>
+<br><font face="MS Gothic">} NisVtxNv;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">/*---- VtxNvGroup area ----*/</font>
+<br><font face="MS Gothic">typedef struct _NisVtxNvGroup</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 vtx_nv_group_tag;&nbsp;&nbsp;
+/* VtxNvGroup area tag &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 this_vtx_nv_group_index;&nbsp;
+/* Index number of this VtxNvGroup area */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 vtx_nv_group_header_size;
+/* The number of bytes of this VtxNvGroupHeader area &nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 vtx_nv_group_size;&nbsp;&nbsp;
+/* The number of bytes of this VtxNvGroup area &nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 vtx_nv_num;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+/* Total number of VtxNv area &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisVtxNv *vtxnv;</font>
+<br><font face="MS Gothic">} NisVtxNvGroup;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">typedef struct _NisVectorList</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisVectorListHeader *h;
+/* List header &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisTriNvGroup *tri_nv_g;&nbsp;
+/* Array of TriVectorGroup area */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisVtxNvGroup *vtx_nv_g;
+/* Array of VtxVectorGroup area */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *n_ext;&nbsp;&nbsp;
+/* Nintendo Expansiondata block&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *u_ext;&nbsp;&nbsp;
+/* User Expansion data block */</font>
+<br><font face="MS Gothic">} NisVectorList;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">/*-------------------------- StList ----------------------------*/</font>
+<br><font face="MS Gothic">typedef struct _NisStListHeader</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 st_list_tag;&nbsp;
+/* StListTag area tag */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 st_list_header_size;
+/* The nubmber of bytes of StListHeader area */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 st_list_size;&nbsp;
+/* The number of bytes of StList area */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 st_group_num;&nbsp;
+/* Total number of StGroup area &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 nin_ext_blk_size;
+/* Nintendo Expansiondata block&nbsp;&nbsp; (bytes) */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 usr_ext_blk_size;
+/* User Expansion data block (bytes) */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *st_group_size;&nbsp;
+/*&nbsp; The number of bytes of each StGroup &nbsp; */</font>
+<br><font face="MS Gothic">} NisStListHeader;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">/*---- St area ----*/</font>
+<br><font face="MS Gothic">typedef struct _NisSt</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float s; /* S texture coordinate 
+*/</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float t; /* T texture coordinate 
+*/</font>
+<br><font face="MS Gothic">} NisSt;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">/*---- StGroup area ----*/</font>
+<br><font face="MS Gothic">typedef struct _NisStGroup</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 st_group_tag;&nbsp;
+/* StGroup area tag &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 this_st_group_index;
+/* Index number of this StGroup area */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 st_group_header_size;
+/* The number of bytes of this StGroupHeader area */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 st_group_size;&nbsp;
+/* The number of bytes of this StGroup area &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 st_num;&nbsp;&nbsp;
+/* The number of St area included in this StGroup area */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisSt *st;</font>
+<br><font face="MS Gothic">} NisStGroup;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">typedef struct _NisStList</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisStListHeader *h;&nbsp;&nbsp;&nbsp;&nbsp;
+/* List header &nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisStGroup&nbsp;&nbsp;&nbsp;&nbsp;
+*stg;&nbsp;&nbsp; /* Array of StGroup area */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *n_ext;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+/* Nintendo Expansiondata block&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *u_ext;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+/* User Expansion data block */</font>
+<br><font face="MS Gothic">} NisStList;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">/*-------------------------- PartList -------------------------------*/</font>
+<br><font face="MS Gothic">typedef struct _NisPartListHeader</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 part_list_tag;&nbsp;
+/* PartList tag &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 part_list_header_size;
+/* The number of bytes of PartListHeader area &nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 part_list_size;&nbsp;
+/* The number of bytes of PartList area &nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 part_num;&nbsp; /*
+Total number of Part area in PartList &nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 nin_ext_blk_size;
+/* Nintendo Expansiondata block&nbsp;&nbsp; (bytes) */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 usr_ext_blk_size;
+/* User Expansion data block (bytes) */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *part_num_byte;&nbsp;
+/* The number of bytes of each Part area */</font>
+<br><font face="MS Gothic">} NisPartListHeader;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">/*---- Part area ----*/</font>
+<br><font face="MS Gothic">typedef struct _NisPart</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 part_tag; /* Part area tag &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+*/</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 this_part_index;/*
+Index number of this Part area */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 part_size; /* Size of this Part area &nbsp;&nbsp;&nbsp;&nbsp;
+*/</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 part_name_index;/*
+Index number of Part name */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 mat_index; /* Mat index used in Part */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 tri_group_index;/*
+TriGroup index used in this Part */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 part_tri_num; /*
+Triangle number used in this part */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 nin_ext_blk_size;
+/* Nintendo Expansiondata block&nbsp;&nbsp; (bytes) */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 usr_ext_blk_size;
+/* User Expansion data block (bytes) */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *tri_index; /* Triangle index number 
+*/</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *n_ext;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+/* Nintendo Expansiondata block&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *u_ext;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+/* User Expansion data block */</font>
+<br><font face="MS Gothic">} NisPart;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">typedef struct _NisPartList</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisPartListHeader&nbsp;
+*h; /* List header &nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisPart&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+*part; /* Array of Part area &nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *n_ext;&nbsp;&nbsp;
+/* Nintendo Expansiondata block&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *u_ext;&nbsp;&nbsp;
+/* User Expansion data block&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">} NisPartList;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">/*----------------------------- MatList --------------------------------*/</font>
+<br><font face="MS Gothic">typedef struct _NisMatListHeader</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 mat_list_tag;&nbsp;
+/* MatList tag &nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 mat_list_header_size;
+/* The number of bytes of this MatListHeader &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 mat_list_size;&nbsp;
+/* The number of bytes of this MatList &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 mat_num;&nbsp;&nbsp;&nbsp;&nbsp;
+/* The number of Mat area described in MatList */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 nin_ext_blk_size;&nbsp;&nbsp;
+/* Nintendo Expansiondata block&nbsp;&nbsp; (bytes) */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 usr_ext_blk_size;&nbsp;&nbsp;
+/* User Expansion data block (bytes) */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *mat_num_byte;&nbsp;&nbsp;&nbsp;&nbsp;
+/* The number of bytes of each Mat area  */</font>
+<br><font face="MS Gothic">} NisMatListHeader;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">/*---- Mat area ----*/</font>
+<br><font face="MS Gothic">typedef struct _NisMat</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 mat_tag; /* Mat area tag &nbsp;&nbsp;&nbsp;
+*/</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 this_mat_index; /*
+Index number of this Mat area &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 mat_size; /* Size of this Mat area &nbsp;&nbsp;
+*/</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 mat_name_index; /*
+Index number in NameList which describes Mat name */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 mat_type; /* Material type :
+NIFF|N64&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 mat_shade_type; /*
+Shading &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 mat_color_type0;
+/* Color modulation &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 mat_color_type1;
+/* Color modulation 2 cycle mode only &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 mat_alpha_type0;
+/* Alpha modulation &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 mat_alpha_type1;
+/* Alpha modulation 2 cycle mode only */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float prim_red; /* Red component of primitive color &nbsp;&nbsp;&nbsp;&nbsp;
+*/</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float prim_green; /*
+Green component of primitive color &nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float prim_blue; /* Blue component of primitive colior &nbsp;&nbsp;&nbsp;&nbsp;
+*/</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float prim_alpha; /*
+Alpha component fo primitive color &nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 usr_flag0; /* 32bit  flag of user definition &nbsp;
+*/</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 usr_flag1; /* 32bit  flag of user definition &nbsp;
+*/</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 usr_flag2; /* 32bit  flag of user definition &nbsp;
+*/</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 usr_flag3; /* 32bit  flag of user definition &nbsp;
+*/</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 usr_flag4; /* 32bit  flag of user definition &nbsp;
+*/</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 usr_flag5; /* 32bit  flag of user definition &nbsp;
+*/</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 usr_flag6; /* 32bit  flag of user definition &nbsp;
+*/</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 usr_flag7; /* 32bit  flag of user definition &nbsp;
+*/</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 local_light_index;</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 tex_num; /* The number of texture used in Mat. 0,1, or 2
+ */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 nin_ext_blk_size;&nbsp;
+/* Nintendo Expansiondata block&nbsp;&nbsp; (bytes) */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 usr_ext_blk_size;&nbsp;
+/* User Expansion data block (bytes) */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *tex_index;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+/* Index number of texture */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *n_ext;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+/* Nintendo Expansiondata block&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *u_ext;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+/* User Expansion data block&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisMatExt *n2;&nbsp;&nbsp;&nbsp;&nbsp;
+/* extending in NIFF2.0 */</font>
+<br><font face="MS Gothic">} NisMat;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">typedef struct _NisMatList</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisMatListHeader *h;
+/* List header &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisMat&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+*mat; /* Arry of Mat area &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *n_ext;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+/* Nintendo Expansiondata block&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *u_ext;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+/* User Expansion data block */</font>
+<br><font face="MS Gothic">} NisMatList;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">/*---------------------- TexList -------------------------*/</font>
+<br><font face="MS Gothic">typedef struct _NisTexListHeader</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 tex_list_tag;&nbsp;
+/* TexList area tag &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 tex_list_header_size;
+/* The number of bytes of TexListHeader area &nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 tex_list_size;&nbsp;
+/* The number of bytes of TexList area &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 tex_num;&nbsp; /*
+Total number of Tex area described in TexList */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 nin_ext_blk_size;&nbsp;
+/* Nintendo Expansiondata block&nbsp;&nbsp; (bytes) */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 usr_ext_blk_size;&nbsp;
+/* User Expansion data block (bytes) */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *tex_num_byte; /*
+The number of bytes in each Tex area */</font>
+<br><font face="MS Gothic">} NisTexListHeader;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">/*---- TexDataArea ----*/</font>
+<br><font face="MS Gothic">/* Data when TEX_ANIM_OFF is specified */</font>
+<br><font face="MS Gothic">typedef struct _NisTexDataAnimOff</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 tex_img_width; /*
+The number of texel of texture image data width */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 tex_img_height; /*
+The number of texel of texture image data height */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 tex_tile_width; /*
+The number of texel of the width of the portion that is used &nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 tex_tile_height;/*
+The number of texel of the height of the portion that is used */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 tex_offset_x; /*
+X coordinate of upper left texel of the portion taht is used */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 tex_offset_y; /*
+Y coordinate of upper left texel of the portion that is used */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 tex_img_index; /*
+Index number in TexImgList  */</font>
+<br><font face="MS Gothic">} NisTexDataAnimOff;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">/* Whe texture animation is done </font>
+<br><font face="MS Gothic">&nbsp;&nbsp; (TEX_ANIM FLIPBOOK, TEX_ANIM_FLIPBOOK_KEY,
+TEX_ANIM_SCROLL_OFFSET,</font>
+<br><font face="MS Gothic">&nbsp;&nbsp; TEX_ANIM_SCROLL_OFFSET_KEY,
+TEX_ANIM_SCROLL_SCALE,</font>
+<br><font face="MS Gothic">&nbsp;&nbsp; TEX_ANIM_SCROLL_SCALE_KEY specified )
+*/</font>
+<br><font face="MS Gothic">typedef struct _NisTexDataAnimOn</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 tex_img_width; /*
+The number of texel of texture image data width &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 tex_img_height; /*
+The number of texel of texture image data height */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 tex_tile_scale_num;</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 tex_tile_offset_num;</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 tex_tile_img_num;</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *tex_tile_scale_key;</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *tex_tile_width;</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *tex_tile_height;</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *tex_tile_offset_key;</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *tex_tile_offset_x;</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *tex_tile_offset_y;</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *tex_tile_img_key;</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *tex_tile_img_index;</font>
+<br><font face="MS Gothic">} NisTexDataAnimOn;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">/*---- Tex area ----*/</font>
+<br><font face="MS Gothic">typedef union _NisTexData</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisTexDataAnimOff anim_off;</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisTexDataAnimOn anim_on;</font>
+<br><font face="MS Gothic">} NisTexData;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">typedef struct _NisTex</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 tex_tag;&nbsp; /*
+Tex area tag &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 this_tex_index;&nbsp;
+/* Index number of this Tex area */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 tex_header_size;
+/* The number of bytes of this TexHeader area &nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 tex_size;&nbsp; /*
+The number of bytes of this Tex area &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 tex_name_index;&nbsp;
+/* Index number in NameList that describes Tex name &nbsp;&nbsp;&nbsp;&nbsp;
+*/</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 tex_type;&nbsp; /*
+Texture format &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 tex_wrap_s;&nbsp;
+/* Specification regarding S direction wrapping of texture */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 tex_wrap_t;&nbsp;
+/* Specification regarding T direction wrapping of texture */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 tex_anim;&nbsp; /*
+Setting regarding texture animation &nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 tex_data_area_size;
+/* The number of bytes of TexDataArea portion &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 tex_anim_frame_rate;
+/* Frame rate of texture animation */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 nin_ext_blk_size;
+/* Nintendo Expansiondata block&nbsp;&nbsp; (bytes) */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 usr_ext_blk_size;
+/* User Expansion data block (bytes) */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisTexData *texdata;</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *n_ext;&nbsp;&nbsp;
+/* Nintendo Expansiondata block&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *u_ext;&nbsp;&nbsp;
+/* User Expansion data block&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisTexExt *n2;&nbsp;
+/* extending in NIFF2.0 */</font>
+<br><font face="MS Gothic">} NisTex;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">typedef struct _NisTexList</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisTexListHeader&nbsp;&nbsp;
+*h;&nbsp; /* List header &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisTex&nbsp;&nbsp;&nbsp;&nbsp;
+*tex;&nbsp;&nbsp; /* Array of Tex area &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *n_ext;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+/* Nintendo Expansiondata block&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *u_ext;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+/* User Expansion data block&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">} NisTexList;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">/*------------------------ TexImgList ------------------------------*/</font>
+<br><font face="MS Gothic">typedef struct _NisTeximgListHeader</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 tex_img_list_tag;&nbsp;&nbsp;&nbsp;&nbsp;
+/* TexImgList tag &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 tex_img_list_header_size;&nbsp;&nbsp;
+/* The number of bytes of TexImgListHeader area */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 tex_img_list_size;&nbsp;&nbsp;&nbsp;&nbsp;
+/* The number of bytes of whole TexImgList area &nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 tex_img_num;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+/* The number of TexImg area &nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 nin_ext_blk_size;&nbsp;&nbsp;&nbsp;&nbsp;
+/* Nintendo Expansiondata block&nbsp;&nbsp; (bytes)&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 usr_ext_blk_size;&nbsp;&nbsp;&nbsp;&nbsp;
+/* User Expansion data block (bytes)&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *tex_img_num_byte;</font>
+<br><font face="MS Gothic">} NisTeximgListHeader;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">/*---- TexImg area ----*/</font>
+<br><font face="MS Gothic">typedef struct _NisTeximg</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 tex_img_tag;&nbsp;
+/* TexImg area tag &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 this_tex_img_index;
+/* Index number of this TexImg area */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 tex_img_header_size;
+/* The number of bytes of TexImgHeader area &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 tex_img_size;&nbsp;
+/* The number of bytes of this TexImg area */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 nin_ext_blk_size;
+/* Nintendo Expansiondata block&nbsp;&nbsp; (bytes) */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 usr_ext_blk_size;
+/* User Expansion data block (bytes) */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u8&nbsp; *teximgdata;&nbsp;
+/* Texture image char->u8 for win */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *n_ext;&nbsp;&nbsp;
+/* Nintendo Expansiondata block&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *u_ext;&nbsp;&nbsp;
+/* User Expansion data block&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisTeximgExt&nbsp;&nbsp;&nbsp;
+*n2; /* extending in NIFF2.0 */</font>
+<br><font face="MS Gothic">} NisTeximg;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">typedef struct _NisTeximgList</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisTeximgListHeader *h;
+/* List header */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisTeximg&nbsp; *teximg;/*
+Array of TexImg area */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *n_ext;&nbsp;&nbsp;
+/* Nintendo Expansiondata block&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *u_ext;&nbsp;&nbsp;
+/* User Expansion data block&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">} NisTeximgList;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">/*------------------------- AnimList ---------------------------*/</font>
+<br><font face="MS Gothic">typedef struct _NisAnimListHeader</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 anim_list_tag;&nbsp;
+/* AnimList area tag &nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 anim_list_header_size;
+/* The number of bytes of AnimListHeader area &nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 anim_list_size;&nbsp;
+/* The number of bytes of AnimList area &nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 anim_group_num;&nbsp;&nbsp;&nbsp;&nbsp;
+/* Total number of AnimGroup area described in AnimList */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 nin_ext_blk_size;
+/* Nintendo Expansiondata block&nbsp;&nbsp; (bytes) */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 usr_ext_blk_size;
+/* User Expansion data block (bytes) */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *anim_group_num_byte;
+/*  The number of bytes of corresponding AnimGroup &nbsp; */</font>
+<br><font face="MS Gothic">} NisAnimListHeader;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">/*---- Anim area ----*/</font>
+<br><font face="MS Gothic">typedef struct _NisAnimStatic</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 anim_tag;&nbsp;&nbsp;&nbsp;&nbsp;
+/* Anim area tag &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 this_anim_index;&nbsp;&nbsp;&nbsp;
+/* Index number of this Anim area */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 anim_size;&nbsp;&nbsp;&nbsp;&nbsp;
+/* The number of bytes of this Anim area &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float translate_x;&nbsp;&nbsp;&nbsp;&nbsp;
+/* X axis directional translation &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float translate_y;&nbsp;&nbsp;&nbsp;&nbsp;
+/* Y axis directional translation &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float translate_z;&nbsp;&nbsp;&nbsp;&nbsp;
+/* Z axis directional translation &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float rotate_axis_x;&nbsp;&nbsp;&nbsp;
+/* X component of rotating axis &nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float rotate_axis_y;&nbsp;&nbsp;&nbsp;
+/* Y component of rotation axis &nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float rotate_axis_z;&nbsp;&nbsp;&nbsp;
+/* Z component of rotation axis &nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32&nbsp;&nbsp; rotate_expand_flag;/*
+Expansion flag &nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float scale_x;&nbsp;&nbsp;&nbsp;&nbsp;
+/* X axis directional scale value &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float scale_y;&nbsp;&nbsp;&nbsp;&nbsp;
+/* Y axis directional scale value &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float scale_z;&nbsp;&nbsp;&nbsp;&nbsp;
+/* Z axis directional scale value &nbsp; */</font>
+<br><font face="MS Gothic">} NisAnimStatic;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">typedef NisAnimStatic NisAnimFull;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">typedef struct _NisAnimKey</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 anim_tag;&nbsp;&nbsp;&nbsp;&nbsp;
+/* Anim area tag &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 this_anim_index;&nbsp;&nbsp;&nbsp;
+/* Index number of this Anim area */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 anim_size;&nbsp;&nbsp;&nbsp;&nbsp;
+/* The number of bytes of this Anim area &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 key;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+/* Frame value of current key frame &nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 next_key;&nbsp;&nbsp;&nbsp;&nbsp;
+/* Frame value of next key frame &nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 interpolation_type;
+/* Interpolation type between this key and the next */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float translate_x;&nbsp;&nbsp;&nbsp;&nbsp;
+/* X axis directional translation &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float translate_y;&nbsp;&nbsp;&nbsp;&nbsp;
+/* Y axis directional translation &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float translate_z;&nbsp;&nbsp;&nbsp;&nbsp;
+/* Z axis directional translation &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float rotate_axis_x;&nbsp;&nbsp;&nbsp;
+/* X component of rotating axis &nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float rotate_axis_y;&nbsp;&nbsp;&nbsp;
+/* Y component of rotating axis &nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float rotate_axis_z;&nbsp;&nbsp;&nbsp;
+/* X component of rotating axis &nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32&nbsp;&nbsp; rotate_expand_flag;
+/* Expansion flag &nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float scale_x;&nbsp;&nbsp;&nbsp;&nbsp;
+/* X axis directional scale value &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float scale_y;&nbsp;&nbsp;&nbsp;&nbsp;
+/* Y axis directional scale value &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float scale_z;&nbsp;&nbsp;&nbsp;&nbsp;
+/* Z axis directional scale value &nbsp; */</font>
+<br><font face="MS Gothic">} NisAnimKey;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">typedef struct _NisAnimBillboard</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 anim_tag;&nbsp;&nbsp;
+/* Anim area tag &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 this_anim_index;&nbsp;
+/* Index number of this Anim area */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 anim_size;&nbsp;&nbsp;
+/* Size of this Anim area &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 lookat_obj_index;
+/* Specify index number in ObjList */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 upper_obj_index;&nbsp;
+/* Specify index number in ObjList */</font>
+<br><font face="MS Gothic">} NisAnimBillboard;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">typedef union _NisAnim</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisAnimStatic&nbsp;&nbsp;
+anim_static;</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisAnimFull&nbsp;&nbsp;&nbsp;&nbsp;
+full;</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisAnimKey&nbsp;&nbsp;&nbsp;&nbsp;
+key;</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisAnimBillboard billboard;</font>
+<br><font face="MS Gothic">} NisAnim; /* Define structure that complies with anim_type 
+*/</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">/*---- AnimGroup area ----*/</font>
+<br><font face="MS Gothic">typedef struct _NisAnimGroup</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 anim_group_tag;&nbsp;
+/* AnimGroup area tag &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 this_anim_group_index;
+/* Index number of this animGroup */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 anim_group_header_size;
+/* The number of bytes of this AnimGroupHeader area &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 anim_group_size;
+/* The number of bytes of this AnimGroup area */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 anim_name_index;&nbsp;&nbsp;&nbsp;
+/* Index number in NameList that describes AnimGroup name */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 anim_type;&nbsp;&nbsp;&nbsp;&nbsp;
+/* Animation type &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 frame_rate;&nbsp;&nbsp;&nbsp;&nbsp;
+/* Frame rate of animation */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 anim_num;&nbsp;&nbsp;&nbsp;&nbsp;
+/* The number of Anim area &nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 anim_loop;&nbsp;&nbsp;&nbsp;&nbsp;
+/* The number of loop of animation  */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 anim_rot_mtx_order;</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 nin_ext_blk_size;
+/* Nintendo Expansiondata block&nbsp;&nbsp; (bytes) */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 usr_ext_blk_size;
+/* User Expansion data block (bytes) */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisAnim *anim;</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *n_ext;&nbsp;&nbsp;
+/* Nintendo Expansiondata block&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *u_ext;&nbsp;&nbsp;
+/* User Expansion data block&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisAnimGroupExt *n2;
+/* extending in NIFF2.0 */</font>
+<br><font face="MS Gothic">} NisAnimGroup;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">typedef struct _NisAnimList</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisAnimListHeader&nbsp;
+*h;&nbsp; /* List header &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisAnimGroup&nbsp;&nbsp;
+*animg;&nbsp; /* array of Anim area &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *n_ext;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+/* Nintendo Expansiondata block&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *u_ext;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+/* User Expansion data block&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">} NisAnimList;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">/*--------------------- CollList ------------------------*/</font>
+<br><font face="MS Gothic">typedef struct _NisCollListHeader</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 coll_list_tag;&nbsp;
+/* CollList area tag &nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 coll_list_header_size;
+/* The number of this CollListHeader area &nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 coll_list_size;&nbsp;
+/* The number of CollList area &nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 coll_group_num;&nbsp;
+/* Total number of CollGroup area in CollList */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 nin_ext_blk_size;
+/* Nintendo Expansiondata block&nbsp;&nbsp; (bytes) */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 usr_ext_blk_size;
+/* User Expansion data block (bytes) */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *coll_group_num_byte;
+/* The number of bytes of corresponding CollGroup &nbsp; */</font>
+<br><font face="MS Gothic">} NisCollListHeader;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">/*---- CollData area ----*/ /* Data structure varies depending upon on coll_type
+ */</font>
+<br><font face="MS Gothic">typedef struct _NisCollTerrain</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 coll_data_tag;&nbsp;
+/* CollData area tag &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 this_coll_data_index;
+/* Index number of this CollData area */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 coll_data_size;&nbsp;
+/* The number of bytes of this CollData area &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 x_subdivide;&nbsp;&nbsp;
+/* X directional resolution of whole geographical data */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 z_subdivide;&nbsp;&nbsp;
+/* Z directional resolution of whole geographical data */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 shape_list_index;
+/* Index number of shape data used for geographical data */</font>
+<br><font face="MS Gothic">} NisCollTerrain;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">typedef struct _NisCollPoint</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32&nbsp;&nbsp; coll_data_tag;
+/* CollData area tag &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32&nbsp;&nbsp; this_coll_data_index;
+/* Index number of this CollData area */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32&nbsp;&nbsp; coll_data_size;
+/* The number of bytes of this CollData area &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float coll_point_x;&nbsp;
+/* X coordinate of Collision point &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float coll_point_y;&nbsp;
+/* Y coordinate of Collision point &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float coll_point_z;&nbsp;
+/* Z coordinate of Collision point &nbsp; */</font>
+<br><font face="MS Gothic">} NisCollPoint;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">typedef struct _NisCollCircle</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32&nbsp;&nbsp; coll_data_tag;
+/* CollData area tag &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32&nbsp;&nbsp; this_coll_data_index;
+/* Index number of this CollData area */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32&nbsp;&nbsp; coll_data_size;
+/* The number of bytes of this CollData area &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float center_x;&nbsp;
+/* X coordinate of center of circle &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float center_y;&nbsp;
+/* Y coordinate of center of circle &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float center_z;&nbsp;
+/* Z coordinate of center of circle &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float normal_x;&nbsp;
+/* X coordinate of normal vector of circle &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float normal_y;&nbsp;
+/* Y coordinate of normal vector of circle &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float normal_z;&nbsp;
+/* Z coordinate of normal vector of circle &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float radius;&nbsp; /* Radius of circle
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">} NisCollCircle;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">typedef struct _NisCollSphere</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32&nbsp;&nbsp; coll_data_tag;
+/* CollData area tag &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32&nbsp;&nbsp; this_coll_data_index;
+/* Index number of this CollData area */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32&nbsp;&nbsp; coll_data_size;
+/* The number of bytes of this CollData area &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float center_x;&nbsp;
+/* X coordinate of center of sphere &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float center_y;&nbsp;
+/* Y coordinate of center of sphere &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float center_z;&nbsp;
+/* Z coordinate of center of sphere &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float radius;&nbsp; /*
+Radius of sphere &nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">} NisCollSphere;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">typedef struct _NisCollCylinder</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32&nbsp;&nbsp; coll_data_tag;
+/* CollData area tag &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32&nbsp;&nbsp; this_coll_data_index;
+/* Index number of this CollData area  */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32&nbsp;&nbsp; coll_data_size;
+/* The number of bytes of this CollData area &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float center_x;&nbsp;
+/* X coordinate of center of base circle of cylinder &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float center_y;&nbsp;
+/* Y coordinate of center of base circle of cylinder &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float center_z;&nbsp;
+/* X coordinate of center of base circle of cylinder &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float radius;&nbsp; /*
+Radius of cylinder &nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float height;&nbsp; /*
+Height of cylinder &nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">} NisCollCylinder;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">typedef struct _NisCollBox</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32&nbsp;&nbsp; coll_data_tag;
+/* CollData area tag &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32&nbsp;&nbsp; this_coll_data_index;
+/* Index number of thi CollData area */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32&nbsp;&nbsp; coll_data_size;
+/* Index number of this CollData area &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float center_x;&nbsp;
+/* X coordinate of center of cube &nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float center_y;&nbsp;
+/* Y coordinate of center of cube &nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float center_z;&nbsp;
+/* Z coordinate of center of cube &nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float length_x;&nbsp;
+/* Length of X axis direction of cube */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float length_y;&nbsp;
+/* Length of Y axis direction of cube */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; float length_z;&nbsp;
+/* Length of Z axis direction of cube */</font>
+<br><font face="MS Gothic">} NisCollBox;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">typedef union _NisCollData</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisCollTerrain&nbsp;
+terrain;</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisCollPoint&nbsp;&nbsp;&nbsp;
+point;</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisCollCircle&nbsp;&nbsp;
+circle;</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisCollSphere&nbsp;&nbsp;
+sphere;</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisCollCylinder cylinder;</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisCollBox&nbsp;&nbsp;&nbsp;&nbsp;
+box;</font>
+<br><font face="MS Gothic">} NisCollData; /* Define structure that complies with coll_type
+*/</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">/*---- Coll area ----*/</font>
+<br><font face="MS Gothic">typedef struct _NisColl</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 coll_tag;&nbsp;&nbsp;
+/* Coll area tag &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 this_coll_index;&nbsp;
+/* Index number of this Coll area &nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 coll_header_size;
+/* The number of bytes of this CollHeader &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 coll_size;&nbsp;&nbsp;
+/* The number of bytes of this Coll area&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 coll_name_index;&nbsp;
+/* Index number in NameList that describes CollGroup name */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 coll_type;&nbsp;&nbsp;
+/* Collision type &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisCollData&nbsp;&nbsp;&nbsp;&nbsp;
+*colldata;</font>
+<br><font face="MS Gothic">} NisColl;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">/*---- CollGroup area ----*/</font>
+<br><font face="MS Gothic">typedef struct _NisCollGroup</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 coll_group_tag;&nbsp;
+/* CollGroup area tag &nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 this_coll_group_index;
+/* Index number of this CollGroup &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 coll_group_header_size;
+/* The number of bytes of this CollGroupHeader &nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 coll_group_size;
+/* The number of bytes of this CollGroup area &nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 coll_group_name_index;
+/* Index number of CollGroup name &nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 coll_num;&nbsp; /* 
+Coll area number&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 nin_ext_blk_size;
+/* Nintendo Expansiondata block&nbsp;&nbsp; (bytes) */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 usr_ext_blk_size;
+/* User Expansion data block (bytes) */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+*coll_num_byte;</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisColl&nbsp;&nbsp;&nbsp;&nbsp;
+*coll;</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *n_ext;&nbsp;&nbsp;
+/* Nintendo Expansiondata block&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *u_ext;&nbsp;&nbsp;
+/* User Expansion data block&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">} NisCollGroup;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">typedef struct _NisCollList</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisCollListHeader&nbsp;
+*h;&nbsp; /* List header */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisCollGroup&nbsp;&nbsp;
+*collg;&nbsp; /* Array of CollGroup area */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *n_ext;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+/* Nintendo Expansiondata block&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *u_ext;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+/* User Expansion data block&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">} NisCollList;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">/*-------------------- SwitchList ------------------------*/</font>
+<br><font face="MS Gothic">typedef struct _NisSwitchListHeader</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 switch_list_tag;&nbsp;&nbsp;&nbsp;&nbsp;
+/*  SwitchList tag */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 switch_list_header_size;&nbsp;&nbsp;&nbsp;
+/*  The number of bytes of SwitchListHeader area &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 switch_list_size;&nbsp;&nbsp;&nbsp;&nbsp;
+/*  The number of bytes of SwitchList area &nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 switch_num;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+/*  Switch area number &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 nin_ext_blk_size;&nbsp;&nbsp;&nbsp;&nbsp;
+/* Nintendo Expansiondata block&nbsp;&nbsp; (bytes) */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 usr_ext_blk_size;&nbsp;&nbsp;&nbsp;&nbsp;
+/* User Expansion data block (bytes) */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *switch_num_byte;
+/*  The number of bytes of corresponding Switch area &nbsp; */</font>
+<br><font face="MS Gothic">} NisSwitchListHeader;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">/*---- Switch area ----*/</font>
+<br><font face="MS Gothic">typedef struct _NisSwitch</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 switch_tag;&nbsp;&nbsp;&nbsp;&nbsp;
+/* Switch area tag */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 this_switch_index;&nbsp;
+/* Index number of this Switch area &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 switch_size;&nbsp;&nbsp;&nbsp;&nbsp;
+/* The number of bytes of this Switch area &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 link_list_type;&nbsp;&nbsp;&nbsp;&nbsp;
+/* Tag that shows a list to which Switch node links &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 default_link_index;
+/* Index of node that links by default &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 case_node_num;&nbsp;&nbsp;&nbsp;&nbsp;
+/* The number of nodes that branch conditions &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 switch_condition;&nbsp;&nbsp;
+/* Conditions when branching */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 nin_ext_blk_size;&nbsp;&nbsp;
+/* Nintendo Expansiondata block&nbsp;&nbsp; (bytes) */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 usr_ext_blk_size;&nbsp;&nbsp;
+/* User Expansion data block (bytes) */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *case_val;&nbsp;&nbsp;&nbsp;&nbsp;
+/* Constant formula for branch condition &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *case_dest_index;&nbsp;&nbsp;
+/* Destination of branch when corresponding conditions are met */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *n_ext;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+/* Nintendo Expansiondata block&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *u_ext;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+/* User Expansion data block&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">} NisSwitch;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">/*---- SwitchList ----*/</font>
+<br><font face="MS Gothic">typedef struct _NisSwitchList</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisSwitchListHeader *h;</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisSwitch&nbsp; *nisswitch;</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *n_ext;&nbsp; /*
+Nintendo Expansiondata block&nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *u_ext;&nbsp; /*
+User Expansion data block&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">} NisSwitchList;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">/*---- NameList ----*/</font>
+<br><font face="MS Gothic">typedef struct _NisNameListHeader</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 name_list_tag;&nbsp;
+/* NameList area tag &nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 name_list_header_size;
+/* The number of bytes of NameListHeader area */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 name_list_size;&nbsp;
+/* The number of bytes NameList &nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 name_num;&nbsp; /*
+Name area number &nbsp;&nbsp;&nbsp;&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 nin_ext_blk_size;
+/* Nintendo Expansiondata block&nbsp;&nbsp; (bytes) */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 usr_ext_blk_size;
+/* User Expansion data block (bytes) */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *name_num_byte ;
+/* The number of bytes of each Name area */</font>
+<br><font face="MS Gothic">} NisNameListHeader;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">/*---- Name area ----*/</font>
+<br><font face="MS Gothic">typedef struct _NisName</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 name_tag;&nbsp;&nbsp;&nbsp;&nbsp;
+/* Name area tag &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 this_name_index;&nbsp;&nbsp;&nbsp;
+/* Index number of this Name area */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 name_header_size;&nbsp;&nbsp;
+/* The number of bytes of this NameHeader &nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 name_size;&nbsp;&nbsp;&nbsp;&nbsp;
+/* The number of bytes of this Name area&nbsp; */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *node_name; /* Describe node name with ASCII characters */</font>
+<br><font face="MS Gothic">} NisName;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">typedef struct _NisNameList</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisNameListHeader&nbsp;
+*h; /* List header */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisName&nbsp; *nisname;
+/* Array of Name area */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *n_ext;&nbsp;&nbsp;
+/* Nintendo Expansiondata block */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; u32 *u_ext;&nbsp;&nbsp;
+/* User Expansion data block&nbsp; */</font>
+<br><font face="MS Gothic">} NisNameList;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">typedef char NisFilename;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">/*-------------------- NIS1.whole ------------------------*/</font>
+<br><font face="MS Gothic">typedef struct _Nis</font>
+<br><font face="MS Gothic">{</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisFilename&nbsp;&nbsp;&nbsp;&nbsp;
+*filename; /* Set to keep an open file name</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; though it is not mentioned in the NIFF specification. Using for 
+niWriteNb() */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisFileHeader&nbsp;&nbsp;
+*fh;</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisSceneList&nbsp;&nbsp;&nbsp;
+*scenel;</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisEnvList&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+*envl;</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisCamList&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+*caml;</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisLightList&nbsp;&nbsp;&nbsp;
+*lightl;</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisObjList&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+*objl;</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisShapeList&nbsp;&nbsp;&nbsp;
+*shapel;</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisVtxList&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+*vtxl;</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisTriList&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+*tril;</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisColorList&nbsp;&nbsp;&nbsp;
+*colorl;</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisVectorList&nbsp;&nbsp;
+*vectorl;</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisStList&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+*stl;</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisPartList&nbsp;&nbsp;&nbsp;&nbsp;
+*partl;</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisMatList&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+*matl;</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisTexList&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+*texl;</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisTeximgList&nbsp;&nbsp;
+*teximgl;</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisAnimList&nbsp;&nbsp;&nbsp;&nbsp;
+*animl;</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisCollList&nbsp;&nbsp;&nbsp;&nbsp;
+*colll;</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisSwitchList&nbsp;&nbsp;
+*switchl;</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; NisNameList&nbsp;&nbsp;&nbsp;&nbsp;
+*namel;</font>
+<br><font face="MS Gothic">/* extending in NIFF2.0 */</font>
+<br><font face="MS Gothic">&nbsp;&nbsp;&nbsp; Nis2Lists&nbsp;&nbsp;&nbsp;
+*n2;</font>
+<br><font face="MS Gothic">} Nis;</font><font face="MS Gothic"></font>
+<p><font face="MS Gothic">#endif /* ! _NIS_H_ */</font>
+<br><font face="MS Gothic"></font>&nbsp;
+</body>
+</html>

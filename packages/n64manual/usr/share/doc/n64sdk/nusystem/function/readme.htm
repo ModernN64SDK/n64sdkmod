@@ -1,0 +1,165 @@
+<HTML>
+<HEAD>
+<TITLE>Function Library</TITLE>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<!-- Editor's Notes: 9/14/1999 Ron Daring -->
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H2>The Standard Function Library V1.2 (<TT>libnustd.a</TT>)</H2>
+<P>
+The standard function library, <TT>libnustd.a</TT>, is an ANSI-compliant function
+library.</P>
+<P>
+The library was created as a supplement to the N64 OS/Library, 
+which contains only a portion of the functions of the ANSI library.
+
+</P>
+<P>
+With the exception of console input/output, most of the functions 
+conform to the ANSI standard and are included with the source code so 
+they can be customized by the user.
+</P>
+<P>
+The numerical computation functions come in double and float versions. 
+The memory allocation routine incorporates an alignment adjustment 
+function, but there is also a routine to check the consistency of 
+memory allocations.
+</P>
+<P>
+For details about each of the functions, see the standard function 
+reference in the NuSYSTEM manual or the comments in the source code 
+for each function.
+</P>
+<P>
+* Procedure For Using the SGI Compiler
+</P>
+<P>
+In order to use the standard function library, you must specify the 
+following include and library paths in the <TT>Makefile</TT>.
+</P>
+<P>
+<TT>N64KITDIR = /usr/local/n64kit</TT><BR>
+<TT>NUSTDINCDIR = $(N64KITDIR)/nustd/include</TT><BR>
+<TT>NUSTDLIBDIR = $(N64KITDIR)/nustd/lib</TT>
+</P>
+<P>
+<TT>.
+.
+.</TT>
+</P>
+<P>
+<TT>LCINCS = -I$(NUSTDINCDIR)</TT><BR>
+<TT>LDFLAGS = $(MKDEPOPT) -nostdlib -L$(ROOT)/usr/lib -L$(NUSTDLIBDIR) \</TT><BR>
+<TT>-u sprintf -lultra_d -lnustd_d</TT>
+</P>
+<P>
+When making a ROM version, define <TT>LDFLAGS</TT> as follows:
+</P>
+<P>
+<TT>LDFLAGS = $(MKDEPOPT) -nostdlib -L$(ROOT)/usr/lib L$(NUSTDLIBDIR) \</TT><BR>
+<TT>-lultra_rom -lnustd</TT>
+</P>
+<P>
+Because <TT>sprintf</TT> is internally called by some functions including 
+<TT>malloc_memcheck()</TT>, <TT>mt_malloc_memcheck()</TT>, <TT>malloc_memdsp()</TT>, and 
+<TT>mt_malloc_memdsp()</TT>, it is necessary to indicate <TT>-u sprintf</TT> when these 
+functions are used.
+</P>
+<P>
+* Procedure For Using exeGCC (N64)
+</P>
+<P>
+exeGCC comes with an ANSI standard library, so there will probably be 
+little need for <TT>libnustd.a</TT>.  However, because the function names and 
+include names are the same as those used by exeGCC, the following 
+options must be attached if the library is going to be used.
+</P>
+<P>
+<TT>N64KITDIR = c:\nintendo\n64kit</TT><BR>
+<TT>NUSTDINCDIR = $(N64KITDIR)/nustd/include</TT><BR>
+<TT>NUSTDLIBDIR = $(N64KITDIR)/nustd/lib</TT>
+</P>
+<P>
+<TT>.c.o:</TT><BR>
+<TT>$(CC) -g -G 0 -c -nostdinc -I- -I$(NUSTDINCDIR) -I$(INC)/PR \</TT><BR>
+<TT>-I$(INC) -D_MIPS_SZLONG=32 -D_MIPS_SZINT=32 $&lt;</TT>
+</P>
+<P>
+<TT>.
+.
+.</TT>
+</P>
+<P>
+<TT>LDFLAGS = $(MKDEPOPT) -L$(LIB) -L$(NUSTDLIBDIR) -L$(GCCDIR)/mipse/lib \</TT><BR>
+<TT>-lgultra_d -lnustd_d -lkmc</TT>
+</P>
+<P>
+The "-<TT>nostdinc -I</TT>-"  option is added to <TT>.c.o:</TT> so the routine will not 
+look in the exeGCC ANSI standard library include file.
+</P>
+<P>
+When making a ROM version, define <TT>LDFLAGS</TT> as follows:
+</P>
+<P>
+<TT>LDFLAGS = $(MKDEPOPT) -L$(LIB) -L$(NUSTDLIBDIR) -L$(GCCDIR)/mipse/lib \</TT><BR>
+<TT>-lgultra_rom -lnustd -lkmc</TT>
+</P>
+<P>
+* Rebuilding the Standard Function Library
+</P>
+<P>
+You can rebuild the standard library by running <TT>make</TT> in the <TT>nustd/src</TT>
+directory. Running <TT>make</TT> builds the ROM version library (<TT>libnustd.a</TT>).
+Running <TT>make deb</TT> builds the debug version library (<TT>libnustd_d.a</TT>).
+(It is safer to delete all of <TT>*.o</TT> and <TT>*.a</TT> files before using <TT>make</TT>)
+</P>
+<P>
+The difference between the ROM version and Debug version in Ver1.2 
+includes the optimization levels that each has and whether debug 
+information is contained.
+</P>
+<P>
+* Library Search Order
+</P>
+<P>
+The linker will search for functions in the order declared with the <TT>-l</TT> 
+option. Note that if the same function is contained in different 
+libraries, the linked object will differ depending on the order in 
+which the libraries were searched.
+</P>
+<P>
+Some functions were provided in both this library, Ver1.1 or previous 
+versions and the N64OS library. However, in Ver1.2 these functions are 
+renamed to avoid confusion. These functions and their corresponding new 
+function names are shown below.
+</P>
+<P>
+<TT>sqrtf()</TT> --&gt; <TT>_nsqrtf()</TT><BR>
+<TT>strchr()</TT> --&gt; <TT>_nstrchr()</TT><BR>
+<TT>strlen()</TT> --&gt; <TT>_nstrlen()</TT><BR>
+<TT>memcpy()</TT> --&gt; <TT>_nmemcpy()</TT><BR>
+<TT>ldiv()</TT> --&gt; <TT>_nldiv()</TT><BR>
+<TT>sinf()</TT> --&gt; <TT>_nsinf()</TT><BR>
+<TT>cosf()</TT> --&gt; <TT>_ncosf()</TT>
+</P>
+<P>
+* Notes Regarding the Standard Function Library
+</P>
+<P>
+ - <TT>errno</TT> is not available.<BR>
+ - It is not guaranteed how the functions <TT>sin()</TT> and <TT>cos()</TT> behave when 
+  values close to the maximum value for each argument are specified. 
+  Because there is also a problem regarding floating point precision, 
+  please design your program so as not to make the resulting angles 
+  significantly large.<BR>
+ - <TT>malloc()</TT> does not support simultaneous access from multiple threads. 
+  <TT>mt-malloc()</TT> supporting multiple threads is provided for <TT>malloc()</TT>.<BR>
+ - <TT>malloc()</TT> uses 16-byte alignment.<BR>
+ - Alignment is not guaranteed if <TT>realloc</TT> is performed to the area 
+  reserved using <TT>memalign()</TT>.<BR>
+ - <TT>setjmp()</TT> does not support saving the FPU register.<BR>
+</P>
+</BODY>
+</HTML>

@@ -1,0 +1,69 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<!--
+Editors Notes:
+  JLR made reformating and copy edits.
+  PWC- updated formatting
+-->
+
+<TITLE>gDPSetColorDither</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>gDPSetColorDither [Macro]</H1>
+
+<h3>Function</h3>
+
+<p>gDPSetColorDither<br><br><i>
+Sets RGB color dither</i>
+
+<p><b>Syntax</b></p>
+<p>
+<PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gbi.htm">gbi.h</A> */
+gDPSetColorDither(Gfx *gdl, u32 type)
+gsDPSetColorDither(         u32 type)</CODE></PRE></p>
+
+<p><b>Arguments</b></p>
+<p><DL>
+  <DT><B>gdl</B>
+  <DD>Display list pointer
+  <DT><B>type</B>
+  <DD>The color dithering type:
+  <DD><B>G_CD_MAGICSQ</B> (Magic square ordered dither method)
+  <DD><B>G_CD_BAYER</B> ("Standard" Bayer matrix ordered dither method)
+  <DD><B>G_CD_NOISE</B> (Random noise dither)
+  <DD><B>G_CD_DISABLE</B> (No dithering)
+</DL></p>
+<p><b>Description</b></p>
+<P>
+Sets the type of color dithering. 
+</P>
+<P>
+The RDP maintains each color component (RGB) value with 8-bit precision until processing in the memory interface (MI).  With a 16-bit RGB frame buffer, the precision of each color is reduced to 5-bit precision, so dithering can also reduce Mach bands.
+</P>
+<P>
+Ordered dithering has a "scattering" effect on the pixel neighborhood of the original image.
+</P>
+<P>
+For details, see Section 15.5.1 "Color Blend Hardware" in the N64 Programming Manual.
+</P>
+<p><b>Comment</b></p>
+<P>
+The video interface (VI) has logic to gather or playback the original information of neighboring pixels while video is being displayed.  This feature can be enabled/disabled by setting either OS_VI_DITHER_FILTER_ON or OS_VI_DITHER_FILTER_OFF in <A HREF="../os/osViSetSpecialFeatures.htm">osViSetSpecialFeatures</A>.
+</P>
+<P>
+We recommend using G_CD_MAGICSQ as the color dithering type with OS_VI_DITHER_FILTER_ON, and G_CD_BAYER with OS_VI_DITHER_FILTER_OFF.  However, you need to make adjustments for every application, scene and object.
+</P>
+<p><b>See Also</b></p>
+<P>
+<A HREF="gDPSetAlphaDither.htm">gDPSetAlphaDither</A>, <A HREF="../os/osViSetSpecialFeatures.htm">osViSetSpecialFeatures</A>
+</P>
+
+<p><b>Revision History</p></b>
+<p>02/01/99&nbsp;&nbsp;&nbsp;Completely rewritten</p>
+
+</BODY>
+</HTML>

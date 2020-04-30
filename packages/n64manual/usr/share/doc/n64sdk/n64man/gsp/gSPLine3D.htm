@@ -1,0 +1,57 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.>
+<TITLE>gSPLine3D</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>gSPLine3D [Macro]</H1>
+
+<p><b>Function</b></font></p>
+
+<p>gSPLine3D</p>
+<P>
+<i>Generates one line</i>
+</P>
+<p><b>Syntax</b></font></p>
+<p>
+<PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gbi.htm">gbi.h</A> */
+gSPLine3D(Gfx *gdl, s32 v0, s32 v1, s32 flag)
+gsSPLine3D(         s32 v0, s32 v1, s32 flag)</CODE></PRE></p>
+
+<p><b>Arguments</b></font></p>
+<p>
+<DL>
+  <DT><B>gdl</B>
+  <DD>the display list pointer. 
+  <DT><B>v0</B>, <B>v1</B>
+  <DD>the vertex buffer indices (0~31). 
+  <DT><B>flag</B>
+  <DD> the line flat-shading index (0~1):
+  <DD>0 (Draws line using the <B>v0</B> color.)
+  <DD>1 (Draws line using the <B>v1</B> color.)
+</DL></p>
+<p><b>Description</b></font></p>
+<P>
+This macro generates one line with a width of 1.5 pixels using the vertices v0, v1 loaded in the vertex buffer by the <A HREF="gSPVertex.htm">gSPVertex</A> macro. To specify the line width, use <A HREF="gSPLineW3D.htm">gSPLineW3D</A>. For details, please see Section 11.9.2, "Lines" in the N64 Programming Manual. This macro works only when line microcode (L3DEX, L3DEX2) is loaded. 
+</P>
+<p><b>Note</b></font></p>
+<P>
+When line microcode is loaded, the <A HREF="gSP1Triangle.htm">gSP1Triangle</A> macro is interpreted as NOOP and not processed. Also, some geometry states cannot be used (i.e., the geometry pipeline modes G_CULL_FRONT, G_CULL_BACK and G_CULL_BOTH in <A HREF="gSPSetGeometryMode.htm">gSPSetGeometryMode</A>). (F3DLX2.Rej, however, does support G_CULL_FRONT and G_CULL_BOTH). Only a few of the RDP's render modes are valid for drawing lines. The most typical modes used are RM_AA_XLU_LINE and RM_AA_ZB_XLU_LINE (see g*DPSetRenderMode). When you use RM_AA_ZB_XLU_LINE, the Z-Buffer can be read but it cannot be written to. For this reason, lines must be drawn after Z-buffered polygons. For details, please see Section 15.7.3, "Transparent Lines, XLU_LINE" in the N64 Programming Manual. To learn more about the rendering modes, see g*DPSetRenderMode and &lt;<A HREF="../../header/gbi.htm">gbi.h</A>&gt;. 
+</P>
+<P>
+Since the line microcode changes the RDP scissoring coordinates (see g*DPSetScissor), the drawing area (the scissoring box) must be reset for the next display list. The exception is with the F3DEX2 microcode, where drawing can be performed without resetting the scissoring box. 
+</P>
+<p><b>See Also</b></font></p>
+<P>
+<A HREF="gSPLineW3D.htm">gSPLineW3D</A>, <A HREF="gSPVertex.htm">gSPVertex</A>
+</P>
+<p><b>Revision History</b></font></p>
+<P>
+02/01/99  Entirely revised.
+</P>
+</BODY>
+</HTML>

@@ -1,0 +1,330 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN"
+MAP- edited content 10/19/99
+PWC 2/23/00-->
+<HEAD><link rel=stylesheet type="text/css" href="../style.css">
+<HEAD>
+<TITLE>Other Graphics Questions</TITLE>
+</HEAD>
+
+<BODY>
+<A name="index"></a>
+<IMG src="../../gif/n64_logo2.gif" height="21" width="136">
+
+<h3><FONT color="#FF8000">Q&A</FONT>- Other Graphics Questions</h3>
+
+
+<P>
+<TABLE>
+  <TR>
+    <TD><B><A href="graphics.htm#qa1">QA1</a></b></td>
+    <TD>Can operations be done directly from the CPU to the frame buffer?</TD></TR>
+  <TR>
+    <TD><B><A href="graphics.htm#qa2">QA2</a></b></td>
+    <TD>Can I use gsSPCullDisplayList() at the top-most level?</TD></TR>
+  <TR>
+    <TD valign="top"><B><A href="graphics.htm#qa3">QA3</a></b></td>
+    <TD>Can I apply translucent processing to a character on which gDPSetFillColor was used?</TD></TR>
+  <TR>
+    <TD valign="top"><B><A href="graphics.htm#qa4">QA4</a></b></td>
+    <TD>Can I correct the fact that screen display positions have shifted from where they were until now? </TD></TR>
+  <TR>
+    <TD><B><A href="graphics.htm#qa5">QA5</a></b></td>
+    <TD>How do I go about creating a polygon in the Copy Mode?</TD></TR>
+  <TR>
+    <TD><B><A href="graphics.htm#qa6">QA6</a></b></td>
+    <TD>Do data have to be in the ~.PPM file format in order to do morphing?</TD></TR>
+  <TR>
+    <TD valign="top"><B><A href="graphics.htm#qa7">QA7</a></b></td>
+    <TD>The screen coordinate settings don't seem to have any effect on a vertex buffer which is the subject of clipping... </TD></TR>
+  <TR>
+    <TD valign="top"><B><A href="graphics.htm#qa8">QA8</a></b></td>
+    <TD>How can I use the CPU to directly transfer data in RAM to the frame buffer without using texture RAM?</TD></TR>
+  <TR>
+    <TD valign="top"><B><A href="graphics.htm#qa9">QA9</a></b></td>
+    <TD>I'd like to store Z-axis data in its own buffer and perform quasi-Z-axis movement criteria...</TD></TR>
+  <TR>
+    <TD valign="top"><B><A href="graphics.htm#qa10">QA10</a></b></td>
+    <TD>What is the exact relationship between the screen effects of osViSetSpecialFeatures(OS_VI_DITHER_FILTER_ON) and gsDPSetColorDither()?</TD></TR>
+  <TR>
+    <TD><A href="graphics.htm#qa11"><B>QA11</font></B></A></TD>
+    <TD>How is the FZERO-X setup screen rendered?</TD></TR>
+  <TR>
+    <TD><B><A href="graphics.htm#qa12">QA12</a></b></td>
+    <TD>How do I use the macro key function?</TD></TR>
+  <TR>
+    <TD><B><A href="graphics.htm#qa13">QA13</a></b></td>
+    <TD>Can I read the 9th bit of the RDRAM?</TD></TR>
+  <TR>
+    <TD><B><A href="graphics.htm#qa14">QA14</a></b></td>
+    <TD>The triple frame buffer...</TD></TR>
+  <TR>
+    <TD><B><A href="graphics.htm#qa15">QA15</a></b></td>
+    <TD>How do I convert RGBA:5551 data to RGBA:8888?</TD></TR>
+</TABLE>
+
+<HR>
+<P>
+<B><A name="qa1"><FONT color="#ff0000">Q1</FONT></A> Can operations be done directly from the CPU to the frame buffer?</B>
+
+<P>
+<B><FONT color="#008000">A1</FONT></B> It is possible, but it is not possible (by normal methods) to manipulate bits which are hidden with respect to anti-aliasing. 
+
+<P align="right">
+<A href="graphics.htm#index">top</A>
+
+<HR>
+<P>
+<B><A name="qa2"><FONT color="#ff0000">Q2</FONT></A> Can I use <a href="../../n64man/gsp/gSPCullDisplayList.htm">gsSPCullDisplayList()</a> at the top-most level?</B>
+
+<P>
+<B><FONT color="#008000">A2</FONT></B> <a href="../../n64man/gsp/gSPCullDisplayList.htm">gsSPCullDisplayList()</a> is a macro for skipping the display list within the bounding box.  The entire display list from <a
+href="../../n64man/gsp/gSPCullDisplayList.htm">gsSPCullDisplayList()</a> until <a
+href="../../n64man/gsp/gSPEndDisplayList.htm">gsSPEndDisplayList()</a> is skipped.  Accordingly, if this macro is used at the highest level, everything including the <a
+href="../../n64man/gdp/gDPFullSync.htm">gsDPFullSync()</a> command will be skipped, so you need to be careful. (This might be useful at times, like when multiple tasks are used and gsSPFullSync() is not included.)
+
+<P align="right">
+<A href="graphics.htm#index">top</A>
+
+<HR>
+<P>
+<B><A name="qa3"><FONT color="#ff0000">Q3</FONT></A> Can I apply translucent processing to a character on which <A href="../../n64man/gdp/gDPSetFillColor.htm">gDPSetFillColor()</a> was used?</B>
+
+<P>
+<FONT color="#008000"><B>A3</FONT></B> Translucent processing cannot be performed when the Fill mode is being used. 
+
+<P align="right">
+<A href="graphics.htm#index">top</A>
+
+<HR>
+<P>
+<B><A name="qa4"><FONT color="#ff0000">Q4</FONT></A> Can I correct the fact that screen display positions have shifted from where they were until now? </B>
+
+<P>
+<B><FONT color="#008000">A4</FONT></B> With the N64 Emulation Software Ver2.0c1, the display positions of graphics are shifted about 4 dots "up" and 4 dots to the "left" from where they were in previous versions.  The coordinates that were supposed to be in the center of the screen in previous versions were shifted about 4 dots in each of the "down" and "right" directions from center, therefore this was done to correct this problem.  Unfortunately, there is no plan to return this to the previous state.  See the following technique if you are interested in modifying the program that you are currently working on (excerpted from the "Blockmonkey" sample program). 
+
+<BLOCKQUOTE>
+
+
+<PRE>
+int ModifyHStart(void)
+{
+    int RegisterValue;
+    RegisterValue = OriginalVideoMode.comRegs.hStart;
+    (*CurrentVideoModePtr).comRegs.hStart=
+        (((((RegisterValue &gt;&gt;16) &amp; 0xffff) + HorizontalOffset) % 0xffff) &lt;&lt;16)|
+        (((((RegisterValue &gt;&gt;0) &amp; 0xffff) + HorizontalOffset) % 0xffff) &lt;&lt;0);
+}
+
+int ModifyVStart(void)
+{       
+    int RegisterValue
+
+    /* Do Field 0 change */
+    RegisterValue = OriginalVideoMode.fldRegs[0].vStart;
+    (*CurrentVideoModePtr).fldRegs[0].vStart=   
+        (((((RegisterValue &gt;&gt;16) &amp; 0xffff) + HorizontalOffset) % 0xffff) &lt;&lt;16)|
+        (((((RegisterValue &gt;&gt;0) &amp; 0xffff) + HorizontalOffset) % 0xffff) &lt;&lt;0);
+
+    /* Do Field 1 change */
+    RegisterValue = OriginalVideoMode.fldRegs[1].vStart;
+        (((((RegisterValue &gt;&gt;16) &amp; 0xffff) + HorizontalOffset) % 0xffff) &lt;&lt;16)|
+        (((((RegisterValue &gt;&gt;0) &amp; 0xffff) + HorizontalOffset) % 0xffff) &lt;&lt;0);
+}
+
+static void ModifyScreenPosition(void)
+{
+    if(HorizontalOffest)        ModifyHStart();
+    if(VerticalOffest)  ModifyVStart();
+}
+</PRE>
+
+</BLOCKQUOTE>
+<P>
+
+
+<P align="right">
+<A href="graphics.htm#index">top</A>
+
+<HR>
+<P>
+<B><A name="qa5"><FONT color="#ff0000">Q5</FONT></A> How do I go about creating a polygon in the Copy Mode?</B>
+
+<P>
+<B><FONT color="#008000">A5</FONT></B> Polygons cannot be created in Copy Mode.  Use 1Cycle Mode or 2Cycle Mode when creating polygons. 
+
+<P align="right">
+<A href="graphics.htm#index">top</A>
+
+<HR>
+<P>
+<B><A name="qa6"><FONT color="#ff0000">Q6</FONT></A> Do data have to be in the ~.PPM file format in order to do morphing?</B>
+
+<P>
+<B><FONT color="#008000">A6</FONT></B> The morphdemo program is set up so as to read ~.ppm files, but ~.rgb files can be used in morphing without any problems if the segment(s) in which screen data are read is changed so that an ~.rgb file is read. 
+
+<P align="right">
+<A href="graphics.htm#index">top</A>
+
+<HR>
+<P>
+<B><A name="qa7"><FONT color="#ff0000">Q7</FONT></A> This question concerns <A href="../../n64man/gsp/gSPModifyVertex.htm">gSPModifyVertex()</A>.</B>
+
+<P>
+<B>When I substitute the screen coordinate values x=100,y=100 into the 0th SP vertex buffer, I use</B>
+
+<BLOCKQUOTE>
+
+
+<PRE>
+<A href="../../n64man/gsp/gSPModifyVertex.htm">gSPModifyVertex</A>( glp++, 0, G_MWO_POINT_XYSCREEN, ((100 &lt;&lt; 2) &lt;&lt; 16 )|((100 &lt;&lt; 2) &amp; 65535) );
+</PRE>
+</BLOCKQUOTE>
+<P>
+<B>or the like, but there are times, depending on the immediately previous polygon rendering mode, when the screen coordinates which were set by the preceding gSPModifyVertex have no effect.  I tried this using a variety of modes, but it seems that the screen coordinate settings are disabled for the vertex buffer that was the subject of clipping during rendering of the immediately previous polygon.</B>
+
+<BLOCKQUOTE>
+
+<P>
+<B>Environment<BR>
+u-code: F3DEX.NoN.fifo<BR>
+OSver.: 2.0g<BR>
+</B>
+
+</BLOCKQUOTE>
+<P>
+<B><FONT color="#008000">A7</FONT></B> I was able to confirm this symptom.  Likewise, it seems that the vertices that were subject to clipping are not being rendered.  (The symptoms should change with <A href="../../n64man/gsp/gSPClipRatio.htm">gSPClipRatio</A>).  I think that the only thing you can do is to perform rendering without clipping (because the vertices that were clipped were not rendered), but I'll let you know if a better way of preventing this is found. 
+
+<P align="right">
+<A href="graphics.htm#index">top</A>
+
+<HR>
+<P>
+<B><A name="qa8"><FONT color="#ff0000">Q8</FONT></A> I want to use the CPU to directly transfer data in RAM to the frame buffer without using texture RAM.  How should I go about accessing?</B>
+
+<P>
+<B><FONT color="#008000">A8</FONT></B> The NINTENDO64 frame buffer utilizes a part of RDRAM.  Thus, you can directly read and write from the CPU.  (Of course, this assumes no read/writes from the RDP and no VI readouts.)  In the case of a 16bit frame buffer, use the RGBA5551 format to directly access the address you want to write (at this time, if the low-order bit is not set to "1" the data may not be displayed very well).
+
+<P align="right">
+<A href="graphics.htm#index">top</A>
+
+<HR>
+<P>
+<B><A name="qa9"><FONT color="#ff0000">Q9</FONT></A> I'd like to store Z-axis data in its own buffer, transfer those data to the Z buffer before rendering the main model, etc., and perform quasi-Z-axis movement criteria, but since the data in RAM are directly transferred by the CPU to the Z buffer, how should I access them?</B>
+
+<P>
+<B><FONT color="#008000">A9</FONT></B> I'll address this as a 2D question.  (An incredible amount of calculation would be necessary if this were used in 3D.)  I think this can be done by directly reading/writing the Z-buffer in DRAM in the same way as with the frame buffer.  However, determination of the Z value might be something of a problem in this case. 
+
+<P align="right">
+<A href="graphics.htm#index">top</A>
+
+<HR>
+<P>
+<B><A name="qa10"><FONT color="#ff0000">Q10</FONT></A> What is the exact relationship between the screen effects of <A href="../../n64man/os/osViSetSpecialFeatures.htm">osViSetSpecialFeatures</A>(OS_VI_DITHER_FILTER_ON) and <A href="../../n64man/gdp/gDPSetColorDither.htm">gsDPSetColorDither()</A>?</B>
+
+<P>
+<B><FONT color="#008000">A10</FONT></B> As the result of testing, the best method in which noise and the Mach band were not apparent is as follows.  Otherwise, we were able to reproduce results in which the symptoms were not really improved. 
+
+<BLOCKQUOTE>
+
+<P>
+<A href="../../n64man/gdp/gDPSetColorDither.htm">gsDPSetColorDither</A>(G_CD_DISABLE);
+
+<P>
+<A href="../../n64man/os/osViSetSpecialFeatures.htm">osViSetSpecialFeatures</A>(OS_VI_DITHER_FILTER_ON);
+
+</BLOCKQUOTE>
+<P>
+We were able only to confirm the symptoms, but it seems that there was no improvement with the combination of these two.
+
+<P>
+Furthermore, addressing only the relationship between these two, we were unable to improve the symptoms even with the following settings. 
+
+<BLOCKQUOTE>
+
+<P>
+<A href="../../n64man/gdp/gDPSetColorDither.htm">gsDPSetColorDither</A>(G_CD_BAYER);
+
+<P>
+<A href="../../n64man/os/osViSetSpecialFeatures.htm">osViSetSpecialFeatures</A>(OS_VI_DITHER_FILTER_OFF);
+
+</BLOCKQUOTE>
+<P>
+The manual says that these settings are possible, but they appeared only slightly to improve the symptoms. 
+
+<P>
+The conclusion derived from the above is that 
+
+<Intensity of Effect>
+
+<BLOCKQUOTE>
+<A href="../../n64man/os/osViSetSpecialFeatures.htm">osViSetSpecialFeatures()</A> > <A href="../../n64man/gdp/gDPSetColorDither.htm">gsDPSetColorDither()</A>
+
+</BLOCKQUOTE>
+<P>
+and it is probably not desirable to use these two functions together. 
+
+<P align="right">
+<A href="graphics.htm#index">top</A>
+
+<HR>
+<P>
+<B><A name="qa11"><FONT color="#ff0000">Q11</FONT></A> For the quality in the FZEROX setting screen, other than the environment map, are you also moving the light? </B>
+
+<P>
+<B><FONT color="#008000">A11</FONT></B> The light is stationary and reflected.  The method of having both the texture of the machine and the texture of the reflection coexist in the setting screen is, first to draw the machine, and then overwrite a translucent version of the same model with the reflection added as a decal.  Incidentally, there is a black edge around the machine in the setting screen, but this serves to make the scale of the model slightly larger, and the black was rendered with the Z OFF.  In other words, 3 overlaid models are rendered. 
+
+<P>
+The model data are all identical with those in the game menu winning run.  (Since LOD is not used in the game screen, a simplified version of the model at a distance is used...)
+
+<P align="right">
+<A href="graphics.htm#index">top</A>
+
+<HR>
+<P>
+<B><A name="qa12"><FONT color="#ff0000">Q12</FONT></A> I've been trying to use a macro key to create transparent objects, but how do I set one up?</B>
+
+<P>
+<B><FONT color="#008000">A12</FONT></B> We are not able to check macro keys.  It is unclear whether or not a macro key function really exists.  Please consider that macro keys cannot be used. 
+
+<P align="right">
+<A href="graphics.htm#index">top</A>
+
+<HR>
+<P>
+<B><FONT color="#ff0000"><A name="qa13">Q13</A></FONT> I am testing methods for moving images which have been rendered in the frame buffer to the work memory and then reusing the images.  This seems to work pretty well for me, but there clearly appear to be more jagged edges [in the graphic] than when it was initially loaded.  It seems to be because the 9th bit of memory can't be read using anti-aliasing, but is there a way to read the 9th bit?</B>
+
+<P>
+<B><FONT color="#008000">A13</FONT></B> The 9th bit of RDRAM cannot be accessed from the CPU.  If the jagged edges are noticeable, fix the edge with bilinear compensation, or something similar. 
+
+<P align="right">
+<A href="graphics.htm#index">top</A>
+
+<HR>
+<P>
+<B><FONT color="#ff0000"><A name="qa14">Q14</A></FONT> I want to use the triple-frame buffer in hi-res mode, but is there an effective way to use memory?  How much of a FIFO buffer will I need?</B>
+
+<P>
+<B><FONT color="#008000">A14</FONT></B> If by "effective" you mean you want it to be fast, dividing the frame buffer and assigning one for each RDRAM bank will slightly increase rendering speed (it depends on the conditions, but there should be an increase of several percent.  In a simple trial, we saw an increase in speed of approximately 3%).  The RDRAM is constructed of four (4) 1MB banks, with an active page register for each bank.  Consequently, if the VI puts the frame buffer during display and the frame buffer which accesses the RCP in different banks, RDRAM access becomes somewhat faster.  For the same reason, it is faster to put the Z buffers in different banks.  (Since there is a line buffer in the RDP, the various rendering methods have little influence on RDRAM access speed.)
+
+<P>
+However, 2.5MB are required for a hi-res triple-frame buffer. This divides up the memory as it is allotted to the various banks, making memory allotment difficult, thus a great deal of care and skill is required in allotting memory. 
+
+<P>
+The suitable FIFO buffer size then differs depending on the screen, but for the majority of cases 100KB to 150KB should be enough.  You could probably adjust this by using osDpGetCounters() to discover whether or not the RDP is waiting for a command from the RSP.
+
+<P align="right">
+<A href="graphics.htm#index">top</A>
+
+<HR>
+<P>
+<B><FONT color="#ff0000"><A name="qa15">Q15</A></FONT> Which calculation method is used when displaying the contents of a 16-bit CFB RGBA5551 with a 24-bit RGB888 or a 32-bit RGB8888?  To put it simply, how are the various CFB 16-bit pixels allotted to the RGBA values?</B>
+
+<P>
+<B><FONT color="#008000">A15</FONT></B> For conversion of RGB:888 and RGB:555 there are not specifically any set rules, and you should be able to freely reduce or dilute them as they are, or adjust the color.  gbi.h has been supplemented with macros such as GPACK_RGBA5551.
+
+<P align="right">
+<A href="graphics.htm#index">top</A>
+
+<HR>
+</BODY>
+</HTML>

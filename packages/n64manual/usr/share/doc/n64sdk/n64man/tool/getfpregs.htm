@@ -1,0 +1,58 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<!--
+Editors Notes:
+  PWC- updated formatting
+  MAP- updated format
+-->
+<title>getfpregs</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>getfpregs</b></font><font style="font-size: 9pt"><b> (tool command)</b></font>
+
+<p><i>Retrieves floating point register contents for a target system thread</i></p>
+
+<h3>Syntax</h3>
+<p>
+getfpregs thread</p>
+
+<h3>Description</h3>
+
+<p>getfpregs sends a message requesting the contents of the floating point registers for the specified target system thread through the <a href="dbgif.htm">dbgif</a> tool and displays the register contents (in hex) on stdout (ordinary shell window).</p>
+
+<p>Before executing this command, you must ensure that the dbgif program is running and that the <tt>METHOD</tt> environment variable is set to zero to indicate that this is a request for the R4300 CPU. The co-processor does not have floating point registers, so it is inappropriate to set METHOD to 1 (specifying to use the co-processor). 
+</p>
+
+<p>This is accomplished by specifying the following command on the shell:
+</p>
+
+<blockquote>
+    <pre>setenv METHOD 0</pre>
+</blockquote>
+
+<p>If the specified thread is running, the displayed registers will be the contents of the registers at the time the thread was preempted to service the getfpregs request. 
+</p>
+
+<h3>Note</h3>
+
+<p>In the event of a communications failure, the program will dump core. If this happens, you must remove the core file manually.
+</p>
+
+<p>Only the 32-bit floating point registers (&quot;float&quot; regs) are displayed. It would be nice to display the 64-bit registers (&quot;double&quot; regs) as well, however, it is not supported at this point. 
+</p>
+
+<h3>See Also</h3>
+<A HREF="../tool/dbgif.htm">dbgif</A>, 
+<A HREF="../tool/listthreads.htm">listthreads</A>
+<h3>Revision History</h3>
+<p>1999/04/30  Changed Format</p>
+<br><br>
+
+
+
+</body>
+</html>

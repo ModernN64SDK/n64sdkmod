@@ -1,0 +1,26 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 9 - Basic Memory Management</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. -->
+</head>
+
+<h1>9.6 <a href="../../n64man/tool/makerom.htm">makerom</a> and Memory Management </h1>
+
+<p>In addition to its more obvious role of creating the application ROM image, <a href="../../n64man/tool/makerom.htm">makerom</a> () is a powerful tool for both memory and <A target="keywords" HREF="../../keywords/index/data/system.htm#symbol table">symbol table</A> management.   <A target="keywords" HREF="../../keywords/index/data/system.htm#segment">Segments</A> to <a href="../../n64man/tool/makerom.htm">makerom</a> mean more than SP addressable memory regions.  To <a href="../../n64man/tool/makerom.htm">makerom</a>, a segment is any contiguous, coherent region of bytes in memory or on the ROM. </p>
+
+<p>The <A target="keywords" HREF="../../keywords/index/data/system.htm#ROM spec file">ROM spec file</A> given to <a href="../../n64man/tool/makerom.htm">makerom</a> provides <A target="keywords" HREF="../../keywords/index/data/system.htm#virtual address">virtual addresses</A> or <A target="keywords" HREF="../../keywords/index/data/system.htm#segment address">segment addresses</A> to segments.   A segment consisting of MIPS 4300 code (or data to run on the CPU) can be given a virtual address with an address statement.  
+A segment consisting of static <a href="../../keywords/index/data/graphics.htm#display list" target="keywords">display list</a> data is given a segment address by specifying the segment number with a number statement. </p>
+
+<p>Briefly, <a href="../../n64man/tool/makerom.htm">makerom</a> does the following:</p>
+<ul>
+  <li>scans the input specification file for syntax errors<br><br>
+  <li>sizes the segments, creating absolute symbols for segment addresses and ROM locations <br><br>
+  <li>performs final relocations of relocatables that comprise the segment, using a link editor that can link an arbitrary number of segments to different addresses <br><br>
+  <li>extracts the text and initialized data portions for each segment from the resulting fully linked binary, and packs these portions of the segment onto the ROM image.<br><br>
+</ul>
+
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+</body> </html>

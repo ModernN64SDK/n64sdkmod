@@ -1,0 +1,63 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../n64man.css">
+<title>MusFxBankInitialize()</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check-->
+</head>
+
+<h1>MusFxBankInitialize()</h1>
+
+<h2>Syntax</h2>
+
+<pre>
+void MusFxBankInitialize(void *fxbank);
+</pre>
+
+<h2>Arguments</h2>
+
+<dl>
+  <dt><b>fxbank</b>
+  <dd>the address of a binary sound effect file 
+</dl>
+
+<h2>Description</h2>
+
+<p>It initializes a sound effect bank. If a default sound effect bank is not currently set, make this bank the default sound effect bank. If the sound effect bank has not already been initialized, the list of offsets the bank contains is converted to pointers and the associated sample bank override is cleared.</p>
+
+<p>The default sample bank is used when the <a href="MusStartEffect.html">MusStartEffect()</a> or the <a href="MusStartEffect2.html">MusStartEffect2()</a> function is used to start sound effects, if no sample bank override has been defined. The <a href="MusFxBankSetSingle.html">MusFxBankSetSingle()</a> function can be used to define a sound effect bank override for the next sound effect started.</p>
+
+<p>The RAM address of a Nintendo 64 Sound Tools .BFX file must be provided in fxbank. The sound effect bank file address must be 32-bit aligned, although it is recommended that it be cache aligned.</p>
+
+<h2>Return Value</h2>
+
+<p>None</p>
+
+<h2>Example</h2>
+
+<pre>void AudioSetEffectBank(int effect_bank)
+{
+  /* test if effect bank is already loaded */
+  if (effect_bank==last_effect_bank)
+    return;
+  last_effect_bank = effect_bank;
+  /* load effect bank */
+  AudioTransfer(fx_address[effect_bank], fx_buffer);
+  /* initialize effect bank */
+  MusFxBankInitialize(fx_buffer);
+  /* set as default effect bank */
+  <a href="MusFxBankSetCurrent.html">MusFxBankSetCurrent</a>(fx_buffer);
+}
+</pre>
+
+<h2>See Also</h2>
+<p>
+<a href="MusFxBankGetCurrent.html">MusFxBankGetCurrent()</a>,
+<a href="MusFxBankSetCurrent.html">MusFxBankSetCurrent()</a>,
+<a href="MusFxBankSetSingle.html">MusFxBankSetSingle()</a>,
+<a href="MusStartEffect.html">MusStartEffect()</a>,
+<a href="MusStartEffect2.html">MusStartEffect2()</a>
+</p>
+
+</body>
+</html>

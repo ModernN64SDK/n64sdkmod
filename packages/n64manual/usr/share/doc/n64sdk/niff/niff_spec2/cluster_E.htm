@@ -1,0 +1,534 @@
+<html>
+<HEAD>
+<TITLE>ClusterNode</TITLE>
+</HEAD>
+<BODY LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff">
+
+<font face="arial" size="-1">
+<b><font size="3">16. ClusterList</font></b>
+<HR>
+
+<P>
+<b>(1) ClusterList</b>
+<p>
+<blockquote>
+
+<table border width="600">
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 cluster_list_tag</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the tags of ClusterList.  Please set the tags shown below.
+<font face="courier" size="2">
+<pre>
+<b>
+TAG_CLUSTER_LIST        0x00280000
+</b>
+</pre>
+</font>
+</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 cluster_list_header_size </font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the ClusterListHeader byte size.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 cluster_list_size</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the ClusterList byte size.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 cluster_shape_num</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the ClusterShape number.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 cluster_shape_size</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the ClusterShape byte size.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">ClusterShape</font>
+</td>
+<td>
+<font face="arial" size="-1">This is the ClusterShape area.</font>
+</td>
+</tr>
+</table>
+
+<p>
+<a href="./cluster_C.htm">Go to the data chunk</a>
+<p>
+</blockquote>
+
+<b>(2) ClusterShape</b>
+<blockquote>
+
+<table border width="600">
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 cluster_shape_tag</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the tags of ClusterShape.  Please set the tags shown below.
+<font face="courier" size="2">
+<pre>
+<b>
+TAG_CLUSTER_SHAPE        0x00280100
+</b>
+</pre>
+</font>
+</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 this_cluster_shape_index</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the ClusterShape index number.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 cluster_shape_size</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the byte size of  ClusterShape.</font>
+</td>
+</tr>
+
+<tr>
+<td  nowrap>
+<font face="arial" size="-1">u32 cluster_shape_name_index</font>
+</td>
+<td>
+<font face="arial" size="-1">Specifies this ClusterShape name with the index number in NameList.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 cluster_shape_type</font>
+</td>
+<td>
+<font face="arial" size="-1">0x0</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 cluster_num</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the Cluster number.<p>
+If there are vertices in 1 shape to which a Cluster has not been
+assigned, please register them as 1 Cluster, assigning them Cluster(0). </font>
+</td>
+</tr>
+
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 cluster_tri_num</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the ClusterTri number.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">Cluster</font>
+</td>
+<td>
+<font face="arial" size="-1">Registers the set of vertices for a given node as a Cluster.</font>
+</td>
+</tr>
+
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">ClusterTri</font>
+</td>
+<td>
+<font face="arial" size="-1">Displays 1 polygon using the vertices that belong to a Cluster in ClusterShape.</font>
+</td>
+</tr>
+</table>
+
+<p>
+<a href="./cluster_C.htm">Go to the data chunk</a>
+<p>
+</blockquote>
+
+<b>(3) Cluster</b>
+
+<blockquote>
+
+<table border width="600">
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 cluster_tag</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the tags of Cluster.  Please set the tags shown below.
+<font face="courier" size="2">
+<pre>
+<b>
+TAG_CLUSTER        0x00280110
+</b>
+</pre>
+</font>
+</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 this_cluster_index</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the index number for the Cluster in this ClusterShape.</font>
+</td>
+</tr>
+
+<tr>
+<td  nowrap>
+<font face="arial" size="-1">u32 cluster_size</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the Cluster byte size.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 cluster_name_index</font>
+</td>
+<td>
+<font face="arial" size="-1">Specifies this Cluster name with the index number in NameList.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 kind_of_transform_node</font>
+</td>
+<td>
+<font face="arial" size="-1">The tag shown below describes the type of node that is influenced by the Cluster.
+<font face="courier" size="2">
+<pre>
+<b>
+TAG_OBJ_LIST            0x00020000
+</b>
+</pre>
+</font>
+For an external reference, please describe with 0xffffffff.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 transform_node_index</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the index number of the node that is influenced by the Cluster.<p>
+For an external reference, please describe with 0xffffffff.</font>
+</td>
+</tr>
+
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 external_transform_obj_file_name_index</font>
+</td>
+<td>
+<font face="arial" size="-1">If the Obj that is influenced by the Cluster references an external file, that file name is described with the ExternalNameList index number.<p>
+Please do not include the directory name etc. when describing this file name.<p>
+If there is no external reference, please describe with 0xffffffff.</font>
+</td>
+</tr>
+
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 external_transform_obj_name_index</font>
+</td>
+<td>
+<font face="arial" size="-1">If the Obj that is influenced by the Cluster references an external file, that Obj name is described with the ExternalNameList index number.<p>
+If there is no external reference, please describe with 0xffffffff.</font>
+</td>
+</tr>
+
+
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 cluster_vtx_group_index</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the index number for the VtxGroup specifying the vertex coordinates in this Cluster.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 cluster_vtx_nv_group_index</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the index number for the VtxNvGroup specifying the normal vectors of the vertices in this Cluster.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 cluster_tri_nv_group_index</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the index number for the TriNvGroup specifying the normal vectors of the polygons in this Cluster.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 cluster_vtx_color_group_index</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the index number for the VtxColorGroup specifying the colors of the vertices in this Cluster.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 cluster_tri_color_group_index</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the index number for the TriNvGroup specifying the colors of the polygons in this Cluster.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 cluster_st_group_index</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the index number for the StGroup specifying the ST values of the vertices in this Cluster.</font>
+</td>
+</tr>
+</table>
+
+<p>
+<a href="./cluster_C.htm">Go to the data chunk</a>
+<p>
+</blockquote>
+
+<b>(4) ClusterTri</b>
+
+<blockquote>
+
+<table border width="600">
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 cluster_tri_tag</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the tags of ClusterTri.  Please set the tags shown below.
+<font face="courier"size="2">
+<pre>
+<b>
+TAG_CLUSTER_TRI        0x00280180
+</b>
+</pre>
+</font>
+</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 this_cluster_tri_index</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the ClusterTri index number.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 cluster_tri_size</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the ClusterTri byte size.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 kind_of_cluster_for_tri</font>
+</td>
+<td>
+<font face="arial" size="-1">The tag shown below describes the type of Cluster used in tri_nv_index and  tri_color_index.
+<font face="courier" size="2">
+<pre>
+<b>
+TAG_CLUSTER        0x00280110
+</b>
+</pre>
+</font>
+</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 cluster_index_for_tri</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the index number of the Cluser used in tri_nv_index and tri_color_index.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 tri_nv_index</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the index number of the normal vectors for this triangle.<p>
+If polygons with four or more sides are to be automatically divided with the CG tool, please averaging the normal vectors of the vertices and output identical data for the normal vectors of the resulting triangles.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 tri_color_index</font>
+</td>
+<td>
+<font face="arial" size="-1">Specifies the color of this triangle.<p>
+If polygons with four or more sides are to be automatically divided with the CG tool, please output identical data for the colors of the resulting triangles.</font>
+</td>
+</tr>
+
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">ClusterVtx</font>
+</td>
+<td>
+<font face="arial" size="-1">This is the ClusterVtx area.  Describes the Vtx comprising this triangle.</font>
+</td>
+</tr>
+</table>
+
+<p>
+<a href="./cluster_C.htm">Go to the data chunk</a>
+<p>
+</blockquote>
+
+<b>(5) ClusterVtx</b>
+
+<blockquote>
+<table border width="600">
+
+<tr>
+
+<td nowrap>
+<font face="arial" size="-1">u32 kind_of_cluster</font>
+</td>
+
+<td>
+<font face="arial" size="-1">The tag shown below describes the type of Cluster to which this vertex belongs.
+<font face="courier" size="2">
+<pre>
+<b>
+TAG_CLUSTER        0x00280110
+</b>
+</pre>
+</font>
+</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 cluster_index</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the index number of the Cluster.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 vtx_index</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the index number of the vertex.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 st_index</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the index number of the ST value of the vertex.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 vtx_nv_index</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the index number of the normal vector of the vertex.<p>
+Output so it is identical to vtx_index.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 vtx_color_index</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the inex number for the color of the vertex.</font>
+</td>
+</tr>
+</table>
+
+<p>
+<a href="./cluster_C.htm">Go to the data chunk</a>
+<p>
+</blockquote>
+
+<hr>
+
+</body>
+</html>

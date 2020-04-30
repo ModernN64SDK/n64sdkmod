@@ -1,0 +1,311 @@
+<html>
+<head>
+<title>[N64 CITextureEditor] 2.5 Plug-In SDK</title>
+</head>
+<body>
+<center>
+<h1><font color=#0000c0><font color=#ff0000>N64</font> <font color=#ff8000>CI</font><font color=#ff0000>T</font>exture<font color=#ff0000>E</font>ditor</font> <font color=#808080>Plug-In SDK</font></h1>
+<!--#config timefmt="%Y年%m月%d日(%a) %X"-->
+<font size=-1><!--#echo var="LAST_MODIFIED"--></font><br>
+<a href="https://ntsc.nintendo.co.jp/"><img src="../images/ntsc.gif" alt="NTSC-ONLINE" border=0></a>
+</center>
+<hr>
+<p align="right"><a href="../us/plugin.html">English</a></p>
+<ol>
+ <li><b>プラグインの仕組み</b>
+ <p>
+ <ol>
+  <li><font color=green>起動時の初期化処理</font>
+  <ul>
+   <p>
+   プラグインはDLLのインターフェイスを利用しています。<br>
+   テクスチャエディタは、起動時にアプリケーション・ディレクトリにある
+   <font color=green>PlugIns</font>ディレクトリ内のDLLを検索し、
+   プラグインの名前、バージョン、種類を順次チェックしていき、動的にリンクします。
+   </p>
+   <p>
+   名前やバージョン情報は、DLLのリソースの<font color=green>VS_VERSION_INFO</font>から得ますので、必ずバージョンリソースをDLLに含めて下さい。<br>
+   <font color=green>VS_VERSION_INFO</font>は、日本語リソース(<b>041104b0</b>)と英語リソース(<b>040904e4</b>)を用意して下さい。<br>
+   <font color=green>Comment</font>に詳細情報、
+   <font color=green>CompanyName</font>に社名、
+   <font color=green>FileVersion</font>にプラグインのバージョン、
+   <font color=green>InternalName</font>にメニュー名が使われます。
+   </p>
+   <p>
+   DLL側では最初に、<font color=blue>int TEPI_getType()</font>が呼ばれ、そこでプラグインの種類を返します。<br>
+   その次に、<font color=blue>BOOL TEPI_isAvail(DWORD version)</font>が呼ばれ、
+   アプリケーションの４バイトのバージョン(<font color=green>1.0.0.15</font>の場合、
+   <font color=green>0x0100000f</font>)がパラメータとして与えられるので、
+   そのアプリケーションに対応していれば、<font color=green>TRUE</font>を返します。
+   対応していなければ、<font color=green>FALSE</font>を返して下さい。
+   </p>
+  </ul>
+  <li><font color=green>インポート処理</font>
+  <ul>
+   <p>
+   もし、種類がインポート（<font color=green>TEPIT_IMPORT</font>のフラグが立っている）なら、
+   <a href="gui.html#UI_MENU_FILE">ファイルメニュー</a>のインポートに名前が登録されているはずです。<br>
+   ユーザーがインポート・プラグインを呼び出した場合、対応するDLLの
+   <font color=blue>BOOL TEPI_import(Pic* pInput, Pic* pOutput)</font>が呼び出されます。<br>
+   </p>
+  </ul>
+  <li><font color=green>エクスポート処理</font>
+  <ul>
+   <p>
+   もし、種類がエクスポート（<font color=green>TEPIT_EXPORT</font>のフラグが立っている）なら、
+   <a href="gui.html#UI_MENU_FILE">ファイルメニュー</a>のエクスポートに名前が登録されているはずです。<br>
+   ユーザーがエクスポート・プラグインを呼び出した場合、対応するDLLの
+   <font color=blue>BOOL TEPI_export(Pic* pInput)</font>が呼び出されます。<br>
+   </p>
+  </ul>
+  <li><font color=green>プレビュー処理</font>
+  <ul>
+   <p>
+   もし、種類がプレビュー（<font color=green>TEPIT_PREVIEW</font>のフラグが立っている）なら、
+   <a href="gui.html#UI_MENU_FILE">表示メニュー</a>のプレビューから呼び出される様になっています。<br>
+   しかし、古いのテクスチャエディタ(1.0.1.4以前)では、プレビュープラグインは１つのみしかサポートしておりませんので、
+   他のプレビュープラグインと同時に利用できません。<br>
+   ユーザーがプレビュー・プラグインを呼び出した場合、対応するDLLの
+   <font color=blue>BOOL TEPI_preview(Pic* pInput)</font>が呼び出されます。
+   </p>
+   <p>
+   バージョン1.0.1.5のテクスチャエディタから、2枚までプレビューが可能になりました。<br>
+   ユーザーがプレビュー・プラグインを呼び出した場合、対応するDLLの
+   <font color=blue>BOOL TEPI_preview2(Pic* pInput, int no)</font>が呼び出されます。
+   </p>
+  </ul>
+ </ol>
+ <li><b>プラグイン開発環境</b>
+ <p>
+ <ol>
+  <li>言語：Ｃ／Ｃ＋＋
+  <li>環境：Visual C++5.0
+  <li>ファイル形式：Windows 32bit DLL
+ </ol>
+ <p>
+ <li><b>プラグインで扱われる型情報</b>
+ <p>
+ <ul>
+  <table border=1>
+   <tr>
+    <td bgcolor=#f0c080>
+     <font color=blue>struct</font> TMF {<br>
+      <dd><font color=blue>int</font> m_width;<br>
+      <dd><font color=blue>int</font> m_height;<br>
+      <dd><font color=blue>int</font> m_bits;<br>
+      <dd>u32* m_pBitmap;<br>
+     };<br>
+    </td>
+    <td bgcolor=#c0c0f0>
+     <font color=green>m_width</font>はイメージの幅、
+     <font color=green>m_height</font>はイメージの高さ、
+     <font color=green>m_bits</font>はイメージのビットの深さ(4 or 8)が入ります。<br>
+     <font color=green>m_pBitmap</font>は、BMPと全く同じバイナリのイメージデータです。<br>
+     4bitの場合は１バイトに２ピクセル分となり、上位4bitビットが左、下位4bitが右のピクセルになります。<br>
+     8bitの場合は１バイト１ピクセルなので、左から右に順次並びます。<br>
+     ただし、１ラインは32bitアライメントなので、右端の端数のギャップは０で埋められます。<br>
+     サイズは、<font color=green>((((m_width * m_bits / 8) + 3) & ~3) * m_height)</font>バイトになります。<br>
+     BMPと同じく、画像の下から上に向って配置してあり、Y軸が逆向きになっておりますので注意して下さい。<br>
+    </td>
+   </tr>
+   <tr>
+    <td bgcolor=#f0c080>
+     <font color=blue>struct</font> TLF {<br>
+      <dd>u32 m_type;<br>
+      <dd>s32 m_num;<br>
+      <dd>u16* m_color_array;<br>
+     };<br>
+    </td>
+    <td bgcolor=#c0c0f0>
+     <font color=green>m_type</font>はパレットの種類（<font color=green>0</font> = 16bit RGBA／<font color=green>1</font> = 16bit IA）<br>
+     <font color=green>m_num</font>はパレットの個数（<font color=green>16</font>／<font color=green>256</font>）<br>
+     <font color=green>m_color_array</font>はパレットの配列です。<br>
+    </td>
+   </tr>
+   <tr>
+    <td bgcolor=#f0c080>
+     <font color=blue>struct</font> Pic {<br>
+      <dd>TMF* m_pTMF;<br>
+      <dd>TLF* m_pTLF;<br>
+      <dd><font color=blue>void</font>* m_pReserved;<br>
+      <dd><font color=blue>int</font> m_palette;<br>
+     };<br>
+    </td>
+    <td bgcolor=#c0c0f0>
+     <font color=green>m_pTMF</font>はTMFのポインタ。<br>
+     <font color=green>m_pTLF</font>はTLFのポインタ。<br>
+     <font color=green>m_pReserved</font>は将来的の属性テーブルへのポインタ。<br>
+     <font color=green>m_palette</font>は、4bitイメージ+256パレット時のパレットブロックの番号<br>
+    </td>
+   </tr>
+  </table>
+  <p>
+ </ul>
+ <li><b>プラグインのインターフェイス</b>
+ <p>
+ <ul>
+  <li><font color=blue>int</font> <font color=red>TEPI_getType</font>()
+  <ul>
+   <p>
+   種類、(<font color=green>TEPIT_IMPORT</font> | <font color=green>TEPIT_EXPORT</font> | <font color=green>TEPIT_PREVIEW</font>)を返します。<br>
+   それぞれのフラグに応じて<font color=blue>TEPI_import()</font> | <font color=blue>TEPI_export()</font> | <font color=blue>TEPI_preview()</font>が呼ばれます。<br>
+   この関数は、起動時の最初の１回だけ呼ばれます。<br>
+   </p>
+  </ul>
+  <li><font color=blue>BOOL</font> <font color=red>TEPI_isAvail</font>(<font color=blue>DWORD</font> <font color=green>version</font>)
+  <ul>
+   <p>
+   テクスチャエディタのバージョン番号
+   (例：<font color=green>1.0.0.15</font>＝<font color=green>0x0100000f</font>)
+   から、このプラグインが有効か無効かを返します。<br>
+   有効であれば<font color=green>TRUE</font>、無効であれば<font color=green>FALSE</font>を返して下さい。<br>
+   この関数は、起動時の最初の１回だけ呼ばれます。<br>
+   </p>
+  </ul>
+  <li><font color=blue>BOOL</font> <font color=red>TEPI_property</font>()
+  <ul>
+   <p>
+   将来の予約です。<br>
+   <font color=green>TRUE</font>で終了して下さい。<br>
+   </p>
+  </ul>
+  <li><font color=blue>BOOL</font> <font color=red>TEPI_about</font>()
+  <ul>
+   <p>
+   将来の予約です。<br>
+   <font color=blue>AfxMessageBox()</font>などでDLLについての情報のダイアログを出して頂ければ幸いです。
+   <font color=green>TRUE</font>で終了して下さい。
+   </p>
+  </ul>
+  <li><font color=blue>BOOL</font> <font color=red>TEPI_import</font>(<font color=blue>Pic*</font> <font color=green>pInput</font>, <font color=blue>Pic*</font> <font color=green>pOutput</font>)
+  <ul>
+   <p>
+   種類で<font color=green>TEPIT_IMPORT</font>フラグを立てている場合に、ユーザーの要求によって呼ばれます。<br>
+   pInputにテクスチャエディタ側の現在の画像のコピーが含まれています。<br>
+   pOutputにイメージを与える事でテクスチャエディタ側でインポートした画像をペーストする事が出来ます。<br>
+   インポートに成功した場合<font color=green>TRUE</font>を返し、
+   取り消しや失敗した場合は<font color=green>FALSE</font>を返して下さい。<br>
+   </p>
+   <p>
+   <font color=red>注意</font>：<br>
+   <li><font color=green>pInput-&gt;m_pTLF</font>は、
+       <font color=green>NULL</font>の可能性があります。<br>
+   <li><font color=green>pOutput-&gt;m_pTMF</font>、
+       <font color=green>pOutput-&gt;m_pTLF</font>は、
+       最初<font color=green>NULL</font>ですが正常に終了する時は、
+       <font color=green>new</font>をしてメモリを確保して下さい。<br>
+       最終的に呼び出し側で削除されますので、<font color=green>delete</font>は不要です。<br>
+   <li><font color=green>pInput-&gt;m_pTMF</font>の内容を直接編集する
+       事で、ペーストモードを行わずにイメージを更新する事が可能です。
+   </p>
+  </ul>
+  <li><font color=blue>BOOL</font> <font color=red>TEPI_export</font>(<font color=blue>Pic*</font> <font color=green>pInput</font>)
+  <ul>
+   <p>
+   種類で<font color=green>TEPIT_EXPORT</font>フラグを立てている場合に、ユーザーの要求によって呼ばれます。<br>
+   pInputにテクスチャエディタ側の現在の画像のコピーが含まれていますので、これを利用してエクスポート処理を行って下さい。<br>
+   エクスポートに成功した場合<font color=green>TRUE</font>を返し、
+   取り消しや失敗した場合は<font color=green>FALSE</font>を返して下さい。<br>
+   </p>
+  </ul>
+  <li><font color=blue>BOOL</font> <font color=red>TEPI_preview</font>(<font color=blue>Pic*</font> <font color=green>pInput</font>)
+  <ul>
+   <p>
+   種類で<font color=green>TEPIT_PREVIEW</font>フラグを立てている場合に、ユーザーの要求によって呼ばれます。<br>
+   テクスチャエディタ側でプレビューをONにしていると、イメージやパレットに変更が加わる度に呼ばれます。<br>
+   プレビューに成功した場合<font color=green>TRUE</font>を返し、
+   取り消しや失敗した場合は<font color=green>FALSE</font>を返して下さい。<br>
+   </p>
+  </ul>
+ </ul>
+ <li><b>プラグインDLLの為の宣言ヘッダファイル</b>
+ <p>
+ <ul>
+<table border=1>
+ <caption>&lt;<font color=green>tePlugIn.h</font>&gt;</caption>
+ <tr>
+  <td>
+<font color=blue>#ifndef</font> __tePlugIn_H__<br>
+<font color=blue>#define</font> __tePlugIn_H__<br>
+<br>
+<font color=blue>#ifdef</font> __cplusplus<br>
+<font color=blue>extern</font> "C" {<br>
+<font color=blue>#endif</font><br>
+<br>
+<font color=blue>#pragma pack(1)</font><br>
+<br>
+<font color=blue>struct</font> TMF {<br>
+    <dd><font color=blue>int</font> m_width;<br>
+    <dd><font color=blue>int</font> m_height;<br>
+    <dd><font color=blue>int</font> m_bits;<br>
+    <dd>u32* m_pBitmap;<br>
+};<br>
+<br>
+<font color=blue>struct</font> TLF {<br>
+    <dd>u32 m_type;<br>
+    <dd>s32 m_num;<br>
+    <dd>u16* m_color_array;<br>
+};<br>
+<br>
+<font color=green>/* Picture */</font><br>
+<font color=blue>struct</font> Pic {<br>
+    <dd>TMF* m_pTMF;<br>
+    <dd>TLF* m_pTLF;<br>
+    <dd><font color=blue>void</font>* m_pReserved;<br>
+    <dd><font color=blue>int</font> m_palette;<br>
+};<br>
+<br>
+<font color=blue>#pragma pack()</font><br>
+<br>
+<font color=green>//// TextureEditor Plug-In Type</font><br>
+<font color=blue>enum</font> TEPIT {<br>
+    <dd>TEPIT_IMPORT = 1,<br>
+    <dd>TEPIT_EXPORT = 2,<br>
+    <dd>TEPIT_PREVIEW = 4,<br>
+};<br>
+<br>
+<font color=blue>#define</font> DLLEXPORT <font color=blue>__declspec</font>(<font color=blue>dllexport</font>)<br>
+<font color=green>/*<br>
+//// YOU MUST BE IMPLEMENT BELOW FUNCTIONS ////<br>
+// get type of plug-in<br>
+// ex) return TEPIT_IMPORT | TEPIT_EXPORT;<br>
+// caution: preview type plug-in is only one.<br>
+*/</font><br>
+DLLEXPORT <font color=blue>int</font> PASCAL EXPORT TEPI_getType();<br>
+<font color=green>/* check an application version. if available then return TRUE. */</font><br>
+DLLEXPORT BOOL PASCAL EXPORT TEPI_isAvail(DWORD version);<br>
+DLLEXPORT BOOL PASCAL EXPORT TEPI_property();<br>
+DLLEXPORT BOOL PASCAL EXPORT TEPI_about();<br>
+DLLEXPORT BOOL PASCAL EXPORT TEPI_import(Pic* pInput, Pic* pOutput); <font color=green>/* called on import. */</font><br>
+DLLEXPORT BOOL PASCAL EXPORT TEPI_export(Pic* pInput); <font color=green>/* called on export. */</font><br>
+DLLEXPORT BOOL PASCAL EXPORT TEPI_preview(Pic* pInput); <font color=green>/* called on update time of TMF/TLF. */</font><br>
+<br>
+<font color=blue>#ifdef</font> __cplusplus<br>
+};<br>
+<font color=blue>#endif</font><br>
+<br>
+<font color=blue>#endif</font><br>
+  </td>
+ </tr>
+</table>
+ </ul>
+</ol>
+<p align="right"><a href="../us/plugin.html">English</a></p>
+<hr>
+<table width=100%>
+ <tr>
+  <td valign=top>
+  </td>
+  <td valign=top align=right nowrap>
+   <font size=-1>
+   Copyright (C) 1998-1999 <a href="https://ntsc.nintendo.co.jp/">NINTENDO Co.,Ltd.</a><br>
+   Copyright (C) 1998-1999 MONEGI CORPORATION.<br>
+   Copyright (C) 1998-1999 <a href="http://www.intsys.co.jp/">INTELLIGENT SYSTEMS Co.,Ltd.</a><br>
+   All rights reserved.<br>
+   </font>
+   <a href="https://ntsc.nintendo.co.jp/"><img src="../images/ntsc.gif" alt="NTSC-ONLINE" border=0></a>
+  </td>
+ </tr>
+</table>
+</body>
+</html>

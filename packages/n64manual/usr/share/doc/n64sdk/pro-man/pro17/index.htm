@@ -1,0 +1,106 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 17 - Audio Library</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. -->
+</head>
+
+<H1>Chapter 17 - Audio Library</H1>
+
+<p>The Nintendo 64 Audio Library is a lightweight library of functions. It provides game developers with the ability to interactively synthesize and manipulate audio on the Nintendo 64. It provides support for both sampled sound playback and <a href="../../keywords/index/data/audio.htm#wave table" target="keywords">wavetable</a> synthesis. This is accomplished with four software objects: the <a href="../../keywords/index/data/audio.htm#sound player" target="keywords">Sound Player</a>, the <a href="../../keywords/index/data/audio.htm#sequence player" target="keywords">Sequence Player</a>, the Synthesis Driver, and the Audio Synthesis <A target="keywords" HREF="../../keywords/index/data/system.htm#microcode">microcode</a>. These are shown in <A HREF="#f17-01">Figure 17-1</A>.</p>
+<UL>
+<LI>
+The Sound Player is useful for the playback of single <a href="../../keywords/index/data/audio.htm#sampling" target="keywords">sampling</a> <a href="../../keywords/index/data/audio.htm#sound effect" target="keywords">sound effect</a> or <a href="../../keywords/index/data/audio.htm#streaming" target="keywords">streaming</a> audio. It is capable of playing back wither ADPCM compressed sounds, or uncompressed 16 bit sound.
+<br><br></li>
+
+<LI>
+The Sequence Player can exist in either of two types. The first type plays back <a href="../../keywords/index/data/audio.htm#Type0, Type1 MIDI" target="keywords">Type 0</a> MIDI sequence files and the second type plays back a format of <a href="../../keywords/index/data/audio.htm#compressed MIDI" target="keywords">compressed MIDI</a> unique to the Nintendo 64. In both cases, the sequence player handles sequence, instrument bank, and synthesizer resource allocation, sequence interpretation, and MIDI message scheduling. 
+<br><br></li>
+</UL>
+
+<p><strong>Note:</strong>  Both the Sequence Player and the Sound Player are clients of the Synthesis Driver. The Driver can support an arbitrary number of clients, including multiple Sound and Sequence Players. </p>
+<UL>
+<LI>
+The Synthesis Driver is responsible for creating audio Command Lists, which are packaged into tasks by the Application program and passed on to the Audio Synthesis Microcode. It allows Driver clients to assign wave tables to synthesizer voices, and control the playback parameters. <br><br></li>
+
+<LI>
+The Audio Synthesis Microcode processes the tasks passed to it by the application and synthesizes stereo 16- bit samples, which the application then passes to the Audio DACs. <br><br></li>
+</UL>
+
+<p>This chapter contains descriptions of the Sound Player, Sequence Player, and Synthesis Driver APIs . Many application programmers will be satisfied with the interfaces provided by the Sound and Sequence Players. Most of the Synthesis Driver API is intended for programmers who want to create their own players (see <A HREF="17-05.htm">Section 17.5 &QUOT;Writing Your Own Player&QUOT;</A> for more information); however, all programmers should have a better understanding about certain functions essential for the creation of audio Command Lists. </p>
+<DL>
+<DT>
+<A NAME="f17-01"></A><strong>Figure 17-1 Audio Software Architecture</strong></DT>
+
+<DD>
+<IMG SRC="gif/f17-01.gif" ALT="[Figure 17-1]" ></DD>
+</DL>
+
+<p>The following sections outline the data structures and API calls that are necessary to make use of the audio library. See <a href="../pro20/index.htm">Chapter 20 &QUOT;Using the Audio Tools&QUOT;</a> for more details about some of the data structures. The data structure definitions and function prototypes for the calls described are in the include file libaudio.h, which is part of the software release. Also included as a part of the software release are reference (man) pages for each of the function calls. </p>
+<BR>
+<HR><A NAME="index"></A>
+<DL>
+<DT>
+<A HREF="17-01.htm">17.1 Generating Audio Output</A></DT>
+</DL>
+
+<DL>
+<DT>
+<A HREF="17-02.htm">17.2 Sampled Sound Playback</A></DT>
+
+<DD>
+<A HREF="17-02.htm#01">17.2.1 Representing Sound</A></DD>
+
+<BR><A HREF="17-02.htm#02">17.2.2 Playing Sound</A></DL>
+
+<DL>
+<DT>
+<A HREF="17-03.htm">17.3 Sequenced Sound Playback</A></DT>
+
+<DD>
+<A HREF="17-03.htm#01">17.3.1 Representing the Sequence</A></DD>
+
+<BR><A HREF="17-03.htm#02">17.3.2 Representing Instruments</A>
+<BR><A HREF="17-03.htm#03">17.3.3 Playing Sequences</A>
+<BR><A HREF="17-03.htm#04">17.3.4 Loops in Sequence Players</A>
+<BR><A HREF="17-03.htm#05">17.3.5 Controllers in Sequence Players</A></DL>
+
+<DL>
+<DT>
+<A HREF="17-04.htm">17.4 The Synthesis Driver </A></DT>
+
+<DD>
+<A HREF="17-04.htm#01">17.4.1 Initializing the Driver</A></DD>
+
+<BR><A HREF="17-04.htm#02">17.4.2 Building and Executing Command Lists</A>
+<BR><A HREF="17-04.htm#03">17.4.3 Synthesis Driver Sound Data Callbacks</A>
+<BR><A HREF="17-04.htm#04">17.4.4 Assigning Players to the Driver</A>
+<BR><A HREF="17-04.htm#05">17.4.5 Allocating and Controlling Voices</A>
+<BR><A HREF="17-04.htm#06">17.4.6 Effects and Effect Busses</A>
+<BR><A HREF="17-04.htm#07">17.4.7 Creating Your Own Effects</A>
+<BR><A HREF="17-04.htm#08">17.4.8 Parameter Description</A>
+<BR><A HREF="17-04.htm#09">17.4.9 Summary of Driver Functions</A></DL>
+
+<DL>
+<DT>
+<A HREF="17-05.htm">17.5 Writing Your Own Player</A></DT>
+
+<DD>
+<A HREF="17-05.htm#01">17.5.1 Initializing the Player</A></DD>
+
+<BR><A HREF="17-05.htm#02">17.5.2 Implementing a Voice Handler</A></DL>
+
+<DL>
+<DT>
+<A HREF="17-06.htm">17.6 Implementing Vibrato and Tremolo</A></DT>
+
+<DD>
+<A HREF="17-06.htm#01">17.6.1 The initOsc Routine</A></DD>
+
+<BR><A HREF="17-06.htm#02">17.6.2 The updateOsc routine</A>
+<BR><A HREF="17-06.htm#03">17.6.3 The stopOsc routine</A></DL>
+
+<HR>
+</BODY>
+</HTML>

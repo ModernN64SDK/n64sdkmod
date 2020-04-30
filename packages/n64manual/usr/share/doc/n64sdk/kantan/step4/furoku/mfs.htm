@@ -1,0 +1,603 @@
+<HTML>
+<HEAD>
+<TITLE>STEP4 [What is 64DD?] - Appendices</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park 7/15/1999 
+reviewed by PWC 7/16/99-->
+
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+
+<font style="font-size:12pt"><B>Appendix 64DD MFS Functions</B></FONT><BR>
+<BR>
+<BR>
+This appendix provides descriptions of 64DD Multi File System (MFS) Library functions.<BR>
+<BR>
+<COLSPAN=2><B>High-Level Library Functions</B><BR>
+
+
+   The ROM and RAM areas can be assigned virtual drives, and file and directory names can be specified by their full pathnames.  Relative paths can also be used, and these cannot be back-tracked.<P>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=3><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsHInitDiskBoot</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                                      Initialize library (for disk boot)</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsHInitCasBoot</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">Initialize library (for cartridge boot)</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsHMediaCheck</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">Check media status of drive</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsHMediaFormat</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">Format media in MFS format</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsHFopen</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                                      Open file</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsHFread</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                                      Read data</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsHFwrite</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                                      Write data</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsHFclose</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                                      Close file</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsHFseek</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                                      Seek head</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsHFtell</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                                      Get file location</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsHFstat</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                                      Get information about file</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsHFgetAttr</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                                      Get file attributes</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsHFsetAttr</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                                      Set file attributes</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsHFgetCopyCount</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">Get file copy counter value</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsHFsetCopyCount</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                                      Set copy counter value</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsHFgetRC</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                                      Get file refresh counter value</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsHFresetRC</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                                      Reset refresh counter value</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsHRemoveFile</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                                      Delete file</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsHRenameFile</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                                      Rename file</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsHGetFileCopyCount</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                                      Get file copy count</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsHSetFileCopyCount</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                                      Set file copy count</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsHGetAttr</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                                      Get file (directory) attributes</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsHSetAttr</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                                      Set file (directory) attributes</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsHGetRC</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">Get file (directory) refresh counter value</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsHResetRC</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">Reset refresh counter value</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsHGetStat</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                                      Get file or directory information</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsHGetCwd</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                                      Get current directory</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsHChDir</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                                      Change current directory</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsHRmDir</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                                      Remove directory</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsHMkDir</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                                      Make directory</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsHGetVolumeInfo</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                                      Get volume information</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsHGetVolumeAttr</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                                      Get volume attributes</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsHSetVolumeAttr</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                                      Set volume attributes</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsHGetVolumeRC</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                                      Get volume refresh counter</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsHResetVolumeRC</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">Reset volume refresh counter</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsHFnsplit</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">Split structural element in path name</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsHFnmerge</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">Merge elements to create path name</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsHGetDisk</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                                      Get current drive number</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsHSetDisk</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                                      Change current drive</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsHFindFirst</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                                      Find directory</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsHFindNext</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                                      Find next file</TD>
+</TR></TABLE>
+<BR>
+<BR>
+<p>
+<B>Low-Level Library Functions</B><BR>
+There is a group of functions for the ROM area and a group of functions for the RAM area. Since writing to the ROM area is disabled, there are no write related functions in the ROM area
+   group.
+<P>
+<BR>
+<B> (1) Initialization Functions </B><BR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=3><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsInit</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">Initialize internal variables</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsInitDiskRom</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">Initialize for disk operation </TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsInitDiskRam</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                                                   Initialize for disk operation</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsInitDiskRomRam</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">Initialize for disk operation</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsRamInit</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                                                   Initialize RAM area library</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsRomInit</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                                                   Initialize ROM area library</TD>
+</TR></TABLE>
+<BR>
+<p>
+<B> (2) Disk Operation Functions </B><BR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=3><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsDiskIdCheck</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                                Read and check disk ID</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsRamMediaFormat</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                                Format media</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsRomMediaCheck</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                                Media check</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsRamMediaCheck</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                                Media check</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsRamFlash</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                                Write header area</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsRamGetFreeSize</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                                Get free space</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="210" NOWRAP> mfsRamGetFreeDirEntryNum</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">Get number of files (directories) which can be registered</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsRomGetFileNum</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                                Get number of files associated with specified directory</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsRamGetFileNum</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">Get number of files associated with specified directory</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsRomGetVolumeAttr</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                                Get volume attributes</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsRamGetVolumeAttr</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                                Get volume attributes</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsRomGetVolumeName</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                                Get volume name</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsRamGetVolumeName</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                                Get volume name</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsRomGetVolumeDate</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                                Get volume date</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsRamGetVolumeDate</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                                Get volume date</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsRamGetVolumeRC</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                                Get refresh counter value</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsRomGetDiskType</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                                Get disk type</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsRamGetDiskType</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                                Get disk type</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsRomGetDestination</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                                Get destination code</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsRamGetDestination</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                                Get destination code</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsRamSetVolumeAttr</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                                Set volume attributes</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsRamSetVolumeName</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                                Set volume name</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsRamSetVolumeDate</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                                Set volume date</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsRamSetDestination</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                                Set destination code</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsRamResetVolumeRC</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                                Reset refresh counter</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsRamRepairHeader</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                                Repair header area</TD>
+</TR></TABLE>
+<BR>
+<p>
+<B> (3) Directory Functions</B><BR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=3><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsRamMakeDir</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                                                                    Make directory</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsRomGetDirID</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                                                                    Get directory ID</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsRamGetDirID</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                                                                    Get directory ID</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsRomGetDirName</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                                                                    Get directory name</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsRamGetDirName</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                                                                    Get directory name</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsRamRemoveDir</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                                                                    Remove directory</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="210" NOWRAP> mfsRamRenameDir</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                                                                    Rename directory</TD>
+</TR></TABLE>
+<BR>
+<p>
+<B> (4) File Operation Functions</B><BR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=3><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsRamCreateFile</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                       Create file</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsRomGetFileDirID</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                       Get directory ID of file</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsRamGetFileDirID</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                       Get directory ID of file</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsRomReadFile</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                       Read data</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsRamReadFile</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                       Read data</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsRamWriteFile</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                       Read data</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="210" NOWRAP> mfsRomSeekFile</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                       Seek head</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="210" NOWRAP> mfsRamSeekFile</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                       Seek head</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="210" NOWRAP> mfsRomGetFileName</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">Get file name</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="210" NOWRAP> mfsRamGetFileName</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                       Get file name</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="210" NOWRAP> mfsRamRemoveFile</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                       Delete file</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="210" NOWRAP> mfsRamRenameFile</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                       Rename file</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="210" NOWRAP> mfsRomGetFileAttr</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                       Get file (directory) attributes</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="210" NOWRAP> mfsRamGetFileAttr</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                       Get file (directory) attributes</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="210" NOWRAP> mfsRomGetFileDate</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                       Get file (directory) date</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="210" NOWRAP> mfsRamGetFileDate</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                       Get file (directory) date</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="210" NOWRAP> mfsRomGetFileParentDir</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">Get directory ID of parent directory</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="210" NOWRAP> mfsRamGetFileParentDir</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">Get directory ID of parent directory</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="210" NOWRAP> mfsRomGetFileSize</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                       Get file size</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="210" NOWRAP> mfsRamGetFileSize</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                       Get file size</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="210" NOWRAP> mfsRamGetFileCopyCount</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                       Get file (directory) copy limit count</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="210" NOWRAP> mfsRomGetFileGameCode</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                       Get company code, game code of file (directory)</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="210" NOWRAP> mfsRamGetFileGameCode</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                       Get company code, game code of file (directory)</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="210" NOWRAP> mfsRamGetFileRC</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                       Get refresh counter value of file (directory)</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="210" NOWRAP> mfsRamSetFiletAttr</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                       Set file (directory) attributes</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="210" NOWRAP> mfsRamSetFileDate</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">Set file (directory) date</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="210" NOWRAP> mfsRamSetFileCopyCount</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                       Set file (directory) copy limit number</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="210" NOWRAP> mfsRamSetFileGameCode</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">Set company code, game code of file (directory)</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="210" NOWRAP> mfsRamResetFileRC</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                       Reset refresh counter value of file (directory)</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="210" NOWRAP> mfsRamSetFileParentDir</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">Change parent directory</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="210" NOWRAP> mfsRamResizeFile</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                       Resize file</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="210" NOWRAP> mfsRomGetFileStat</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                       Get information</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="210" NOWRAP> mfsRamGetFileStat</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                       Get information</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="210" NOWRAP> mfsRomGetDirListFirst</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">Get directory contents (list directory)</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="210" NOWRAP> mfsRamGetDirListFirst</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">Get directory contents (list directory)</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="210" NOWRAP> mfsRomGetDirListNext</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                       Continue to get directory contents (next page of directory list)</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="210" NOWRAP> mfsRamGetDirListNext</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                       Continue to get directory contents (next page of directory list)</TD>
+</TR></TABLE>
+<BR>
+<BR>
+<p>
+<B>Device Functions</B><BR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=3><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsReadWriteLBA</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                              Read/write from/to disk</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsReadLBA</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                              Read disk</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsWriteLBA</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                              Write to disk</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsReadDiskID</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                              Read disk ID</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsSpdlMotor</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                              Control 64DD head and motor</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsTestUnit</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                              Check status of 64DD</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsReadRtc</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                              Read date and time from internal RTC</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsSetRtc</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                              Set internal RTC</TD>
+</TR></TABLE>
+<BR>
+<BR>
+<p>
+<B>Other Functions</B><BR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=3><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsGetGameCode</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                        Get company code, game code</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsSetGameCode</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                       Set company code, game code</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsStrCmp</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                       Compare text strings</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsStrnCmp</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                       Compare text strings</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsStrCpy</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                       Copy text string</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsStrnCpy</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                       Copy text string</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsStrLen</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                       Calculate length of text string</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsStrrChr</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                       Find location of last appearance of character "c"</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsStrCat</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                       Connect text string</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsStrWCmp</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                       Compare text string (wild card version)</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsSetLeoBusyFunc</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                       Register PI control function (before using PI)</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsSetLeoReadyFunc</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                       Register PI control function (after using PI)</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsSetLeoErrorFunc</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                                                       Register error processing function for Leo function</TD>
+</TR></TABLE>
+<BR>
+<BR>
+<p>
+<B>Global Variables</B><BR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=3><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsError</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                         Stores errors when LEO function is called inside MFS library</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> mfsDiskInfo</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">
+                                         Structure for storing information regarding disk inside MFS library</TD>
+</TR></TABLE>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+
+</BODY>
+</HTML>

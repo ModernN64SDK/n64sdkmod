@@ -1,0 +1,99 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<!--
+Editors Notes:
+  PWC- updated formatting
+  MAP- added links, updated format
+--><title>spClearAttribute</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>spClearAttribute</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p>spSetAttribute, spClearAttribute<br><br><i>
+Sets or clears the specified attributes.</i></p>
+
+<h3>Syntax</h3>
+
+<p>#include &lt;sp.h&gt;     /* <A HREF="../../header/sp.htm">sp.h</A> */<br>
+void spSetAttribute (Sprite *sp, u32 attributes)<br>
+void spClearAttribute (Sprite *sp, u32 attributes)
+</p>
+<h3>Arguments</h3>
+
+<dl>
+    <dt><strong>*sp</strong></dt>
+    <dd>Pointer to the sprite<br>
+        <br>
+        </dd>
+</dl>
+
+<h3>Attributes</h3>
+
+<p>bit-wise OR of the sprite attributes to be changed.</p>
+
+<h3>Explanation</h3>
+
+<p>It modifies the sprite's current attributes.</p>
+
+<p>Attributes control how the sprite is to be drawn.</p>
+
+<dl>
+    <dt><strong>SP_TRANSPARENT</strong></dt>
+    <dd>Use Alpha to blend the sprite with the frame buffer.<br>
+        <br>
+        </dd>
+    <dt><strong>SP_CUTOUT</strong></dt>
+    <dd>Use AlphaCompare to ensure that pixels are not to drawn in alpha &lt; blendcolor.alpha (automatically set to 1).</dd>
+    <dd>This can also be used in COPYMODE to disable writing (disable interruption) 16-bit RGBA texels with the alpha bit off.<br>
+        <br>
+        </dd>
+    <dt><strong>SP_HIDDEN</strong></dt>
+    <dd>Don't draw this sprite.<br>
+        <br>
+        </dd>
+    <dt><strong>SP_Z</strong></dt>
+    <dd>Use Z-Buffering to determine sprite visibility.<br>
+        <br>
+        </dd>
+    <dt><strong>SP_SCALE</strong></dt>
+    <dd>Use sprite scaling factors.<br>
+        <br>
+        </dd>
+    <dt><strong>SP_FASTCOPY</strong></dt>
+    <dd>Use COPY mode to draw the sprite into the frame buffer. </dd>
+    <dd>This runs the fastest, but it does not allow resizing or high quality transparency.<br>
+        <br>
+        </dd>
+    <dt><strong>SP_TEXSHIFT</strong></dt>
+    <dd>Shift texture exactly 1/2 texel in both s and t before drawing it.</dd>
+    <dd>This creates a better anti-aliased edge along transparent texture boundaries when in CUTOUT mode.<br>
+        <br>
+        </dd>
+    <dt><strong>SP_FRACPOS</strong></dt>
+    <dd>Use frac_s and frac_t fields of the sprite structure to fine-position the texture into the drawn pixels.</dd>
+    <dd>This allows the texture to be moved as little as 1/32 of a texel.<br>
+        <br>
+        </dd>
+    <dt><strong>SP_TEXSHUF</strong></dt>
+    <dd>Indicates that the specified tile textures have their odd lines pre-shuffled to work around a LoadTextureBlock problem.<br>
+        <br>
+        </dd>
+    <dt><strong>SP_EXTERN</strong></dt>
+    <dd>Force sprite drawing to use existing drawing modes instead of explicitly setting them. The application must be sure to get all of the details exactly correct. The next drawn sprite will assume nothing about the current drawing modes.<br>
+        <br>
+        </dd>
+</dl>
+
+<h3>See Also</h3>
+
+<p><a href="spDraw.htm">spDraw</a></p>
+<h3>Revision History</h3>
+<p>1999/04/30  Changed Format</p>
+<br><br>
+
+</body>
+</html>

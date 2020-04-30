@@ -1,0 +1,60 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>07-07</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font face="arial" size="-1">
+<p> <strong>7.7 Disk Startup and Game Pak ROM Startup </strong> 
+<hr>
+
+<p>This section describes disk and Game Pak ROM startup.  With a single-disk game, for example, the IPL is started, and it starts the game from disk, as described in Chapter 4, "64DD Internal ROM." This type of startup will be referred to as "disk startup."  In contrast, with games that use the Game Pak and disk as a set, the Game Pak ROM is first started, and data are read from the disk as the game progresses.  This type of startup will be referred to as "Game Pak startup."  Following is a summary of the development differences between disk startup and Game Pak ROM startup.</p>
+
+<p><strong>Intialization Function Differences
+</strong> 
+
+<p>
+With disk startup, the <a href="../../n64man/64dd/LeoCreateLeoManager.htm">LeoCreateLeoManager()</a> function is used, regardless of whether the game was made for Japan or North America.  With Game Pak ROM startup, however, the <a href="../../n64man/64dd/LeoCreateLeoManager.htm">LeoCJCreateLeoManager()</a> function is used with games made for Japan, and the <a href="../../n64man/64dd/LeoCreateLeoManager.htm">LeoCACreateLeoManager()</a> funciton is used with games created for North America.  For details, please see <a href="07-01.htm"> Section 7.1, "Initialization Functions."</a> 
+ 
+
+<p> <strong>Functions Called Immediately after Initialization
+</strong> 
+
+<p>With Game Pak ROM startup, a state called "reset status" is entered after initialization.  In this state, the POWERONRESET_DEVICERESET_OCCURRED error will occur for any function called.  To return to normal status, the program must call the <a href="../../n64man/64dd/LeoResetClear.htm">LeoResetClear( )</a> function.
+</p>
+
+<p>For details, please see <a href="07-01.htm"> Section 7.1, "Initialization Functions,"</a> and <a href="../dd10/index.htm">"Chapter 10, Error-Handling Sequences."</a> 
+
+<p><strong>Checking the RTC (internal clock)</strong>
+ 
+
+<p>When starting games that use a Game Pak and the RTC, be sure to check the RTC after initialization.  For details, please see <a href="../dd10/index.htm">"Chapter 10, Error-Handling Sequences."</a>
+
+
+<p> <strong>Checking the Memory Expansion Pak
+</strong> 
+
+<p>With disk startup, the IPL checks whether a Memory Expansion Pak is inserted.  With Game Pak startup, a Game Pak ROM program must perform this check.  Use <a href="../../n64man/os/osGetMemSize.htm">osGetMemSize( )</a> for this purpose.  osGetMemSize()takes no arguments, and it returns the size of RDRAM.  A return value of less than 0x00800000 indicates that no Memory Expansion Pak is inserted, and a message is displayed asking the user to insert the pack.  For details, please see <a href="../dd10/index.htm">"Chapter 10,  Error-Handling Sequences."</a>
+
+<p><strong>Types of Debugging with 64DD
+</strong>
+
+
+<p>With disk startup, debugging is performed with a special IPL placed in the Partner emulation ROM (when debugging using Partner) or into ??one side of the Partner's socket pair?? (when debugging with the 64DD).  With Game Pak ROM startup, the application program is used instead of these IPLs.  For details, please see section <a href="../dd05/05-03.htm">Section  5.3, "Debugging During Development."</a> 
+ 
+
+<p> <strong>Other Points to Note</strong> 
+
+<ul>
+    <li>Disks used with game Pak ROM and those after the second disk in games that use two startup disks can currently be used only for data.
+   <P>
+    <li>With Game Pak ROM startup, leoBootID is not stored.  Immediately after initialization, store in RDRAM the disk ID that was read, and subsequently use this ID to determine whether disks have been exchanged. (For information on leoBootID, see item 5. Main Functions of the IPL in section 4.1:  IPL. 
+</ul>
+
+<p><A href="index.htm#index"><img src="../../gif/index.gif" border="0"
+width="65" height="17"></a></p>
+
+<hr>
+</body>
+</html>

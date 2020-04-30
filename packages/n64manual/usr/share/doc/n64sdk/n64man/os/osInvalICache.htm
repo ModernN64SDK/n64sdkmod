@@ -1,0 +1,49 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<!--Edited by Matt P., 2/21/2000- added revisions-->
+<TITLE>osInvalICache</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+<font style="font-size: 12pt"><b>osInvalICache</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+<P>
+<i>Invalidates CPU instruction cache</i>
+</P>
+<H3>Syntax</H3>
+<PRE>
+<CODE>#include &lt;ultra64.h&gt;        /* <A href="../../header/ultra64.htm">os.h</A> */
+void osInvalICache(void *vaddr, s32 nbytes);
+</CODE>
+</PRE>
+<H3>Description</H3>
+<P>
+The MIPS R4300 CPU implements a 16Kbyte direct-mapped instruction cache with a line size of 32bytes.  The cache is not synchronized with physical memory and thus cache lines must be invalidated to ensure that old instruction codes are not used when more recent instruction codes exist in physical memory.  
+</P>
+<P>
+<tt>osInvalICache</tt> function invalidates all instruction cache lines that contain the region [<B>vaddr</B>, <B>vaddr</B>+<B>nbytes</B>- <B>1</B>].  The given address <B>vaddr</B> must be a CPU virtual address, either direct mapped or mapped via the CPU TLB.  If <B>vaddr</B> is not aligned to the cache line boundary, and <B>nbytes</B> is not a multiple of the cache line size, a slightly larger region may be invalidated.  
+</P>
+<P>
+The function is mostly used when new instruction codes are read from mask ROM to memory by way of DMA. In this case, the cache must be invalidated prior to reading by way of DMA.<BR>
+</P>
+<H3>Additional Description</H3>
+<P>
+<tt>osInvalICache</tt> function does the following operations:<BR>
+If <B>nbytes</B> &lt; 16384: invalidates instruction cache lines with the region of [<B>vaddr</B>, <B>vaddr</B>+<B>nbytes</B>-
+<B>1</B>] <BR>
+If <B>nbytes</B> &gt;= 16384: invalidates all the instruction cache lines.<BR>
+</P>
+<H3>See Also</H3>
+<P>
+<A href="osMapTLB.htm">osMapTLB</A>, <A href="osInvalDCache.htm">osInvalDCache</A>, <A href="osWritebackDCache.htm">osWritebackDCache</A>
+</P>
+<H3>Revision History</H3>
+<P>
+04/30/1999 Changed format.
+</P>
+<P>
+11/05/1999 Retranslated "Description."  Added "Additional Description."  
+</P>
+</BODY>
+</HTML>

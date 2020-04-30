@@ -1,0 +1,211 @@
+<HTML>
+<HEAD>
+<TITLE>mgkapp</TITLE>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../mobile/allman.css">
+<!-- Editor's Notes: 9/22/1999 Ron Daring -->
+</HEAD>
+  <BODY bgcolor="#FFFFFF">
+<h1>Function</h1>
+<hr>
+<a name="mgkAppInit">
+</A><h1><a name="mgkAppInit">mgkAppInit</A></h1><a name="mgkAppInit">
+</A><p><a name="mgkAppInit"><i>Initializes the application.</i></A></p><a name="mgkAppInit">
+
+</A><H2><a name="mgkAppInit">Syntax</A></H2><a name="mgkAppInit">
+</A><blockquote><a name="mgkAppInit">
+    </A><pre><a name="mgkAppInit">#include &lt;mgk/App.h&gt;
+void mgkAppInit( const u32 frame_latency,
+                 const u32 gfx_length,
+                 const u32 frame_resource_size,
+                 const u32 instance_queue_size,
+                 const u32 transform_buffer_size,
+                 const u32 max_objs,
+                 MgkObj *obj_array,
+                 void *user_data )
+</A></pre><a name="mgkAppInit">
+</A></blockquote><a name="mgkAppInit">
+</A><H2><a name="mgkAppInit">Arguments</A></H2><a name="mgkAppInit">
+</A><dl>
+    <dt><a name="mgkAppInit"><strong><TT>frame_latency</TT></strong></A></dt>
+    <dd><a name="mgkAppInit"><TT>frame_latency</TT> is decided, depending upon NuSystem<br>
+    When Double buffer, <TT>frame_latency</TT> = 2<br>
+    When Triple buffer, <TT>frame_latency</TT> = 3<br>
+    </A></dd>
+    <dt><a name="mgkAppInit"><strong><TT>gfx_length</TT></strong></A></dt>
+    <dd><a name="mgkAppInit"><TT>gfx_length</TT> is the size of <TT>gfx</TT> buffer, and the actual volume of <TT>gfx</TT> buffer is<br>
+    <TT>frame_latency * gfx_length * sizeof( Gfx )</TT>
+    </A></dd>
+    <dt><a name="mgkAppInit"><strong><TT>frame_resource_size</TT></strong></A></dt>
+    <dd><a name="mgkAppInit"><TT>frame_resource_size</TT> sets the capacity of frame resource in scene<br>
+    Frame resource is a temporary storage area for rendering each frame, which will
+    be destroyed everytime frame rendering completes. It is good for <TT>Mtx</TT> or dynamic
+    <TT>Vtx</TT>.
+    </A></dd>
+    <dt><a name="mgkAppInit"><strong><TT>instance_queue_size</TT></strong></A></dt>
+    <dd><a name="mgkAppInit"><TT>instance_queue_size</TT> sets maximum number of queue needed for hierarchy evaluation
+    </A></dd>
+    <dt><a name="mgkAppInit"><strong><TT>max_obj</TT></strong></A></dt>
+    <dd><a name="mgkAppInit"><TT>max_obj</TT> sets maximum number of objects that the application uses
+    </A></dd>
+    <dt><a name="mgkAppInit"><strong><TT>transform_buffer_size</TT></strong></A></dt>
+    <dd><a name="mgkAppInit"><TT>transform_buffer_size</TT> sets maximum size of buffer needed for coordinate conversion
+    for hierarchy evaluation
+    </A></dd>
+</dl><a name="mgkAppInit">
+</A><H2><a name="mgkAppInit">Description</A></H2><a name="mgkAppInit">
+  Initializes the application.
+</A><H2><a name="mgkAppInit">See Also</A></H2><a name="mgkAppInit">
+</A><a href="mgkobj.htm#MgkObj">MgkObj</a><a name="mgkAppInit">
+</A><hr>
+<a name="mgkAppInitGroups">
+</A><h1><a name="mgkAppInitGroups">mgkAppInitGroups</A></h1><a name="mgkAppInitGroups">
+</A><p><a name="mgkAppInitGroups"><i>Initialized rendering groups</i></A></p><a name="mgkAppInitGroups">
+</A><H2><a name="mgkAppInitGroups">Syntax</A></H2><a name="mgkAppInitGroups">
+</A><blockquote><a name="mgkAppInitGroups">
+    </A><pre><a name="mgkAppInitGroups">#include &lt;mgk/App.h&gt;
+void mgkAppInitGroups( void )
+</A></PRE></blockquote><a name="mgkAppInitGroups">
+</A><H2><a name="mgkAppInitGroups">Description</A></H2><a name="mgkAppInitGroups">
+  Initialized rendering groups
+
+</A><hr>
+<a name="mgkAppEvalAll">
+</A><h1><a name="mgkAppEvalAll">mgkAppEvalAll</A></h1><a name="mgkAppEvalAll">
+</A><p><a name="mgkAppEvalAll"><i>Evaluates the hierarchy structure</i></A></p><a name="mgkAppEvalAll">
+</A><H2><a name="mgkAppEvalAll">Syntax</A></H2><a name="mgkAppEvalAll">
+</A><blockquote><a name="mgkAppEvalAll">
+    </A><pre><a name="mgkAppEvalAll">#include &lt;mgk/App.h&gt;
+void mgkAppEvalAll( void )
+</A></PRE></blockquote><a name="mgkAppEvalAll">
+</A><H2><a name="mgkAppEvalAll">Description</A></H2><a name="mgkAppEvalAll">
+  Evaluates the hierarchy structure
+
+
+</A><hr>
+<a name="mgkAppDraw">
+</A><h1><a name="mgkAppDraw">mgkAppDraw</A></h1><a name="mgkAppDraw">
+</A><p><a name="mgkAppDraw"><i>Generates Gfx</i></A></p><a name="mgkAppDraw">
+</A><H2><a name="mgkAppDraw">Syntax</A></H2><a name="mgkAppDraw">
+</A><blockquote><a name="mgkAppDraw">
+    </A><pre><a name="mgkAppDraw">#include &lt;mgk/App.h&gt;
+Gfx *mgkAppDraw( void )
+</A></PRE></blockquote><a name="mgkAppDraw">
+</A><H2><a name="mgkAppDraw">Description</A></H2><a name="mgkAppDraw">
+  Generates Gfx
+
+</A><hr>
+<h1><a name="mgkAppDraw">Global variables</A></h1><hr>
+<hr>
+<a name="gMgkApp">
+</A><h1><a name="gMgkApp">gMgkApp</A></h1><a name="gMgkApp">
+</A><p><a name="gMgkApp"><i>The application instance.</i></A></p><a name="gMgkApp">
+</A><H2><a name="gMgkApp">Syntax</A></H2><a name="gMgkApp">
+</A><blockquote><a name="gMgkApp">
+</A><pre><a name="gMgkApp">#include &lt;mgk/App.h&gt;
+MgkApp gMgkApp</A></pre></blockquote><a name="gMgkApp">
+</A><H2><a name="gMgkApp">Description</A></H2><a name="gMgkApp">
+  The application instance.<br>
+  Pointer to MgkApp has not been added to the arguments of mgpApp*( )<br>
+  because every function has access to this global variable.
+</A><H2><a name="gMgkApp">See Also</A></H2><a name="gMgkApp">
+</A><a href="mgkapp.htm#MgkApp">MgkApp</a><a name="gMgkApp">
+
+</A><hr>
+<h1><a name="gMgkApp">Macros</A></h1><hr>
+<hr>
+<a name="_mgkAppGetHierarchy">
+</A><h1><a name="_mgkAppGetHierarchy">_mgkAppGetHierarchy</A></h1><a name="_mgkAppGetHierarchy">
+</A><p><a name="_mgkAppGetHierarchy"><i>Returns pointer to hierarchy of Scene</i></A></p><a name="_mgkAppGetHierarchy">
+</A><H2><a name="_mgkAppGetHierarchy">Syntax</A></H2><a name="_mgkAppGetHierarchy">
+</A><blockquote><a name="_mgkAppGetHierarchy">
+    </A><pre><a name="_mgkAppGetHierarchy">#include &lt;mgk/App.h&gt;
+_mgkAppGetHierarchy( )
+</A></PRE></blockquote><a name="_mgkAppGetHierarchy">
+</A><H2><a name="_mgkAppGetHierarchy">Description</A></H2><a name="_mgkAppGetHierarchy">
+  Returns pointer to hierarchy of Scene
+
+</A><hr>
+<a name="_mgkAppGetScene">
+</A><h1><a name="_mgkAppGetScene">_mgkAppGetScene</A></h1><a name="_mgkAppGetScene">
+</A><p><a name="_mgkAppGetScene"><i>Returns pointer to Scene</i></A></p><a name="_mgkAppGetScene">
+</A><H2><a name="_mgkAppGetScene">Syntax</A></H2><a name="_mgkAppGetScene">
+</A><blockquote><a name="_mgkAppGetScene">
+    </A><pre><a name="_mgkAppGetScene">#include &lt;mgk/App.h&gt;
+_mgkAppGetScene( )
+</A></PRE></blockquote><a name="_mgkAppGetScene">
+</A><H2><a name="_mgkAppGetScene">Description</A></H2><a name="_mgkAppGetScene">
+  Returns pointer to Scene
+
+</A><hr>
+<a name="_mgkAppGetScreen">
+</A><h1><a name="_mgkAppGetScreen">_mgkAppGetScreen</A></h1><a name="_mgkAppGetScreen">
+</A><p><a name="_mgkAppGetScreen"><i>Returns pointer to Screen</i></A></p><a name="_mgkAppGetScreen">
+</A><H2><a name="_mgkAppGetScreen">Syntax</A></H2><a name="_mgkAppGetScreen">
+</A><blockquote><a name="_mgkAppGetScreen">
+    </A><pre><a name="_mgkAppGetScreen">#include &lt;mgk/App.h&gt;
+_mgkAppGetScreen( )
+</A></PRE></blockquote><a name="_mgkAppGetScreen">
+</A><H2><a name="_mgkAppGetScreen">Description</A></H2><a name="_mgkAppGetScreen">
+  Returns pointer to Screen
+
+</A><hr>
+<a name="_mgkAppBeginFrame">
+</A><h1><a name="_mgkAppBeginFrame">_mgkAppBeginFrame</A></h1><a name="_mgkAppBeginFrame">
+</A><p><a name="_mgkAppBeginFrame"><i>Declares beginning of a frame.</i></A></p><a name="_mgkAppBeginFrame">
+</A><H2><a name="_mgkAppBeginFrame">Syntax</A></H2><a name="_mgkAppBeginFrame">
+</A><blockquote><a name="_mgkAppBeginFrame">
+    </A><pre><a name="_mgkAppBeginFrame">#include &lt;mgk/App.h&gt;
+_mgkAppBeginFrame( )
+</A></PRE></blockquote><a name="_mgkAppBeginFrame">
+</A><H2><a name="_mgkAppBeginFrame">Description</A></H2><a name="_mgkAppBeginFrame">
+  Declares beginning of a frame.
+  Evaluating hierarchy and generating Gfx are performed between
+  <TT>BeginFrame()</TT> and <TT>EndFrame()</TT>. Conversely, switching screen modes
+  must not be done between those two functions.
+
+</A><hr>
+<a name="_mgkAppEndFrame">
+</A><h1><a name="_mgkAppEndFrame">_mgkAppEndFrame</A></h1><a name="_mgkAppEndFrame">
+</A><p><a name="_mgkAppEndFrame"><i>Declares end of a frame.</i></A></p><a name="_mgkAppEndFrame">
+</A><H2><a name="_mgkAppEndFrame">Syntax</A></H2><a name="_mgkAppEndFrame">
+</A><blockquote><a name="_mgkAppEndFrame">
+    </A><pre><a name="_mgkAppEndFrame">#include &lt;mgk/App.h&gt;
+_mgkAppEndFrame( )
+</A></PRE></blockquote><a name="_mgkAppEndFrame">
+</A><H2><a name="_mgkAppEndFrame">Description</A></H2><a name="_mgkAppEndFrame">
+  Declares end of a frame.
+
+</A><hr>
+<a name="_mgkAppGetFrameCount">
+</A><h1><a name="_mgkAppGetFrameCount">_mgkAppGetFrameCount</A></h1><a name="_mgkAppGetFrameCount">
+</A><p><a name="_mgkAppGetFrameCount"><i>Returns frame count</i></A></p><a name="_mgkAppGetFrameCount">
+</A><H2><a name="_mgkAppGetFrameCount">Syntax</A></H2><a name="_mgkAppGetFrameCount">
+</A><blockquote><a name="_mgkAppGetFrameCount">
+    </A><pre><a name="_mgkAppGetFrameCount">#include &lt;mgk/App.h&gt;
+_mgkAppGetFrameCount( )
+</A></PRE></blockquote><a name="_mgkAppGetFrameCount">
+</A><H2><a name="_mgkAppGetFrameCount">Description</A></H2><a name="_mgkAppGetFrameCount">
+  Returns frame count
+
+</A><hr>
+<h1><a name="_mgkAppGetFrameCount">Structure</A></h1><hr>
+<hr>
+<a name="MgkApp">
+</A><h1><a name="MgkApp">MgkApp</A></h1><a name="MgkApp">
+</A><blockquote><pre><a name="MgkApp">
+typedef struct _MgkApp
+{
+    u32                 number_of_objs;
+    struct _MgkObj      *obj_array;
+    struct _MgkObj      *active_camera_ptr;
+    void                *user_data;
+} MgkApp;
+</A></pre></blockquote><a name="MgkApp">
+</A><H2><a name="MgkApp">See Also</A></H2><a name="MgkApp">
+</A><a href="mgkobj.htm#MgkObj">MgkObj</a><a name="MgkApp">
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+<br><br>
+</A></BODY>
+</HTML>

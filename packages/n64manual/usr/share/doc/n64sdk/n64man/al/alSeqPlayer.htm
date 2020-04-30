@@ -1,0 +1,102 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<link rel=stylesheet type="text/css" HREF="../N64man.css">
+<!--
+Editors Notes:
+  PWC- updated formatting
+  MAP- updated format
+-->
+<title>alSeqPlayer</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>alSeqPlayer</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p><i>
+Nintendo 64 MIDI sequence player routines</i>
+
+<h3>Syntax</h3>
+
+<blockquote>
+    <pre>#include &lt;libaudio.h&gt;     /* <a href="../../header/libaudio.htm">libaudio.h</a> */
+
+void  alSeqpNew(ALSeqPlayer *seqp, ALSeqpConfig *config);
+void  alSeqpDelete(ALSeqPlayer *seqp);
+void  alSeqpSetSeq(ALSeqPlayer *seqp, ALSeq *seq);
+ALSeq *alSeqpGetSeq(ALSeqPlayer *seqp);
+void  alSeqpSetBank(ALSeqPlayer *seqp,ALBank *b);
+s32   alSeqpGetState(ALSeqPlayer *seqp);
+void  alSeqpPlay(ALSeqPlayer *seqp);
+void  alSeqpStop(ALSeqPlayer *seqp);
+void  alSeqpSetTempo(ALSeqPlayer *seqp, s32 tempo);
+s32   alSeqpGetTempo(ALSeqPlayer *seqp);
+s16   alSeqpGetVol(ALSeqPlayer *seqp);
+void  alSeqpSetVol(ALSeqPlayer *seqp, s16 vol);
+void  alSeqpSetChlProgram(ALSeqPlayer *seqp, u8 chan, u8 prog);
+s32   alSeqpGetChlProgram(ALSeqPlayer *seqp, u8 chan);
+void  alSeqpSetChlFXMix(ALSeqPlayer *seqp, u8 chan, u8 fxmix);
+u8    alSeqpGetChlFXMix(ALSeqPlayer *seqp, u8 chan);
+void  alSeqpSetChlVol(ALSeqPlayer *seqp, u8 chan, u8 vol);
+u8    alSeqpGetChlVol(ALSeqPlayer *seqp, u8 chan);
+void  alSeqpSetChlPan(ALSeqPlayer *seqp, u8 chan, ALPan pan);
+ALPan alSeqpGetChlPan(ALSeqPlayer *seqp, u8 chan);
+void  alSeqpSetChlPriority(ALSeqPlayer *seqp, u8 chan, u8 priority);
+u8    alSeqpGetChlPriority(ALSeqPlayer *seqp, u8 chan);
+void  alSeqpSendMidi(ALSeqPlayer *seqp, s32 ticks, u8 status, u8 byte1, u8 byte2);
+void  alSeqpLoop(ALSeqPlayer *seqp, ALSeqMarker *start, ALSeqMarker *end, s32 count);</pre>
+</blockquote>
+
+<h3>Description</h3>
+
+<p>The Nintendo 64 Audio Library supports the playback of MIDI sequences by using either the Type 0 MIDI Sequence Player (the routines begin with alSeqp) or the Compressed MIDI Sequence Player (the routines begin with alCSP).</p>
+
+<p>This page details the Type 0 MIDI Sequence Player. For details of the Compressed MIDI Sequence Player, see the page for <a href="alCSeqPlayer.htm">alCSeqPlayer</a>. The two MIDI players differ in their handling of loops and their compression of data. Details are discussed in the Audio Library and Audio Formats sections of the Nintendo 64 Programming Manual</p>
+
+<p>The sequence player handles the playback of the sequence, but the actual sequence data is handled by a Sequence.</p>
+
+<p>To use the Sequence Player, you must first initialize an ALSeqPlayer structure to represent it. To do this, call <a href="alSeqpNew.htm">alSeqpNew</a>.</p>
+
+<p>After initializing the ALSeqPlayer structure, you must set the bank and the sequence by calling <a href="alSeqpSetBank.htm">alSeqpSetBank</a> and <a href="alSeqpSetSeq.htm">alSeqpSetSeq</a> respectively.</p>
+
+<p>To start the sequence player playing, call <a href="alSeqpPlay.htm">alSeqpPlay</a>. To stop the sequence player, call <a href="alSeqpStop.htm">alSeqpStop</a>. The sequence player can only have one target sequence at a time. You must stop a sequence before setting and playing a new sequence. You should not attempt to switch banks while a sequence is playing. You can use the <tt>alCSPGetSeq</tt> function to determine if the sequence player is fully stopped. When you call <a href="alSeqpPlay.htm">alSeqpPlay</a>, all processing of the sequence stops and all notes are turned off.</p>
+
+<p>When a sequence is stopped, it will not rewind. It remains pointing to its current location. This allows you to restart a sequence from where it was stopped by calling <a href="alSeqpPlay.htm">alSeqpPlay</a>. Sustained notes that were cut off by a call to <a href="alSeqpStop.htm">alSeqpStop</a> are not restarted, only new notes are processed.</p>
+
+<p>If you want to rewind the sequence or relocate to another point in the sequence, you can create an ALSeqMarker at the desired location by calling <a href="alSeqNewMarker.htm">alSeqNewMarker</a>, and then call <a href="alSeqSetLoc.htm">alSeqSetLoc</a> to rewind or relocate the sequence. Note that these calls do not affect the channel playback state, so make sure that the channel arguments (such as program, volume, pan, and so on) are set to appropriate values for the given sequence location.</p>
+
+<p>You can set channel arguments by calling individual functions or by sending the appropriate MIDI data in a call to <a href="alSeqpSendMidi.htm">alSeqpSendMidi</a>. Music can be created in real time and played back by calling <a href="alSeqpSendMidi.htm">alSeqpSendMidi</a>. </p>
+
+<p>A single loop can be created by calling alSeqpLoop; however, you must first create and set a beginning and an ending loop. Looping of individual tracks is not supported by the sequence player. For more involved looping. see the compressed MIDI sequence player (<a href="alCSeqPlayer.htm">alCSeqPlayer</a>) routine. </p>
+
+<h3>See Also</h3>
+
+<p><a href="alSeq.htm">alSeq</a>, <a href="alSeqpNew.htm">alSeqpNew</a>,
+<a href="alSeqpDelete.htm">alSeqpDelete</a>, <a
+href="alSeqpSetSeq.htm">alSeqpSetSeq</a>, <a
+href="alSeqpGetSeq.htm">alSeqpGetSeq</a>, <a
+href="alSeqpPlay.htm">alSeqpPlay</a>, <a
+href="alSeqpStop.htm">alSeqpStop</a>, <a
+href="alSeqpSetBank.htm">alSeqpSetBank</a>, <a
+href="alSeqpSetTempo.htm">alSeqpSetTempo</a>, <a
+href="alSeqpGetTempo.htm">alSeqpGetTempo</a>, <a
+href="alSeqpGetVol.htm">alSeqpGetVol</a>, <a
+href="alSeqpSetVol.htm">alSeqpSetVol</a>, <a
+href="alSeqpSetChlProgram.htm">alSeqpSetChlProgram</a>, <a
+href="alSeqpGetChlProgram.htm">alSeqpGetChlProgram</a>, <a
+href="alSeqpSetChlFXMix.htm">alSeqpSetChlFXMix</a>, <a
+href="alSeqpGetChlFXMix.htm">alSeqpGetChlFXMix</a>, <a
+href="alSeqpSetChlPan.htm">alSeqpSetChlPan</a>, <a
+href="alSeqpGetChlPan.htm">alSeqpGetChlPan</a>, <a
+href="alSeqpSetChlVol.htm">alSeqpSetChlVol</a>, <a
+href="alSeqpGetChlVol.htm">alSeqpGetChlVol</a>, <a
+href="alSeqpSetChlPriority.htm">alSeqpSetChlPriority</a>, <a
+href="alSeqpGetChlPriority.htm">alSeqpGetChlPriority</a>, and <a
+href="alSeqpSendMidi.htm">alSeqpSendMidi</a></p>
+<h3>Revision History</h3>
+<p>1999/04/30  Changed Format</p>
+<br><br>
+
+</body>
+</html>

@@ -1,0 +1,1528 @@
+<html>
+
+
+<!..
+-- CHANGE START --
+1998/10/07
+
+softimage scaleをすべてunique scaleに変更。
+
+-- CHANGE END --
+..>
+
+
+<title>
+AnimNode
+</title>
+<body bgcolor="ffffff">
+
+<h1>
+<font color="ff0000">
+<i>
+Nintendo Confidential
+</i>
+</font>
+</h1>
+<hr size="3">
+
+
+<h2>
+12. AnimNode
+
+</h2>
+<hr size="3">
+<h3>
+(1) AnimGroup
+</h3>
+
+<blockquote>
+
+<table border width="600">
+
+<tr>
+<td nowrap>
+u32 use_animation_channel
+</td>
+<td>
+NIFF1.0で使用していたAnimを使用せずに各チャンネル毎にデータを持つ場合に使用します。下記のチャンネルが用意されています。
+<pre>
+<b>
+NIFF2_ANIM_CHANNEL_NO_USE                        0x00000000
+NIFF2_ANIM_CHANNEL_ROTATE_AXIS                   0x00000001
+NIFF2_ANIM_CHANNEL_ROTATE_X                      0x00000002
+NIFF2_ANIM_CHANNEL_ROTATE_Y                      0x00000004
+NIFF2_ANIM_CHANNEL_ROTATE_Z                      0x00000008
+NIFF2_ANIM_CHANNEL_ORIENTATION_XY                0x00000010
+NIFF2_ANIM_CHANNEL_TRANSLATION                   0x00000020
+NIFF2_ANIM_CHANNEL_UNIQUE_SCALE                  0x00000040
+NIFF2_ANIM_CHANNEL_CLASSICAL_SCALE               0x00000080
+NIFF2_ANIM_CHANNEL_ORIENTATION_CONSTRAINT        0x00000100
+NIFF2_ANIM_CHANNEL_DIRECTION_CONSTRAINT          0x00000200
+NIFF2_ANIM_CHANNEL_UPVECTOR_CONSTRAINT           0x00000400
+NIFF2_ANIM_CHANNEL_PREFERRED_AXIS_CONSTRAINT     0x00000800
+NIFF2_ANIM_CHANNEL_POSITION_CONSTRAINT           0x00001000
+NIFF2_ANIM_CHANNEL_UNIQUE_SCALE_CONSTRAINT       0x00002000
+NIFF2_ANIM_CHANNEL_CLASSICAL_SCALE_CONSTRAINT    0x00004000
+</b>
+</pre>
+従来通りのAnimを使用する場合はANIM_CHANNEL_NO_USEを設定してください。<p>
+NIFF2_ANIM_CHANNEL_ROTATE_AXISはローテーション軸について回転するアニメーションチャンネルです。<p>
+NIFF2_ANIM_CHANNEL_ROTATE_XはX軸周りの回転角度を指定するアニメーションチャンネルです。<p>
+NIFF2_ANIM_CHANNEL_ROTATE_YはY軸周りの回転角度を指定するアニメーションチャンネルです。<p>
+NIFF2_ANIM_CHANNEL_ROTATE_ZはZ軸周りの回転角度を指定するアニメーションチャンネルです。<p>
+NIFF2_ANIM_CHANNEL_ORIENTATION_XYはX軸とY軸の方向を指定して回転をおこないアニメーションチャンネルです。X軸とY軸が直交しない場合はY軸を調整するようにN64側のソフトウェアを作成してください。<p>
+NIFF2_ANIM_CHANNEL_TRANSLATIONは平行移動値を指定するアニメーションチャンネルです。<p>
+NIFF2_ANIM_CHANNEL_UNIQUE_SCALEはUniqueで使用されるunique scaleを指定するアニメーションチャンネルです。<p>
+NIFF2_ANIM_CHANNEL_CLASSICAL_SCALEは通常のCGツールで使用されるscaleを指定するアニメーションチャンネルです。<p>
+NIFF2_ANIM_CHANNEL_ORIENTATION_CONSTRAINTは指定したオブジェクトに対してorientation値をconstraintするアニメーションチャンネルです。<p>
+NIFF2_ANIM_CHANNEL_DIRECTION_CONSTRAINTはX軸を指定したオブジェクトに向けるアニメーションチャンネルです。<p>
+NIFF2_ANIM_CHANNEL_UPVECTOR_CONSTRAINTはY軸を指定したオブジェクトに向けるアニメーションチャンネルです。<p>
+NIFF2_ANIM_CHANNEL_PREFERRED_AXIS_CONSTRAINTはZ軸を指定したオブジェクトに向けるアニメーションチャンネルです。<p>
+NIFF2_ANIM_CHANNEL_POSITION_CONSTRAINTは平行移動を指定したオブジェクトにconstraintするアニメーションチャンネルです。<p>
+NIFF2_ANIM_CHANNEL_UNIQUE_SCALE_CONSTRAINTはunique scaleを指定したオブジェクトにconstraintするアニメーションチャンネルです。<p>
+NIFF2_ANIM_CHANNEL_CLASSICAL_SCALE_CONSTRAINTはclassical scaleを指定したオブジェクトにconstraintするアニメーションチャンネルです。<p>
+また、複数のアニメーションチャンネルを同時に使用する場合はそれぞれbitORして記述してください。ただし、下記のように不可能な組み合わせが存在します。<p>
+RotateAxis、(RotateX, RotateY, RotateZ)、OrientationXYは同時使用できません。ただし、RotateX, RotateY, RotateZはそれぞれ組み合わせて使用できます。<p>
+UniqueScale、ClassicalScaleは同時使用できません。<p>
+OrientationConstraintはRotateAxis、RotateY、RotateZ、OrientationXYと同時使用できません。<p>
+UpVectorConstraintはRotateAxis、RotateX、RotateZ、OrientationXYと同時使用できません。<p>
+PreferredAxisConstraintはRotateAxis、RotateX、RotateY、OrientationXYと同時使用できません。<p>
+DirectionConstraintはRotateAxis、RotateX、RotateY、OrientationXYと同時使用できません。<p>
+PositionConstraintはTranslationと同時使用できません。<p>
+UniqueScaleConstraintはUniqueScale、ClassicalScale、ClassicalScaleConstraintと同時使用できません。<p>
+ClassicalScaleConstraintはUniqueScale、ClassicalScale、UniqueScaleConstraintと同時使用できません。<p>
+移動、回転、スケールに関して、同じ種類の複数のconstraintを同時に使用することはできません。<p>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 rotate_axis_num
+</td>
+<td>
+RotateAxis数を記述します。RotateAxisチャンネルを使用しない場合は0x0を記述してください。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 rotate_x_num
+</td>
+<td>
+RotateX数を記述します。RotateXチャンネルを使用しない場合は0x0を記述してください。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 rotate_y_num
+</td>
+<td>
+RotateY数を記述します。RotateYチャンネルを使用しない場合は0x0を記述してください。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 rotate_z_num
+</td>
+<td>
+RotateZ数を記述します。RotateZチャンネルを使用しない場合は0x0を記述してください。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 orientation_xy_num
+</td>
+<td>
+OrientationXY数を記述します。OrientationXYチャンネルを使用しない場合は0x0を記述してください。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 translation_num
+</td>
+<td>
+Translation数を記述します。Translationチャンネルを使用しない場合は0x0を記述してください。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 unique_scale_num
+</td>
+<td>
+UniqueScale数を記述します。UniqueScaleチャンネルを使用しない場合は0x0を記述してください。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 classical_scale_num
+</td>
+<td>
+ClassicalScale数を記述します。ClassicalScaleチャンネルを使用しない場合は0x0を記述してください。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 kind_of_orientation_constraint_node
+</td>
+<td>
+Orientation Constraintするノードの種類を下記のタグで記述します。
+<pre>
+<b>
+TAG_OBJ_LIST            0x00020000
+TAG_CHAIN_ROOT_LIST     0x00240000
+TAG_JOINT_LIST          0x00250000
+TAG_EFFECTOR_LIST       0x00260000
+</b>
+</pre>
+Orientation Constraintを使用しない場合や、外部ファイル参照する場合は0xffffffffを記述してください。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 orientation_constraint_node
+</td>
+<td>
+Orientation Constraintするノードのインデックス番号を記述します。<p>
+Orientation Constraintを使用しない場合や、外部ファイル参照する場合は0xffffffffを記述してください。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 kind_of_direction_constraint_node
+</td>
+<td>
+Direction Constraintするノードの種類を下記のタグで記述します。
+<pre>
+<b>
+TAG_OBJ_LIST            0x00020000
+TAG_CHAIN_ROOT_LIST     0x00240000
+TAG_JOINT_LIST          0x00250000
+TAG_EFFECTOR_LIST       0x00260000
+</b>
+</pre>
+Direction Constraintを使用しない場合や、外部ファイル参照する場合は0xffffffffを記述してください。
+</td>
+</tr>
+
+
+
+<tr>
+<td nowrap>
+u32 direction_constraint_node
+</td>
+<td>
+Direction Constraintするノードのインデックス番号を記述します。<p>
+Direction Constraintを使用しない場合や、外部ファイル参照する場合は0xffffffffを記述してください。
+</td>
+</tr>
+
+
+<tr>
+<td nowrap>
+u32 kind_of_upvector_constraint_node
+</td>
+<td>
+Upvector Constraintするノードの種類を下記のタグで記述します。
+<pre>
+<b>
+TAG_OBJ_LIST            0x00020000
+TAG_CHAIN_ROOT_LIST     0x00240000
+TAG_JOINT_LIST          0x00250000
+TAG_EFFECTOR_LIST       0x00260000
+</b>
+</pre>
+Upvector Constraintを使用しない場合や、外部ファイル参照する場合は0xffffffffを記述してください。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 upvector_constraint_node
+</td>
+<td>
+UpVector Constraintするノードのインデックス番号を記述します。<p>
+UpVector Constraintを使用しない場合や、外部ファイル参照する場合は0xffffffffを記述してください。
+</td>
+</tr>
+
+
+<tr>
+<td nowrap>
+u32 kind_of_preferred_axis_constraint_node
+</td>
+<td>
+Preferred Axis Constraintするノードの種類を下記のタグで記述します。
+<pre>
+<b>
+TAG_OBJ_LIST            0x00020000
+TAG_CHAIN_ROOT_LIST     0x00240000
+TAG_JOINT_LIST          0x00250000
+TAG_EFFECTOR_LIST       0x00260000
+</b>
+</pre>
+Preferred Axis Constraintを使用しない場合や、外部ファイル参照する場合は0xffffffffを記述してください。
+</td>
+</tr>
+
+
+<tr>
+<td nowrap>
+u32 preferred_axis_constraint_node
+</td>
+<td>
+Preferred Axis Constraintするノードのインデックス番号を記述します。<p>
+Preferred Axis Constraintを使用しない場合や、外部ファイル参照する場合は0xffffffffを記述してください。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 kind_of_position_constraint_node
+</td>
+<td>
+Position Constraintするノードの種類を下記のタグで記述します。
+<pre>
+<b>
+TAG_OBJ_LIST            0x00020000
+TAG_CHAIN_ROOT_LIST     0x00240000
+TAG_JOINT_LIST          0x00250000
+TAG_EFFECTOR_LIST       0x00260000
+</b>
+</pre>
+Position Constraintを使用しない場合や、外部ファイル参照する場合は0xffffffffを記述してください。
+</td>
+</tr>
+
+
+
+<tr>
+<td nowrap>
+u32 positon_constraint_node
+</td>
+<td>
+Position Constraintするノードのインデックス番号を記述します。<p>
+Position Constraintを使用しない場合や、外部ファイル参照する場合は0xffffffffを記述してください。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 kind_of_unique_scale_constraint_node
+</td>
+<td>
+Unique Scale Constraintするノードの種類を下記のタグで記述します。
+<pre>
+<b>
+TAG_OBJ_LIST            0x00020000
+TAG_CHAIN_ROOT_LIST     0x00240000
+TAG_JOINT_LIST          0x00250000
+TAG_EFFECTOR_LIST       0x00260000
+</b>
+</pre>
+Unique Scale Constraintを使用しない場合や、外部ファイル参照する場合は0xffffffffを記述してください。
+</td>
+</tr>
+
+
+
+
+<tr>
+<td nowrap>
+u32 unique_scale_constraint_node
+</td>
+<td>
+Unique Scale Constraintするノードのインデックス番号を記述します。<p>
+Unique Scale Constraintを使用しない場合や、外部ファイル参照する場合は0xffffffffを記述してください。
+</td>
+</tr>
+
+
+<tr>
+<td nowrap>
+u32 kind_of_classical_scale_constraint_node
+</td>
+<td>
+Classical Scale Constraintするノードの種類を下記のタグで記述します。
+<pre>
+<b>
+TAG_OBJ_LIST            0x00020000
+TAG_CHAIN_ROOT_LIST     0x00240000
+TAG_JOINT_LIST          0x00250000
+TAG_EFFECTOR_LIST       0x00260000
+</b>
+</pre>
+Classical Scale Constraintを使用しない場合や、外部ファイル参照する場合は0xffffffffを記述してください。
+</td>
+</tr>
+
+
+
+
+<tr>
+<td nowrap>
+u32 classical_scale_constraint_node
+</td>
+<td>
+Classical Scale Constraintするノードのインデックス番号を記述します。<p>
+Classical Scale Constraintを使用しない場合や、外部ファイル参照する場合は0xffffffffを記述してください。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 external_orientation_constraint_file_name_index 
+</td>
+<td>
+Orientation ConstraintするObjを外部ファイル参照する場合、ファイル名をExternalNameListのインデックス番号で記述します。<p>
+ファイル名はディレクトリ名などを含まない形で記述してください。<p>
+外部参照しない場合は0xffffffffを記述してください。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 external_orientation_constraint_obj_name_index
+</td>
+<td>
+Orientation ConstraintするObjを外部ファイル参照する場合、そのObj名をExternalNameList内のインデックス番号で記述します。<p>
+外部参照しない場合は0xffffffffを記述してください。
+</td>
+</tr>
+
+
+<tr>
+<td nowrap>
+u32 external_direction_constraint_file_name_index 
+</td>
+<td>
+Direction ConstraintするObjを外部ファイル参照する場合、ファイル名をExternalNameListのインデックス番号で記述します。<p>
+ファイル名はディレクトリ名などを含まない形で記述してください。<p>
+外部参照しない場合は0xffffffffを記述してください。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 external_direction_constraint_obj_name_index
+</td>
+<td>
+Direction ConstraintするObjを外部ファイル参照する場合、そのObj名をExternalNameList内のインデックス番号で記述します。<p>
+外部参照しない場合は0xffffffffを記述してください。
+</td>
+</tr>
+
+
+
+<tr>
+<td nowrap>
+u32 external_upvector_constraint_file_name_index 
+</td>
+<td>
+Upvector ConstraintするObjを外部ファイル参照する場合、ファイル名をExternalNameListのインデックス番号で記述します。<p>
+ファイル名はディレクトリ名などを含まない形で記述してください。<p>
+外部参照しない場合は0xffffffffを記述してください。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 external_upvector_constraint_obj_name_index
+</td>
+<td>
+Upvector ConstraintするObjを外部ファイル参照する場合、そのObj名をExternalNameList内のインデックス番号で記述します。<p>
+外部参照しない場合は0xffffffffを記述してください。
+</td>
+</tr>
+
+
+<tr>
+<td nowrap>
+u32 external_preferred_axis_constraint_file_name_index 
+</td>
+<td>
+Preferred Axis ConstraintするObjを外部ファイル参照する場合、ファイル名をExternalNameListのインデックス番号で記述します。<p>
+ファイル名はディレクトリ名などを含まない形で記述してください。<p>
+外部参照しない場合は0xffffffffを記述してください。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 external_preferred_axis_constraint_obj_name_index
+</td>
+<td>
+Preferred Axis ConstraintするObjを外部ファイル参照する場合、そのObj名をExternalNameList内のインデックス番号で記述します。<p>
+外部参照しない場合は0xffffffffを記述してください。
+</td>
+</tr>
+
+
+<tr>
+<td nowrap>
+u32 external_position_constraint_file_name_index 
+</td>
+<td>
+Position ConstraintするObjを外部ファイル参照する場合、ファイル名をExternalNameListのインデックス番号で記述します。<p>
+ファイル名はディレクトリ名などを含まない形で記述してください。<p>
+外部参照しない場合は0xffffffffを記述してください。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 external_position_constraint_obj_name_index
+</td>
+<td>
+Position ConstraintするObjを外部ファイル参照する場合、そのObj名をExternalNameList内のインデックス番号で記述します。<p>
+外部参照しない場合は0xffffffffを記述してください。
+</td>
+</tr>
+
+
+<tr>
+<td nowrap>
+u32 external_unique_scale_constraint_file_name_index 
+</td>
+<td>
+Unique Scale ConstraintするObjを外部ファイル参照する場合、ファイル名をExternalNameListのインデックス番号で記述します。<p>
+ファイル名はディレクトリ名などを含まない形で記述してください。<p>
+外部参照しない場合は0xffffffffを記述してください。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 external_unique_scale_constraint_obj_name_index
+</td>
+<td>
+Unique Scale ConstraintするObjを外部ファイル参照する場合、そのObj名をExternalNameList内のインデックス番号で記述します。<p>
+外部参照しない場合は0xffffffffを記述してください。
+</td>
+</tr>
+
+
+<tr>
+<td nowrap>
+u32 external_classical_scale_constraint_file_name_index 
+</td>
+<td>
+Classical Scale ConstraintするObjを外部ファイル参照する場合、ファイル名をExternalNameListのインデックス番号で記述します。<p>
+ファイル名はディレクトリ名などを含まない形で記述してください。<p>
+外部参照しない場合は0xffffffffを記述してください。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 external_classical_scale_constraint_obj_name_index
+</td>
+<td>
+Classical Scale ConstraintするObjを外部ファイル参照する場合、そのObj名をExternalNameList内のインデックス番号で記述します。<p>
+外部参照しない場合は0xffffffffを記述してください。
+</td>
+</tr>
+
+
+
+<tr>
+<td nowrap>
+RotateAxis
+</td>
+<td>
+RotateAxisエリアです。回転軸を指定することでrotationを記述するチャンネルです。rotate_axis_num = 0の時はこのエリアは記述されません。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+RotateX
+</td>
+<td>
+X軸周りの回転を記述するチャンネルです。rotate_x_num = 0の時はこのエリアは記述されません。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+RotateY
+</td>
+<td>
+Y軸周りの回転を記述するチャンネルです。rotate_y_num = 0の時はこのエリアは記述されません。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+RotateZ
+</td>
+<td>
+Z軸周りの回転を記述するチャンネルです。rotate_z_num = 0の時はこのエリアは記述されません。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+OrientationXZ
+</td>
+<td>
+回転をorientationで表現する場合に記述するチャンネルです。orientation_xy_num = 0の時はこのエリアは記述されません。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+Translation
+</td>
+<td>
+平行移動を記述するエリアです。translation_num = 0の時はこのエリアは記述されません。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+UniqueScale
+</td>
+<td>
+UniqueScaleを記述するエリアです。unique_scale_num = 0の時はこのエリアは記述されません。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+ClassicalScale
+</td>
+<td>
+通常のCGツールで使用されているスケーリングであるClassicalScaleを記述するエリアです。classical_scale_num = 0の時はこのエリアは記述されません。
+</td>
+</tr>
+
+
+
+
+
+</table>
+
+
+
+<p>
+<a href="./appendix/unique_scale_J.htm">
+Appendix ... about Unique Scale
+</a>
+<p>
+<a href="./anim_C.htm">
+Go to the data chunk
+</a>
+<p>
+<a href="./index.htm">
+Go back to the index
+</a>
+
+
+
+</blockquote>
+
+<h3>
+(2) RotateAxis
+</h3>
+<blockquote>
+
+
+<table border width="600">
+
+<tr>
+<td nowrap>
+u32 interpolation_type
+</td>
+<td>
+このキーから次のキーまでの補間タイプを記述します。下記のフラグが定義されています。
+
+<pre>
+<b>
+NIFF2_INTERPOLATION_TYPE_CONST&#9;&#9;0x00000000
+NIFF2_INTERPOLATION_TYPE_FULL&#9;&#9;0x00000001
+NIFF2_INTERPOLATION_TYPE_LINEAR&#9;&#9;0x00000002
+NIFF2_INTERPOLATION_TYPE_HERMITE&#9;0x00000003
+</b>
+</pre>
+NIFF2_INTERPOLATION_TYPE_CONSTはこのキーから次のキーまでデータを保持します。この場合、すべての加速度データは無視されます。<p>
+NIFF2_INTERPOLATION_TYPE_FULLはフルフレームアニメーションを表現します。すべてのキーのデータを記述してください。この場合、すべての加速度データは無視されます。<p>
+NIFF2_INTERPOLATION_TYPE_LINEARはこのキーから次のキーまで線形補間をおこないます。この場合、すべての加速度データは無視されます。<p>
+NIFF2_INTERPOLATION_TYPE_HERMITEはこのキーから次のキーまで三次補間をHermite関数を用いておこないます。<p>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 key
+</td>
+<td>
+Key値を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+float axis_x
+</td>
+<td>
+正規化された回転軸の方向ベクトルのX成分を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+float axis_y
+</td>
+<td>
+正規化された回転軸の方向ベクトルのY成分を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+float axis_z
+</td>
+<td>
+正規化された回転軸の方向ベクトルのZ成分を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+float rotation_angle
+</td>
+<td>
+回転軸周りの角度をラジアンで記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+float differential_axis_x
+</td>
+<td>
+回転軸の方向ベクトルについてHermite補間のための接ベクトルのX成分を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+float differential_axis_y
+</td>
+<td>
+回転軸の方向ベクトルについてHermite補間のための接ベクトルのY成分を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+float differential_axis_z
+</td>
+<td>
+回転軸の方向ベクトルについてHermite補間のための接ベクトルのZ成分を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+float differential_rotation_angle
+</td>
+<td>
+回転軸周りの角度についてHermite補間のための接ベクトルを記述します。
+</td>
+</tr>
+</table>
+
+<p>
+<a href="./appendix/hermite_J.htm">
+Appendix ... about Hermite
+</a>
+
+<p>
+<a href="./anim_C.htm">
+Go to the data chunk
+</a>
+<p>
+<a href="./index.htm">
+Go back to the index
+</a>
+
+</blockquote>
+
+
+
+<h3>
+(3) RotateX
+</h3>
+
+<blockquote>
+<table border width="600">
+
+<tr>
+<td nowrap>
+u32 interpolation_type
+</td>
+<td>
+このキーから次のキーまでの補間タイプを記述します。下記のフラグが定義されています。
+
+<pre>
+<b>
+NIFF2_INTERPOLATION_TYPE_CONST&#9;&#9;0x00000000
+NIFF2_INTERPOLATION_TYPE_FULL&#9;&#9;0x00000001
+NIFF2_INTERPOLATION_TYPE_LINEAR&#9;&#9;0x00000002
+NIFF2_INTERPOLATION_TYPE_HERMITE&#9;0x00000003
+</b>
+</pre>
+NIFF2_INTERPOLATION_TYPE_CONSTはこのキーから次のキーまでデータを保持します。この場合、すべての加速度データは無視されます。<p>
+NIFF2_INTERPOLATION_TYPE_FULLはフルフレームアニメーションを表現します。すべてのキーのデータを記述してください。この場合、すべての加速度データは無視されます。<p>
+NIFF2_INTERPOLATION_TYPE_LINEARはこのキーから次のキーまで線形補間をおこないます。この場合、すべての加速度データは無視されます。<p>
+NIFF2_INTERPOLATION_TYPE_HERMITEはこのキーから次のキーまで三次補間をHermite関数を用いておこないます。
+
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 key
+</td>
+<td>
+Key値を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+float rotate_angle
+</td>
+<td>
+X軸周りの回転角度をラジアンで記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+float differential_rotate_angle
+</td>
+<td>
+X軸周りの回転角度についてHermite補間のための接ベクトルを記述します。
+</td>
+</tr>
+
+
+</table>
+
+<p>
+<a href="./appendix/hermite_J.htm">
+Appendix ... about Hermite
+</a>
+
+<p>
+<a href="./anim_C.htm">
+Go to the data chunk
+</a>
+<p>
+<a href="./index.htm">
+Go back to the index
+</a>
+
+
+</blockquote>
+
+<h3>
+(4) RotateY
+</h3>
+
+<blockquote>
+
+<table border width="600">
+
+<tr>
+<td nowrap>
+u32 interpolation_type
+</td>
+<td>
+このキーから次のキーまでの補間タイプを記述します。下記のフラグが定義されています。
+
+<pre>
+<b>
+NIFF2_INTERPOLATION_TYPE_CONST&#9;&#9;0x00000000
+NIFF2_INTERPOLATION_TYPE_FULL&#9;&#9;0x00000001
+NIFF2_INTERPOLATION_TYPE_LINEAR&#9;&#9;0x00000002
+NIFF2_INTERPOLATION_TYPE_HERMITE&#9;0x00000003
+</b>
+</pre>
+NIFF2_INTERPOLATION_TYPE_CONSTはこのキーから次のキーまでデータを保持します。この場合、すべての加速度データは無視されます。<p>
+NIFF2_INTERPOLATION_TYPE_FULLはフルフレームアニメーションを表現します。すべてのキーのデータを記述してください。この場合、すべての加速度データは無視されます。<p>
+NIFF2_INTERPOLATION_TYPE_LINEARはこのキーから次のキーまで線形補間をおこないます。この場合、すべての加速度データは無視されます。<p>
+NIFF2_INTERPOLATION_TYPE_HERMITEはこのキーから次のキーまで三次補間をHermite関数を用いておこないます。
+
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 key
+</td>
+<td>
+Key値を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+float rotate_angle
+</td>
+<td>
+Y軸周りの回転角度をラジアンで記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+float differential_rotate_angle
+</td>
+<td>
+Y軸周りの回転角度についてHermite補間のための接ベクトルを記述します。
+</td>
+</tr>
+
+
+</table>
+
+
+<p>
+<a href="./appendix/hermite_J.htm">
+Appendix ... about Hermite
+</a>
+
+<p>
+<a href="./anim_C.htm">
+Go to the data chunk
+</a>
+<p>
+<a href="./index.htm">
+Go back to the index
+</a>
+
+
+</blockquote>
+
+<h3>
+(5) RotateZ
+</h3>
+<blockquote>
+
+<table border width="600">
+
+<tr>
+<td nowrap>
+u32 interpolation_type
+</td>
+<td>
+このキーから次のキーまでの補間タイプを記述します。下記のフラグが定義されています。
+
+<pre>
+<b>
+NIFF2_INTERPOLATION_TYPE_CONST&#9;&#9;0x00000000
+NIFF2_INTERPOLATION_TYPE_FULL&#9;&#9;0x00000001
+NIFF2_INTERPOLATION_TYPE_LINEAR&#9;&#9;0x00000002
+NIFF2_INTERPOLATION_TYPE_HERMITE&#9;0x00000003
+</b>
+</pre>
+NIFF2_INTERPOLATION_TYPE_CONSTはこのキーから次のキーまでデータを保持します。この場合、すべての加速度データは無視されます。<p>
+NIFF2_INTERPOLATION_TYPE_FULLはフルフレームアニメーションを表現します。すべてのキーのデータを記述してください。この場合、すべての加速度データは無視されます。<p>
+NIFF2_INTERPOLATION_TYPE_LINEARはこのキーから次のキーまで線形補間をおこないます。この場合、すべての加速度データは無視されます。<p>
+NIFF2_INTERPOLATION_TYPE_HERMITEはこのキーから次のキーまで三次補間をHermite関数を用いておこないます。
+
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 key
+</td>
+<td>
+Key値を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+float rotate_angle
+</td>
+<td>
+Z軸周りの回転角度をラジアンで記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+float differential_rotate_angle
+</td>
+<td>
+Z軸周りの回転角度についてHermite補間のための接ベクトルを記述します。
+</td>
+</tr>
+
+
+</table>
+
+<p>
+<a href="./appendix/hermite_J.htm">
+Appendix ... about Hermite
+</a>
+
+<p>
+<a href="./anim_C.htm">
+Go to the data chunk
+</a>
+<p>
+<a href="./index.htm">
+Go back to the index
+</a>
+
+
+</blockquote>
+
+<h3>
+(6) OrientationXY
+</h3>
+<blockquote>
+
+
+<table border width="600">
+
+<tr>
+<td nowrap>
+u32 interpolation_type
+</td>
+<td>
+このキーから次のキーまでの補間タイプを記述します。下記のフラグが定義されています。
+
+<pre>
+<b>
+NIFF2_INTERPOLATION_TYPE_CONST&#9;&#9;0x00000000
+NIFF2_INTERPOLATION_TYPE_FULL&#9;&#9;0x00000001
+NIFF2_INTERPOLATION_TYPE_LINEAR&#9;&#9;0x00000002
+NIFF2_INTERPOLATION_TYPE_HERMITE&#9;0x00000003
+</b>
+</pre>
+NIFF2_INTERPOLATION_TYPE_CONSTはこのキーから次のキーまでデータを保持します。この場合、すべての加速度データは無視されます。<p>
+NIFF2_INTERPOLATION_TYPE_FULLはフルフレームアニメーションを表現します。すべてのキーのデータを記述してください。この場合、すべての加速度データは無視されます。<p>
+NIFF2_INTERPOLATION_TYPE_LINEARはこのキーから次のキーまで線形補間をおこないます。この場合、すべての加速度データは無視されます。<p>
+NIFF2_INTERPOLATION_TYPE_HERMITEはこのキーから次のキーまで三次補間をHermite関数を用いておこないます。
+
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 key
+</td>
+<td>
+Key値を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+float x_axis_x
+</td>
+<td>
+正規化されたX軸のX成分を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+float x_axis_y
+</td>
+<td>
+正規化されたX軸のY成分を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+float x_axis_z
+</td>
+<td>
+正規化されたX軸のZ成分を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+float y_axis_x
+</td>
+<td>
+正規化されたY軸のx成分を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+float y_axis_y
+</td>
+<td>
+正規化されたY軸のY成分を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+float y_axis_z
+</td>
+<td>
+正規化されたY軸のZ成分を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+float differential_x_axis_x
+</td>
+<td>
+X軸のX成分についてHermite補間のための接ベクトルを記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+float differential_x_axis_y
+</td>
+<td>
+X軸のY成分についてHermite補間のための接ベクトルを記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+float differential_x_axis_z
+</td>
+<td>
+X軸のZ成分についてHermite補間のための接ベクトルを記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+float differential_y_axis_x
+</td>
+<td>
+Y軸のX成分についてHermite補間のための接ベクトルを記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+float differential_y_axis_y
+</td>
+<td>
+Y軸のY成分についてHermite補間のための接ベクトルを記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+float differential_y_axis_z
+</td>
+<td>
+Y軸のZ成分についてHermite補間のための接ベクトルを記述します。
+</td>
+</tr>
+
+
+
+
+
+</table>
+
+
+
+<p>
+<a href="./appendix/hermite_J.htm">
+Appendix ... about Hermite
+</a>
+
+<p>
+<a href="./anim_C.htm">
+Go to the data chunk
+</a>
+<p>
+<a href="./index.htm">
+Go back to the index
+</a>
+
+</blockquote>
+
+<h3>
+(7) Translation
+</h3>
+
+<blockquote>
+
+<table border width="600">
+
+<tr>
+<td nowrap>
+u32 interpolation_type
+</td>
+<td>
+このキーから次のキーまでの補間タイプを記述します。下記のフラグが定義されています。
+
+<pre>
+<b>
+NIFF2_INTERPOLATION_TYPE_CONST&#9;&#9;0x00000000
+NIFF2_INTERPOLATION_TYPE_FULL&#9;&#9;0x00000001
+NIFF2_INTERPOLATION_TYPE_LINEAR&#9;&#9;0x00000002
+NIFF2_INTERPOLATION_TYPE_HERMITE&#9;0x00000003
+</b>
+</pre>
+NIFF2_INTERPOLATION_TYPE_CONSTはこのキーから次のキーまでデータを保持します。この場合、すべての加速度データは無視されます。<p>
+NIFF2_INTERPOLATION_TYPE_FULLはフルフレームアニメーションを表現します。すべてのキーのデータを記述してください。この場合、すべての加速度データは無視されます。<p>
+NIFF2_INTERPOLATION_TYPE_LINEARはこのキーから次のキーまで線形補間をおこないます。この場合、すべての加速度データは無視されます。<p>
+NIFF2_INTERPOLATION_TYPE_HERMITEはこのキーから次のキーまで三次補間をHermite関数を用いておこないます。
+
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 key
+</td>
+<td>
+Key値を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+float translate_x
+</td>
+<td>
+平行移動のX成分を記述します。
+</td>
+</tr>
+<tr>
+<td nowrap>
+float translate_y
+</td>
+<td>
+平行移動のY成分を記述します。
+</td>
+</tr>
+<tr>
+<td nowrap>
+float translate_z
+</td>
+<td>
+平行移動のZ成分を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+float differential_translate_x
+</td>
+<td>
+平行移動のX成分についてHermite補間のための接ベクトルを記述します。
+</td>
+</tr>
+<tr>
+<td nowrap>
+float differential_translate_y
+</td>
+<td>
+平行移動のY成分についてHermite補間のための接ベクトルを記述します。
+</td>
+</tr>
+<tr>
+<td nowrap>
+float differential_translate_z
+</td>
+<td>
+平行移動のZ成分についてHermite補間のための接ベクトルを記述します。
+</td>
+</tr>
+
+
+
+
+</table>
+
+
+<p>
+<a href="./appendix/hermite_J.htm">
+Appendix ... about Hermite
+</a>
+
+<p>
+<a href="./anim_C.htm">
+Go to the data chunk
+</a>
+<p>
+<a href="./index.htm">
+Go back to the index
+</a>
+
+</blockquote>
+
+
+<h3>
+(8) UniqueScale
+</h3>
+
+<blockquote>
+
+<table border width="600">
+
+<tr>
+<td nowrap>
+u32 interpolation_type
+</td>
+<td>
+このキーから次のキーまでの補間タイプを記述します。下記のフラグが定義されています。
+
+<pre>
+<b>
+NIFF2_INTERPOLATION_TYPE_CONST&#9;&#9;0x00000000
+NIFF2_INTERPOLATION_TYPE_FULL&#9;&#9;0x00000001
+NIFF2_INTERPOLATION_TYPE_LINEAR&#9;&#9;0x00000002
+NIFF2_INTERPOLATION_TYPE_HERMITE&#9;0x00000003
+</b>
+</pre>
+NIFF2_INTERPOLATION_TYPE_CONSTはこのキーから次のキーまでデータを保持します。この場合、すべての加速度データは無視されます。<p>
+NIFF2_INTERPOLATION_TYPE_FULLはフルフレームアニメーションを表現します。すべてのキーのデータを記述してください。この場合、すべての加速度データは無視されます。<p>
+NIFF2_INTERPOLATION_TYPE_LINEARはこのキーから次のキーまで線形補間をおこないます。この場合、すべての加速度データは無視されます。<p>
+NIFF2_INTERPOLATION_TYPE_HERMITEはこのキーから次のキーまで三次補間をHermite関数を用いておこないます。
+
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 key
+</td>
+<td>
+Key値を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+float scale_x
+</td>
+<td>
+X軸方向についてのスケール値を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+float scale_y
+</td>
+<td>
+Y軸方向についてのスケール値を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+float scale_z
+</td>
+<td>
+Z軸方向についてのスケール値を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+float differential_scale_x
+</td>
+<td>
+X軸方向のスケール値についてHermite補間のための接ベクトルを記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+float differential_scale_y
+</td>
+<td>
+Y軸方向のスケール値についてHermite補間のための接ベクトルを記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+float differential_scale_z
+</td>
+<td>
+Z軸方向のスケール値についてHermite補間のための接ベクトルを記述します。
+</td>
+</tr>
+
+
+
+
+</table>
+
+
+<p>
+<a href="./appendix/unique_scale_J.htm">
+Appendix ... about Unique Scale
+</a>
+<p>
+<a href="./appendix/hermite_J.htm">
+Appendix ... about Hermite
+</a>
+
+<p>
+<a href="./anim_C.htm">
+Go to the data chunk
+</a>
+<p>
+<a href="./index.htm">
+Go back to the index
+</a>
+
+</blockquote>
+
+<h3>
+(9) ClassicalScale
+</h3>
+<blockquote>
+
+
+<table border width="600">
+
+<tr>
+<td nowrap>
+u32 interpolation_type
+</td>
+<td>
+このキーから次のキーまでの補間タイプを記述します。下記のフラグが定義されています。
+
+<pre>
+<b>
+NIFF2_INTERPOLATION_TYPE_CONST&#9;&#9;0x00000000
+NIFF2_INTERPOLATION_TYPE_FULL&#9;&#9;0x00000001
+NIFF2_INTERPOLATION_TYPE_LINEAR&#9;&#9;0x00000002
+NIFF2_INTERPOLATION_TYPE_HERMITE&#9;0x00000003
+</b>
+</pre>
+NIFF2_INTERPOLATION_TYPE_CONSTはこのキーから次のキーまでデータを保持します。この場合、すべての加速度データは無視されます。<p>
+NIFF2_INTERPOLATION_TYPE_FULLはフルフレームアニメーションを表現します。すべてのキーのデータを記述してください。この場合、すべての加速度データは無視されます。<p>
+NIFF2_INTERPOLATION_TYPE_LINEARはこのキーから次のキーまで線形補間をおこないます。この場合、すべての加速度データは無視されます。<p>
+NIFF2_INTERPOLATION_TYPE_HERMITEはこのキーから次のキーまで三次補間をHermite関数を用いておこないます。
+
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 key
+</td>
+<td>
+Key値を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+float scale_x
+</td>
+<td>
+X軸方向についてのスケール値を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+float scale_y
+</td>
+<td>
+Y軸方向についてのスケール値を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+float scale_z
+</td>
+<td>
+Z軸方向についてのスケール値を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+float differential_scale_x
+</td>
+<td>
+X軸方向のスケール値についてHermite補間のための接ベクトルを記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+float differential_scale_y
+</td>
+<td>
+Y軸方向のスケール値についてHermite補間のための接ベクトルを記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+float differential_scale_z
+</td>
+<td>
+Z軸方向のスケール値についてHermite補間のための接ベクトルを記述します。
+</td>
+</tr>
+
+
+
+
+</table>
+
+
+<p>
+<a href="./appendix/hermite_J.htm">
+Appendix ... about Hermite
+</a>
+
+<p>
+<a href="./anim_C.htm">
+Go to the data chunk
+</a>
+<p>
+<a href="./index.htm">
+Go back to the index
+</a>
+
+
+
+</blockquote>
+
+
+<hr>
+<i>
+Copyright 1998,1999 NINTENDO Co.,Ltd. All rights reserved.<br>
+Copyright 1998,1999 MONEGI CORPORATION All rights reserved.
+</i>
+
+
+</body>
+</html>

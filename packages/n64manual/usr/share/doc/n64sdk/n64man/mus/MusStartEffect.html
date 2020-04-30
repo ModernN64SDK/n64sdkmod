@@ -1,0 +1,63 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../n64man.css">
+<title>MusStartEffect()</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check-->
+</head>
+
+<h1>MusStartEffect()</h1>
+
+<h2>Syntax</h2>
+
+<pre>
+musHandle MusStartEffect(int number);
+</pre>
+
+<h2>Arguments</h2>
+
+<dl>
+  <dt><b>number</b>
+  <dd>the sound effect number 
+</dl>
+
+<h2>Description</h2>
+
+<p>It starts a sound effect with default settings. This function will start a sound effect using the priority level defined in the sound data if the required number of channels is available or a sound effect of lower, or the same, priority is currently playing.</p>
+
+<p>The sound effect started will use the default sound effect bank unless an override has been set with the <a href="MusFxBankSetSingle.html">MusFxBankSetSingle()</a> function. If a sound effect bank override has been specified, this function will use it and then clear the override.</p>
+
+<p>The sound effect started will use the default sample bank unless an override is defined in the sound effect bank with the <a href="MusFxBankSetPtrBank.html">MusFxBankSetPtrBank()</a> function or is set with the higher priority sample bank override function <a href="MusPtrBankSetSingle.html">MusPtrBankSetSingle()</a>. If a sample bank override has been set using the <a href="MusPtrBankSetSingle.html">MusPtrBankSetSingle()</a> function, this function will use it and then clear the override.</p>
+
+<p>The number is a value in the range of 0 to the number of sound effects stored in the sound effect bank. The number of available sound effects can be found by using the <a href="MusFxBankNumberOfEffects.html">MusFxBankNumberOfEffects()</a> function. Currently, a list of "#defines" is located in the header files (included with Nintendo64 Sound Tools) associated with the sound effect bank. Those who prefer the sound effect names to the numbers to refer sound effects may want to use them.</p>
+
+<h2>Return Value</h2>
+
+<p>Sound handle or 0 if sound effect could not be triggered.</p>
+
+<h2>Example</h2>
+
+<pre>void AlwaysTriggerSoundEffect(void)
+{
+  static unsigned long handle=0;
+
+  if (<a href="MusHandleAsk.html">MusHandleAsk</a>(handle)==0)
+  handle = MusStartEffect(RETRIGGER_SOUND);
+}
+</pre>
+
+<h2>See Also</h2>
+<p>
+<a href="MusStartEffect2.html">MusStartEffect2()</a>,
+<a href="MusHandleAsk.html">MusHandleAsk()</a>,
+<a href="MusHandleSetFreqOffset.html">MusHandleSetFreqOffset()</a>,
+<a href="MusHandleSetPan.html">MusHandleSetPan()</a>,
+<a href="MusHandleSetVolume.html">MusHandleSetVolume()</a>,
+<a href="MusHandleStop.html">MusHandleStop()</a>,
+<a href="MusSetMasterVolume.html">MusSetMasterVolume()</a>,
+<a href="MusAsk.html">MusAsk()</a>,
+<a href="MusStop.html">MusStop()</a>
+</p>
+
+</body>
+</html>

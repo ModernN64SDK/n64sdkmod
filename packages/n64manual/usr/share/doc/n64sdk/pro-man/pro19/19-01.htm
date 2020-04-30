@@ -1,0 +1,645 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 19 - Audio File Formats</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. -->
+</head>
+
+<H1>
+19.1 Bank Files</H1>
+
+<p><a href="../../keywords/index/data/audio.htm#bank" target="keywords">Bank</a> files store the audio and control information needed to create audio from <a href="../../keywords/index/data/audio.htm#sequencer" target="keywords">sequencer</a> MIDI events. On the Nintendo 64, this information is separately stored in two different files: the bank file and the <a href="../../keywords/index/data/audio.htm#wave table" target="keywords">wave table file</a>. </p>
+
+<P>The Bank (.bnk) file contains control information such as <a href="../../keywords/index/data/audio.htm#program number" target="keywords">program number</a> to <a href="../../keywords/index/data/audio.htm#instrument" target="keywords">instrument</a> assignment, key mapping, tuning, and <a href="../../keywords/index/data/audio.htm#envelope" target="keywords">envelope</a> descriptions. It is always loaded into the Nintendo 64 DRAM during playback. </p>
+
+<P>The Wavetable (.tbl) file contains <a href="../../keywords/index/data/audio.htm#ADPCM" target="keywords">ADPCM</a> compressed audio data. Because of the size of the data, it is streamed into DRAM (and then to the RCP) only when it is needed. </p>
+
+<P>The formats for both files are optimized for the Nintendo 64 to be efficiently used with the <a href="../../keywords/index/data/audio.htm#sequence player" target="keywords">Sequence Player</a> and the <a href="../../keywords/index/data/audio.htm#sound player" target="keywords">Sound Player</a>. They are not intended to be interchange file formats, and contain no textual information or other data not directly related to playing back audio. Many features commonly found in standard patch and wavetable formats (for example, <a href="../../keywords/index/data/audio.htm#AIFF" target="keywords">AIFF</a> files) were sacrificed in favor of smaller files in ROM. </p>
+
+<P><strong>Note:</strong>  References to objects are stored as offsets in the Bank files, but the <A HREF="../../n64man/al/alBnkfNew.htm">alBnkfNew()</A> call converts the offsets to pointers. </p>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="01"></A>
+<H2>
+19.1.1 ALBankFile</H2>
+
+<p>Bank files must begin with an ALBankFile structure. This structure allows the software to locate data for a specific bank. </p>
+<BLOCKQUOTE>
+<PRE>typedef struct {
+        s16     revision;
+        s16     bankCount;
+        s32     bankArray[1];
+} ALBankFile;</PRE>
+</BLOCKQUOTE>
+
+<TABLE BORDER >
+<CAPTION><A NAME="t19-01"></A><strong>Table 19-1 ALBankFile Structure</strong></CAPTION>
+
+<TR>
+<TH NOWRAP>Field</TH>
+
+<TH NOWRAP>Description</TH>
+</TR>
+
+<TR>
+<TD>revision</TD>
+
+<TD>File format revision number.</TD>
+</TR>
+
+<TR>
+<TD>bankCount</TD>
+
+<TD>Number of banks contained in the Bank file.</TD>
+</TR>
+
+<TR>
+<TD>bankArray</TD>
+
+<TD>Array of offsets of the ALBank structures in the bank file.</TD>
+</TR>
+</TABLE>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="02"></A>
+<H2>
+19.1.2 ALBank</H2>
+
+<p>The ALBank structure specifies the instruments that make up the bank, as well as the default sample rate and percussion instrument. Banks may contain any number of programs. </p>
+
+<P><strong>Note:</strong>  The percussion field specifies an instrument for the Sequence Player to use as a default MIDI channel 10 (drum channel) instrument. </p>
+<BLOCKQUOTE>
+<PRE>typedef struct {
+        s16   instCount;
+         u8   flags;
+         u8   pad;
+        s32   sampleRate;
+        s32   percussion;
+        s32   instArray[1];
+} ALBank;</PRE>
+</BLOCKQUOTE>
+
+<TABLE BORDER >
+<CAPTION><A NAME="t19-02"></A><strong>Table 19-2 ALBank Structure</strong></CAPTION>
+
+<TR>
+<TH NOWRAP>Field</TH>
+
+<TH NOWRAP>Description</TH>
+</TR>
+
+<TR>
+<TD>instCount</TD>
+
+<TD>Number of programs (instruments) in the bank.</TD>
+</TR>
+
+<TR>
+<TD>flags</TD>
+
+<TD>0: if instArray contains offset,
+<BR>1: if instArray contains pointers.</TD>
+</TR>
+
+<TR>
+<TD>pad</TD>
+
+<TD>Currently unused byte.</TD>
+</TR>
+
+<TR>
+<TD>sampleRate</TD>
+
+<TD>The sample rate at which this bank is intended to be played. </TD>
+</TR>
+
+<TR>
+<TD>percussion</TD>
+
+<TD>The offset (or pointer) to the default percussion instrument.</TD>
+</TR>
+
+<TR>
+<TD>instArray</TD>
+
+<TD>Array of offsets (or pointers) to ALInstrument structures that make up this bank.</TD>
+</TR>
+</TABLE>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="03"></A>
+<H2>
+19.1.3 ALInstrument</H2>
+
+<p>The ALInstrument structure contains pronunciation information.</p>
+<BLOCKQUOTE>
+<PRE>typedef struct {
+        u8      volume;
+        u8      pan;
+        u8      priority;
+        u8      flags;
+        u8      tremType;
+        u8      tremRate;
+        u8      tremDepth;
+        u8      tremDelay;
+        u8      vibType;
+        u8      vibRate;
+        u8      vibDepth;
+        u8      vibDelay;
+        s16     bendRange;
+        s16     soundCount;
+        s32     soundArray[1];
+} ALInstrument;</PRE>
+</BLOCKQUOTE>
+
+<TABLE BORDER >
+<CAPTION><A NAME="t19-03"></A><strong>Table 19-3 ALInstrument Structure</strong></CAPTION>
+
+<TR>
+<TH NOWRAP>Field</TH>
+
+<TH NOWRAP>Description</TH>
+</TR>
+
+<TR>
+<TD>volume</TD>
+
+<TD>Overall instrument playback volume.</TD>
+</TR>
+
+<TR>
+<TD>pan</TD>
+
+<TD><a href="../../keywords/index/data/audio.htm#pan" target="keywords">Pan</a> values.0=left, 64=center, 127=right</TD>
+</TR>
+
+<TR>
+<TD>priority</TD>
+
+<TD>The priority for voices for this instrument. 0 = lowest priority, 10 = highest priority.</TD>
+</TR>
+
+<TR>
+<TD>flags</TD>
+
+<TD>0: If soundArray values are offsets,
+<BR>1: If soundArray values are pointers</TD>
+</TR>
+
+<TR>
+<TD>bendRange</TD>
+
+<TD><a href="../../keywords/index/data/audio.htm#pitch bend" target="keywords">Pitch bend</a> range in cents</TD>
+</TR>
+
+<TR>
+<TD>soundCount</TD>
+
+<TD>Number of sounds in the soundArray array.</TD>
+</TR>
+
+<TR>
+<TD>soundArray</TD>
+
+<TD>Offsets of (or pointers to) the ALSound objects in the instrument.</TD>
+</TR>
+</TABLE>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="04"></A>
+<H2>
+19.1.4 ALSound</H2>
+
+<p>The ALSound structure contains information about the individual sounds that make up an instrument. </p>
+
+<BLOCKQUOTE>
+<PRE>typedef struct Sound_s {
+        s32     envelope;
+        s32     keyMap;
+        s32     wavetable;
+        u8      samplePan;
+        u8      sampleVolume;
+        u8      flags;
+} ALSound;</PRE>
+</BLOCKQUOTE>
+
+<TABLE BORDER >
+<CAPTION><A NAME="t19-04"></A><strong>Table 19-4 ALSound Structure</strong></CAPTION>
+
+<TR>
+<TH NOWRAP>Field</TH>
+
+<TH NOWRAP>Description</TH>
+</TR>
+
+<TR>
+<TD>envelope</TD>
+
+<TD>Offset of (or pointer to ) the ALEnvelope object assigned to the sound.</TD>
+</TR>
+
+<TR>
+<TD>keyMap</TD>
+
+<TD>Offset of (or pointer to) the ALKeyMap object assigned to this sound. </TD>
+</TR>
+
+<TR>
+<TD>wavetable</TD>
+
+<TD>Offset of (or pointer to) ALWavetable objects assigned to the sound.</TD>
+</TR>
+
+<TR>
+<TD>samplePan</TD>
+
+<TD>Pan position of the sound in the stereo field (128 scale).</TD>
+</TR>
+
+<TR>
+<TD>sampleVolume</TD>
+
+<TD>Overall sample <a href="../../keywords/index/data/audio.htm#volume" target="keywords">volume</a> (128 scale)</TD>
+</TR>
+
+<TR>
+<TD>flags</TD>
+
+<TD>If envelope, keyMap, and wavetable are specified as offsets, flags = 0. If they are pointers, flags = 1.</TD>
+</TR>
+</TABLE>
+
+<p>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="05"></A>
+<H2>
+19.1.5 ALEnvelope</H2>
+
+<p>The ALEnvelope structure describes the attack-decay-sustain-release (ADSR) envelope for a sound. </p>
+
+<P><strong>Note:</strong>  Release volume is assumed to be 0.</p>
+<BLOCKQUOTE>
+<PRE>typedef struct {
+        s32     attackTime;
+        s32     decayTime;
+        s32     releaseTime;
+        s16     attackVolume;
+        s16     decayVolume;
+} ALEnvelope;</PRE>
+</BLOCKQUOTE>
+
+<TABLE BORDER >
+<CAPTION><A NAME="t19-05"></A><strong>Table 19-5 ALEnvelope Structure</strong></CAPTION>
+
+<TR>
+<TH NOWRAP>Field</TH>
+
+<TH NOWRAP>Description</TH>
+</TR>
+
+<TR>
+<TD>attackTime</TD>
+
+<TD>Time, in microseconds, to ramp from zero gain to attackVolume. </TD>
+</TR>
+
+<TR>
+<TD>attackVolume</TD>
+
+<TD>Target volume for the attack segment of the envelope.</TD>
+</TR>
+
+<TR>
+<TD>decayTime</TD>
+
+<TD>Time, in microseconds, to ramp from the attackVolume to the decayVolume.</TD>
+</TR>
+
+<TR>
+<TD>decayVolume</TD>
+
+<TD>Target volume for the decay segment of the envelope.
+<BR>The sustain loop holds at the decayVolume.</TD>
+</TR>
+
+<TR>
+<TD>releaseTime</TD>
+
+<TD>Time, in microseconds, to ramp to zero volume.</TD>
+</TR>
+</TABLE>
+
+<p>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="06"></A>
+<H2>
+19.1.6 ALKeyMap</H2>
+
+<p>The ALKeyMap describes how the sound is <A target="keywords" HREF="../../keywords/index/data/system.htm#map">mapped</a> to the keyboard. It allows the sequencer to determine at what <a href="../../keywords/index/data/audio.htm#pitch" target="keywords">pitch</a> to play a sound, given its <a href="../../keywords/index/data/audio.htm#MIDI" target="keywords">MIDI</a> <a href="../../keywords/index/data/audio.htm#key number" target="keywords">key number</a> and note on velocity. </p>
+
+<P><strong>Note:</strong>  C4 is considered to be <a href="../../keywords/index/data/audio.htm#middle C" target="keywords">middle C</a> (MIDI <a href="../../keywords/index/data/audio.htm#note number" target="keywords">note number</a> 60). Bank files may not contain
+<a href="../../keywords/index/data/audio.htm#key map" target="keywords">keymaps</a> that have overlapping key or <a href="../../keywords/index/data/audio.htm#velocity" target="keywords">velocity</a> ranges. 
+</p>
+<BLOCKQUOTE>
+<PRE>typedef struct {
+        u8      velocityMin;
+        u8      velocityMax;
+        u8      keyMin;
+        u8      keyMax;
+        u8      keyBase;
+        u8      detune;
+} ALKeyMap;</PRE>
+</BLOCKQUOTE>
+
+<TABLE BORDER >
+<CAPTION><A NAME="t19-06"></A><strong>Table 19-6 ALKeyMap Structure</strong></CAPTION>
+
+<TR>
+<TH NOWRAP>Field</TH>
+
+<TH NOWRAP>Description</TH>
+</TR>
+
+<TR>
+<TD>velocityMin</TD>
+
+<TD>Minimum note on velocity for this map. (128 scale)</TD>
+</TR>
+
+<TR>
+<TD>velocityMax</TD>
+
+<TD>Maximum note on velocity for this map.(128 scale)</TD>
+</TR>
+
+<TR>
+<TD>keyMin</TD>
+
+<TD>Lowest note in this key map. Notes are defines as in the MIDI specification.</TD>
+</TR>
+
+<TR>
+<TD>keyMax</TD>
+
+<TD>Highest note in this key map. Notes are defined as in the MIDI specification.</TD>
+</TR>
+
+<TR>
+<TD>keyBase</TD>
+
+<TD>The MIDI note equivalent to the sound played at unity pitch.</TD>
+</TR>
+
+<TR>
+<TD>detune</TD>
+
+<TD>Amount, in <a href="../../keywords/index/data/audio.htm#cent" target="keywords">cent</a>, to fine-tune this sample.</TD>
+</TR>
+</TABLE>
+
+<p>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="07"></A>
+<H2>
+19.1.7 ALWavetable</H2>
+
+<p>The ALWavetable structure describes the sample data to be played for the given sound. It is described in detail below, along with the structures it contains. </p>
+<BLOCKQUOTE>
+<PRE>enum    {AL_ADPCM_WAVE = 0, AL_RAW16_WAVE};
+
+typedef struct {
+        s32             order;
+        s32             npredictors;
+        s16             book[1];        /* Must be 8-byte aligned */
+}ALADPCMBook;
+
+typedef struct {
+        u32             start;
+        u32             end;
+        u32             count;
+        ADPCM_STATE     state;
+}ALADPCMloop;
+
+typedef struct{
+        u32             start;
+        u32             end;
+        u32             count;
+}ALRawLoop;
+
+typedef struct{
+        ALADPCMloop     *loop;
+        ALADPCMBook     *book;
+}ALADPCMWaveInfo;
+
+typedef struct{
+        ALRawLoop       *loop;
+}ALRAWWaveInfo;
+
+typedef struct{
+        s32             base;
+        s32             len;
+        u8              type;
+        u8              flags;
+        union{
+                        ALADPCMWaveInfo adpcmWave;
+                        ALRAWWaveInfo           rawWave;
+        }waveInfo;
+}ALWaveTable;</PRE>
+</BLOCKQUOTE>
+
+<TABLE BORDER >
+<CAPTION><A NAME="t19-07"></A><strong>Table 19-7 ALWavetable Structure</strong></CAPTION>
+
+<TR>
+<TH NOWRAP>Field</TH>
+
+<TH NOWRAP>Description</TH>
+</TR>
+
+<TR>
+<TD>base</TD>
+
+<TD>Offset of (or pointer to) the start of the raw or ADPCM compressed wavetable in the table (.tbl) file.</TD>
+</TR>
+
+<TR>
+<TD>len</TD>
+
+<TD>Length, in bytes, of the wavetable.</TD>
+</TR>
+
+<TR>
+<TD>type</TD>
+
+<TD>The type (AL_ADPCM_WAVE or AL_RAW16_WAVE) of the wavetable structure.</TD>
+</TR>
+
+<TR>
+<TD>flags</TD>
+
+<TD>If the base field contains an offset, flags =0. If it contains a pointer, flags = 1.</TD>
+</TR>
+
+<TR>
+<TD>waveInfo</TD>
+
+<TD>Wavetable type specific information.</TD>
+</TR>
+</TABLE>
+
+<p>
+
+<TABLE BORDER >
+<CAPTION><A NAME="t19-08"></A><strong>Table 19-8 ALADPCMWaveInfo Structure</strong></CAPTION>
+
+<TR>
+<TH NOWRAP>Field</TH>
+
+<TH NOWRAP>Description</TH>
+</TR>
+
+<TR>
+<TD>loop</TD>
+
+<TD>Offset or pointer to the ADPCM-specific loop structure.</TD>
+</TR>
+
+<TR>
+<TD>book</TD>
+
+<TD>Offset or pointer to the ADPCM-specific <a href="../../keywords/index/data/audio.htm#code book" target="keywords">code book</a>.</TD>
+</TR>
+</TABLE>
+
+<p>
+
+<TABLE BORDER >
+<CAPTION><A NAME="t19-09"></A><strong>Table 19-9 ALRawWaveInfo Structure</strong></CAPTION>
+
+<TR>
+<TH NOWRAP>Field</TH>
+
+<TH NOWRAP>Description</TH>
+</TR>
+
+<TR>
+<TD>loop</TD>
+
+<TD>Offset or pointer to the raw sound loop structure.</TD>
+</TR>
+</TABLE>
+
+<p>
+
+<TABLE BORDER >
+<CAPTION><A NAME="t19-10"></A><strong>Table 19-10 ALADPCMLoop Structure</strong></CAPTION>
+
+<TR>
+<TH NOWRAP>Field</TH>
+
+<TH NOWRAP>Description</TH>
+</TR>
+
+<TR>
+<TD>start</TD>
+
+<TD>Sample offset of the loop start point.</TD>
+</TR>
+
+<TR>
+<TD>end</TD>
+
+<TD>Sample offset of the loop end point</TD>
+</TR>
+
+<TR>
+<TD>count</TD>
+
+<TD>Number of times the wavetable is to loop. A value of -1 specifies an infinite loop.</TD>
+</TR>
+
+<TR>
+<TD>state</TD>
+
+<TD>ADPCM decoder state information.</TD>
+</TR>
+</TABLE>
+
+<p>
+
+<TABLE BORDER >
+<CAPTION><A NAME="t19-11"></A><strong>Table 19-11 ALADPCMBook Structure</strong></CAPTION>
+
+<TR>
+<TH NOWRAP>Field</TH>
+
+<TH NOWRAP>Description</TH>
+</TR>
+
+<TR>
+<TD>order</TD>
+
+<TD>Order of the ADPCM predictor.</TD>
+</TR>
+
+<TR>
+<TD>npnredictors</TD>
+
+<TD>Number of ADPCM predictors.</TD>
+</TR>
+
+<TR>
+<TD>book</TD>
+
+<TD>Array of code book data.</TD>
+</TR>
+</TABLE>
+
+<p>
+
+<TABLE BORDER >
+<CAPTION><A NAME="t19-12"></A><strong>Table 19-12 ALRawLoop Structure</strong></CAPTION>
+
+<TR>
+<TH NOWRAP>Field</TH>
+
+<TH NOWRAP>Description</TH>
+</TR>
+
+<TR>
+<TD>start</TD>
+
+<TD>Sample offset of loop start point.</TD>
+</TR>
+
+<TR>
+<TD>end</TD>
+
+<TD>Sample offset of loop end point.</TD>
+</TR>
+
+<TR>
+<TD>count</TD>
+
+<TD>Number of times the wavetable is to loop. A value of -1 specifies an infinite loop.</TD>
+</TR>
+</TABLE>
+
+<p>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR>
+</BODY>
+</HTML>

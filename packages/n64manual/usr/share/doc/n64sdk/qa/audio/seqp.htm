@@ -1,0 +1,436 @@
+<HTML>
+<!--Editor notes-MAP- edited content 10/21/99
+PWC 2/23/00-->
+<HEAD><link rel="stylesheet" type="text/css" href="../style.css">
+<TITLE>Sequence Player</TITLE>
+</HEAD>
+
+<BODY>
+
+
+<A name="index"></a>
+<IMG src="../../gif/n64_logo2.gif" height="21" width="136">
+<h3><FONT color="#FF8000">Q&A</FONT>- Sequence Player</h3>
+
+<P>
+<TABLE border="0">
+  <TR>
+    <TD valign="top" width="50"><A href="seqp.htm#01"><b>QA1</b></A></TD>
+    <TD>About alCSPLoop(), etc.</TD>
+  </TR>
+  <TR>
+    <TD valign="top" width="50"><A href="seqp.htm#02"><b>QA2</b></A></TD>
+    <TD>Loop playback</TD>
+  </TR>
+  <TR>
+    <TD valign="top" width="50"><A href="seqp.htm#03"><b>QA3</b></A></TD>
+    <TD>Instruments</TD>
+  </TR>
+  <TR>
+    <TD valign="top" width="50"><A href="seqp.htm#04"><b>QA4</b></A></TD>
+    <TD>Sequence players</TD>
+  </TR>
+  <TR>
+    <TD valign="top" width="50"><A href="seqp.htm#05"><b>QA5</b></A></TD>
+    <TD>Tremolo</TD>
+  </TR>
+  <TR>
+    <TD valign="top" width="50"><A href="seqp.htm#06"><b>QA6</b></A></TD>
+    <TD>The sounds of certain parts is strange</TD>
+  </TR>
+  <TR>
+    <TD valign="top" width="50"><A href="seqp.htm#07"><b>QA7</b></A></TD>
+    <TD>Differences between two sequence players</TD>
+  </TR>
+  <TR>
+    <TD valign="top" width="50"><A href="seqp.htm#08"><b>QA8</b></A></TD>
+    <TD>The stop time in asCSPStop() is over 100 frames</TD>
+  </TR>
+  <TR>
+    <TD valign="top" width="50"><A href="seqp.htm#09"><b>QA9</b></A></TD>
+    <TD>What does ASSERTION FAULT:../audio.c, 105:&quot;samples&gt;=0&quot;:&quot;samples&lt;=AL_MAX_RSP_SAMPLES&quot; mean?</TD>
+  </TR>
+  <TR>
+    <TD valign="top" width="50"><A href="seqp.htm#10"><b>QA10</b></A></TD>
+    <TD>Processing time slows down when I increase a sequence player's number of logical voices </TD>
+  </TR>
+  <TR>
+    <TD valign="top" width="50"><A href="seqp.htm#11"><b>QA11</b></A></TD>
+    <TD>How do I loop sequence data?</TD>
+  </TR>
+  <TR>
+    <TD valign="top" width="50"><A href="seqp.htm#12"><b>QA12</b></A></TD>
+    <TD>What kind of loop information is included in the sequence data?</TD>
+  </TR>
+  <TR>
+    <TD valign="top" width="50"><A href="seqp.htm#13"><b>QA13</b></A></TD>
+    <TD>I want to stop looped sequence data without making it loop.</TD>
+  </TR>
+  <TR>
+    <TD valign="top" width="50"><A href="seqp.htm#14"><b>QA14</b></A></TD>
+    <TD>Looping at different timing from that in the sequence data</TD>
+  </TR>
+  <TR>
+    <TD valign="top" width="50"><A href="seqp.htm#15"><b>QA15</b></A></TD>
+    <TD>My sound effects are disabled. </TD>
+  </TR>
+</TABLE>
+
+<HR>
+
+<P>
+<A name="01"><FONT  color="#FF0000"><b>Q1</b></FONT></A>
+<b> There don't seem to be any functions for compressed MIDI files that correspond with the <a href="../../n64man/al/alSeqpLoop.htm">alSeqLoop()</a> for setting up sequence loops.  Will (something like alCSPLoop()) be provided in the future? </b>
+
+
+<P>
+<FONT   color="#008000"><b>A1</b></FONT>
+ Probably not.  There is no function for performing loop control with an external function such as Seqplayer, which controls normal MIDI sequences.  Instead, extremely detailed control is possible.  It is possible to create up to 128 sequential or nested loops per track.  The loop setting in <a href="../../n64man/al/alCSeqPlayer.htm">alCSeqPlayer</a> mentioned in your question is performed on the MIDI data side.  You can use everything up to the undefined control routine (102-105), but you should refer to Chapter 20, "MIDI Files," in the N64 Online Programming Manual. 
+
+
+<P align="right">
+<A href="seqp.htm#index"><IMG src="../../gif/index.gif" height="13" width="65" border="0"></A>
+
+
+<HR>
+
+<P>
+<A name="02"><FONT   color="#FF0000"><b>Q2</b></FONT></A>
+<b> When playing back a loop, can the loop start point be set to any other than the file head?  If it can be done, is processing needed, such as resetting the loop start point with a program change, or the like?</b>
+
+
+<P>
+<FONT   color="#008000"><b>A2</b></FONT>
+ Control changes can be freely inserted anywhere.  It is also possible to loop any range other than the file head.  You should be able to do this without any program changes, but it is recommended that these be inserted when the amount of memory and/or the processing load are not concerns.  
+
+
+<P align="right">
+<A href="seqp.htm#index">top</A>
+
+
+<HR>
+
+<P>
+<A name="03"><FONT   color="#FF0000"><b>Q3</b></FONT></A>
+<b> Can the bend range in the AlInstrument structure be set in semi-tone units?  What is the default value if this is not specified? </b>
+
+
+<P>
+<FONT  color="#008000"><b>A3</b></FONT>
+ The bend range is set in cent units.  Since the maximum value is in the 16 bit range, up to 32,767 can be set, but it would probably be safest to stop it at the one octave unit.  The default value on the player side is 200 cents (one full tone).  The source code that we have is the version that does not reflect the bank settings (it stays at 200 cents no matter what is written), but it may still be this way. 
+
+
+<P align="right">
+<A href="seqp.htm#index">top</A>
+
+
+<HR>
+
+<P>
+<A name="04"><FONT   color="#FF0000"><b>Q4</b></FONT></A>
+<b> When I play a sequence with a sequence player, the rhythm sometimes speeds up and slows down.  What causes this and how can I avoid it?</b>
+
+
+<P>
+<FONT  color="#008000"><b>A4</b></FONT>
+ Assuming that your sequence player is compact, here are some possibilities. 
+
+
+<ol>
+    <li>Check to see if processing is stopping.<P>
+    <li>Use <a href="../../n64man/al/alAudioFrame.htm">alAudioFrame()</a> to check if the right number of samples is being given for each frame.<P>
+    <li>Are there incorrect commands embedded in the sequence?  This is a bug.<P>
+    <li>If the timebase of the original sequence is 480, is the included delta time too short (1, etc.)? </li>
+</ol>
+
+<P align="right">
+<A href="seqp.htm#index">top</A>
+
+
+<HR>
+
+<P>
+<A name="05"><FONT   color="#FF0000"><b>Q5</b></FONT></A>
+<b> How do I apply tremolo?</b>
+
+
+<P>
+<FONT   color="#008000"><b>A5</b></FONT>
+ All of the tremolo types (1-4) are available (confirm with Ver2.0c).  However, since the change time is slower than would be ideal, try setting the tremoloRate value high and changing the variable definition in the sample updataOsc from 
+
+
+<blockquote><pre>ALMicrotime deltatime = AL_USEC_PER_FRAME</pre></blockquote></font>
+
+<p>
+to 
+
+
+<blockquote><pre>ALMicrotime deltatime = AL_USEC_PER_FRAME / 8</pre></blockquote></font>
+
+<p>
+At this time, there is no bug in which a lot of processing time is used up when anything other than a square wave tremolo is used.  In addition, since setting the delay time to 0 will be seen as "no change," set Delay to 1 or more. 
+
+
+<P align="right">
+<A href="seqp.htm#index">top</A>
+
+
+<HR>
+
+<P>
+<A name="06"><FONT  color="#FF0000"><b>Q6</b></FONT></A>
+<b> When the BMG is played, sometimes certain parts (instruments) will not play, or the tempo will change.  Why do you think that is?</b>
+
+
+<P>
+<FONT   color="#008000"><b>A6</b></FONT>
+ Various causes are considered in connection with these symptoms. 
+
+
+<ol>
+  <li><b>Improper virtual voices or physical voices.</b><br>
+      If the same number of virtual voices as there are physical voices, are defined, the voices may not play back if the number of voices momentarily increases.  In this case, if you only change the number of virtual voices to a sufficiently large value, when there are too many voices, those parts with the lowest priority will not be played and this will not be noticed overall.  Naturally, it is important that the main parts be given higher priority.  
+<P>
+As for  processing time, nothing can be done if the MAX is exceeded.  You could try smoothing out the processing on the data side so that the timing of program changes and note-on processing are not overlapped in the same frame.  Beyond that, if the game frame is two frames, you should measure the MAX value in two continuous frames.  I don't think there are any data which would bring about the worst case scenario of two frames running. <P></li>
+  <li><b>Improper buffers.</b><br>
+      Following is a list of the buffers.  Try tuning each of them so that they are optimized. <P>
+Sample DMA Buffers, Audio Output Buffers, Command List
+        Buffers, Synthesizer Updates, Sequencer Events, Reverb Delay
+        Size, Sequence Buffer, Bank Ctl Buffer, Audio Thresd
+        Stack, Audio Heap<P></li>
+  <li><b>The message queue buffer </b><a href="../../n64man/os/osPiStartDma.htm"><b>osPistartDma</b></a><b>, which performs, DMA has overflowed. </b><br>
+      The buffer that receives the <a href="../../n64man/os/osPiStartDma.htm">osPiStartDma</a>(, , , , , &amp;dmaMessageQ) message queue, which performs DMA, has been eaten up with graphics, etc., and may have overflowed.  Try rethinking the entire DMA system and changing the values accordingly. </li>
+</ol>
+
+<P align="right">
+<A href="seqp.htm#index">top</A>
+
+
+<HR>
+
+<P>
+<A name="07"><FONT   color="#FF0000"><b>Q7</b></FONT></A>
+<b> What are the differences in the usage methods for the standard sequence player and the compact sequence player? </b>
+
+
+<P>
+<FONT   color="#008000"><b>A7</b></FONT>
+ The standard sequence player plays MIDI sequences formatted to comply with the standard MIDI file 1.0 specification for type 0 MIDI files.  In contrast to this, the compact sequence player plays sequence data of the proprietary N64 compressed MIDI format.  There are 3 actual differences between the compact player and the standard player: 
+
+
+<ol>
+  <li>Function syntax</li>
+  <li>Format of data handled</li>
+  <li>Loop processing method</li>
+</ol>
+
+<p>
+The loop processing method for the compact player consists of the musician constructing the loop by inserting a controller in the sequence track, while the method for the standard player comprises the programmer creating one marker each for the start point and the end point of the loop, then causing the sequence to loop between the two markers using the <a href="../../n64man/al/alSeqpLoop.htm">alSeqpLoop()</a> function. 
+
+
+<P align="right">
+<A href="seqp.htm#index">top</A>
+
+
+<HR>
+
+<P>
+<A name="08"><FONT  color="#FF0000"><b>Q8</b></FONT></A>
+<b> The stop time in <a href="../../n64man/al/alCSPStop.htm">alCSPStop()</a> is over 100 frames.</b>
+
+
+<P>
+<FONT  color="#008000"><b>A8</b></FONT>
+ I couldn't find any reason in the sequence player code for the stop time to be this length.
+
+
+<p>
+As a suggestion, is the value for Event_count too small?  For example, this value is a buffer for collecting the event changes that are generated with time, such as <a href="../../n64man/al/alCSPPlay.htm">alCSPPlay</a> and <a href="../../n64man/al/alCSPStop.htm">Stop</a>.  The inability to stop may be due to this being insufficient.  
+
+
+<P align="right">
+<A href="seqp.htm#index">top</A>
+
+
+<HR>
+
+<P>
+<A name="09"><FONT  color="#FF0000"><b>Q9</b></FONT></A>
+<b> When I start up 5 sequence players and repeatedly PLAY and STOP a sound, the error </b>
+
+
+<pre>ASSERTION FAULT:../audio.c, 105:&quot;samples&gt;=0&quot;:&quot;samples&lt;=AL_MAX_RSP_SAMPLES&quot;</pre></font>
+
+<p>
+<b>occurs.  How do I handle this?</b>
+
+
+<P>
+<FONT  color="#008000"><b>A9</b></FONT>
+ The number of ABI command samples which can be processed at once by the RSP is set at 160 in the aspMain microcode.  It seems that this error is occurring because this processing sample count is being exceeded for some reason.  Check to see if the task-related buffers have been destroyed.
+
+
+<P align="right">
+<A href="seqp.htm#index">top</A>
+
+
+<HR>
+
+<P>
+<A name="10"><FONT  color="#FF0000"><b>Q10</b></FONT></A>
+<b> The processing time slows down if I increase the number of logical voices in the sequence player. </b>
+
+
+<P>
+<FONT   color="#008000"><b>A10</b></FONT>
+ Check the following 3 items. 
+
+
+<ol>
+  <li>When the number of physical voices in the compact sequence player is set to 12, the number of sounds synthesized must be 12 or fewer. <P>
+  <li>If the number of logical voices in the compact sequence player is set to 32, up to 32 sounds, including the releases, can be layered at any moment in one sequence.  However, the number of these 32 sounds which actually can be voiced is limited to the number of logical voices set by the synthesizer driver.<P>
+  <li>The number of logical voices in the synthesizer driver can be set to any value. </li>
+</ol>
+
+<p>
+Two things can be said from the above:  
+<ol>
+<li>"the only thing that increases, even if the number of logical voices is increased, is the processing time consumed by the dynamic allocation" <P>
+<li>"the compact sequence player does not use the logical voices of the synthesizer driver."  
+</ol>
+<P>
+The majority of CPU processing time consumed by audio exists in the work of assembling command lists for the various physical voices.  Sequence processing and the allocation of physical voices from the logical voices themselves are not much of a problem.  The fact that "the processing time is slower when the number of logical voices is set to 16 than when it is set to 12," is not due to the number of physical voices being 16, but is probably "because the 12 voices, which until now were not all being voiced, are now always being voiced because voids in the logical voice processing have disappeared."  
+<P>
+Could it be that processing has slowed not because the number of logical voices was increased, but rather be that it has become slower than it has been because the voices which essentially should have been processed now actually are being processed?  If there are not enough logical voices, voices will not be physically generated regardless of the priority of the voices turned ON because they are in a state in which they cannot be candidates for generation (=no free voices). 
+
+
+<P align="right">
+<A href="seqp.htm#index">top</A>
+
+
+<HR>
+
+<P>
+<A name="11"><FONT  color="#FF0000"><b>Q11</b></FONT></A>
+<b> How do I loop sequence data?</b>
+
+
+<P>
+<FONT  color="#008000"><b>A11</b></FONT>
+ When creating the MIDI data, insert a &quot;control change &quot; at the start position and the end position of the loop.  The control numbers are 
+
+
+<blockquote><pre>loopstart       102
+loopend         103
+loopcount       104 or 105</pre></blockquote></font>
+
+<p>
+Control changes have a 7-bit value as the argument, consisting of the loop ID number for loopstart and loopend, or the number of loop iterations for loopcount.  With control 105, 128 is added to the setting and set as the loop iterations.  Since the default is for infinite loop iterations, data can be simply created in which a song intro will be played and then a loop segment will infinitely cycle by setting the following: 
+
+
+<p>
+Song intro
+
+
+<blockquote><pre>Control Change 102,0</pre></blockquote></font>
+
+<p>
+Song loop segment
+
+
+<blockquote><pre>Control Change 103,0</pre></blockquote></font>
+
+<p>
+However, since control changes are commands given in channel units, commands must be embedded for all of the channels being used by the sequence. 
+
+
+<p>
+Doubling is permitted if the ID numbers are different from the channel.  See the manual regarding more complex loops. 
+
+
+<P align="right">
+<A href="seqp.htm#index">top</A>
+
+
+<HR>
+
+<P>
+<A name="12"><FONT  color="#FF0000"><b>Q12</b></FONT></A>
+<b> What kind of loop information is included in the sequence data?</b>
+
+
+<P>
+<FONT  color="#008000"><b>A12</b></FONT>
+ This is explained in detail in <a href="../../pro-man/pro20/20-05.htm#01">Chapter 20, Section 5, "&quot;Loops in Sequences,&quot;</a> in the N64 Online Programming Manual.  
+
+
+<P align="right">
+<A href="seqp.htm#index">top</A>
+
+
+<HR>
+
+<P>
+<A name="13"><FONT  color="#FF0000"><b>Q13</b></FONT></A>
+<b> I want to stop looped sequence data without making it loop.</b>
+
+
+<P>
+<FONT  color="#008000"><b>A13</b></FONT>
+ Check the loop status on the software side by embedding a dummy track for checking the loop. 
+
+
+<P align="right">
+<A href="seqp.htm#index">top</A>
+
+
+<HR>
+
+<P>
+<A name="14"><FONT  color="#FF0000"><b>Q14</b></FONT></A>
+<b> Looping at different timing from that in the sequence data</b>
+
+
+<P>
+<FONT   color="#008000"><b>A14</b></FONT>
+ If the compact sequence player is used, the loop will be embedded in the data using entirely MIDI commands, so that the player will automatically perform them, without requiring any operation on the program side. 
+
+
+<p>
+Once again, check the control number of the following control changes in the MIDI file. 
+
+
+<blockquote><pre>loopstart       102
+loopend         103
+loopcount       104 or 105</pre></blockquote></font>
+
+<P align="right">
+<A href="seqp.htm#index">top</A>
+
+
+<HR>
+
+<P>
+<A name="15"><FONT  color="#FF0000"><b>Q15</b></FONT></A>
+<b> I am using NuSystem, but the effects are completely disabled even when I execute nuAuSeqPlayerSetChlFXMix() (for all MIDI channels). </b>
+
+
+<p>
+<b>Even Pan has no effect on the sequence when I use the above method.</b>
+
+<P>
+<FONT   color="#008000"><b>A15</b></FONT>
+ Do you have reverb depth and/or pan control changes embedded in the MIDI data?
+
+<p>
+Since the controller has priority over settings from functions, this could be preventing your effects from having any effect.
+
+
+<P align="right">
+<A href="seqp.htm#index">top</A>
+
+
+<HR>
+
+</BODY>
+</HTML>

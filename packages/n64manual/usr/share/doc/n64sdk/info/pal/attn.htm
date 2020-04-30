@@ -1,0 +1,32 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<TITLE>PAL Cautions</TITLE>
+<!-- Editor Notes: Ron Daring 7/15/1999, -->
+</HEAD>
+
+<BODY bgcolor="#FFFFFF">
+<font face="arial" size="-1">
+
+<TABLE border="1" cellspacing="1" cellpadding="6" bgcolor="#FFFF00">
+  <TR>
+    <TD><FONT face="Arial" size="4" color="#000000"><STRONG>Using with PAL</STRONG></FONT></TD></TR>
+</TABLE>
+
+<P>
+<FONT size="3" color="#FF0000"><STRONG>PAL Development Precautions</STRONG></FONT>
+</P>
+<P>
+<A name="01"><b>Return the Y-scale to 1.0 in the PreNMI Routine</b>
+</P>
+<P>
+Since a normal image will not be displayed if an NMI occurs while the Y-scale is a value other than 1.0, when the Y-scale has been changed, please be sure to return the Y-scale to 1.0 in the PRENMI routine (executed osViSetYScale(1.0)). This is not limited to PAL, but since Y-scale changes are used often with PAL, a great deal of care is required. This pattern is the most frequent cause of failures for PAL software in the lot checks at the Uji Plant. </P>
+<P>
+<A name="02"><b>Using osTVType to Check the Television System Format </b>
+</P>
+<P>
+Please design the game program so that it won't execute normally when an unexpected television system format is detected by osTvType. Design the program to either go into an infinite loop or display a message indicating a system error. Please do not design the game program to execute normally for both regional Television reception system formats by implementing a routine that auto-detects which reception system format is used. For more details, see <A href="../../caution/caution/index5.htm#5-2">N64 Programming Caution 5-2</A>.
+</P>
+<HR>
+</BODY>
+</HTML>

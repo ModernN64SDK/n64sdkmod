@@ -1,0 +1,55 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 12 - RDP Programming</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. -->
+</head>
+
+<h1>12.3 RS - Rasterizer</h1>
+
+<p>The Rasterizer's main job is implied in its name: to generate pixels that cover the interior of the primitive. The primitives are either triangles or rectangles. For each pixel, the RS generates the following <a href="../../keywords/index/data/graphics.htm#attribute" target="keywords">attributes</a>: </p>
+
+<ol>
+  <li>screen x,y location<br><br>
+  <li>z depth for <a href="../../keywords/index/data/graphics.htm#Z buffer" target="keywords">Z buffer</a> purposes<br><br>
+  <li>RGBA color information<br><br>
+  <li>s/w, t/w, 1/w, <a href="../../keywords/index/data/graphics.htm#LOD" target="keywords">LOD</a> for texture index, <a href="../../keywords/index/data/graphics.htm#perspective correction" target="keywords">perspective correction</a>, and <a href="../../keywords/index/data/graphics.htm#MIP mapping" target="keywords">mipmapping</a>. These are commonly referred to as s, t, w, l. <br><br>
+  <li><a href="../../keywords/index/data/graphics.htm#coverage value" target="keywords">coverage value</a> (Pixels on the edge of primitives have partial coverage values. Interiors are full.)<br><br>
+</ol>
+
+<p>These values are sent to the pipelined blocks downstream for other computations, such as texture sampling, color blending, and so on. </p>
+
+<dl>
+  <dt><a name="f12-03"><strong>Figure 12-3 RS State and Input/Output </strong></a>
+  <dd><img alt="[Figure 12-3]" src="gif/f12-03.gif">
+</dl>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="01"><h2>12.3.1 Scissoring</h2></a>
+
+<p>Scissoring is commonly used to eliminate running performance-intensive clipping code in the geometry processing stage of a graphics pipeline.  You do this by projecting the clipping rectangle at the near plane larger than the scissor rectangle.  The rasterizer can then efficiently eliminate the portion outside of the screen rectangle. </p>
+
+<p>The RSP geometry processing is performed in fixed-point arithmetic.  The clipped rectangle boundary is not a perfect rectangle, because of precision errors. This artifact can also be eliminated using the scissoring rectangle. </p>
+
+<dl>
+  <dt><a name="f12-04"><strong>Figure 12-4 Scissor/Clipping/Screen Rectangles </strong></a>
+  <dd><img alt="[Figure 12-4]" src="gif/f12-04.gif">
+</dl>
+
+<p>Triangle A is scissored, but not clipped. B, C and E are trivially rejected because no pixels are enumerated. Only D is clipped and scissored. </p>
+
+<table border=1 align="center">
+  <caption><a name="t12-09"><strong>Table 12-9 <a href="../../n64man/gdp/gDPSetScissor.htm">gsDPSetScissor</a>(ulx,uly,lrx,lry)</strong></a></caption>
+  <tr><th>Parameter</th><th>Value</th></tr>
+  <tr><td align="center">ulx</td><td>upper left x</td></tr>
+  <tr><td align="center">uly</td><td>upper left y</td></tr>
+  <tr><td align="center">lrx</td><td>lower right x</td></tr>
+  <tr><td align="center">lry</td><td>lower right y</td></tr>
+</table>
+
+<p><strong>Note:</strong>  Rectangles are scissored with some restrictions. In 1CYCLE and 2CYCLE mode, rectangles are scissored the same as triangles.  In FILL and COPY mode, rectangles are scissored to the nearest four pixel boundary; this might require rectangles to be scissored in screen space by the game software. </p>
+
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+</body> </html>

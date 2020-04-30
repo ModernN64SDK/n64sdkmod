@@ -1,0 +1,63 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<TITLE>64DD Chapter 4</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+<font face="Arial" size="-1">
+<b>4.1 IPL</b>
+
+<P>
+The IPL is a program written in DDROM that starts a game from disk.  If a Pak has not been inserted in the N64 when the power is turned on, the IPL is executed (when both a Game Pak and 64DD are connected, the Game Pak is given priority).  During the time that no disk is inserted in the 64DD, a demo program runs while the system waits for the user to insert a disk.  The user can also set the RTC (internal clock) during this time. 
+</P>
+<P>
+DDROM is not built in the drive for development. Refer to the chapter 5 for the start sequence of the drive for development.  
+ 
+<P>
+<B>Main Functions of the IPL</B>
+ 
+<P>
+<B>1. Checking expansion memory.</B>
+ 
+<P>
+A Memory Expansion Pak is included with the 64DD.  The program first checks whether the IPL can recognize the memory in this pack. If it cannot, an error message is displayed.
+
+<P>
+<B>2. Prompting the user to insert a disk.</B>
+
+<P>
+The message "please insert disk" is displayed against a backdrop of Mario leaping and springing around the Nintendo 64 logo.
+
+<P>
+<B>3. Displaying and setting the clock.</B>
+
+<P>
+The time is read from the 64DD RTC (internal clock) and displayed in real time in the lower portion of the screen.  In addition, pressing the A button for approximately 1 second brings up a menu with which the time can be set.
+ 
+<P>
+ <B>4. Starting the game after a disk is inserted.</B> 
+ 
+<P>
+After a disk is inserted, the IPL automatically reads the number of blocks specified by the IPL size, beginning from LBA0, stores the contents at the address in RDRAM specified by the load address, then jumps to that address.  For a detailed description of the IPL size and load address, please see section 11.4, The System Area.
+ 
+<P>
+<B>5. Storing the ID of the loaded game in RDRAM</B> 
+ 
+<P>
+32 bytes of data called the ID, which identifies each disk, are stored in RDRAM.  These data can be referenced from a disk game as the variable leoBootID.  For a detailed description of the ID, please see Chapter 6: Disk ID.</P>
+<P>
+The boot segment loaded by the IPL must remain clear of the memory areas that the IPL uses.  These areas are shown below.  Once the IPL has loaded, all memory areas except the OS area can be used.
+ 
+<P>
+<B>IPL RAM Map</B>
+ 
+<P>
+<IMG src="f04-01.gif">
+ 
+<P align="left">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" height="17" width="65" border="0"></A>
+</P>
+<HR>
+</BODY>
+</HTML>

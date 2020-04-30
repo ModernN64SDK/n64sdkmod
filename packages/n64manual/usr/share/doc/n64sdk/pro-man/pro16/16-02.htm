@@ -1,0 +1,121 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 16 - N64 Sprite Library</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. -->
+</head>
+
+<h1>16.2 Data Structures and Attributes</h1>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="01"><h2>16.2.1 Bitmap Structure</h2></a>
+
+<p>Following is the actual structure of a single bitmap:</p>
+
+<blockquote><pre>
+typedef struct bitmap {
+        s16 width;          /* Size across to draw in texels */
+                            /* Done if width = 0 */
+        s16 width_img;      /* Actual size across in texels */
+        s16 s;              /* Horizontal offset into bitmap */
+                            /* if (s &gt; width_img), then load only! */
+        s16 t;              /* Vertical offset into base */
+        void *buf           /* Pointer to bitmap data */
+                            /* Don't re-load if new buf */
+                            /* is the same as the old one */
+                            /* Skip if NULL */
+        s16 actualHeight;   /* True Height of this bitmap piece */
+        s16 LUToffset;      /* LUT base index (for 4-bit <a href="../../keywords/index/data/graphics.htm#CI" target="keywords">CI</a> Texs) */
+} Bitmap;
+</pre></blockquote>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="02"><h2>16.2.2 Sprite Structure</h2></a>
+
+<blockquote><pre>
+typedef struct sprite {
+    s16     x, y;                       /* Target position */
+    s16     width, height;              /* Target size (before scaling */
+    f32     scalex, scaley;             /* Texel to Pixel scale factor */
+    s16     expx, expy;                 /* Explosion spacing */
+    u16     attr;                       /* Attribute Flags */
+    s16     zdepth;                     /* Z Depth */
+    u8      red, green, blue, alpha;    /* Primitive Color */
+    u16     startTLUT;                  /* Lookup Table Entry Starting index */
+    s16     nTLUT;                      /* Total number of LUT Entries */
+    s16     *LUT;                       /* Pointer to Lookup Table */
+    s16     istart;                     /* Starting bitmap index */
+    s16     istep;                      /* Bitmaps index step (see SP_INCY) */
+                                        /* if 0, then variable width bitmaps */
+    s16     nbitmaps;                   /* Total number of bitmaps */
+    s16     ndisplist;                  /* Total number of display-list words */
+    s16     bmheight;                   /* Bitmap Texel height (Used) */
+    s16     bmHreal;                    /* Bitmap Texel height (Real) */
+    u8      bmfmt;                      /* Bitmap Format */
+    u8      bmsiz;                      /* Bitmap Texel Size */
+    Bitmap  *bitmap;                    /* Pointer to first bitmap */
+    Gfx     *rsp_dl;                    /* Pointer to RSP display list */
+    Gfx     *rsp_dl_next;               /* Pointer to next RSP DL entry */
+} Sprite; 
+</pre></blockquote>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="03"><h2>16.2.3 Attributes</h2></a>
+
+<p><a href="../../keywords/index/data/graphics.htm#sprite" target="keywords">Sprite</a> <a href="../../keywords/index/data/graphics.htm#attribute" target="keywords">attributes</a> permit sprites to be used in a variety of different ways. The following detailed description of each attribute indicates how setting or clearing that attribute affects the
+appearance of the drawn sprite. Note also that these attributes are as independent as possible, thus greatly expanding the available variety and uses for sprites. </p>
+
+<dl>
+  <dt><strong>SP_TRANSPARENT</strong>
+  <dd>This attribute permits the Alpha blending of the sprite texture with the background. 
+</dl>
+
+<dl>
+  <dt><strong>SP_CUTOUT</strong>
+  <dd>Use <a href="../../keywords/index/data/graphics.htm#alpha comparison" target="keywords">alpha comparison</a> hardware not to draw pixels with an alpha less than the blend color alpha (automatically set to 1). 
+</dl>
+
+<dl>
+  <dt><strong>SP_HIDDEN</strong>
+  <dd>This attribute makes <a href="../../n64man/sp/spDraw.htm">spDraw()</a>  on the sprite return without generating a <a href="../../keywords/index/data/graphics.htm#display list" target="keywords">display list</a>.
+</dl>
+
+<dl>
+  <dt><strong>SP_Z</strong>
+  <dd>This attribute specifies that <a href="../../keywords/index/data/graphics.htm#Z buffer" target="keywords">Z buffer</a> should be on while drawing the sprite. 
+</dl>
+
+<dl>
+  <dt><strong>SP_SCALE</strong>
+  <dd>This attribute specifies that the sprite should be scaled in both X and Y by the amount indicated in scalex and scaley. 
+</dl>
+
+<dl>
+  <dt><strong>SP_FASTCOPY</strong>
+  <dd>This attribute indicates that the sprite should be drawn in COPY mode. This produces the fastest possible drawing speed for background clears. 
+</dl>
+
+<dl>
+  <dt><strong>SP_TEXSHIFT</strong>
+  <dd>This attribute indicates that textures are to be shifted exactly 1/2 <a href="../../keywords/index/data/graphics.htm#texel" target="keywords">texel</a> in both s and t before drawing it. This creates a better antialiased (less <a href="../../keywords/index/data/graphics.htm#aliasing" target="keywords">aliased</a>) edge along transparent texture boundaries when in cutout mode. 
+</dl>
+
+<dl>
+  <dt><strong>SP_FRACPOS</strong>
+  <dd>This attribute indicates that the frac_s and frac_t fields of the sprite structure are to be used to fine-position the texture into the drawn pixels. 
+</dl>
+
+<dl>
+  <dt><strong>SP_TEXSHUF</strong>
+  <dd>This attribute indicates that the tile textures have their odd lines pre-shuffled to work around a <a href="../../n64man/gdp/gDPLoadTextureBlock.htm">LoadTextureBlock()</a> problem. (Please see <a href="../pro13/index.htm">Section 13, &QUOT;Texture Mapping&QUOT;</a> for details on this problem.) 
+</dl>
+
+<dl>
+  <dt><strong>SP_EXTERN</strong>
+  <dd>This attribute indicates that existing drawing modes are to be used rather than the drawing modes explicitly set with the sprite routines.
+</dl>
+
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+</body> </html>

@@ -1,0 +1,298 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<TITLE>Chapter 9 64DD</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+<font face="arial" size="-1">
+<b>9.2 Wave Data</b>
+<hr>
+<A name="01"></A><u>9.2.1 ROM Map</u>
+<P>
+Waveform data used for sounds are stored in DDROM ( <a href="../../64ddman/dd04/index.htm"> See "Chapter 4, 64DD Internal ROM"</a>) in a form such as that shown on the following page.
+</P>
+<TABLE border="1" cellspacing="3" cellpadding="3">
+  <TR>
+    <TD valign="top" width="43%" height="30">
+<font face="arial" size="-1">
+    <P>
+<B>Contents</B>
+    </P>
+</TD>
+    <TD valign="top" width="57%" height="30"><font face="arial" size="-1">
+    <P>
+<B>Offset from the beginning of the wave data </B>
+    </P>
+</TD></TR>
+  <TR>
+    <TD valign="top" width="43%" height="268"><font face="arial" size="-1">
+    <P>
+Header:
+    </P>
+    <P>
+Header
+    </P>
+</TD>
+    <TD valign="top" width="57%" height="268"><font face="arial" size="-1">
+    <P>
+0x000000-0x00001F
+    </P>
+    <P>
+int version code(0x19970123)
+    </P>
+    <P>
+int number of waveforms stored (0x00000124 = 292)
+    </P>
+    <P>
+unsigned int *WavePointer
+    </P>
+    <P>
+unsigned int *BookPointer
+    </P>
+    <P>
+unsigned int *LoopPointer
+    </P>
+    <P>
+Book_Table *BookData
+    </P>
+    <P>
+Loop_Table *LoopData
+    </P>
+    <P>
+Info_Table *Information
+    </P>
+</TD></TR>
+  <TR>
+    <TD valign="top" width="43%" height="55"><font face="arial" size="-1">
+    <P>
+WaveData:
+    </P>
+    <P>
+ADPCM waveform data
+    </P>
+</TD>
+    <TD valign="top" width="57%" height="55"><font face="arial" size="-1">
+    <P>
+0x000020-0x2B3D5F
+    </P>
+    <P>
+waveform(32Khz &amp; 16Khz)
+    </P>
+</TD></TR>
+  <TR>
+    <TD valign="top" width="43%" height="57"><font face="arial" size="-1">
+    <P>
+BookData:
+    </P>
+    <P>
+ADPCM predictor data
+    </P>
+</TD>
+    <TD valign="top" width="57%" height="57"><font face="arial" size="-1">
+    <P>
+0x2B4000-0x2B88FF
+    </P>
+    <P>
+64 bytes/waveform
+    </P>
+</TD></TR>
+  <TR>
+    <TD valign="top" width="43%" height="55"><font face="arial" size="-1">
+    <P>
+LoopData:
+    </P>
+    <P>
+ADPCM loop data
+    </P>
+</TD>
+    <TD valign="top" width="57%" height="55"><font face="arial" size="-1">
+    <P>
+0x2B9000-0x2BAFFF
+    </P>
+    <P>
+32 bytes/waveform
+    </P>
+</TD></TR>
+  <TR>
+    <TD valign="top" width="43%" height="58"><font face="arial" size="-1">
+    <P>
+WavePointer:
+    </P>
+    <P>
+waveform data pointer table
+    </P>
+</TD>
+    <TD valign="top" width="57%" height="58"><font face="arial" size="-1">
+    <P>
+0x2BB000-0x2BB48F
+    </P>
+    <P>
+4 bytes/waveform
+    </P>
+</TD></TR>
+  <TR>
+    <TD valign="top" width="43%" height="61"><font face="arial" size="-1">
+    <P>
+BookPointer:
+    </P>
+    <P>
+predictor pointer table
+    </P>
+</TD>
+    <TD valign="top" width="57%" height="61"><font face="arial" size="-1">
+    <P>
+0x2BB500-0x2BB98F
+    </P>
+    <P>
+4 bytes/waveform
+    </P>
+</TD></TR>
+  <TR>
+    <TD valign="top" width="43%" height="60"><font face="arial" size="-1">
+    <P>
+LoopPointer:
+    </P>
+    <P>
+loop pointer table
+    </P>
+</TD>
+    <TD valign="top" width="57%" height="60"><font face="arial" size="-1">
+    <P>
+0x2BBA00-0x2BBE8F
+    </P>
+    <P>
+4 bytes/waveform
+    </P>
+</TD></TR>
+  <TR>
+    <TD valign="top" width="43%" height="62"><font face="arial" size="-1">
+    <P>
+Information:
+    </P>
+    <P>
+additional waveform information
+    </P>
+</TD>
+    <TD valign="top" width="57%" height="62"><font face="arial" size="-1">
+    <P>
+0x2BC000-0x2BE47F
+    </P>
+    <P>
+32 bytes/waveform
+    </P>
+</TD></TR>
+</TABLE>
+
+<HR>
+<A name="02"></A><u>9.2.2 Detailed Description</u>
+<P>
+<B>Information structure:32-byte configuration</B>
+</P>
+<P>
+Waveform information is contained in the information area of the sound ROM.
+</P>
+<PRE><font face="courier" size="2">
+struct {
+	u32	version;		/* 0x19970123 */
+	u32	adpcmsize;		/* compressed size */
+	u32	samplesize;		/* noncompressed size */
+	u32	loop_startsamplepoint;	/* oop starting point.  0 with non-looped data */
+	u32	loop_endsamplepoint;	/* loop ending point */
+	u16	loop_count;		/* 0 with non-looped, -1 with looped data */
+	u8	book_bytes;		/* always 64 */
+	u8	samplingbaseMIDIkey;	/* key base value */
+	f32	samplingrate;		/* sampling rate */
+	f32	tuning_C4_32K;		/* detune value */
+} Waveinformation_;
+</PRE></font>
+
+<font face="arial" size="-1">
+<P>
+The same information is described in the file romsound.infos.txt in the ddsound directory (see <a href="../../64ddman/dd14/index.htm">"Chapter 14, Important Directories"</a>) of the DD development environment.  Please refer to this file when creating the bank control file (.ctl).
+</P>
+<P>
+In addition, please refer to the examples of this file shown in <a href="../../64ddman/dd0a/index.htm">Appendix A.</a>
+</P>
+<P>
+<B>Pointer Tables</B>
+</P>
+<P>
+The individual pointer tables for waveform data, predictor data, and loop data indicate how far the storage addresses of each of these types of data are from the beginning (Header) of sound ROM (offset from Header).
+</P>
+<P>
+For non-looped sound, 0x002D8FFF is stored in the the corresponding loop pointer in the loop pointer table.  
+</P>
+<HR>
+<u><A name="03"></A>9.2.3 Usage</u>
+<P>
+To use sound ROM data, the starting storage address of the data must be known.  This starting address is defined in leo.h as DDROM_WAVEDATA_START. Specifically, wnen the EPi function is used to transfer sound data from DDROM by DMA, the following should be used as the address.
+</P>
+<BLOCKQUOTE>
+<B>DDROM_WAVEDATA_START+offset</B>
+</BLOCKQUOTE>
+<P>
+Offset is the offset address given in the table in section 9.2.1 ROM Map.
+
+<P>
+</P>
+<P>
+To use sound ROM data, the starting storage address of the data must be known.  This starting address is defined in leo.h as DDROM_WAVEDATA_START. (Support for 64DD sound development began with ver. 2.0 of NINTENDO 64 Sound Tools.  Those using prior versions are encouraged to upgrade to the latest version.)
+</P>
+<P>
+The following section discusses audio development with the NW version.
+</P>
+<P>
+When developing audio, use the following procedure to create a sound ROM .ctl file. 
+</P>
+<OL>
+  <LI>Create an inst file for using the provided (see <a href="../../64ddman/dd14/index.htm">"Chapter 14, Important Directories."</a>) AIFC data for the disk sound generator. 
+  <LI>Compile using the ic (Instrument Compiler).  In doing so, use the -v option for output of information on the arrangement of .ctl data.
+  <LI>Substitute the sound ROM address for the waveform offset specified in the .ctl file.  This is easily done by preparing a patch program for this purpose beforehand.
+</OL>
+<P>
+For details, please see <a href="../../pro-man/pro18/index.htm">"Chapter 18, Audio Tools,"</a> of the N64 Online Programming Manual.
+</P>
+<HR>
+<u><A name="04"></A>9.2.4 Supplementary Information on Use with SGI Drivers</u>
+<P>
+When SGI drivers are used, the waveform offset specified in the .ctl file must be rewritten.  Although this can be accomplished using such tools as a binary editor, it can easily be accomplished by creating a patch-application program beforehand.   The information below is provided to aid in creating this program.
+</P>
+<P>
+The patch-application program performs tasks such as the following.
+</P>
+<P>
+Compiles using the ic and creates a bank file.  Outputting the name of the archived original waveform file and the offset address in the archive (accomplished using the -v option; e.g. % ic -v -o sample sample.inst > info.txt) at this time facilitates subsequent tasks.
+</P>
+<P>
+The patch program reads the bank control file (.ctl) and corrects the waveform address.  
+</P>
+<P>
+Specifically, assuming structure ALBankfile *bf; is used, the program rewrites the following in sequence:
+</P>
+<BLOCKQUOTE>
+<B>bf-&gt;bankArray[b]-&gt;instArray[i]-&gt;soundArray[s]-&gt;wavetable-&gt;base</B>
+</BLOCKQUOTE>
+<P>
+For details on these structures, please see <a href="../../pro-man/pro19/index.htm">"Chapter 19,  Audio File Format,"</a> of the N64 Programming Manual.
+</P>
+<P>
+When performing this procedure, the waveform items to be rewritten by original data must be selected.  If the previously mentioned output file (abbreviated as info below) containing the name of the archived original waveform file and the offset address in the archive does exist, the data can be rewritten using the following general process.
+</P>
+<OL>
+  <LI>Identify the waveform name by comparing the base value with the waveform offset value in the info file.
+  <LI>Search for this waveform name in romsound.exinfo (see <a href="../../64ddman/dd14/index.htm">"Chapter 14,  Important Directories"</a>).  The sound ROM waveform offset address can be obtained at this location. 
+  <LI>Write the sound ROM offset address in place of the value of base.
+</OL>
+<P>
+The following specific methods can be used.
+</P>
+<P>
+First search for Wave Table: in the info file.  The waveform name is a written as a continuation of Wave Table:, so use this as a reference. This data item's offset value is the offset address stored by the ALWaveTable structure for that waveform; base is the value described in the .ctl file as the value of base for ALWaveTable.<BR>
+Next open the .ctl file and replace the value of base at the location of Offset with the sound ROM offset address.
+</P>
+<P>
+If the info file cannot be obtained, the waveform can only be identified without the base address.  Because the waveform length and loop information are likely to be different for all waveforms, the reference tables for these types of information can probably also be integrated into the patch program.  When doing this, it is convenient to also include as a table in the patch file the rom waveform offset information written in romsound.exinfo.
+</P>
+</BODY>
+</HTML>

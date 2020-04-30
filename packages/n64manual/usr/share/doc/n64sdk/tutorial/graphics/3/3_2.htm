@@ -1,0 +1,41 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Graphics-Chapter 3  Simple Texture Mapping</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/22/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<font style="font-size:12pt"><B>3.2  Loading Textures</B></FONT>
+<br>
+<P>
+With the N64, if you do not load a texture into TMEM you cannot utilize texture mapping and texture rendering, so first we will look at the method used to load textures into TMEM. 
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=1><TR>
+<TD NOWRAP ALIGN=LEFT VALIGN=TOP>
+<PRE><CODE>   gDPLoadTextureBlock(
+          Gfx *gdl,
+          u32 timg,
+          u32 fmt,
+          u32 siz,
+          u32 width,
+          u32 height,
+          u32 pal,
+          u32 cms,
+          u32 cmt,
+          u32 masks,
+          u32 maskt,
+          u32 shifts,
+          u32 shiftt )</CODE></PRE>
+</TD>
+</TR></TABLE>
+<P>
+The second argument in the gDPLoadTextureBlock command expresses the pointer to the texture image.  In a game program, a texture for display is generally sent from ROM to RDRAM as needed, and that (segment) address is passed to gDPLoadTextureBlock.  However, in this tutorial, the texture data is converted to C source format and included in the object as an initialized array.<br><br>
+
+     The fifth and sixth arguments represent the size of the image.  They provide values that indicate the width and height in texels of the texture that is to be loaded.  As mentioned before, TMEM has a capacity of 4KB, so a very large texture cannot be loaded all at once.
+     The gDPLoadTextureBlock command has many other arguments, but because explaining them all would be a lengthy undertaking, so the explanations have been divided up for each argument into separate sections.
+</P>
+</BODY>
+</HTML>

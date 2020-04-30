@@ -1,0 +1,201 @@
+<HTML><HEAD>
+<TITLE></TITLE>
+</HEAD></BODY>
+<PRE><FONT COLOR="red">/**************************************************************************
+ *									  *
+ *		 Copyright (C) 1994, Silicon Graphics, Inc.		  *
+ *									  *
+ *  These coded instructions, statements, and computer programs  contain  *
+ *  unpublished  proprietary  information of Silicon Graphics, Inc., and  *
+ *  are protected by Federal copyright law.  They  may  not be disclosed  *
+ *  to  third  parties  or copied or duplicated in any form, in whole or  *
+ *  in part, without the prior written consent of Silicon Graphics, Inc.  *
+ *									  *
+ **************************************************************************/</FONT>
+
+<FONT COLOR="red">/**************************************************************************
+ *
+ * Sprite library include file
+ *
+ *  $Revision: 1.16 $
+ *  $Date: 1998/04/17 05:03:46 $
+ *  $Source: /hosts/gate3/exdisk2/cvs/N64OS/Master/cvsmdev2/PR/include/sp.h,v $
+ *
+ **************************************************************************/</FONT>
+
+#ifndef _SP_H_
+#define _SP_H_
+
+#ifdef _LANGUAGE_C_PLUS_PLUS
+extern &quot;C&quot; {
+#endif
+
+#include &lt;PR/mbi.h&gt;
+#include &lt;PR/ultratypes.h&gt;
+
+struct bitmap {
+	s16	width;		<FONT COLOR="red">/* Size across to draw in texels */</FONT>
+				<FONT COLOR="red">/* Done if width = 0		*/</FONT>
+
+	s16	width_img;	<FONT COLOR="red">/* Size across of bitmap in texels */</FONT>
+				<FONT COLOR="red">/* Done if width = 0		*/</FONT>
+
+	s16	s;		<FONT COLOR="red">/* Horizontal offset into bitmap */</FONT>
+				<FONT COLOR="red">/* if (s &gt; width), then load only! */</FONT>
+
+	s16	t;		<FONT COLOR="red">/* Vertical offset into base	*/</FONT>
+
+	void	*buf;		<FONT COLOR="red">/* Pointer to bitmap data	*/</FONT>
+				<FONT COLOR="red">/* Don't re-load if new buf	*/</FONT>
+				<FONT COLOR="red">/* is the same as the old one   */</FONT>
+				<FONT COLOR="red">/* Skip if NULL */</FONT>
+
+	s16	actualHeight;	<FONT COLOR="red">/* True Height of this bitmap piece */</FONT>
+
+	s16	LUToffset;	<FONT COLOR="red">/* LUT base index		*/</FONT>
+};
+
+typedef struct bitmap Bitmap;
+
+struct sprite {
+	s16	x,y;		<FONT COLOR="red">/* Target position		*/</FONT>
+
+	s16	width, height;	<FONT COLOR="red">/* Target size			*/</FONT>
+
+	f32	scalex, scaley;	<FONT COLOR="red">/* Texel to Pixel scale factor	*/</FONT>
+
+	s16	expx, expy;	<FONT COLOR="red">/* Explosion spacing		*/</FONT>
+
+	u16 	attr;		<FONT COLOR="red">/* Attribute Flags		*/</FONT>
+	s16	zdepth;		<FONT COLOR="red">/* Z Depth 			*/</FONT>
+
+	u8	red;		<FONT COLOR="red">/* Red component		*/</FONT>
+	u8	green;		<FONT COLOR="red">/* Green component		*/</FONT>
+	u8	blue;		<FONT COLOR="red">/* Blue component		*/</FONT>
+	u8	alpha;		<FONT COLOR="red">/* Alpha component		*/</FONT>
+
+	s16	startTLUT;	<FONT COLOR="red">/* Lookup Table Entry Starting index */</FONT>
+	s16	nTLUT;		<FONT COLOR="red">/* Total number of Lookup Table Entries */</FONT>
+
+	int	*LUT;		<FONT COLOR="red">/* Pointer to Lookup Table	*/</FONT>
+
+	s16	istart;		<FONT COLOR="red">/* Starting bitmap index	*/</FONT>
+	s16	istep;		<FONT COLOR="red">/* Bitmaps index step (see SP_INCY) */</FONT>
+				<FONT COLOR="red">/* if 0, then variable width bitmaps */</FONT>
+
+	s16	nbitmaps;	<FONT COLOR="red">/* Total number of bitmaps	*/</FONT>
+	s16	ndisplist;	<FONT COLOR="red">/* Total number of display-list words */</FONT>
+
+	s16	bmheight;	<FONT COLOR="red">/* Bitmap Texel height (Used)	*/</FONT>
+	s16	bmHreal;	<FONT COLOR="red">/* Bitmap Texel height (Real)	*/</FONT>
+	u8	bmfmt;		<FONT COLOR="red">/* Bitmap Format	 	*/</FONT>
+	u8	bmsiz;		<FONT COLOR="red">/* Bitmap Texel Size		*/</FONT>
+
+	Bitmap	*bitmap;	<FONT COLOR="red">/* Pointer to first bitmap	*/</FONT>
+
+	Gfx	*rsp_dl;	<FONT COLOR="red">/* Pointer to RSP display list	*/</FONT>
+
+	Gfx	*rsp_dl_next;	<FONT COLOR="red">/* Pointer to next RSP display entry	*/</FONT>
+
+	s16	frac_s,		<FONT COLOR="red">/* Fractional Texture offsets */</FONT>
+		frac_t;		<FONT COLOR="red">/* These have 5 fraction bits */</FONT>
+};
+
+typedef struct sprite Sprite;
+
+<FONT COLOR="red">/*
+ * DANGER!
+ * This is bad programming. Where the *heck* do these numbers come
+ * from?
+ *
+ * They are obviously 'maximums' from the sprite library, but since
+ * the sprite library is built on top of gbi.h, which includes macros
+ * that decode into multiple macros, etc., it is nearly impossible to
+ * know what these maximums should be.
+ *
+ * Worse, there are some gbi macros (texture alignment mostly) that
+ * decode into *many* macros, so if we choose that as a maximum, we
+ * are wasting TONS of space...
+ *
+ * These numbers work for &quot;reasonable&quot; sprite library usage, and
+ * there is an assert() in the library to detect when they aren't
+ * enough. (use the debug version)
+ */</FONT>
+#define DL_BM_OVERHEAD (12)
+#define DL_SPRITE_OVERHEAD (24)
+
+#define NUM_DL(nb)      ((nb)*DL_BM_OVERHEAD +DL_SPRITE_OVERHEAD)
+
+<FONT COLOR="red">/*
+ * Misc constants
+ */</FONT>
+
+#ifndef NULL
+#define NULL			0
+#endif
+
+#ifndef TRUE
+#define TRUE			1
+#endif
+
+#ifndef FALSE
+#define FALSE			0
+#endif
+
+<FONT COLOR="red">/*
+ * For sprite-&gt;attr
+ */</FONT>
+
+#define SP_TRANSPARENT		0x00000001
+#define SP_CUTOUT		0x00000002
+#define SP_HIDDEN		0x00000004
+#define SP_Z			0x00000008
+#define SP_SCALE		0x00000010
+#define SP_FASTCOPY		0x00000020
+#define SP_OVERLAP		0x00000040
+#define SP_TEXSHIFT		0x00000080
+#define SP_FRACPOS		0x00000100
+#define SP_TEXSHUF		0x00000200
+#define SP_EXTERN		0x00000400
+
+<FONT COLOR="red">/*
+ * Function wrapper
+ */</FONT>
+#if	defined(F3DEX_GBI_2)
+#define	spMove			spX2Move
+#define	spSetZ			spX2SetZ
+#define	spScissor		spX2Scissor
+#define	spDraw			spX2Draw
+#define	spInit			spX2Init
+#define	spFinish		spX2Finish
+#elif	defined(F3DEX_GBI)
+#define	spMove			spXMove
+#define	spSetZ			spXSetZ
+#define	spScissor		spXScissor
+#define	spDraw			spXDraw
+#define	spInit			spXInit
+#define	spFinish		spXFinish
+#endif
+
+<FONT COLOR="red">/*
+ * Function prototypes
+ */</FONT>
+
+void spSetAttribute (Sprite *sp, s32 attr);
+void spClearAttribute (Sprite *sp, s32 attr);
+void spMove (Sprite *sp, s32 x, s32 y);
+void spScale (Sprite *sp, f32 sx, f32 sy);
+void spSetZ  (Sprite *sp, s32 z );
+void spColor (Sprite *sp, u8 red, u8 green, u8 blue, u8 alpha);
+Gfx *spDraw (Sprite *sp);
+void spInit( Gfx **glistp );
+void spScissor( s32 xmin, s32 xmax, s32 ymin, s32 ymax );
+void spFinish( Gfx **glistp );
+
+#ifdef _LANGUAGE_C_PLUS_PLUS
+}
+#endif
+
+#endif <FONT COLOR="red">/* _SP_H_ */</FONT>
+</PRE>
+</BODY>

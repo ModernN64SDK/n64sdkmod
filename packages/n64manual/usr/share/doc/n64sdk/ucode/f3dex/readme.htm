@@ -1,0 +1,131 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<title>F3DEX readme 1.23</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<FONT FACE="Arial" SIZE="-1">
+
+<p><font size="2"><strong>*****************************************************************************<br>
+README / Release 1.23 06/09/97<br>
+*****************************************************************************</strong></font></p>
+
+<p>The microcodes in this archive:</p>
+
+<p><font color="#FF8040" size="2"><strong>(1)
+gspF3DEX.fifo.o/gspF3DEX.NoN.fifo.o:</strong></font></p>
+
+<p>These are based on Fast3D ucode and support 32 vertices cache, 2 triangles' instruction and more DL links (10->18).</p>
+
+<p>gspF3DEX.fifo.o uses near clipping, gspF3DEX.NoN.fifo.o does not use near clipping.</p>
+
+<p><font color="#FF8000" size="2"><strong>(2)
+gspF3DLX.fifo.o/gspF3DLX.NoN.fifo.o:</strong></font></p>
+
+<p>These have no subpixel calculation of y screen to get more performance. So, some wrinkles may appear on the texture.</p>
+
+<p>F3DLX supports all F3DEX's GBIs and can control clipping enable/disable. If clipping is disabled, you can get better performance. Please refer to "NewFunctions".</p>
+
+<p>gspF3DLX.fifo.o uses near clipping, gspF3DLX.NoN.fifo.o does not use near clipping.</p>
+
+<p>These ucodes are supported in release 0.94 and later.</p>
+
+<p><font color="#FF8000" size="2"><strong>(3)
+gspF3DLX.Rej.fifo.o/gspF3DLP.Rej.fifo.o:</strong></font></p>
+
+<p>These don't support clipping but do support triangle rejection.</p>
+
+<p>Rejection is performed in which only a triangle whose three vertices are located inside the specified area is rendered, while a triangle with one or more vertices located outside the specified area is not rendered. This specified area is refered to as a rejection box. The size of a rejection box may vary, depending on various conditions. However, as far as the X/Y directions are concerned, the initial values are approximately twice as large as the the screen when the screen size is 320 x 240 as illustrated below.</p>
+
+<p>Use g*SPClipRatio to change this area, with the value ranging from FRUSTRATIO_2 to FRUSTRATIO_6. Z direction (screen depth) is rejected by Far plane. It is not rejected by Near plane.</p>
+
+<hr>
+
+<p>A large triangle where one vertex is outside the rejection box and is not drawn.
+</p>
+
+<p>To avoid this, a large triangle may be divided into small triangles in the modeling stage.
+</p>
+
+<p>F3DLX.Rej and F3DLP.Rej can provide faster performance with the 2 Triangles instruction by applying this rejection process.
+</p>
+
+<p>Therefore, use g*SP2Triangles when generating DL.</p>
+
+<p>gspF3DLX.Rej.fifo.o is a version with texture correction while gspF3DLP.Rej.fifo.o is a version without texture correction.
+</p>
+
+<p>F3DLP.Rej works slightly faster than F3DLX.Rej. Although a process for SP gets faster, there isn't much change in a DP process. Therefore, occasionally a DP process is not able to catch up with the SP process. Thus it is necessary to consider using RA mode (G_RM_RA_ZB_OPA_SURF) for the render mode.</p>
+
+<p>These microcodes don't support G_CULL_BOTH.</p>
+
+<p>These ucodes are supported in release 0.96 and later.
+</p>
+
+<p><font color="#FF8000" size="2"><strong>(4) gspL3DEX.fifo.o:</strong></font></p>
+
+<p>These are based on Line3D ucode and support 32 vertices cache.</p>
+
+<p>They may be used to draw wireframe objects specified by 1Triangle, 2Triangles and 1Quadrangle.</p>
+
+<p>These ucodes are supported in release 1.00 and later.</p>
+
+<p><font size="3">*****************************************************************************</font></p>
+
+<p><font size="2">Header files:</font></p>
+
+<ul>
+    <li><font size="2">headers-2.0e/*.h Header files for U64 Dev 2.0e</font></li>
+    <li><font size="2">headers-2.0f/*.h Header files for U64 Dev 2.0f</font></li>
+    <li><font size="2">headers-2.0g/*.h Header files for U64 Dev 2.0g</font></li>
+    <li><font size="2">headers-2.0h/*.h Header files for U64 Dev 2.0h</font></li>
+</ul>
+
+<p>Copy one of them to /usr/include/PR.
+</p>
+
+<p><font size="2">*****************************************************************************</font></p>
+
+<p><font size="2">About GBI Compatibility:</font></p>
+
+<p>Some GBI (Graphics Binary Interface) macros are not compatible between Fast3D (original) and this released ucode at a binary level.</p>
+
+<p>But, we can get source level compatibility using gbi.h.
+</p>
+
+<p>Various compile options create an appropriate DL for different kinds of GBIs.</p>
+
+<p>Specifically, a GBI supported by microcodes in this package is output by defining a key word &quot;F3DEX_GBI&quot; before including gbi.h. (Normally, gbi.h is automatically included if ultra64.h is included.)
+</p>
+
+<p>When you make DL for new ucode in static_ex.c, you should add
+  "#define F3DEX_GBI" before "#include <ultra64.h>" like this.</p>
+
+<blockquote>
+    <pre><font size="3">static_ex.c:
+        |
+        |#define F3DEX_GBI
+        |#include &lt;ultra64.h&gt;
+        |</font></pre>
+</blockquote>
+
+<p>In release 0.96 or later, all gbi commands held compatibility
+between F3DEX, F3DLX, F3DLX.Rej and F3DLP.Rej. So you can use the same gbi
+binary data in each ucode.  But, there is a small difference concerning rejection between F3DL*.Rej and F3DEX/LX. So, it is necessary to be careful of the differences.</p>
+
+<p><font size="2">*****************************************************************************</font></p>
+
+<p><font size="2">OS patches:</font></p>
+
+<p>An OS patch for g*SPLoadUcode is located under os_patches/. Apply the patch as instructed below.</p>
+
+<blockquote>
+    <pre><font size="3">% cd os_patches
+% make</font></pre>
+</blockquote>
+
+<p>This makes libultra.a, libultra_rom.a, and libultra_d.a with the patch applied. Please move these files to /usr/lib.</font></p>
+</body>
+</html>

@@ -1,0 +1,214 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<title>3</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<FONT FACE="Arial" SIZE="-1">
+
+<h2>3. Microcode</h2>
+
+<p>N64 JPEG microcode does the high-speed compression and decompression of JPEG files (N64 JPEG) from Nintendo original format.</p>
+
+<p>There are the two kinds of microcode: </p>
+
+<p><font face="Arial"></font><font face="Courier New">njpgdspMain.o</font> decompresses the compressed images</p>
+
+<p><font face="Arial"></font><font face="Courier New">njpgespMain.o</font> compresses images</p>
+
+<p>As the application programmer, you can choose the microcode appropriate for your game application. </p>
+
+<h3><a name="01">3.1 The Decompression Microcode</h3>
+
+<p>The decompression microcode <font face="Courier New">njpgdspMain</font> is explained here.</p>
+
+<h4><a name="01-01">3.1.1 Input Data</a></h4>
+
+<p><font face="Arial">The N64 JPEG format has two operation blocks for image compression, a sub-block (SB) and a macro block (MB). 
+</p>
+
+<p>A sub-block (SB) is an 8x8 dot square. For both compression and decompression of the JPEG file, discrete cosine transformation (reverse-discrete cosine transformation), quantization (reverse-quantization), zigzag scanning, and the Huffman encode (decode) are done in a sub-block.</p>
+
+<p>A macro block (MB) is a 16x16 dot square. It is a group of four sub-blocks. The N64 JPEG color space uses the YUV format as does standard JPEG, not RGB format which is frequently used in N64 development. N64 JPEG culls the color differences in a macro block after converting the color space from RGB to YUV (4:1:1). As a result, RSP output during the compression (or RSP input during decompression) keeps the YUV data in the macro block. The final drawing during the decompression is also done in the macro block (please see Section 3.1.3, "Output Data," for more information).</p>
+
+<p>The following diagram shows the relationship between the sub-blocks and macro blocks (<font face="Arial">3-1</font>):  The following diagram shows the RSP output data format during compression (or RSP input data format during decompression) (<font face="Arial">3-2</font>):</p>
+
+<p><img src="jpeg_f01.gif"></p>
+
+<p><img src="jpeg_f02.gif"></p>
+
+<h4><a name="01-02">3.1.2 Microcode Start-up</a></h4>
+
+<p>The procedure for starting the expansion microcode, njpgdsMain, is described below.</p>
+
+<p>First, include the header-file &quot;<font face="Courier New">n64jpeg.h</font>&quot; in the source code for your game application, and include &quot;<font
+face="Arial">njpgdspMain.o</font>&quot; in the spec file for <font face="Arial">makerom</font>. Then establish the <font face="Arial">OSTask</font> structure as follows:</p>
+
+<blockquote>
+    <pre><font face="Courier New" SIZE="3">type			M_NJPEGDTASK
+flags			0x0
+*ucode_boot 		(u64 *)rspbootTextStart
+ucode_boot_size		SP_BOOT_UCODE_SIZE
+*ucode			(u64 *)njpgdspMainTextStart
+ucode_size		SP_UCODE_SIZE
+*ucode_data		(u64 *)njpgdspMainDataStart
+ucode_data_size		SP_UCODE_DATA_SIZE
+*dram_stack		NULL
+dram_stack_size		0
+*output_buf		NULL
+*output_buff_size	NULL
+*data_ptr		Pointer to the parameter structure
+<font face="Courier New">data_size		NJPEGD_PARAM_SIZE</font>
+<font face="Courier New">*yield_data_ptr		yield</font>Buffer pointer
+<font face="Courier New">yield_data_size		NJPEGD_YIELD_SIZE</font></font></pre>
+</blockquote>
+
+<p>The address of the yield buffer must conform to 16-byte alignment, and it must be 272 bytes in size. </p>
+
+<p>The parameter structure is defined as follows:</p>
+
+<blockquote>
+    <pre><font face="Courier New" SIZE="3">typedef struct{
+	u64 *buffer;	/* input/output data buffer address*/
+	u32 mbs;	/* number of all the macro blocks*/
+	u32 scale;	/* quantization scale(-2, -1, 0 ,1 ,2) */
+	u32 dummy;
+} NJPEGDParam;</font></pre>
+</blockquote>
+
+<p>In the header address of the input/output data buffer, enter the output address for the CPU decoding process that will be done by <tt>njpgHuffDecode</tt> function. Microcode overwrites the decompressed input data in RAM, so you don't have to specify the output address for the microcode.</p>
+
+<p>The microcode processes and outputs the image data with a macro block of 16x16 (length x width) dots (pixels). For the mbs argument (the number of all macro blocks), enter the number macro blocks in the original image data. For example, if the size of the original image data is 240x 320 (length x width) dots, the total number of macro blocks should be 300, which is 15 (length) x 20 (width). </p>
+
+<p>For the scale argument (the quantization scale value), enter the specified quantization scale value during the compression. The larger this value is, the higher the compression rate becomes and the shorter the decompression time. However, the image quality becomes worse. Choose a value appropriate for your image. 
+</p>
+
+<p>You can specify any value in the range from -2 to 2 as the quantization scale value. Any other value may cause unexpected results. If you specify 0, the reverse-quantization is not done.</p>
+
+<p>After the CPU decoding process ends and the OSTask structure is prepared, you can start to use the microcode. Call the <tt>osSpTaskStart</tt> function. It works in the same way as
+graphics or audio microcode. 
+</p>
+
+<p><font face="Courier New">(</font>Example<font face="Courier New">)</font>
+</p>
+
+<blockquote>
+    <pre><font face="Courier New" SIZE="3">OSTask njpgdtlist;
+	 .
+	 .
+	 .
+/* OSTask structure njpgdtlist set */
+	 .
+	 .
+/* Start RSP Processing */
+osWritebackDCacheAll();
+osSpTaskStart(&amp;njpgdtlist);
+	 .
+	 .
+/* Wait for the end of RSP processing */
+osRecvMesg(&amp;rspMessageQ, NULL, OS_MESG_BLOCK); </font></pre>
+</blockquote>
+
+<h4><a name="01-03">3.1.3 Output Data</a></h4>
+
+<p>Data output by the decompression microcode has a format such that each graphics microcode is usable for the YUV texture. For more information about <font
+face="Arial">16bitYUV</font> texel format, please refer to <font
+face="Arial">N64</font>Programming Manual Chapter 13 Texture mapping" figure <font face="Arial">13-18</font>.</p>
+
+<p>The decompression microcode output data overwrites the input data of each macro block, so you don't have to prepare another microcode output buffer.</p>
+
+<p>The Figure <font face="Arial">3-3</font> shows the format of the data output by the decompression microcode.</p>
+
+<p><img src="jpeg_f03.gif"></p>
+
+<p>Draw the data output by the decompression microcode as illustrated in figure <font face="Arial">3-3</font> as <font face="Arial">YUV</font> texture per every macro block on the appropriate position of the screen. Although there are different kinds of methods of drawing, the output data is drawn using sprite microcode in the sample program which comes with the manual.</p>
+
+<h3><a name="02">3.2 The Compression Microcode</a></h3>
+
+<p>The compression microcode <font face="Courier New">njpgespMain</font> is explained here.</p>
+
+<h4><a name="02-01">3.2.1 Input Data</a></h4>
+
+<p>This microcode can only encode (compress) 16-bit RGBA formatted image data format. No other format can be encoded. With regard to the size of the graphic data, the only restriction is that the length and width each conform to a dot multiple of 16.</p>
+
+<p>The microcode directly divides and encodes the image data into 16x16 dot macro blocks (MBs), so it is impossible to cut and process a piece of a large image. For example, it is impossible to cut out a 240x160 piece from a drawn 320x 240 dot image in a frame buffer to use directly as input data for the microcode without erasing it from the frame buffer. However, after first cutting out the piece for another buffer in the application, you can then use the cut-out data as the input data for the microcode. </p>
+
+<h4><a name="02-02">3.2.2 Microcode Start-up</a></h4>
+
+<p>How to launch the compression microcode njpgespMain is described below.</p>
+
+<p>First, include the n64jpeg.h header file in the source code for your game application, and include the njpgespMain.o file in the spec file for makerom. Then set the OSTask structure as follows: </p>
+
+<blockquote>
+    <pre><font face="Courier New" SIZE="3">type			M_NJPEGTASK;
+flags			0x0;
+*ucode_boot		(u64 *)rspbootTextStart;
+ucode_boot_size		SP_BOOT_UCODE_SIZE;
+*ucode			(u64 *)njpgespMainTextStart;
+ucode_size		SP_UCODE_SIZE;
+*ucode_data		(u64 *)njpgespMainDataStart;
+ucode_data_size		SP_UCODE_DATA_SIZE;
+*dram_stack		NULL;
+dram_stack_size		0;
+*output_buff		NULL;
+*output_buff_size	NULL;
+*data_ptr		Pointer to the parameter structure;
+data_size		NJPEGE_PARAM_SIZE;
+*yield_data_ptr		pointer to yield buffer;
+yield_data_size		NJPEGE_YIELD_SIZE;</font></pre>
+</blockquote>
+
+<p>The OSTask structure is used to transfer the data to the RCP. The address of the yield buffer must conform to 16-byte alignment, and it must be 288 bytes in size for encoding. 
+</p>
+
+<p>The parameter structure is defined as follows:</p>
+
+<blockquote>
+    <pre><font face="Courier New" SIZE="3">typedef struct{
+	u64 *input;	/* input data buffer address*/
+	u64 *output;	/* output data buffer address*/
+	u32 mbs_x;	/* number of macro blocks in the x direction */
+	u32 mbs_y;	/* number of macro blocks in the y direction- 1*/
+	u32 scale;	/* quantization scale(-2, -1, 0, 1, 2) */
+	u32 dummy1;
+	u32 dummy2;
+	u32 dummy3;
+} NJPEGEParam;</font></pre>
+</blockquote>
+
+<p>The quantization scale value is a coefficient to be multiplied by each value in a quantization table when quantizing. There are five possible scale values: -2, -1, 0, 1, and 2 which represent 1/4, 1/2, don't use the quantization table, 1, and 2 respectively. When the quantization table isn't used, the output value of the discrete cosine transformation is used only for zigzag scanning. </p>
+
+<p>After completing each setup item outlined above, call the <tt>osSpTaskStart</tt> function to activate the compression microcode in the same way you would activate graphics or audio microcode. </p>
+
+<p>&nbsp;</p>
+
+<blockquote>
+    <pre><font face="Courier New" SIZE="3">OSTask	njpgetlist;
+	.
+	. 
+	.
+/* OSTask structure njpgetlist set */
+	.
+	.
+/* Start RSP Processing */
+osWritebackDCacheAll();
+osSpTaskStart(&amp;njpgetlist);
+	.
+	.
+/* Wait for the end of RSP processing */
+osRecvMesg(&amp;rspMessageQ, NULL, OS_MESG_BLOCK);</font></pre>
+</blockquote>
+
+<h4><a name="02-03">3.2.3 Output Data</a></h4>
+
+<p>In each macro block (MB), the microcode converts the data from RGB to YUV format, reduces (culls) the data, performs discrete cosine transformation, quantizes the data, and zigzag scans the data. 
+  You can use culling (in the ratio of 4:1:1) and the quantization table to make necessary modifications to the data. You can change the quantization table by changing the quantization scale factor. 
+</p>
+
+<p>Each macro block must be 768 bytes in size to hold the output data buffer. For example, an image of 320 x 240 dots is divided into a total of 300 MBs. Therefore, a 230,400-byte region is required for the output buffer. Each application must prepare this buffer. 
+
+</p>
+</body>
+</html>

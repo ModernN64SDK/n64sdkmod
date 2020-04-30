@@ -1,0 +1,135 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 4 - Runtime Software Architecture</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check.-->
+</head>
+
+<H1>4.2 CPU Access</H1>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="01"></A>
+<H2>
+4.2.1 Message Passing Priority Scheduled Threads </H2>
+
+<p>To provide access to CPU compute cycles, the <A target="keywords" HREF="../../keywords/index/data/system.htm#message">message</a> passing priority scheduling thread provides a simple CPU scheduler, which helps the game manage multiple <A target="keywords" HREF="../../keywords/index/data/system.htm#thread">threads</A>. Following are the attributes of this scheduling scheme:</p>
+<DL>
+<DT><STRONG>
+Non-preemptive execution</STRONG></DT>
+
+<DD>
+The currently running thread will continue to run on the CPU until it wishes to yield.  <A target="keywords" HREF="../../keywords/index/data/system.htm#preemption">Preemption</A> occurs if there is a need to service
+        another higher-priority thread awakened by an interrupt <A target="keywords"   HREF="../../keywords/index/data/system.htm#event">event</A>. The interrupt service thread must not consume extensive CPU cycles.   In other words, preemption is only caused by interrupts.  Preemption can also occur explicitly with a yield, or implicitly while waiting to receive a message. </DD>
+</DL>
+
+<DL>
+<DT><STRONG>
+Priority scheduling</STRONG></DT>
+
+<DD>
+A simple numerical priority determines which thread runs when a currently executing thread yields or an interrupt causes rescheduling.</DD>
+</DL>
+
+<DL>
+<DT><STRONG>
+Message passing</STRONG></DT>
+
+<DD>
+Threads communicate with each other through messages. One thread writes a message into a queue for another thread to retrieve. </DD>
+</DL>
+
+<DL>
+<DT><STRONG>
+Interrupt messages</STRONG></DT>
+
+<DD>
+An application can associate a message to a particular thread with an interrupt.</DD>
+</DL>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="02"></A>
+<H2>
+4.2.2 CPU Data Cache </H2>
+
+<p>N64 CPU has a write back data cache.  When the CPU reads data, the cache may satisfy the read request eliminating the extra cycles needed to access main memory.   When the CPU writes data, the data is written to the cache first and then flushed to main memory at some point in the future. Therefore, when the CPU modifies data for the RCP's or I/O DMA engine's consumption via memory, the software must perform explicit cache flushing. The application can choose to flush the
+entire cache or a particular memory <A target="keywords" HREF="../../keywords/index/data/system.htm#segment">segment</A>.    If the cache is not flushed, the RCP or DMA may get stale data from main memory. 
+</p>
+
+<P>
+Before the RCP or I/O DMA engines produce data for the CPU to process, the internal CPU caches must be explicitly invalidated.  This is to avoid the CPU from examining old data in the cache. The invalidation must occur before the RCP or DMA engine place the data in main memory.  Otherwise, there is a chance that a write back of data in the
+cache will destroy the new data in main memory.</p>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="03"></A>
+<H2>
+4.2.3 No Default Memory Management</H2>
+
+<p>As described above, the Nintendo 64 operating system provides multi-threaded message-passing execution control.  The operating system does not impose a default memory management model. It does provide a generic Translation Lookaside Buffer (TLB) access.  The application can use the TLB to provide for a variety of operations such as
+virtual contiguous memory or memory protection.  For example, an application can use TLBs to protect against <A target="keywords" HREF="../../keywords/index/data/system.htm#stack">stack</A> overflows.</p>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="04"></A>
+<H2>
+4.2.4 Timers</H2>
+
+<p>Simple timer facilities are provided, useful for <A target="keywords" HREF="../../keywords/index/data/system.htm#performance profiling">performance profiling</A>, real-time <A target="keywords" HREF="../../keywords/index/data/system.htm#scheduling">scheduling</A>, or game timing. See the man page for <A HREF="../../n64man/os/osGetTime.htm">osGetTime</A> for more information. </p>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="05"></A>
+<H2>
+4.2.5 Variable TLB Page Sizes </H2>
+
+<p>N64 CPU has variable Translation Lookaside Buffer (TLB) page size capability.  This can provide additional, useful functionality such as the "poor man's <A target="keywords" HREF="../../keywords/index/data/system.htm#2-way set associative">2-way set associative</A> cache", because the data cache is 8 KB of direct-mapped memory and TLB pages size can be set to 4 KB.  The application can roll a 4 KB cache window through a contiguous chunk of memory without wiping out the other 4 KB in cache. </p>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="06"></A>
+<H2>
+4.2.6 CoProcessor 0 Access </H2>
+
+<p>A set of <A target="keywords" HREF="../../keywords/index/data/system.htm#application programming interface">application programming interfaces</A> (<A target="keywords" HREF="../../keywords/index/data/system.htm#API">APIs</A>) are also provided for co-processor 0 register access, including CPU cycle accurate timer, cause of exception, and status. </p>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="07"></A>
+<H2>
+4.2.7 I/O Access and Management </H2>
+
+<p>The I/O subsystem provides functional access to the individual I/O hardware sub-components.  Most functions provide for logical translation to raw physical access to the I/O device. </p>
+<DL>
+<DT>
+<A NAME="f04-02"></A><strong>Figure 4-2  I/O Access and Management Software Components </strong></DT>
+
+<DD>
+<IMG SRC="gif/f04-02.gif" ALT="[Figure 4-2]" ></DD>
+</DL>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="08"></A>
+<H2>
+4.2.8 PI Manager</H2>
+
+<p>The N64 also provides a peripheral interface (PI) <A target="keywords" HREF="../../keywords/index/data/system.htm#device manager">device manager</A> for multiple threads to access the peripheral device.  This device manager manages thread access for multiple threads to access the peripheral device.  For example, the audio thread may want to <A target="keywords" HREF="../../keywords/index/data/system.htm#paging">page</a> in the next set of audio samples, while the graphics thread needs to page in a future database.  The PI manager is a thread that waits for commands to be placed in a message
+queue.  At the completion of the command, a message is sent to the thread that requested the DMA.</p>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="09"></A>
+<H2>
+4.2.9 VI Manager </H2>
+
+<p>A simple video interface (VI) device manager keeps track of when <A target="keywords" HREF="../../keywords/index/data/system.htm#vertical retrace">vertical retrace</A> and graphics <a href="../../keywords/index/data/graphics.htm#rendering" target="keywords">rendering</a> is complete. It also updates the proper video modes for the new video field.  The VI manager can send a message to the game application on a vertical retrace. The game can use this to synchronize rendering the next frame. 
+</p>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR>
+</BODY>
+</HTML>

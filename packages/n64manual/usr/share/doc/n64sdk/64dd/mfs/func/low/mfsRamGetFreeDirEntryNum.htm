@@ -1,0 +1,67 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>mfsRamGetFreeDirEntryNum</title>
+</head>
+
+<body>
+<font face="arial" size="-1">
+<b><font size="3">mfsRamGetFreeDirEntryNum</b></font>
+
+<hr>
+
+<strong>Syntax</strong>
+<font face="courier" size="2">
+<pre>s32 mfsRamGetFreeDirEntryNum(void)</pre></font>
+
+<P>
+<b>Arguments</b>
+<dl><dd>None</dl></dd>
+
+<P>
+<b>Return value</b>
+<dl><dd>Remaining number of files (directories) that can be recorded (a negative value is an error)
+</dl></dd>
+
+<P>
+<b>Function</b>
+<dl><dd>Obtains number of files (directories) that can be recorded</dl></dd>
+
+<P>
+<b>Description</b>
+<P>
+MFS has an upper limit for the number of files (directories) that can be recorded.
+	This upper limit value differs as follows according to the disk type.
+<pre><font size="3">
+	          +------------+----------------+
+	          | Disk type  | Number of files|
+	          +================+============+
+	          |      0     |       899      |
+	          |      1     |       814      |
+	          |      2     |       729      |
+	          |      3     |       644      |
+	          |      4     |       559      |
+	          |      5     |       474      |
+	          |      6     |        -       |
+	          +------------+----------------+
+ 
+</pre></font>
+	This function obtains the remaining number of files (directories) that can be recorded.  Note that this number of files cannot be exceeded when recording data even if the disk has free space.
+
+<P>
+<b>Main errors</b>
+<P>
+<table border="0" cellpadding="3" cellspacing="3">
+<tr><td valign="top"><font face="arial" size="-1">MFS_ERR_NOTMFSDISK</td>
+<td><font face="arial" size="-1">Not an MFS-format disk
+<br>The disk ID's disk use is not 1, or the header is different.</td></tr>
+<tr><td valign="top"><font face="arial" size="-1">MFS_ERR_VERSION</td>
+<td><font face="arial" size="-1">Different version disk</td></tr> 
+<tr><td valign="top"><font face="arial" size="-1">MFS_ERR_PROTECT</td>
+<td><font face="arial" size="-1">DWrite protected
+<br>The medium is volume protected.</td></tr></table> 			
+		
+		
+	
+</body>
+</html>

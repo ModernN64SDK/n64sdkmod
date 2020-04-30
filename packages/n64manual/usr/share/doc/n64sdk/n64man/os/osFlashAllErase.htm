@@ -1,0 +1,38 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <title>osFlashClearStatus</title>
+</head>
+<body bgcolor="#FFFFFF">
+<font face="arial" size="-1">
+<h1>
+osFlashAllErase<font size=+0> [Function]</font></h1>
+<font color="#FF0000">Deletes the entire area of Flash</font>
+<h3>
+Syntax</h3>
+
+<font face="courier">
+#include &lt;ultra64.h&gt;<br> 
+s32&nbsp; osFlashAllErase(void); 
+</font> 
+ 
+<h3> 
+Description</h3> 
+This is a function that deletes the entire data of 1M Flash. 
+<p>For a return value, 0 is returned when sucessful and -1 when failed. 
+As the entire area is deleted at one time, this function allows you to 
+delete the entire area in high speed, rather than repeating the execution 
+of <font face="courier">osFlashSectorErase</font>. 
+<p>Timer wait is done inside of <font face="courier">osFlashAllErase</font>. Since timer management 
+is done by VI manager, it is necessary to boot VI manager with <font face="courier">osCreateViManager</font> 
+prior to the use of this function. It takes from several msec to 
+several hundred msec to delete the entire area of data. 
+<h3> 
+Reference</h3> 
+[<a href="osFlashSectorErase.htm">osFlashSectorErase</a>] [<a href="osCreateViManager.htm">osCreateViManager</a>]
+
+<h3>
+Revision History</h3>
+07/07/2000&nbsp; This function was added. 
+</body> 
+</html> 

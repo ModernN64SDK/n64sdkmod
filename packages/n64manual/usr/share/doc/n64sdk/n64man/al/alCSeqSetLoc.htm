@@ -1,0 +1,62 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<link rel=stylesheet type="text/css" HREF="../N64man.css">
+<!--
+Editors Notes:
+  JLR made formating edits for 4.1.
+  PWC- updated formatting
+  MAP- added links, updated format
+-->
+
+<title>alCSeqSetLoc</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>alCSeqSetLoc</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+
+<p><i>
+Sets the current sequence location to play back within the compressed MIDI sequence</i>
+
+<h3>Syntax</h3>
+<p>
+<blockquote>
+    <pre>#include &lt;libaudio.h&gt;     /* <a href="../../header/libaudio.htm">libaudio.h</a> */
+
+void alCSeqSetLoc(ALCSeq *seq, ALCSeqMarker *marker);</pre>
+</blockquote>
+<p>
+<h3>Arguments</h3>
+<p>
+<dl>
+    <dt><strong>seq</strong></dt>
+    <dd>Pointer to the sequence <br>
+        <br>
+        </dd>
+    <dt><strong>marker</strong></dt>
+    <dd>Pointer to the marker containing the new sequence location
+<br>
+        <br>
+        </dd>
+</dl>
+</p>
+<h3>Description</h3>
+
+<p><tt>alCSeqSetLoc</tt> sets the sequence player location to the location specified in the marker. You must ensure that the marker was previously initialized by using the <a href="alCSeqNewMarker.htm">alCSeqNewMarker</a> or <a href="alCSeqGetLoc.htm">alCSeqGetLoc</a> function.</p>
+
+<h3>Note</h3>
+
+<p>Changing the location of the sequence does not revert the channel arguments (pan, volume, priority, FXMix) to the values that would exist if the sequence was played from the beginning to the new location. Channel arguments remain what they were prior to the <tt>alCSeqSetLoc</tt> call. Therefore, either embed controllers in the sequence to update the channel arguments or have the application make function calls to set the channel arguments. </p>
+
+<h3>See Also</h3>
+
+<p><a href="alCSeq.htm">alCSeq</a>, <a
+href="alCSeqNewMarker.htm">alCSeqNewMarker</a>, and <a
+href="alCSeqGetLoc.htm">alCSeqGetLoc</a></p>
+<h3>Revision History</h3>
+<p>1999/04/30  Changed Format</p>
+<br><br>
+
+</body>
+</html>

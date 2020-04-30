@@ -1,0 +1,90 @@
+<HTML>
+<HEAD>
+<TITLE>mrnscene</TITLE>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../mobile/allman.css">
+<!-- Editor's Notes: 9/23/1999 Ron Daring -->
+</HEAD>
+  <BODY bgcolor="#FFFFFF">
+<h1>Function</h1>
+
+<hr>
+<a name="mrnSceneInit">
+</A><h1><a name="mrnSceneInit">mrnSceneInit</A></h1><a name="mrnSceneInit">
+</A><p><a name="mrnSceneInit"><i>Initializes</i> <TT>mrnScene</TT></A></p><a name="mrnSceneInit">
+</A><H2><a name="mrnSceneInit">Syntax</A></H2><a name="mrnSceneInit">
+</A><blockquote><a name="mrnSceneInit">
+    </A><pre><a name="mrnSceneInit">#include &lt;mrn/Scene.h&gt;
+void mrnSceneInit( MrnScene *scene_ptr, const u32 frame_resource_size )
+</A></pre></blockquote><a name="mrnSceneInit">
+</A><H2><a name="mrnSceneInit">Description</A></H2><a name="mrnSceneInit">
+</A><pre><a name="mrnSceneInit">
+  Initializes <TT>mrnScene</TT>
+  - <TT>frame_resource_size</TT> sets the capacity of the frame resource for a scene.  The frame resource is the 
+    temporary storage area used for rendering each frame, and is destroyed when the frame is rendered.  
+    For instance, it is suitable for storing <TT>Mtx</TT> or dynamic <TT>Vtx</TT>. 
+</A></pre><a name="mrnSceneInit">
+</A><H2><a name="mrnSceneInit">See Also</A></H2><a name="mrnSceneInit">
+</A><a href="mrnscene.htm#MrnScene">MrnScene</a><a name="mrnSceneInit">
+
+</A><hr>
+<a name="mrnSceneDestroy">
+</A><h1><a name="mrnSceneDestroy">mrnSceneDestroy</A></h1><a name="mrnSceneDestroy">
+</A><p><a name="mrnSceneDestroy"><i>Destroys</i> <TT>mrnScene</TT></A></p><a name="mrnSceneDestroy">
+</A><H2><a name="mrnSceneDestroy">Syntax</A></H2><a name="mrnSceneDestroy">
+</A><blockquote><a name="mrnSceneDestroy">
+    </A><pre><a name="mrnSceneDestroy">#include &lt;mrn/Scene.h&gt;
+void mrnSceneDestroy( MrnScene *scene_ptr )
+</A></pre></blockquote><a name="mrnSceneDestroy">
+</A><H2><a name="mrnSceneDestroy">Description</A></H2><a name="mrnSceneDestroy">
+  Destroys <TT>mrnScene</TT>
+
+</A><hr>
+<a name="mrnSceneBuildGfx">
+</A><h1><a name="mrnSceneBuildGfx">mrnSceneBuildGfx</A></h1><a name="mrnSceneBuildGfx">
+</A><p><a name="mrnSceneBuildGfx"><i>Evaluates all objects and generates a</i> <TT>gfx</TT></A></p><a name="mrnSceneBuildGfx">
+</A><H2><a name="mrnSceneBuildGfx">Syntax</A></H2><a name="mrnSceneBuildGfx">
+</A><blockquote><a name="mrnSceneBuildGfx">
+    </A><pre><a name="mrnSceneBuildGfx">#include &lt;mrn/Scene.h&gt;
+Gfx *mrnSceneBuildGfx( MrnScene *scene_ptr, Gfx *gfx_ptr )
+</A></pre></blockquote><a name="mrnSceneBuildGfx">
+</A><H2><a name="mrnSceneBuildGfx">Description</A></H2><a name="mrnSceneBuildGfx">
+  Evaluates all objects and generates a <TT>gfx</TT>
+
+</A><hr>
+<a name="mrnSceneAllocFrameResource">
+</A><h1><a name="mrnSceneAllocFrameResource">mrnSceneAllocFrameResource</A></h1><a name="mrnSceneAllocFrameResource">
+</A><p><a name="mrnSceneAllocFrameResource"><i>Allocates memory from the frame resource</i></A></p><a name="mrnSceneAllocFrameResource">
+</A><H2><a name="mrnSceneAllocFrameResource">Syntax</A></H2><a name="mrnSceneAllocFrameResource">
+</A><blockquote><a name="mrnSceneAllocFrameResource">
+</A><pre><a name="mrnSceneAllocFrameResource">#include &lt;mrn/Scene.h&gt;
+void *mrnSceneAllocFrameResource( MrnScene *scene_ptr,
+                                  const u32 size,
+                                  const u32 alignment )
+</A></pre></blockquote><a name="mrnSceneAllocFrameResource">
+</A><H2><a name="mrnSceneAllocFrameResource">Description</A></H2><a name="mrnSceneAllocFrameResource">
+  Allocates memory from the frame resource 
+
+</A><hr>
+<h1><a name="mrnSceneAllocFrameResource">Structure</A></h1><hr>
+<hr>
+<a name="MrnScene">
+</A><h1><a name="MrnScene">MrnScene</A></h1><a name="MrnScene">
+</A><blockquote><pre><a name="MrnScene">#include &lt;mrn/Scene.h&gt;
+typedef struct _MrnScene
+{
+    u32                 frame_resource_size;
+    u8                  *frame_resource_buffer;
+    u32                 alloc_cursor[ 2 ];
+    u32                 free_cursor;
+    u8                  latency;
+    MrnFog              fog;
+    MrnGroup            *group_ptr_array[ MRN_SCENE_MAX_GROUPS ];
+    MrnObjectList       object_list;
+} MrnScene;
+</A></pre></blockquote><a name="MrnScene">
+<br><br><br><br><br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br><br><br><br><br>
+
+  </A></BODY>
+</HTML>

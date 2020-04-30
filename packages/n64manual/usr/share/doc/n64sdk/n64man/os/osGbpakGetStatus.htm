@@ -1,0 +1,74 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<html>
+
+	<head>
+              <LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+              <!-- Editor's Notes: JLR made reformating and copy edits. -->
+              <TITLE>osGbpakGetStatus</TITLE>
+	</head>
+
+	<body bgcolor="white">
+		<font style="font-size: 12pt"><b>osGbpakGetStatus</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+		<p><i>Gets status of the N64 Transfer Pak</i></p>
+		<p><b>Syntax</b></p>
+		<pre>#include &lt;ultra64.h&gt;     /* <a href="../../header/ultra64.htm">ultra64.h</a> */
+s32 osGbpakGetStatus(OSPfs *pfs, u8 *status);</pre>
+		<p><b>Description</b></p>
+		<p>The <tt>osGbpakGetStatus</tt> function is used to detect the status of the N64 Transfer Pak.</p>
+		<p>OSPfs structure pfs must be initialized first with <a href="osGbpakInit.htm">osGbpakInit</a> function.</p>
+		<p>The detected result is returned to status. Determines the status according to whether the following bits are set.</p>
+		<p><b>OS_GBPAK_GBCART_ON</b></p>
+		<blockquote>
+			<p>This bit indicates that a Game Boy Game Pak is inserted. It is returned when a Game Boy Game Pak is inserted into the N64 Transfer Pak.</p>
+		</blockquote>
+		<p><b>OS_GBPAK_GBCART_PULL</b></p>
+		<blockquote>
+			<p>This bit indicates that removal of a Game Boy Game Pak has been detected. It is returned once the Game Boy Game Pak has been removed.<br>
+			When there is a Game Boy Game Pak in the N64 Transfer Pak and the <tt>osGbpakGetStatus</tt> or <a href="osGbpakReadId.htm">osGbpakReadId</a> function is called, this bit becomes 0.</p>
+		</blockquote>
+		<p><b>OS_GBPAK_POWER</b></p>
+		<blockquote>
+			<p>This bit indicates the state of power supply to the Game Boy Game Pak. When this bit is 1, power is ON; when this bit is 0, power is OFF.<br>
+			Note that this only checks for power on the software side, and does not confirm that the hardware has a stable power supply. The status of the latter cannot be checked on the software side. For details, please refer to <a href="osGbpakPower.htm">osGbpakPower</a>.<br>
+			<br>
+			</p>
+		</blockquote>
+		<p><b>OS_GBPAK_RSTB_DETECTION</b><br>
+		<br>
+		</p>
+		<blockquote>
+			<font style="font-size:10pt">This bit indicates that the Reset signal has been detected. When the Game Boy Game Pak is reset, this bit becomes 1. If either the <tt>osGbpakGetStatus</tt> or the <tt>osGbpakReadId</tt> function is called when a Game Boy Game Pak is inserted, this bit returns to 0. Since this bit becomes 1 when the power is turned on, you need to clear it back to 0 after the power is turned on by calling the <tt>osGbpakGetStatus</tt> or the <tt>osGbpakReadId</tt> function so the bit status can be used to detect a Reset signal.</font></blockquote>
+		<p><br>
+		Return value is an error code. If the function terminates normally, a value of 0 is returned. If an error occurs, one of the following error codes is returned:<br>
+		<br>
+		<br>
+		</p>
+		<p><b>PFS_ERR_NOPACK</b></p>
+		<blockquote>
+			<p>Nothing is inserted in the specified Controller.</p>
+		</blockquote>
+		<p><b>PFS_ERR_DEVICE</b></p>
+		<blockquote>
+			<p>A device other than the N64 Transfer Pak is inserted in the Controller.</p>
+		</blockquote>
+		<p><b>PFS_ERR_CONTRFAIL</b></p>
+		<blockquote>
+			<p>Data transfers with the Controller have failed. The Controller may not be connected correctly, or there may be some problem with the N64 Transfer Pak or the Controller connector.</p>
+		</blockquote>
+		<p><b>PFS_ERR_NO_GBCART</b></p>
+		<blockquote>
+			<p>No Game Boy Game Pak is inserted in the N64 Transfer Pak.</p>
+		</blockquote>
+		<p><b>PFS_ERR_NEW_GBCART</b></p>
+		<blockquote>
+			<p>A Game Boy Game Pak has been removed and reinserted. A different Game Boy Game Pak may have been inserted.</p>
+		</blockquote>
+		<p>If you remove and reinsert a Game Boy Game Pak and then reset N64, the flag for insertion and removal of the Game Boy Game Pak will remain up. Therefore you need to be careful, because a PFS_ERR_NEW_GBCART error will be returned if <tt>osGbpakInit</tt> and then <tt>osGbpakGetStatus</tt> are executed after resetting N64. If <tt>osGbpakReadId</tt> is called instead of <tt>osGbpakGetStatus</tt>, the PFS_ERR_NEW_GBCART error will not be issued. Thus, <tt>osGbpakReadId</tt> should be used to check the status of the N64 Transfer Pak after initialization.</p>
+		<p><b>See Also</b></p>
+		<p><a href="osGbpakInit.htm">osGbpakInit</a>, <a href="osGbpakPower.htm">osGbpakPower</a>, <a href="osGbpakReadWrite.htm">osGbpakReadWrite</a>, <a href="osGbpakReadId.htm">osGbpakReadId</a>, and <a href="osGbpakCheckConnector.htm">osGbpakCheckConnector</a></p>
+		<h3>Revision History</h3>
+		<p>1998/10/29 Added OS_GBPAK_RSTB_DETECTION to the detected statuses<br>
+		1999/04/30 Changed format
+	</body>
+
+</html>

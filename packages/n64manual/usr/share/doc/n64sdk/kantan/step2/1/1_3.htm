@@ -1,0 +1,72 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<title>STEP2 [A Guide to the N64 Programming] - Chapter 1 N64 Programming</title>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!--
+Editors Notes:
+  PWC- updated formatting
+-->
+<base target="keywords">
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<p><font style="font-size:12pt; font-weight:bold">1-3 Thread</font></p>
+<br>
+<p>A <a href="../../../keywords/index/data/system.htm#thread" target="keywords"> thread</a> is a single control unit of a CPU process.  Under the N64 operating system, the code for all threads exists and is processed in main memory (RDRAM).  A thread is like a small sub-program. N64 game programs use threads, <a href="../../../keywords/index/data/system.htm#message" target="keywords">messages</a>, <a href="../../../keywords/index/data/system.htm#event" target="keywords">events</a> and tasks. The priority of the thread determines thread execution order. (The kinds of threads differ depending on the applications.)</p>
+<br>
+
+<p><b>1-3-1 Kinds of Threads</b></p>
+<br>
+
+<p>Each programmer is free to program each thread as is appropriate for a given game application. However, in most cases, a programmer creates the following kinds of threads:
+<ul>
+<li>Initializing thread</li>
+<li>Game thread</li>
+<li>Device thread</li>
+<li>Scheduler thread</li>
+<li>Graphics thread</li>
+<li>Audio thread</li>
+<li><a href="../../../keywords/index/data/system.htm#idle thread" target="keywords">Idle thread</a>, etc.</li>
+</ul>
+<br>
+<br>
+<p><b>1-3-2 State of the Thread</b></p>
+
+<br>
+<br><li><b>Running state</b></li><br>
+Only one thread in a game program can be executing at a given time. Therefore, among those threads in the "ready condition" state, the thread with the highest priority is executed.<br><br>
+<li><b>Runnable state</b></li><br>
+A thread is in the ready condition if it is ready to begin executing as soon as it becomes the highest priority thread in the ready condition. A thread can move into the ready condition when its processing is interrupted by a higher priority thread or when it has been waiting (in the waiting condition) for resources and those resources become available.<br><br>
+<li><b>Waiting state</b></li><br>
+A thread is in the queued state when it is waiting for a message or event.  Upon receiving the message (or when the event occurs), the thread changes state to the execution state or the ready condition depending on its priority.<br><br>
+<li><b>Stopped state</b></li><br>
+A thread in the halt condition has no standing in the execution <a href="../../../keywords/index/data/system.htm#scheduling" target="keywords">schedule</a>.  That is, a halted thread does not automatically become a candidate for execution unless the program specifically places it in the ready condition. For example, a newly created thread is automatically placed in the halt condition. A thread can change anytime to the halt condition and the ready condition. Use the <a href="../../../n64man/os/osStartThread.htm">osStartThread()</a> function to place a thread in halt condition. Use the <a href="../../../n64man/os/osStopThread.htm">osStopThread()</a> function to place a thread in the ready condition</p>
+
+<p>The following illustration shows the relationships between the thread conditions:</p>
+
+<table border="1" cellspacing="0"><tr><td><img src="img00014.gif"></td></tr></table>
+
+<p><br>
+<b>Figure 1-3-1 State of the Thread</b></p>
+<br>
+<br><br>Considering the fact that all threads <b>share RDRAM</b>, the following points need to be kept in mind:	
+<ul>
+<li>If every thread accepts data from the same address, each thread has the same data content.</li>
+<li>Switching from thread to thread is a very fast process.</li>
+<li>You must keep careful track of addresses to prevent any serious impact on other threads.</li>
+<li>A lower-priority thread is always suspended by a higher priority thread during execution. Therefore, each thread must have a <a href="../../../keywords/index/data/system.htm#stack" target="keywords">stack</a> and its own control table so that it can be suspended at any time. This should be prepared with the thread accession in the N64 OS.</li>
+</ul>
+
+<br><br><Li>If you raise the optimization level by adding the <font face=monospace>-O</font> option when you compile your code, it is possible that each thread variable will not be updated. Therefore, you have to use the volatile keyword when using a variable that is common to two threads (threads A and B for example).</li>
+<br>
+<br>
+<br>
+<b>1-3-3 Necessity of the Idle Thread</b>
+<br><br>
+<br>
+<p>The idle thread is the lowest priority thread. This thread is executed when the CPU does not have any other threads to process. If this thread did not exist, the CPU could not do anything. Even an idle thread has an important role. Make sure your game program creates an idle thread.</p>
+</body>
+</html>

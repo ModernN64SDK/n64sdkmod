@@ -1,0 +1,54 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../n64man.css">
+<title>MusFxBankGetCurrent()</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check-->
+</head>
+
+<h1>MusFxBankGetCurrent()</h1>
+
+<h2>Syntax</h2>
+
+<pre>void MusFxBankGetCurrent(void);</pre>
+
+<h2>Arguments</h2>
+
+<p>None</p>
+
+<h2>Description</h2>
+
+<p>It gets the current default sound effect bank address. If no default sound effect bank address is set, this function will return NULL.</p>
+
+<p>The default sound effect bank is used when the <a href="MusStartEffect.html">MusStartEffect()</a> or the <a href="MusStartEffect2.html">MusStartEffect2()</a> function is used to start sound effects, if no sound effect bank override has been defined.</p>
+
+<p>The <a href="MusFxBankSetSingle.html">MusFxBankSetSingle()</a> function can be used to define a sound effect bank override for the next sound effect started.</p>
+
+<h2>Return Value</h2>
+
+<p>The sound effect bank address or NULL.</p>
+
+<h2>Example</h2>
+
+<pre>void StackEffectBank(void *fx_addr)
+{
+  effect_bank_stack[stack_ptr++]=MusFxBankGetCurrent();
+  <a href="MusFxBankSetCurrent.html">MusFxBankSetCurrent</a>(fx_addr);
+}
+
+void UnStackEffectBank(void)
+{
+  <a href="MusFxBankSetCurrent.html">MusFxBankSetCurrent</a>(effect_bank_stack[--stack_ptr]);
+}
+</pre>
+
+<h2>See Also</h2>
+<p>
+<a href="MusFxBankSetCurrent.html">MusFxBankSetCurrent()</a>,
+<a href="MusFxBankSetSingle.html">MusFxBankSetSingle()</a>,
+<a href="MusStartEffect.html">MusStartEffect()</a>,
+<a href="MusStartEffect2.html">MusStartEffect2()</a>
+</p>
+
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.
+  PWC- updated formatting
+  MAP- added revisions, updated format
+-->
+<title>osSetTime</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>osSetTime</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p>osGetTime, osSetTime</p>
+
+<p><i>Gets/sets the real time counter value</i></p>
+
+<h3>Syntax</h3>
+<p>
+<blockquote>
+    <pre>#include &lt;ultra64.h&gt;     /* <A HREF="../../header/ultra64.htm">ultra64.h</A> */
+OSTime osGetTime(void);
+void osSetTime(OSTime time);</pre>
+</blockquote></p>
+
+<h3>Description</h3>
+
+<!--  --><P>
+Calling the osGetTime function returns the time since the last cold reset, expressed in units of CPU count register cycles.  Regardless of whether the system is NTSC or PAL, this counter increments at 46.875 MHz, with 1 cycle equal to approximately 21.33 nanoseconds.  When the counter reaches its maximum value, it returns to zero and continues to increment.<BR>
+(Since the real time counter has a length of 64 bits, unless the counter value is changed by calling osSetTime it will take more than 10,000 years for the counter to reach its maximum value and return to zero.)
+</P>
+<P>
+The osSetTime function is used to set the value of the real time counter.
+</P>
+<P>
+See <A href="OS_CYCLES_TO_NSEC.htm">OS_CYCLES_TO_NSEC</A> and related macros for ways of converting between the counter and time in nanoseconds and microseconds.
+</P>
+<P>
+Note that the OSTime type is defined as u64 (unsigned long long), so you should specify "%llu" for the conversion format if you are going to output this type of numerical value with a printf function.
+</P>
+<H3>Note</H3>
+<P>
+<P>Since the VI Manager performs timer management, you must activate the VI Manager with osCreateViManager before using this function.
+</P><!--  -->
+
+
+<h3>See Also</h3>
+
+<p><a href="osGetCount.htm">osGetCount</a>, <a
+href="osLogEvent.htm">osLogEvent</a>, <a
+href="osSetTimer.htm">osSetTimer</a>, and <a href="osTvType.htm">osTvType</a></p>
+<H3>Revision history</H3>
+<P>
+1999/06/15 Completely revised
+</P>
+
+</body>
+</html>

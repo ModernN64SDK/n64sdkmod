@@ -1,0 +1,309 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 1 - N64 Software Development Overview</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check.
+             MAP- 10/28/99 edited content, updated format-->
+</head>
+
+<h1>1.3 Using the Sample Programs</h1>
+
+<p>The sample programs can be run after installation of the emulator board and software. Directories for the sample programs such as simple or onetri are located under /usr/src/PR/demos. To run the sample programs, run "make" with each directory and enter &QUOT;<a
+href="../../n64man/tool/gload.htm">gload</a>&QUOT;. Some of the functions and features of the sample programs are explained below. For a
+complete description of the features of each sample program, please review its accompanying README. </p>
+
+<p>Analyzing and understanding the source code for the sample programs will help you acquire a better understanding of N64 software development. </p>
+
+<p align="right"><a href="index.htm#index"><img
+src="../../gif/index.gif" alt="UP" border="0" width="65"
+height="17"></a></p>
+
+<hr>
+
+<h2><a name="01">1.3.1 Simple Sample Programs</a></h2>
+
+<p>The following 10 sample programs are of great importance during N64 Software development. We recommend that you analyze them first.</p>
+
+<dl>
+    <dt><strong>simple:</strong> </dt>
+    <dd>This program demonstrates the compatibility of the audio and graphics processes. In this sample, the audio process will stop the graphics process when it cannot be completed in time. 
+    </dd>
+</dl>
+
+<dl>
+    <dt><strong>blockmonkey:</strong> </dt>
+    <dd>This is a simple application that measures performance. A user can change the size of a <a href="../../keywords/index/data/graphics.htm#display list" target="keywords">display list</a> or parameters, and confirm the effect when <a href="../../keywords/index/data/graphics.htm#rendering" target="keywords">rendering</a>. Operation instructions for the controller are displayed on the host screen when the application is executed.  The graph of performance measurement on the lower screen shows the time needed to render a <a href="../../keywords/index/data/graphics.htm#polygon" target="keywords">polygon</a>. The CPU processing time needed to create a display list is not calculated. This was done to avoid slowing down the animation even when it cannot catch up with the next frame. 
+    </dd>
+</dl>
+
+<dl>
+    <dt><strong>turbomonkey:</strong> </dt>
+    <dd>This is the same as blockmonkey except that this uses the turbo3D <a href="../../keywords/index/data/system.htm#microcode" target="keywords">microcode</a>. This sample program verifies the difference between turbo3D microcode and Fast3D microcode on the screen. A <a href="../../keywords/index/data/system.htm#trade off" target="keywords">trade-off</a> between image quality and processing speed can be compared using this program and blockmonkey. 
+    </dd>
+</dl>
+
+<dl>
+    <dt><strong>onetri:</strong> </dt>
+    <dd>This is a simple sample program for rendering 1 polygon without the <a href="../../keywords/index/data/graphics.htm#Z buffer" target="keywords">Z buffer</a>. By using &quot;<a href="../../n64man/tool/gload.htm">gload</a> -a -t&quot;, a simple <a href="../../keywords/index/data/graphics.htm#texture mapping" target="keywords">texture mapping</a> is possible. 
+    </dd>
+</dl>
+
+<dl>
+    <dt><strong>topgun:</strong> </dt>
+    <dd>The fighter in this sample program is the .flt format data for which modeling was processed by MultiGen. A display list is created using the <a href="../../keywords/index/data/graphics.htm#geometry" target="keywords">geometry</a> converter <a
+        href="../../n64man/tool/flt2c.htm">flt2c</a> which is included with this sample. 
+    </dd>
+</dl>
+
+<dl>
+    <dt><strong>fogworld:</strong> </dt>
+    <dd>This sample program shows how to use the <a href="../../keywords/index/data/graphics.htm#fog process" target="keywords">fog process</a> and <a href="../../keywords/index/data/graphics.htm#volume culling" target="keywords">volume culling</a> process.
+    </dd>
+</dl>
+
+<dl>
+    <dt><strong>spbench:</strong> </dt>
+    <dd>This program demonstrates the process for displaying a sprite using the <a href="../../keywords/index/data/graphics.htm#sprite" target="keywords">sprite</a> library. The number of sprites and color modes can be determined using the Controller. This sample can be used to assist you in learning how to program for high-speed processing. 
+    </dd>
+</dl>
+
+<dl>
+    <dt><strong>playseq:</strong> </dt>
+    <dd>This sample program uses the <a href="../../keywords/index/data/audio.htm#sequence player" target="keywords">sequence player</a>.
+    </dd>
+</dl>
+
+<dl>
+    <dt><strong>soundmonkey:</strong> </dt>
+    <dd>A sample program using both the sequence player and the <a href="../../keywords/index/data/audio.htm#sound player" target="keywords">sound player</a>.
+    </dd>
+</dl>
+
+<dl>
+    <dt><strong>spin:</strong> </dt>
+    <dd>This sample program enables you to experiment with RDP functions. Please refer to the README for this sample program for details. 
+    </dd>
+</dl>
+
+<p align="right"><a href="index.htm#index"><img
+src="../../gif/index.gif" alt="UP" border="0" width="65"
+height="17"></a></p>
+
+<hr>
+
+<h2><a name="02">1.3.2 High-Level Sample Programs</a></h2>
+
+<p>The following sample programs are provided for users to get familiar with the demos and tools that include higher level functions.</p>
+
+<dl>
+    <dt><strong>autofill:</strong> </dt>
+    <dd>This is a simple sample program that measures the performance of painting out the screen. This program paints out the screen using a polygon with different aspect ratio size, and measures the speed automatically. Use gnuplot to view the measurement data. For details, please refer to README included with this sample program. 
+    </dd>
+</dl>
+
+<dl>
+    <dt><strong>bumpmap:</strong></dt>
+    <dd>This is a sample program of bump mapping. For details, please refer to the README included with this sample program. </dd>
+</dl>
+
+<dl>
+    <dt><strong>chrome:</strong> </dt>
+    <dd>This sample program demonstrates the reflection mapping function.
+    </dd>
+</dl>
+
+<dl>
+    <dt><strong>ci8fb:</strong> </dt>
+    <dd>This sample program is similar to autofill. Rendering is processed using an 8 bit <a href="../../keywords/index/data/graphics.htm#color index" target="keywords">color index</a>. For details, please refer to the README included with this sample program. 
+    </dd>
+</dl>
+
+<dl>
+    <dt><strong>cptest:</strong> </dt>
+    <dd>This sample program uses C++. Please refer to the README included with this sample for additional information. 
+    </dd>
+</dl>
+
+<dl>
+    <dt><strong>detail:</strong> </dt>
+    <dd>This sample program explains how to use the multi-tiling texture. It includes a demonstration of both the detail texture and <a href="../../keywords/index/data/graphics.htm#MIP map texture" target="keywords">MIPmap texture</a>. 
+    </dd>
+</dl>
+
+<dl>
+    <dt><strong>eeptest:</strong></dt>
+    <dd>A simple program to test EEPROM (4k or 16k). </dd>
+</dl>
+
+<dl>
+    <dt><strong>fault:</strong> </dt>
+    <dd>This sample program processes CPU exceptions without using rmon debug <a href="../../keywords/index/data/system.htm#thread" target="keywords">thread</a>. 
+    </dd>
+</dl>
+
+<dl>
+    <dt><strong>ginv:</strong> </dt>
+    <dd>This program outputs information such as the version of the emulator board equipped on the Indy, RCP and CPU clock speed, and the total amount of available DRAM. 
+    </dd>
+</dl>
+
+<dl>
+    <dt><strong>greset:</strong> </dt>
+    <dd>This program simulates the operation of pressing the reset button on the hardware. 
+    </dd>
+</dl>
+
+<dl>
+    <dt><strong>ground:</strong> </dt>
+    <dd>This sample program performs the <a href="../../keywords/index/data/graphics.htm#clipping" target="keywords">clipping</a> of a large ground plane accurately.
+    </dd>
+</dl>
+
+<dl>
+    <dt><strong>gs2dex:</strong></dt>
+    <dd>This sample program explains how to use the sprite microcode S2DEX. </dd>
+</dl>
+
+<dl>
+    <dt><strong>gtdemo:</strong> </dt>
+    <dd>In this sample program characters run or punch someone. This program demonstrates the multiple graphics task. Turbo3D microcode is used a great deal. Animation is realized using a complex <a href="../../keywords/index/data/graphics.htm#matrix" target="keywords">matrix</a> calculation by the host. 
+    </dd>
+</dl>
+
+<dl>
+    <dt><strong>hostio:</strong> </dt>
+    <dd>This sample program exchanges data between the Indy (host) and the game application using the Host-U64 API (Application programmer's interface). 
+    </dd>
+</dl>
+
+<dl>
+    <dt><strong>lights:</strong> </dt>
+    <dd>This program expresses a <a href="../../keywords/index/data/graphics.htm#specular highlight" target="keywords">specular highlight</a> effect which uses RSP texture and false shadows (shades). The Controller issued to determine the location and size of the effect. The background is processed with <a href="../../keywords/index/data/graphics.htm#MIP map" target="keywords">MIP map</a>. 
+    </dd>
+</dl>
+
+<dl>
+    <dt><strong>mipmap:</strong> </dt>
+    <dd>This program demonstrates MIP mapping. Verification is possible by comparing with other texture processing or changing MIP map parameters.
+    </dd>
+</dl>
+
+<dl>
+    <dt><strong>morphcube:</strong> </dt>
+    <dd>The CPU calculates each vertex for <a href="../../keywords/index/data/graphics.htm#morphing" target="keywords">morphing</a>. The CPU and the <a href="../../keywords/index/data/graphics.htm#graphics pipeline" target="keywords">graphics pipeline</a> execute 2 frames consecutively in parallel. Tiling of a large MIP map texture is processed with a capacity that is stored in <a href="../../keywords/index/data/graphics.htm#texture memory" target="keywords">texture memory</a>. 
+    </dd>
+</dl>
+
+<dl>
+    <dt><strong>morphfaces:</strong> </dt>
+    <dd>This program demonstrates morphing of two dimensional images. The CPU processes the morphing of vertex. Blending is performed using 2 cycle mode. For details, please refer to the NOTES file included with this sample program.
+    </dd>
+</dl>
+
+<dl>
+    <dt><strong>motortest:</strong></dt>
+    <dd>This is a sample program for the Rumble Pak.</dd>
+</dl>
+
+<dl>
+    <dt><strong>nnsample1:</strong></dt>
+    <dd>This is a sample program for the NTSC scheduler.</dd>
+</dl>
+
+<dl>
+    <dt><strong>nnsample2:</strong></dt>
+    <dd>This is a sample program for the graphics microcode F3DEX Version 1.21</dd>
+</dl>
+
+<dl>
+    <dt><strong>nosPak:</strong></dt>
+    <dd>This is a sample program for the Controller Pak menu using the N64 font data.</dd>
+</dl>
+
+<dl>
+    <dt><strong>overlay:</strong> </dt>
+    <dd>This sample program performs the <a href="../../keywords/index/data/system.htm#overlay" target="keywords">overlay</a> of onetri.code. Two different <a href="../../keywords/index/data/system.htm#segment" target="keywords">segments</a> containing codes and data, share the same memory. 
+</dd>
+</dl>
+
+<dl>
+    <dt><strong>pfs:</strong> </dt>
+    <dd>This is a sample program for the Controller Pak.
+    </dd>
+</dl>
+
+<dl>
+    <dt><strong>polyline:</strong> </dt>
+    <dd>This sample program performs rendering by switching microcodes of polygon and line. 
+    </dd>
+</dl>
+
+<dl>
+    <dt><strong>print:</strong></dt>
+    <dd>This is a test program to measure the difference in performance of the <tt>osSyncPrintf</tt>() function when <tt>osInitRdb</tt>() is used and when <tt>osInitRdb</tt>() is not used.</dd>
+</dl>
+
+<dl>
+    <dt><strong>spgame:</strong> </dt>
+    <dd>This sample program renders objects in <a href="../../keywords/index/data/graphics.htm#fore (back) ground" target="keywords">the foreground and the background</a> using a sprite function. 
+    </dd>
+</dl>
+
+<dl>
+    <dt><strong>spritemonkey:</strong></dt>
+    <dd>This program demonstrates the use of the sprite microcode Sprite2D. </dd>
+</dl>
+
+<dl>
+    <dt><strong>sramtest:</strong></dt>
+    <dd>This program tests for the operation of 256K SRAM. The execution result is displayed with <tt>osSyncPrintf</tt>(). A 256K SRAM board is required to execute this sample program. </dd>
+</dl>
+
+<dl>
+    <dt><strong>terrain:</strong> </dt>
+    <dd>Use this sample program to create geographical features. This program renders the geometry using N64 hardware. The interface is operated using the Controller.  Use this tool to create data and save it to the INDY. The tool demonstrates various functions including I/O with the Host. For details, see the README included with this sample.
+    </dd>
+</dl>
+
+<dl>
+    <dt><strong>texlight:</strong> </dt>
+    <dd>This program expresses a <a href="../../keywords/index/data/graphics.htm#diffuse light"
+        target="keywords">diffuse lighting</a> process, a specular highlight process, and objects which are texture mapped, at the same time. 
+    </dd>
+</dl>
+
+<dl>
+    <dt><strong>tile_rect2d:</strong> </dt>
+    <dd>This program demonstrates how to divide a large texture into small texture tiles so it can be stored in a texture memory. This program creates two dimensional <a href="../../keywords/index/data/graphics.htm#texture rectangle primitive" target="keywords">texture rectangle primitives</a>. 
+    </dd>
+</dl>
+
+<dl>
+    <dt><strong>tile_rect3d:</strong> </dt>
+    <dd>This sample program explains how to divide a large texture into tiles so it can be stored in a texture memory. As filtering is processed properly, there will be no joints, and a triangle will be created.     </dd>
+</dl>
+
+<dl>
+    <dt><strong>tron:</strong> </dt>
+    <dd>A wall is a transparent object which is not <a href="../../keywords/index/data/system.htm#sorting process" target="keywords">sort processed</a>. This sample program demonstrates how to use the BOWTIE_VAL parameter, which avoids RDP hanging. 
+    </dd>
+</dl>
+
+<p align="right"><a href="index.htm#index"><img
+src="../../gif/index.gif" alt="UP" border="0" width="65"
+height="17"></a></p>
+
+<hr>
+
+<h2><a name="03">1.3.3 About the N64 Online Function Reference Manual</a></h2>
+
+<p>The "N64 Online Function Reference Manual" provides complete descriptions of each N64 function and its usage. Please refer to this manual for additional information. </p>
+
+<p align="right"><a href="index.htm#index"><img
+src="../../gif/index.gif" alt="UP" border="0" width="65"
+height="17"></a></p>
+
+<hr>
+</body>
+</html>

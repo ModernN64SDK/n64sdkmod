@@ -1,0 +1,57 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../n64man.css">
+<title>MusHandleSetTempo()</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check-->
+</head>
+
+<h1>MusHandleSetTempo()</h1>
+
+<h2>Syntax</h2>
+
+<pre>
+int MusHandleSetTempo(musHandle handle, int tempo);
+</pre>
+
+<h2>Arguments</h2>
+
+<dl>
+  <dt><b>handle</b>
+  <dd>the sound handle
+  <dt><b>tempo</b>
+  <dd>the tempo offset value
+</dl>
+
+<h2>Description</h2>
+
+<p>It sets the tempo scale value for the channels associated with the specified sound handle. This function allows the programmer to speed up or slow down songs and sound effects relevant to the defined song speed or the default sound effect speed.
+</p>
+
+<p>The handle must be a sound handle returned by <a href="MusStartSong.html">MusStartSong()</a>, <a href="MusStartSongFromMarker.html">MusStartSongFromMarker()</a>, <a href="MusStartEffect.html">MusStartEffect()</a>, or <a href="MusStartEffect2.html">MusStartEffect2()</a>.  If a handle of zero is supplied, this function will always return zero.</p>
+
+<p>The tempo should be within the range of 0 to 0x100 (256), with this range representing 0% to 200% of the value defined in the original sound data. The default tempo scale value for all channels is 0x80 (100%).</p>
+
+<h2>Return Value</h2>
+
+<p>Number of channels which have been changed.</p>
+
+<h2>Example</h2>
+
+<pre>void SongSpeedFromBossHealth(unsigned long handle, int health)
+{
+  /* health In range 0-32767 */
+  health = (32767 - health)&gt;&gt;9;
+  MusHandleSetTempo(handle, health + 128);
+}
+</pre>
+
+<h2>See Also</h2>
+<p>
+<a href="MusStartSong.html">MusStartSong()</a>,
+<a href="MusStartEffect.html">MusStartEffect()</a>,
+<a href="MusStartEffect2.html">MusStartEffect2()</a>
+</p>
+
+</body>
+</html>

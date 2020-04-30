@@ -1,0 +1,142 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<title>STEP3 [N64 3D Graphics] - Chapter 1 Basic 3D Graphics</title>
+<base target="keywords">
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park 7/12/1999 -->
+
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<p><font style="font-size:12pt"><b>1-5 Matrix Specification</b></font><br>
+<br>
+<br>
+A <a
+href="../../../keywords/index/data/graphics.htm#matrix"
+target="keywords">matrix</a> is made up of rows and columns. Rows are numbered from top to bottom, and columns are numbered from left to right.  A matrix that has <em>m</em> rows and <em>n</em> columns is called a matrix of <em>m</em> rows and <em>n</em> columns or an, <em>m</em> x <em>n</em>  ,matrix.  An individual cell in a matrix is called an <b>element</b> or <b>component</b> and is referenced as the element in row 
+<em>m</em> and column <em>n</em> or as the <em>(m, n)</em> component.</p>
+
+<table border="1" cellspacing="0" cellpadding="4">
+    <tr>
+        <td><img src="img00120.gif" width="338" height="147"> </td>
+    </tr>
+</table>
+
+<p><br>
+<b>Figure 1-5-1 Matrix</b><br>
+<br>
+<br>
+You will usually use 4 x 4 matrices in 3D graphics and 3 x 3 matrices in 2D graphics. These matrices are specified like this:<br>
+<br>
+<img src="img00123.gif" align="absmiddle" width="185" height="97">
+ or <img src="img00124.gif" align="absmiddle" width="150"
+height="72"><br>
+<br>
+<br>
+<br>
+<b>1-5-1 Matrix Addition and Subtraction</b><br>
+<br>
+<br>
+Adding or subtracting matrices is accomplished by using this formula:<br>
+<br>
+<img src="img00125.gif" width="405" height="219"><br>
+<br>
+Here's an easy example showing how to add matrices together:<br>
+<br>
+<img src="img00126.gif" width="425" height="413"><br>
+<br>
+<b>Figure 1-5-2 Matrix Addition 1</b><br>
+<br>
+<br>
+
+   Here's another example. This one switches the order of the same matrices and shows that the result is still the same:<br>
+<br>
+<img src="img00127.gif" width="425" height="395"><br>
+<br>
+<b>Figure 1-5-3 Matrix Addition 2</b><br>
+<br>
+<br>
+As you can see from these examples, the commutative law is valid for matrix addition and subtraction. In other words, you can switch the calculation order:<br>
+<br>
+<img src="img00128.gif" align="absmiddle" width="146" height="22"> <b>(The commutative law is valid)</b><br>
+<img src="img00129.gif" align="absmiddle" width="380" height="22"> <b>(The associative law is valid)</b><br>
+<br>
+<br>
+<br>
+<b>1-5-2 Matrix Multiplication</b><br>
+<br>
+<br>
+When you multiply one matrix by another matrix, the result is also a matrix. This section explains the calculation method for Matrix Multiplication.<br>
+<br>
+ If you multiply matrix <img
+src="img00137.gif" align="absmiddle" width="28" height="22"> by matrix <img
+src="img00137.gif" align="absmiddle" width="28" height="22">, the result is 
+<img src="img00130.gif"
+align="absmiddle" width="60" height="21">.  Use the following formula to obtain each element of row <i>i</i> and column <i>j</i> in the resulting matrix <img
+src="img00133.gif" align="absmiddle" width="28" height="22"> where <img
+src="img00132.gif" align="absmiddle" width="90" height="22">:
+<br>
+<br>
+<img src="img00134.gif" width="93" height="64"><br>
+<br>
+For example, to calculate the element in the second row and third column of <img src="img00135.gif" align="absmiddle" width="26"
+height="22">, use this formula:<br>
+<br>
+<img src="img00136.gif" width="236" height="95"><br>
+<br>
+As you can see, the element of the second row and the third column is the product-sum of the second row of the matrix <img
+src="img00137.gif" align="absmiddle" width="28" height="22"> and third column of the matrix <img
+src="img00138.gif" align="absmiddle" width="28" height="22"> as illustrated here:<br>
+<br>
+<img src="img00139.gif" align="absmiddle" width="469"
+height="120"><br>
+<br>
+Note that for matrix multiplication to be possible, the number of columns in matrix A (<em>m</em> rows <em>n</em> columns) must equal the number of rows in matrix B (<em>p</em> rows <em>q</em> columns). In other words, <em>n</em> and <em>p</em> in the following illustration must be
+   equal:<br>
+<br>
+<img src="img00149.gif" width="433" height="291"><br>
+<br>
+<b>Figure 1-5-4 The criteria for matrix multiplication</b><br>
+<br>
+<br>
+Next, an additional example of multiplication will be provided using a simpler matrix.    <br>
+<br>
+<img src="img00150.gif" width="428" height="387"><br>
+<br>
+The following is another example which shows how the results differ when the order of the matrix multiplication is changed:<br>
+<br>
+<img src="img00151.gif" width="427" height="401"><br>
+<br>
+<b>Figure 1-5-5 Matrix Multiplication</b><br>
+<br>
+<br>
+Matrix Multiplication.  However, the associative law is valid for matrix multiplication.<br>
+<br>
+<img src="img00152.gif" align="absmiddle" width="114" height="22">  (the commutative law is invalid)<br>
+<img src="img00153.gif" align="absmiddle" width="270" height="22">  (the associative law is valid)<br>
+<br>
+</p>
+
+<table border="1" cellspacing="0" cellpadding="4">
+    <tr>
+        <td><b>N64 Functions to Use for Matrix Multiplication</b><br>
+        <br>
+          <a href="../../../n64man/gu/guMtxCatF.htm"><b>guMtxCatF</b></a><br>
+          <a href="../../../n64man/gu/guMtxCatL.htm">
+        <b>guMtxCatL</b></a><br>
+        </td>
+    </tr>
+</table>
+
+<p><br>
+<br>
+<br>
+<br>
+<br>
+<br>
+</p>
+</body>
+</html>

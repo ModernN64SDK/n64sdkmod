@@ -1,0 +1,77 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Author's Comments: MAP created file 9/29/99>
+<title>LeoSetRTC</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>LeoSetRTC</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p>LeoReadRTC</p>
+<p><i>Reads the time from the internal RTC</i></p>
+
+<p>LeoSetRTC<br></p>
+<p><i>Sets the internal RTC time</i></p>
+
+<h3>Syntax</h3>
+<p>
+<pre>#include &lt;PR/leo.h&gt;     /* <A HREF="../../header/leo.htm">leo.h</A> */
+
+s32 LeoReadRTC(LEOCmd *cmdBlock, OSMesgQueue *mq);
+s32 LeoSetRTC(LEOCmd *cmdBlock, LEODiskTime *RTCdata, OSMesgQueue *mq);
+
+typedef struct
+{
+   u8 pad;
+   u8 yearhi;
+   u8 yearlo;
+   u8 month; 
+   u8 day; 
+   u8 hour;
+   u8 minute;
+   u8 second;
+} LEODiskTime;
+</font></pre></p>
+
+<h3>Description</h3>
+
+<p><b>Note:</b> None of the N64 Disk Drive-related instructions involve ROM DMA (including DMA to ROM in the drive). In fact, the instructions are designed on the assumption that ROM DMA will not be carried out. To learn more about this, please see "Chapter 12: Programming Cautions" in the N64 Disk Drive Programming Manual. </p>
+
+<p>The <a href="LeoReadRTC.htm">LeoReadRTC</a> and <tt>LeoSetRTC</tt> functions work with the N64 Disk Drive's internal RTC (real-time clock). The <tt>LeoReadRTC</tt> function reads the time from the RTC and stores it in the cmdBlock.data.time (LEODiskTime structure). The <tt>LeoSetRTC</tt> function sets the RTC with the time specified by the <b>RTCdata</b> argument.
+</p>
+
+<p>The LEODiskTime structure members are all expressed in BCD notation.</p>
+
+<p>The "year" member follows the Western calendar. The "year" is expressed in 4 digits with the high 2 digits being yearhi and low 2 digits being yearlo.</p>
+
+<p>A value for the year that the <tt>LeoReadRTC</tt> function returns ranges from 1996 to 2095. Also the value that the <tt>LeoSetRTC</tt> function sets must be in that range. LEO_ERROR_ILLEGAL_TIMER_VALUE error will be returned if a value our of that range is specified. If one second passes by from 23:59:59 12/31/2059, it will be 0:0:0 01/01/1996.
+</p>
+
+<p>The "hour" member uses the 24-hour clock.</p>
+
+<p>Nothing needs to be set for the command block <b>cmdBlock</b> argument. When processing of this function ends, an error code is returned to the message queue mq. An error could arise, so the programmer needs to check this error code.</p>
+ 
+<p>For more information about the errors that may be returned, their causes, and ways to deal with them, please see  "Chapter 10: Error-Handling" of the N64 Disk Drive Programming Manual. </p>
+
+<p>The return value is -1 if Leo Manager has not been created, and 0 if it has. Usually no check is necessary. </p>
+
+<h3>Example</h3>
+<pre>
+<font face="Courier">LEOCmd cmdBlock;</font>
+<font face="Courier">u32 error;</font>
+<font face="Courier">.....</font>
+<font face="Courier">LeoReadRTC(&amp;cmdBlock, &amp;diskQ);</font>
+<font face="Courier">osRecvMesg(&amp;diskQ, (OSMesg *)&amp;error, OS_MESG_BLOCK);</font></pre>
+
+<h3>See Also</h3>
+</b></p>
+<p><a href="LeoCreateLeoManager.htm">Leo*CreateLeoManager</a>, 
+</p>
+<h3>Revision History</h3>
+<p>04/30/1999  Changed Format</p>
+<br><br>
+
+</body>
+</html>

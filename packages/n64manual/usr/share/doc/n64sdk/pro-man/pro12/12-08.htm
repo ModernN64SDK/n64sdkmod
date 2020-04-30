@@ -1,0 +1,55 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 12 - RDP Programming</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. -->
+</head>
+
+<h1>12.8 MI - Memory Interface</h1>
+
+<p>Memory Interface (MI) simply interfaces to the framebuffer memory.  It has programmable color and <a href="../../keywords/index/data/graphics.htm#Z buffer" target="keywords">Z buffer</a> pointers, a 32-bit fill color value used in the FILL cycle type (see <a href="../pro12/12-01.htm#04">Section 12.1.4, "Fill Mode"</a>, and an enable for <a href="../../keywords/index/data/graphics.htm#color dither" target="keywords">color dither</a>). </p>
+
+<dl>
+  <dt><a name="f12-14"><strong>Figure 12-14 Memory Interface State and Input/Output</strong></a>
+  <dd><img alt="[Figure 12-14]" src="gif/f12-14.gif">
+</dl>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="01"><h2>12.8.1 Image Location and Format</h2></a>
+
+<p>The framebuffer is row-ordered, starting at the upper left.  The color and Z buffer image pointers must be <A target="keywords" HREF="../../keywords/index/data/system.htm#64-bit boundary alignment">64-bit aligned</A>.  The DRAM has dual banks, one on each 1 MB. By keeping the color and Z buffers on different banks, you can improve the DRAM access latency when the RDP is seeking DRAM <A target="keywords" HREF="../../keywords/index/data/system.htm#bandwidth">bandwidth</A> for <a href="../../keywords/index/data/graphics.htm#rendering" target="keywords">rendering</a>. </p>
+
+<p>The Nintendo 64 system actually uses 9-bit DRAMs rather than 8-bit DRAMs, to gain two extra bits per color or z pixel. The color and z image pixel format are illustrated in <a href="#f12-15">Figure 12-15</a>.</p>
+
+<dl>
+  <dt><a name="f12-15"><strong>Figure 12-15 Pixel Format of Color and Z buffer Image</strong></a>
+  <dd><img alt="[Figure 12-15]" src="gif/f12-15.gif">
+</dl>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="02"><h2>12.8.2 Fill Color</h2></a>
+
+<p>The MI has a 32-bit fill color register that is used in FILL cycle type. Fill color is typically programmed to a constant value to fill background color and Z buffers. Since two framebuffer pixels are 18x2=36 bits, while fill color register is 32 bits, a few of the bits are replicated.  In <a href="#f12-16">Figure 12-16</a> this bit replication is illustrated.</p>
+
+<dl><dt><a name="f12-16"><strong>Figure 12-16 Fill Color Register LSB Replication </strong></a>
+  <dd><img alt="[Figure 12-16]" src="gif/f12-16.gif">
+</dl>
+
+<table border=1 align="center">
+  <caption><a name="t12-30"><strong>Table  12-30 gsSetFillColor(data32bits)</strong></a></caption>
+  <tr><th>Parameter</th><th>Values</th></tr>
+  <tr><td align="center">data32bits</td><td>2 different macros, one each for color and z. <br>
+each generate 16 bits. so do x &LT;&LT;16 | x to get 32 bits<br>
+                GPACK_RGBA5551(r, g, b, a), a=1 is full coverage. (Typical)<br>
+               GPACK_ZDZ(z, dz), z=G_MAXFBZ, dz=0. (Typical)</td></tr>
+</table>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="03"><h2>12.8.3 Dithering</h2></a>
+
+<p>The RDP pipeline keeps full, 8-bit per RGB component precision throughout. Dithering can be enabled or disabled to write to the 5-bit per RGB component dram framebuffer format. Dithering is recommended since it can significantly reduce Mach banding effect. </p>
+
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+</body> </html>

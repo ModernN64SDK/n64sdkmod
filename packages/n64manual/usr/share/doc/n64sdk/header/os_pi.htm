@@ -1,0 +1,229 @@
+<HTML><HEAD>
+<TITLE></TITLE>
+</HEAD></BODY>
+<PRE>
+<FONT COLOR="red">/*====================================================================
+ * os_pi.h
+ *
+ * Copyright 1995, Silicon Graphics, Inc.
+ * All Rights Reserved.
+ *
+ * This is UNPUBLISHED PROPRIETARY SOURCE CODE of Silicon Graphics,
+ * Inc.; the contents of this file may not be disclosed to third
+ * parties, copied or duplicated in any form, in whole or in part,
+ * without the prior written permission of Silicon Graphics, Inc.
+ *
+ * RESTRICTED RIGHTS LEGEND:
+ * Use, duplication or disclosure by the Government is subject to
+ * restrictions as set forth in subdivision (c)(1)(ii) of the Rights
+ * in Technical Data and Computer Software clause at DFARS
+ * 252.227-7013, and/or in similar or successor clauses in the FAR,
+ * DOD or NASA FAR Supplement. Unpublished - rights reserved under the
+ * Copyright Laws of the United States.
+ *====================================================================*/</FONT>
+
+<FONT COLOR="red">/*---------------------------------------------------------------------*
+        Copyright (C) 1998 Nintendo. (Originated by SGI)
+        
+        $RCSfile: os_pi.h,v $
+        $Revision: 1.1 $
+        $Date: 1998/10/09 08:01:16 $
+ *---------------------------------------------------------------------*/</FONT>
+
+#ifndef _OS_PI_H_
+#define	_OS_PI_H_
+
+#ifdef _LANGUAGE_C_PLUS_PLUS
+extern &quot;C&quot; {
+#endif
+
+#include &lt;PR/ultratypes.h&gt;
+#include &quot;os_thread.h&quot;
+#include &quot;os_message.h&quot;
+
+
+#if defined(_LANGUAGE_C) || defined(_LANGUAGE_C_PLUS_PLUS)
+
+<FONT COLOR="red">/**************************************************************************
+ *
+ * Type definitions
+ *
+ */</FONT>
+
+<FONT COLOR="red">/*
+ * Structure for Enhanced PI interface
+ */</FONT>
+
+<FONT COLOR="red">/*
+ * OSTranxInfo is set up for Leo Disk DMA. This info will be maintained
+ * by exception handler. This is how the PIMGR and the ISR communicate.
+ */</FONT>
+
+typedef struct {
+	u32		errStatus;	<FONT COLOR="red">/* error status */</FONT>
+        void     	*dramAddr;      <FONT COLOR="red">/* RDRAM buffer address (DMA) */</FONT>
+	void		*C2Addr;	<FONT COLOR="red">/* C2 buffer address */</FONT>
+	u32		sectorSize;	<FONT COLOR="red">/* size of transfering sector */</FONT>
+	u32		C1ErrNum;	<FONT COLOR="red">/* total # of C1 errors */</FONT>
+	u32		C1ErrSector[4];	<FONT COLOR="red">/* error sectors */</FONT>
+} __OSBlockInfo;
+
+typedef struct {
+	u32     	cmdType;       	<FONT COLOR="red">/* for disk only */</FONT>
+	u16     	transferMode;   <FONT COLOR="red">/* Block, Track, or sector?   */</FONT>
+	u16		blockNum;	<FONT COLOR="red">/* which block is transfering */</FONT>
+	s32     	sectorNum;      <FONT COLOR="red">/* which sector is transfering */</FONT>
+	u32     	devAddr;        <FONT COLOR="red">/* Device buffer address */</FONT>
+	u32		bmCtlShadow;	<FONT COLOR="red">/* asic bm_ctl(510) register shadow ram */</FONT>
+	u32		seqCtlShadow;	<FONT COLOR="red">/* asic seq_ctl(518) register shadow ram */</FONT>
+	__OSBlockInfo	block[2];	<FONT COLOR="red">/* bolck transfer info */</FONT>
+} __OSTranxInfo;
+
+
+typedef struct OSPiHandle_s {
+        struct OSPiHandle_s     *next;  <FONT COLOR="red">/* point to next handle on the table */</FONT>
+        u8                      type;   <FONT COLOR="red">/* DEVICE_TYPE_BULK for disk */</FONT>
+        u8                      latency;        <FONT COLOR="red">/* domain latency */</FONT>
+        u8                      pageSize;       <FONT COLOR="red">/* domain page size */</FONT>
+        u8                      relDuration;    <FONT COLOR="red">/* domain release duration */</FONT>
+        u8                      pulse;          <FONT COLOR="red">/* domain pulse width */</FONT>
+	u8			domain;		<FONT COLOR="red">/* which domain */</FONT>
+        u32                     baseAddress;    <FONT COLOR="red">/* Domain address */</FONT>
+        u32                     speed;          <FONT COLOR="red">/* for roms only */</FONT>
+        <FONT COLOR="red">/* The following are &quot;private&quot; elements&quot; */</FONT>
+        __OSTranxInfo           transferInfo;	<FONT COLOR="red">/* for disk only */</FONT>
+} OSPiHandle;
+
+typedef struct {
+        u8      type;
+        u32     address;
+} OSPiInfo;
+
+<FONT COLOR="red">/*
+ * Structure for I/O message block
+ */</FONT>
+typedef struct {
+        u16 		type;		<FONT COLOR="red">/* Message type */</FONT>
+        u8 		pri;		<FONT COLOR="red">/* Message priority (High or Normal) */</FONT>
+        u8		status;		<FONT COLOR="red">/* Return status */</FONT>
+	OSMesgQueue	*retQueue;	<FONT COLOR="red">/* Return message queue to notify I/O 
+					 * completion */</FONT>
+} OSIoMesgHdr;
+
+typedef struct {
+	OSIoMesgHdr	hdr;		<FONT COLOR="red">/* Message header */</FONT>
+	void *		dramAddr;	<FONT COLOR="red">/* RDRAM buffer address (DMA) */</FONT>
+	u32		devAddr;	<FONT COLOR="red">/* Device buffer address (DMA) */</FONT>
+	u32 		size;		<FONT COLOR="red">/* DMA transfer size in bytes */</FONT>
+	OSPiHandle	*piHandle;	<FONT COLOR="red">/* PI device handle */</FONT>
+} OSIoMesg;
+
+<FONT COLOR="red">/*
+ * Structure for device manager block
+ */</FONT>
+typedef struct {
+        s32             active;		<FONT COLOR="red">/* Status flag */</FONT>
+	OSThread	*thread;	<FONT COLOR="red">/* Calling thread */</FONT>
+        OSMesgQueue  	*cmdQueue;	<FONT COLOR="red">/* Command queue */</FONT>
+        OSMesgQueue  	*evtQueue;	<FONT COLOR="red">/* Event queue */</FONT>
+        OSMesgQueue  	*acsQueue;	<FONT COLOR="red">/* Access queue */</FONT>
+					<FONT COLOR="red">/* Raw DMA routine */</FONT>
+        s32             (*dma)(s32, u32, void *, u32);
+        s32             (*edma)(OSPiHandle *, s32, u32, void *, u32);
+} OSDevMgr;
+
+
+#endif <FONT COLOR="red">/* defined(_LANGUAGE_C) || defined(_LANGUAGE_C_PLUS_PLUS) */</FONT>
+
+<FONT COLOR="red">/**************************************************************************
+ *
+ * Global definitions
+ *
+ */</FONT>
+
+<FONT COLOR="red">/* Flags to indicate direction of data transfer */</FONT>
+
+#define	OS_READ			0		<FONT COLOR="red">/* device -&gt; RDRAM */</FONT>
+#define	OS_WRITE		1		<FONT COLOR="red">/* device &lt;- RDRAM */</FONT>
+#define	OS_OTHERS		2		<FONT COLOR="red">/* for Leo disk only */</FONT>
+
+<FONT COLOR="red">/*
+ * I/O message types
+ */</FONT>
+#define OS_MESG_TYPE_BASE	(10)
+#define OS_MESG_TYPE_LOOPBACK	(OS_MESG_TYPE_BASE+0)
+#define OS_MESG_TYPE_DMAREAD	(OS_MESG_TYPE_BASE+1)
+#define OS_MESG_TYPE_DMAWRITE	(OS_MESG_TYPE_BASE+2)
+#define OS_MESG_TYPE_VRETRACE	(OS_MESG_TYPE_BASE+3)
+#define OS_MESG_TYPE_COUNTER	(OS_MESG_TYPE_BASE+4)
+#define OS_MESG_TYPE_EDMAREAD	(OS_MESG_TYPE_BASE+5)
+#define OS_MESG_TYPE_EDMAWRITE	(OS_MESG_TYPE_BASE+6)
+
+<FONT COLOR="red">/*
+ * I/O message priority
+ */</FONT>
+#define OS_MESG_PRI_NORMAL	0
+#define OS_MESG_PRI_HIGH	1
+
+<FONT COLOR="red">/*
+ * PI/EPI
+ */</FONT>
+#define PI_DOMAIN1      0
+#define PI_DOMAIN2      1
+
+
+#if defined(_LANGUAGE_C) || defined(_LANGUAGE_C_PLUS_PLUS)
+
+<FONT COLOR="red">/**************************************************************************
+ *
+ * Macro definitions
+ *
+ */</FONT>
+
+
+<FONT COLOR="red">/**************************************************************************
+ *
+ * Extern variables
+ *
+ */</FONT>
+
+extern OSPiHandle      *__osPiTable;    <FONT COLOR="red">/* The head of OSPiHandle link list */</FONT>
+
+
+<FONT COLOR="red">/**************************************************************************
+ *
+ * Function prototypes
+ *
+ */</FONT>
+
+<FONT COLOR="red">/* Peripheral interface (Pi) */</FONT>
+extern u32 		osPiGetStatus(void);
+extern s32		osPiGetDeviceType(void);
+extern s32		osPiWriteIo(u32, u32);
+extern s32		osPiReadIo(u32, u32 *);
+extern s32		osPiStartDma(OSIoMesg *, s32, s32, u32, void *, u32,
+				     OSMesgQueue *);
+extern void		osCreatePiManager(OSPri, OSMesgQueue *, OSMesg *, s32);
+
+<FONT COLOR="red">/* Enhanced PI interface */</FONT>
+
+extern OSPiHandle *osCartRomInit(void);
+extern OSPiHandle *osLeoDiskInit(void);
+extern OSPiHandle *osDriveRomInit(void);
+
+extern s32 osEPiDeviceType(OSPiHandle *, OSPiInfo *);
+extern s32 osEPiWriteIo(OSPiHandle *, u32 , u32 );
+extern s32 osEPiReadIo(OSPiHandle *, u32 , u32 *);
+extern s32 osEPiStartDma(OSPiHandle *, OSIoMesg *, s32);
+extern s32 osEPiLinkHandle(OSPiHandle *);
+
+
+#endif  <FONT COLOR="red">/* defined(_LANGUAGE_C) || defined(_LANGUAGE_C_PLUS_PLUS) */</FONT>
+
+#ifdef _LANGUAGE_C_PLUS_PLUS
+}
+#endif
+
+#endif <FONT COLOR="red">/* !_OS_PI_H_ */</FONT>
+</PRE>
+</BODY>

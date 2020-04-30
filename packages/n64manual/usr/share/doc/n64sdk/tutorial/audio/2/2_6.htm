@@ -1,0 +1,140 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Audio-Chapter 2 AUDIO MANIPULATIONS BY THE PROGRAMMER</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/16/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<font style="font-size:12pt"><B>2.6  Effects (Reverb)</B></FONT>
+<br>
+<P>
+Effect, also known as reverb, is the sound effect applied at the end of the audio process.  The 6 following effect settings are preset:
+</P>
+<TABLE BORDER=0><TR><TD ROWSPAN=12>&nbsp;</TD><TD>
+<TABLE BORDER=1 CELLSPACING=0 CELLPADDING=5><TR>
+</TR><TR>
+        <TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE>Effect name</TD>
+        <TD NOWRAP ALIGN=CENTER VALIGN=MIDDLE>Effect No.</TD>
+        <TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE>Macro name</TD>
+</TR><TR>
+        <TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE>None</TD>
+        <TD NOWRAP ALIGN=CENTER VALIGN=MIDDLE>0</TD>
+        <TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE>AL_FX_NONE</TD>
+</TR><TR>
+        <TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE>Small Room</TD>
+        <TD NOWRAP ALIGN=CENTER VALIGN=MIDDL>1</TD>
+        <TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE>AL_FX_SMALLROOM</TD>
+</TR><TR>
+        <TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE>Big Room (default)</TD>
+        <TD NOWRAP ALIGN=CENTER VALIGN=MIDDLE>2</TD>
+        <TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE>AL_FX_BIGROOM</TD>
+</TR><TR>
+        <TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE>Chorus</TD>
+        <TD NOWRAP ALIGN=CENTER VALIGN=MIDDLE>3</TD>
+        <TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE>AL_FX_CHORUS</TD>
+</TD></TR>
+        <TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE>Flange</TD>
+        <TD NOWRAP ALIGN=CENTER VALIGN=MIDDLE>4</TD>
+        <TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE>AL_FX_FLANGE</TD>
+</TD></TR>
+        <TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE>Echo</TD>
+        <TD NOWRAP ALIGN=CENTER VALIGN=MIDDLE>5</TD>
+        <TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE>AL_FX_ECHO</TD>
+</TR></TABLE>
+</TD></TR></TABLE>
+<P>
+In the MUS library, Big Room is set as the initial value, but the programmer is free to change the type of effect using <tt>MusSetFxType</tt>.<BR>
+<HR>
+<p><b>Set the library effect type</B><br>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Function name:</TD>
+	<TD COLSPAN=2 ALIGN=LEFT VALIGN=TOP NOWRAP><tt>MusSetFxType</tt></TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Syntax:</TD>
+	<TD COLSPAN=2 ALIGN=LEFT VALIGN=TOP>s32 MusSetFxType(s32 fxtype)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Arguments: </TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP><b>fxtype</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Effect type<BR>
+			AL_FX_NONE<BR>
+			AL_FX_SMALLROOM<BR>
+			AL_FX_BIGROOM<BR>
+			AL_FX_CHORUS<BR>
+			AL_FX_FLANGE<BR>
+			AL_FX_ECHO</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Return value:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>0</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Failure</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Non-zero </TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Success<BR></TD>
+</TR></TABLE>
+<HR>
+<p>
+ If the Return value is 0, please wait for a retrace message and call the function again.
+</P>
+<P>
+ The programmer can not only change effect types, but also embed them into songs using the tools.   Using <tt>MusSetSongFxChange</tt>, the programmer can enable and disable the effect settings embedded in a song.  When disabled, the effect becomes the type it was the last time <tt>MusSetFxType</tt> was called (if never called, then the effect becomes Big Room).
+<BR>
+<HR>
+<p><b>Set the library's change song effect flag</B><br>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Function name:</TD>
+	<TD COLSPAN=2 ALIGN=LEFT VALIGN=TOP NOWRAP><tt>MusSetSongFxChange</tt></TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Syntax:</TD>
+	<TD COLSPAN=2 ALIGN=LEFT VALIGN=TOP>s32 MusSetSongFxChange(musBool onoff)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Arguments:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP><b>onoff</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP><b>Flag</b><BR>
+		MUSBOOL_ON   Enable<BR>
+		MUSBOOL_OFF  Disable</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Return value:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>0</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Failure</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Non-zero </TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Success<BR></TD>
+</TR></TABLE>
+<HR><p>
+If the Return value is 0, please wait for a retrace message and call the function again.</P>
+<P>
+ The extent to which the effect is applied is called the wet/dry value (reverb level).  This value is set in both songs and sound effects, and the programmer can change it using a sound handle.<br><br>
+     A wet/dry value of 0 is completely dry (the effect is not applied), while a value of 0x80 is completely wet (the effect is applied).<BR>
+<HR>
+<p><b>Set the reverb value using a sound handle</B><br>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Function name:</TD>
+	<TD COLSPAN=2 ALIGN=LEFT VALIGN=TOP NOWRAP><tt>MusHandleSetReverb</tt></TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Syntax:</TD>
+	<TD COLSPAN=2 ALIGN=LEFT VALIGN=TOP NOWRAP>s32 MusHandleSetReverb(musHandle handle, s32 reverb)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Arguments:</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP><b>handle</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Sound handle</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP><b>reverb</b></TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>wet/dry base value (0 to 0x7f)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Return value:</TD>
+	<TD COLSPAN=2 ALIGN=LEFT VALIGN=TOP NOWRAP>The number of channels that have been changed</TD>
+</TR></TABLE>
+<HR><p>
+  By changing the wet/dry base value (minimum value) with this function, you can "raise the bar" so to speak for all levels of reverb.  For example, when the base value is set to 0x40, a wet/dry value of 0 becomes 0x40 and a value of 0x40 becomes 0x80.  In order to give the programmer complete control, it is best to set original data to 0.</P>
+<P>
+(*)The changes made with this function will take effect from the next sound that is generated.
+</P>
+<br>
+<br>
+</BODY>
+</HTML>

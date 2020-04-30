@@ -1,0 +1,75 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<!--
+Editors Notes:
+  PWC- updated formatting
+  MAP- updated format
+--><title>mksprite</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>mksprite</b></font><font style="font-size: 9pt"><b> (tool command)</b></font>
+
+<p>mksprite , mksprite32, mkisprite<br><br><i>Converts .rgb files to the C Sprite data structure</i>
+
+<h3>Syntax</h3>
+
+<p>mksprite spname img.rgb tx ty overlap &gt; ../sp_spname.h<br>
+mksprite32 spname img.rgb tx ty overlap &gt; ../sp_spname.h<br>
+mkisprite spname img.rgb tx ty overlap &gt; ../sp_spname.h</p>
+
+
+<h3>Description</h3>
+
+<p>The mksprite family of programs converts large images into smaller pieces (tiles) that can be loaded individually into TMEM and drawn next to each other using the sprite library of functions (see <a href="../sp/spIntro.htm">sp</a>). Currently there are two fully functional texel types supported.</p>
+
+<blockquote>
+    <p>: 32-bit RGBA (use <a href="mksprite32.htm">mksprite32</a>)</p>
+    <p>: 16-bit RGBA (5:5:5:1) (use mksprite)</p>
+</blockquote>
+
+<p>Also supported for small image sizes (single tiles), is 8-bit Color Index (CI) mode (use <a href="mkisprite.htm">mkisprite</a>). Support for other texel types has been added, and customization is relatively easy for these commands with csh scripts.</p>
+
+<p>The current application framework assumes that sprite textures are stored in a subdirectory called &quot;Texture&quot;. These commands are assumed to be run in this subdirectory, in which case, their output file &quot;../sp_basename.h&quot; will be in the application directory.</p>
+
+<p>Command Line Options</p>
+
+<dl>
+    <dt><strong>spname</strong></dt>
+    <dd>All created files and declared structures and arrays are prefixed with this basename. This keeps the names of sprite components distinct.<br>
+        <br>
+        </dd>
+    <dt><strong>img.rgb</strong></dt>
+    <dd>Is the SGI format image file. This is the basic texture that is drawn when the generated sprite is drawn. If this is a 4-channel (RGBA) image, then the indicated alpha will be used, otherwise it is assumed that alpha=1.0 for the while image.<br>
+        <br>
+        </dd>
+    <dt><strong>tx</strong></dt>
+    <dd>Is the width of the basic tile. This does not include the overlap, if any, with the horizontally adjacent tile. Also, the rightmost column of tiles may have a smaller width. <br>
+        <br>
+        </dd>
+    <dt><strong>ty</strong></dt>
+    <dd>Is the height of the basic tile. This does not include the overlap, if any, with the vertically adjacent tile. Also, the bottommost row of tiles may have a smaller height. <br>
+        <br>
+        </dd>
+    <dt><strong>overlap</strong></dt>
+    <dd>This parameter indicates how many extra texels will be added to the right and bottom of each tile. Sprites that will be used in SP_FASTCOPY mode should use overlap of 0 (no overlap). Sprites that will be scaled or shifted by fractional amounts should have an overlap of 1 to ensure seamless transitions from one tile to the next. <br>
+        <br>
+        </dd>
+    <dt><strong>../sp_spname.h</strong></dt>
+    <dd>This is the recommended filename for the generated Sprite structure. <br>
+        <br>
+        </dd>
+</dl>
+
+<h3>See Also</h3>
+
+<p><a href="rgb2c.htm">rgb2c</a>, <a href="../sp/spIntro.htm">sp</a></p>
+<h3>Revision History</h3>
+<p>1999/04/30  Changed Format</p>
+<br><br>
+
+</body>
+</html>

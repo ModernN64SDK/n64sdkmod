@@ -1,0 +1,237 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../n64man.css">
+<title>2.0I PC Release Notes (12/15/98)</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check-->
+</head>
+
+<h1>2.0I PC Release Notes (12/15/98)</h1>
+
+<hr>
+
+<h2>Summary:</h2>
+
+<p>This release of Ultra 64(for RCP 2.0 version2.0I) includes the various patches that were released since version 2.0H.</p>
+
+<p>The directory structure under /usr/src/PR was completely revised, and demo software is now installed in /usr/src/PR/demos.  For detailed structre, refer to /usr/src/PR/demos/Readme_Demos.  It is recommended that you erase the entire /usr/src/PR directory before installation.  By doing this, it is possible to prevent mixing up the old directory with the newly installed directory.</p>
+
+<p>A description of "to executed gload" is found in a README in the directories of some sample demos under /usr/src/PR/demos/README_DEMOS and /usr/src/PR/demos. This is how to execute a program in the development environment of the Indy + a development board.  For PARTNER users, please execute a program following the procedures for PARTNER.</p>
+
+<p>The 64DD development environment was included in version 2.0H. For version 2.0I, the 64DD development environment is included as a separate package on the CD.  You can choose to install both Release 2.0i of the N64 OS/Library and the N64 Disk Drive development environment.</p>
+
+<p>A batch file to set an environmental parameter, setup.bat was changed. A batch file for the library, setuplib.bat and a batch file for exeGCC, setupgcc.bat were added, and these two batch files are now called for setup.bat.</p>
+
+<p>The format file to set an demo software, Makefile was changed. It is now similar to the format for the SGI. It is also compatible with the compression functions used in exeGCC ver 1.2. Accordingly, files under ultra/include/make were completely revised.</p>
+
+<p>A header file under ultra/usr/include/ was changed.</p>
+
+<h3>* Deleted header file</h3>
+
+<blockquote>
+    <table border="0" cellpadding="0" cellspacing="0">
+        <tr>
+            <td align="center" width="50%">ultra/usr/include/</td>
+            <td width="50%">bstring.h</td>
+        </tr>
+        <tr>
+            <td width="50%">&nbsp;</td>
+            <td width="50%">math.h</td>
+        </tr>
+        <tr>
+            <td width="50%">&nbsp;</td>
+            <td width="50%">svr4_math.h</td>
+        </tr>
+        <tr>
+            <td width="50%">&nbsp;</td>
+            <td width="50%">tinymon.h</td>
+        </tr>
+    </table>
+</blockquote>
+
+<h3>* The header file whose contents were changed</h3>
+
+<blockquote>
+    <p>ultra/usr/include/assert.h</p>
+</blockquote>
+
+<hr>
+
+<h2>New functions:</h2>
+
+<p>A new sprite micro code, S2DEX was added. For its function and usage, refer to the document in /usr/src/PR/doc/gfxucode.S2DEX.  This is same as Release 1.06 of S2DEX microcode which was distributed as a patch for 2.0H. Please note that there is no compatibility between Sprite2D micro code that has been distributed and S2DEX microcode.</p>
+
+<hr>
+
+<h2>New demo software:</h2>
+
+<dl>
+    <dt><strong>gs2dex</strong></dt>
+    <dd>A sample program for S2DEX micorcode. Controller 1 is used.<br>
+        <br>
+        </dd>
+    <dt><strong>eeptest</strong></dt>
+    <dd>A test program for EEPROM. It executes WRITE/READ for EEPROM and checks if reading/writing is performed correctly. It is compatible with a 16K-EEPROM.<br>
+        <br>
+        </dd>
+    <dt><strong>sramtest</strong></dt>
+    <dd>A sample program for SRAM. A 256Kb SRAM is needed for execution. The result is returned to a terminal using osSyncPrintf.<br>
+        <br>
+        </dd>
+</dl>
+
+<hr>
+
+<h2>Modifyed demo software:</h2>
+<p>The following demos have been modified:</p>
+<dl>
+    <dt><strong>motortest</strong></dt>
+    <dd>It was changed to call osMotorStop() three times when stopping the Rumble Pak.<br>
+        <br>
+        </dd>
+    <dt><strong>nosPak</strong></dt>
+    <dd>A sample library for the Controller Pak menu libnos_jpn.a, libnos.a was provided in its entirety for the previous version.  It was changed so that by executing make using lib/, a library is created.	With this modification, a sample library in ultra/usr/lib, libnos*.a, and a header file in ultra/usr/include/PR, lisnos.h, ncode.h were deleted.  Also,  when using the previous Controller Pak menu program, the setting for screen mode was designed only for NTSC within a menu.  Therefore, it could not be used for other modes (such as PAL).  In order to make the Controller Pak menu usable with other modes, the screen mode is no longer set within a menu.  That is, it is necessary to set a screen mode before calling the Controller Pak menu.  It was changed so that a version of Controller Pak Library would be displayed by the Controller Pak menu.  If one's own Controller Pak menu is used, please be sure to display a version number.<br>
+        <br>
+        </dd>
+    <dt><strong>overlay</strong></dt>
+    <dd>Since this is not presently used with Multi Wave in the PC version, it was deleted.<br>
+        <br>
+        </dd>
+    <dt><strong>pfs</strong></dt>
+    <dd>A character error for the screen display was fixed.  Also, specifications were changed so that it conforms to Controller Pak guidelines. The function used to change the number of pages of a game note with the L and R buttons was deleted.<br>
+        <br>
+        </dd>
+    <dt><strong>nnsample1,2</strong></dt>
+    <dd>An error with RDP FIFO buffer size was corrected. And in case rmon is used, it was changed to USE_RMON to be specified. <br>
+        <br>
+        </dd>
+</dl>
+
+<hr>
+
+<h2>Corrected problems:</h2>
+
+<dl>
+    <dt><strong>AUDIO</strong></dt>
+    <dd>he osAiSetNextBuffer() function was modififed. 
+        Previously, a bug was considered to be found if the last address of DMA source is bXX10 0000 0000 0000.  It is now considered that a bug would be found when the address is bXXX0 0000 0000 0000.  It has been changed to avoid that address.<br>
+        <br>
+        </dd>
+    <dt><strong>GRAPHICS</strong></dt>
+    <dd>Yield processing could not be done for Sprite2D Micro Code in the previous version.  This has been corrected.  Previously, this occurred when it was combined with naudio microcode.<br>
+        <br>
+        </dd>
+    <dt><strong>F3DEX</strong></dt>
+    <dd>When flat shading was used for gSP1Quadrangle of F3DEX micro code, occasionally the outcome was not as expected.  gbi.h was modified to make this function more reliable. <br>
+        <br>
+        </dd>
+    <dt><strong>OS</strong></dt>
+    <dd>With the previous OS, operation became unstable if osMotorStart()or osMotorStop() wascalled without first calling osMotorInit(). In this case, it was changed to return an error such as PFS_ERR_INVALID.<br>
+        <br>
+        </dd>
+    <dd>With osContGetReadData(), sometimes correct data could not be read because the data of the 1-Controller was destroyed.  This problem has been corrected.<br>
+        <br>
+        </dd>
+    <dd>The portion of code in which a 15ms wait occurred for each read using the CPU timer within osEepromLongRead() was deleted.   Only writing requires a 15ms wait.<br>
+        <br>
+        </dd>
+    <dd>In the previous version, when a Controller Pak was removed and re-inserted PFS_ERR_NEW_PACK was not returned. This problem has been corrected.   Similarly, if a Controller Pak was removed and re-inserted for a controller of another port,PFS_ERR_NEW_PACK was not returned. This has also been corrected.<br>
+        <br>
+        </dd>
+    <dd>When trying to delete a game note using osPfsDeleteFile() and the 1M Controller Pak (under development) was used, another game note was deleted as well.  This problem was corrected.   When a 256K Controller Pak was used, this problem never occurred.  To ensure that the Controller Pak library which was corrected is used, the following was added.  OS_PFS_VERSION indicates that a version of Controller Pak library was added.  Please be sure to display this version in the Controller Pak menu for each game application.  OS_PFS_VERSION is a 16bit value.  The upper 8bits contain the integer part of the version number. The lower 8bits contain the decimal part.  For example, if the value of OS_PFS_VERSION is 0x0200, the version of Controller Pak library is 2.0.  For examples of usage, refer to the attached sample, nosPak.<br>
+        <br>
+        </dd>
+    <dd>When osEPi(Raw)ReadIo()and osEPi(Raw)WriteIo() are used, the set value of PI bus was not changed according to the handler given by an argument.  This problem was corrected.<br>
+        <br>
+        </dd>
+    <dd>he portion in a macro definition,  missing parenthesis was corrected.<br>
+        <br>
+        </dd>
+    <dd>The definition of a macro OS_CYCLES_TO_*SEC, OS_*SEC_TO_CYCLES was changed so that overflow is unlikely to occur.<br>
+        <br>
+        </dd>
+    <dd>The extern declaration of osViRepeatLine() in the header file os.h was osRepeatLine() by mistake.  This was corrected. <br>
+        <br>
+        </dd>
+    <dd>The value of SEGMENT_NUMBER was the upper 8bits of the address.  It was changed so that the upper 4bits will be ignored.  Therefore, a malfunction will not occur when the address of KSEG0,1 is entered.<br>
+        <br>
+        </dd>
+    <dd>When hostio is used for Partner, a thread was made to wait by polling if the data was not received. This has been corrected.<br>
+        <br>
+        </dd>
+    <dd>When osUnmapTLBAll() is used, entries 1 - 31 were unmapped instead of entries 0 - 30 (Entry 31 is used by the system.)  This has been corrected.<br>
+        <br>
+        </dd>
+    <dd>An exception handler of Version 2.0H would overwrite a global variable area to be used for 64DD programs in the previous version. This has been corrected.<br>
+        <br>
+        </dd>
+    <dd>When osDestroyThread() is called, specifying a thread that does not exist,  (for example, a thread which had already been destroyed), unexpected results would occur. This has been corrected. If this happens now it returns without doing anything. <br>
+        <br>
+        </dd>
+    <dt><strong>TOOL</strong></dt>
+    <dd>None<br>
+        <br>
+        </dd>
+    <dd><hr>
+    </dd>
+</dl>
+
+<h2>Expanded functions:</h2>
+
+<dl>
+    <dt><strong>AUDIO</strong></dt>
+    <dd>None<strong><br>
+        <br>
+        </strong></dd>
+    <dt><strong>GRAPHICS</strong></dt>
+    <dd>None<strong><br>
+        <br>
+        </strong></dd>
+    <dt><strong>OS</strong></dt>
+    <dd>EEPROM function for 16K-EEPROM<br>
+        <br>
+        </dd>
+    <dd>osGetMemSize() function was added. This is to check if Memory Pak is inserted by actually accessing the part of extended memory area of RDRAM.  Please use this for 64DD games.  The difference from the previous osMemSize is that this is a variable and the size of RDRAM acquired at the time of activation is stored, but osGetMemSize() checks if it is possible to access when it is called.<br>
+        <br>
+        </dd>
+    <dd>The osEPiLinkHandle() function was added.  This is used when you create a custom handler acquisition function.  For details, refer to the sample demo, sramtest.<br>
+        <br>
+        </dd>
+</dl>
+
+<hr>
+
+<h2>Functions no longer supported:</h2>
+
+<p>osPfsReSizeFile() function was deleted.</p>
+
+<hr>
+
+<h2>Notes:</h2>
+
+<p>None</p>
+
+<hr>
+
+<h2>Documentation:</h2>
+
+<p>Information has been added to and correlated in the documentation.</p>
+
+<hr>
+
+<h2>Warnings:</h2>
+
+<p>None</p>
+
+<hr>
+
+<h2>Appendix A</h2>
+
+<hr>
+
+<p><strong>Important notes requiring attention from previous release:</strong></p>
+
+<p>None</p>
+
+</body>
+</html>

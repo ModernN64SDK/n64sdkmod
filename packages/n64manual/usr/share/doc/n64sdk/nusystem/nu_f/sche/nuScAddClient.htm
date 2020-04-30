@@ -1,0 +1,94 @@
+<HTML>
+<HEAD>
+<TITLE>nuScAddClient</TITLE>
+</HEAD>
+
+<BODY bgcolor="#FFFFFF">
+<font face="arial" size="-1">
+
+<P>
+<FONT size="5"><b><IMG src="../nusystem2.gif" height="30" width="176">Function</b></FONT>
+</P>
+<HR>
+<P>
+<FONT size="3"><b>nuScAddClient</b></FONT>
+</P>
+<HR>
+<P>
+<b>Syntax</b>
+</P>
+<font face="courier" size="2">
+<PRE>
+void nuScAddClient(NUScClient *c, OSMesgQueue *mq, NUScMsg msgType)
+</PRE>
+</font>
+<P>
+<b>Arguments</b>
+</P>
+<font face="courier" size="2">
+<PRE>
+*c              pointer to the client structure 
+*mq             pointer to the Message Queue 
+msgType         type of message to be registered (if both, use "OR") 
+                NU_SC_RETRACE_MSG =  Retrace 
+                NU_SC_PRENMI_MSG  =  PRENMI
+
+</PRE>
+</font>
+<P>
+<b>Return Value</b>
+</P>
+<font face="courier" size="2">
+<PRE>
+None
+</PRE>
+</font>
+<P>
+<b>Description</b>
+</P>
+<i>Register Scheduler client</i>
+<p>
+This registers a retrace or PRE NMI client in the Scheduler.
+When an event occurs, the Scheduler sends a message to the message queue of the registered client.
+<P>
+When NE_SC_PRENMI_MSG is specified as the type of message to be registered, a PRE NMI message will be sent to the message queue specified when the client was
+registered (even if the PRE NMI event has already happened.<BR>
+</P>
+
+Use the nuScRemoveClient function to delete client registration.
+<P>
+
+<b>Example</b>
+<font face="courier" size="2">
+<pre>
+#define      MESG_NUM 1 
+NUScClient   client;
+OSMesgQueue  mesgQ;
+OSMesg       mesgBuf[MESG_NUM];
+
+/* initialization of the message queue */
+osCreateMesgQueue(&amp;mesgQ, mesgBuf,MESG_NUM); 
+
+/* specify the retrace event and register clients to the Scheduler*/ 
+nuScAddClient(&amp;client, &amp;mesgQ , NU_SC_RETRACE_MSG);
+
+/* waiting for the retrace event */ 
+osRecvMesg(&amp;mesgQ, NULL, OS_MESG_BLOCK ); 
+
+/* delete the registered clients*/
+nuScRemoveClient(&amp;client );
+</pre>
+</font>
+
+<hr>
+<p>
+<b>Revision History </b>
+<P>
+2/1/99  Added text regarding PRE NMI. 
+</P>
+<HR>
+<P align="right">
+<A href="index.htm"><IMG src="../index.gif" height="17" width="65" border="0"></A>
+</P>
+</BODY>
+</HTML>

@@ -1,0 +1,284 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<title>STEP1 [What is N64?] - CHapter 1 Introduction to the N64</title>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Ron Daring 7/20/1999, -->
+</head>
+
+<body bgcolor="#FFFFFF">
+<base target="keywords">
+
+<p><font style="font-size: 12pt"><b>1-3 N64 Hardware and System Features</b></font></p>
+
+<p><b>1-3-1 Hardware Features</b></p>
+<br>
+<p>
+The CPU is fast (about 100 MIPS) and includes the following on-chip cache memory:<br>
+<img src="img00012.gif" width="218" height="96"> <br>
+<p><b>Figure 1-3-1 CPU Cache Memory</b></p>
+<p>
+<p>
+N64 doesn't require a special dedicated chip to process graphics and audio as was the case with Super NES. N64 uses software to execute almost all processes.</p>
+
+<table border="1" cellspacing="0" cellpadding="4">
+    <tr>
+        <td><img src="img00013.gif" width="411" height="176"> </td>
+    </tr>
+</table>
+
+
+<p><br><b>Figure 1-3-2 Process are executed by software</b></p>
+<p>
+<p>
+The main memory (RDRAM) can be used by the entire system. Programmers are free to divide up the main memory into buffers (frame buffer, audio buffer, Z-buffer, <a
+
+href="../../../keywords/index/data/system.htm#heap"
+target="keywords">heap</a>, texture buffer, and so on) as appropriate for each game program. It is a unified memory system.</p>
+
+<img src="img00014.gif" width="303" height="180"> <br>
+<p><br><b>Figure 1-3-3 Unified Memory System</b></p>
+<p>
+<p>
+Almost all processes are executed by the CPU and RCP working together.</p>
+
+<table border="1" cellspacing="0" cellpadding="4">
+    <tr>
+        <td><img src="img00015.gif" width="273" height="128"> </td>
+    </tr>
+</table>
+
+
+<p><br><b>Figure 1-3-4 CPU and RCP execute a process in common</b></p>
+<p>
+<p>
+The RCP consists of two internal processors the RSP (Reality Signal Processor) and the RDP (Reality Display Processor), I/O Interface, and control logic.</p>
+
+<table border="1" cellspacing="0" cellpadding="4">
+    <tr>
+        <td><img src="img00016.gif" width="382" height="103"> </td>
+    </tr>
+</table>
+
+
+<p><br><b>Figure 1-3-5 The configuration of RCP</b></p>
+<p>
+<p>
+The RSP and RDP work together to execute GBI <a
+href="../../../keywords/index/data/graphics.htm#graphics binary interface"
+target="keywords">(Graphics Binary Interface)</a> commands and render graphics into the frame buffer. The GBI commands are strung together into a specialized command list call the <a
+href="../../../keywords/index/data/graphics.htm#display list"
+target="keywords">display list</a>.</p>
+
+<table border="1" cellspacing="0" cellpadding="4">
+    <tr>
+        <td><img src="img00017.gif" width="350" height="238"> </td>
+    </tr>
+</table>
+
+
+<p><br><b>Figure 1-3-6 RSP and RDP on the graphics process</b></p>
+<p>
+<p>
+The RSP also interprets ABI (Audio Binary Interface) commands and creates linear PCM data using the sampling rate specified by the audio buffer.</p>
+
+<table border="1" cellspacing="0" cellpadding="4">
+    <tr>
+        <td><img src="img00018.gif" width="373" height="250"> </td>
+    </tr>
+</table>
+
+<p><br><b>Figure 1-3-7 RSP onthe audio process</b></p>
+<p>
+<p>
+The RSP interprets GBI and ABI commands using software called <a
+href="../../../keywords/index/data/system.htm#microcode"
+target="keywords">microcode</a>.</p>
+
+<table border="1" cellspacing="0" cellpadding="4">
+    <tr>
+        <td><img src="img00019.gif" width="388" height="130"> </td>
+    </tr>
+</table>
+
+
+<p><br><b>Figure 1-3-8 RSP interprets commands by microcode</b></p>
+<p>
+<p>
+The image drawn in the frame buffer is transferred to the video DAC (Digital-to-Analog Converter) through DMA (direct memory access). The image becomes the TV image in the video DAC.</p>
+
+<table border="1" cellspacing="0" cellpadding="4">
+    <tr>
+        <td><img src="img00020.gif" width="379" height="223"> </td>
+    </tr>
+</table>
+
+<p><br><b>Figure 1-3-9 Image Transfered to DAC through DMA</b></p>
+<p>
+<p>
+The PCM data placed in the audio buffer is transferred to audio DAC through DMA. The audio becomes sound in the audio DAC.</p>
+
+<table border="1" cellspacing="0" cellpadding="4">
+    <tr>
+        <td><img src="img00021.gif" width="414" height="183"> </td>
+    </tr>
+</table>
+
+
+<p><br><b>Figure 1-3-10 The PCM data transfered to the audio DAC by DMA</b></p>
+<p>
+<p>
+For faster processing, game programs are not executed on the N64 Game Pak directly. Instead they are loaded into RDRAM first.<br>
+<br>
+  <u>Previous</u>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<U>N64</U> </p>
+
+<table border="1" cellspacing="0" cellpadding="4">
+    <tr>
+        <td><img src="img00022.gif" width="303" height="212"> </td>
+    </tr>
+</table>
+
+
+<p><br><b>Figure 1-3-11 The programs on the Game Pak are <!--surely--> loaded on RDRAM</b></p>
+<br>
+<br>
+<p>
+Data coming from the Controller is read by way of the PIF chip as serial data.<br>
+Similarly, data in the Controller Pak is also read and written by way of the PIF chip through the Controller as serial data.</p>
+
+<table border="1" cellspacing="0" cellpadding="4">
+    <tr>
+        <td><img src="img00023.gif" width="473" height="220"> </td>
+    </tr>
+</table>
+
+
+<p><br><b>Figure 1-3-12 The Data Communication of the Controller</b></p>
+<br>
+<br>
+<p>
+The RDP creates the screen using the Z-buffer (depth <a
+href="../../../keywords/index/data/system.htm#buffer"
+target="keywords">buffer</a>) as shown in the following illustration. </p>
+
+<table border="1" cellspacing="0" cellpadding="4">
+    <tr>
+        <td><img src="img00024.gif" width="458" height="275"> </td>
+    </tr>
+</table>
+
+
+<p><br><b>Figure 1-3-13 Creating the Screen with the Z-buffer Using RDP</b></p>
+(Note that this is a conceptual illustration only. In practice, the Z-buffer values range from -1.0 to 1.0.)<br>
+<br>
+<br>
+<br>
+<br>
+<p><b>1-3-2System (Software) Features</b></p>
+<br>
+<p>
+Game applications are executed in the multi-<a
+href="../../../keywords/index/data/system.htm#thread"
+target="keywords">thread</a> N64 Operating System.</p>
+
+<table border="1" cellspacing="0" cellpadding="4">
+    <tr>
+        <td><img src="img00025.gif" width="375" height="205"> </td>
+    </tr>
+</table>
+
+
+<p><br><b>Figure 1-3-14 The application software is executed on OS</b></p>
+<br>
+<br>
+<p>
+Multi-thread programming provides the following advantages:<br>
+<p>
+<ul>
+<li>You can run independent processes on a single piece of hardware at the same time
+<li>Threads provide a natural way to structure your program
+<li>Thread synchronization is assured because the threads communicate with each other by sending and receiving <a
+href="../../../keywords/index/data/system.htm#message"
+target="keywords">messages</a></ul>
+<p>
+As a result, there are fewer bugs and debugging time is reduced.</p>
+
+<table border="1" cellspacing="0" cellpadding="4">
+    <tr>
+        <td><img src="img00026.gif" width="267" height="205"> </td>
+    </tr>
+</table>
+
+
+<p><br><b>Figure 1-3-15 Multi-thread programming</b></p>
+<br>
+<br>
+<p>
+Messages provide information throughput between threads.</p>
+
+<table border="1" cellspacing="0" cellpadding="4">
+    <tr>
+        <td><img src="img00027.gif" width="359" height="181"> </td>
+    </tr>
+</table>
+
+
+<p><br><b>Figure 1-3-16 "Message" Provide Information Throughput Between Threads</b></p>
+<br>
+<br>
+<p>
+Threads are executed according to their priority, not their actual position in the program code.</p>
+
+<table border="1" cellspacing="0" cellpadding="4">
+    <tr>
+        <td><img src="img00028.gif" width="304" height="254"> </td>
+    </tr>
+</table>
+
+
+<p><br><b>Figure 1-3-17 Software execution is provided by priority of threads</b></p>
+<br>
+<br>
+<p>
+Threads that receive interrupt information messages execute interrupt processing.</p>
+
+<table border="1" cellspacing="0" cellpadding="4">
+    <tr>
+        <td><img src="img00029.gif" width="167" height="198"> </td>
+    </tr>
+</table>
+
+
+<p><br><b>Figure 1-3-18 Threads provide the interrupt processing </b></p>
+<br>
+<br>
+<p>
+A high-priority thread called the Scheduler manages all the other threads. The Scheduler thread manages messages for the threads by using tasks or the VI retrace (the vertical synchronizing interrupt).</p>
+
+<table border="1" cellspacing="0" cellpadding="4">
+    <tr>
+        <td><img src="img00030.gif" width="226" height="268"> </td>
+    </tr>
+</table>
+
+
+<p><br><b>Figure 1-3-19 The scheduler provide management of threads</b></p>
+<br>
+<br>
+<p>
+The CPU executes threads comprised of several processing units (function calls,macros, and so on). The RSP in the RCP, on the other hand, executes processing units called tasks.</p>
+
+<table border="1" cellspacing="0" cellpadding="4">
+    <tr>
+        <td><img src="img00031.gif" width="324" height="187"> </td>
+    </tr>
+</table>
+
+
+<p><br><b>Figure 1-3-20 Thread and Task</b></p>
+<br>
+<br>
+
+</body>
+</html>

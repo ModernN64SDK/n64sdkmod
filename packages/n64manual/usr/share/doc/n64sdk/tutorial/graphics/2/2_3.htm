@@ -1,0 +1,30 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Graphics-CHAPTER 2  Adding Color to a Model</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/22/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<font style="font-size:12pt"><B>2.3  Vertex Color</B></FONT>
+<br>
+<P>
+You have already seen an example of rendering using vertex color back in Chapter 1, in the gfx1.c sample program.  Setting the vertex color is simply a matter of setting the last four elements in the Vtx union.<br><br>
+     As was mentioned above in section 2.1, the use of vertex color and the use of lighting to shade things are together called shading, and shading is divided into the two processes of flat shading and smooth shading.<br><br>
+Back in Chapter 1, Section 1.5, "Defining the Model," we omitted an explanation of the last argument in the gDP1Triangle command.  This last argument has special meaning when you perform flat shading.
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=1><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>
+<FONT COLOR="#000080"><PRE><CODE>   gSP1Triangle(Gfx * gdl, int v0, int v1, int v2, int flag);</CODE></PRE></FONT>
+</TD>
+</TR></TABLE>
+<P>
+When flat shading is performed, the "flag" argument takes the value 0, 1 or 2, specifying which vertex to use (v0, v1 or v2) for coloring.  The color of the specified vertex is used to paint the entire surface.<br><br>
+     In contrast, when smooth shading is used to shade things, the colors of all three vertices are used to color the inside of the surface.  As a result, the "flag" argument has no meaning, even when it specifies a vertex.<br><br>
+     When you flat shade using vertex color, the surface is colored uniformly, regardless of the direction in which the surface is pointing, so the rendering result is the same as when filling with primitive color.  However, with smooth shading, the inside of the surface can be filled with a smooth change in color.  In the gfx1.c sample of the previous chapter, smooth shading is implemented to express squares filled with a variety of colors.<br><br>
+     Switching between flat shading and smooth shading will be described later in "2.6, Geometry Mode."
+</P>
+</BODY>
+</HTML>

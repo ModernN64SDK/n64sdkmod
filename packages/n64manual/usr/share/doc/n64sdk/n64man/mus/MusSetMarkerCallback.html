@@ -1,0 +1,60 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../n64man.css">
+<title>MusSetMarkerCallback()</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check-->
+</head>
+
+<h1>MusSetMarkerCallback()</h1>
+
+<h2>Syntax</h2>
+
+<pre>
+void MusSetMarkerCallback(void *callback);
+</pre>
+
+<h2>Arguments</h2>
+
+<dl>
+  <dt><b>callback</b>
+  <dd>the callback function address 
+</dl>
+
+<h2>Description</h2>
+
+<p>It sets the callback function for a synchronous marker. This function specifies the address of the function to inform when a marker prepared in a function by the programmer appears during playback of a song. The callback argument takes on the LIBMUScb_marker definition set with typedef in libmus.h</p>
+
+<pre>  typedef void(*LIBMUScb_marker)  (musHandle, int);</pre>
+
+<p>The parameters passed to the callback function are the handle of the song that generated the callback and the number of synchronous markers found.</p>
+
+<p>Note: The callback function is called from the library thread, so it is best to process it as soon as called.</p>
+
+<h2>Return Value</h2>
+
+<p>None</p>
+
+<h2>Example</h2>
+
+<pre>void GameSongCallback(musHandle handle, int marker)
+{
+  if (handle==gamesong_handle)
+    gamesong_position = marker;
+}
+
+void GameSongStart(void)
+{
+  gamesong_position = 0;
+  gamesong_handle = <a href="MusStartSongFromMarker.html">MusStartSongFromMarker</a>(&amp;song_data, 1);
+  MusSetMarkerCallback(GameSongCallback);
+}
+</pre>
+
+<h2>See Also</h2>
+<p>
+<a href="MusStartSongFromMarker.html">MusStartSongFromMarker()</a>
+</p>
+
+</body>
+</html>

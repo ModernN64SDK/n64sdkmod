@@ -1,0 +1,52 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.
+MAP- added links, updated format>
+<TITLE>osEepromLongRead</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+<font style="font-size: 12pt"><b>osEepromLongRead</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p>osEepromLongRead, osEepromLongWrite</p>
+
+<P><i>Reads/writes multiple blocks in EEPRom</i></P>
+
+<H3>Syntax</H3>
+
+<p><PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/os.htm">os.h</A> */
+s32 osEepromLongRead(OSMesgQueue *mq, u8 address, u8 *buffer, int nbytes);
+s32 osEepromLongWrite(OSMesgQueue *mq, u8 address, u8 *buffer, int nbytes);</CODE></PRE></p>
+
+<H3>Description</H3>
+
+<P>
+The <tt>osEepromLongRead</tt> function issues a read command to EEProm and reads nbytes of data from the address specified by address. The <a href="osEepromLongWrite.htm">osEepromLongWrite</a>function issues a write command to EEPRom and writes nbytes of data to the address specified by address.
+</P>
+
+<P>
+The size of buffer, which is used for storing the data, must be large enough to hold nbytes of data.  Also, due to hardware restrictions, the transfer byte size (nbytes) must be a multiple of 8.  Note that address is an EEPROM block address.  Because blocks are in units of 8 bytes, you must specify a value that is divisible by 8 for the actual address.
+</P>
+<P>
+"mq" is the initialized message queue associated with OS_EVENT_SI events.  For details, see the <a href="osSetEventMesg.htm">osSetEventMesg</a> function in the <i>N64 Online Function Reference Manual</i>.  Since mq is used inside the function to wait for messages, the application does not need to use mq to wait for an end-of-function message.
+</P>
+<P>
+It can take as long as 15 milliseconds for the EEPROM write command to complete a data transfer.  The <a href="osEepromWrite.htm">osEepromWrite</a> function is called numerous times inside the <tt>osEepromLongWrite</tt> function, and the CPU timer is used to wait 15 milliseconds every time data is written with <tt>osEepromWrite</tt>.  The returned values are the same as for <tt>osEepromWrite</tt>.  That is to say, the returned value is 0 if all write commands (the amount for "length" (=nbytes/8) number of times) have been properly sent to the interface circuit.  The returned value is -1 if the value of "address" is not within the proper range.  The returned value is 8 (CONT_NO_RESPONSE_ERROR) if no EEPROM exists or if the interface circuit does not respond.
+</P>
+<P>
+The <tt>osEepromLongRead</tt> function internally calls <a href="osEepromRead.htm">osEepromRead</a> the length number of times. The returned values are the same as for the <tt>osEepromRead</tt> function.  A 0 is returned if all data (the amount for "length" number of times) is properly read.  A -1 is returned if the value of address is not within the proper range. An 8 is returned (CONT_NO_RESPONSE_ERROR) if no EEPROM exists or if the interface circuit does not respond.
+</P>
+
+<H3>See Also</H3>
+<P>
+<A HREF="osContInit.htm">osContInit</A>, <A HREF="osEepromProbe.htm">osEepromProbe</A>, <A HREF="osEepromRead.htm">osEepromRead</A>, <A HREF="osEepromWrite.htm">osEepromWrite</A>, and <A HREF="osSetEventMesg.htm">osSetEventMesg</A>
+</P>
+<H3>Revision History</H3>
+<P>
+1999/02/01  Revised entirely<br>
+1999/04/30  Changed format
+</P>
+</BODY>
+</HTML>

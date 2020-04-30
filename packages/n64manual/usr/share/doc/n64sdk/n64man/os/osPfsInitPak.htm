@@ -1,0 +1,154 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.
+  PWC- updated formatting
+  MAP- updated format
+-->
+<TITLE>osPfsInitPak</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+<font style="font-size: 12pt"><b>osPfsInitPak</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p><i>Initializes the Controller Pak's file handle</i></P>
+
+<H3>Syntax</H3>
+<PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/os.htm">os.h</A> */
+s32 osPfsInitPak(OSMesgQueue *mq,  OSPfs *pfs,  int controller_no);
+</CODE></PRE>
+
+<H3>Description</H3>
+<P>
+It initializes the OSPfs structure pfs, which is the file handle used to operate the Controller Pak. This function should be called first when a Controller Pak is used for the first time, a new Controller Pak is inserted, or to access different Controller Paks inserted in multiple controllers. However, because configuration must be performed to use SI, <a href="osContInit.htm">osContInit</a> should be called once at the start, before <tt>osPfsInitPak</tt> is called.</P>
+<P>
+When controlling a file system, a Controller Pak function uses the OSPfs structure pointed to by the <B>pfs</B> argument as a file handle to gain access. This function <tt>osPfsInitPak</tt> initializes that OSPfs structure.
+</P>
+<P>
+The <B>controller_no</B> argument specifies the Controller number (0-3) into which the Controller Pak is inserted. A controller pak inserted in the controller port which is specified by the <B>controller_no</B> would be the target controller pak.
+</P>
+<P>
+The <B>mq</B> argument is the initialized message queue linked to OS_EVENT_SI. Please refer to <a href="osSetEventMesg.htm">osSetEventMesg</a> for creation of this link. Because <B>mq</B> is used by the function as an internal message queue, it is not necessary for the application to use <b>mq</b> for purposes such as queuing function-termination messages. 
+</P>
+
+<P>
+The <tt>osPfsInitPak</tt> performs the following kinds of processing internally. First it checks the disk ID area. If it recognizes the ID, it calls the function <a href="osPfsChecker.htm">osPfsChecker</a>. This enables recovery to be performed automatically if the file managment area (FAT area) is destroyed. 
+</P>
+
+<P>
+Although the previous Pfs initialization function, <a href="osPfsInit.htm">osPfsInit</a>, performed automatic recovery if the ID area was completely destroyed, <tt>osPfsInitPak</tt> does not perform automatic restoration. (<tt>osPfsInitPak</tt> confirms ID integrity internally by checksum comparison. If the checksums do not agree, the ID is evaluated as corrupted.) ID recover requires a separate call to function <a href="osPfsRepairId.htm">osPfsRepairId</a>. Normally when initializing the Controller Pak, the function <tt>osPfsInitPak</tt> should be used rather than <tt>osPfsInit</tt>. In addition, be sure to integrate <tt>osPfsRepairId</tt> into the program so that it can be called.</B>
+</P>
+<P>
+This is necessary because certain addresses could become indeterminate due to a poor connection at the connector or for other reasons. If you use <tt>osPfsInit</tt> to check the ID area, 
+the function could reach the wrong address somehow because of the inappropriate address, although it was supposed to check the ID. And the function could determine that it is not a valid ID, looking at the data at the wrong address. In this case, the old <tt>osPfsInit</tt> function assigns a new ID automatically and it could write the new ID to the wrong address. As a result, the content of the Controller Pak may be destroyed. 
+</P>
+<P>
+<B>Therefore, always use the following procedure when initializing a Controller Pak. </B>
+</P>
+<P>
+To initialize a Controller Pak, always call <tt>osPfsInitPak</tt>. If 0 is returned, the call is successful. 
+</P>
+<P>
+If PFS_ERR_ID_FATAL is returned as the error code, one of the following problems may exist: The Controller Pak's ID area is destroyed, the Controller Pak is not connected properly, the Controller Pak ID cannot be read due to a dirty connector, or the Controller's joy bus or Controller Pak is damaged. In this case, you must display the message, "The Controller or Controller Pak may not be inserted properly, the content may have been destroyed, or it may be damaged." Then prompt the user to choose between "connect again" or "repair it - the content of the Controller Pak may be destroyed.". If the user chooses "connect again," call the <tt>osPfsInitPak</tt> function again. If the user chooses "repair," call the <tt>osPfsRepairId</tt> function, and then call <tt>osPfsInitPak</tt> again. 
+</P>
+<P>
+If an error occurs, one of the following error codes is returned: 
+</P>
+
+<DL>
+  <DT><B>PFS_ERR_NOPACK</B>
+  <DD>Either the Controller Pak is not inserted into the specified Controller or the Controller is not properly connected. To determine which is the case, use <a href="osContStartQuery.htm">osContStartQuery</a> or <a href="osContGetQuery.htm">osContGetQuery</a>. 
+  <BR><BR>
+  <DT><B>PFS_ERR_NEW_PACK</B>
+  <DD>A different Controller Pak has been inserted; internally specified controller pak is recognized by comparing ID each Controller pak has. To use the inserted Controller Pak, initialize it by calling <tt>osPfsInitPak</tt>.
+  <BR><BR>
+  <DT><B>PFS_ERR_CONTRFAIL</B>
+  <DD>Data transfer to or from the Controller has failed. If a transfer error occurs, up to three tries will be done internally. Therefore, it is rather rare to see this error. If this error has returned, it is possible that either the Controller is not connected properly, or the Controller Pak or Controller Socket is damaged. 
+  <BR><BR>
+  <DT><B>PFS_ERR_ID_FATAL</B>
+  <DD>An attempt was made to initialize the file system, but the ID area was corrupted. Either the Controller Pak data were corrupted or the controller itself is malfunctioning or not properly connected. When this error is returned, the user should first be asked whether the Controller Pak should be initialized (assign a new ID) or to check the Controller Pak connection. If the user responds that the Controller Pak should be initialized, the function <tt>osPfsRepairId</tt> should be called. 
+  <BR><BR>
+  <DT><B>PFS_ERR_DEVICE</B>
+  <DD>A peripheral device other than a Controller Pak (eg, Rumble Pak, 64GB Pak) has been inserted in the controller. Whether a Controller Pak has been inserted is determined by whether the device has RAM. This error is issued if there is no RAM present. 
+  <BR><BR>
+</DL>
+
+<P>
+The programming example with this function is shown below.
+</P>
+
+<H3>Example</H3>
+
+<PRE><CODE>void
+mainproc(void) {
+  int            i;
+  OSMesgQueue    intMesgQueue;
+  OSMesg         intMesgBuf[1];
+  OSContStatus   contstat[MAXCONTROLLERS];
+  OSPfs          pfs[MAXCONTROLLERS];
+  u8             contpat;
+  
+  osCreateMesgQueue(&amp;intMesgQueue, intMesgBuf, 1);
+  osSetEventMesg(OS_EVENT_SI, &amp;intMesgQueue, NULL);
+  osContInit(&amp;intMessageQ, &amp;contpat, contstat);
+  
+  for (i = 0  ; i &lt; MAXCONTROLLERS ; i ++) {
+    if ((contpat &gt;&gt; i) &amp; 1) {
+      if ((contstat[i].type &amp; CONT_TYPE_MASK) == CONT_TYPE_NORMAL) {
+         do {
+           ret = osPfsInitPak(&amp;intMessageQ, &amp;pfs[i], i);
+
+           switch(ret) {
+           case 0:
+             osSyncPrintf(&quot;Controller Pak is inserted into PORT %d\n&quot;, i);
+             break;
+           case PFS_ERR_NOPACK:
+             osSyncPrintf(&quot;Controller Pak is not inserted into PORT %d\n&quot;, i);
+             osSyncPrintf(&quot;Insert Controller Pak\n&quot;);
+             break;
+           case PFS_ERR_NEW_PACK:
+             osSyncPrintf(&quot;Controller Pak for PORT %d was replaced\n&quot;, i);
+             osSyncPrintf(&quot;This Controller Pak will be used\n&quot;);
+             break;
+           case PFS_ERR_CONTRFAIL:
+             osSyncPrintf(&quot;Abnormality is found in connection of Controller Pak for PORT %d\n&quot;, i);
+             osSyncPrintf(&quot;Check if Controller is inserted properly\n&quot;);
+             break;
+           case PFS_ERR_DEVICE:
+             osSyncPrintf(&quot;It cannot be saved in Controller Pak for PORT %d\n&quot;, i);
+             osSyncPrintf(&quot;Check if Controller Pak is inserted properly\n&quot;);
+             break;
+           case PFS_ERR_ID_FATAL:
+             osSyncPrintf(&quot;Abnormality is found in Controller Pak for PORT %d\n&quot;, i);
+             osSyncPrintf(&quot;   A button..try to recover\n&quot;);
+             osSyncPrintf(&quot;   Other buttons, re-insert\n&quot;);
+            if (AskQuestion(i) == A_BUTTON) {
+               osPfsRepairId(&amp;pfs[i]);
+             }
+             break;
+           }
+           WaitForPushingAnyButton(i);
+         } while (ret != 0) ;
+      } else {
+          osSyncPrintf(&quot;PORT %d is not a normal Controller\n&quot;, i);
+      }
+    } else {
+      osSyncPrintf(&quot;Controller is not inserted into PORT %d\n&quot;, i);
+    }
+  }
+}</CODE></PRE></p>
+
+<H3>See Also</H3>
+<P>
+<A HREF="osPfsRepairId.htm">osPfsRepairId</A>, <A HREF="osPfsAllocateFile.htm">osPfsAllocateFile</A>, <A HREF="osPfsChecker.htm">osPfsChecker</A>, <A HREF="osPfsFileState.htm">osPfsFileState</A>, <A HREF="osPfsFreeBlocks.htm">osPfsFreeBlocks</A>, <A HREF="osPfsIsPlug.htm">osPfsIsPlug</A>, <A HREF="osPfsReadWriteFile.htm">osPfsReadWriteFile</A>, <A HREF="osPfsSetLabel.htm">osPfsSetLabel</A>, and <A HREF="osSetEventMesg.htm">osSetEventMesg</A>
+</P>
+
+<H3>Revision History</H3>
+<P>
+1999/02/01 Completely revised<br>
+1999/04/30 Changed format
+</P>
+
+</BODY>
+</HTML>

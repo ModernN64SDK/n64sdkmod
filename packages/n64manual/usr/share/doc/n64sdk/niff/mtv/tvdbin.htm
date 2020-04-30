@@ -1,0 +1,387 @@
+<html>
+<head>
+<title>
+File Formats Output by the Converter
+</title>
+</head>
+<body bgcolor="#ffffff" text="#000000" link="#0000ff" vlink="#800080" alink="#ff0000">
+<font face="arial" size="-1">
+
+<a name="top">
+
+<input value="Return" type="button" onClick="history.back()">
+<br>
+
+<font size="3"><b>6. File Format Output by the Converter</b></font>
+<hr size=3>
+
+<a href="#tvd">.tvd files</a><br>
+	<dl>
+	<li><a href="#zentai">Overall composition</a><br></li>
+	<li><a href="#tvfh">tv_file_header structure</a><br></li>
+	<li><a href="#tiimage">texture_info_image structure</a><br></li>
+	<li><a href="#palette">Palette data</a><br></li>
+	<li><a href="#pixel">Pixel data</a><br></li>
+	</dl>
+<a href="#bin">.bin files</a><br>
+
+<!-------------------------------------------
+				.tvd files
+--------------------------------------------->
+
+<hr size=3>
+
+<a name="tvd"><font size="3"><b>.tvd files</b></font><br>
+
+<blockquote>
+Files of this format are output by <a href="index.htm#trans">trans.exe</a><br>
+<br>
+<a href="#zentai">Overall composition</a><br>
+<a href="#tvfh">tv_file_header structure</a><br>
+<a href="#tiimage">texture_info_image structure</a><br>
+<a href="#palette">Palette data</a><br>
+<a href="#pixel">Pixel data</a><br>
+<br>
+
+<!-------------- Overall composition ----------------->
+
+<br>
+<a name="zentai"><b>Overall composition</b><br>
+<dl>
+<li>
+<table border>
+<tr>
+	<td><font face="arial" size="-1">Address</font><br></td>
+	<td><nobr><font face="arial" size="-1">Palettes used</font></nobr><br></td>
+	<td><nobr><font face="arial" size="-1">Palettes not used</font></nobr><br></td>
+</tr><tr>
+	<td><font face="arial" size="-1">0x00000000</font></td>
+	<td colspan=2 align="center"><a href="#tvfh"><font face="arial" size="-1">tv_file_header</font></a></td>
+</tr><tr>
+	<td><font face="arial" size="-1">0x00000010</font></td>
+	<td colspan=2 align="center"><a href="#tiimage"><font face="arial" size="-1">texture_info_image</font></a></td>
+</tr><tr>
+	<td><font face="arial" size="-1">0x00000100</font></td>
+	<td><a href="#palette"><font face="arial" size="-1">Palette data</font></a></td>
+	<td rowspan=2 align=center><a href="#pixel"><font face="arial" size="-1">Pixel data</font></a></td>
+</tr><tr>
+	<td><font face="arial" size="-1">0x00000n00<font size=2><sup>(*1)</sup></font></font></td>
+	<td><a href="#pixel"><font face="arial" size="-1">Pixel data</font></a></td>
+</tr>
+</table>
+<p>
+(*1) The next 0x200 bytes are used per palette when palettes are used.
+Thus, n = 2*(tv_file_header.num_of_palette) + 1 
+However, if the palette is made from 16 colors, then num_of_palette is 
+divided by 16 and the result (rounded up) is used in this equation.
+</p>
+</li>
+</dl>
+
+<!-------------- tv_file_header structure ----------------->
+
+<a name="tvfh"><b>tv_file_header structure<br></b>
+<dl><li>
+<table border>
+<tr>
+	<td align=center><font face="arial" size="-1">Type</font>
+	<td align=center><font face="arial" size="-1">Variable name</font>
+	<td align=center><font face="arial" size="-1">Description</font>
+</tr><tr>
+	<td><font face="arial" size="-1">char</font>
+	<td><font face="arial" size="-1">recognize[8]</font>
+	<td><font face="arial" size="-1">Recognition code "TexTvIEw"</font>
+</tr><tr>
+	<td><font face="arial" size="-1">u16</font>
+	<td><font face="arial" size="-1">num_of_texture</font>
+	<td><font face="arial" size="-1">Number of textures</font>
+</tr><tr>
+	<td><font face="arial" size="-1">u16</font>
+	<td><font face="arial" size="-1">num_of_palette</font>
+	<td><font face="arial" size="-1">Number of palettes</font>
+</tr><tr>
+	<td><font face="arial" size="-1">u32</font>
+	<td><font face="arial" size="-1">size_of_pixel_data</font>
+	<td><nobr><font face="arial" size="-1">The volume (in bytes) per texture</nobr></font>
+</tr>
+</table>
+	<dl>
+
+<p>
+ <font face="courier" size="2">
+	<pre>
+typedef struct {
+    char recognize[8];         /* Recognition code TexTvIEw */
+    u32  num_of_texture;       /* Number of textures */
+    u32  size_of_pixel_data;   /* Pixel size */
+} tv_file_header;
+	</pre>
+ </font>
+<p>
+	</dl>
+</li></dl>
+
+<!-------------- texture_info_image structure ----------------->
+
+<a name="tiimage"><b>texture_info_image structure <br></b>
+<dl>
+<li>
+This structure was made based on the S2DEX structure.  It contains some unused members.<br>
+<table border>
+<tr>
+	<td align=center><font face="arial" size="-1">Type</font>
+	<td align=center><font face="arial" size="-1">Variable name</font>
+	<td align=center><font face="arial" size="-1">Description</font>
+</tr>
+<tr>
+	<td align=center><font face="arial" size="-1">u16</font>
+	<td align=center><font face="arial" size="-1">imageX</font>
+	<td align=left><font face="arial" size="-1">Not used.</font>
+</tr>
+<tr>
+	<td align=center><font face="arial" size="-1">u16</font>
+	<td align=center><font face="arial" size="-1">imageW</font>
+	<td align=left><font face="arial" size="-1">The width of the image.</font>
+</tr>
+<tr>
+	<td align=center><font face="arial" size="-1">s16</font>
+	<td align=center><font face="arial" size="-1">frameX</font>
+	<td align=left><font face="arial" size="-1">The upper-left position of the image.
+					Effected by the center position of the image 
+					when the image is rotated with the Control Stick.</font>
+</tr>
+<tr>
+	<td align=center><font face="arial" size="-1">u16</font>
+	<td align=center><font face="arial" size="-1">frameW</font>
+	<td align=left><font face="arial" size="-1">Not used.  However, for images that fit in TMEM,
+	                 if this value is larger than imageW, then the same image
+	                 will look like it has been WRAP-processed.  This can be used
+	                 to see bricks, checkers, etc.</font>
+</tr>
+<tr>
+	<td align=center><font face="arial" size="-1">u16</font>
+	<td align=center><font face="arial" size="-1">imageY</font>
+	<td align=left><font face="arial" size="-1">Not used.</font>
+</tr>
+<tr>
+	<td align=center><font face="arial" size="-1">u16</font>
+	<td align=center><font face="arial" size="-1">imageH</font>
+	<td align=left><font face="arial" size="-1">The height of the image.</font>
+</tr>
+<tr>
+	<td align=center><font face="arial" size="-1">s16</font>
+	<td align=center><font face="arial" size="-1">frameY</font>
+	<td align=left><font face="arial" size="-1">The upper-right position of the image.
+					Effected by the center position of the image 
+					when the image is rotated with the Control Stick.</font>
+</tr>
+<tr>
+	<td align=center><font face="arial" size="-1">u16</font>
+	<td align=center><font face="arial" size="-1">frameH</font>
+	<td align=left><font face="arial" size="-1">Not used.  However, for images that fit in TMEM,
+	                 if this value is larger than imageH, then the same image
+	                 will look like it has been WRAP-processed.  This can be used
+	                 to see checkered, polka dot and other patterns.</font>
+</tr>
+<tr>
+	<td align=center><font face="arial" size="-1">u32</font>
+	<td align=center><font face="arial" size="-1">loadmode</font>
+	<td align=left><font face="arial" size="-1">The way to load textures.
+					Presently, you should always specify 2 (use load tiles).</font>
+</tr>
+<tr>
+	<td align=center><font face="arial" size="-1">u32</font>
+	<td align=center><font face="arial" size="-1">cms</font>
+	<td align=left><font face="arial" size="-1">Always 2
+					(Clamp mode, G_TX_CLAMP).
+					Automatically WRAP when the value of frameW is larger than imageW.</font>
+</tr>
+<tr>
+	<td align=center><font face="arial" size="-1">u32</font>
+	<td align=center><font face="arial" size="-1">cmt</font>
+	<td align=left><font face="arial" size="-1">Always 2
+					(Clamp mode, G_TX_CLAMP).
+					Automatically WRAP when the value of frameH is larger than imageH.</font>
+</tr>
+<tr>
+	<td align=center><font face="arial" size="-1">u32</font>
+	<td align=center><font face="arial" size="-1">tlutMode</font>
+	<td align=left><font face="arial" size="-1">The palette mode.
+					Either G_TT_NONE, G_TT_RGBA16, or G_TT_IA16</font>
+</tr>
+<tr>
+	<td align=center><font face="arial" size="-1">u16</font>
+	<td align=center><font face="arial" size="-1">imagePal[8]</font>
+	<td align=left><font face="arial" size="-1">The texture palette number.
+					Presently, you should specify 0 for all texture palette numbers.</font>
+</tr>
+<tr>
+	<td align=center><font face="arial" size="-1">u8</font>
+	<td align=center><font face="arial" size="-1">imageFmt</font>
+	<td align=left><font face="arial" size="-1">The texture format.
+					The value of G_IM_FMT_* is entered.</font>
+</tr>
+<tr>
+	<td align=center><font face="arial" size="-1">u8</font>
+	<td align=center><font face="arial" size="-1">imageSiz</font>
+	<td align=left><font face="arial" size="-1">The texture size.
+					The value of G_IM_SIZ_*b is entered.</font>
+</tr>
+<tr>
+	<td align=center><font face="arial" size="-1">u8</font>
+	<td align=center><font face="arial" size="-1">mipmapNum</font>
+	<td align=left><font face="arial" size="-1">The number of MIP maps.
+					If all of the load blocks which comprise the texture data
+					are loaded into TMEM, then MIP maps can be used.
+					N64 can support up to RGBA32 
+					but it does not support WIN applications.</font>
+</tr>
+<tr>
+	<td align=center><font face="arial" size="-1">u8</font>
+	<td align=center><font face="arial" size="-1">bg_flag</font>
+	<td align=left><font face="arial" size="-1">Background attribute.
+					When this variable is "1" then the texture is processed as background.</font>
+</tr>
+</table>
+
+	<dl>
+	<font face="Courier" size=2>
+	<pre>
+typedef	struct
+{
+    u16 imageX;         /*  X coordinate of the read texture */
+    u16 imageW;         /*  Width of the read texture        */
+    s16 frameX;         /*  Upper left X coordinate of the   */
+                        /*  transferred frame                */
+    u16 frameW;         /*  Width of the transferred frame   */
+    u16 imageY;         /*  Y coordinate of the read texture */
+    u16 imageH;         /*  Height of the read texture       */
+    s16 frameY;         /*  Upper left Y coordinate of the   */
+                        /*  transferred frame                */
+    u16 frameH;         /*  Height of the transferred frame  */
+
+    u32 loadmode;       /*  Load mode  MESH_LOADMODE_*       */
+    u32 cms;            /*  Horizontal clamp mode            */
+    u32 cmt;            /*  Vertical clamp mode              */
+
+    u32 tlutMode;       /*  Palette mode  G_TT_*             */
+    u16 imagePal[8];    /*  Palette number                   */
+
+    u8  imageFmt;       /*  Format     G_IM_FMT_*            */
+    u8  imageSiz;       /*  Bit depth  G_IM_SIZ_*b           */
+    u8  mipmapNum;      /*  Number of MIP maps               */
+    u8  bg_flag;        /*  Background attribute flag        */
+    u8  boundary[4];    /*  Adjust to 64 bit boundary        */
+} texture_info_image;
+	</pre>
+	</font>
+</dl>
+</li></dl>
+
+<!-------------- Palette data ----------------->
+
+<a name="palette"><b>Palette data <br></b>
+<dl><li>
+u16	palette[256];<br>
+<br>
+	<dl><li>
+	The palette data is entered in order.<br>
+	There are (tv_file_header.num_of_palette) units of palette data.<br>
+ However, if the palette is made from 16 colors, then num_of_palette is <br>
+ divided by 16 and the result (rounded up) is used here.<br>
+	</li></dl>
+</li></dl>
+
+<!-------------- Pixel data ----------------->
+
+<a name="pixel"><b>Pixel data<br></b>
+<dl><li>
+char	name[12];<br>
+u16		PaletteBlock;<br>
+u16		PaletteNumber;<br>
+u32		pixel[(tv_file_header.size_of_pixel_data+7)/8];<br>
+<br>
+	<dl><li>
+	"name" contains the name of the texture<br>
+	One block is 256 colors.  The value entered in PaletteBlock describes which block's palettes to use.<br>
+	PaletteNumber is only valid for images with a 16 color palette.  The value entered in PaletteNumber specifies which palette to use within the block selected with PaletteBlock <br>
+	For PaletteBlock, enter a value from 0 ~ (the number of blocks used-1).  For PaletteNumber enter a value from 0~15.<br>
+	A pixel is stored as a 1 byte boundary per line (non-4bit textures can be ignored)<br>
+	for an overall 8 byte boundary.<br>
+	This makes for a combined (tv_file_header.num_of_texture) number of textures.<br>
+	</li></dl>
+</li></dl>
+<br>
+
+</blockquote>
+
+<p align="right"><a href="index.htm#top">
+<img src="../../gif/index.gif" border="0" width="65" height="17"></a></p>
+
+<!-------------------------------------------
+				.bin files
+--------------------------------------------->
+
+<br><hr size=3 width=100%></br>
+
+<a name="bin"><font size=3><b>.bin files</b></font><br>
+
+<blockquote>
+This file represents a number of <a href="#tvd">.tvd files</a> integrated together<br>
+and converted into a format executable by texv.n64 <br>
+It is output by <a href="index.htm#texview">texview.exe</a><br>
+
+<dl><li>
+<table border>
+<tr>
+	<td align=center valign=top><font face="arial" size="-1">Address</font><br></td>
+	<td align=center valign=center colspan=2><nobr><font face="arial" size="-1">Description</font></nobr><br></td>
+</tr>
+<tr>
+	<td align=center valign=top><font face="arial" size="-1">0x00000000</font><br></td>
+	<td align=left valign=center><nobr><font face="arial" size="-1">char code[8]</font></nobr><br></td>
+	<td align=left valign=center><nobr><font face="arial" size="-1">Recognition code "TexVHeaD"</font></nobr><br></td>
+</tr>
+<tr>
+	<td align=center valign=top><font face="arial" size="-1">0x0000000c</font><br></td>
+	<td align=left valign=center><nobr><font face="arial" size="-1">u32 num_of_tvd</font></nobr><br></td>
+	<td align=left valign=center><nobr><font face="arial" size="-1">The number of integrated .tvd files</font></nobr><br></td>
+</tr>
+<tr>
+	<td align=center valign=top><font face="arial" size="-1">0x00000010</font><br></td>
+	<td align=left valign=center><nobr><font face="arial" size="-1">u32 rom_read_address[num_of_tvd]</font></nobr><br></td>
+	<td align=left valign=center><nobr><font face="arial" size="-1">The .tvd file address</font></nobr><br></td>
+</tr>
+<tr>
+	<td align=center valign=top><font face="arial" size="-1">0x00001000</font><br></td>
+	<td align=left valign=center colspan=2><nobr><font face="arial" size="-1">.tvd file contents (num_of_tvd units)</font></nobr><br></td>
+</tr>
+</table>
+	<dl><li>
+	"code" is for data recognition.<br>
+	"num_of_tvd" is the number of integrated .tvd files.  It includes background.<br>
+	"rom_read_address[]" is the address from where to read in ROM.<br>
+	The adress is entered on the assumption that data will be nloaded into 0x400000<br>
+	The .tvd file contents are entered as-is.  It is aligned to byte 0x1000.<br>
+	</li></dl>
+</li></dl>
+<br>
+
+</blockquote>
+
+<p align="right"><a href="index.htm#top">
+<img src="../../gif/index.gif" border="0" width="65" height="17"></a></p>
+
+<!--------------------------
+    Copyright
+---------------------------->
+
+<br><hr size=3 width=100%></br>
+
+<p><font size="2">Copyright 1997-1999 NINTENDO Co.,Ltd./1998-1999 MONEGI CORPORATION All rights reserved. </font></p>
+
+<br>
+
+</body>
+</html>
+

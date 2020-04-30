@@ -1,0 +1,133 @@
+<HTML>
+<HEAD>
+<TITLE>STEP4 [What is 64DD?] -Appendices</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park 7/15/1999 
+reviewed PWC 7/16/99-->
+
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+
+<font style="font-size:12pt"><B>Appendices Leo Functions</B></FONT><BR>
+<BR>
+<BR>
+This is the outline of functions in the Leo Library.<BR>
+<BR>
+<COLSPAN=2><B>Initializer Functions </B><BR>
+Functions to create a device driver called Leo Manager<P>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=3><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> LeoCreateLeoManager</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">Start an N64 Disk Drive game</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> LeoCJCreateLeoManager</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">Start a Japanese Game Pak game</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> LeoCACreateLeoManager</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">Start an American Game Pak game</TD>
+</TR></TABLE>
+<BR>
+<BR>
+<p>
+<B>
+                                          Asynchronous Functions </B><BR>
+Actual processing is done within a different thread from the one that brought up the function. Also, with this function, processing is done asynchronous to the thread that was brought up.<BR>
+<BR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=3><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> LeoSpdlMotor</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">Control the drive's motor and the position of the head</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> LeoReadWrite</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">Perform reads and writes from the N64 DD</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> LeoSeek</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">Issue the Seek command for the 64DD</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> LeoReadDiskID</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">Get the disk ID</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> LeoReadRTC</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">Read the time from the
+                                          RTC</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> LeoSetRTC</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">Set the time in RTC</TD>
+</TR></TABLE>
+<BR>
+<BR>
+<p>
+<B>Synchronous Functions </B><BR>
+Functions to be processed within the threads brought up<BR>
+  <BR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=3><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> LeoByteToLBA</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">Convert from byte to LBA</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> LeoLBAToByte</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">Convert from LBA into byte</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> LeoReadCapacity</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">Calculate the usable disk space</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> LeoInquiry</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">Check the version of the N64 Disk Drive hardware and the software.</TD>
+</TR></TABLE>
+<BR>
+<BR>
+<p>
+<B>
+                                          Font-Use Functions </B><BR>
+Functions to get the stored address for font data in the ROM built within the 64DD<br>  <BR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=3><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> LeoGetKAdr</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">Get the storage offset address for a kanji character specified by the shift-JIS code in the sjis argument</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> LeoGetAAdr</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">Get the storage offset address for the ASCII character specified by the character code in the code argument</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> LeoGetAAdr2</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">Get the storage offset address for the ASCII character specified by the character information data in the ccode argument</TD>
+</TR></TABLE>
+<BR>
+<BR>
+<p>
+<B>Other Functions</B><BR>
+Other Important Functions 
+<BR>
+  <BR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=3><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> LeoReset</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">Interrupt the command being executed and clear the command queue.</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> LeoResetClear</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">Cancel the N64 Disk Drive reset state</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> LeoClearQueue</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">Clear the Leo Manager's command queue</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> LeoBootGame</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">Executes a reboot</TD>
+</TR></TABLE>
+<BR>
+<BR>
+<p>
+<B>Special Functions </B><BR>
+Functions with use limitations and not for general use<BR>
+  <BR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=3><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> LeoModeSelectAsync</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">Provide a way to alter the wait-time specified for changes between the active,standby, and sleep modes to meet the needs of the game</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> LeoRezero</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">Issue the recalibration command to the N64 Disk Drive</TD>
+</TR><TR>
+	<TD ALIGN="LEFT" VALIGN="TOP" WIDTH="200" NOWRAP> LeoTestUnitReady</TD>
+	<TD ALIGN="LEFT" VALIGN="TOP">Check the state of the N64 Disk Drive</TD>
+</TR></TABLE>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+
+</BODY>
+</HTML>

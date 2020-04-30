@@ -1,0 +1,28 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 9 - Basic Memory Management</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check.
+             MAP- 11/16/99 edited content, updated format  -->
+</head>
+
+<h1>9.8 Flushing the CPU Data Cache </h1>
+
+<p>N64 CPU transparently caches data accesses on an onboard data cache. Ordinarily this cache is of no concern to the application, but when an external agent such as the SP or DMA engine is involved, the application must be aware of the caching implications. </p>
+
+<p>The data cache is based on a "write back" replacement process.  This means that data stores are held in the cache until the entire cache line is written back, usually due to a cache miss that requires the same cache line.  The cache is not coherent with respect to physical memory and thus cache lines must be explicitly written back to memory prior to their use by another processor such as the SP.  Using the above example, the dynamic data can be written with a single <a
+href="../../keywords/index/data/system.htm#procedure"
+target="keywords">procedure</a> call as follows. It is expected that this will be done prior to the task list being executed by the SP. </p>
+
+<blockquote>
+    <p><a href="../../n64man/os/osWritebackDCache.htm">osWritebackDCache</a>(dynamicp,sizeof(Dynamic_t));
+    </p>
+</blockquote>
+
+<p align="right"><a href="index.htm#index"><img
+src="../../gif/index.gif" alt="UP" border="0" width="65" height="17"></a></p>
+
+<hr>
+</body>
+</html>

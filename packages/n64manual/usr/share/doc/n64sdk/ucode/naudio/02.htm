@@ -1,0 +1,256 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<title>Audio Library NCL RD3 Revised version (n-world)</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<FONT FACE="Arial" SIZE="-1">
+
+<h2>2. Improvements</h2>
+
+<p align="right"><a href="index.htm"><img src="../../gif/index.gif"
+alt="[UP]" border="0" width="65" height="17"></a></p>
+
+<hr>
+
+<h3><a name="01"></a>2.1 Player</h3>
+
+<p>There are 2 types of players in the audio library. One is a sequence player which performs the MIDI sequences, and the other is a sound player which replays the sound effects. In the previous audio library, the application could have any number of players, regardless of types. </p>
+
+<p>In n_audio library, the game application is limited to having 2 sequence players and 1 sound player active (registered in the synthesizer driver) at any one time. Therefore, audio processing is simplified and speed up by changing the process from indirect reference to direct reference.</p>
+
+<p align="right"><a href="index.htm"><img src="../../gif/index.gif"
+alt="[UP]" border="0" width="65" height="17"></a></p>
+
+<hr>
+
+<h3><a name="02"></a>2.2 The Envelope</h3>
+
+<p>The previous audio library used an exponential function for the envelope. This was changed to a linear function in n_audio, thereby minimizing the processing required by the audio driver, and speeding
+up audio processing.
+
+</p>
+
+<blockquote>
+    <p><img src="gif/02-02-00.gif" 
+    nosave></p>
+</blockquote>
+
+<p align="right"><a href="index.htm"><img src="../../gif/index.gif"
+alt="[UP]" border="0" width="65" height="17"></a></p>
+
+<hr>
+
+<h3><a name="03"></a>2.3 Fixing the Minimum Unit of the Audio Process</h3>
+
+<p>In the previous audio library, the RSP could create the maximum number (160) of sample data at one time.  However, as shown in the example below, the audio command list is split and the RSP cannot create the maximum number (160) of sample data at one time. Therefore, the whole processing rate
+deteriorates.
+</p>
+
+<p><strong>Example 1) 
+We will call the unit that the RSP processes at one time (160 sample data) "1 sub-frame".</strong></p>
+
+<blockquote>
+    <p><img src="gif/02-03-00.gif" 
+    nosave></p>
+</blockquote>
+
+<p>When the change in envelope (Attack -> Decay) occurs in one sub-frame, this sub-frame, as shown above, is split into &quot;the remaining Attack (fractional numbers)&quot; and &quot;Decay&quot;.</p>
+
+<p>Therefore, in n_audio, we set up the minimum unit used by the audio process so that the audio command list is not split. And, we fixed this minimum unit to the maximum number of sample data that
+RSP can process at one time
+</p>
+
+<p>If the maximum number of sample data is 160 (the same number as the previous library), the envelope change of the previous example is processed as follows.</p>
+
+<p><strong>Example 2) Change in envelope (n_audio)</strong></p>
+
+<blockquote>
+    <p><img src="gif/02-03-01.gif" 
+    nosave></p>
+</blockquote>
+
+<p>When the change in envelope (Attack -> Decay) occurs in one sub-frame, the point where the change occurs is forced to move forward or backwards by rounding up the values.</p>
+
+<p>Therefore, the audio command list is not split and
+processing for the CPU and RSP are sped up.</p>
+
+<p>In this way, we have set the minimum unit for the audio process and fixed this value in n_audio.
+</p>
+
+<p align="right"><a href="index.htm"><img src="../../gif/index.gif"
+alt="[UP]" border="0" width="65" height="17"></a></p>
+
+<hr>
+
+<h3><a name="04"></a>2.4 Processing of Every 184 Samples</h3>
+
+<p>When each player is used, the most common playback frequency is 32kHz.</p>
+
+<p>When the playback frequency is 32kHz, the required number of sample data for 1 frame becomes 
+
+</p>
+
+<blockquote>
+    <pre><FONT SIZE="3"> 32000
+------- = 533.33...= 533
+   60</FONT></pre>
+</blockquote>
+
+<p>samples using the previous library. The maximum number of RSP sample data is 160 using the previous library. So, 533 samples are split into 4 sub-frames as illustrated in the following figure.
+</p>
+
+<blockquote>
+    <p><img src="gif/02-04-00.gif" ></p>
+</blockquote>
+
+<p>In this case, the last sub-frame needs to create only 53 samples.
+</p>
+
+<p>On the other hand, in n_audio, we fixed the minimum unit of the audio process to the maximum number of sample data that the RSP could process at one time. Therefore, we must set the data number created in 1 frame to a multiple integer of the maximum data number of the RSP in n_audio. If the maximum data number is 160 (which is the same number as the previous library), n_audio must create </p>
+
+<blockquote>
+    <pre><FONT SIZE="3">160 x 4 = 640</FONT></pre>
+</blockquote>
+
+<p>samples for 1 frame, as follows.</p>
+
+<p><strong>Frame A</strong></p>
+
+<blockquote>
+    <p><img src="gif/02-04-01.gif" ></p>
+</blockquote>
+
+<p>At this momoent, the sample data</p>
+
+<blockquote>
+    <pre><FONT SIZE="3">160 - 53 = 107</FONT></pre>
+</blockquote>
+
+<p>is carried over to the next frame as the surplus sample data of this frame. To adjust for this surplus data, you would prepare frames as in the following figure.
+
+</p>
+
+<blockquote>
+    <p><img src="gif/02-04-02.gif" ></p>
+</blockquote>
+
+<p>
+If you use Frame A and Frame B as in the Figure below, as time passes it is possible to adjust the previous surplus data. 
+</p>
+
+<blockquote>
+    <p><img src="gif/02-04-03.gif" ></p>
+</blockquote>
+
+<p>The total output sample data of these 3 frames is
+</p>
+
+<blockquote>
+    <pre><FONT SIZE="3">160 x 4 + 160 x 3 + 160 x 3 = 1600</FONT></pre>
+</blockquote>
+
+<p>The actual required number of sample data among 3 frames is 
+</p>
+
+<blockquote>
+    <pre><FONT SIZE="3">533 x 3 = 1599</FONT></pre>
+</blockquote>
+
+<p>Thus, with this calculation it becomes possible to adjust the surplus data of the entire application by using the previous 3 frames repeatedly.
+For example, we can make a table of the time frame, the number of samples, and the number of surplus samples, as follows. 
+</p>
+
+<blockquote>
+    <p><img src="gif/02-04-04.gif" ></p>
+</blockquote>
+
+<p>At time "160" in the table above, the application uses frame A if following the original order. However, because 1 surplus sample is produced by each frame A - frame B - frame B sequence, it uses frame B at time "160" to use the accumulated surplus samples. 
+</p>
+
+<p>This adjustment for the number of created data must be provided on the application side. Also, the table above has been created using theoretical data. The actual adjustment for surplus data does not always work exactly as represented here.
+</p>
+
+<p>In Frame A above, you must create 107 more data than the original required number of sample data for 1 frame. Therefore, the processing time for Frame A increases. Though it depends on each case, it is possible for Frame A only, that the increased processing time due to the required processing data, will exceed the processing time allowed by "n_audio." 
+</p>
+
+<p>This problem is avoided as follows. </p>
+
+
+<blockquote>
+    <pre><FONT SIZE="3"> 32000     1
+------- x --- = 177.7... = 178
+   60      3</FONT></pre>
+</blockquote>
+
+<p>
+The maximum number of sample data that the RSP can process at one time is 178. Using this value, the number of surplus data which is produced at each frame is minimized. However, the maximum number of sample data needs to be a multiple of 8 for convenience of the RSP process. Therefore, we increased the maximum number of sample data from 160 to 184 in n_audio.
+</p>
+
+<p>
+At this time, the previous frame A becomes: 
+</p>
+
+<blockquote>
+    <p><img src="gif/02-04-05.gif" ></p>
+</blockquote>
+
+<p>
+The number of output data in Frame A becomes: 
+</p>
+
+<blockquote>
+    <pre><FONT SIZE="3">184 x 3 = 552</FONT></pre>
+</blockquote>
+
+<p>Thus, in Frame A:</p>
+
+<blockquote>
+    <pre><FONT SIZE="3">552 - 533 = 19</FONT></pre>
+</blockquote>
+
+<p>surplus samples are produced for 1 frame. To adjust these surplus samples for example, we prepare Frame B as follows. 
+</p>
+
+<blockquote>
+    <p><img src="gif/02-04-06.gif" ></p>
+</blockquote>
+
+<p>And it is possible to adjust the surplus data by combining Frame A and Frame B as time passes. 
+</p>
+
+<blockquote>
+    <p><img src="gif/02-04-07.gif" ></p>
+</blockquote>
+
+<p>The total of output sample data of these 10 frames is
+</p>
+
+<blockquote>
+    <pre><FONT SIZE="3">184 x 3 x9 + 184 x 2 = 5336</FONT></pre>
+</blockquote>
+
+<p>and the actual number of required sample data among 10 frames is
+</p>
+
+<blockquote>
+    <pre><FONT SIZE="3">533 x 10 = 5330</FONT></pre>
+</blockquote>
+
+<p>Thus, it becomes possible to adjust the surplus data of the whole application by using the 10 frames above repeatedly.
+</p>
+
+<p>Please refer to the sample program (playseq.naudio) for an example of the method used to adjust surplus sample data. In the sample program, the application decides the frame to use dynamically, so it uses Frame B if the number of surplus sample data becomes the data number for 1 sub-frame (184) or more.
+</p>
+
+<p>In this way, we changed the maximum number of sample data that the RSP can process at one time from 160 to 184 in n_audio, so that the minimum unit of the audio process is effective at a frequency of 32kHz.
+</p>
+
+<p align="right"><a href="index.htm"><img src="../../gif/index.gif"
+alt="[UP]" border="0" width="65" height="17"></a></p>
+
+<hr>
+</body>
+</html>

@@ -1,0 +1,74 @@
+<HTML>
+<HEAD>
+<TITLE>nuGfxPreNMIFuncSet</TITLE>
+</HEAD>
+
+<BODY bgcolor="#FFFFFF">
+<font face="arial" size="-1">
+
+<P>
+<FONT size="5"><b><IMG src="../nusystem2.gif" height="30" width="176">Function</b></FONT>
+
+<HR>
+<P>
+<FONT size="3"><b>nuGfxPreNMIFuncSet</b></FONT>
+<p>
+<HR>
+<P>
+<b>Syntax</b>
+<font face="courier" size="2">
+<pre>void nuGfxPreNMIFuncSet(NUGfxPreNMIFunc func)</pre>
+</font>
+
+<b>Arguments</b>
+<font face="courier" size="2">
+<pre>func    call back function </pre>
+</font>
+
+<b>Return Value</b>
+<font face="courier" size="2">
+<pre>None</pre>
+</font>
+
+<b>Description</b>
+
+<p><i>Registers the PRE_NMI call back function in the graphics thread</i></p>
+
+<p>Registers the call back function which is executed by the PRE NMI event in the graphics thread.
+</p>
+
+<b>Example</b>
+<font face="courier" size="2">
+<pre>
+u8 gfxTaskEnd = FALSE;
+
+/* retrace function */
+void prenmiFunc(void)
+{
+  /* Set the Y-scale to 1.0 using PRE NMI*/
+  osViSetYScale(1.0);
+		
+  /* Set the flag so as not to create a new graphics task*/
+  gfxTaskEnd = TRUE;
+}
+	
+void gameGfxInit(void)
+{
+  ......
+  /*Register the function which is executed by retrace */
+  nuGfxPreNMIFuncSet(prenmiFunc);
+}
+</pre>
+</font>
+
+<p>
+<b>See Also</b>
+<p><a href="nuGfxPreNMIFuncRemove.htm">nuGfxPreNMIFuncRemove</a>
+
+<p>
+<hr>
+
+<p align="right"><a href="index.htm"><img src="../index.gif" border="0"
+width="65" height="17"></a></p>
+</body>
+</html>

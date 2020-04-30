@@ -1,0 +1,52 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.
+MAP- added links, updated format>
+<TITLE>osEepromRead</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+<font style="font-size: 12pt"><b>osEepromRead</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p>osEepromRead, osEepromWrite</P
+<P>
+<i> Reads or writes data in EEPRom</i></P>
+
+<H3>Syntax</H3>
+
+<p><PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/os.htm">os.h</A> */
+s32 osEepromRead(OSMesgQueue *mq, u8 address, u8 *buffer);
+s32 osEepromWrite(OSMesgQueue *mq, u8 address, u8 *buffer);</CODE></PRE></p>
+
+<H3>Description</H3>
+<P>
+The function <tt>osEepromRead</tt> issues a read command to EEPRom and reads 8 bytes of data from an address specified by address. The function <a href="osEepromWrite.htm">osEepromWrite</a> issues a write command to EEPRom and writes 8 bytes of data to an address specified by address.</p>
+<P>
+The size of buffer, which is used for storing the data, must be large enough to hold nbytes of data.Note that address is an EEPROM block address. Since blocks are in units of 8 bytes, you must specify a value that is divisible by 8 for the actual address. 
+</P>
+<P>
+The returned value is 0 if the command is properly sent to the interface circuit.  The returned value is -1 if the value of address is not within the proper range.  If no EEPROM exists or if the interface circuit does not respond, then the returned value is 8 (CONT_NO_RESPONSE_ERROR).
+</P>
+<P>
+"mq" is the initialized message queue associated with OS_EVENT_SI events.  For details, see the <a href="osSetEventMesg.htm">osSetEventMesg</a>function in the <i>N64 Online Function Reference Manual</i>.  Since mq is used inside the function to wait for messages, the application does not need to use mq to wait for an end-of-function message.
+</P>
+<P>
+The <tt>osEepromRead</tt> and <tt>osEepromWrite</tt> functions can only read and write data of 8 bytes (1 block). To read and write more than 8 bytes, use the <a href="osEepromLongRead.htm">osEepromLongRead</a> and <a href="osEepromLongWrite.htm">osEepromLongWrite</a> functions.
+</P>
+<P>
+The EEPROM command takes about 15 milliseconds to finish. To avoid a reduction in overall system performance, you need to set up a timer between calls to <tt>osEepromRead</tt> and <tt>osEepromWrite</tt>. 
+</P>
+
+<H3>See Also</H3>
+<P>
+<A HREF="osContInit.htm">osContInit</A>, <A HREF="osEepromProbe.htm">osEepromProbe</A>, <A HREF="osEepromLongRead.htm">osEepromLongRead</A>, <A HREF="osEepromLongWrite.htm">osEepromLongWrite</A>, and <A HREF="osSetEventMesg.htm">osSetEventMesg</A>
+</P>
+<H3>Revision History</H3>
+<P>
+1999/02/01  Revised entirely<br>
+1999/04/30  Changed format 
+</P>
+</BODY>
+</HTML>

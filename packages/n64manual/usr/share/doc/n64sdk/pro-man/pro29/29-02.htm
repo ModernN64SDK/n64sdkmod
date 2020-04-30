@@ -1,0 +1,140 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 29 - n_audio Library</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. 
+             MAP- 10/26/99 edited content, updated format-->
+</head>
+
+<h1>29.2 Influence of n_audio</h1>
+
+<p>The sequence and sound data developed for the past versions of the audio library can also be used with the n_audio library. However, because of the improvements outlined in Section 29.1, you will need to prepare the data following the guidelines below. </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+
+<h2><a name="01">29.2.1 Effect of the Envelope </a></h2>
+
+<p>As explained in <a href="29-01.htm#02">Section 29.1.2 "The Envelope"</a>, the effect of the change from an exponential to a linear envelope is greatest at the time of release. The effect is such that it sounds like the release time has been extended because the attenuation rate is smaller at the beginning of the release. To compensate for this effect you can: </p>
+
+
+
+<ul>
+  <li>shorten the "release" time of the envelope. 
+  <li>generate sound taking the envelope shape (linear function) into account. 
+</ul>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+
+<h2><a name="02">29.2.2 Effect of Processing Every 184 Samples</a></h2>
+
+<p>Because <a href="29-01.htm#03">the n_audio library uses a minimum fixed audio processing unit</a> made up of <a href="29-01.htm#04">184 audio samples</a>, you must: </p>
+
+<ul>
+  <li>set the number of samples per frame to a multiple of 184. 
+  <li>create samples that do not require audio processing in the middle of a sub-frame. 
+</ul>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+
+<h3><a name="02-01">29.2.2.1 Set the Number of Samples Per Frame to a Multiple of 184 </a></h3>
+
+<p>In n_audio the minimum audio processing unit is set to a fixed value of 184 samples per unit.  The number of samples that can be processed by the RSP is also fixed at 184.  Therefore, the number of samples that the application generates for each frame must be set to a multiple of 184 (see playseq).</p>
+
+<p>For example, when the playback frequency is 32 kHz, the number of required data for 1 frame is </p>
+
+<blockquote><pre>32000 / 60 = 533.33333 = 533</pre></blockquote>
+
+<p>The closest multiple to 533 is</p>
+
+<blockquote><pre>184 * 3 = 552</pre></blockquote>
+
+<p>Thus, Frame A can be set up as shown in <a href="#f29-09">Figure 29-9</a>.</p>
+
+<dl>
+  <dt><a name="f29-09"><strong>Figure 29-9 Frame A </strong></a>
+  <dd><img alt="[Figure 29-9]" src="gif/f29-09.gif">
+</dl>
+
+<p>It is possible to set up a value larger than 552 as the size of frame A. However, if it is set up much larger than 533, the required time for processing the frame may become longer than the time for creating 533 pieces of data in the previous library, even though n_audio is used.</p>
+
+<p>In Frame A, </p>
+
+<blockquote><pre>552 - 533 = 19</pre></blockquote>
+
+<p>samples become surplus samples and are carried over to the next frame.  To adjust for the surplus samples, prepare Frame B as shown in <a href="#f29-10">Figure 29-10</a>.</p>
+
+<dl>
+  <dt><a name="f29-10"><strong>Figure 29-10  Frame B </strong></a>
+  <dd><img alt="[Figure 29-10]" src="gif/f29-10.gif">
+</dl>
+
+<p>Combine Frame A and Frame B as shown in <a href="#f29-11">Figure 29-11</a>.</p>
+
+<dl>
+  <dt><a name="f29-11"><strong>Figure 29-11 10-Frame Sequence Used to Adjust Samples Over Time </strong></a>
+  <dd><img alt="[Figure 29-11]" src="gif/f29-11.gif">
+</dl>
+
+<p>The total of output sample data numbers of these 10 frames is </p>
+
+<blockquote><pre>184 * 3 * 9 + 184 * 2 = 5336</pre></blockquote>
+
+<p>and the actual number of the required sample data among 10 frames is</p>
+
+<blockquote><pre>533 * 10 = 5330</pre></blockquote>
+
+<p>Thus, it becomes possible to adjust the surplus data of the whole application by using these 10 frames as shown in <a href="#f29-11">Figure 29-11</a> repeatedly.</p>
+
+<p>In this manner, you must provide the adjustment of surplus data in the application, and set the number of sampling data created for 1 frame to a multiple of 184.</p>
+
+<p>Please refer to the sample program, "playseq.audio," for an example of the method used to decide the specific frame size within the application.</p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+
+<h3><a name="02-02">29.2.2.2 Create Data that Do Not Require Audio Processing in the Middle of a Sub-Frame </a></h3>
+
+<p>Because we fixed the minimum unit of the audio process to 184 pieces of sampling data, gaps are produced depending upon the timing of the ON/OFF for sound, and the envelope transition points (see <a href="#e29-03">Example 29-3</a>).</p>
+
+<dl>
+  <dt><a name="e29-03"><strong>Example 29-3 A Timing Gap Between Envelope Changes </strong></a>
+  <dd><img alt="[Example 29-3]" src="gif/e29-03.gif"><br>
+When the envelope change (Attack - Decay) occurs within 1 sub-frame, the transition point is forced to move to the next complete sub-frame.<br>
+</dl>
+
+<p>For example, if the playback frequency is 32kHz, the previous timing is a maximum of</p>
+
+<blockquote><pre>(1 / 32000) * (184 / 2) = 0.002975 sec</pre></blockquote>
+
+<p>off due to rounding errors.  To prevent the timing gap, each event needs to occur on the multiple integer of the minimum audio processing unit. When the playback frequency is 32kHz, </p>
+
+<blockquote><pre>(1 / 32000) * 184 = 0.00575 sec</pre></blockquote>
+
+<p>becomes the minimum processing unit.  Therefore, at this moment, we adjust the timing of envelope change by setting the envelope (within the ".inst" file) to </p>
+
+<blockquote><pre>
+envelope
+{
+	attackTime 	= 17250;	/* &LT;- 5750 usec * 3 */
+    	attackVolume 	= 127;
+    	decayTime	= 2501250;	/* &LT;- 5750 usec * 435 */
+    	decayVolume	= 0;
+    	releaseTime	= 201250;	/* &LT;- 5750 usec * 35 */
+}
+</pre></blockquote>
+
+<p>We adjust timing for each process using tempo value for the MIDI sequence data.  Specifically, it becomes as follows:  If you process a quarter note with 48 steps, the time "Qn" per quarter note becomes </p>
+
+<blockquote><pre>Qn = 0.00575 * 48 = 0.276 sec</pre></blockquote>
+
+<p>"Tempo" becomes</p>
+
+<blockquote><pre>Tempo = (60 / Qn) = 217.39 bpm</pre></blockquote>
+
+<p>We adjust the timing of sequence data using "one to this integer" as the actual tempo.</p>
+
+<p>Although, there is sequencer software that will not allow the decimal value of tempo to be input. In these cases, we try to rewrite the tempo value of MIDI data directly.</p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+</body>
+</html>

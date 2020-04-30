@@ -1,0 +1,114 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<title></title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<p>
+<FONT FACE="ARIAL" SIZE="-1">
+<strong>3.1 makedisk (NW only)</strong>
+
+
+<p>When a game which uses a Game Pak is compiled, makerom is used to combine the various seqments into a single rom image.  With disk games, however, <a href="../../n64man/64dd/64ddtool/makedisk.htm"><font color="#FF0000">makedisk</font></a> is used for this purpose.  The tasks performed by <a href="../../n64man/64dd/64ddtool/makedisk.htm"><font color="#FF0000">makedisk</font></a> are broadly categorized into the following three types.
+
+<ol>
+  <li>Segment linking based on the specifications in the spec file.</li>
+  <li>Creation of the batch file gwrite.</li>
+  <li>Generation of symbols for disk use. </li>
+</ol>
+
+<p>The first task is exactly the same as for makerom but with the addition of the specification lba.  This specifies to which disk LBA the segment is written (For more information on the LBA, see <a
+href="../dd11/index.htm">Chapter 11:  64DD Hardware Specifications</a>.  An example is shown below.
+</p>
+
+<table border="1" width="100%">
+  <tr>
+    <td><pre>..... </pre>
+    <pre>beginseg </pre>
+    <pre>	name &quot;road&quot; </pre>
+    <pre>	lba 100 </pre>
+    <pre>	flags OBJECT </pre>
+    <pre>	number TEXTURE_SEGMENT </pre>
+    <pre>	include &quot;road.o&quot; </pre>
+    <pre>endseg </pre>
+    <pre>.....</pre>
+    </td>
+  </tr>
+</table>
+
+<p>An lba for a segment stored on the disk must be specified in the spec file.  An error results if lba is specified for a segment not stored on the disk.  Segments considered to be stored on disk are those which have a non-zero size in the ROM image.  The boot segment is one such segment.  However, a segment consisting of a color frame buffer and z-buffer is reserved only in RDRAM; no ROM area is reserved. Thus, such a segment is not stored on the disk.
+
+<p>The syntax of the lba specification is as follows.<br>
+
+<p><strong>lba numeral </strong>
+
+<p>Write the segment beginning at the LBA expressed by numeral.</p>
+
+<p><strong>lba RAMSTART [+numeral] </strong>
+
+<p>Write the segment beginning from the LBA expressed by the start of the RAM area + numeral.  Because the LBA of the start of the RAM area depends on the disk type,    this notation is convenient.  For information on RAM areas and disk types, please see <a href="../dd11/index.htm">"Chapter 11, 64DD Hardware Specifications</a>." Note that a space must be present on either side of the + sign.
+
+<p><strong>lba after segment name </strong>
+
+<p>Place the segment after the segment expressed by segment name.  For example, when lba after code is specified, if the code segment is LBA 0-LBA100, the segment is positioned from LBA 101 onward.  The segment expressed by segment name  must be defined before the segment to be written.</p>
+
+<p>gwrite mentioned in task 2. is a batch file that writes the results the compiled results to disk.  Further details are given in section <a href="03-03.htm">3.3 gwrite</a>.
+<p></p>
+
+<p>The disk symbols of task 3. are described next.</p>
+
+<p>For the sake of simplicity, makerom is considered first. </p>
+
+<p>For example, when a texture is to be transferred from the Game Pak ROM to RDRAM, it is not known until compile time where in ROM this segment is stored.  However, the programmer can enter the following beforehand.  
+</p>
+
+<table border="1" width="100%">
+  <tr>
+    <td><pre>..... </pre>
+    <pre>extern char _textureSegmentRomStart[],_textureSegmentRomEnd[] </pre>
+    <pre>..... </pre>
+    <pre>(Transfer the contents between _textureSegmentRomStart and _textureSegmentRomEnd-1 to . . . of RDRAM by DMA.) </pre>
+    </td>
+  </tr>
+</table>
+
+
+<p><strong>_textureSegmentRomStart, _textureSegmentRomEnd </strong></p>
+
+<p>In this case, makerom defines the symbols _textureSegmentRomStart and _textureSegmentRomEnd by calculation. For more information, see also <a href="../../n64man/tool/makerom.htm">"makerom Online Manual</a>."  Thus, a data transfer program can be written without the bother of compiling a second time.  In this way, makerom outputs as symbols information that is not defined until linking, such as the starting and ending locations of a segment stored in the Game Pak ROM, allowing the programmer to reference this information in the program.
+</p>
+
+<p>The same is true with a disk.  In this case, data are accessed using a logically assigned sequential number, the LBA.  However, the questions of which segments are stored beginning from what LBA and spanning how many blocks are not answered until linking.</P>
+
+<p>
+Using the preceding texture segment as an example, however, if the programmer writes the follow program beforehand, <a href="../../n64man/64dd/64ddtool/makedisk.htm"><font color="#FF0000">makedisk</font></a> resolves the symbols  <strong>_textureSegmentDiskStart</strong> and <strong>_textureSegmentDiskEnd</strong>, enabling the desired transfer.
+</p>
+
+<table border="1" width="100%">
+  <tr>
+    <td><pre>..... </pre>
+    <pre>extern char _textureSegmentDiskStart[],_textureSegmentDiskEnd[] </pre>
+    <pre>..... </pre>
+    <pre>(Transfer the contents between _textureSegmentDiskStart and _textureSegmentDiskEnd-1 to . . . of RDRAM by DMA.) </pre>
+    </td>
+  </tr>
+</table>
+
+<p>
+In addition to outputting the symbols that makerom outputs, <a href="../../n64man/64dd/64ddtool/makedisk.htm"><font color="#FF0000">makedisk</font></a> outputs information describing from which block to which block on a disk a segment is stored.
+</p>
+
+<p>
+<B>Note:</B> SegmentDiskEnd expresses the last storage block + 1.  For example, if _textureSegmentDiskStart = 20 and _textureSegmentDiskEnd = 30, the segment texture is stored from LBA 20 to LBA 29.  Please keep this in mind.
+
+<p>All read/write operations to the 64DD are performed in units of blocks.  For information on blocks, please see <a href="../dd11/index.htm">"Chapter 11, 64DD Hardward Specifications</a>."
+
+
+<hr>
+
+<p><a href="index.htm"><img src="../../gif/index.gif" border="0" width="65" height="17"></a></p>
+</body>
+</html>

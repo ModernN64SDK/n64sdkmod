@@ -1,0 +1,71 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 11 - RSP Graphics Programming</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. -->
+</head>
+
+<h1>11.1 RSP Overview</h1>
+
+<p>A program which runs on the RSP is called a task; the application is completely responsible for <A target="keywords" HREF="../../keywords/index/data/system.htm#scheduling">scheduling</A> and invoking tasks on the RSP.</p>
+
+<p>The interface between the application and the RSP task is accomplished with a series of operating system calls, and a structure called the task list (or task header) which is type OSTask (defined in sptask.h).  The task list contains all the information necessary to begin task execution, including pointers to the <A target="keywords" HREF="../../keywords/index/data/system.htm#microcode">microcode</a> to run.  This structure is filled in by the application program.</p>
+
+<p>A detailed description of invocation of a task on the RSP is beyond the scope of this section (please see <a href="../pro04/04-07.htm">Section 4.7 "RCP Task Management"</a>, but the essential procedure is straightforward:</p>
+
+<ol>
+  <li>the RSP is assumed to be halted (or N64 CPU halts it).<br><br>
+  <li>N64 CPU DMA's the boot microcode into the RSP IMEM.<br><br>
+  <li>N64 CPU DMA's the "task header" into the RSP DMEM. <br><br>
+  <li>N64 CPU sets the RSP PC to 0. <br><br>
+  <li>N64 CPU clears the RSP halt status (allowing it to run).<br><br>
+</ol>
+
+<p>From this point, the boot microcode takes over, loading the task microcode (and data) specified in the task list, and jumping to the beginning of the task.</p>
+
+<p>One item in the task header is a pointer to the initial data to process (in the case of a graphics task, this is a <a href="../../keywords/index/data/graphics.htm#display list" target="keywords">display list</a> pointer).</p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="01"><h2>11.1.1 Display List Format</h2></a>
+
+<p>The display list which the <a href="../../n64man/ucode/gspFast3D.htm">gspFast3D</a>, <a href="../../n64man/ucode/gspFast3D.htm">gspF3DNoN</a>, or <a href="../../n64man/ucode/gspLine3D.htm">gspLine3D</a> microcode running on the RCP interprets is defined as a stream of 64-bit commands.</p>
+
+<p>Applications written in C will usually use the interface from the file gbi.h., which will be included via inclusion of ultra64.h. Although the construction of display lists looks like a familiar series of function calls, they are actually just bit-packing macros. These macros are described in detail in their individual man pages.</p>
+
+<p>Each macro has two forms, i.e. <a href="../../n64man/gsp/gSPTexture.htm">gSPTexture()</a> and <a href="../../n64man/gsp/gSPTexture.htm">gsSPTexture()</a>.  The difference between 'g' and 'gs' is that the 'g' form is an <A target="keywords" HREF="../../keywords/index/data/system.htm#in-line model">in-line model</A> form which requires an additional argument (pointer of the display list being constructed).  The display list pointer must be of the form "ptr++" in order for the macros to work properly. </p>
+
+<p>The 'gs' form is for static declarations, and generates the appropriate C structure initialization sequence. </p>
+
+<p>Throughout this document, only the 'gs' form is mentioned, however the 'g' form also applies, and could always be substituted.</p>
+
+<p>All of the display list building macros also embed an 'SP' or a 'DP' to describe the functional unit of the RCP which will operate on this command.  This is certainly confusing, especially to application programmers familiar with higher-level graphics <A target="keywords" HREF="../../keywords/index/data/system.htm#API">API</A>'s such as OpenGL.  In order to achieve maximum performance, it is necessary to expose RSP and RDP, the two major units of the RCP to the application programmer.  The primary reason for this is resource constraints; there is simply not enough RSP IMEM to build a display list processor that is rich enough to hide these details from the application programmer.  The binary encoding of most of the display list commands is the lowest possible level: they are the bits that control the hardware. </p>
+
+<p>Exposing the two functional units of the RCP also limits the amount of state shared between them.  The major drawback of this design decision is that you must often tell the same thing to the RSP and the RDP.   For example, in order to "turn on <a href="../../keywords/index/data/graphics.htm#texture mapping" target="keywords">texture mapping</a>" you must turn it on in the RSP and turn it on in the RDP.  This is a common source of display list bugs, but the parallel execution of the RSP and RDP, plus a highly efficient display list processing machine make this trade-off worthwhile.  </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="02"><h2>11.1.2 
+Segmented Memory and the RSP Memory Map</h2></a>
+
+<p>All DRAM addresses in the display list are <A target="keywords" HREF="../../keywords/index/data/system.htm#segment address">segmented addresses</A>.  The mapping of <A target="keywords" HREF="../../keywords/index/data/system.htm#segment">segments</A> and their base addresses is provided using the gSPSegment() macro.   It is the responsibility of the application to maintain this mapping and inform the RSP via the display list. </p>
+
+<p>The RSP maintains an associative table of up to 16 segment ID's and their base addresses.  Any DRAM address in the display list is 'physical-ized' using this table.  The RDP only uses physical addresses, and one of the chores of the RSP is to do the address translation necessary for the RDP. </p>
+
+<p><b>Note</b>: By convention, segment table entry 0 is reserved for physical addressing.</p>
+
+<p>The RSP software can only access DMEM.  All data must first be transferred into DMEM using DMA operations, which must be <A target="keywords" HREF="../../keywords/index/data/system.htm#64-bit boundary alignment">64-bit aligned</a> (if the size of data is below 64-bit, it is necessary to pad it).  Invocation of the DMA engine is handled by the RSP software, but the application programmer needs to be aware of the boundary requirements.  Any data structure that is to be passed to the RSP must be aligned to a 64-bit boundary. The structures in gbi.h use C unions to guarantee this.  </p>
+
+<p>Since the DMA engine is shared between the N64 CPU and the RSP, the application program should also avoid unnecessary DMA activity while the RSP is running.</p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="03"><h2>11.1.3 Interaction Between the RSP and N64 CPU Memory Caching</h2></a>
+
+<p>The most prevalent example of communication between the CPU and the RSP is that of the CPU creating a display list in DRAM for eventual interpretation by the RSP.  The display list data is read from DRAM via a DMA mechanism.   Unfortunately, DRAM locations may be "stale" with respect to newer data being held in the N64 CPU's data cache.  The N64 CPU cache mechanism implements a "write-back" caching policy which means individual stores to memory are not immediately written to memory.  To update the memory contents with more recent cached data, the CPU must first write back cached data to the DRAM.  Then, and only then, will the RSP be able to DMA the correct data for display list processing.</p>
+
+<p>Conversely, the contents of memory may be more recent than cached data in some situations when the RSP modifies memory (an obvious example is updating the color frame buffer).  In this case, the CPU's cache may contain stale data and the CPU should invalidate the cached data to force an access directly to DRAM and get the most recent data.</p>
+
+<p> As a practical note, this second scenario only arises in advanced applications. </p>
+
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+</body> </html>

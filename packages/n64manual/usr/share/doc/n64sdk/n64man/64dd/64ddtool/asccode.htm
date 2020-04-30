@@ -1,0 +1,66 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../N64man.css">
+<Author's Comments: JLR made formating edits for 4.1.
+MAP updated format 9/28/99>
+<title>asccode</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<font style="font-size: 12pt"><b>asccode</b></font><font style="font-size: 9pt"><b> (tool command)</b></font>
+
+<p><i>Obtains the character information data</i></p>
+
+<p><b>Syntax</b></font></p>
+<pre>
+asccode (filename)
+</pre>
+
+<p><b>Description</b></font></p>
+
+
+<p>asccode gets the character information data about an ASCII character. This character information data comprises the DDROM storage address and the character width, height and alignment, all compressed into 32 bits of data for use by the <a href="../LeoGetAAdr2.htm">LeoGetAAdr2</a>function.</p>
+
+<p>Specify a file name of a text file in the following format for the <b>asccode</b> argument.</p>
+<p>
+<table border="1" cellpadding="10" width="70%">
+    <tr>
+        <td><pre><font face="Courier">0,Super Mario 64</font> </pre>
+        <pre><font face="Courier">5,Wave Race 64</font> </pre>
+        <pre><font face="Courier">11,Mario Kart 64
+</font></pre>
+        </td>
+    </tr>
+</table></p>
+
+<p>The values 0, 5, and 11 each express a different font number (font#). To learn more about font# values, see Chapter 9.1.2 of the N64 Disk Drive Programming Manual. For example, if the file name is "string", then typing the following on the command line:</p>
+
+<p>% asccode string </p>
+
+<p>results in the creation of a file named string.c that contains the following array of character information data.<br>
+</p>
+<p>
+<table border="1" cellpadding="10" width="70%">
+    <tr>
+        <td><pre><font face="Courier">unsigned string0[]={</font> </pre>
+        <pre><font face="Courier">67336724,114259726,107715344,93558800,111626256,40212,56150548,86874128,111626256,99756564,106207248,40212,24742420,21858836,0};</font> </pre>
+        <pre><font face="Courier">unsigned string1[]={</font> </pre>
+        <pre><font face="Courier">1585843223,1602787342,1634048014,1609795598,1487761176,1575459606,1602787342,1606576142,1609795598,1487761176,1520081942,1515952918,0};</font> </pre>
+        <pre><font face="Courier">unsigned string2[]={</font> </pre>
+        <pre><font face="Courier">3183115030,3210180624,3231606800,3221314326,3228067856,3127996184,3179973398,3210180624,3231606800,3233438228,3127996184,3151592214,3148446486,0}; 
+</font></pre>
+        </td></p>
+    </tr></table>
+
+<p><b>See Also</b></font></p>
+
+<p><a href="../LeoGetAAdr2.htm">LeoGetAAdr2</a>
+</p>
+<h3>Revision History</h3>
+<p>04/30/1999  Changed Format</p>
+<br><br>
+
+</body>
+</html>

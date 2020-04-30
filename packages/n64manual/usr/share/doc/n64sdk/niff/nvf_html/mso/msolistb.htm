@@ -1,0 +1,51 @@
+<HTML>
+<HEAD>
+<TITLE>msolistb</TITLE>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../mobile/allman.css">
+<!-- Editor's Notes: 9/23/1999 Ron Daring -->
+</HEAD>
+  <BODY bgcolor="#FFFFFF">
+<h1>_msoListBase</h1>
+<p><i>Macro group for uni-directional lists</i></p>
+<pre>
+* _msoListBaseDefine( nodetype )
+  Defines the nodetype list type by the name nodetypeList
+
+* _msoListBaseBegin( list_ptr )
+  Returns the head of the list
+
+* _msoListBaseEnd( list_ptr )
+  Returns the end of the list  (Actually NULL)
+
+* _msoListBaseIsEmpty( list_ptr )
+  Returns whether or not the list is empty
+
+* _msoListBaseInit( list_ptr )
+  Initializes the list
+
+* _msoListBasePushFront( list_ptr, node_ptr )
+  Adds a node from the head of the list
+
+* _msoListBasePopFront( list_ptr )
+  Deletes a node from the head of the list
+
+Usage Examples 
+* Create a list of MxxObject's called mxxObjectList 
+  and create mxxObjectListPushFront( ) as follows.
+
+  _msoListBaseDefine( MxxObject );
+  #define _mxxObjectListPushFront(list_ptr,node_ptr) \
+          _msoListBasePushFront(list_ptr,node_ptr)
+
+* Scan MxxObject
+  for ( node_ptr = mxxObjectListBegin( list_ptr );
+        node_ptr != mxxObjectListEnd( list_ptr );
+        node_ptr = node_ptr->next_ptr )
+  {
+      ....
+  }
+
+</pre>
+
+  </BODY>
+</HTML>

@@ -1,0 +1,131 @@
+<HTML>
+<HEAD>
+<TITLE>nuDebTaskPerfBar1 & nuDebTaskPerfBar1EX2</TITLE>
+<link rel=stylesheet type="text/css" href="../../../n64man/n64man.css">
+<!-- Editor's Notes: 9/8/1999 Ron Daring, RSP/RDP Illustration was corrupted in NCL's 5.0 version. Appropriate changes have been made, and confirmed with NCL. -->
+</HEAD>
+
+<BODY bgcolor="#FFFFFF">
+
+
+<P>
+<FONT size="5"><b><IMG src="../nusystem2.gif" height="30" width="176">Function</b></FONT>
+
+<HR>
+<P>
+<FONT size="3"><b>nuDebTaskPerfBar1<br>nuDebTaskPerfBar1EX2</b></FONT>
+<p>
+<HR>
+<P>
+<b>Syntax</b>
+<font face="courier" size="2">
+<pre>
+void nuDebTaskPerfBar1(u32 frameNum, u32 y, u32 flag)
+void nuDebTaskPerfBar1EX2(u32 frameNum, u32 y, u32 flag)</pre>
+</font>
+
+<p><b>Arguments</b>
+<font face="courier" size="2">
+<pre>
+<B>frameNum</B>      number of frames to display (1-6) <br>
+<B>y</B>             Y coordinate of display position (0-240) <br>
+<B>flag</B>          determines whether or not to swap frame buffer when a task completed
+NU_SC_SWAPBUFFER     Swap frame buffer 
+NU_SC_NOSWAPBUFFER   Do not swap frame buffer</pre>
+</font>
+
+<p><b>Return Value</b>
+<font face="courier" size="2">
+<pre>None</pre>
+</font>
+
+<p><b>Description</b>
+
+<p><i>Displays the performance meter (Type 1)</i>
+
+<p>Displays the performance meter for the graphics task as well as for the audio task.  This function internally <!--  -->sets the RDP<!--  --> and creates a display list, then starts the graphics task.
+
+<p><TT>frameNum</TT> is the number of frames to display on the screen.
+
+<p><TT>y</TT> is the upper-left Y coordinate of the display frame for the performance meter. This is specified using the screen coordinate system.
+
+<p><TT>flag</TT> is the frame buffer swap flag passed to the argument of the <TT>nuGfxTaskStart</TT> function.
+
+<p>Type 1 displays the total time of RSP and RDP processing of audio tasks and graphics tasks while drawing the frame buffer.
+
+<font face="courier" size="2">
+<pre>
+         frame -1      frame 1       frame 2       frame 3
+	 -------------------------------------------------------
+(1) RSP	|=====        |             |             |             |
+(2) RSP	|<font color="#FFFF00">=============</font>|<font color="#FFFF00">=============</font>|<font color="#FFFF00">=============</font>|<font color="#FFFF00">== </font>          |
+(3) RDP	|<font color="#00FF00">=============</font>|<font color="#00FF00">=============</font>|<font color="#00FF00">========= </font>   |             |
+(4) CMD	|<font color="#C0C0C0">=============</font>|<font color="#C0C0C0">=============</font>|<font color="#C0C0C0">=========</font><font color="#00FF00"> </font>   |             |
+(5) PIPE|<font color="#C0C0C0">=============</font>|<font color="#C0C0C0">=============</font>|<font color="#C0C0C0">========= </font>   |             |
+(6) TMEM|<font color="#C0C0C0">=============</font>|<font color="#C0C0C0">=============</font>|<font color="#C0C0C0">=========  </font>  |             |
+	 -------------------------------------------------------</pre>
+</font>
+
+<table border="0">
+    <tr>
+        <td valign="top"><font face="arial" size="-1">(1)</font></td>
+        <td valign="top"><font face="arial" size="-1">RSP's time processing audio task (black) </font></td>
+    </tr>
+    <tr>
+        <td valign="top"><font face="arial" size="-1">(2)</font></td>
+        <td valign="top"><font face="arial" size="-1">RSP's time processing graphics task (yellow) (includes yield time) </font></td>
+    </tr>
+    <tr>
+        <td valign="top"><font face="arial" size="-1">(3)</font></td>
+        <td valign="top"><font face="arial" size="-1">RDP's time drawing graphics (green) </font></td>
+    </tr>
+    <tr>
+        <td valign="top"><font face="arial" size="-1">(4)</font></td>
+        <td valign="top"><font face="arial" size="-1">CMD counter value of RDP's internal counter <br>
+        This is the process execution time. Unlike (3) it does not include the time waiting for commands from the RSP. When this bar is shorter than bar (3) it means that time is being spent waiting for commands from the RDP. </font></td>
+    </tr>
+    <tr>
+        <td valign="top"><font face="arial" size="-1">(5)</font></td>
+        <td valign="top"><font face="arial" size="-1">RDP's PIPE counter value </font></td>
+    </tr>
+    <tr>
+        <td valign="top"><font face="arial" size="-1">(6)</font></td>
+        <td valign="top"><font face="arial" size="-1">RDP's TMEM counter value <br>
+        This value represents the time required for loading to texture memory.  The performance is better if this value is small.</font></td>
+    </tr>
+</table>
+
+<p>The task is measured by calculating the time between the end of the task specified by NU_SC_SWAPBUFFER, when the graphics task is started, and the end of the next task specified by NU_SC_SWAPBUFFER.
+
+<P><!--  -->Intervals of measuring performance can be changed by the <TT>nuDebTaskPerfIntervalSet</TT> function. In this case, performance is measured by intervals of specifying NU_SC_SWAPBUFFER. In frames between measuring intervals, the performance measured previously will be displayed, as is.<!--  -->
+
+<p>This performance meter is set up to help you grasp the processing time by the RSP and RDP. It can be used to make adjustments, for example when you want to cut back to a limited number of frames.
+
+<p>This function can only be used with the debug library.
+
+<p>Also, please note that when the <TT>nuGfxInit</TT> function is not used, then the 0th microcode in the microcode structure array defined by the <TT>nuGfxSetUcode</TT> function is used.
+
+<p><!--  -->Beginning with Version 2.06, F3DEX_GBI_2 is defined by nusys.h. Therefore, <TT>nuDebTaskPerfBar1EX2</TT> is usually used. If F3DEX microcode is used, define F3DEX_GBI before nusys.h.<!--  --> 
+
+
+<p><b>See Also</b>
+<p><a href="../graphics/nuGfxTaskStart.htm">nuGfxTaskStart</a>, <a
+href="../graphics/nuGfxInit.htm">nuGfxInit</a>, <a
+href="../graphics/nuGfxSetUcode.htm">nuGfxSetUcode</a>, <a
+href="nuDebTaskPerfBar0.htm">nuDebTaskPerfBar0</a>, <!--  --><a
+href="nuDebTaskPerfIntervalSet.htm">nuDebTaskPerfIntervalSet</a>, and <a
+href="nuDebPerfMarkSet.htm">nuDebPerfMarkSet</a><!--  -->
+<p>
+<hr>
+<P><b><!--  -->Revision History</b>
+<P>
+<!--  -->6/15/99  Added explanation of setting performance measuring interval. Added text regarding <TT>nuDebPerfMarkSet</TT> function.<br>
+8/4/99 Deleted description of Ver1.2 and added description of Ver2.06.<!--  -->
+
+<p>
+<hr>
+
+<p align="right"><a href="index.htm"><img src="../index.gif" border="0"
+width="65" height="17"></a>
+</body>
+</html>

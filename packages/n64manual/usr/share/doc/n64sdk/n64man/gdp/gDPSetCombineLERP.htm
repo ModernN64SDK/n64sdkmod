@@ -1,0 +1,146 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.>
+<TITLE>gDPSetCombineLERP</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>gDPSetCombineLERP [Macro]</H1>
+
+<p><b>Function</b></p>
+
+<p>gDPSetCombineLERP</p>
+
+<P>
+<i>Sets the color combiner (CC) mode</i>
+</P>
+<p><b>Syntax</b></p>
+<p>
+<PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gbi.htm">gbi.h</A> */
+gDPSetCombineLERP(
+        Gfx  *pkt,
+        a0,  b0,  c0,  d0,
+        Aa0, Ab0, Ac0, Ad0,
+        a1,  b1,  c1,  d1,
+        Aa1, Ab1, Ac1, Ad1)
+gsDPSetCombineLERP(
+        a0,  b0,  c0,  d0,
+        Aa0, Ab0, Ac0, Ad0,
+        a1,  b1,  c1,  d1,
+        Aa1, Ab1, Ac1, Ad1)</CODE></PRE></p>
+
+<p><b>Arguments</b></p>
+<p><DL>
+  <DT><B>pkt</B>
+  <DD>Display list pointer
+  <DT><B>a0</B>, <B>b0</B>, <B>c0</B>, <B>d0</B>
+  <DD>Color input source for 1st cycle
+  <DT><B>Aa0</B>, <B>Ab0</B>, <B>Ac0</B>, <B>Ad0</B>
+  <DD>Alpha input source for 1st cycle
+  <DT><B>a1</B>, <B>b1</B>, <B>c1</B>, <B>d1</B>
+  <DD>Color input source for 2nd cycle
+  <DT><B>Aa1</B>, <B>Ab1</B>, <B>Ac1</B>, <B>Ad1</B>
+  <DD>Alpha input source for 2nd cycle
+</DL></p>
+<p><b>Returned Value</b></p>
+<P>
+None.
+</P>
+<p><b>Description</b></p>
+<P>
+This macro is used for setting details pertaining to the source input to the RDP's color combiner.  Most of the standard input source is set in advance, but by including color constants and alpha constants, you can specify a unique CC mode.  <A HREF="gDPSetCombineMode.htm">gDPSetCombineMode</A> is a simplified version of this macro.  Thus, the following two sets of syntax are the same:  
+<p>
+<PRE><CODE>(a) gsDPSetCombineMode(G_CC_MODULATE, G_CC_MODULATE)
+(b) <B>gsDPSetCombineLERP</B>(TEXEL0, 0, SHADE, 0, TEXEL0, 0,
+      SHADE, 0, TEXEL0, 0, SHADE, 0, TEXEL0, 0, SHADE, 0)
+</CODE></PRE>
+</P>
+<P>
+For details, see <A HREF="gDPSetCombineMode.htm">gDPSetCombineMode</A> as well as Section 12.6 "CC: Color Combiner" in the N64 Programming Manual.</p>
+<p>
+<DL>
+  <DT>Below are the color constants that can be used for the arguments <B>a0</B>, <B>b0</B>, <B>c0</B>, <B>d0</B> and the arguments <B>a1</B>, <B>b1</B>, <B>c1</B>, <B>d1</B>:</p>
+<p>
+  <DL>
+  <DT><B>COMBINED</B>
+  <DD>Color combined from 1st cycle
+  <DT><B>TEXEL0</B>
+  <DD>Texture color
+  <DT><B>TEXEL1</B>
+  <DD>Texture color from tile+1
+  <DT><B>PRIMITIVE</B>
+  <DD>Primitive color
+  <DT><B>SHADE</B>
+  <DD>Shading color
+  <DT><B>ENVIRONMENT</B>
+  <DD>Environment color
+  <DT><B>CENTER</B>
+  <DD>Chroma key center value
+  <DT><B>SCALE</B>
+  <DD>Chroma key scale value
+  <DT><B>COMBINED_ALPHA</B>
+  <DD>Combined alpha from 1st cycle
+  <DT><B>TEXEL0_ALPHA</B>
+  <DD>Texture alpha
+  <DT><B>TEXEL1_ALPHA</B>
+  <DD>Texture alpha from tile+1
+  <DT><B>PRIMITIVE_ALPHA</B>
+  <DD>Primitive alpha
+  <DT><B>SHADE_ALPHA</B>
+  <DD>Shading alpha
+  <DT><B>ENV_ALPHA</B>
+  <DD>Environment alpha
+  <DT><B>LOD_FRACTION</B>
+  <DD>LOD coefficient
+  <DT><B>PRIM_LOD_FRAC</B>
+  <DD>Primitive LOD coefficient
+  <DT><B>NOISE</B>
+  <DD>Random noise
+  <DT><B>K4</B>
+  <DD>Color conversion constant K4
+  <DT><B>K5</B>
+  <DD>Color conversion constant K5
+  <DT><B>1</B>
+  <DD>1.0
+  <DT><B>0</B>
+  <DD>0.0
+  </DL></p>
+
+<p>Below are the alpha constants that can be used for the arguments <B>Aa0</B>, <B>Ab0</B>, <B>Ac0</B>, <B>Ad0</B> and the arguments <B>Aa1</B>, <B>Ab1</B>, <B>Ac1</B>, <B>Ad1</B>:</p>
+
+<p><DL>
+  <DT><B>COMBINED</B>
+  <DD>Combined alpha from 1 Cycle mode
+  <DT><B>TEXEL0</B>
+  <DD>Texture alpha
+  <DT><B>TEXEL1</B>
+  <DD>Texture alpha from tile+1
+  <DT><B>PRIMITIVE</B>
+  <DD>Primitive alpha
+  <DT><B>SHADE</B>
+  <DD>Shading alpha
+  <DT><B>ENVIRONMENT</B>
+  <DD>Environment alpha
+  <DT><B>LOD_FRACTION</B>
+  <DD>LOD coefficient
+  <DT><B>PRIM_LOD_FRAC</B>
+  <DD>Primitive LOD coefficient
+  <DT><B>1</B>
+  <DD>1.0
+  <DT><B>0</B>
+  <DD>0.0
+  </DL></p>
+</DL>
+<p><b>See Also</b></p>
+<P>
+<A HREF="gDPSetCombineMode.htm">gDPSetCombineMode</A>
+</P>
+<p><b>Revision History</b></p>
+<P>
+03/01/99  Newly created.
+</P>
+</BODY>
+</HTML>

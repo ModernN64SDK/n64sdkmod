@@ -1,0 +1,54 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<!--Editor's Notes: JLR made reformating and copy edits.
+Matt P. added links, updated format-->
+<title>nosLoadFont</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>nosLoadFont</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p><i>Loads font data onto memory</i></p>
+
+<h3>Syntax</h3>
+<p><pre><code>#include &lt;libnos.h&gt;    
+void  nosLoadFont (u16  *font_buf);</pre></code>
+</p>
+<h3>Description</h3>
+
+<p><tt>nosLoadFont</tt> loads the compressed character font data onto the RAM in order of the N64 font code, so that the application can use it. This function takes the starting address for the buffer to load font data as the argument. The required buffer sizes are:
+</p>
+
+<table border="0">
+    <tr>
+        <td>English</td>
+        <td>2112 bytes (0x840)</td>
+        <td>... defined by FONTSIZE_E</td>
+    </tr>
+    <tr>
+        <td>English + Japanese</td>
+        <td>4768 bytes (0x12a0)</td>
+        <td>... defined by FONTSIZE_J</td>
+    </tr>
+</table>
+
+<p>The size of the character font is 16 dots wide by 16 dots high. A string 16 dots wide corresponds to 16 bits of data, with Hi referring to the left side of the font and Lo referring to the right side.
+</p>
+
+<p>The N64 font code, which is the order in which the character font is arranged, is shown here.
+</p>
+
+<img src="table1.gif">
+
+<p><br>
+</p>
+
+<H3>Revision History</H3>
+<P>
+04/30/1999 Changed Format
+</P>
+<br><br>
+</body>
+</html>

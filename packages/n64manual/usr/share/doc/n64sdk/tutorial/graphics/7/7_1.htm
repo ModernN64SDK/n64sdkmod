@@ -1,0 +1,41 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Graphics-Chapter 7  Z Buffering</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/23/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<BR>
+<font style="font-size:16pt"><B>CHAPTER 7  Z BUFFERING</B></FONT>
+<BR><BR>
+<HR SIZE=3 NOSHADE>
+<P>
+We have reached the midway point of the Graphics tutorial now and gone into quite a bit of detail about the Combiner and the Blender.  In this chapter, we bring up the topic of Z buffering to give you a general understanding of how this relates to the Blender.  We will concentrate on the basics here (by basic, we do not mean easy), and then cover expansions on the theme in subsequent chapters.  If there are parts you do not fully understand, please make the effort to reread the pertinent sections to gain a deeper comprehension of things.
+</P>
+
+<font style="font-size:12pt"><B>7.1  Determining Depth with Z Buffering</B></FONT>
+<P>
+In the sample programs up through Chapter 6, we displayed a single cube model, changing the texture mapped to the cube and performing various processes in the Combiner and Blender.  Even by doing just these things, you saw how it is possible to effect large changes in the final appearance of the image.<BR><BR>
+     For the purpose of explaining the N64 system of Z buffering, we have prepared a sample program in this chapter that uses models that cannot be displayed correctly without Z buffering.  The single cube is changed to models of thin rods that are displayed overlapping.  There is only one set of model data, but this data is reused to render three rods.
+<BR><BR>
+     First try running the gfx7.c sample program as is without any changes.  The three rods overlap one another, but do they do not look like they have been rendered correctly. 
+</P>
+<P>
+<BR>
+<IMG SRC="image23.gif" WIDTH="453" HEIGHT="118">
+</P>
+<P>
+<B>Figure 7-1  Screen shots of gfx7.c sample program</B>
+</P>
+<P>
+By default, the gfx7.c program renders the poles without the use of Z buffering.  The models simply ride on top of one another.  With the default settings, the poles are not displayed correctly, and one pole always sits entirely in the front-most plane.<BR><BR>
+
+     Next we will change undef to define in line 32 of gfx7.c and compile and run the program again.  This time the rendering should correctly reflect the depth of the model.<BR><BR>
+
+     Line 32 of gfx7.c defines the __Z_BUFFER__ macro.  When this macro is defined, rendering is performed using Z buffering.  In order to accurately render the three overlapping pole models you need the help of the Z buffer.<BR><BR>
+     The gfx7.c sample program differs from the samples of the previous chapters in that it makes repeated use of the same model to display three cubes (converted into pole shapes).  Thus, if you simply place the shared model view matrix on the matrix stack, you end up pushing the matrix stack to make use of it later.  We will not cover the subject of matrix manipulations in this chapter, so if you are interested in this topic, see the <TT>DrawCube</TT> function in gfx7.c.
+</P>
+</BODY>
+</HTML>

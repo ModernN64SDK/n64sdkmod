@@ -1,0 +1,136 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+
+<HTML>
+<HEAD>
+<TITLE>07-05</TITLE>
+</HEAD>
+
+<BODY bgcolor="#FFFFFF">
+<font face="arial" size="-1">
+<P>
+<STRONG>7.5 Other Important Functions</STRONG> 
+ 
+<HR>
+<P>
+<A name="01"> <u>7.5.1 Issued when a preNMI Occurs </u>u</A>
+ 
+<P>
+<TABLE border="1">
+  <TR>
+    <TD><FONT face="arial" size="-1"><STRONG>LeoReset ( ) function</STRONG></FONT>
+    <P>
+<FONT   face="Courier">#include &lt;PR/leo.h&gt;<BR>
+</FONT>
+    </P>
+    <P>
+<FONT face="Courier">void LeoReset(void);</FONT>
+    </P>
+</TD></TR>
+</TABLE>
+
+<P>
+When a preNMI occurs, the above function should be called as quickly as possible.
+</P>
+<P>
+If reading or writing is in progress when a preNMI occurs and processing of the block being accessed is terminated, this function terminates the reading or writing so that the subsequent block is not accessed.  Because occurrence of an NMI during PI bus use is extremely critical, please be sure to issue a call to LeoReset()at the occurrence of a preNMI, which precedes an NMI.
+</P>
+<P>
+The function returns the LEO_ERROR_WAITING_NMI error for interrupted commands and for commands that are issued but not executed following LeoReset( ) execution. 
+</P>
+<P>
+<A href="index.htm#index"><IMG src="../../gif/index.gif" height="17" width="65" border="0"></A>
+ 
+<HR>
+<P>
+<A name="02"><FONTface="arial" size="-1"><u>7.5.2 Clearing a Reset</u> </A>
+
+<P>
+<TABLE border="1">
+  <TR>
+    <TD><FONT face="arial" size="-1"><STRONG>LeoResetClear ( ) function </STRONG></FONT>
+    <P>
+<FONT  face="Courier">#include &lt;PR/leo.h&gt;<BR>
+</FONT>
+    </P>
+    <P>
+<FONT face="Courier">void LeoResetClear(void);</FONT>
+    </P>
+</TD></TR>
+</TABLE>
+
+<P>
+The <A href="../../n64man/64dd/LeoResetClear.htm"> LeoResetClear() </A>function is used only when a <FONT face="Courier">POWERONRESET_DEVICERESET_OCCURED</FONT> error occurs with the first instance of <A href="../../n64man/64dd/LeoReadDiskID.htm"><FONT face="Century">LeoReadDiskID()</FONT></A> in games started from Game Pak ROM.  For details, please see <A href="07-01.htm">"Section 7.1, Initialization Functions</A>."
+ 
+<P>
+Use of the LeoResetClear() function in any instances but the above is prohibited.  Occurrence of a POWERONRESET_DEVICERESET_OCCURRED error in any other instance is considered a drive abnormality, and the error should be displayed on the screen.  For details, please see <A href="../dd10/index.htm">"Chapter 10,   Error-Handling Sequences."</A>
+ 
+<P>
+<A href="index.htm#index"><IMG src="../../gif/index.gif" height="17" width="65" border="0"></A>
+ 
+<HR>
+<P>
+<A name="03"> <u>7.5.3 Clearing the Command Queue</u></A>
+</P>
+<TABLE border="1">
+  <TR>
+    <TD><font face="Arial" size="-1"><STRONG>LeoClearQueue ( )function </STRONG>
+    <P>
+<FONT   face="Courier">#include &lt;PR/leo.h&gt;<BR>
+</FONT>
+    </P>
+    <P>
+<FONT face="Courier">void LeoClearQueue(void);</FONT>
+    </P>
+</TD></TR>
+</TABLE>
+
+<P>
+Clears any commands remaining in the command queue at that time.  Commands being executed cannot be canceled.  A COMMAND_TERMINATED error is returned for cleared commands.  The <FONT face="Courier"><A href="../../n64man/64dd/LeoClearQueue.htm"> LeoClearQueue()</A></font> function itself  returns no errors as long as the  <font face="courier">leo manager</font> has been started.
+ 
+<P>
+<A href="index.htm#index"><IMG src="../../gif/index.gif" height="17" width="65" border="0"></A>
+ 
+<HR>
+<P>
+<A name="04"><u> 7.5.4 Restarting </u></A>
+
+<P>
+<TABLE border="1">
+  <TR>
+    <TD><B><FONT face="arial" size="-1">LeoBootGame ( ) function </B><P>
+#include &lt;PR/leo.h&gt;<BR>
+<p>
+void LeoBootGame(void *bootaddr);</TD></TR>
+</TABLE>
+
+<P>
+Performs a restart. For an overview of restarting and details on using this function, see <a href="../dd15/15-01.htm">Section 15.1, "Rebooting."</a>
+</P>
+<P>
+<A href="index.htm#index"><IMG src="../../gif/index.gif" height="17" width="65" border="0"></A>
+  
+<HR>
+<P>
+<A name="05"><u>7.5.5 Checking whether a drive is connected</u></A>
+ 
+<P>
+<TABLE border="1">
+  <TR>
+    <TD><b><FONT face="arial" size="-1">LeoDriveExist ( ) function </B>
+<P>
+#include &lt;PR/leo.h&gt; 
+<p>
+u32 LeoDriveExist(void);</TD></TR>
+</TABLE>
+
+<P>
+Checks whether a drive is connected.  Returns 1 if a drive is connected and 0 if not. 
+</P>
+<P>
+The function determines whether a drive is connected by checking whether DDROM is present.  Note that, as a result, if the function is used when a development drive is used and no IPLROM cassette is connected, the function will incorrectly determine that there is no drive connected.  
+</P>
+<P>
+<A href="index.htm#index"><IMG src="../../gif/index.gif" height="17" width="65" border="0"></A>
+</P>
+</BODY>
+</HTML>

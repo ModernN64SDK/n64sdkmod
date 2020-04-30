@@ -1,0 +1,106 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>Chapter 12</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font face="arial" size="-1">
+<p><font size="3"><strong>Chapter 12 Programming Cautions</strong></font>
+<hr>
+
+<p>This chapter is a compilation of the tasks that must be performed and areas requiring particular care, including some of the points already mentioned.  A list of these items is presented first.  Descriptions of each item, including detailed reasons for each, are subsequently presented.  Please read and take note of these items.</p>
+
+<p> <strong>Items requiring close attention
+</strong> 
+
+<ol>
+<li>During disk access, do not access the Game Pak ROM or other AD16 device. (12.1)
+<P>
+<li>After the IPL starts the game, disk access is prohibited until the first screen appears. (12.2)
+<P>
+<li> After a disk exchange is detected, be sure to call <a href="../../n64man/64dd/LeoReadDiskID.htm">LeoReadDiskID()</a>.  Subsequently, be sure to compare the disk ID read by this function with the original ID. (12.3)
+<P>
+<li>If a write to save data is interrupted by the user, the contents of the block being written to at that time may be destroyed. (12.12)</dd>
+    <dd>5. In the master, place an initial value in blocks that are used or may be used by the game. (12.4)
+<P>
+<li>When the RTC is used during a Game Pak-startup game, please ensure that the time can be set during the game.  (It is not necessary to enable the time to be set at any point during a game.  It would be sufficient, for example, for a menu for setting the time to appear immediately after the game starts.)  In addition, please be careful to ensure that problems such as game hang-ups do not occur if the user enters an odd time. (12.5)
+<P>
+<li>Please set the times for the standby and sleep modes to the default settings or to the shortest possible times below these settings. (12.6)
+<P>
+<li>If a preNMI state occurs, be sure to call <a href="../../n64man/64dd/LeoReset.htm">LeoReset( )</a>. (12.7)
+<P>
+<li>Ensure that screen display is possible even if startup is performed using a disk other than the startup disk. (12.8)
+<P>
+<li>Ensure that changes in processing time resulting from retries or errors are adequately handled. (12.9)</ol>
+
+<p><strong>Other points of caution</strong>
+
+<ol>
+<li>Use the EPI functions to access the PI bus.  Do not use the Pi functions. (12.10)
+<P>
+<li>When very important data are written, it is recommended that the data be read and checked immediately after they are written to confirm that they were written properly (verification). (12.11)
+<P>
+<li>If a disk exchange is detected at a point where a calculation using <a href="../../n64man/64dd/LeoByteToLBA.htm">LeoLBAToByte()</a>, <a href="../../n64man/64dd/LeoByteToLBA.htm">LeoByteToLBA()</a>, or <a href="../../n64man/64dd/LeoReadCapacity.htm">LeoReadCapacity()</a> is required, be sure to execute the function again. (12.13)
+<P>
+<li>Please consider that a disk may be removed part way through a game.  Also consider the time required for error handling when a disk is reinserted after being removed. (12.14)
+<P>
+<li>Calling disk-related functions from multiple threads is problematic. (12.15)
+<P>
+<li>Consider the possibility of battery failure when using the RTC. (12.16)
+<P>
+<li>Consider the accuracy of the RTC when using it. (12.17)
+<P>
+<li>The IPL is installed in /usr/lib/PR/ in the NW version, in same directory as Partner in PC versions 1.06 or earlier, and in ultra\usr\lib\PR in PC versions 1.07 or later. (12.18)
+<P>
+<li>Be careful when using a shared command block.  The next function executed will overwrite the previous results. (12.19)
+<P>
+<li>LeoBootID is not saved with a Game Pak startup.(12.20)</ol>
+
+<p>The following section elaborates on each of the above points in order.</p>
+
+<hr>
+
+<p><a href="12-00.htm#01" name="index"><font size="2">12.1 Mixing of 64DD instructions and PI bus access is prohibited.</font></a></p>
+
+<p><a href="12-00.htm#02"><font size="2">12.2 After the IPL starts the game, disk access is prohibited until the first screen.</font></a></p>
+
+<p><a href="12-00.htm#03"><font size="2">12.3 After a disk exchange is detected, be sure to call LeoReadDiskID().  Then check the disk ID read by this function.</font></a></p>
+
+<p><a href="12-00.htm#04"><font size="2">12.4  In the master, place an initial value in blocks that are used or may be used by the game.</font></a></p>
+
+<p><a href="12-00.htm#05"><font size="2">12.5 Setting the RTC at the time of a Game Pak startup. </font></a></p>
+
+<p><a href="12-00.htm#06"><font size="2">12.6 Set the times for switching to standby and sleep modes to the shortest times possible.</font></a></p>
+
+<p><a href="12-00.htm#07"><font size="2">12.7 Call LeoReset() if a preNMI state occurs.(</font></a></p>
+
+<p><a href="12-00.htm#08"><font size="2">12.8 Ensure that screen display is possible even when startup is performed using a non-startup disk.</font></a></p>
+
+<p><a href="12-00.htm#09"><font size="2">12.9 Ensure that changes in processing time resulting from retries or errors are adequately handled.</font></a></p>
+
+<p><a href="12-00.htm#10"><font size="2">12.10 Use the EPI functions to access the PI bus.  Do not use the Pi functions.</font></a></p>
+
+<p><a href="12-00.htm#11"><font size="2">12.11 Verification is recommended when writing critical data.</font></a></p>
+
+<p><a href="12-00.htm#12"><font size="2">12.12  Pay careful attention to write interrupts. </font></a></p>
+
+<p><a href="12-00.htm#13"><font size="2">12.13 If a disk exchange is detected at a point in the program that uses results from LeoLBAToByte(), LeoByteToLBA(), or LeoReadCapacity( ), execute the function again.</font></a></p>
+
+<p><a href="12-00.htm#14"><font size="2">12.14 Consider that a disk may be removed part way through a game.  Also consider the time required for error handling when a disk is reinserted after being removed.</font></a></p>
+
+<p><a href="12-00.htm#15"><font size="2">12.15 Calling to disk-related functions from multiple threads is problematic.</font></a></p>
+
+<p><a href="12-00.htm#16"><font size="2">12.16 Consider the possibility of battery failure when using the RTC.</font></a></p>
+
+<p><a href="12-00.htm#17"><font size="2">12.17 Give adequate consideration to the accuracy of the RTC when using it.</font></a></p>
+
+<p><a href="12-00.htm#18"><font size="2">12.18 The IPL is installed in /usr/lib/PR/ in the NW version, in same directory as Partner in PC versions 1.06 or earlier, and in ultra\usr\lib\PR in PC versions 1.07 or later.</font></a></p>
+
+<p><a href="12-00.htm#19"><font size="2">12.19 Be careful when using a shared command block.  The next function executed will overwrite the previous results.</font></a></p>
+
+<p><a href="12-00.htm#20"><font size="2">12.20 LeoBootID is not saved with a Game Pak startup.  </font></a></p>
+
+<hr>
+</body>
+</html>

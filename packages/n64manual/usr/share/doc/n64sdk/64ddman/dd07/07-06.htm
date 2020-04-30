@@ -1,0 +1,138 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<TITLE>07-06</TITLE>
+</HEAD>
+
+<BODY bgcolor="#FFFFFF">
+<font face="arial" size="-1">
+<P>
+<STRONG>7.6 Special Functions </STRONG> 
+<HR>
+<P>
+Described in this section are special functions that are not commonly used.  Use of these functions is accompanied by various restrictions.  Please note these restrictions when using the functions.
+ 
+<P>
+<A href="index.htm#index"><IMG src="../../gif/index.gif" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<P>
+<A name="01"><u>7.6.1 Setting the Mode Switch Time </u>u</A>
+
+<P>
+<TABLE border="1">
+  <TR>
+    <TD><FONT face="arial" size="-1"><STRONG>LeoModeSelectAsync ( )function </STRONG> 
+    <P>
+<FONT face="Courier">#include &lt;PR/leo.h&gt;<BR>
+</FONT>
+ 
+    <P>
+<FONT  face="Courier">s32 LeoModeSelectAsync(LEOCmd *<U>cmdBlock</U>,
+u32 <U>standby</U>,</FONT>
+    
+    <P>
+<FONT face="Courier">u32 <U>sleep</U>, OSMesgQueue *<U>mq</U>);<BR>
+</FONT>
+ 
+    <P>
+<FONT face="Courier"><U>standby</U></FONT> &nbsp; timing of change from active to standby mode
+ 
+    <P>
+<FONT face="Courier"><U>sleep</U></FONT> &nbsp;  &nbsp; &nbsp; timing of change from standby to sleep mode
+ 
+</TD></TR>
+</TABLE>
+
+<P>
+The  LeoModeSelect( ) function of previous versions is no longer available.  Provided instead is the <A href="../../n64man/64dd/LeoModeSelectAsync.htm"> LeoModeSelectAsync( ) </A> function for asynchronous functions. 
+</P>
+<P>
+The switch times from active mode to standby mode and from standby mode to sleep mode are set using <U>standby</U> and <U>sleep</U>, respectively (units: seconds).  The default settings are 3 seconds for <U>standby</U> and 1 second for <U>sleep</U>.  That is, if a command that puts 64DD in active mode - such as a read, write, or seek command - is not issued for approximately 3 seconds, 64DD automatically switches to standby mode.  If one of these commands is not issued in standby mode for approximately 1 second, 64DD automatically switches to sleep mode. The <A href="../../n64man/64dd/LeoModeSelectAsync.htm">LeoModeSelectAsync( )</A> function can change these times.  Each can be set to between 0 and 10 seconds in 1-second units.
+ 
+<P>
+For more information,  on active, standby, and sleep mode, see <A href="07-02.htm#01">"7.2.1, Forced Mode Changes."</A>
+ 
+<P>
+For information on <U>cmdBlock</U>, or <U>mq</U>, see the description in section <A href="07-02.htm">"7.2, Asynchronous Functions."</A>  The return value is 0 if leo manager is started and -1 if it is not.  If the arguments provided for <U>standby</U> and <U>sleep</U> are not between 0 and 10, -1 is returned even if the leo manager is started.  In this case, messages are not sent from leo manager as <U>mq</U>, increasing the chance of a message queue hangup by the subsequent function, osRecvMesg().  In programs that specify arguments for <U>standby</U> and <U>sleep</U> via variables rather than by assigning them constants, particular care is required to ensure that the values of these variables are between 0 and 10. 
+</P>
+<P>
+<b>Note:</B> Settings that are excessively high invariably shorten the life of the user's  64DD.  Whenever possible, please use the default settings.  Settings that are shorter than the default values pose no problems. 
+ 
+<P>
+<A href="index.htm#index"><IMG src="../../gif/index.gif" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<P>
+<A name="02"> <u>7.6.2 Rezeroing</u></A>
+
+<P>
+<TABLE border="1">
+  <TR>
+    <TD><FONT face="arial" size="-1"><STRONG>LeoRezero ( ) function </STRONG> 
+    <P>
+<FONT   face="Courier">#include &lt;PR/leo.h&gt;<BR>
+</FONT>
+    </P>
+    <P>
+<FONT   face="Courier">s32 LeoRezero(LEOCmd *<U>cmdBlock</U>, OSMesgQueue
+*<U>mq</U>);</FONT>
+    </P>
+</TD></TR>
+</TABLE>
+
+<P>
+When a seek is performed for <FONT face="Century">LBA0</FONT>, the drive's internal register is returned to the initialized state.  With typical use, use of this command is unnecessary.  A simple seek for <FONT face="Century">LBA0</FONT> can be completed more quickly using <A href="../../n64man/64dd/LeoSeek.htm"> LeoSeek() </A>. 
+</P>
+<P>
+For information on <FONT face="Courier"><U>cmdBlock</U></FONT>, or <FONT face="Courier"><U>mq</U></FONT>, see the description in <A href="07-02.htm">Section 7.2, "Asynchronous Functions."</A>
+</P>
+<P>
+<A href="index.htm#index"><IMG src="../../gif/index.gif" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<P>
+<A name="03"><u>7.6.3 Checking the Current Drive Status</u>u</A>
+
+<P>
+<TABLE border="1">
+  <TR>
+    <TD><FONT face="arial" size="-1"><STRONG>LeoTestUnitReady ( )function </STRONG> 
+    <P>
+<FONT   face="Courier">#include &lt;PR/leo.h&gt;<BR>
+</FONT>
+    
+    <P>
+<FONT   face="Courier">typedef u8 LEOStatus;</FONT>
+   
+    <P>
+<FONT   face="Courier">s32 LeoTestUnitReady(LEOStatus *<U>status</U>);<BR>
+</FONT>
+     
+    <P>
+<FONT face="Courier"><U>status</U></FONT> <FONT face="Courier">64DD</FONT>status
+ 
+</TD></TR>
+</TABLE>
+
+<P>
+<FONT face="Courier">#define LEO_TEST_UNIT_MR 0x01 /* MEDIUM REMOVED */</FONT>
+</P>
+<P>
+<FONT face="Courier">#define LEO_TEST_UNIT_RE 0x02 /* HEAD RETRACTED */</FONT>
+</P>
+<P>
+<FONT face="Courier">#define LEO_TEST_UNIT_SS 0x04 /* SPINDLE STOPPED */</FONT>
+</P>
+<P>
+Checks the status of the  64DD , and the result is stored in  status .  When the <FONT face="Courier">LEO_TEST_UNIT_MR</FONT> bit is set, no disk is inserted; when the <FONT face="Courier">LEO_TEST_UNIT_RE</FONT> bit is set, the head is retracted; and when the <FONT face="Courier">LEO_TEST_UNIT_SS</FONT> bit is set, the motor is stopped.  Because access through the  PI bus is required to execute this command, it cannot be executed if the  PI  bus is in use.  In such cases, <FONT face="Courier">LEO_ERROR_BUSY</FONT> is returned.  
+ 
+<P>
+<B>Note:</B> Whether a disk has been removed can be determined by issuing a call to one of the asynchronous functions.  It is usually not necessary to determine whether the head is retracted or the motor is stopped (i.e. the current status [mode] of the drive).  For example, if active mode is desired, switching to this mode can be accomplished directly using the <A href="../../n64man/64dd/LeoSpdlMotor.htm"> LeoSpdlMotor( ) </A>function.  Thus, there are few cases in which the LeoTestUnitReady ( ) command can be used.
+ 
+<P>
+<A href="index.htm#index"><IMG src="../../gif/index.gif" height="17" width="65" border="0"></A>
+ 
+<HR>
+</BODY>
+</HTML>

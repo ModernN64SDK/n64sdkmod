@@ -1,0 +1,98 @@
+<HTML>
+<HEAD>
+<TITLE>nuGfxSetCfb</TITLE>
+</HEAD>
+
+<BODY bgcolor="#FFFFFF">
+<font face="arial" size="-1">
+
+<P>
+<FONT size="5"><b><IMG src="../nusystem2.gif" height="30" width="176">Function</b></FONT>
+
+<HR>
+<P>
+<FONT size="3"><b>nuGfxSetCfb</b></FONT>
+<p>
+<HR>
+<P>
+<b>Syntax</b>
+<font face="courier" size="2">
+<PRE>
+void nuGfxSetCfb(u16** framebuf, u32 framebufnum);
+</PRE>
+</font>
+<P>
+<b>Arguments</b>
+</P>
+<font face="courier" size="2">
+<PRE>
+**framebuf        pointer to the pointer array of the frame buffer 
+framebufnum       number of the frame buffer
+</PRE>
+</font>
+<P>
+<b>Return Value</b>
+</P>
+<font face="courier" size="2">
+<PRE>
+None
+</PRE>
+</font>
+<P>
+<b>Description</b>
+</P>
+<P>
+<i>Registers the frame buffer</i>
+</P>
+<P>
+Registers an array of RDRAM address for the frame buffer. By default, the following low resolution (320*240 Dot), 16 bit color pixel, and pointer arrays for three frame buffers are registered by the nuGfxInit function with the triple frame buffer. </P>
+<font face="courier" size="2">
+<PRE>
+        u16* FrameBuf[3] = {
+             (u16*)NU_GFX_FRAMEBUFFER0_ADDR,
+             (u16*)NU_GFX_FRAMEBUFFER1_ADDR,
+             (u16*)NU_GFX_FRAMEBUFFER2_ADDR
+        };
+</PRE>
+</font>
+<P>
+The pointer for the frame buffer can be registered using the nuGfxSetCfb function when changing the pointer for the frame buffer or creating the initialized function without using the nuGfxInit function.  Specify the pointer for the pointer array of the frame buffer for framebuf. Specify the number of the frame buffer for framebufnum. </P>
+<P>
+The number of frame buffers can also be registered in the scheduler using the <A href="../sche/nuScSetFrameBufferNum.htm">nuScFrameBufferNum</A> function.
+</P>
+<P>
+The pointer array registered here will be used inside the Graphics Task Manager.</P>
+<P>
+<b>Example:</b>
+<font face="courier" size="2">
+<PRE>
+/* The pointer array of the frame buffer */
+u16* FrameBuf[3] = {
+     (u16*)NU_GFX_FRAMEBUFFER0_ADDR,
+     (u16*)NU_GFX_FRAMEBUFFER1_ADDR,
+     (u16*)NU_GFX_FRAMEBUFFER2_ADDR
+};
+void gfxSetCfb(void)
+{
+  nuGfxSetCfb(FrameBuf, 3); /* Register the frame  buffer*/
+  ......
+}
+</PRE>
+</font>
+
+<p><b>
+See Also</b>
+<p><A href="nuGfxInit.htm">nuGfxInit</A> and <A href="../sche/nuScSetFrameBufferNum.htm">nuScFrameBufferNum</A>
+<p>
+<hr>
+<P>
+<b>Revision History</b>
+<P>
+2/1/99 Added text regarding registration of the number of frame buffers in the scheduler. 
+</P>
+<hr>
+<P align="right">
+<A href="index.htm"><IMG src="../index.gif" height="17" width="65" border="0"></A>
+</P>
+</BODY>
+</HTML>

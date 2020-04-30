@@ -1,0 +1,590 @@
+<html>
+<head>
+<title>[N64 CITextureEditor] 3.User Interface</title>
+</head>
+<body>
+<p align="right"><a href="../us/gui.html">English</a></p>
+<h2>３．<font color=#008000>ユーザーインターフェイス</font></h2>
+<ol>
+ <li><a href="gui.html#UI_MENU">メニュー</a>
+ <ol>
+  <li><a href="gui.html#UI_MENU_FILE">ファイル</a>
+  <li><a href="gui.html#UI_MENU_EDIT">編集</a>
+  <li><a href="gui.html#UI_MENU_PROJECT">プロジェクト</a>
+  <li><a href="gui.html#UI_MENU_PALETTE">パレット</a>
+  <li><a href="gui.html#UI_MENU_DRAW">描画</a>
+  <li><a href="gui.html#UI_MENU_VIEW">表示</a>
+  <li><a href="gui.html#UI_MENU_TOOL">ツール</a>
+  <li><a href="gui.html#UI_MENU_WINDOW">ウィンドウ</a>
+  <li><a href="gui.html#UI_MENU_HELP">ヘルプ</a>
+ </ol>
+ <li><a href="gui.html#UI_CTRL">コントロール</a>
+ <ol>
+  <li><a href="gui.html#UI_CTRL_TOOL_BAR">ツールバー</a>
+  <li><a href="gui.html#UI_CTRL_STATUS_BAR">ステータスバー</a>
+  <li><a href="gui.html#UI_CTRL_DRAW_TOOL_BAR">ドロー・ツールバー</a>
+  <li><a href="gui.html#UI_CTRL_VIEW_TOOL_BAR">ビュー・ツールバー</a>
+  <li><a href="gui.html#UI_CTRL_PALETTE_BAR">パレット・ダイアログバー</a>
+  <li><a href="gui.html#UI_CTRL_PROJECT_BAR">プロジェクト・ダイアログバー</a>
+ </ol>
+ <li><a href="gui.html#UI_WINDOW">ウィンドウ</a>
+ <ol>
+  <li><a href="gui.html#UI_WINDOW_TMF">テクスチャ・イメージ・ウィンドウ</a>
+  <li><a href="gui.html#UI_WINDOW_TPF">テクスチャ・プロジェクト・ウィンドウ</a>
+ </ol>
+ <li><a href="gui.html#UI_DLG">ダイアログ</a>
+ <ol>
+  <li><a href="gui.html#UI_DLG_FILE_NEW">ファイル新規作成・ダイアログ</a>
+  <ol>
+   <li><a href="gui.html#UI_DLG_FILE_NEW_TPF">プロジェクトページ</a>
+   <li><a href="gui.html#UI_DLG_FILE_NEW_TMF">イメージページ</a>
+   <li><a href="gui.html#UI_DLG_FILE_NEW_TLF">パレットページ</a>
+  </ol>
+  <li><a href="gui.html#UI_DLG_EDIT_PROJECT">プロジェクト・プロパティ・ダイアログ</a>
+  <li><a href="gui.html#UI_DLG_EDIT_PICTURE">ピクチャ編集ダイアログ</a>
+  <li><a href="gui.html#UI_DLG_EDIT_PALETTE">カラー設定ダイアログ</a>
+  <li><a href="gui.html#UI_DLG_ABOUT">アバウト・ダイアログ</a>
+  <li><a href="gui.html#UI_DLG_OPTIONS">オプション設定ダイアログ</a>
+  <li><a href="gui.html#UI_DLG_ASK_USE_PROJECT">プロジェクト利用の問い合わせダイアログ</a>
+ </ol>
+</ol>
+<hr>
+<ol>
+ <a name="UI_MENU">
+ <li><b><font color=green>メニュー</font></b>
+ <!--ol-->
+  <table cellpadding=4 border=1>
+   <tr>
+    <th bgcolor=gray nowrap><font color=white>メニュー</font></th>
+    <th bgcolor=gray nowrap><font color=white>イメージ</font></th>
+    <th bgcolor=gray nowrap><font color=white>説明</font></th>
+   </tr>
+   <tr>
+    <td valign=top nowrap bgcolor=#c0c0c0><a name="UI_MENU_FILE">1.ファイル</td>
+    <td valign=top><img src="images/menu_file.gif" alt="ファイルメニュー"></td>
+    <td valign=top>
+     <li><font color=green><b>新規作成</b></font>は
+	  <a href="spec.html#FILE_TMF">TMF</a>/<a href="spec.html#FILE_TPF">TPF</a>の
+	  いずれを作成するかのダイアログが開きます。いずれかを選択すると、
+	  それぞれの<a href="#UI_DLG_FILE_NEW_TPF">TPF</a>/<a href="#UI_DLG_FILE_NEW_TMF">TMF</a>作成ダイアログが開きます。
+	  <!--
+      <a href="#UI_DLG_FILE_NEW">ファイル新規作成ダイアログ</a>を開きます。
+      新しい<a href="spec.html#FILE_TPF">TPF</a>/<a href="spec.html#FILE_TMF">TMF</a>/<a href="spec.html#FILE_TLF">TLF</a>を
+      編集する場合はこれを選択して下さい。
+	  -->
+     <li><font color=green><b>開く</b></font>は
+      ファイルオープンダイアログを開きます。
+     <li><font color=green><b>閉じる</b></font>は
+      現在編集中のファイルを閉じます。
+      この時、未保存のファイルがある場合、保存するか、破棄するか、閉じるのをキャンセルするかを伺います。
+     <li><font color=green><b>上書き保存</b></font>は、
+      現在編集中のファイルを保存します。
+      名前が未設定の新規イメージの場合、ファイル保存ダイアログが開きますので、ファイル名を与えて保存して下さい。
+     <li><font color=green><b>名前を付けて保存</b></font>は、
+      現在編集中のファイルに名前をつけて保存します。
+      ファイル保存ダイアログが開きますので、新しいファイル名を与えて保存して下さい。
+     <li><font color=green><b>インポート</b></font>は、
+      他のファイルを<a href="spec.html#OBJECT_IMAGE">イメージ</a>に取り込みます。
+      <font color=red>参照</font>）<a href="spec.html#FILE_IMPORT">インポート可能なファイル</a>
+     <li><font color=green><b>エクスポート</b></font>は、
+      画像イメージを他のファイルに出力します。<br>
+      <font color=red>参照</font>）<a href="spec.html#FILE_EXPORT">エクスポート可能なファイル</a>
+     <li><font color=green><b>印刷</b></font>、
+      <font color=green><b>印刷プレビュー</b></font>、
+      <font color=green><b>プリンタの設定</b></font>は、
+      現在サポートされておりません。
+     <li><font color=green><b>アプリケーションの終了</b></font>は、
+      アプリケーションを終了します。
+      編集中のファイルはすべて閉じられます。
+      この時、未保存のファイルがある場合、保存するか、破棄するか、閉じるのをキャンセルするかを伺います。
+    </td>
+   </tr>
+   <tr>
+    <td valign=top nowrap bgcolor=#c0c0c0><a name="UI_MENU_EDIT">2.編集</td>
+    <td valign=top><img src="images/menu_edit.gif" alt="編集メニュー"></td>
+    <td valign=top>
+     <li><font color=green><b>元に戻す</b></font>は、
+      <a href="spec.html#OBJECT_IMAGE">イメージ</a>に対して行われた変更を元に戻す事が出来ます。
+      <!--現在、メモリの許す限り-->100ステップ前までの状態を記憶しています。
+      <font color=red>参照</font>）<a href="spec.html#METHOD_EDIT_IMAGE_UNDO">元に戻す</a>
+     <li><font color=green><b>やり直す</b></font>は、
+      元に戻した処理をやり直す事ができます。
+      <font color=red>参照</font>）<a href="spec.html#METHOD_EDIT_IMAGE_REDO">やり直す</a>
+     <li><font color=green><b>切り取り</b></font>は、
+      選択された<a href="spec.html#OBJECT_IMAGE">イメージ</a>をクリップボードにコピーした後、
+      削除します。
+      <font color=red>参照</font>）<a href="spec.html#METHOD_EDIT_IMAGE_CUT">切り取り</a>
+     <li><font color=green><b>コピー</b></font>は、
+      選択された<a href="spec.html#OBJECT_IMAGE">イメージ</a>をクリップボードにコピーします。
+      <font color=red>参照</font>）<a href="spec.html#METHOD_EDIT_IMAGE_COPY">コピー</a>
+     <li><font color=green><b>貼り付け</b></font>は、
+      クリップボードにある<a href="spec.html#OBJECT_IMAGE">イメージ</a>を貼り付けます。
+      <font color=red>参照</font>）<a href="spec.html#METHOD_EDIT_IMAGE_PASTE">貼り付け</a>
+     <li><font color=green><b>上下反転・左右反転</b></font>は、
+      選択された<a href="spec.html#OBJECT_IMAGE">イメージ</a>を反転します。
+      <font color=red>参照</font>）
+      <a href="spec.html#METHOD_EDIT_IMAGE_FLIP_Y">上下反転</a>と
+      <a href="spec.html#METHOD_EDIT_IMAGE_FLIP_X">左右反転</a>
+     <li><font color=green><b>プロジェクトに追加</b></font>は、
+      現在アクティブなTMF(TLFにアタッチしている必要があります)をプロジェクトに追加します。
+    </td>
+   </tr>
+   <tr>
+    <td valign=top nowrap bgcolor=#c0c0c0><a name="UI_MENU_PROJECT">3.プロジェクト</td>
+    <td valign=top><img src="images/menu_project.gif" alt="プロジェクトメニュー">
+    <img src="images/menu_project_picture.gif" alt="ピクチャー・サブメニュー">
+    </td>
+    <td valign=top>
+     <li><font color=green><b>新規作成</b></font>は
+      <a href="#UI_DLG_FILE_NEW_TPF">プロジェクトファイル新規作成ダイアログ</a>を開きます。
+      新しい<a href="spec.html#FILE_TPF">TPF</a>を編集する場合はこれを選択して下さい。
+     <li><font color=green><b>開く</b></font>は
+      ファイルオープンダイアログを開きます。
+     <li><font color=green><b>閉じる</b></font>は
+      現在編集中の<a href="spec.html#OBJECT_PROJECT">プロジェクト</a> (<a href="spec.html#FILE_TPF">TPF</a>)を閉じます。
+      この時、未保存のプロジェクトファイルがある場合、保存するか、破棄するか、閉じるのをキャンセルするかを伺います。
+     <li><font color=green><b>保存</b></font>は、
+      現在編集中の<a href="spec.html#OBJECT_PROJECT">プロジェクト</a> (<a href="spec.html#FILE_TPF">TPF</a>)を保存します。
+      名前が未設定の新規プロジェクトの場合、ファイル保存ダイアログが開きますので、ファイル名を与えて保存して下さい。
+     <li><font color=green><b>名前を付けて保存</b></font>は、
+      現在編集中の<a href="spec.html#OBJECT_PROJECT">プロジェクト</a> (<a href="spec.html#FILE_TPF">TPF</a>)に名前をつけて保存します。
+      ファイル保存ダイアログが開きますので、新しいファイル名を与えて保存して下さい。
+     <li><font color=green><b>ピクチャー・追加</b></font>は、
+      現在編集中の<a href="spec.html#OBJECT_PROJECT">プロジェクト</a>に新しい<a href="spec.html#OBJECT_PICTURE">ピクチャー</a>を新規追加します。
+      <a href="#UI_DLG_EDIT_PICTURE">ピクチャー設定ダイアログ</a>が開きますので、
+      新しいピクチャー名と<a href="spec.html#OBJECT_IMAGE">イメージ</a>と<a href="spec.html#OBJECT_PALETTE">パレット</a>を設定して登録して下さい。
+      <font color=red>参照</font>）<a href="spec.html#METHOD_EDIT_PICTURE_ADD">追加</a>
+     <li><font color=green><b>ピクチャー・変更</b></font>は、
+      現在編集中の<a href="spec.html#OBJECT_PROJECT">プロジェクト</a>に登録されている<a href="spec.html#OBJECT_PICTURE">ピクチャー</a>の構成を変更します。
+      <a href="#UI_DLG_EDIT_PICTURE">ピクチャー設定ダイアログ</a>が開きますので、
+      <a href="spec.html#OBJECT_IMAGE">イメージ</a>と<a href="spec.html#OBJECT_PALETTE">パレット</a>の構成を変更して下さい。
+      <font color=red>参照</font>）<a href="spec.html#METHOD_EDIT_PICTURE_EDIT">変更</a>
+     <li><font color=green><b>ピクチャー・削除</b></font>は、
+      現在編集中の<a href="spec.html#OBJECT_PROJECT">プロジェクト</a>に登録されている<a href="spec.html#OBJECT_PICTURE">ピクチャー</a>を削除します。
+      <font color=red>参照</font>）<a href="spec.html#METHOD_EDIT_PICTURE_REMOVE">削除</a>
+     <li><font color=green><b>プロパティ</b></font>は、
+      現在編集中の<a href="spec.html#OBJECT_PROJECT">プロジェクト</a>の<a href="#UI_DLG_EDIT_PROJECT">プロパティ</a>を開きます。
+      <font color=red>参照</font>）<a href="spec.html#DIR">ディレクトリ</a>
+    </td>
+   </tr>
+   <tr>
+    <td valign=top nowrap bgcolor=#c0c0c0><a name="UI_MENU_PALETTE">4.パレット</td>
+    <td valign=top><img src="images/menu_palette.gif" alt="パレットメニュー"></td>
+    <td valign=top>
+     <li><font color=green><b>新規作成</b></font>は
+      <a href="#UI_DLG_FILE_NEW_TLF">パレットファイル新規作成ダイアログ</a>を開きます。
+      新しい<a href="spec.html#FILE_TLF">TLF</a>を編集する場合はこれを選択して下さい。
+     <li><font color=green><b>開く</b></font>は
+      ファイルオープンダイアログを開きます。
+     <li><font color=green><b>閉じる</b></font>は
+      現在編集中の<a href="spec.html#OBJECT_PALETTE">パレット</a> (<a href="spec.html#FILE_TLF">TLF</a>)を閉じます。
+      この時、未保存のパレットファイルがある場合、保存するか、破棄するか、閉じるのをキャンセルするかを伺います。
+     <li><font color=green><b>保存</b></font>は、
+      現在編集中の<a href="spec.html#OBJECT_PALETTE">パレット</a> (<a href="spec.html#FILE_TLF">TLF</a>)を保存します。
+      名前が未設定の新規パレットの場合、ファイル保存ダイアログが開きますので、ファイル名を与えて保存して下さい。
+     <li><font color=green><b>名前を付けて保存</b></font>は、
+      現在編集中の<a href="spec.html#OBJECT_PALETTE">パレット</a> (<a href="spec.html#FILE_TLF">TLF</a>)に名前をつけて保存します。
+      ファイル保存ダイアログが開きますので、新しいファイル名を与えて保存して下さい。
+     <li><font color=green><b>編集</b></font>は、
+      選択されたパレットの色を編集します。
+     <li><font color=green><b>アタッチ</b></font>は、
+      現在アクティブなイメージに現在のパレットを割り当てます。
+      パレットがアタッチされていないイメージは、何も表示されません。
+     <li><font color=green><b>元に戻す</b></font>は、
+      <a href="spec.html#OBJECT_PALETTE">パレット</a>に対して行われた変更を元に戻す事が出来ます。
+      <!--現在、メモリの許す限り-->100ステップ前までの状態を記憶しています。
+      <font color=red>参照</font>）<a href="spec.html#METHOD_EDIT_PALETTE_UNDO">元に戻す</a>
+     <li><font color=green><b>やり直す</b></font>は、
+      元に戻した処理をやり直す事ができます。
+      <font color=red>参照</font>）<a href="spec.html#METHOD_EDIT_PALETTE_REDO">やり直す</a>
+     <li><font color=green><b>コピー</b></font>は、
+      選択されたパレットをクリップボードにコピーします。
+     <li><font color=green><b>貼り付け</b></font>は、
+      クリップボードにあるパレットを貼り付けます。
+      <!--
+     <li><font color=green><b>プロパティ</b></font>は、
+      <font color=red>現在有効ではありません。</font>
+      -->
+    </td>
+   </tr>
+   <tr>
+    <td valign=top nowrap bgcolor=#c0c0c0><a name="UI_MENU_DRAW">5.描画</td>
+    <td valign=top><img src="images/menu_draw.gif" alt="描画メニュー"></td>
+    <td valign=top>
+     <li><font color=green><b>選択</b></font>は、
+      編集領域を矩形で指定する事ができます。
+      <font color=red>参照</font>）<a href="spec.html#METHOD_EDIT_IMAGE_SELECT">矩形選択</a>
+     <li><font color=green><b>倍率</b></font>は、
+      指定位置を拡大・縮小表示するモードです。
+      <font color=red>参照</font>）<a href="spec.html#METHOD_VIEW_ZOOM">ズーム機能</a>
+     <li><font color=green><b>ピクセル</b></font>は、
+      １つの点を打ちます。現在のペンに割り当てられた色で点を描画します。
+      <font color=red>参照</font>）<a href="spec.html#METHOD_DRAW_PIXEL">ピクセル</a>
+     <li><font color=green><b>ペン</b></font>は、
+      フリードローモードです。現在のペンに割り当てられた色で線を描画します。
+      <font color=red>参照</font>）<a href="spec.html#METHOD_DRAW_PEN">ペン</a>
+     <li><font color=green><b>ライン</b></font>は、
+      直線を描画します。現在のペンに割り当てられた色で直線を描画します。
+      <font color=red>参照</font>）<a href="spec.html#METHOD_DRAW_LINE">ライン</a>
+     <li><font color=green><b>ボックス</b></font>は、
+      矩形を描画します。現在のペンに割り当てられた色で矩形を描画します。
+      <font color=red>参照</font>）<a href="spec.html#METHOD_DRAW_BOX">ボックス</a>
+     <li><font color=green><b>ボックス・フィル</b></font>は、
+      塗りつぶされた矩形を描画します。現在のペンに割り当てられた色で塗りつぶされた矩形を描画します。
+      <font color=red>参照</font>）<a href="spec.html#METHOD_DRAW_BOX_FILL">ボックス・フィル</a>
+     <li><font color=green><b>サークル</b></font>は、
+      円を描画します。現在のペンに割り当てられた色で円を描画します。
+      <font color=red>参照</font>）<a href="spec.html#METHOD_DRAW_CIRCLE">サークル</a>
+     <li><font color=green><b>サークル・フィル</b></font>は、
+      塗りつぶされた円を描画します。現在のペンに割り当てられた色で塗りつぶされた円を描画します。
+      <font color=red>参照</font>）<a href="spec.html#METHOD_DRAW_CIRCLE_FILL">サークル・フィル</a>
+     <li><font color=green><b>ペイント</b></font>は、
+      指定した位置に色を流し込みます。現在のペンに割り当てられた色で描画します。
+      <font color=red>参照</font>）<a href="spec.html#METHOD_DRAW_PAINT">ペイント</a>
+     <li><font color=green><b>リプレイサー</b></font>は、
+      指定された範囲、若しくは全体をマウス位置の色のものを現在ペンに割り当てられている色に置き換えます。
+      <font color=red>参照</font>）<a href="spec.html#METHOD_DRAW_REPLACER">リプレイサー</a>
+     <li><font color=green><b>右クリックでスポイト</b></font>は、
+      <a href="spec.html#OBJECT_IMAGE">イメージ</a>上に着色された色を吸い取り、現在のペンにその色を割り当てます。
+      <font color=red>参照</font>）<a href="spec.html#METHOD_DRAW_SPUIT">右クリックでスポイト</a>
+    </td>
+   </tr>
+   <tr>
+    <td valign=top nowrap bgcolor=#c0c0c0><a name="UI_MENU_VIEW">6.表示</td>
+    <td valign=top><img src="images/menu_view.gif" alt="表示メニュー">
+    <img src="images/menu_view_zoom.gif" alt="ズーム・サブメニュー"></td>
+    <td valign=top>
+     <li><font color=green><b>ツールバー</b></font>は、
+      <a href="#UI_CTRL_TOOL_BAR">ツールバー</a>の表示をON/OFFします。
+     <li><font color=green><b>ステータスバー</b></font>は、
+      <a href="#UI_CTRL_STATUS_BAR">ステータスバー</a>の表示をON/OFFします。
+     <li><font color=green><b>プロジェクトバー</b></font>は、
+      <a href="#UI_CTRL_PROJECT_BAR">プロジェクト・ダイアログバー</a>の表示をON/OFFします。
+     <li><font color=green><b>パレット</b></font>は、
+      <a href="#UI_CTRL_PALETTE_BAR">パレット・ダイアログバー</a>の表示をON/OFFします。
+     <li><font color=green><b>ドローモードバー</b></font>は、
+      <a href="#UI_CTRL_DRAW_TOOL_BAR">ドロー・ツールバー</a>の表示をON/OFFします。
+     <li><font color=green><b>ビュー・バー</b></font>は、
+      <a href="#UI_CTRL_VIEW_TOOL_BAR">ビュー・ツールバー</a>の表示をON/OFFします。
+     <li><font color=green><b>倍率</b></font>は、
+      イメージの表示を拡大します。
+      <font color=red>参照</font>）<a href="spec.html#METHOD_VIEW_ZOOM">ズーム機能</a>
+     <li><font color=green><b>グリッド</b></font>は、
+      グリッド表示のON/OFFをします。
+      <font color=red>参照</font>）<a href="spec.html#METHOD_VIEW_GRID">グリッド</a>
+     <li><font color=green><b>プレビュー1/2</b></font>は、
+      プレビュー機能のON/OFFをします。
+      <font color=red>参照</font>）<a href="spec.html#METHOD_VIEW_TARGET">プレビュー機能</a>
+    </td>
+   </tr>
+   <tr>
+    <td valign=top nowrap bgcolor=#c0c0c0><a name="UI_MENU_TOOL">7.ツール</td>
+    <td valign=top><img src="images/menu_tools.gif" alt="ツールメニュー"></td>
+    <td valign=top>
+     <li><font color=green><b>オプション</b></font>は、
+      <a href="#UI_DLG_OPTION">オプション設定ダイアログ</a>を開きます。
+    </td>
+   </tr>
+   <tr>
+    <td valign=top nowrap bgcolor=#c0c0c0><a name="UI_MENU_WINDOW">8.ウィンドウ</td>
+    <td valign=top><img src="images/menu_window.gif" alt="ウィンドウメニュー"></td>
+    <td valign=top>
+     他のアプリケーションと一緒ですので、説明は省略。
+    </td>
+   </tr>
+   <tr>
+    <td valign=top nowrap bgcolor=#c0c0c0><a name="UI_MENU_HELP">9.ヘルプ</td>
+    <td valign=top><img src="images/menu_help.gif" alt="ヘルプメニュー"></td>
+    <td valign=top>
+     <li><font color=green><b>トピックの検索</b></font>は、
+      <b>c:/nintendo64/texedit/doc/index.html</b>を開きます。
+     <li><font color=green><b>バージョン情報</b></font>は、
+      <a href="#UI_DLG_ABOUT">アバウト・ダイアログ</a>を開きます。
+      製品のバージョンと、インストールされたプラグインを確認する事ができます。
+    </td>
+   </tr>
+  </table>
+ <!--/ol-->
+ <a name="UI_CTRL">
+ <li><b><font color=green>コントロール</font></b>
+ <!--ol-->
+  <table cellpadding=4 width=472 border=1>
+   <tr bgcolor=gray>
+    <th nowrap><font color=white>コントロールバー</font></th>
+    <th nowrap colspan=2><font color=white>イメージと説明</font></th>
+   </tr>
+   <tr>
+    <td valign=top nowrap bgcolor=#c0c0c0 rowspan=2><a name="UI_CTRL_TOOL_BAR">1.ツールバー</td>
+    <td bgcolor=#c0c0c0 colspan=2><img src="images/tool_bar.gif" alt="ツールバー"></td>
+   </tr>
+   <tr>
+    <td valign=top colspan=2>
+     <a href="#UI_MENU_FILE"><img src="../images/tool_bar_new.gif" alt="新規作成" border=0>新規作成</a><br>
+     <a href="#UI_MENU_FILE"><img src="../images/tool_bar_open.gif" alt="開く" border=0>開く</a><br>
+     <a href="#UI_MENU_FILE"><img src="../images/tool_bar_save.gif" alt="保存" border=0>保存</a><br>
+     <a href="spec.html#METHOD_EDIT_IMAGE_UNDO"><img src="../images/tool_bar_undo.gif" alt="元に戻す" border=0>元に戻す</a><br>
+     <a href="spec.html#METHOD_EDIT_IMAGE_REDO"><img src="../images/tool_bar_redo.gif" alt="やり直す" border=0>やり直す</a><br>
+     <a href="spec.html#METHOD_EDIT_IMAGE_CUT"><img src="../images/tool_bar_cut.gif" alt="切り取り" border=0>切り取り</a><br>
+     <a href="spec.html#METHOD_EDIT_IMAGE_COPY"><img src="../images/tool_bar_copy.gif" alt="コピー" border=0>コピー</a><br>
+     <a href="spec.html#METHOD_EDIT_IMAGE_PASTE"><img src="../images/tool_bar_paste.gif" alt="貼り付け" border=0>貼り付け</a><br>
+     <a href="#UI_MENU_FILE"><img src="../images/tool_bar_print.gif" alt="印刷" border=0>印刷</a><br>
+     <a href="#UI_MENU_HELP"><img src="../images/tool_bar_about.gif" alt="バージョン情報" border=0>バージョン情報</a><br>
+     <a href="#UI_MENU_HELP"><img src="../images/tool_bar_help.gif" alt="ヘルプ" border=0>ヘルプ</a><br>
+    </td>
+   </tr>
+   <tr>
+    <td valign=top nowrap bgcolor=#c0c0c0 rowspan=2><a name="UI_CTRL_DRAW_TOOL_BAR">2.ドロー・ツールバー</td>
+    <td bgcolor=#c0c0c0 colspan=2><img src="images/draw_bar.gif" alt="ドロー・ツールバー"></td>
+   </tr>
+   <tr>
+    <td valign=top colspan=2>
+     <a href="spec.html#METHOD_EDIT_IMAGE_SELECT"><img src="../images/draw_bar_select.gif" alt="選択" border=0>選択</a><br>
+     <a href="spec.html#METHOD_VIEW_ZOOM"><img src="../images/draw_bar_zoom.gif" alt="ズーム" border=0>ズーム</a><br>
+     <a href="spec.html#METHOD_DRAW_PIXEL"><img src="../images/draw_bar_pixel.gif" alt="ピクセル" border=0>ピクセル</a><br>
+     <a href="spec.html#METHOD_DRAW_PEN"><img src="../images/draw_bar_pen.gif" alt="ペン" border=0>ペン</a><br>
+     <a href="spec.html#METHOD_DRAW_LINE"><img src="../images/draw_bar_line.gif" alt="ライン" border=0>ライン</a><br>
+     <a href="spec.html#METHOD_DRAW_BOX"><img src="../images/draw_bar_box.gif" alt="ボックス" border=0>ボックス</a><br>
+     <a href="spec.html#METHOD_DRAW_BOX_FILL"><img src="../images/draw_bar_boxfill.gif" alt="ボックスフィル" border=0>ボックスフィル</a><br>
+     <a href="spec.html#METHOD_DRAW_CIRCLE"><img src="../images/draw_bar_circle.gif" alt="サークル" border=0>サークル</a><br>
+     <a href="spec.html#METHOD_DRAW_CIRCLE_FILL"><img src="../images/draw_bar_circlefill.gif" alt="サークルフィル" border=0>サークルフィル</a><br>
+     <a href="spec.html#METHOD_DRAW_PAINT"><img src="../images/draw_bar_paint.gif" alt="ペイント" border=0>ペイント</a><br>
+     <a href="spec.html#METHOD_DRAW_REPLACER"><img src="../images/draw_bar_replacer.gif" alt="リプレイサー" border=0>リプレイサー</a><br>
+     <a href="spec.html#METHOD_DRAW_SPUIT"><img src="../images/draw_bar_spuit.gif" alt="右クリックでスポイト" border=0>右クリックでスポイト（トグルボタン）</a><br>
+    </td>
+   </tr>
+   <tr>
+    <td valign=top nowrap bgcolor=#c0c0c0 rowspan=2><a name="UI_CTRL_VIEW_TOOL_BAR">3.ビュー・ツールバー</td>
+    <td bgcolor=#c0c0c0 colspan=2><img src="images/view_bar.gif" alt="ビュー・ツールバー"></td>
+   </tr>
+   <tr>
+    <td valign=top colspan=2>
+     <a href="spec.html#METHOD_VIEW_PALETTE"><img src="../images/view_bar_palette.gif" alt="パレット" border=0>パレット・ダイアログバーのＯＮ／ＯＦＦ</a><br>
+     <a href="spec.html#METHOD_VIEW_GRID"><img src="../images/view_bar_grid.gif" alt="グリッド" border=0>グリッドのＯＮ／ＯＦＦ</a><br>
+     <a href="spec.html#METHOD_VIEW_TARGET"><img src="../images/view_bar_preview1.gif" alt="プレビュー1" border=0>IS-VIEWER64へのプレビュー１のＯＮ／ＯＦＦ</a><br>
+     <a href="spec.html#METHOD_VIEW_TARGET"><img src="../images/view_bar_preview2.gif" alt="プレビュー2" border=0>IS-VIEWER64へのプレビュー２のＯＮ／ＯＦＦ</a><br>
+    </td>
+   </tr>
+   <tr>
+    <td valign=top nowrap bgcolor=#c0c0c0 rowspan=2><a name="UI_CTRL_STATUS_BAR">4.ステータスバー</td>
+    <td bgcolor=#c0c0c0 colspan=2><img src="../images/status_bar.gif" alt="ステータスバー"></td>
+   </tr>
+   <tr>
+    <td valign=top colspan=2>
+     左側にはカーソル位置のコントロール（ボタンやメニュー）の説明が表示されます。<br>
+     「(85,135) 200%」は、ペンの座標と拡大率を表示しています。<br>
+     「(320,240) 8bit」は、編集中のイメージのサイズとビットを表示しています。<br>
+    </td>
+   </tr>
+   <tr>
+    <td valign=top nowrap bgcolor=#c0c0c0><a name="UI_CTRL_PALETTE_BAR">5.パレット・<br>　ダイアログバー</td>
+    <td bgcolor=#c0c0c0><a href="images/palette_bar.gif"><img src="images/palette_bar.gif" width=132 border=0 alt="パレット・ダイアログバー"></a></td>
+    <td valign=top>
+     パレットが増えるたびにページが増えます。<br>
+     4bit/8bitのパレットのリストが表示され、マウスでペンの色を選択できます。<br>
+     ダブルクリックで
+     <a href="#UI_DLG_EDIT_PALETTE">カラー設定ダイアログ</a>が開き、
+     指定の色を変更する事ができます。<br>
+     <a href="spec.html#METHOD_EDIT_PALETTE_COPY">コピー</a>・
+     <a href="spec.html#METHOD_EDIT_PALETTE_PASTE">貼り付け</a>・
+     <a href="#UI_MENU_PALETTE">アタッチ</a>
+    </td>
+   </tr>
+   <tr>
+    <td valign=top nowrap bgcolor=#c0c0c0 rowspan=2><a name="UI_CTRL_PROJECT_BAR">6.プロジェクト・<br>　ダイアログバー</td>
+    <td bgcolor=#c0c0c0 colspan=2><a href="images/project_bar.gif"><img src="images/project_bar.gif" width=330 border=0 alt="プロジェクト・ダイアログバー"></a></td>
+   </tr>
+   <tr>
+    <td valign=top colspan=2>
+     左から、登録された<a href="spec.html#OBJECT_PICTURE">ピクチャー</a>名・
+     イメージとパレットの組み合わせを表示しています。
+     （これはボタンになっており、イメージとパレットを開く事ができます。）・
+     続くボタンには、
+     <a href="spec.html#METHOD_EDIT_PICTURE_ADD">追加ボタン</a>・
+     <a href="spec.html#METHOD_EDIT_PICTURE_EDIT">変更ボタン</a>・
+     <a href="spec.html#METHOD_EDIT_PICTURE_REMOVE">削除ボタン</a>
+     があります。
+    </td>
+   </tr>
+  </table>
+ <!--/ol-->
+ <a name="UI_WINDOW">
+ <li><b><font color=green>ウィンドウ</font></b>
+ <ol>
+  <a name="UI_WINDOW_TMF">
+  <li>テクスチャ・イメージ・ウィンドウ
+  <ul>
+   <img src="../images/window_tmf.gif" alt="テクスチャ・イメージ・ウィンドウ">
+   <p>
+    もし、<font color=red>NO PALETTE</font>と表示されている場合は、パレットが割り当てられていない為表示できない事を示しています。<br>
+    その場合、<a href="#UI_CTRL_PALETTE_BAR">パレット・ダイアログバー</a>の「アタッチ」によって色を割り当てる事でイメージを表示できます。<br>
+   </p>
+  </ul>
+  <a name="UI_WINDOW_TPF">
+  <li>テクスチャ・プロジェクト・ウィンドウ
+  <ul>
+   <p>
+    プロジェクトに含まれる情報をツリー構造で表示しています。<br>
+    ドラッグ＆ドロップや右クリックのポップアップメニューで操作できます。<br>
+   </p>
+   <img src="images/window_tpf.gif" alt="テクスチャ・プロジェクト・ウィンドウ">
+   <p>
+	<font color=green><b>Project</b></font><br>
+	プロジェクトのトップノードです。移動や削除は出来ません。<br>
+	右クリックのポップアップメニューでプロパティを編集する事ができます。<br>
+	<font color=green><b>Picture</b></font><br>
+	ピクチャーを登録するノードです。<br>
+	登録されたピクチャーはドラッグ＆ドロップで移動できます。<br>
+	また、シーケンスにドロップする事でアニメーションパターンを追加できます。<br>
+	<font color=green><b>Animation</b></font><br>
+	アニメーションを管理するノードです。移動や削除はできません。<br>
+	右クリックのポップアップメニューでシーケンスを追加する事ができます。
+	<font color=green><b>Sequence</b></font><br>
+	アニメーションパターンを管理するシーケンスノードです。<br>
+	右クリックのポップアップメニューで、アニメーションパターンとしてピクチャーを追加できます。<br>
+	登録されたピクチャーはドラッグ＆ドロップで移動可能です。<br>
+   </p>
+   </p>
+  </ul>
+ </ol>
+ <a name="UI_DLG">
+ <li><b><font color=green>ダイアログ</font></b>
+ <ol>
+  <a name="UI_DLG_FILE_NEW">
+  <li>ファイル新規作成・ダイアログ
+  <ol>
+   <a name="UI_DLG_FILE_NEW_TPF">
+   <li>プロジェクトページ
+   <ul>
+    <img src="images/dlg_new_project.gif" alt="プロジェクトの新規作成">
+	<p>
+	 <font color=green><b>TPFファイル名</b></font><br>
+	 ディレクトリ名、拡張子を除く重複しないプロジェクト名を指定して下さい。<br>
+	 <font color=green><b>TPFディレクトリ</b></font><br>
+	 プロジェクトファイルが保存される作業ディレクトリとなるディレクトリ名を指定して下さい。<br>
+	 <font color=green><b>TMFディレクトリ</b></font><br>
+	 TMFファイルが保存される作業ディレクトリとなるディレクトリ名を指定して下さい。<br>
+	 省略した場合、TPFディレクトリと同じになります。<br>
+	 <font color=green><b>TLFディレクトリ</b></font><br>
+	 TLFファイルが保存される作業ディレクトリとなるディレクトリ名を指定して下さい。<br>
+	 省略した場合、TPFディレクトリと同じになります。<br>
+	</p>
+   </ul>
+   <a name="UI_DLG_FILE_NEW_TMF">
+   <li>イメージページ
+   <ul>
+    <img src="images/dlg_new_image.gif" alt="イメージの新規作成">
+	<p>
+	 <font color=green><b>横幅・縦幅</b></font><br>
+	 サイズをピクセル単位で入力して下さい。<br>
+	 最小は１×１。最大は1024×1024です。<br>
+	 <font color=green><b>ビットモード</b></font><br>
+	 4ビット（16色）／8ビット（256色）から選びます。<br>
+	</p>
+   </ul>
+   <a name="UI_DLG_FILE_NEW_TLF">
+   <li>パレットページ
+   <ul>
+    <img src="images/dlg_new_palette.gif" alt="パレットの新規作成">
+	<p>
+	 <font color=green><b>ビットモード</b></font><br>
+	 パレットのビットモードを指定します。<br>
+	 （8bitの256色は、4bitの16色×16ブロックとして扱う事が可能です。）<br>
+	 <font color=green><b>色の種類</b></font><br>
+	 色の種類は、16bit RGBAと、16bit IAから選びます。<br>
+	 16bit RGBA/IAについては、N64デベロッパーマニュアル大全集を参照して下さい。<br>
+	 <font color=green><b>Alphaのデフォルト値</b></font><br>
+	 新規作成時のアルファ値を指定します。<br>
+	 16bit RGBA時は、０か１です。<br>
+	 16bit IA時は、０～255までの整数です。<br>
+	</p>
+   </ul>
+  </ol>
+  <a name="UI_DLG_EDIT_PROJECT">
+  <li>プロジェクト・プロパティ・ダイアログ
+  <ul>
+   <p>
+   このダイアログはプロジェクトのベースとなる作業ディレクトリを設定するダイアログです。
+   </p>
+   <img src="images/dlg_edit_project.gif" alt="プロジェクト・プロパティ・ダイアログ">
+  </ul>
+  <a name="UI_DLG_EDIT_PICTURE">
+  <li>ピクチャ編集ダイアログ
+  <ul>
+   <p>
+    これらのダイアログは<a href="#UI_MENU_PROJECT">プロジェクトメニュー</a>の「ピクチャー」の「追加」・「変更」を選ぶか、
+    <a href="#UI_CTRL_PROJECT">プロジェクト・ダイアログバー</a>の「追加」・「変更」を選ぶか、
+    <a href="#UI_WINDOW_TPF">プロジェクト・ウィンドウ</a>のピクチャーノードで、右クリックで現れる追加・編集メニューによって呼び出されます。
+   </p>
+   <img src="images/dlg_edit_picture.gif" alt="ピクチャ編集ダイアログ">
+   <p>
+    重複しないピクチャ名を与え、TMF/TLFの組み合わせを選び、ＯＫを押すことで追加・編集できます。<br>
+    コンボボックスのリストの中身は、プロジェクトのプロパティで設定されたディレクトリに含まれるファイルを表示しています。<br>
+    新規作成したい場合、重複しない名前を入力欄に書き込み、「新規作成」ボタンを押して作成できます。<br>
+   </p>
+  </ul>
+  <a name="UI_DLG_EDIT_PALETTE">
+  <li>カラー設定ダイアログ
+  <ul>
+   <p>
+    これらのダイアログは<a href="#UI_CTRL_PALETTE_BAR">パレット・ダイアログバー</a>のカラーをダブルクリックする事で呼び出されます。
+   </p>
+   <li>16bit RGBA<br>
+   <img src="images/dlg_edit_palette.gif" alt="16bit RGBA カラー設定ダイアログ">
+   <li>16bit IA<br>
+   <img src="images/dlg_edit_paletteIA.gif" alt="16bit IA 設定ダイアログ">
+  </ul>
+  <a name="UI_DLG_ABOUT">
+  <li>アバウト・ダイアログ
+  <ul>
+   <p>
+    このダイアログは<a href="#UI_MENU_HELP">ヘルプメニュー</a>の「バージョン情報」から呼び出されます。
+   </p>
+   <img src="images/dlg_about.gif" alt="アバウト・ダイアログ">
+  </ul>
+  <a name="UI_DLG_OPTIONS">
+  <li>オプション設定ダイアログ
+  <ul>
+   <p>
+    このダイアログではアプリケーションの既定の設定を変更するダイアログです。<br>
+   </p>
+   <img src="images/dlg_options.gif" alt="オプション設定ダイアログ">
+   <p>
+    <font color=green><b>TMF新規作成時にプロジェクトを利用するか問い合わせる</b></font><br>
+    <a href="#UI_DLG_ASK_USE_PROJECT">プロジェクト利用の問い合わせダイアログ</a>を開かせたい場合にチェックを付けて下さい。
+   </p>
+  </ul>
+  <a name="UI_DLG_ASK_USE_PROJECT">
+  <li>プロジェクト利用の問い合わせダイアログ
+  <ul>
+   <p>
+    このダイアログは、TMF新規作成時にプロジェクトを開いていない時に促されるメッセージです。<br>
+   </p>
+   <img src="images/dlg_ask_use_project.gif" alt="プロジェクト使用の問い合わせダイアログ">
+   <p>
+    この時点で、プロジェクトを作成するなら「新規作成」を、開くなら「開く」を、プロジェクトを開きたくないなら「キャンセル」を選んで下さい。<br>
+    以後、このメッセージをキャンセルしたい場合は、チェックを外していずれかを選択すると、問い合わせを行わなくなります。<br>
+    再度、問い合わせを行いたい場合は、<a href="#UI_MENU_TOOL">ツールメニュー</a>の<a href="#UI_DLG_OPTIONS">オプション設定ダイアログ</a>で設定して下さい。<br>
+   </p>
+  </ul>
+ </ol>
+</ol>
+<p align="right"><a href="../us/gui.html">English</a></p>
+<hr>
+<table width=100%>
+ <tr>
+  <td valign=top>
+   <a href="index.html">戻る</a>
+  </td>
+  <td valign=top align=right nowrap>
+   <font size=-1>
+   Copyright (C) 1998-1999 <a href="https://ntsc.nintendo.co.jp/">NINTENDO Co.,Ltd.</a><br>
+   Copyright (C) 1998-1999 MONEGI CORPORATION.<br>
+   Copyright (C) 1998-1999 <a href="http://www.intsys.co.jp/">INTELLIGENT SYSTEMS Co.,Ltd.</a><br>
+   All rights reserved.<br>
+   </font>
+   <a href="https://ntsc.nintendo.co.jp/"><img src="../images/ntsc.gif" alt="NTSC-ONLINE" border=0></a>
+  </td>
+ </tr>
+</table>
+</body>
+</html>

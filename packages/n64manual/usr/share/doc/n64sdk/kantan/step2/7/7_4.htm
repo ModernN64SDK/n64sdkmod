@@ -1,0 +1,510 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!--
+Editors Notes:
+  PWC- updated formatting
+-->
+<title>STEP2 [A Guide to the N64 Programming] - Chapter 7 PARTNER-N64 NW</title>
+<base target="keywords">
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<p><font style="font-size:12pt; font-weight:bold">7-4 Tutorial</font><br>
+<br>
+<br>
+By using an actual sample this section describes the program compilation/link, creation of the ROM image file, and the debugging method.  Before you use the sample, we will describe the procedure for creating the ROM image file.  Proceed to the next step after you have an understanding of this.<br>
+<br>
+<br>
+<b>7-4-1 Procedure for creating the ROM image file</b><br>
+<br>
+<br>
+The ROM image file is created by designating the object file and the picture/sound data to the ROM image creation tool after the <b>relocationable object file</b> is created one time using the compiler/linker. <b>(Relocationable object file: Object files where the function and argument
+ addresses have not been determined)</b>. The ROM image creation tool outputs the ROM image file and the debugger symbol file. When a name for the ROM image file is not specified it is output using the name, "rom". Specify the symbol file name within "beginwave" and "endwave" of the spec file specified to the ROM image creation tool.<br>
+<br>
+<br>
+<br>
+<b>7-4-2 The compilation/link/creation of the ROM image using an actual sample.</b><br>
+<br>
+<br>
+Now let us do the compilation/link/creating the ROM image of the actual sample. Here, we will use the sample called, "simple". "simple" has been installed in the directory, "/usr/src/PR/demos/simple".  Copy it into the appropriate directory from the console. For example, you can make the directory, "simple". copied into the current directory by executing<br><br>
+<b>    % cp -r /usr/src/PR/demos/simple .</b><br>
+<br>
+<br>
+<b>1. Makefile</b><br>
+The compilation/link/ROM image creation on "simple" are provided by using the program, "make".<br>
+"make" provides the process based on the contents defined in the text file, "Makefile" (see the online manual, "make", for details).<br>
+<br>
+Now, we will describe the contents defined in "Makefile".  Open the text file, "Makefile", in the directory, "simple", with your editor (the actual "Makefile" does not describe the following <b>#comments</b>).<br>
+<br>
+ <b> [Makefile]</b> </p>
+
+<table border="1" cellpadding="10" cellspacing="0">
+    <tr>
+        <td valign="top">#!smake<br>
+        include $(ROOT)/usr/include/make/PRdefs  <b>#
+        Files reserved in the system [defining</b><br>
+                                                  <b>#
+        the compiler name and </b><br>
+                                                  <b>#
+        dependency, etc.</b><br>
+        <br>
+        # to make the tags file do "make simpletags"<br>
+        # to make just the simple_d directory do "make
+        SUBDIRS=simple_d"<br>
+        <br>
+        SUBDIRS=simple_d simple simple_rom    <b>#
+        Specify the subdirectory</b><br>
+         <b>#  In "simple", you create the following three types of ROM image files</b><br>
+         <b># and symbol files</b><br>
+         <b># 1. For debugging    simple_d</b><br>
+         <b># 2. For ordinary use  simple</b><br>
+         <b># 3. For master submitting    simple_rom</b><br>
+        <br>
+        COMMONPREF = simple     <b># unused</b><br>
+        <br>
+        APP =    simple     <b>#
+        Specifying the symbol file name</b><br>
+        TARGETS =  rom       <b># Specifies the ROM image file name</b><br>
+        <br>
+        HFILES =   \        <b># Specifies the header file name for "simple"</b><br>
+                    :<br>
+        CODEFILES = \       <b># Specifies the .c (the program code) file name</b><br>
+                    :<br>
+        CODEOBJECTS = $(CODEFILES:.c=.o)<br>
+                              <b># Specifies (the program code) file name</b><br>
+                              <b># (The name is changed from .c to .o, which is</b><br>
+                              <b># the file name specified in CODEFIELES</b><br>
+                              <b># Example) test.c -> test.o</b><br>
+        <br>
+        CODESEGMENT = codesegment.o  <b># Specifies the relocationable</b><br>
+                                      <b># object file name created as a </b><br>
+                                      <b># result of linking the program code</b><br>
+        # Data files that have their own segments:<br>
+        <br>
+        DATAFILES =  \              <b># Specifies the .o(data) file name</b><br>
+                      :<br>
+        DATAOBJECTS = $(DATAFILES:.c=.o)<br>
+                                      <b># Specifies the .o (data code) file name</b><br>
+                                      <b># (Same as CODDOBJECTS above)</b><br>
+        <br>
+        OBJECTS =   $(CODESEGMENT)$(DATAOBJECTS)<br>
+         <b># Specifies all relocationable object file names</b><br>
+         <b># Specifies to the ROM image creation tool<br>
+        </b><br>
+        <br>
+        LCINCS = -I.. -I$(ROOT)/usr/include/PR<br>
+         <b>#
+        Specifies the passing of the include file specified to the compiler (for local use)</b><br>
+        LCOPTS = $(DFLAG) -fullwarn -non_shared -G 0 -Xcpluscomm<br>
+         <b>#
+        Designates the option to specify to the compiler (for local use)</b><br>
+        LCDEFS =<br>
+         <b>#
+        Specifies the symbol definition to specify to the compiler (for local use)</b><br>
+         <b># Unused in "simple"</b><br>
+        <br>
+        LDIRT = load.map   <b># Specifies the <a
+        href="../../../keywords/index/data/system.htm#map"
+        target="keywords">map</a> file name</b><br>
+        <br>
+        LDFLAGS =    $(MKDEPOPT) -nostdlib
+        -L$(ROOT)/usr/lib<br>
+                -L$(ROOT)/usr/lib/PR
+        -l$(ULTRALIB)<br>
+         <b>#
+        Designates the option to specify to the linker</b><br>
+         <b># MKDEPOPT is the reserved name and the file defined to dependent</b><br>
+         <b># relation of each object file.</b><br>
+         <b># "-nostdlib" is a specification which is not use the standard library</b><br>
+         <b># "-L$(ROOT)/usr/lib -L$(ROOT)/usr/lib/PR
+        -l$(ULTRALIB)" is the </b><br>
+         <b># option to link the N64 OS library.</b><br>
+        <br>
+        .PATH: ..                         <b># The path specification of "simple"</b><br>
+                                          <b>#
+        "simple" is to execute "make" in each subdirectory.</b><br>
+                                          <b>#
+        The file reserved in the system..</b><br>
+        sinclude locdefs<br>
+        <br>
+        #include $(COMMONRULES)           <b># Note that "#" is a comment.</b><br>
+        <br>
+        default:z                         <b>#
+        Specifies to provide the following </b><br>
+                                          <b>#
+        process with default in this "Makefile".</b><br>
+         for i in $(SUBDIRS) ; do \   <b>#
+        Specifies to go to each subdirectory</b><br>
+           echo ==== $$i === ; \    <b># and execute "make".</b><br>
+           cd $$i ; \<br>
+           $(MAKE) -f ../Makefile loc_$$i ; \<br>
+           cd .. ; \<br>
+         done<br>
+        <br>
+        $(COMMONTARGS) :      <b>#
+        Specifies to provide the process when it specifies</b><br>
+                                      <b># the reserved command in the system to "make"</b><br>
+                                      <b># Example) make clean</b><br>
+         for i in $(SUBDIRS) ; do \ <b># default: the same</b><br>
+            echo ==== clobber $$i === ; \<br>
+            cd $$i ; \<br>
+            $(MAKE) -f ../Makefile loc_$@ ; \<br>
+            cd .. ; \<br>
+         done<br>
+        <br>
+        include $(COMMONRULES)    <b>#
+        Accept the reserved file in the</b><br>
+                                      <b>#
+        system</b><br>
+        <br>
+        install: default       <b>#  Specifies to install "simple"</b><br>
+                                      <b>#
+        The files below are installed.</b><br>
+                                      <b>#
+        Before executing this, execute the default</b><br>
+                                      <b>#
+        if it is not executed.</b><br>
+             $(INSTALL) -m 444 -F
+        /usr/src/PR/demos/simple \<br>
+                $(HFILES) $(CODEFILES) \<br>
+                $(DATAFILES) Makefile spec \<br>
+                simple/log.fmt simple_d/locdefs \<br>
+                simple/locdefs simple_rom/locdefs<br>
+        <br>
+        $(CODESEGMENT):   $(CODEOBJECTS)<br>
+         <b># Specifies the dependent relation between "codesegment.o" and the .o file.</b><br>
+         <b># If the .o file is updated, provide the following process.</b><br>
+             $(LD) -m -o $(CODESEGMENT) -r
+        $(CODEOBJECTS) \<br>
+                 $(LDFLAGS) &gt; load.map<br>
+         <b>#
+        Specifies to create the relocationable object file by using the linker.</b><br>
+         <b># "-m" specifies to output the map file.</b><br>
+         <b># "-o" $(CODESEGMENT) is an option to specify the output file name.</b><br>
+         <b># "-r" is the option to create the relocationable object file.</b><br>
+         <b># "$(CODEOBJECTS)" specifies the linking object file name.</b><br>
+         <b># "$(LDFLAGS)" specifies to pass other options to the linker.</b><br>
+        <br>
+        rom:   ../spec $(OBJECTS)<br>
+         <b># Specifies the ROM image file, all ".o" files and the dependent relation of the </b><a
+        href="../../../keywords/index/data/system.htm#ROM spec file"
+        target="keywords"><b>spec file</b></a><br>
+         <b># Provide the following process when the .o file and the spec file are updated</b><br>
+              $(MAKEROM) $(MAKEROMDEFS) ../spec<br>
+         <b># Specifies to create the ROM image file by using the ROM image creation tool.</b><br>
+         <b># "$(MAKEROSDEFS)" is the standard option specified to the image creation tool.</b><br>
+         <b># "spec" is the text file to specify the ROM image to the ROM image creation tool.</b><br>
+         <b>#
+        We will describe this later.</b><br>
+        </td>
+    </tr>
+</table>
+
+<p><br>
+The contents mentioned above are just one example. The compiler/linker/ROM image creation tool has many other convenient functions.  Utilize them based on what the program can be used for.<br>
+<br>
+<br>
+<b>2. Specifying the ROM Image</b><br>
+Next, we will describe the contents defined in the script file to specify the ROM image.  Open the text file, "spec", in the directory, "simple", with your editor (in the actual "spec", the <b>/*Comments*/</b> below are not described). Read the "makerom" online manual along with this explanation.<br>
+<br>
+ <b> [spec]</b> <br><br>
+
+<table border="1" cellpadding="10" cellspacing="0">
+    <tr>
+        <td valign="top"><b>/* The ROM image manages in units of </b><a
+        href="../../../keywords/index/data/system.htm#segment"
+        target="keywords"><b>segments</b></a><b>.*/</b><br>
+        <b>/*
+        Define the segments having the program code attributes.*/</b><br>
+        beginseg                         <b>/*
+        Initiate to define the segments*/</b><br>
+         name "code"                   <b>/*
+        Specify the segment names */</b><br>
+         flags BOOT OBJECT             <b>/* Designate the </b><a
+        href="../../../keywords/index/data/system.htm#boot"
+        target="keywords"><b>boot</b></a><b> attribute and the object attribute
+        */</b><br>
+         entry boot                       <b>/*
+        Specify the boot function */</b><br>
+         stack bootStack + STACKSIZEBYTES<br>
+                                          <b>/*
+        Specify the </b><a
+        href="../../../keywords/index/data/system.htm#stack"
+        target="keywords"><b>stack</b></a><b> used by the boot function
+        */</b><br>
+         include "codesegment.o"<br>
+              <b>/*
+        Specify the object file mapping within the segment
+        */</b><br>
+         include "$(ROOT)/usr/lib/PR/rspboot.o"<br>
+                                                <b>/*
+        Specify the boot </b><a
+        href="../../../keywords/index/data/system.htm#microcode"
+        target="keywords"><b>microcode</b></a><b>*/</b><br>
+         include "$(ROOT)/usr/lib/PR/gspFast3D.o"<br>
+                                                <b>/*
+        Specify the graphic microcode */</b><br>
+         include
+        "$(ROOT)/usr/lib/PR/gspFast3D.dram.o"<br>
+                                                <b>/*
+        Specify the graphic microcode */</b><br>
+         include "$(ROOT)/usr/lib/PR/aspMain.o"<br>
+                                                <b>/*
+        Specify the sound microcode */</b><br>
+        endseg                                  <b>/*
+        End segment definitions */</b><br>
+        <b>/* The following is a description only about the parts which do not overlap with the "code" segments.
+        */</b><br>
+        beginseg<br>
+         name "gfxdlists"<br>
+         flags OBJECT  <b>/*
+        Designate the object attribute */</b><br>
+         after code   <b>/* Specify mapping right after the "code" segment. */</b><br>
+         include "gfxdlists.o"<br>
+        endseg<br>
+        beginseg<br>
+         name "zbuffer"<br>
+         flags OBJECT    <b>/*
+        Designate the object attribute */</b><br>
+         address 0x801da800 <b>/* Specify mapping on the 0x801da800 address*/</b><br>
+         include "gfxzbuffer.o"<br>
+        endseg<br>
+        <br>
+        beginseg<br>
+         name "cfb"<br>
+         flags OBJECT     <b>/*
+        Designate the object attribute */</b><br>
+         address 0x80200000  <b>/* Specify mapping on the 0x80200000 address*/</b><br>
+         include "gfxcfb.o"<br>
+        endseg<br>
+        beginseg<br>
+         name "static"<br>
+         flags OBJECT        <b>/*
+        Designate the object attribute */</b><br>
+         number STATIC_SEGMENT   <b>/*
+        Specify the static segment number */</b><br>
+         include "gfxinit.o"<br>
+         include "gfxstatic.o"<br>
+        endseg<br>
+        beginseg<br>
+         name "dynamic"<br>
+         flags OBJECT        <b>/*
+        Designate the data attribute */</b><br>
+         number DYNAMIC_SEGMENT   <b>/*
+        Specify the dynamic segment number */</b><br>
+         include "gfxdynamic.o"<br>
+        endseg<br>
+        beginseg<br>
+         name "bank"<br>
+         flags RAW         <b>/*
+        Designate the data attribute */</b><br>
+         include
+        "$(ROOT)/usr/lib/PR/soundbanks/GenMidiBank.ctl"<br>
+                         <b>/*
+        Specify the sound </b><a
+        href="../../../keywords/index/data/audio.htm#bank"
+        target="keywords"><b>bank</b></a><b> data
+        */</b><br>
+        endseg<br>
+        beginseg<br>
+         name "table"<br>
+         flags RAW                   <b>/*
+        Designate the data attribute */</b><br>
+         include
+        "$(ROOT)/usr/lib/PR/soundbanks/GenMidiBank.tbl"<br>
+                                     <b>/*
+        Specify the sound table data. */</b><br>
+        endseg<br>
+        beginseg<br>
+         name "seq"<br>
+         flags RAW                   <b>/*
+        Designate the data attribute */</b><br>
+         include
+        "$(ROOT)/usr/lib/PR/sequences/BassDrive.seq"<br>
+                                      <b>/*
+        Specify the sound sequence data */</b><br>
+        endseg<br>
+        <br>
+        beginwave                    <b>/* Initiate to define </b><a
+        href="../../../keywords/index/data/system.htm#wave"
+        target="keywords"><b>waves</b></a><b>
+        */</b><br>
+         name "simple"  <b>/*
+        Specify the symbol file name (ignore ".out") */</b><br>
+         include "code"  <b>/*
+        The following are the specification of mapping segments. */</b><br>
+         include "gfxdlists"<br>
+         include "static"<br>
+         include "dynamic"<br>
+         include "cfb"<br>
+         include "zbuffer"<br>
+         include "table"<br>
+         include "bank"<br>
+         include "seq"<br>
+        endwave                  <b>/*
+        End the wave definition */<br>
+        </b></td>
+    </tr>
+</table>
+
+<p><b><br>
+The preceding is the required procedure to do the compilation/link/ROM image creation for the sample with "make".<br>
+<br>
+<br>
+</b><b>3. Executing "make"</b><br>
+Now, we will actually execute, "make". Execute "make" from the directory, "simple".<br>
+<br>
+<b>    % make</b><br>
+<br>
+After completion of "make" in three subdirectories, the ROM image file, "rom"  and the symbol file, "simple" are created.  Verify this with the "Is" command, etc.<br>
+<br>
+<br>
+<br>
+<b>7-4-3 Executing the Sample</b><br>
+<br>
+Execute the sample by using the ROM image and symbol files which were created in "5-4-2: The Compilation/Link/ROM Image Creation of the Sample" (you use "simple" again here).  Do the execution of the sample by using the debugger (The rest is called "PARTNER"). Continue with the following procedure:<br>
+<br>
+<br>
+<b>1. Move the Directory</b><br>
+Move to the subdirectory "simple_d" of "simple".<br>
+<br>
+<b>    % cd simple_d</b><br>
+<br>
+<br>
+<b>2. Activate PARTNER</b><br>
+In the moved directory, enter the shell script "ptn64" for the "PARTNER" activation.<br>
+<br>
+<b>    % ptn64</b><br>
+<br>
+Note: Before the "PARTNER" activation, specify the directory of, "simple", to the environment argument, "PTSRC".<br>
+<br>
+<br>
+<b>3. Load the File</b><br>
+Enter the "I command" in the command window.<br>
+<br>
+<b>    &gt;l simple</b><br>
+<br>
+<br>
+<b>4. The Execution</b><br>
+Enter the "g command" or the F5 key in the command window.<br>
+<br>
+<br>
+<b>5. End the Program</b><br>
+Press the ESC key.<br>
+<br>
+<br>
+<br>
+<b>7-4-4 Debug the Sample</b><br>
+<br>
+<br>
+Here we will describe some debugging examples (the operation methods of PARTNER) using the sample.  We use "simple" here again.<br>
+<br>
+<br>
+<b>1. Setting/Freeing the Breakpoint</b><br>
+We will describe the setting method of the breakpoint. Set the breakpoint in "simple" - "gfx.c" - "createGfxTask()".<br>
+<br>
+After loading the sample, press the F1 key. After you press the key, the window, "Select reference file name", is displayed.  Select "fgx.c" with the cursor key, and press the "Enter" key,<br>
+<br>
+<img src="img00008.gif"><br>
+<br>
+After the end of the module selection, the contents of "gfx.c" are displayed in the command window of PARTNER.  Scroll sources until you reach, "createGfxTask()", by using the PageDown key or the scroll key.  Line numbers are displayed at the left side of the code window.  Scroll until you reach between the 110th and 130th lines.  <br>
+<br>
+On the 127th line of "gfx.c", there is a place which is bringing up the assert() function.  Bring the mouse cursor to the line number and click on it with the left button of the mouse.  Then a line is displayed under the line bringing up the assert() function from the code window. Now the breakpoint is set.<br>
+<br>
+<img src="img00009.gif"><br>
+<br>
+Next, execute the program.<br>
+<br>
+<img src="img00010.gif"><br>
+<br>
+After execution, the line which set the breakpoint is highlighted and the program breaks.  When you free the breakpoint, click on the line number with the left mouse button in the same way as with the setting.  After clicking, the underline of the line which set the breakpoint disappears.  Now you have freed the breakpoint.<br>
+<br>
+<br>
+<b>2. The Step Execution/ The Trace Execution</b><br>
+Next we will describe the step execution/the trace execution of the program. First execute the contents explained in "1. Setting/ Freeing the Breakpoint". After the break, provide the step execution.<br>
+<br>
+The trace execution is done by entering the "t command" or F8 key in the command window.  The difference between this and the step execution is that if a function is brought up, the trace execution goes into the function, but the step execution just provides the function call and does not go inside of the function.<br></p>
+
+<table border="1" cellspacing="0">
+    <tr>
+        <td><img src="img00011.gif"> </td>
+    </tr>
+</table>
+
+<p><br>
+Enter the "p command" or the F10 key in the command window. After doing this, the highlighted line in the code window moves along in the process of the program.  This shows that the step execution is being done.<br>
+<br>
+<br>
+<b>3. The Dump/Editing</b><br>
+Next we will describe the <a href="../../../keywords/index/data/system.htm#dump" target="keywords">dump</a>/editing functions. First we will execute the contents explained in "1. Setting/ Freeing the Breakpoint." After the break, do the dump.<br>
+<br>
+The dump is done using the "d command" from the command window. In "createGfxTask()" the argument called "glistp" provides the data setting.  Dump this content.<br>
+<br>
+<b>     &gt;d glistp</b><br>
+<br>
+After inputting, the 16-byte dump data is displayed in the command window.  If you want to do the dump continuously, simply enter the "d command" only.  The dump data is displayed in units of 16-bytes.<br>
+<br>
+<img src="img00012.gif"><br>
+
+
+
+
+
+
+
+
+<br>
+We have only described the dump in units of byte here.  However, the "d command" can dump in various sizes.  Try out some of these. <br>
+<br>
+Next we will do editing. The dump is done by using the "e command" from the command window. The editing also uses the argument called "glistp".  Do the following input in the command window.<br>
+<br>
+<b>    &gt;e glistp</b><br>
+<br>
+After inputting, it will enter the input wait status.  Enter "ff" and enter "." next.  ("." specefies the end of editing).<br>
+<br>
+<img src="img00013.gif"><br>
+<br>
+After clicking, when you dump "glistp" again, you will find that the first byte becomes "Oxff".<br>
+<br>
+Though we have only described the editing in units of bytes here, you can edit in various sizes with the "e command".  Try out some of these.<br>
+<br>
+<br>
+<b>4. Refering to the Argument of C</b><br>
+Next we will describe the source code debug function which refers to the arguments of C.  First execute the contents explained in "1. Setting/Freeing the Breakpoint."  After the break, we will carry out the argument reference.<br>
+<br>
+First, let us try to reference using the inspect window. In "createGfxTask()", the local argument "dynamicp" is passed to the function "doLogo()". Set the mouse cursor to "dynamicp" on the code window, and double-click the left mouse button.<br>
+<br>
+<img src="img00014.gif"><br>
+<br>
+After double-clicking, the inspect window is displayed and you can look up the contents of "dynamicp". The inspect window is displayed in horizontal lines.  If it's hard to see, double-click the @ address in the inspect window with the left mouse button.  You can  display them vertically. You can also do the inspect by using the "ins command" from the command window.<br>
+<br>
+<b>    &gt;ins dynamicp</b><br>
+<br>
+<img src="img00015.gif"><br>
+<br>
+Next, let us provide the reference using the watch window. The operation of the watch window is basically the same as the inspect window. This time, try to look up the argument "glistp". Set the mouse cursor on "dynamicp" in the code window, and enter CTRL+W or CTRL+F7. After clicking, the watch window is displayed, and you can look up the contents of "glistp".<br>
+<br>
+<img src="img00016.gif"><br>
+<br>
+You can also carry out the watch by using the "w command" from the command window.<br>
+<br>
+Finally, if you want to look up the local argument, you can do so by operating the local window of the option window.   You do not have to do the inspect and the watch.<br>
+<br>
+<img src="img00017.gif"><br>
+<br>
+<br>
+<b>5. The Debug Print</b><br>
+In PARTNER, you can look up the debug print during programming. To display the debug print, "<a
+href="../../../n64man/os/osSyncPrintf.htm">osSyncPrintf( )</a>" which is compatible with the N64 OS functions, is used.  The output result of "<a href="../../../n64man/os/osSyncPrintf.htm">osSyncPrintf( )</a>" is displayed in the command window.  "simple" is the program which displays the debug print when the A, B and C button of the controller are entered.   After loading "simple", execute it without setting the breakpoint.  When you enter the button of the controller while executing the program, the debug print is displayed in the command window.<br>
+<br>
+<img src="img00018.gif"><br>
+<br>
+<br>
+<br>
+All of the above are simple examples of debugging. PARTNER has various other functions.  Find the most suitable debugging method from among them.<br><br><br>
+</body>
+</html>

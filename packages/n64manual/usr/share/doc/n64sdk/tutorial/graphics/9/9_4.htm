@@ -1,0 +1,124 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Graphics-Chapter 9  Advanced Texture Mapping</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/22/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<font style="font-size:12pt"><B>9.4  Highlights</B></FONT>
+<br>
+<P>
+ The procedure you follow to produce highlights is explained in the Programming Manual in Chapter 11.7.4, "Specular Highlights," so here we will give just a simple explanation using the source from the gfx9.c sample program.
+<br><br>
+     Whereas the Programming Manual presents sample code to position two highlight light-sources, the gfx9.c sample program makes use of only one highlight.  Thus, you will probably want to look at gfx9.c to see how to position just one highlight light-source.
+</P>
+<BR>
+<B>9.4.1  Preparing the Structure</B>
+<P>
+ To perform lighting using highlights, you define the LookAt type variable and Hilite type variable, and pass these to the <tt>guLookAtHilite</tt> function and initialize.  The <tt>guLookAtHilite</tt> function takes a number of arguments, but none are very difficult to understand.  For details, please see the Function Reference.
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=5><TR>
+	<TD NOWRAP COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE><B>List 9-1</B>
+</TR><TR>
+	<TD NOWRAP BGCOLOR="666666" WIDTH="4" ALIGN=LEFT VALIGN=TOP><HR NOSHADE SIZE=0></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>
+<FONT COLOR="#000080"><PRE><CODE>  guLookAtHiliteF(fmat2, &amp;lookat, &amp;hilite,
+                0.0, 0.0, 50.0,
+                0.0, 0.0, 0.0,
+                0.0, 1.0, 0.0,
+                0.0, 1.0, 0.0,   /* Direction of highlight light-source  */
+                0.0, 0.0, 1.0,   /* A non-zero value even when not used  */
+                __TEXTURE_WIDTH__,
+                __TEXTURE_HEIGHT__);</CODE></PRE></FONT>
+	</TD>
+</TR></TABLE>
+<BR>
+<p>
+<B>9.4.2  Preparing the Light</B>
+<P>
+  Although the direction of the highlight light-source is specified in guLookAtHilite, you also need to define a light structure that points in the same direction.  In the case of the gfx9.c sample program, diffuse light is also used at the same time as a highlight.
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=5><TR>
+	<TD NOWRAP COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE><B>List 9-2</B>
+</TR><TR>
+	<TD NOWRAP BGCOLOR="666666" WIDTH="4" ALIGN=LEFT VALIGN=TOP><HR NOSHADE SIZE=0></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>
+<FONT COLOR="#000080"><PRE><CODE>Lights1 light = gdSPDefLights1( 0,   0, 50,  /* Blue ambient light  */
+                              250, 150, 30,  /* Gold diffuse light */
+                                0, 127,  0); /* Direction toward diffuse light */</CODE></PRE></FONT>
+	</TD>
+</TR></TABLE>
+<BR>
+<p>
+<B>9.4.3  Loading the Texture</B>
+<P>
+g  The texture coordinate scaling parameters and the primitive tile are specified in gSPTexture. G_TX_RENDERTILE, which is a macro constant defined in &lt;gbi.h&gt;, connotes Tile0.  If you use either gDPLoadTextureBlock or gDPLoadTextureTile, then the texture will be automatically loaded to the G_TX_RENDERTILE tile.  The color that is used for highlight color is the one set for primitive color.
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=5><TR>
+	<TD NOWRAP COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE><B>List 9-3</B>
+</TR><TR>
+	<TD NOWRAP BGCOLOR="666666" WIDTH="4" ALIGN=LEFT VALIGN=TOP><HR NOSHADE SIZE=0></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>
+<FONT COLOR="#000080"><PRE><CODE>  * Enable textures, set scaling parameters */
+  gSPTexture(glistp++,
+            (__TEXTURE_WIDTH__  - 1) &lt;&lt; 6,
+            (__TEXTURE_HEIGHT__ - 1) &lt;&lt; 6,
+            0, G_TX_RENDERTILE, G_ON);
+  /* (Parts have been omitted) */
+  /*
+   *  Load highlight texture (image i8hilite)
+Å@ *  Wrapping is turned on
+   */
+  gDPLoadTextureBlock(glistp++,
+                i8hilite,             /* Pointer to texture image */
+                G_IM_FMT_I,           /* Texel format  */
+                G_IM_SIZ_8b,          /* Texel size  */
+                __TEXTURE_WIDTH__,    /* Image width  */
+                __TEXTURE_HEIGHT__,   /* Image height  */
+                0,            /* LUT (highlight) index. (Not used here)*/
+                G_TX_WRAP | G_TX_NOMIRROR,
+                              /* Clamp, wrap, mirror flags in s direction  */
+                G_TX_WRAP | G_TX_NOMIRROR,
+                              /* Clamp, wrap, mirror flags in t direction */
+                __TEXTURE_BITS_X__,        /* s mask  */
+                __TEXTURE_BITS_Y__,        /* t mask  */
+                G_TX_NOLOD, G_TX_NOLOD);   /* Shift (No shift here) */
+  /* The primitive color becomes the color of the highlight light  */
+  gDPSetPrimColor(glistp++, 0, 0, 255, 255, 255, 255);</CODE></PRE></FONT>
+	</TD>
+</TR></TABLE>
+<BR>
+<p>
+<B>9.4.4  Other Commands</B>
+<P>
+To use highlight textures, you also need to set the various modes with the following commands.  Note that G_TEXTURE_GEN has been added to geometry mode.
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=5><TR>
+	<TD NOWRAP COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE><B>List 9-4</B>
+</TR><TR>
+	<TD NOWRAP BGCOLOR="666666" WIDTH="4" ALIGN=LEFT VALIGN=TOP><HR NOSHADE SIZE=0></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>
+<FONT COLOR="#000080"><PRE><CODE>  gSPLookAt(glistp++, &amp;lookat);
+  /* Please set G_TEXTURE_GEN in geometry mode  */
+  gSPSetGeometryMode(glistp++, G_TEXTURE_GEN | G_LIGHTING |
+                     G_ZBUFFER | G_SHADE | G_SHADING_SMOOTH | G_CULL_BACK);
+  /* G_CC_HILITERGB = PRIMITIVE, SHADE, TEXEL0, SHADE, 0, 0, 0, SHADE */
+  gDPSetCombineMode(glistp++, G_CC_HILITERGB, G_CC_HILITERGB);
+  /* Light position  */
+  gSPSetLights1(glistp++, light);
+  /* Set highlight texture tile */
+  gDPSetHilite1Tile(glistp++, G_TX_RENDERTILE, &amp;hilite,
+                              __TEXTURE_WIDTH__, __TEXTURE_HEIGHT__);</CODE></PRE></FONT>
+	</TD>
+</TR></TABLE>
+<P>
+<IMG SRC="image29.gif" WIDTH="458" HEIGHT="117">
+</P>
+<P>
+<B>Figure 9-2  Screen shots of gfx9.c sample program with __HILITE__ defined.</B>
+</P>
+</BODY>
+</HTML>

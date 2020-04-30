@@ -1,0 +1,46 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-N64 Programming Basics-Chapter 3  The Display List and Tasks</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/20/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<FONT Style="font-size:12pt"><B>3.4  Analyzing Part of the Sample Source</B></FONT>
+<br>
+<P>
+ Next we will analyze some of the sample source.  For these explanations, the sample program basic3 will be used.<br><br>  
+     First, take a look at the static display lists rspinit_dl and rdpinit_dl in graphic.c.  
+     Here are several important yet simple commands:  
+<br><br>
+<B>gsSPViewport</B>(&amp;viewport)<br>
+Provides the pointer to the viewport structure Vp and sets the projection transformation parameters necessary for the size of the display window and the display of polygons.
+<br><br>
+<B>gsDPSetCycleType</B>(G_CYC_1CYCLE)<br>
+Specifies the rendering mode.  The number of pixels that you can fill at any one time and the usable drawing functions vary depending on the mode, but this is not important for our purposes now. <br><br>
+<B>gsDPSetScissor</B>(G_SC_NON_INTERLACE, 0, 0, SCREEN_WD, SCREEN_HT)<br>
+Specifies the area in which you can draw.  This is the same as specifying the clipping area for the so-called clipping process.  Note that if you omit this command, the screen image will not be displayed correctly.
+<P>
+  You may have noticed a convention in the naming of these commands.  The SP and DP in the names indicate commands for the RSP processor or the RDP processor.  Also, the initials gs at the front of the name indicate these are commands for a static display list.  Commands for a dynamic display list have only the initial g at the front of their names.<br><br>
+     In general, commands have been prepared in two versions, g... and gs... for dynamic and static display lists.  Since both types of commands operate in exactly the same way, we will not distinguish between them in subsequent explanations.  Yet note that g... commands take one extra argument not required by gs... commands, namely, the address where the command should be stored.  If you look at the g... commands appearing in graphic.c you will see that they all have glistp++ as the first argument.<br><br>  
+
+     Next, we will look at some of the basic commands found in the dynamic display list: 
+</P>
+<B>gSPDisplayList</B>(glistp++, rdpinit_dl)<br>
+The display list rdpinit_dl is included in the dynamic display list glist.rspinit_dl is included in the same way. 
+<br><br>
+<B>gDPSetColorImage</B>(glistp++, G_IM_FMT_RGBA, G_IM_SIZ_16b,SCREEN_WD, <BR>     osVirtualToPhysical(nuGfxCfb_ptr))<br>
+This command specifies the address of the framebuffer intended for the fill color operation.  In this example, pixels are expressed in 16-bit format and the framebuffer nuGfxCfb_ptr has an image width of SCREEN_WD.  nuGfxCfb_ptr is a global variable for the framebuffer prepared by NuSystem.  <tt>osVirtualToPhysical</tt> is a function that converts virtual addresses to physical addresses.  Since the RDP operates on the basis of physical addresses, you need to explicitly make this conversion.
+<br><br>
+<B>gDPSetFillColor</B>(glistp++, (GPACK_RGBA5551(r, g, b, 1) &lt;&lt; 16 |<BR>
+     GPACK_RGBA551(r, g, b, 1)))<br>
+This command specifies the fill color.  In this example, the background color expressed by r, g and b is set.  By using the GPACK_RGBA5551 macro, you can convert the 8-bit RGB elements into the 5551 format, with 5-bit RGB elements and a 1-bit alpha value.
+<br><br><B>gDPFillRectangle</B>(glistp++, 0, 0, SCREEN_WD - 1, SCREEN_HT - 1)<br>
+Specifies the size of the rectangle to fill.  If you want to fill the whole screen with the background color, you set this line to the entire area of the screen.<br><br>
+<B>gSPEndDisplayList</B>(glistp++)<br>
+The command indicates the end of the display list.  In the same way, the gsSPEndDisplayList command is put on the end of the static display lists rspinit_dl and rdpinit_dl.
+</p>
+</BODY>
+</HTML>

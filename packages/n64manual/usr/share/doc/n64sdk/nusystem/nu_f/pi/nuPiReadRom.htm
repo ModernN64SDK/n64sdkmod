@@ -1,0 +1,68 @@
+<HTML>
+<HEAD>
+<TITLE>nuPiReadRom</TITLE>
+<link rel=stylesheet type="text/css" href="../../../n64man/n64man.css">
+<!-- Editor's Notes: 9/8/1999 Ron Daring -->
+</HEAD>
+
+<BODY bgcolor="#FFFFFF">
+
+
+<P>
+<FONT size="5"><b><IMG src="../nusystem2.gif" height="30" width="176">Function</b></FONT>
+
+<HR>
+<P>
+<FONT size="3"><b>nuPiReadRom</b></FONT>
+<p>
+<HR>
+<P>
+<b>Syntax</b>
+<font face="courier" size="2">
+<pre>void nuPiReadRom(u32 rom_addr, void* buf_ptr, u32 size)
+</PRE>
+</font>
+
+<p><b>Arguments</b>
+<font face="courier" size="2">
+<PRE>
+<B>rom_addr</B>      transfer origin(from) ROM address 
+<B>buf_ptr</B>       transfer destination(to) buffer pointer 
+<B>size</B>          transfer size
+</PRE>
+</font>
+
+<p><b>Return Value</b>
+<font face="courier" size="2">
+<PRE>
+None
+</PRE>
+</font>
+
+<p><b>Description</b>
+<P>
+<i>Reads data from ROM</i>
+
+<P>
+Uses the PI to DMA transfer data from Game Pak ROM into RDRAM.  
+The transfer origin(from) ROM address "rom_addr" must be 2-byte aligned.  The pointer to the transfer destination buffer "buf_ptr" must be 8-byte aligned. 
+
+<P>
+<!--  -->While transferring a large amount of data using PI-DMA, it is possible that the necessary data cannot be transferred for audio playback during that period, causing noise in the audio.<!--  --> Therefore, when the amount of data to be transferred at one time is greater than 16,384 bytes, perform processing within the function so that it is divided into 16,384 byte units.
+<p>
+<b>See Also</b>
+<p><A href="nuPiInit.htm">nuPiInit</A>
+<p>
+<hr>
+<P>
+<b>Revision History</b>
+
+<P>
+2/1/99 Added description of divided transfer
+<p>
+<hr>
+<P align="right">
+<A href="index.htm"><IMG src="../index.gif" height="17" width="65" border="0"></A>
+
+</BODY>
+</HTML>

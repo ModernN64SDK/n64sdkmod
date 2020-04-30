@@ -1,0 +1,126 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 11 - RSP Graphics Programming</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check.
+             MAP 11/18/99 edited content, updated format -->
+</head>
+
+<h1>11.3 Matrix State</h1>
+
+<p>The "geometry engine" in the RSP implements a fixed-point <a href="../../keywords/index/data/graphics.htm#matrix" target="keywords">matrix</a> engine with the following matrix state: </p>
+
+<dl>
+  <dt><strong>A 10-element modeling matrix <A target="keywords" HREF="../../keywords/index/data/system.htm#stack">stack</A></strong>
+  <dd>New matrices can be loaded onto the stack, multiplied with the top of the stack, popped off of the stack, etc.  This matrix stack is primarily used for manipulating objects within the world coordinate system (often combinations of rotations, translations, and sometimes scales). 
+</dl>
+<dl>
+  <dt><strong>A 1-element projection and viewing matrix "stack"</strong>
+  <dd>New matrices can be loaded onto the stack, multiplied with the top of the stack, but cannot be <A target="keywords" HREF="../../keywords/index/data/system.htm#push">pushed</A> or popped.  This matrix "stack" is primarily used for the projection matrix and the viewing matrix.  The projection matrix (often created with the <a href="../../n64man/gu/guPerspective.htm">guPerspective</a> or the <a href="../../n64man/gu/guOrtho.htm">guOrtho</a>
+        functions) is loaded onto the stack, and then the viewing matrix (often created with the <a href="../../n64man/gu/guLookAt.htm">guLookAt</a> function) is multiplied on top of it. 
+</dl>
+<dl>
+  <dt><strong>A "perspective normalization" factor</strong>
+  <dd>This is used to improve precision of the fixed-point perspective computation.
+</dl>
+
+<p>When a group of vertices is loaded, they are first transformed by the matrix MP (the current top of the modeling stack multiplied by the projection matrix).   All vertex transformations are done only when they are loaded; sending a new matrix down later will not change any points already in the points buffer.</p>
+
+<p>The modeling matrix stack resides in DRAM. It is the application's responsibility to allocate enough memory for this stack and provide a pointer to this stack area in the task list. </p>
+
+<p>The format of a matrix is a bit unusual. It is optimized for the RSP's vector unit (used during the process of multiplication through transformation.)   This format groups all of the integer parts of the elements, followed by all of the fractional parts of the elements.  This unusual format is not exposed to the user, unless he/she chooses not to use the matrix utilities
+in the libraries. </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="01"><h2>11.3.1 Insert a Matrix </h2></a>
+
+<p>Inserts a new matrix into the <a href="../../keywords/index/data/graphics.htm#display list" target="keywords">display list</a>.</p>
+
+
+<table border=1 align="center">
+  <caption><a name="t11-04"><strong>Table 11-4 <a href="../../n64man/gsp/gSPMatrix.htm">gsSPMatrix</a>(Mtx *m,unsigned int p)</strong></a></caption>
+  <tr><th nowrap>Parameter</th><th>Values</th></tr>
+  <tr><td align="center">m</td><td>pointer to the new matrix</td></tr>
+  <tr><td align="center">p</td><td>G_MTX_MODELVIEW or G_MTX_PROJECTION,<br>
+      G_MTX_MUL or G_MTX_LOAD,<br>
+      G_MTX_PUSH or G_MTX_NOPUSH<br></td></tr>
+</table>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="02"><h2>11.3.2 Pop a Matrix </h2></a>
+
+<p>This command pops the matrix stack. </p>
+
+<table border=1 align="center">
+  <caption><a name="t11-05"><strong>Table 11-5 <a href="../../n64man/gsp/gSPPopMatrix.htm">gsSPPopMatrix</a>(unsigned int n)</strong></a></caption>
+  <tr><th nowrap>Parameter</th><th>Values</th></tr>
+  <tr><td align="center">n</td><td>unused</td></tr>
+</table>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="03"><h2>11.3.3 Perspective Normalization </h2></a>
+
+<p>This scale value is used to scale the transformed w coordinate down, prior to dividing out w to compute the screen coordinates (which are similarly scaled). The effect of this is to maximize the precision of this division.</p>
+
+<p>The library function <a href="../../n64man/gu/guPerspective.htm">guPerspective()</a> returns one approximation for this scale value, which is a good estimate for most cases: </p>
+
+<dl>
+  <dt><a name="f11-02"><strong>Figure 11-2 Perspective Normalization Calculation</strong></a>
+  <dd><img alt="[Figure 11-2]" src="gif/f11-02.gif">
+</dl>
+
+<p>This approximation normalizes w=1.0 halfway between the near and far planes.</p>
+
+<table border=1 align="center">
+  <caption><a name="t11-06"><strong>Table 11-6 <a href="../../n64man/gsp/gSPPerspNormalize.htm">gsSPPerspNormalize</a>(unsigned short int s)</strong></a></caption>
+  <tr><th nowrap>Parameter</th><th>Values</th></tr>
+  <tr><td align="center">s</td><td>16-bit unsigned fractional perspective normalization scale</td></tr>
+</table>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="04"><h2>11.3.4 Note on Coordinate Systems and Big Numbers </h2></a>
+
+<p>The RSP is a fixed point machine, so keeping coordinate systems within a certain range is important.   If numbers in the final coordinate system (or intermediate coordinate systems) are too big, then the geometry of objects can be distorted, textures can shift erratically, and <a href="../../keywords/index/data/graphics.htm#clipping" target="keywords">clipping</a> can fail to work correctly.  In order to avoid these problems keep the following notes in mind: </p>
+
+<ol>
+  <li>No coordinate component (x, y, z, or w) should ever be greater than 32767.0 or less than -32767.0 
+  <li>The difference between any 2 vertices of a triangle should not have any components greater than 32767.0 
+  <li>The sum of the difference of w's of any 2 vertices plus the sum of the differences of any of the x, y, or z components should be less than 32767.0.   In other words for any 2 vertices in a triangle, v1=(x1,y1,z1,w1), and v2=(x2,y2,z2,w2), these should all be true:
+<br>
+      <blockquote>
+      abs (x1 - x2) + abs (w1 - w2) &lt; 32767.0<br>
+      abs (y1 - y2) + abs (w1 - w2) &lt; 32767.0<br>
+      abs (z1 - z2) + abs (w1 - w2) &lt; 32767.0<br>
+      </blockquote>
+</ol>
+
+<p>One way to check this is to take the largest <a href="../../keywords/index/data/graphics.htm#vertex" target="keywords">vertices</a> that you have and run them through the largest matrices you are likely to have, then check to make sure that these conditions are met. </p>
+
+<p>A recommended way of avoiding trouble is to never allow any component to get larger than 16383.0 or smaller than -16383.0.  If you want to keep all components of coordinate value within the range of value above, ensure that M*S+T&lt;16383.0.  M, S and T are as follows:</p>
+
+<dl>
+  <dt><strong>M</strong>
+  <dd>the largest component (x, y, or z) of the largest model in your database. 
+  <dt><strong>S</strong>
+  <dd>The largest scale (i.e., number in the upper 3 rows of the matrix) in the matrix made up of the concatenation of the largest modeling matrix, the largest LookAt matrix, and the largest Perspective matrix you will use. 
+  <dt><strong>T</strong>
+  <dd>the largest translation (i.e., number in the 4th row of the matrix) in the matrix made up of the concatenation of the largest modeling matrix, the largest LookAt matrix, and the largest Perspective matrix you will use.
+</dl>
+
+<p> If you experience textures wobbling or shifting over a <a href="../../keywords/index/data/graphics.htm#surface" target="keywords">surface</a>, clipping not working correctly, or geometry behaving erratically, this is a good place to check. </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="05"><h2>11.3.5 A Few Words About Matrix Precision </h2></a>
+
+<p>The RSP uses fixed-point 32-bit multiplies during matrix operations.  Since the product of two 32-bit numbers is a 64-bit number, only the middle 32 bits of the answer is retained.  Overflow of intermediate terms is possible, especially in large coordinate systems or unusual projection matrices. </p>
+
+<p>In order to avoid fixed-point precision problems, in some cases it may be desirable to compute the matrix in floating point on the N64 CPU  and just load it. </p>
+
+<p>Matrix multiplies are very fast on the RSP, but they are not free. If possible, reduce matrix operations by pre-multiplying the matrices at modeling time or compile time. </p>
+
+<p>Please see <a href="#04"> Section 11.3.4 "Note on Coordinate Systems and Big Numbers"</a> for information about keeping coordinates from becoming too large.</p>
+
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+</body> </html>

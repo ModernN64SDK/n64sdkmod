@@ -1,0 +1,19 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 14 - Texture Rectangles (Hardware Sprites)</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. -->
+</head>
+
+<h1>14.6 Color Index Frame Buffer</h1>
+
+<p>You might have noticed that one of the color image types that is available is the 8-bit I type. You can use this mode to render <a href="../../keywords/index/data/graphics.htm#color index" target="keywords">color index</a> images into the framebuffer. Before displaying the 8-bit image, however, you must read the 8-bit image into TMEM and de-reference into a 16-bit RGBA image. Note that the 8-bit frame buffer can share the same memory as the 16-bit frame buffer by placing the 8-bit buffer in the high half of the 16-bit buffer.This technique can give better performance than rendering directly to a 16-bit framebuffer because the memory accesses are more efficient. Also, the initial clear of the framebuffer is faster because the buffer is half the size. </p>
+
+<p>There are, however, restrictions when using this technique. Since we are <a href="../../keywords/index/data/graphics.htm#rendering" target="keywords">rendering</a> an 8-bit <a href="../../keywords/index/data/graphics.htm#CI" target="keywords">CI</a> image, you must texture <A target="keywords" HREF="../../keywords/index/data/system.htm#map">map</a> objects with 8-bit CI textures (but don't de-reference yet) and use shade colors that fit into your palette. You cannot filter the textures since the texture values in the pipeline are indices. You also cannot blend with <a href="../../keywords/index/data/graphics.htm#memory color" target="keywords">memory colors</a> (unless your palette is laid out specifically to allow this), although you can achieve cut-out type transparency. Antialiasing is also not available for this framebuffer type, because no <a href="../../keywords/index/data/graphics.htm#coverage value" target="keywords">coverage value</a> is stored. </p>
+
+<p>These restrictions sound severe, but may be practical for some <a href="../../keywords/index/data/graphics.htm#sprite" target="keywords">sprite</a> games, especially those that use sort priority and can render totally in copy mode. In copy mode (and 1 or 2-cycle mode) you can get cut-out transparency by using the <a href="../../keywords/index/data/graphics.htm#alpha" target="keywords">alpha</a> compare logic and reserving an index (0 is a good choice) that indicates transparency. If the index 0 means transparent, then setting the blend alpha to 1 and enabling alpha compare (G_AC_THRESHOLD) would allow all pixel with any index greater than or equal to 1 to be written to the framebuffer but pixels with index 0 would not be written. </p>
+
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+</body> </html>

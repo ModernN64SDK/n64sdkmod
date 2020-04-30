@@ -1,0 +1,195 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: MAP- created file>
+<TITLE>Release Notes OS2.0J</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>Release Notes OS2.0K</H1>
+<P align="right">
+[<A href="../relnote_j/index.htm"> Click here for Release Notes OS2.0J</A>]
+</P>
+<HR>
+<P>
+08/04/99 OS2.0K RELEASE NOTES<BR>
+==============================<BR>
+<BR>
+Summary: <BR>
+-----<BR>
+This release of NINTENDO64 OS2.0K contains corrections of several bugs that were discovered since the previous release, and the addition of new features and upgrades to the OS. <BR>
+<BR>
+See /usr/src/PR/README.jp for the detailed structure of OS2.0K.<BR>
+See /usr/src/PR/demos/README_DEMOS.jp for descriptions of the various software demos.<BR>
+It is also recommended that you delete or backup all of /usr/src/PR before installing the new release.  This will allow you to avoid mixing the old directories in with the newly installed directories, making them difficult to tell from one another.<BR>
+<BR>
+The README files in several of the sample program directories under /usr/src/PR/demos/README_DEMOS.jp and /usr/src/PR/demos/ say to execute &quot;gload&quot;, but this is the method for running programs in the Indy + development board development environment.  Developers using the PARTNER development environment, the Monegi Smart Pack development environment or the IS development environment should run programs according to the methods listed in the corresponding manuals.<BR>
+<BR>
+<BR>
+New Features: <BR>
+-----------<BR>
+<BR>
+OS<BR>
+<BR>
+The <tt>osInitialize</tt> function has been made into a macro and removed from the model-dependent area of the development equipment when the debug library is being used.  Whether you are using PARTNER-N64, Monegi Smart Pack-A, IS-Viewer for debugger, or an Emulation board, after initializing with <tt>osInitialize()</tt>, the debug display can be used by calling <tt>osSyncPrintf</tt> or, when the debug-version library is being used, osError.<BR>
+The development equipment being used is automatically identified during <tt>osInitialize</tt>, and if you do not want to utilize this feature, you can create a program that forcibly calls the initialization routine for that development equipment by defining its respective constant, i.e., PTN64, MSP64, ISV64, or EMU64 (in the order described above).<BR> 
+When linking to a release library, define the FINALROM constant and execute make.  This will create a program that only initializes the NINTENDO64, without performing the model-depenedent initialization.  See the definition of os_host.h for operation details. <BR>
+Software which is compatible with the latest version of <tt>osInitialize</tt> is needed when used with IS-VIEWER64 and IS-VIEWER64 for Debugger. This can be downloaded from http://intsys.co.jp/tool/isv/. <BR>
+<BR>
+A thread profiler API has been added that measures the execution time for each thread.<BR>
+<BR>
+New Sample Programs: <BR>
+-------------------------<BR>
+<BR>
+spritemonkeyEX<BR>
+<BR>
+This is a sample using the S2DEX2 sprite microcode.<BR>
+Since 32-bit textures will not be displayed normally when used under the current S2DEX2 microcode specifications, they can be displayed using the <tt>guS2DEmuBgRect1Cyc()</tt> emulation function for the corresponding mode.<BR>
+<BR>
+threadmonkey<BR>
+<BR>
+This is a sample showing how to use the API thread profiler.<BR>
+The body of the program is exactly the same as blockmonkey, but the block.c portion has been rewritten with an added function for outputting the profile results as a debug printout. <BR>
+<BR>
+Revised Sample Programs:<BR>
+-----------------------------<BR>
+<BR>
+Sample Programs in General<BR>
+<BR>
+When the environmental variable <tt>NOMAKEMASK</tt> is defined, Makefile is altered so that makemask is not executed when make FINAL=.<BR>
+Several variable names and function names have been changed for source-sharing with CodeWarrior.  Specific buffer alignment specifications also have been added.<BR>
+<BR>
+gbpak<BR>
+<BR>
+This program has been changed so that it waits for a Controller Read End message before executing the next processing.<BR>
+<BR>
+playseq.naudio<BR>
+<BR>
+The MAX_VOICES definition value has been changed from 24 to 32. <BR>
+<BR>
+Changed Features: <BR>
+---------------<BR>
+<BR>
+mgu (high-speed versions of gu functions)<BR>
+<BR>
+Programs have been optimized with respect to gu-type functions which are utilized with relatively high frequency, replacing them with functions that are executed at higher speeds.<BR>
+<BR>
+osInitialize()<BR>
+<BR>
+This has been made into a macro, and has been modified so that processing related to debugger model dependency is performed more precisely.<BR>
+<BR>
+gbi.h<BR>
+<BR>
+Bugs with the gsSPLoadGeometryMode and gsDPSetConvert macros have been fixed.  This has also been fixed so that a gcc warning is not issued when {} are missing for Gfx.<BR>
+<BR>
+os_convert.h<BR>
+<BR>
+This has been fixed so that the OS_K0_TO_PHYSICAL macro operates properly when CodeWarrior is used.<BR>
+<BR>
+os_debug.h<BR>
+<BR>
+API definition was added for the thread profiler.<BR>
+<BR>
+os_host.h<BR>
+<BR>
+<tt>osIntialize</tt> was made into a macro and made to correspond with the subdivision of the type-dependent parts. <BR>
+<BR>
+os_internal_reg.h<BR>
+<BR>
+Added definitions for __osGetWatchLo and __osSetWatchLo.<BR>
+<BR>
+os_thread.h<BR>
+<BR>
+Added structure definitions, etc. for the thread profiler. <BR>
+<BR>
+rcp.h<BR>
+<BR>
+Changed 8-14 for DEVICE_TYPE to reserve. <BR>
+<BR>
+Fixed Bugs: <BR>
+-----------------<BR>
+<BR>
+OS<BR>
+<BR>
+osGbpakReadWrite()<BR>
+<BR>
+Fixed bug in which invalid values were returned when a 0 was passed to size. <BR>
+<BR>
+osGBpakReadId()<BR>
+<BR>
+Fixed bug in which registration data in ROM was not being properly read. <BR>
+<BR>
+guS2DEmuBgRect1Cyc()<BR>
+<BR>
+Corrected bug in which 32-bit textures were not properly handled.<BR>
+<BR>
+osSetTimer</tt>
+<p>
+Changed so that the timer would be reset to a minimum of 10us because the counter would expire before the register was set when the timer was activated for short periods of time. <BR>
+<BR>
+assert()<BR>
+<BR>
+Changed so that it could be used even when libgultra.a was being used. <BR>
+<BR>
+Expanded Features: <BR>
+---------------<BR>
+<BR>
+AUDIO<BR>
+<BR>
+GRAPHICS<BR>
+<BR>
+OS<BR>
+<BR>
+64DD<BR>
+<BR>
+Sample Programs No Longer Supported: <BR>
+---------------------------------------<BR>
+<BR>
+The following sample programs have been moved to the /PR/demos_old/ directory. 
+<BR>
+<BR>
+nnsample1<BR>
+nnsample2<BR>
+<BR>
+Features No Longer Supported: <BR>
+-------------------------<BR>
+<BR>
+Precautions: <BR>
+-------<BR>
+<BR>
+<BR>
+Document: <BR>
+-------------<BR>
+<BR>
+----------------------------------------------------------------------<BR>
+Warnings: <BR>
+----------------------------------------------------------------------<BR>
+<BR>
+Graphics: <BR>
+---------------<BR>
+<BR>
+Audio:<BR>
+-----------<BR>
+<BR>
+OS:<BR>
+---<BR>
+<BR>
+Demo:<BR>
+-----<BR>
+<BR>
+Tools: <BR>
+-------<BR>
+<BR>
+Debugger: <BR>
+---------<BR>
+<BR>
+----------------------------------------------------------------------<BR>
+Appednix A<BR>
+----------------------------------------------------------------------<BR>
+<BR>
+</P>
+<HR>
+</BODY>
+</HTML>

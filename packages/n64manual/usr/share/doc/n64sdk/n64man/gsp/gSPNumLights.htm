@@ -1,0 +1,71 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.
+  PWC- updated formatting
+-->
+<TITLE>gSPNumLights</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>gSPNumLights [Macro]</font></H1>
+
+<p><b>Function</b></font></p>
+
+<P>gSPNumLights</p>
+
+<p><i>Specifies the number of Light structures to load into the RSP</i></P>
+
+<p><b>Syntax</b></font></p>
+<p>
+<PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gbi.htm">gbi.h</A> */
+gSPNumLights(Gfx *gdl, s32 n)
+gsSPNumLights(         s32 n)</CODE></PRE></p>
+
+<p><b>Arguments</b></font></p>
+<p>
+<DL>
+  <DT><B>gdl</B>
+  <DD>the pointer to the display list. 
+  <DT><B>n</B>
+  <DD>the number of diffuse lights to use for lighting at one time: 
+  <DD><B>NUMLIGHTS_0</B> (0 diffuse lights) 
+  <DD><B>NUMLIGHTS_1</B> (1 diffuse light) 
+  <DD><B>NUMLIGHTS_2</B> (2 diffuse lights) 
+  <DD>       :
+  <DD><B>NUMLIGHTS_7</B> (7 diffuse lights) 
+</DL></p>
+<p><b>Description</b></font></p>
+<P>
+Specifies the number of lights used in lighting calculations. This macro is used in association with <A HREF="gSPLight.htm">gSPLight</A>, which loads the light that will be actually used. When this macro specifies N number of lights, the 1st to Nth lights are used as directional lights (color and direction), and Nth+1 light is used as the ambient light (color only). To use only ambient light, set the "n" argument to NUMLIGHTS_0 so the first light is set to the ambient light color. 
+</P>
+<p><b>Note</b></font></p>
+<P>
+When the lighting state has been altered with <A HREF="gSPLight.htm">gSPLight</A>, you must use the gSPNumLights macro to tell the RSP that Light has been modified (even if the number of lights has not been changed). 
+</P>
+<P>
+For static light, it is more efficient to use <A HREF="../gdsp/gdSPDefLights.htm">gdSPDefLights</A> together with <A HREF="gSPSetLightsM.htm">gSPSetLights<I>M</I></A>, rather than using <A HREF="gSPLight.htm">gSPLight</A> and gSPNumLights. 
+</P>
+<p><b>Example</b></font></p>
+<P>
+gSPNumLights indicates the number of structures loaded with <A HREF="gSPLight.htm">gSPLight</A>.
+</P>
+<P>
+<PRE><CODE>gSPLight(glistp++, &amp;(light.l[0]), 1);  /* Load directional lights */
+gSPLight(glistp++, &amp;(light.l[1]), 2);
+gSPLight(glistp++, &amp;(light.a), 3);     /* Load ambient light */
+<B>gSPNumLights</B>(glistp++, NUMLIGHTS_2); /* Specify the number of lights being loaded */
+</CODE></PRE>
+</P>
+<p><b>See Also</b></font></p>
+<P>
+<A HREF="../gdsp/gdSPDefLights.htm">gdSPDefLights</A>, <A HREF="gSPLight.htm">gSPLight</A>, and <A HREF="gSPSetLightsM.htm">gSPSetLights<I>M</I></A>
+</P>
+</P><p><b>Revision History</b></p>
+<P>
+02/01/99 Completely rewritten.
+</P>
+</BODY>
+</HTML>

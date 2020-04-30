@@ -1,0 +1,317 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!--
+Editors Notes:
+  PWC- updated formatting
+-->
+<title>STEP2 [A Guide to the N64 Programming - Chpater 3 N64 Audio Architecture and Samples</title>
+<base target="keywords">
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<p><font style="font-size:12pt; font-weight:bold">3-6 Audio Playback Samples</font><br>
+<br>
+<br>
+The following code demonstrates how to play a MIDI sequence in your game. Another audio sample on the CD demonstrates how to play <a href="../../../keywords/index/data/audio.htm#sound effect" target="keywords">sound effects</a>.  See [Appendix C Sample Description] about the sample program. <a href="../../../n64man/os/os_INDEX.htm">os-fuctions</a> and <a href="../../../n64man/al/al_INDEX.htm">al-functions</a> are included in libraries. You can look them up in the "N64 Function Reference Manual" for more information. All other functions are defined for this sample only; they are not part of the os or al libraries. <br>
+<br>
+<br>
+<b>3-6-1 Sequence Playback Sample Code</b><br>
+<img src="img00014.gif"> <br><pre>
+/*-------------------------------------------------------------------------
+ The main process
+---------------------------------------------------------------------------*/
+void mainproc(void* arg)
+{
+ /* Initialize each type */
+ InitMain( );
+
+  /* The main loop */
+ while(1){ 
+  switch(main_no){
+   case GM_MAIN:
+    main_no = main00(&amp;sched);
+   break;
+  }
+ }
+}
+
+/*-------------------------------------------------------------------------
+ Initialize each type
+---------------------------------------------------------------------------*/
+void InitMain(void)
+{
+ /* Initialize the audio player */
+auAudioInit( );
+
+ /* Initialize the <a href="../../../keywords/index/data/audio.htm#sequence player" target="keywords">sequence player</a> */
+ auSeqPlayerInit(_midibankSegmentRomStart,
+  _midibankSegmentRomEnd,
+  _seqSegmentRomStart,
+  _seqSegmentRomEnd,
+  _miditableSegmentRomStart);
+
+ /* Create the scheduler <a href="../../../keywords/index/data/system.htm#thread" target="keywords">thread</a> */
+ nnScCreateScheduler(&amp;sched, OS_VI_NTSC_LAN1,1);
+
+ /*  Create the audio thread  */
+ auCreateAudioThread(&amp;sched);
+
+ main_no = GM_MAIN;
+}
+
+/*-------------------------------------------------------------------------
+ Allocate each <a href="../../../keywords/index/data/system.htm#buffer" target="keywords">buffer</a>  and initialize the
+     parameter used in the audio library
+---------------------------------------------------------------------------*/
+void auAudioInit(void)
+{
+ /*initialize audio heap */
+ <a href="../../../n64man/al/alHeapInit.htm">alHeapInit</a>(&amp;audio_heap,audio_heap_buf,AUDIO_HEAP_SIZE);
+
+ /* create command list buffer */
+ audio_cmdlist_ptr[0] = <a href="../../../n64man/al/alHeapAlloc.htm">alHeapAlloc</a>(&amp;audio_heap,1,
+  AUDIO_CLIST_SIZE_MAX*sizeof(Acmd));
+ audio_cmdlist_ptr[1] = <a href="../../../n64man/al/alHeapAlloc.htm">alHeapAlloc</a>(&amp;audio_heap,1,
+ AUDIO_CLIST_SIZE_MAX*sizeof(Acmd));
+
+ /* create task list buffer */
+ audio_tlist_ptr[0] = <a href="../../../n64man/al/alHeapAlloc.htm">alHeapAlloc</a>(&amp;audio_heap,1,
+sizeof(OSTask));
+ audio_tlist_ptr[1] = <a href="../../../n64man/al/alHeapAlloc.htm">alHeapAlloc</a>(&amp;audio_heap,1,
+sizeof(OSTask));
+
+ /* create audio buffer */
+ audio_buffer_ptr[0] = <a href="../../../n64man/al/alHeapAlloc.htm">alHeapAlloc</a>(&amp;audio_heap,1,
+  sizeof(s32)*AUDIO_BUFFER_MAX);
+ audio_buffer_ptr[1] = <a href="../../../n64man/al/alHeapAlloc.htm">alHeapAlloc</a>(&amp;audio_heap,1,
+  sizeof(s32)*AUDIO_BUFFER_MAX);
+ audio_buffer_ptr[2] = <a href="../../../n64man/al/alHeapAlloc.htm">alHeapAlloc</a>(&amp;audio_heap,1,
+  sizeof(s32)*AUDIO_BUFFER_MAX);
+
+ /* create message queue for DMA */
+ <a href="../../../n64man/os/osCreateMesgQueue.htm">osCreateMesgQueue</a>(&amp;audioDmaMessageQ,
+  &amp;audioDmaMessageBuf,1);
+ <a href="../../../n64man/os/osCreateMesgQueue.htm">osCreateMesgQueue</a>(&amp;audioRomMessageQ,
+  &amp;audioRomMessageBuf, 1);
+
+ /* Clear initialization flag of DMABuffer */
+ dmaState.initialized = 0;
+
+ /* initialize audio library */
+ audio_config.outputRate= 
+  <a href="../../../n64man/os/osAiSetFrequency.htm">osAiSetFrequency</a>(AUDIO_OUTPUT_RATE);
+ audio_config.maxVVoices =
+  AUDIO_VVOICE_MAX;/* max <a href="../../../keywords/index/data/audio.htm#virtual voice" target="keywords">virtual voices </a> */
+ audio_config.maxPVoices =
+  AUDIO_PVOICE_MAX; /* max <a href="../../../keywords/index/data/audio.htm#physical voice" target="keywords"> physical voices</a> */
+ audio_config.maxUpdates = AUDIO_UPDATE_MAX;
+ audio_config.dmaproc = &amp;dmaNew; /* <a href="../../../keywords/index/data/audio.htm#DMA call back" target="keywords">DMA callback</a> function */
+ audio_config.fxType = AL_FX_SMALLROOM;/* <a href="../../../keywords/index/data/audio.htm#effect" target="keywords">effect</a> type */
+ audio_config.heap = &amp;audio_heap;/* audio heap */
+ audio_config.params = 0; /* custom effect */
+
+ /*  Create the synthesizer (initialize the audio library) */
+ <a href="../../../n64man/al/alInit.htm">alInit</a>(&amp;audio_global, 
+&amp;audio_config);
+}
+
+/*-------------------------------------------------------------------------
+ Initialize the sequence player
+ input
+  midi_start: The header ROM address of the <a href="../../../keywords/index/data/audio.htm#bank file" target="keywords">bank file</a>(.ctl)
+  midi_end: THe end ROM address of the bank file(.ctl)
+  seqheader_start:The header ROM address of
+                    the sequence file (.sbk)
+  seqheader_end:The end ROM address of the
+                  sequence file (.sbl)
+  midi_table_star:The header ROM address of
+                    the wave table file (.tbl)
+---------------------------------------------------------------------------*/
+void auSeqPlayerInit(u8* midi_start, u8* midi_end,
+ u8* seqheader_start, u8* seqheader_end,
+ u8* midi_table_start)
+{
+ ALBank *midiBank_ptr;
+ u32 size;
+
+ /* create sequence data buffer */
+ seqplayer[0].seqdata_ptr =
+  <a href="../../../n64man/al/alHeapAlloc.htm">alHeapAlloc</a>(&amp;audio_heap,
+1,AUDIO_SEQDATA_SIZE_MAX);
+ seqplayer[1].seqdata_ptr =
+  <a href="../../../n64man/al/alHeapAlloc.htm">alHeapAlloc</a>(&amp;audio_heap,
+1,AUDIO_SEQDATA_SIZE_MAX);
+
+ /* initialize sequence player 0 */
+ seqplayer[0].seqconfig.maxVoices =
+  AUDIO_SEQ_VVOICE_MAX; /* max virtual voices */
+ seqplayer[0].seqconfig.maxEvents =
+  AUDIO_SEQ_EVTCOUNT_MAX; /* max inside <a href="../../../keywords/index/data/audio.htm#event" target="keywords">events</a> */
+ seqplayer[0].seqconfig.maxChannels = 
+  AUDIO_SEQ_CHANNEL_MAX; /* max MIDI channels */
+ seqplayer[0].seqconfig.heap = &amp;audio_heap;/* audio heap */
+ seqplayer[0].seqconfig.initOsc = 0;
+ seqplayer[0].seqconfig.updateOsc = 0;
+ seqplayer[0].seqconfig.stopOsc = 0;
+ seqplayer[0].seqconfig.debugFlags = 0;
+
+#ifdef _AUDIO_COMPACTMIDI_
+ <a href="../../../n64man/al/alCSPNew.htm">alCSPNew</a>(&amp;seqplayer[0].seqplayer,
+&amp;seqplayer[0].seqconfig);
+#else
+ <a href="../../../n64man/al/alSeqpNew.htm">alSeqpNew</a>(&amp;seqplayer[0].seqplayer,&amp;seqplayer[0].seqconfig);
+#endif /* _AUDIO_COMPACTMIDI_ */
+
+ /* initialize sequence player 1 */
+ seqplayer[1].seqconfig.maxVoices =
+  AUDIO_SEQ_VVOICE_MAX; /*  max virtual voices */
+ seqplayer[1].seqconfig.maxEvents =
+  AUDIO_SEQ_EVTCOUNT_MAX; /* max inside events */
+ seqplayer[1].seqconfig.maxChannels =
+  AUDIO_SEQ_CHANNEL_MAX; /*  max MIDI channels */
+ seqplayer[1].seqconfig.heap = &amp;audio_heap;/* audio heap */
+ seqplayer[1].seqconfig.initOsc = 0;
+ seqplayer[1].seqconfig.updateOsc = 0;
+ seqplayer[1].seqconfig.stopOsc = 0;
+ seqplayer[1].seqconfig.debugFlags = 0;
+
+#ifdef _AUDIO_COMPACTMIDI_
+ <a href="../../../n64man/al/alCSPNew.htm">alCSPNew</a>(&amp;seqplayer[1].seqplayer,&amp;seqplayer[1].seqconfig);
+#else
+ <a href="../../../n64man/al/alSeqpNew.htm">alSeqpNew</a>(&amp;seqplayer[1].seqplayer,&amp;seqplayer[1].seqconfig);
+#endif /* _AUDIO_COMPACTMIDI_ */
+
+ /* read seqfileheader data */
+ auReadSeqFileHeader((u32)seqheader_start);
+ <a href="../../../n64man/al/alSeqFileNew.htm">alSeqFileNew</a>(seqHeaderfile_ptr,
+seqheader_start);
+
+ /* read midi bank data */
+ size = (u32)midi_end-(u32)midi_start;
+ midi_buffer_ptr = <a href="../../../n64man/al/alHeapAlloc.htm">alHeapAlloc</a>(&amp;audio_heap,1,
+size);
+ auRomRead((u32)midi_start, midi_buffer_ptr,size);
+
+ /* Specify the <a href="../../../keywords/index/data/audio.htm#instrument" target="keywords">instrument</a> <a href="../../../keywords/index/data/audio.htm#bank">bank</a>
+ used by the <a href="../../../keywords/index/data/audio.htm#sequencer" target="keywords">sequencer</a> */<br>
+ <a href="../../../n64man/al/alBnkfNew.htm">alBnkfNew</a>(midi_buffer_ptr,
+midi_table_start);
+ midiBank_ptr = midi_buffer_ptr-&gt;bankArray[0];
+
+#ifdef _AUDIO_COMPACTMIDI_
+ <a href="../../../n64man/al/alCSPSetBank.htm">alCSPSetBank</a>(&amp;seqplayer[0].seqplayer,midiBank_ptr);
+ <a href="../../../n64man/al/alCSPSetBank.htm">alCSPSetBank</a>(&amp;seqplayer[1].seqplayer,midiBank_ptr);
+#else
+ <a href="../../../n64man/al/alSeqpSetBank.htm">alSeqpSetBank</a>(&amp;seqplayer[0].seqplayer,midiBank_ptr);
+ <a href="../../../n64man/al/alSeqpSetBank.htm">alSeqpSetBank</a>(&amp;seqplayer[1].seqplayer,midiBank_ptr);
+#endif /* _AUDIO_COMPACTMIDI_ */
+
+}
+
+/*-------------------------------------------------------------------------
+ Create and activate the audio thread
+---------------------------------------------------------------------------*/
+void auCreateAudioThread(NNSched *sched)
+{
+ <a href="../../../n64man/os/osCreateThread.htm">osCreateThread</a>(&amp;audioThread,
+AUDIO_THREAD_ID,audioProc, 
+  (void *)sched,
+  (audioThreadStack+AUDIO_STACKSIZE/sizeof(u64)),
+  AUDIO_THREAD_PRI);
+ <a href="../../../n64man/os/osStartThread.htm">osStartThread</a>(&amp;audioThread);
+}
+
+/*-------------------------------------------------------------------------
+ Main Sequence Playback
+---------------------------------------------------------------------------*/
+int main00(NNSched* sched)
+{
+ OSMesgQueue msgQ;
+ OSMesg msgbuf[MAX_MESGS];
+ NNScClient client;
+ u32 seqno;
+
+ /* create message queue for VI retrace */
+ <a href="../../../n64man/os/osCreateMesgQueue.htm">osCreateMesgQueue</a>(&amp;msgQ,
+msgbuf, MAX_MESGS);
+
+ /* create message queue for VI retrace */
+ auSeqPlayerSetFile(0,2);
+
+ /* add client to shceduler */
+ nnScAddClient(sched, &amp;client, &amp;msgQ);
+
+ seqno = 0;
+ auSeqPlayerPlay(seqno);
+ while(1){
+  (void) <a href="../../../n64man/os/osRecvMesg.htm">osRecvMesg</a>(&amp;msgQ,
+NULL, OS_MESG_BLOCK);
+  /* If the sequence has stopped, repeat it */
+  if(auSeqPlayerState(0) == AL_STOPPED){
+   auSeqPlayerPlay(seqno);
+  }
+ }
+
+ /* exit label */
+ return MAIN_01;
+}
+
+/*-------------------------------------------------------------------------
+ Playback the sequence
+ Input:
+  seqplayer_no:
+The sequence player number that
+   starts the reproduction.
+  If the sequence player is not in AL_STOPPED
+   state, 
+  return FALSE.
+---------------------------------------------------------------------------*/
+int auSeqPlayerPlay(u32 seqplayer_no)
+{
+#ifndef _AUDIO_COMPACTMIDI_
+ s32 seqdata_len;
+ u32 seqno;
+#endif /* _AUDIO_COMPACTMIDI_ */
+
+#ifdef _AUDIO_DEBUG_
+ if(seqplayer_no &gt; 1){
+  <a href="../../../n64man/os/osSyncPrintf.htm">osSyncPrintf</a>(&quot;seqplayer_no
+over!!\n&quot;);
+  return FALSE;
+ }
+#endif /* _AUDIO_DEBUG_ */
+
+ /* check seqplayer state. */
+ if(seqplayer[seqplayer_no].seqplayer.state!= AL_STOPPED){
+#ifdef _AUDIO_DEBUG_
+  <a href="../../../n64man/os/osSyncPrintf.htm">osSyncPrintf</a>(&quot;sequence
+player %d is playing\n&quot;,seqplayer_no);
+#endif /* _AUDIO_DEBUG_ */
+  return FALSE;
+ }
+
+#ifdef _AUDIO_COMPACTMIDI_
+ <a href="../../../n64man/al/alCSeqNew.htm">alCSeqNew</a>(&amp;seqplayer[seqplayer_no].sequence,
+  seqplayer[seqplayer_no].seqdata_ptr);
+ <a href="../../../n64man/al/alCSPSetSeq.htm">alCSPSetSeq</a>(&amp;seqplayer[seqplayer_no].seqplayer,
+  &amp;seqplayer[seqplayer_no].sequence);
+ <a href="../../../n64man/al/alCSPPlay.htm">alCSPPlay</a>(&amp;seqplayer[seqplayer_no].seqplayer);
+#else
+ seqno = seqplayer[seqplayer_no].seqno;
+ seqdata_len = seqHeaderfile_ptr-&gt;seqArray[seqno].len;
+ <a href="../../../n64man/al/alSeqNew.htm">alSeqNew</a>(&amp;seqplayer[seqplayer_no].sequence,
+  seqplayer[seqplayer_no].seqdata_ptr,seqdata_len);
+ <a href="../../../n64man/al/alSeqpSetSeq.htm">alSeqpSetSeq</a>(&amp;seqplayer[seqplayer_no].seqplayer,
+  &amp;seqplayer[seqplayer_no].sequence);
+ <a href="../../../n64man/al/alSeqpPlay.htm">alSeqpPlay</a>(&amp;seqplayer[seqplayer_no].seqplayer);
+#endif /* _AUDIO_COMPACTMIDI_ */
+ return TRUE;
+}
+</pre>
+</p>
+</body>
+</html>

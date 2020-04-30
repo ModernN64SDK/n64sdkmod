@@ -1,0 +1,33 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 8 - Input/Output Functionality</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check.
+             MAP- 11/16/99 edited content, updated format -->
+</head>
+
+<H1>
+8.7 Device Manager</H1>
+
+<p>Depending on the user application, a device in the Nintendo 64 environment may be shared between two or more <A target="keywords" HREF="../../keywords/index/data/system.htm#thread">threads</A>.   Furthermore, if you want to utilize both DMA and I/O operations on a device, you must ensure that these two operations cannot overlap.  For each device that requires protection, you can use the concept of a <A target="keywords" HREF="../../keywords/index/data/system.htm#device manager">device manager</A> to implement <A target="keywords" HREF="../../keywords/index/data/system.htm#mutual exclusion">mutual exclusion</A>. </p>
+
+<P>The Device Manager (DM) is simply a thread that runs at a high priority.  The main purpose of this manager is to process all DMA requests to and from a device (that is, ROM devices), thus guaranteeing safe and orderly usage of the device.  Upon start-up, the manager registers an <A target="keywords" HREF="../../keywords/index/data/system.htm#event">event</A>, its event message queue, and a <A target="keywords" HREF="../../keywords/index/data/system.htm#message">message</A> with the system. The manager is then blocked listening on its input command queue for request messages.  The manager simply reads from the front of the queue and processes one request of a time. </p>
+
+
+<P>After calling the corresponding low-level device routine(the routine that actually accesses the device) and initiating the I/O operation, the manager goes into a block state(queued) in order to carry out a series of processes on the input event queue.  These include waiting for the event to be sent from the exception handler,  and then signaling I/O completion.  Once started up, the manager then notifies the calling thread (I/O requester) by simply sending the request message to a pre-registered message queue.  The manager, then returns to the input command queue to wait for new requests.</p>
+
+<P>The reason for alternating the waiting between these two queues (command and event queues) is that there can be only one outstanding I/O transaction at any given time.  Figure  8-3 summarizes the interaction between various I/O components to service an I/O request on a shared device. </p>
+<DL>
+<DT>
+<A NAME="f08-03"></A><strong>Figure 8-3  Interactions Between I/O Components and a Shared Device</strong></DT>
+
+<DD>
+<IMG SRC="gif/f08-03.gif" ALT="[Figure 8-3]" ></DD>
+</DL>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR>
+</BODY>
+</HTML>

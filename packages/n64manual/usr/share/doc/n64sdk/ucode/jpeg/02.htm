@@ -1,0 +1,135 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<title>2</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<FONT FACE="Arial" SIZE="-1">
+
+<h2>2. Library Functions</h2>
+
+<p>N64 JPEG library includes following functions.
+</p>
+
+<h3><a name="01">2.1 Encode</h3>
+
+<hr>
+
+<h4><font face="Courier New"><strong>njpgHuffEncode(3P)</strong></font></h4>
+
+<p><font size="2"><b>Function Name</b></font></p>
+
+
+  <p><font face="Courier New" size="2"><strong>njpgHuffEncode</strong></font>  --> 
+  function to encode and compress data using Huffman encoding</p>
+
+
+<p><b><font size="2">Syntax</font></b></p>
+
+
+  <pre><font face="Courier New" SIZE="3">#include &lt;n64jpeg.h&gt;
+u32 njpgHuffEncode(u8 *indata, u8 *outdata, u32 size);</font></pre>
+
+
+<p><font size="2"><b>Parameter</b></font></p>
+
+<table border="0">
+  <tr>
+    <td width="127"><strong><font face="Courier New" SIZE="-1">indata</font></strong></td>
+    <td width="529"><font face="Arial" SIZE="-1">The pointer to the input data buffer</font> 
+</td>
+  </tr>
+  <tr>
+    <td width="127"><strong><font face="Courier New" SIZE="-1">outdata</font></strong></td>
+    <td width="529"><font face="Arial" SIZE="-1">The pointer to the output data buffer</font> 
+</td>
+  </tr>
+  <tr>
+    <td width="127"><strong><font face="Courier New" SIZE="-1">size</font></strong></td>
+    <td width="529"><font face="Arial" SIZE="-1">The size of the encoding data</font> 
+</td>
+  </tr>
+</table>
+
+<p><font size="2"><b>Description</b></font> </p>
+
+<p>The Huffman method encodes the output data by using the <font face="Courier New">njpgespMain</font> microcode. The address of the input/output data buffer must be <font face="Arial">4byte</font> aligned. Also, the input data size needs to be a multiple of <font face="Arial">768byte</font> (<font face="Arial">8</font>x<font face="Arial">8(</font> unit process <font face="Arial">matrix)</font>x<font face="Arial">2(byte)</font>x<font face="Arial">6</font>). (The output data from the <font face="Courier New">njpgespMain</font> microcode is usually this size.)
+</p>
+
+<p>The output data size of the <font face="Courier New">njpgespMain</font> microcode is one and a half times the size of the original image. The value should be (the width of the original image) x (the height of the original image) x 2 <font face="Arial">(byte)</font>x<font face="Arial">1.5</font>.
+
+<p>Return value of the function is the data size after compression.</p>
+
+<hr>
+
+<h3><a name="02">2.2 <font size="4">Decode</font></h3>
+
+<hr>
+
+<h4><strong><font face="Courier New">njpgHuffDecode(3P)</font></strong></h4>
+
+<p><font size="2"><b>Function Name</b></font></p>
+
+
+  <p><font face="courier new" size="2"><strong>njpgHuffDecode</strong></font>  --> 
+  function to decompress data that was compressed by the Huffman encoding method. </p>
+
+
+<p><b><font size="2">Syntax</font></b></p>
+
+
+  <pre><font face="Courier New" SIZE="3">#include &lt;n64jpeg.h&gt;
+s32 njpgHuffDecode(u8 *indata, u8 *outdata);</font></pre>
+
+
+<p><font size="2"><b>Parameter</b></font></p>
+
+<table border="0">
+  <tr>
+    <td width="127"><font face="Courier New" SIZE="-1">indata</font></td>
+    <td width="529"><font face="Arial" SIZE="-1">The pointer to the input data buffer</font></td>
+  </tr>
+  <tr>
+    <td width="127"><font face="Courier New" SIZE="-1">outdata</font></td>
+    <td width="529"><font face="Arial" SIZE="-1">The pointer to the output data buffer</font> 
+</td>
+  </tr>
+</table>
+
+<p><font size="2"><b>Description</b></font></p>
+
+<p>This function decompresses the Huffman-encoded compression data.  The address of the input/output buffer must be <font face="Arial">4byte</font> aligned.</p>
+
+<p>If a function is called successfully, 0 is returned. If the call is unsuccessful, -1 is returned. The data which was output will be decoded again using the njpgdsMain microcode.</p>
+
+<p>You should check the return value to see if the decoding process failed because the original data (the compressed data) may have been destroyed; for example, you could have saved the compression data on a disk or Controller Pak whose data was later destroyed.
+</p>
+
+<p>To be sure the file is valid, check to see if the first <font face="Arial">4 bytes</font> of the compression data is the recognition header &quot;<font face="Arial">HUFF</font>&quot;<font face="Arial">(ASCII: 0x48554646)</font>, and check the number of the following <font face="Arial">2byte</font> macro block <font
+face="Arial">(block which is set to 16</font>x<font face="Arial">16</font> dod <font
+face="Arial">)</font></p>
+
+<p>Please refer to <A HREF="05.htm#02-02">"5.2.2 Data from njpgCompress tool"</A> for details about the data format.<br>
+</p>
+
+<p><font size="2"><b>Example</b></font></p>
+
+<blockquote>
+  <pre><font SIZE="3">if(*((u32*)indata) != 0x4e485546){
+	/* Error process */
+}
+
+if(*((u32*)(indata + 4)) != IMAGE_SIZE){
+	/* Error process */
+}
+
+njpgNonhuffDecode(indata, outdata);
+
+/* Decoding by njpgdspMain microcode */</FONT></pre>
+</blockquote>
+
+<hr>
+</body>
+</html>

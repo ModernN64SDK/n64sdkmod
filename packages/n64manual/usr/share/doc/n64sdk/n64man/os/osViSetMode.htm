@@ -1,0 +1,310 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.
+  PWC- updated formatting
+-->
+<TITLE>osViSetMode</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>osViSetMode </h1>
+
+<h3>Function</h3>
+
+<P>osViSetMode</p>
+
+<p><i>Sets VI modes</i></p>
+
+<H3>Syntax</H3>
+<p><PRE>
+#include &lt;ultra64.h&gt;        /* <A href="../../header/os.htm">os.h</A> */
+void osViSetMode(OSViMode *mode);</PRE></p>
+
+<H3>Arguments</H3>
+<p><DL>
+  <DT><B>mode</B>
+  <DD>VI mode
+</DL></p>
+<H3>Return Value</H3>
+<P>
+None.
+</P>
+<H3>Description</H3>
+<P>
+This function sets the display mode in the VI. The VI supports a total of 56 display modes. These break down into 14 NTSC modes, 14 PAL modes, 14 MPAL modes, and 14 full-screen display PAL (FPAL) modes. The attributes of each mode, such as interlace and non-interlace, 16-bit color pixels and 32-bit color pixels, low-resolution and high-resolution, etc., can be set. In addition, the resolution can be dropped or images can be rescaled in order to increase rendering speed. 
+</P>
+<P>
+The 56 modes are indicated by 5 switches, viz., high/low resolution, 16/32-bit color pixels, anti-aliasing/point sampling, filter/non-filter processing, and NTSC/PAL/MPAL/FPAL format. The defined symbol names for these modes are in &lt;<A href="../../header/os.htm">os.h</A>&gt;. For example, "OS_VI_NTSC_LPN1" indicates that low-resolution, point sampling, non-interlace, and 16-bit color pixels are supported, while "OS_VI_PAL_LPN1" indicates that the same content are supported in PAL format. 
+</P>
+<P>
+The last 4 characters of the symbol name (LPN1, etc.) comprise the following codes. 
+</P><p>
+<TABLE border="1" cellspacing="0" cellpadding="3">
+  <TR>
+    <TD nowrap rowspan="2" align="center" valign="middle">1st Character</TD>
+    <TD nowrap colspan="2" align="left" valign="middle">H = High resolution</TD></TR>
+  <TR>
+    <TD nowrap colspan="2" align="left" valign="middle">L = Low resolution</TD></TR>
+  <TR>
+    <TD nowrap rowspan="2" align="center" valign="middle">2nd Character</TD>
+    <TD nowrap colspan="2" align="left" valign="middle">A = Anti-aliasing</TD></TR>
+  <TR>
+    <TD nowrap colspan="2" valign="middle">P = Point sampling</TD></TR>
+  <TR>
+    <TD nowrap rowspan="4" align="center" valign="middle">3rd Character</TD>
+    <TD nowrap rowspan="2" align="center" valign="middle">Low resolution</TD>
+    <TD nowrap align="left" valign="middle">N = Non-interlaced</TD></TR>
+  <TR>
+    <TD nowrap align="left" valign="middle">F = Interlaced</TD></TR>
+  <TR>
+    <TD nowrap rowspan="2" align="center" valign="middle">High resolution</TD>
+    <TD nowrap align="left" valign="middle">N = Normal interlaced</TD></TR>
+  <TR>
+    <TD nowrap align="left" valign="middle">F = Deflickered interlaced</TD></TR>
+  <TR>
+    <TD nowrap rowspan="2" align="center" valign="middle">4th Character</TD>
+    <TD nowrap colspan="2" align="left" valign="middle">1 = 16-bit pixel size</TD></TR>
+  <TR>
+    <TD nowrap colspan="2" align="left" valign="middle">2 = 32-bit pixel size</TD></TR>
+</TABLE></p>
+
+<P><ul>
+<li>Of the possible combinations of the above codes, the following 14 modes are each supported in NTSC/PAL/FPAL/MPAL:<br>
+LPN1, LPF1, LAN1, LAF1, LPN2, LPF2, LAN2, LAF2, HPN1, HPF1,  HAN1, HAF1, HPN2, HPF2</li>
+</ul></P>
+<P>
+At low resolution (320 pixels x 240 lines in PAL/MPAL/NTSC modes, 320 pixels x 288 lines in FPAL mode), non-interlaced mode and interlaced mode can be selected. Non-interlaced mode repeats the same frame in each field (scan). In contrast, interlaced mode interpolates between adjacent lines. First, in the first field, the upper line is weighted 75% and the lower line is weighted 25%. Then, interpolation is performed in the next in the next field, by weighting the upper line 25% and weighting the lower line 75%. In this case, there is no flicker because there is not high blanking frequency. 
+</P>
+<P>
+At high resolution (640 pixels x 480 lines in PAL/MPAL/NTSC modes, 640 pixels x 576 lines in FPAL mode), normal interlaced mode and de-flickered interlaced mode can be selected. In normal interlaced mode, only those data, which have been rendered for that field, are used in one field. While the current field is being displayed, the next field is being rendered, and since they have no effect on one another, there is no need to use a double-buffer. However, since it is high resolution, pixels, which are only displayed in one field, will flicker. On the other hand, in de-flickered interlaced mode, the lines are averaged and displayed to eliminate the high-frequency components. However, the data for both fields are required to display one field in this mode, double-buffer processing becomes necessary. 
+</P>
+<P>
+The register settings for these 56 modes are in the VI mode table osViModeTable, which is defined as an external variable. osViSetMode overwrites all VI registers with data referenced by <B>mode</B> (the pointer to osViModeTable) at the timing of the next vertical retrace. All previous settings (XY scale, gamma correction, etc.) will be reset. 
+The VI mode table is an array of 56 OSViMode structures, but each mode is individually defined in &lt;<A href="../../header/os.htm">os.h</A>&gt; as an external variable in the OS source file. 
+For instance, there are two ways, as shown below, to write it when registering NTSC, low-resolution, anti-aliasing, non-interlaced processing, and 16-bit mode in the VI. 
+</P>
+<P>
+<pre>osViSetMode(&amp;osViModeNtscLan1);</pre>
+or<BR><br>
+<pre>osViSetMode(&amp;osViModeTable[OS_VI_NTSC_LAN1]);</pre>
+</P>
+<P>
+Since the latter method is linked to data, which are not used, it uses a lot of memory. It is recommended that the former method be used. 
+</P>
+
+<ul>
+<li>Please see "Comment: Reference (VI Mode Type List)" for the VI mode types. </li>
+</ul>
+
+<H3>Note</H3>
+<P>
+<B>osViSetMode</B> will return all of the settings for functions that are set by X/Y scale processing or <A href="osViSetSpecialFeatures.htm">osViSetSpecialFeatures</A> (e.g., gamma correction) to their default values as defined in the VI mode table. 
+</P>
+<P>
+<B>References VI Mode Type List</B>
+</P>
+<TABLE border="1" cellspacing="0" cellpadding="3">
+  <TR>
+    <TD nowrap rowspan="14" align="center" valign="middle">NTSC</TD>
+    <TD nowrap align="left" valign="middle">OS_VI_NTSC_LPN1</TD>
+    <TD nowrap align="center" valign="middle">0</TD></TR>
+  <TR>
+    <TD nowrap align="left" valign="middle">OS_VI_NTSC_LPF1</TD>
+    <TD nowrap align="center" valign="middle">1</TD></TR>
+  <TR>
+    <TD nowrap align="left" valign="middle">OS_VI_NTSC_LAN1</TD>
+    <TD nowrap align="center" valign="middle">2</TD></TR>
+  <TR>
+    <TD nowrap align="left" valign="middle">OS_VI_NTSC_LAF1</TD>
+    <TD nowrap align="center" valign="middle">3</TD></TR>
+  <TR>
+    <TD nowrap align="left" valign="middle">OS_VI_NTSC_LPN2</TD>
+    <TD nowrap align="center" valign="middle">4</TD></TR>
+  <TR>
+    <TD nowrap align="left" valign="middle">OS_VI_NTSC_LPF2</TD>
+    <TD nowrap align="center" valign="middle">5</TD></TR>
+  <TR>
+    <TD nowrap align="left" valign="middle">OS_VI_NTSC_LAN2</TD>
+    <TD nowrap align="center" valign="middle">6</TD></TR>
+  <TR>
+    <TD nowrap align="left" valign="middle">OS_VI_NTSC_LAF2</TD>
+    <TD nowrap align="center" valign="middle">7</TD></TR>
+  <TR>
+    <TD nowrap align="left" valign="middle">OS_VI_NTSC_HPN1</TD>
+    <TD nowrap align="center" valign="middle">8</TD></TR>
+  <TR>
+    <TD nowrap align="left" valign="middle">OS_VI_NTSC_HPF1</TD>
+    <TD nowrap align="center" valign="middle">9</TD></TR>
+  <TR>
+    <TD nowrap align="left" valign="middle">OS_VI_NTSC_HAN1</TD>
+    <TD nowrap align="center" valign="middle">10</TD></TR>
+  <TR>
+    <TD nowrap align="left" valign="middle">OS_VI_NTSC_HAF1</TD>
+    <TD nowrap align="center" valign="middle">11</TD></TR>
+  <TR>
+    <TD nowrap align="left" valign="middle">OS_VI_NTSC_HPN2</TD>
+    <TD nowrap align="center" valign="middle">12</TD></TR>
+  <TR>
+    <TD nowrap align="left" valign="middle">OS_VI_NTSC_HPF2</TD>
+    <TD nowrap align="center" valign="middle">13</TD></TR>
+  <TR>
+    <TD nowrap rowspan="14" align="center" valign="middle">PAL</TD>
+    <TD nowrap align="left" valign="middle">OS_VI_PAL_LPN1</TD>
+    <TD nowrap align="center" valign="middle">14</TD></TR>
+  <TR>
+    <TD nowrap align="left" valign="middle">OS_VI_PAL_LPF1</TD>
+    <TD nowrap align="center" valign="middle">15</TD></TR>
+  <TR>
+    <TD nowrap align="left" valign="middle">OS_VI_PAL_LAN1</TD>
+    <TD nowrap align="center" valign="middle">16</TD></TR>
+  <TR>
+    <TD nowrap align="left" valign="middle">OS_VI_PAL_LAF1</TD>
+    <TD nowrap align="center" valign="middle">17</TD></TR>
+  <TR>
+    <TD nowrap align="left" valign="middle">OS_VI_PAL_LPN2</TD>
+    <TD nowrap align="center" valign="middle">18</TD></TR>
+  <TR>
+    <TD nowrap align="left" valign="middle">OS_VI_PAL_LPF2</TD>
+    <TD nowrap align="center" valign="middle">19</TD></TR>
+  <TR>
+    <TD nowrap align="left" valign="middle">OS_VI_PAL_LAN2</TD>
+    <TD nowrap align="center" valign="middle">20</TD></TR>
+  <TR>
+    <TD nowrap align="left" valign="middle">OS_VI_PAL_LAF2</TD>
+    <TD nowrap align="center" valign="middle">21</TD></TR>
+  <TR>
+    <TD nowrap align="left" valign="middle">OS_VI_PAL_HPN1</TD>
+    <TD nowrap align="center" valign="middle">22</TD></TR>
+  <TR>
+    <TD nowrap align="left" valign="middle">OS_VI_PAL_HPF1</TD>
+    <TD nowrap align="center" valign="middle">23</TD></TR>
+  <TR>
+    <TD nowrap align="left" valign="middle">OS_VI_PAL_HAN1</TD>
+    <TD nowrap align="center" valign="middle">24</TD></TR>
+  <TR>
+    <TD nowrap align="left" valign="middle">OS_VI_PAL_HAF1</TD>
+    <TD nowrap align="center" valign="middle">25</TD></TR>
+  <TR>
+    <TD nowrap align="left" valign="middle">OS_VI_PAL_HPN2</TD>
+    <TD nowrap align="center" valign="middle">26</TD></TR>
+  <TR>
+    <TD nowrap align="left" valign="middle">OS_VI_PAL_HPF2</TD>
+    <TD nowrap align="center" valign="middle">27</TD></TR>
+  <TR>
+    <TD nowrap rowspan="14" align="center" valign="middle">MPAL<BR>
+(Mainly Brazil)</TD>
+    <TD nowrap align="left" valign="middle">OS_VI_MPAL_LPN1</TD>
+    <TD nowrap align="center" valign="middle">28</TD></TR>
+  <TR>
+    <TD nowrap align="left" valign="middle">OS_VI_MPAL_LPF1</TD>
+    <TD nowrap align="center" valign="middle">29</TD></TR>
+  <TR>
+    <TD nowrap align="left" valign="middle">OS_VI_MPAL_LAN1</TD>
+    <TD nowrap align="center" valign="middle">30</TD></TR>
+  <TR>
+    <TD nowrap align="left" valign="middle">OS_VI_MPAL_LAF1</TD>
+    <TD nowrap align="center" valign="middle">31</TD></TR>
+  <TR>
+    <TD nowrap align="left" valign="middle">OS_VI_MPAL_LPN2</TD>
+    <TD nowrap align="center" valign="middle">32</TD></TR>
+  <TR>
+    <TD nowrap align="left" valign="middle">OS_VI_MPAL_LPF2</TD>
+    <TD nowrap align="center" valign="middle">33</TD></TR>
+  <TR>
+    <TD nowrap align="left" valign="middle">OS_VI_MPAL_LAN2</TD>
+    <TD nowrap align="center" valign="middle">34</TD></TR>
+  <TR>
+    <TD nowrap align="left" valign="middle">OS_VI_MPAL_LAF2</TD>
+    <TD nowrap align="center" valign="middle">35</TD></TR>
+  <TR>
+    <TD nowrap align="left" valign="middle">OS_VI_MPAL_HPN1</TD>
+    <TD nowrap align="center" valign="middle">36</TD></TR>
+  <TR>
+    <TD nowrap align="left" valign="middle">OS_VI_MPAL_HPF1</TD>
+    <TD nowrap align="center" valign="middle">37</TD></TR>
+  <TR>
+    <TD nowrap align="left" valign="middle">OS_VI_MPAL_HAN1</TD>
+    <TD nowrap align="center" valign="middle">38</TD></TR>
+  <TR>
+    <TD nowrap align="left" valign="middle">OS_VI_MPAL_HAF1</TD>
+    <TD nowrap align="center" valign="middle">39</TD></TR>
+  <TR>
+    <TD nowrap align="left" valign="middle">OS_VI_MPAL_HPN2</TD>
+    <TD nowrap align="center" valign="middle">40</TD></TR>
+  <TR>
+    <TD nowrap align="left" valign="middle">OS_VI_MPAL_HPF2</TD>
+    <TD nowrap align="center" valign="middle">41</TD></TR>
+  <TR>
+    <TD nowrap rowspan="14" align="center" valign="middle">FPAL<BR>
+(Full-screen PAL)</TD>
+    <TD nowrap align="left" valign="middle">OS_VI_FPAL_LPN1</TD>
+    <TD nowrap align="center" valign="middle">42</TD></TR>
+  <TR>
+    <TD nowrap align="left" valign="middle">OS_VI_FPAL_LPF1</TD>
+    <TD nowrap align="center" valign="middle">43</TD></TR>
+  <TR>
+    <TD nowrap align="left" valign="middle">OS_VI_FPAL_LAN1</TD>
+    <TD nowrap align="center" valign="middle">44</TD></TR>
+  <TR>
+    <TD nowrap align="left" valign="middle">OS_VI_FPAL_LAF1</TD>
+    <TD nowrap align="center" valign="middle">45</TD></TR>
+  <TR>
+    <TD nowrap align="left" valign="middle">OS_VI_FPAL_LPN2</TD>
+    <TD nowrap align="center" valign="middle">46</TD></TR>
+  <TR>
+    <TD nowrap align="left" valign="middle">OS_VI_FPAL_LPF2</TD>
+    <TD nowrap align="center" valign="middle">47</TD></TR>
+  <TR>
+    <TD nowrap align="left" valign="middle">OS_VI_FPAL_LAN2</TD>
+    <TD nowrap align="center" valign="middle">48</TD></TR>
+  <TR>
+    <TD nowrap align="left" valign="middle">OS_VI_FPAL_LAF2</TD>
+    <TD nowrap align="center" valign="middle">49</TD></TR>
+  <TR>
+    <TD nowrap align="left" valign="middle">OS_VI_FPAL_HPN1</TD>
+    <TD nowrap align="center" valign="middle">50</TD></TR>
+  <TR>
+    <TD nowrap align="left" valign="middle">OS_VI_FPAL_HPF1</TD>
+    <TD nowrap align="center" valign="middle">51</TD></TR>
+  <TR>
+    <TD nowrap align="left" valign="middle">OS_VI_FPAL_HAN1</TD>
+    <TD nowrap align="center" valign="middle">52</TD></TR>
+  <TR>
+    <TD nowrap align="left" valign="middle">OS_VI_FPAL_HAF1</TD>
+    <TD nowrap align="center" valign="middle">53</TD></TR>
+  <TR>
+    <TD nowrap align="left" valign="middle">OS_VI_FPAL_HPN2</TD>
+    <TD nowrap align="center" valign="middle">54</TD></TR>
+  <TR>
+    <TD nowrap align="left" valign="middle">OS_VI_FPAL_HPF2</TD>
+    <TD nowrap align="center" valign="middle">55</TD></TR>
+</TABLE></p>
+
+<H3>Example</H3>
+<PRE>
+//      Start VI manager & blackout
+        osCreateViManager(OS_PRIORITY_VIMGR);
+#if (SCREEN_WD==320)&amp;&amp;(SCREEN_HT==240)    // Settings for low resolution
+        <B>osViSetMode</B>(&amp;osViModeNtscLan1);
+#elif (SCREEN_WD==640)&amp;&amp;(SCREEN_HT==480)   // Settings for high resolution
+        <B>osViSetMode</B>(&amp;osViModeNtscHaf1);
+#else
+#error  &quot;Illegal Screen size&quot;
+#endif
+        osViBlack(TRUE);</PRE>
+
+<H3>See Also</H3>
+<P>
+<A href="osViGetCurrentMode.htm">osViGetCurrentMode</A>, <A href="osViSetSpecialFeatures.htm">osViSetSpecialFeatures</A>
+</P>
+
+<H3>Revision History</H3>
+<P>
+02/01/99 Completely revised.
+</P>
+
+</BODY>
+</HTML>

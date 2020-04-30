@@ -1,0 +1,60 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 4 - Runtime Software Architecture</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check.-->
+</head>
+
+<h1>4.5 Graphics Interface</h1>
+
+<p>The N64 uses a <a href="../../keywords/index/data/graphics.htm#display list" target="keywords">display list</a> hierarchy to describe what to render.  3D <a href="../../keywords/index/data/graphics.htm#geometry" target="keywords">geometry</a> transformation and <a href="../../keywords/index/data/graphics.htm#rasterize" target="keywords">rasterization</a> are accelerated by RSP and RDP respectively.  The CPU generates the display list in memory, then the RCP fetches the display list and <a href="../../keywords/index/data/graphics.htm#rendering" target="keywords">renders</a> the graphics.</p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="01"><h2>4.5.1 Graphics Binary Interface (GBI)</h2></a>
+
+<p>Nintendo 64 renders graphics using a display list interface called <a href="../../keywords/index/data/graphics.htm#graphics binary interface" target="keywords">graphics binary interface</a> (GBI).  The CPU assembles the GBI structure in RDRAM for the RSP/RDP to render.  The RSP must first be downloaded with graphics <A target="keywords" HREF="../../keywords/index/data/system.htm#microcode">microcode</a> to perform geometry transformation. The RDP performs <a href="../../keywords/index/data/graphics.htm#polygon" target="keywords">polygon</a> rasterization.  RSP and RDP state machines are described in detail in <a href="../pro11/index.htm">Chapter 11, "RSP Graphics Programming"</a> and <a href="../pro12/index.htm">Chapter 12, "RDP Programming"</a>.</p> 
+
+<dl>
+  <dt><a name="f04-03"><strong>Figure 4-3 Graphics Pipeline</strong></a>
+  <dd><img alt="[Figure 4-3]" src="gif/f04-03.gif">
+</dl>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="02"><h2>4.5.2 GBI Geometry and Attribute Hierarchy </h2></a>
+
+<p>The GBI structure describes a hierarchy of geometry and its <a href="../../keywords/index/data/graphics.htm#attribute" target="keywords">attributes</a>.   This tree is traversed depth first and the graphics pipeline attributes are sequentially modified during traversal.  Both geometry (RSP) and <a href="../../keywords/index/data/graphics.htm#raster" target="keywords">raster</a> (RDP) attributes are contained in a GBI structure. </p>
+
+<dl>
+  <dt><a name="f04-04">Figure 4-4 Graphics Binary Interface (GBI) of an Airplane </a>
+  <dd><img alt="[Figure 4-4]" src="gif/f04-04.gif">
+</dl>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="03"><h2>4.5.3 GBI Feature Set</h2></a>
+
+<p>The graphics binary interface (GBI) contains many 3D graphics features. An algorithmic description of many of these features can be found in the "OpenGL Programmer's Guide." Table 4-1 below, lists the basic features of the GBI pipeline. </p>
+
+<table border=1 alien="center">
+  <caption><a name="t04-01"><strong>Table 4-1 GBI Feature Set</strong></a></caption>
+<tr><th>Processor</th><th>Functionality</th></tr>
+  <tr><td align="center">CPU</td><td>GBI Assembly</td></tr>
+  <tr><td align="center">RSP</td><td><a href="../../keywords/index/data/graphics.htm#matrix stack" target="keywords">matrix stack</A> operations<br>
+      3D transformations<br>
+      <a href="../../keywords/index/data/graphics.htm#clipping" target="keywords">clipping</a> and back-face rejection to viewing frustum<br>
+      lighting and <a href="../../keywords/index/data/graphics.htm#reflection mapping" target="keywords">reflection mapping</a><br>
+      setup for polygon and line rasterization</td></tr>
+  <tr><td align="center">RDP</td><td>polygon rasterization<br>
+      texturing/filtering<br>
+      blending<br>
+      <a href="../../keywords/index/data/graphics.htm#Z buffer" target="keywords">Z buffer</a> process<br>
+      <a href="../../keywords/index/data/graphics.htm#anti-aliasing" target="keywords">antialiasing</a> process</td></tr>
+</table>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="04"><h2>4.5.4 RSP Geometry Microcode</h2></a>
+
+<p>There are three different versions of RSP geometry microcode: <a href="../../n64man/ucode/gspFast3D.htm">gspFast3D</a>, <a href="../../n64man/ucode/gspLine3D.htm">gspLine3D</a>, and <a href="../../n64man/ucode/gspTurbo3D.htm">gspTurbo3D</a>. The <a href="../../n64man/ucode/gspFast3D.htm">gspFast3D</a> microcode is the optimized, full-featured 3D polygonal geometry microcode.   The <a href="../../n64man/ucode/gspLine3D.htm">gspLine3D</a> is the optimized, full-featured 3D line geometry microcode, and the <a href="../../n64man/ucode/gspTurbo3D.htm">gspTurbo3D</a> is the optimized, reduced-featured 3D polygonal geometry microcode. Each of these microcode types come in two versions.   One version of the microcode has the RSP output the rasterization and attribute commands directly to the RDP.  The other version outputs RDP commands to DRAM.  Writing the RDP commands to DRAM could be used to overlap graphics and audio.  For example, you could use the RSP for audio processing while the RDP is processing commands stored in DRAM. Storing the RDP commands in DRAM may also be useful for debugging. </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+</body> </html>

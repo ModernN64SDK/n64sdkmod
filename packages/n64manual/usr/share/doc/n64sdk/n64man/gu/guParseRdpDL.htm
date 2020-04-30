@@ -1,0 +1,133 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.>
+<TITLE>guParseRdpDL</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>guParseRdpDL<FONT size="+0"> [Function]</FONT></H1>
+
+<p><h3>Function</h3></p>
+
+<p>guParseRdpDL</p>
+<P>
+<i>Outputs a low-level display list</i>
+</P>
+<H3>Syntax</H3>
+<p>
+<PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gu.htm">gu.h</A> */
+void guParseRdpDL(u64 *rdp_dl, u64 nbytes, u8 flags);</CODE></PRE></p>
+
+<H3>Arguments</H3>
+<p><DL>
+  <DT><B>rdp_dl</B>
+  <DD>Pointer to RDP display list in DRAM
+  <DD>* Array passed to the stack header.  For details, see t.output_buff in <A HREF="../os/osSpTaskLoad.htm">osSpTaskLoad</A>.
+  <DD>
+  <DT><B>nbytes</B>
+  <DD>Byte size of RDP display list returned from the graphics task.
+  <DD>* For details, see t.output_buff_size in <A HREF="../os/osSpTaskLoad.htm">osSpTaskLoad</A>.
+  <DD>
+  <DT><B>flags</B>
+  <DD>Additional information flags
+  <DD><B>GU_PARSERDP_VERBOSE</B> (Enable output of supplemental information)
+  <DD><B>GU_PARSERDP_PRAREA</B> (Enable output of span information)
+  <DD><B>GU_PARSERDP_DUMPONLY</B> (Enable display in hexadecimal)
+</DL></p>
+
+<H3>Returned value</H3>
+<P>
+None.
+</P>
+<H3>Description</H3>
+<P>
+This function outputs the RDP display list in a readable format.  Using options, you can also output information about the region of each primitive and about the number of span buffers.  Command types are classified into primitive, attribute, synchronize and load commands. The number of each of these types of commands is output after the display list dump.  This function detects the following common conditions in the display list:
+</P>
+<P>
+<TABLE BORDER="0" CELLSPACING="0" CELLPADDING="0">
+<TR>
+<TD NOWRAP ALIGN="center" VALIGN="top">
+-- 
+</TD>
+<TD ALIGN="left" VALIGN="middle">
+The color/Z image is not stored within the first 2 megabytes of DRAM
+</TD>
+</TR>
+<TR>
+<TD NOWRAP ALIGN="center" VALIGN="top">
+-- 
+</TD>
+<TD ALIGN="left" VALIGN="middle">
+The image pointer is not stored within the first 2 megabytes of DRAM
+</TD>
+</TR>
+<TR>
+<TD NOWRAP ALIGN="center" VALIGN="top">
+-- 
+</TD>
+<TD ALIGN="left" VALIGN="middle">
+The image pointer is not aligned correctly
+</TD>
+</TR>
+<TR>
+<TD NOWRAP ALIGN="center" VALIGN="top">
+-- 
+</TD>
+<TD ALIGN="left" VALIGN="middle">
+Synchrony failures
+</TD>
+</TR>
+<TR>
+<TD NOWRAP ALIGN="center" VALIGN="top">
+-- 
+</TD>
+<TD ALIGN="left" VALIGN="middle">
+Inappropriate primitive coefficients
+</TD>
+</TR>
+<TR>
+<TD NOWRAP ALIGN="center" VALIGN="top">
+-- 
+</TD>
+<TD ALIGN="left" VALIGN="middle">
+Non-scissored rectangles
+</TD>
+</TR>
+</TABLE>
+<DL>
+  <DT>Regarding the <B>flags</B>argument:
+  <DD>The following flags can be ORed to make multiple specifications:
+  <DL>
+  <DT><B>GU_PARSERDP_VERBOSE</B>
+  <DD>Outputs supplemental information relating to the display list.  Normally used when debugging.
+  <DT><B>GU_PARSERDP_PRAREA</B>
+  <DD>Outputs information about the span buffer region for each primitive and about the number of span buffers.
+  <DT><B>GU_PARSERDP_DUMPONLY</B>
+  <DD>Dumps the RDP display list in hexadecimal format
+  </DL>
+</DL>
+</P>
+<H3>Note</H3>
+<P>
+To use this function you must run <A HREF="../tool/dlprint.htm">dlprint</A> on the Indy.  No assumption is made about the number of cycles it takes to load a texture.  And it is not always easy to check for synchronization.  Sometimes incorrect values are calculated for the area of a triangle.  The estimate for clock ticks does not take into account DRAM latency, cycle type, or RWM (Read/Modify/Write) mode.  In other words, this function provides only an outline of the performance of the display list.
+</P>
+<P>
+Moreover, this function can only be used with DRAM microcode (i.e., it cannot be used with microcode that does not have the .dram extension).
+</P>
+<H3>Comment</H3>
+<P>
+The output format of the RDP display list depends on which graphics microcode is being executed in the RSP.  By using the appropriate microcode (in this case, microcode with the .dram extension), the display list will be output to a DRAM buffer.  Once in DRAM, this function can be used to print out the display list.  Then <A HREF="../os/osDpSetNextBuffer.htm">osDpSetNextBuffer</A> can be used to send the display list from DRAM to the RDP.  By using this procedure, if a problem arises you can determine whether it occurred in the application, the RSP or the RDP.
+</P>
+<H3>See Also</H3>
+<P>
+<A HREF="../al/alParseAbiCL.htm">alParseAbiCL</A>, <A HREF="../tool/dlprint.htm">dlprint</A>, <A HREF="guParseGbiDL.htm">guParseGbiDL</A>, <A HREF="../os/osDpSetNextBuffer.htm">osDpSetNextBuffer</A>, and <A HREF="../os/osSpTaskLoad.htm">osSpTaskLoad</A>
+</P>
+<H3>Revision History</H3>
+<P>
+03/01/99  Completely rewritten.
+</P>
+</BODY>
+</HTML>

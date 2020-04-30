@@ -1,0 +1,201 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<title>STEP3 [N64 3D Graphics] - Chapter 1 Basic of 3D Graphics</title>
+<base target="keywords">
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park 7/12/1999 
+reviewed PWC 7/16/99 -->
+
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<p><h1>1-7 Lighting and Colors</h1><br>
+
+After drawing a model defined by the mathematical conversions explained thus far, you need to insert a light source (and shading), material properties (such as shininess), and color to make the model appear real.  All objects become black in a state of no lighting. This Chapter describes how to implement color, lighting, properties, and shading in your game program. <br>
+<br>
+<br>
+<b>1-7-1 Color</b><br>
+<br>
+<br>
+Colors expressed on a computer are basically composed using the <b>three primary colors of light</b> (red, green, and blue), that can be displayed on a luminous object like a TV screen.  Other colors are created by mixing red, green, and blue together.<br>
+<br>
+<img src="img00228.gif" width="172" height="172"><br>
+<br>
+<b>Figure 1-7-1 Three Primary Colors of Light</b><br>
+<br>
+<br>
+   Although this illustration shows only eight colors, you can create many more by using different mixes and by changing their brightness. For example, if you slightly reduce the brightness of the mixed color of red, green, and blue, the color becomes light gray. Then, if you increase the brightness of the red, the color becomes pink. In this way, the computer expresses colors by combining three kinds of elements.<br>
+<br>
+<br>
+<b>1-7-2 Lighting</b><br>
+<br>
+<br>
+For our eyes to be able to see an object, the object must be either emitting light or reflecting light.  On a computer, it is difficult to represent in real time the situation where an object itself is emitting light, therefore this discussion will focus on showing you how to represent reflected light. To represent reflected light, you need to know the position and direction of light coming from the light source, as well as two other types of light: <a href="../../../keywords/index/data/graphics.htm#ambient light" target="keywords">ambient light</a> and <a href="../../../keywords/index/data/graphics.htm#diffuse light" target="keywords">diffuse light</a>.  The position and direction are the setting for these, from where and to which direction the source of light emits light.  Ambient light and diffused light are difficult to describe, and require a separate explanation.<br>
+<br>
+<br>
+<b># Ambient Light</b><br>
+<b>Ambient light</b> is the surrounding atmospheric light. For example, the part of an object that is on the opposite side of a light source is usually not black. The reason for this is that it is lit up slightly by ambient (atmospheric) light. Ambient light occurs because surrounding objects produce irregular reflections. 
+Ambient light has no direction, so if you give a color to ambient light, that light is reflected on everything in the scene.</p>
+
+<table border="1" cellspacing="0">
+    <tr>
+        <td><img src="img00229.jpg"> </td>
+    </tr>
+</table>
+
+<p><br>
+<b>Figure 1-7-2 Ambient Light</b><br>
+<br>
+<br>
+<b># Diffuse Light</b><br>
+<b>Diffuse light</b> is light that has been scattered through reflection or refraction.  For example, transmitting a light through a translucent material diffuses the light. Diffuse lights take on the color of the translucent material that scattered the light.</p>
+
+<table border="1" cellspacing="0">
+    <tr>
+        <td><img src="img00230.gif" width="288" height="147"> </td>
+    </tr>
+</table>
+
+<p><br>
+<b>Figure 1-7-3 Diffuse Light</b><br>
+<br>
+<br>
+To implement lighting, you simply set the position and direction of the source light, and also specify appropriate ambient and diffuse lights. 
+<br>
+<br>
+<br>
+<b>1-7-3 Material Properties</b><br>
+<br>
+<br>
+There are three elements that determine the materials of an object. These are ambient light, diffused light, and reflected light.<br>
+<br>
+<br>
+<b># Ambient Light</b><br>
+As mentioned earlier, ambient light is the color of the shadow of an object.<br>
+<br>
+<br>
+<b># Diffuse Light</b><br>
+Unlike the diffuse light previously mentioned, the color of diffuse light comes from the color of the substance itself. The diffuse light becomes brighter as the incident angle gets closer to a right angle. <br>
+<br>
+<br>
+<b># Specular Light</b><br>
+
+   How a substance reflects light affects how shiny the object appears. A substance like chalk reflects light in all directions with equal intensity, so it appears dull. On the other hand, a substance like a mirror reflects light in only a certain direction, so it appears shiny. How shiny or dull a surface appears depends on how that substance reflects light. Shiny surfaces show a shiny spot (specular highlight) that is very bright compared to the surrounded parts because most of the reflected light comes off in a single predominant direction.  
+N64 cannot set these elements, but pseudo-expression is possible. <br>
+<br>
+</p>
+
+<table border="1" cellspacing="0" cellpadding="4">
+    <tr>
+        <td><b>Example N64 Functions (Lighting)</b><br>
+        <br>
+          <a href="../../../n64man/gsp/gSPLight.htm"><b>gSPLight</b></a><br>
+          <a href="../../../n64man/gsp/gSPLightColor.htm"><b>gSPLightColor</b></a><br>
+          <a href="../../../n64man/gsp/gSPNumLights.htm"><b>gSPNumLights</b></a><br>
+          <a href="../../../n64man/gdsp/gdSPDefLights.htm"><b>gdSPDefLights</b></a><br>
+        </td>
+    </tr>
+</table>
+
+<p><br>
+<br>
+<br>
+<b>1-7-4 Shading</b><br>
+<br>
+<br>
+
+   <b>Shading</b> is adding shadow to an object by calculating the materials and lighting. 
+N64 implements <a href="../../../keywords/index/data/graphics.htm#flat shading" target="keywords">flat shading</a> and smooth shading (Gouraud shading). <br>
+<br>
+<br>
+<b># Flat Shading</b><br>
+In flat shading each surface is shaded uniformly by using the same color as illustrated here:</p>
+
+<table border="1" cellspacing="0">
+    <tr>
+        <td><img src="img00231.gif" width="408" height="141"> </td>
+    </tr>
+</table>
+
+<p><br>
+<b>Figure 1-7-4 Flat Shading</b><br>
+<br>
+<br>
+This shading technique calculates the normal vector and the light source of a surface, and applies uniform color to the surface. As a result, objects will appear blocky (like computer graphics).</p>
+
+<table border="1" cellspacing="0">
+    <tr>
+        <td><img src="img00232.gif" width="378" height="176"> </td>
+    </tr>
+</table>
+
+<p><br>
+<b>Figure 1-7-5 Normal Vector and Light Source</b><br>
+<br>
+</p>
+
+<table border="1" cellspacing="0" cellpadding="4">
+    <tr>
+        <td><b>Example N64 Functions (Flat Shading)</b><br>
+        <br>
+          <b> Function         Parameter</b><br>
+          <a
+        href="../../../n64man/gsp/gSPSetGeometryMode.htm"><b>gSPSetGeometryMode</b></a><b> G_SHADE</b><br>
+          <a
+        href="../../../n64man/gsp/gSPClearGeometryMode.htm"><b>gSPClearGeometryMode</b></a><b> G_SHADE</b><br>
+        </td>
+    </tr>
+</table>
+
+<p><br>
+<br>
+<b># Smooth Shading</b><br>
+The smooth shading technique smoothes out the shading to make it appear more realistic. Note that smooth shading affects the inside shading only; it has no effect on the outline of the object, as you can see in this illustration:</p>
+
+<table border="1" cellspacing="0">
+    <tr>
+        <td><img src="img00233.gif" width="418" height="287"> </td>
+    </tr>
+</table>
+
+<p><br>
+<b>Figure 1-7-6 Smooth Shading</b><br>
+<br>
+<br>
+
+   There are many different techniques that you could use to implement smooth shading. One of the most popular is <a href="../../../keywords/index/data/graphics.htm#Gouraud shading" target="keywords">Gouraud shading</a>.  Gouraud shading, named for its developer, gives a normal vector to each vertex of the surface. In other words, it calculates both the light source and the normal vector for each vertex. In this way, it interpolates calculated light for each vertex to make the shading appear smooth as illustrated here:</p>
+
+<table border="1" cellspacing="0">
+    <tr>
+        <td><img src="img00234.gif" width="392" height="209"> </td>
+    </tr>
+</table>
+
+<p><br>
+<b>Figure 1-7-7 The difference between flat and smooth shading</b><br>
+<br>
+<br>
+
+   By providing shading, you can put colors that are reflected from surrounding objects on your shaded object. <br>
+<br>
+</p>
+
+<table border="1" cellspacing="0" cellpadding="4">
+    <tr>
+        <td><b>Example N64 Functions (Smooth Shading)</b><br>
+        <br>
+          <b> Function          Parameter</b><br>
+         <a
+        href="../../../n64man/gsp/gSPSetGeometryMode.htm"><b>gSPSetGeometryMode</b></a><b> G_SHADING_SMOOTH</b><br>
+          <a
+        href="../../../n64man/gsp/gSPClearGeometryMode.htm"><b>gSPClearGeometryMode</b></a><b> G_SHADING_SMOOTH</b><br>
+        </td>
+    </tr>
+</table>
+
+
+</body>
+</html>

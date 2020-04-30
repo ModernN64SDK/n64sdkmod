@@ -1,0 +1,38 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.
+  PWC- updated formatting
+  MAP- added links, updated format
+-->
+<title>osStartThread</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>osStartThread</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p><i>Starts/resumes a thread</i></p>
+
+<p><b>Syntax</b><br>
+<p>
+<blockquote>
+    <pre>#include &lt;ultra64.h&gt;     /* <A HREF="../../header/ultra64.htm">ultra64.h</A> */
+void osStartThread(OSThread *t);</pre>
+</blockquote></p>
+
+<h3>Description</h3>
+
+<p>The <tt>osStartThread</tt> function makes a thread created by <a href="osCreateThread.htm">osCreateThread</a> runnable for the first time, or it resumes a thread previously suspended by <a href="osStopThread.htm">osStopThread</a>. In the former case, <tt>osStartThread</tt> enqueues the given thread t onto the run queue. In the latter case, <tt>osStartThread</tt> reinserts the given thread back onto the queue it was on when <tt>osStopThread</tt> was called. In either case, if the thread is made runnable and if the thread has a higher priority than the invoking thread, the currently running thread immediately yields the CPU to the started thread.</p>
+
+<p>See <tt>osStopThread</tt> for a discussion of the side effects of this implementation. </p>
+
+<p><b>See Also</b><br>
+<a href="osCreateThread.htm">osCreateThread</a>, <a href="osGetThreadId.htm">osGetThreadId</a>, <a href="osGetThreadPri.htm">osGetThreadPri</a>, <a href="osStopThread.htm">osStopThread</a>, and <a href="osYieldThread.htm">osYieldThread</a></p>
+<h3>Revision History</h3>
+<p>1999/04/30  Changed Format</p>
+<br><br>
+
+
+</body>
+</html>

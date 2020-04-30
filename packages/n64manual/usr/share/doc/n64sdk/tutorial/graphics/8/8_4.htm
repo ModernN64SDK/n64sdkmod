@@ -1,0 +1,159 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Graphics-Chapter 8  Advanced Rendering Techniques</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/23/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<font style="font-size:12pt"><B>8.4  The Blender in 2-Cycle Mode (Fog)</B></FONT>
+<br>
+<P>
+   Next let's bring up the topic of Fog, which can be realized when the Blender operates in 2-Cycle mode.  In the Fog process, the fog parameter is calculated based on the Z value of each vertex, and the fog color and pixel color are then blended according to this parameter.
+     The Fog process is not very difficult to use, but it is important to remember to follow the procedures described below.
+
+</P>
+<p>
+<B>8.4.1  Set the Geometry Mode</B>
+<P>
+When implementing the Fog process on a polygon, you must change the thickness of the fog to correspond to the distance between the polygon and the camera.  In order to do this, you need to make use of the geometry information of the polygon.  Polygon geometry calculations are the job of the RSP, so when you enable the Fog function you also need to do this in the RSP. 
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=5><TR>
+	<TD NOWRAP COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE><B>List 8-3</B>
+</TR><TR>
+	<TD NOWRAP BGCOLOR="666666" WIDTH="4" ALIGN=LEFT VALIGN=TOP><HR NOSHADE SIZE=0></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>
+<FONT COLOR="#000080"><PRE><CODE>  /* Fog mode */
+  gSPSetGeometryMode(glistp++, G_FOG | G_ZBUFFER | G_SHADE |
+                                       G_SHADING_SMOOTH | G_CULL_BACK);
+</CODE></PRE></FONT>
+	</TD>
+</TR></TABLE>
+
+<p>
+<B>8.4.2  Set the Pipeline Mode to 2-Cycle Mode</B>
+<P>
+In order to perform Fog processing you must set the pipeline mode to 2-Cycle mode.
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=5><TR>
+	<TD NOWRAP COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE><B>List 8-4</B>
+</TR><TR>
+	<TD NOWRAP BGCOLOR="666666" WIDTH="4" ALIGN=LEFT VALIGN=TOP><HR NOSHADE SIZE=0></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>
+<FONT COLOR="#000080"><PRE><CODE>  /* Set the RDP cycle type */
+  gDPSetCycleType(glistp++, G_CYC_2CYCLE);
+</CODE></PRE></FONT>
+	</TD>
+</TR></TABLE>
+
+<p>
+<B>8.4.3  Set the Appropriate Rendering Mode</B>
+x<P>
+ When rendering with fog, the fog is blended in the Blender in the first cycle and in the framebuffer in the second cycle.
+     For the first cycle, the rendering mode should be specified as either of the following:
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=1><TR>
+	<TD NOWRAP COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE><B>-G_RM_FOG_SHADE_A</B></TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=MIDDLE>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=MIDDLE>Blend fog using the shade alpha</TD>
+</TR><TR>
+	<TD NOWRAP COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE><B>-G_RM_FOG_PRIM_A</B></TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=MIDDLE>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=MIDDLE> Blend fog using the fog alpha (the fog color register's alpha value)</TD>
+</TR></TABLE>
+<P>
+ If you use the latter of these two rendering modes, a uniform fog effect will be implemented on pixels of differing depth.
+     For the second cycle, you should set the rendering mode the same way you would for 1-Cycle mode, using either G_RM_AA_ZB_OPA_SURF2 or G_RM_AA_ZB_XLU_SURF2.
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=5><TR>
+	<TD NOWRAP COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE><B>List 8-5</B>
+</TR><TR>
+	<TD NOWRAP BGCOLOR="666666" WIDTH="4" ALIGN=LEFT VALIGN=TOP><HR NOSHADE SIZE=0></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>
+<FONT COLOR="#000080"><PRE><CODE>  /* Fog - transparent - anti-aliasing - Z buffering  */
+  gDPSetRenderMode(glistp++, G_RM_FOG_SHADE_A, G_RM_AA_ZB_XLU_SURF2);
+</CODE></PRE></FONT>
+	</TD>
+</TR></TABLE>
+
+<p>
+<B>8.4.4  Determine Fog Color and Fog Location & Thickness</B>
+<P>
+    If you follow the procedure up to this point, you are just about ready to use the Fog process.  However, you still need to specify the essential elements of fog color, position and thickness.
+     Setting the fog color is a simple process of using the gDPSetFogColor command to set the RGBA components in the RDP's fog color register.  This command works exactly like gDPSetEnvColor and gDPSetBlendColor, so we will not provide a very in depth explanation.
+</P>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD ALIGN=LEFT VALIGN=TOP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP COLSPAN=2>gDPSetFogColor(Gfx *gdl, u32 r, u32 g, u32 b, u32 a)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;gdl--</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Display list pointer</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;r--</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Red component of RGBA color (8bit precision, 0 - 255)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;g--</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Green component of RGBA color (8bit precision, 0 - 255)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;b--</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Blue component of RGBA color (8bit precision, 0 - 255)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;a--</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Alpha component of RGBA color (8bit precision, 0 - 255)</TD>
+</TR></TABLE>
+<P>
+This sets the RDP's fog color.  Fog color is a general-use color register inside the Blender (BL).  For details, see the N64 Programming Manual, Chapter 12.7.3, "BL Internal Color Registers."<br><br>
+     
+
+     Use the gSPFogPosition command to specify the effective distance for fog and the fog thickness.  The gSPFogPosition command takes two arguments in addition to the display list pointer.  These two arguments specify, respectively, the fog's starting point and the fog's saturation point.  Both can take any value between 0 and 1000, with 0 being the near clipping plane and 1000 being the far clipping plane.  The fog's starting point is the point at which fog effects become valid, so any part in front of that point will not take a fog effect.  Any part behind the fog saturation point will be completely filled with the fog color.
+</P>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD ALIGN=LEFT VALIGN=TOP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP COLSPAN=4>gSPFogPosition(Gfx *gdl, s32 min, s32 max)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;gdl</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>--</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Display list pointer </TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;min</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>--</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Where fog starts (takes value of 0 (near plane) to 1000 (far plane))</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;max</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>--</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Where fog saturates (takes value of 0 (near plane) to 1000 (far plane))</TD>
+</TR></TABLE>
+<P>
+This specifies where the fog starts and where it saturates.  Fog changes the color of an object based on its Z position.  Normally, the farther away an object is from the viewpoint, the more it is mixed with the "fog color" (see gDPSetFogColor), becoming closer in color to the fog color.
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=5><TR>
+	<TD NOWRAP COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE><B>List 8-6</B>
+</TR><TR>
+	<TD NOWRAP BGCOLOR="666666" WIDTH="4" ALIGN=LEFT VALIGN=TOP><HR NOSHADE SIZE=0></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>
+<FONT COLOR="#000080"><PRE><CODE>  gDPSetFogColor(glistp++,
+               __FOG_INTENSITY__,
+               __FOG_INTENSITY__,
+               __FOG_INTENSITY__,
+               255);
+  gSPFogPosition(glistp++, 700, 1000);
+</CODE></PRE></FONT>
+	</TD>
+</TR></TABLE>
+<P>
+  To enable this fog process in the gfx8.c sample program, define __FOG__ on line 26.
+</P>
+</BODY>
+</HTML>

@@ -1,0 +1,367 @@
+------------------------------------------------------------------
+N64-HVQM2 library  version 1.2
+Function Reference Manual
+------------------------------------------------------------------
+
+Name
+
+     adpcmDecode - ADPCM decoder
+
+Example
+
+     #include <adpcmdec.h>
+
+     void adpcmDecode(void *instream, u32 format, u32 samples, 
+     s16 *outstream, u32 ex_stereo, ADPCMstate *state)
+
+Arguments
+
+     instream       ADPCM data input pointer
+     format         ADPCM data format
+     samples        Number of samples to convert
+     outstream      PCM data output pointer
+     ex_stereo      Stereo expansion flag
+     state          ADPCM state structure pointer
+
+Explanation
+
+Takes the ADPCM audio data that holds the audio record of the 
+"HVQM2 1.0" format HVQM2 file, decodes it into 16bit PCM data, 
+and outputs it to "outstream."  Outstream must be at a 16bit 
+boundary. 
+
+The audio record in an HVQM2 file comprises the record header 
+(HVQM2Record structure), followed by the audio record 
+(HVQM2Audio structure) and then a string of ADPCM data.  
+Normally, the address for the start of this ADPCM data string 
+(located directly after the audio header) is specified for 
+"instream," and the number of samples in that audio record is 
+specified for "samples."  The number of samples in the audio 
+record can be obtained from the audio header.
+
+The ADPCM data is a series of 4bit samples, but when the format 
+in the record header is HVQM2_AUDIO_KEYFRAME, then 16bit data is 
+set as the initial data in the record's ADPCM data string.  To 
+decode this record, specify ADPCM_RESET in the "format" argument 
+of the ADPCM decoder.  Otherwise (i.e., when the format in the 
+record header is HVQM2_AUDIO_PREDICT) specify ADPCM_CONTINUED in 
+the "format" argument.
+
+If NULL is specified in "outstream" for the second and 
+subsequent times this function is called, then the data will 
+continue to be output to the buffer used the previous time.
+
+In the same way, if NULL is specified in "instream" then reading 
+will continue from the previous time.  In this way, the decoding 
+of one long audio record (i.e., a record with many samples) can 
+be divided into a number of steps.
+
+Please specify appropriate values for "instream" and "format" 
+when decoding a new audio record.  When NULL is specified for 
+instream, format is ignored and the input data is processed as 
+if the format were ADPCM_CONTINUED.
+
+You cannot concatenate and decode two audio records.  This is 
+because audio records come in two different formats, as 
+mentioned above, and because bits are padded into the end of 
+records to achieve byte alignment and word alignment.
+
+When ex_stereo is set to nonzero, two PCM samples are output for 
+every ADPCM sample.
+
+"outstream" needs a capacity of 16bits x samples when 0 is 
+specified for ex_stereo, but when 1 is specified for ex_stereo 
+it needs double that capacity.
+
+"state" is the pointer to the ADPCMstate structure.  The 
+contents of this structure do not need to be set from the 
+application.  This structure is the area where information about 
+the state of the ADPCM decoder is maintained so one string of 
+ADPCM data can be divided up and decoded.  If you prepare 
+separate structures, you can divide and decode a number of 
+strings of ADPCM data in parallel.
+
+
+
+------------------------------------------------------------------
+
+
+Name
+
+     hvqm2Init1, hvqm2Init2, hvqm2InitSP1, hvqm2InitSP2 
+	- Initialize the HVQM2 decoder
+
+Example
+
+     #include <hvqm2dec.h>
+     void hvqm2Init1(u8 alpha);
+     void hvqm2Init2(u8 alpha);
+     void hvqm2InitSP1(u8 alpha);
+     void hvqm2InitSP2(u8 alpha);
+
+Explanation
+
+These functions initialize the HVQM2 decoder.
+
+The 8bit argument "alpha" is used for the A (alpha) value set in 
+the buffer along with the RBG value of the pixels expanded by 
+the HVQ2 decoder.  The 32bit RGBA format has an 8bit A field, 
+and the value of alpha is set there.  The 16bit RGBA format has 
+a 1bit A field, and the MSB of alpha (bit 7) is set there.
+
+You only need to call hvqm2Init1() once at the start when using 
+hvqm2Decode1().  The same is true for hvqm2Init2() when using 
+hvqm2Decode2(), for hvqm2InitSP1() when using hvqm2DecodeSP1(), 
+and for hvqm2InitSP2() when using hvqm2DecodeSP2().
+  
+
+
+----------------------------------------------------------------------------
+
+
+Name
+
+     hvqm2Setup1, hvqm2Setup2, hvqm2SetupSP1, hvqm2SetupSP2 
+	- Set up for playing an HVQM2 movie
+
+Example
+
+     #include <hvqdec.h>
+     u32  hvqm2Setup1(HVQM2Header *header, u32 outbufWidth);
+     u32  hvqm2Setup2(HVQM2Header *header, u32 outbufWidth);
+     u32  hvqm2SetupSP1(HVQM2Header *header, u32 outbufWidth);
+     u32  hvqm2SetupSP2(HVQM2Header *header, u32 outbufWidth);
+
+Explanation
+
+Performs the setup for playback of an HVQM2 movie.  After 
+calling this function, you read the succession of video records 
+from the HVQM2 data and call the HVQM2 decoder to decode the 
+image for each frame of the motion picture.
+
+"header" specifies the address of the HVQM2 header.
+
+"outbufWidth" specifies the horizontal width (in pixels) of the 
+image expansion buffer specified in the HVQM2 decoder.  This 
+must be as wide or wider than the image.  When the image is 
+narrower than the width of the expansion buffer, the image is 
+written from the left side of the buffer, and nothing is written 
+in the remaining space to the right.  When 0 is specified for 
+outbufWidth, the expansion buffer is considered to be the same 
+width as the image.
+
+
+----------------------------------------------------------------------------
+
+
+Name
+
+   hvqm2Decode1, hvqm2Decode2       - HVQM2 decoder (CPU version)
+   hvqm2DecodeSP1, hvqm2DecodeSP2   - HVQM2 decoder (RSP version)
+
+Example
+
+   #include <hvqdec.h>
+
+   void hvqm2Decode1(void *code, u32 format, u16 *outbuf, u16 
+   *previm, u16 *workbuf);
+
+   void hvqm2Decode2(void *code, u32 format, u32 *outbuf, u32 
+   *previm, u16 *workbuf);
+
+   u32 hvqm2DecodeSP1(void *code, u32 format, u16 *outbuf, u16 
+   *previm, u16 *workbuf, HVQM2Arg *arg, HVQM2Info *infobuf);
+
+   u32 hvqm2DecodeSP2(void *code, u32 format, u32 *outbuf, u32 
+   *previm, u16 *workbuf, HVQM2Arg *arg, HVQM2Info *infobuf);
+
+
+Explanation
+
+Decodes the video records in the "HVQM2 1.0" format HVQM2 data 
+and expands that decoded image data in the buffer.  
+hvqm2Decode*1() expands the data in 16bit RGBA format, while 
+hvqm2Decode*2() expands the data in 32bit RGBA format.
+
+hvqm2DecodeSP1() and hvqm2DecodeSP2() execute the first half of 
+the decoding process and create intermediate data.  By 
+delivering this intermediate data to the RSP microcode after 
+these functions are finished, the decoding of the image is 
+completed.
+
+
+hvqm2Decode1() and hvqm2Decode2() complete the entire decoding 
+process within the function (by just the CPU).  Accordingly, RSP 
+tasks do not need to be executed.
+
+"code" specifies the starting address of the buffer for the 
+video record (the record header, followed by the data body 
+including the video header, etc.).  This must be at a 32bit 
+boundary.
+
+"outbuf" specifies the starting address of the expansion buffer 
+where the decoded image data is written.  This must be at a 
+16bit boundary for hvqm2Decode1() and at a 32bit boundary for 
+hvqm2Decode2().
+
+"workbuf" specifies the starting address of the work area.  This 
+must be at a 16bit boundary.  The necessary size of this work 
+area is determined using the formula shown below from the number 
+of pixels in the horizontal (W) and vertical (H) directions of 
+the image and the compression format of the data being decoded.  
+
+If the data to be decoded is in 4:1:1 mode:
+(W/8) * (H/8) * 12 [byte]
+
+If the data to be decoded is in 4:2:2 mode:
+(W/8) * (H/4) * 8  [byte]
+
+The image's width, height and compression method can be obtained 
+from the HVQM2 file header in the following manner:
+
+
+   #include <HVQM2File.h>
+
+   extern HVQM2Header;  /* buffer where the HVQM2 file header is 
+			   loaded */
+
+   u32 width;
+   u32 height;
+   u8  type;
+
+   width  = HVQM2Header.width;              /* Image width  */
+   height = HVQM2Header.height;             /* Image height */
+   type   = HVQM2Header.v_sampling_rate;    /* If 1 then 4:2:2,
+                                               If 2 then 4:1:1 */
+
+There are three types of video records in the HVQM2 file: 
+HVQM2_VIDEO_KEYFRAME, HVQM2_VIDEO_PREDICT and HVQM2_VIDEO_HOLD.  
+These are distinguished by the format in the record header.  
+Please specify this in the decoder's format argument. 
+
+Except when the format is HVQM2_VIDEO_KEYFRAME, the address of 
+the expansion buffer holding the decoded image of the preceding 
+video record must be specified in previm.  When the format is 
+HVQM2_VIDEO_PREDICT, the HVQM2 decoder builds a new image based 
+on the image in previm.  When the format is HVQM2_VIDEO_HOLD, 
+the image in previm is simply copied as-is to outbuf.
+
+The RSP version function's "arg" argument specifies the address 
+of the HVQM2 parameters structure.  This structure holds the 
+parameters that are communicated to the RSP microcode by 
+hvqm2DecodeSP*().  Nothing needs to be set by the application.
+
+The RSP version function's "infobuf" argument specifies the 
+starting address of the buffer (the array of HVQM2Info 
+structures) holding the intermediate data for the RSP 
+microcode.  The necessary size of this buffer is different for 
+every video record.  The maximum value is indicated by 
+max_sp_packets in the HVQM2 file header.  The size of infobuf 
+must be big enough for that much of an array of HVQM2Info 
+structures.  That is to say, the buffer must be 
+(sizeof(HVQM2Info) x max_sp_packets) bytes in size.
+
+The value returned by the RSP version function hvqm2DecodeSP*() 
+indicates whether or not an RSP task must be activated.  When 
+the returned value is 0, the expansion of the image has been 
+completed and there is no need to start an RSP task (a task 
+should not be activated).
+
+When the value by hvqm2DecodeSP*() is 1, expansion of the image 
+is completed by activating the HVQM2 microcode.  There are two 
+kinds of HVQM2 microcode: the hvqm2sp1 microcode, which 
+corresponds to hvqm2DecodeSP1() and outputs 16bit RBGA format 
+image data, and the hvqm2sp2 microcode, corresponds to 
+hvqm2DecodeSP2() and outputs 32bit RBGA format image data.
+
+Note: These functions do not perform data cache write-backs to 
+the output buffer. Where data cache write-backs are necessary, 
+please perform them from the application.
+
+When using hvqm2DecodeX() (where X represents 1, 2, SP1, SP2), 
+you must call hvqm2SetupX() in advance.  Also, you need to call 
+hvqm2InitX() once at the start before using these functions.
+
+
+----------------------------------------------------------------------------
+
+Name
+
+   hvqm2sp1, hvqm2sp2 - HVQM2 microcode
+
+Explanation
+
+Decodes the image from the intermediate data created by 
+hvqm2DecodeSP*() and expands the decoded image data in a buffer 
+(in the expansion buffer specified in the hvqm2DecodeSP*() 
+function).  hvqm2sp1 expands the data in 16bit RGBA format while 
+hvqm2sp2 expands it in 32bit RGBA format.
+
+When the HVQ2 microcode is activated, the OSTask structure is 
+set as shown below:
+
+   type            = M_HVQM2TASK;
+   flags           = 0;
+   ucode_boot      = (u64 *)rspbootTextStart;
+   ucode_boot_size = (int)rspbootTextEnd - (int)rspbootTextStart;
+   ucode_data_size = HVQM2_UCODE_DATA_SIZE;
+   data_ptr        = Pointer to HVQM2 parameters structure
+   yield_data_ptr  = yield buffer pointer
+   yield_data_size = HVQM2_YIELD_DATA_SIZE;
+
+(when using hvqm2sp1)
+   ucode         = (u64 *)hvqm2sp1TextStart;
+   ucode_size    = (int)hvqm2sp1TextEnd - (int)hvqm2sp1TextStart;
+   ucode_data    = (u64 *)hvqm2sp1DataStart;
+
+(when using hvqm2sp2)
+   ucode         = (u64 *)hvqm2sp2TextStart;
+   ucode_size    = (int)hvqm2sp2TextEnd - (int)hvqm2sp2TextStart;
+   ucode_data    = (u64 *)hvqm2sp2DataStart;
+
+
+The above symbols are all defined in hvqm2dec.h.
+
+The standard N64OS rspboot microcode is used for the boot 
+microcode.  Please include rspboot.o together with either 
+hvqm2sp1.o or hvqm2sp2.o in the spec file for makerom (mild).
+
+The value set in data_ptr is the pointer to the HVQM2Arg 
+structure where parameters are set by hvqm2DecodeSP*().
+
+hvqm2sp1 and hvqm2sp2 both accept yields.  Please prepare a 
+buffer of HVQM2_YIELD_DATA_SIZE bytes for the yield buffer, and 
+set its address (must have a 64bit boundary) in yield_data_ptr.  
+
+After the OSTask structure is set as shown above, start the 
+microcode in the same way you would for graphics and audio.
+
+
+(Example)
+
+   #include <ultra64.h>
+
+   /* Write-back data cache */
+   osWritebackDCacheAll();
+
+   /* Invalidate expansion buffer cache */
+   osInvalDCache(outbuf, OUTBUFSIZE);
+
+   /* Start the microcode */
+   osSpTaskStart(&hvqm2task);
+
+   /* Wait for microcode to end processing */
+   osRecvMesg(&rspMessageQ, NULL, OS_MESG_BLOCK);
+
+
+The above steps complete expansion of the image.
+
+
+
+Note: When the microcode is activated, cache write-backs must be 
+performed not only for the OSTask structure, but also for the 
+HVQM2 parameters structure (the HVQM2Arg structure) inherited 
+from hvqm2DecodeSP*() as well as for the intermediate data (the 
+array of HVQM2Info structures).  In addition, since the RSP 
+writes to the expansion buffer, the expansion buffer cache must 
+be invalidated on the CPU side.

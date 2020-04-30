@@ -1,0 +1,331 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 15 - Antialiasing and Blending</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. -->
+</head>
+
+<h1>15.5 Blender</h1>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="01"><h2>15.5.1 Color Blend Hardware</h2></a>
+
+<p>The blend mux (<A target="keywords" HREF="../../keywords/index/data/system.htm#multiplexor">multiplexor</a>) selects input operands for the <a href="../../keywords/index/data/graphics.htm#blender" target="keywords">blender</a> hardware. The controls for these muxes are in the RDP's SetOtherModes modeword. There are two sets of mux controls, one for each of the two possible <a href="../../keywords/index/data/graphics.htm#rendering" target="keywords">rendering</a> cycles. </p>
+
+<p>The blend equation is of the form: </p>
+
+<dl>
+  <dt><a name="m15-01"><strong>Equation 15-1 Blend</strong></a>
+  <dd><img alt="[Equation 15-1]" src="gif/m15-01.gif">
+</dl>
+
+<p>The four input operands (p, a, m, b) each have four possible sources so two bits are needed to control each mux. This gives a total of 8 bits per cycle of blend mux control. Since the pipeline can operate in one or two cycle mode (see <a href="../../n64man/gdp/gDPSetCycleType.htm">g*DPSetCycleType()</a>) the blender must select which of the sets of mux controls to use depending on the cycle type (G_CYC_1CYCLE or G_CYC_2CYCLE) and an internal cycle counter. The sources for the p and m muxes are identical and are shown in the Table 15-1. </p>
+
+<table border=1 align="center">
+  <caption><a name="t15-01"><strong>Table 15-1 P and M Mux Inputs</strong></a></caption>
+  <tr><th nowrap>Mux Select</th><th>Source</th></tr>
+  <tr><td align="center">0</td><td>first cycle - pixel RGB<br>
+      second cycle - blended RGB from first cycle</td></tr>
+  <tr><td align="center">1</td><td>1 memory RGB</td></tr>
+  <tr><td align="center">2</td><td>blend (register) RGB</td></tr>
+  <tr><td align="center">3</td><td>fog (register) RGB</td></tr>
+</table>
+
+<p>For select 0, the cycle select is built into the hardware. The &QUOT;blended RGB&QUOT; refers to the numerator result of the blend equation, Equation 1, on the first cycle (it is fed back as an input). Note that this will only work if the b mux is set to 1.0 - a, since only the numerator of the blend equation is provided to the input mux. Register RGBs refer to colors which can be set using the <a href="../../n64man/gdp/gDPSetFogColor.htm">g*DPSetFogColor()</a> and <a href="../../n64man/gdp/gDPSetBlendColor.htm">g*DPSetBlendColor()</a> commands. Colors set using these commands are stored in registers within the RDP. Care must be taken to make sure that a <a href="../../n64man/gdp/gDPPipeSync.htm">g*DPPipeSync()</a> command is issued previous to setting these registers. The <a href="../../n64man/gdp/gDPPipeSync.htm">g*DPPipeSync()</a> command inserts a delay into the RDP pipe so that a previous primitive is guaranteed to be finished processing before the register is updated. It is anticipated that the user will set a group of <a href="../../keywords/index/data/graphics.htm#attribute" target="keywords">attributes</a> and process many primitives and then set a new group of attributes, etc. Primitive color, <a href="../../n64man/gdp/gDPSetPrimColor.htm">g*DPSetPrimColor()</a>, primitive depth, <a href="../../n64man/gdp/gDPSetPrimDepth.htm">g*DPSetPrimDepth()</a>, and scissor, <a href="../../n64man/gdp/gDPSetScissor.htm">g*DPSetScissor()</a>, are attributes that do not require any syncs.</p>
+
+<p>The sources for the a and b muxes are shown in the following table.</p>
+
+<table border=1 align="center">
+  <caption><a name="t15-02"><strong>Table 15-2 A Mux Inputs</strong></a></caption>
+  <tr><th nowrap>Mux Select</th><th>Source</th></tr>
+  <tr><td align="center">0</td><td>color combiner output alpha</td></tr>
+  <tr><td align="center">1</td><td>fog (register) alpha</td></tr>
+  <tr><td align="center">2</td><td>(stepped) shade alpha</td></tr>
+  <tr><td align="center">3</td><td>0.0</td></tr>
+</table>
+
+<p></p>
+
+<table border=1 align="center">
+  <caption><a name="t15-03"><strong>Table 15-3 B Mux Inputs</strong></a></caption>
+  <tr><th nowrap>Mux Select</th><th>Source</th></tr>
+  <tr><td align="center">0</td><td>1.0 - a mux output</td></tr>
+  <tr><td align="center">1</td><td>memory alpha</td></tr>
+  <tr><td align="center">2</td><td>1.0</td></tr>
+  <tr><td align="center">3</td><td>0.0</td></tr>
+</table>
+
+<p>In general, the RDP pipeline operates on RGBA pixels with 8 bits per component. The 1.0 in Table 15-3 assumes the <a href="../../keywords/index/data/graphics.htm#alpha" target="keywords">alpha</a> is a number between 0.0-1.0. These numbers are actually fixed point and the output of the a and b alpha muxes have less resolution (5 bits) than the color components (8 bits) to reduce hardware cost. When this alpha is changing slowly across a face, Mach banding can occur due to the reduced number of discrete steps in the alpha channel. </p>
+
+<p>Two <a href="../../keywords/index/data/graphics.htm#dither" target="keywords">dither</a> commands can be used to reduce Mach banding effects: <a href="../../n64man/gdp/gDPSetColorDither.htm">g*DPSetColorDither()</a> and <a href="../../n64man/gdp/gDPSetAlphaDither.htm">g*DPSetAlphaDither()</a>. These commands basically add a small amount of randomness (1/2 of an LSB) to the color and/or alpha which makes the Mach banding less noticeable. The <a href="../../n64man/gdp/gDPSetColorDither.htm">g*DPSetColorDither()</a> command also controls the dithering of RGB from 8 to 5 bits per component (for use in 5/5/5/1 pixel mode). </p>
+
+<p>There are two variations of dithering that can be set using the <a href="../../n64man/gdp/gDPSetColorDither.htm">g*DPSetColorDither()</a> command. One is a screen coordinate based dither (G_CD_MAGICSQ or G_CD_BAYER) in which the <a href="../../keywords/index/data/graphics.htm#dither matrix" target="keywords">dither matrix</a> changes based on the location of the pixel on the screen. In other words, the dither pattern is registered to the screen. The noise dither (G_CD_NOISE), on the other hand, adds pseudo-random noise with a very long period into the LSBs of each pixel. In this mode, the dithering is not registered to the screen and will vary from frame to frame. Of course, you can disable color dithering altogether using the G_CD_DISABLE parameter. </p>
+
+<p>Alpha dithering (<a href="../../n64man/gdp/gDPSetAlphaDither.htm">g*DPSetAlphaDither()</a>) for screen-based dither patterns uses the same <a href="../../keywords/index/data/graphics.htm#matrix" target="keywords">matrix</a> that is selected by the <a href="../../n64man/gdp/gDPSetColorDither.htm">g*DPSetColorDither()</a> command. However, the user may invert the pattern, G_AD_NOTPATTERN, or simply pass the pattern through unchanged, G_AD_PATTERN. The user may also select the noise pattern using G_AD_NOISE, or disable alpha dithering altogether using G_AD_DISABLE. </p>
+
+<p><strong>Note:</strong>  The dithering of the RGB from 8 bits to 5 bits by adding 3 LSBs of noise to the original 8 bits (with <a href="../../keywords/index/data/graphics.htm#clamp" target="keywords">clamping</a> to prevent wrapping) is enabled even in 32 bit mode (8/8/8/8), where there is no truncation to be done. Since this one mode bit controls both RGB dither and alpha dither (which always is needed, even in 32 bit mode), opaque things should have the dither bit off in 32 bit mode (so the 3 LSBs do not get stepped on), but transparent things should have this bit on in 32 bit mode, since the noise from the alpha will be of the same  order as the noise gratuitously added to the RGB. </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="02"><h2>15.5.2 Fog</h2></a>
+
+<p>Suppose we want to &QUOT;fog out&QUOT; from an image to a constant color as a function (set up in the RSP) of depth. We will assume the fog parameter is set up (per <a href="../../keywords/index/data/graphics.htm#vertex" target="keywords">vertex</a>) in the stepped alpha of the shaded triangle primitive (see <a href="../pro11/11-08.htm">Section 11.8 &QUOT;Vertex Fog State</a>&QUOT;. We will use the fog register color (<a href="../../n64man/gdp/gDPSetFogColor.htm">g*DPSetFogColor()</a>) as the color to fade too. We will use the stepped shade alpha as a control to determine how much of the fog color is used. The first cycle blend mux selects in &QUOT;<a href="#t15-04">Table 15-4  Fog Mux Controls</a>&QUOT; will achieve this effect. </p>
+
+
+<table border=1 align="center">
+  <caption><a name="t15-04"><strong>Table 15-4 Fog Mux Controls</strong></a></caption>
+  <tr><th nowrap>Mux</th><th>Source</th></tr>
+  <tr><td align="center">P</td><td>select 0, pixel RGB</td></tr>
+  <tr><td align="center">A</td><td>select 2, stepped shade alpha</td></tr>
+  <tr><td align="center">M</td><td>select 3, fog register color</td></tr>
+  <tr><td align="center">B</td><td>select 0, 1.0 - stepped shade alpha</td></tr>
+</table>
+
+<p>From the <a href="#m15-01">blend equation 15-1</a>, you can see that these selects perform a linear interpolation between the fog color and the color combiner output color. </p>
+
+<dl>
+  <dt><a name="m15-02"><strong>Equation 15-2 Fog Blend Equation</strong></a>
+  <dd><img alt="[Equation 15-2]" src="gif/m15-02.gif">
+</dl>
+
+<p><a href="../../n64man/gdp/gDPSetRenderMode.htm">g*DPSetRenderMode()</a> is used to control these muxes as well as other
+blender modes. The command <a href="../../n64man/gdp/gDPSetRenderMode.htm">g*DPSetRenderMode</a>(G_RM_FOG_SHADE_A, G_RM_FOG_SHADE_A) implements the mux controls for this fog effect in G_CYC_1CYCLE mode. Typically, this effect would be used only in G_CYC_2CYCLE mode, with the second cycle performing the blend of the pixel with memory. For example, <a href="../../n64man/gdp/gDPSetRenderMode.htm">g*DPSetRenderMode</a> (G_RM_FOG_SHADE_A, G_RM_AA_ZB_OPA_SURF2) enables fog while rendering <a href="../../keywords/index/data/graphics.htm#anti-aliasing" target="keywords">anti-aliasing</a>, Z buffered, opaque <a href="../../keywords/index/data/graphics.htm#surface" target="keywords">surfaces</a>. In G_CYC_1CYCLE mode, only the fogging operation would be performed (no blend). </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="03"><h2>15.5.3 Coverage Calculation</h2></a>
+
+<p>From the previous discussion in <a href="15-03.htm">Section 15.3 &QUOT;Coverage Unit&QUOT;</a>, <a href="../../keywords/index/data/graphics.htm#coverage value" target="keywords">coverage value</a> is a 4-bit value that indicates how many <a href="../../keywords/index/data/graphics.htm#sub pixel" target="keywords">subpixels</a> are occluded by a primitive. Note that a coverage of zero indicates that no subpixels were covered and the pixel does not need to be written to the frame buffer. Because there are only 3 bits of coverage available in the frame buffer, the coverage stored is actually: </p>
+
+<dl>
+  <dt><a name="m15-03"><strong>Equation 15-3 Stored Coverage</strong></a>
+  <dd><blockquote><pre>
+memcvg = coverage-1
+      </pre></blockquote>
+</dl>
+
+<p>When the pixel is read from memory, a one is automatically added to restore the actual coverage before it is used in calculations. </p>
+
+<p>It is interesting to note that the Video Filter is concerned primarily with partially covered pixels around the silhouette edges of objects (please see <a href="15-06.htm">Section 15.6 &QUOT;Video Filter&QUOT;</a>. Also, the antialiasing performed by the blender uses information about <a href="../../keywords/index/data/graphics.htm#coverage value wrap" target="keywords">coverage value wrap</a>, i.e. when the sum of memory coverage and pixel coverage are greater than 1.0. Because of this, the frame buffer is initially cleared such that the coverage bits are all one. Please see Section &QUOT;<a href="15-05.htm#06">15.5.6 Color Image Format</a>&QUOT;. </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="04"><h2>15.5.4 Alpha Compare Calculation</h2></a>
+
+<p>From &QUOT;Fill Mode&QUOT; and &QUOT;Copy Mode&QUOT;, you will notice that in G_CYC_COPY and G_CYC_FILL modes the blender hardware is bypassed and the fill color or image is written with no opportunity for read/modify operations. </p>
+
+
+<p><strong>Note:</strong>  When rendering in G_CYC_COPY or G_CYC_FILL, you should use the RenderMode G_RM_NOOP to make sure that reading of Z and color is disabled. </p>
+
+<p>You can achieve a texture edge effect in G_CYC_COPY mode, however, by using the pixel alpha thresholded to compare with the blend register alpha threshold (<a href="../../n64man/gdp/gDPSetBlendColor.htm">g*DPSetBlendColor()</a>).  </p>
+
+<p><a href="#f15-08">Figure 15-8</a> shows that write enables are generated when the <a href="../../keywords/index/data/graphics.htm#texel" target="keywords">texel</a> alpha is greater than or equal to blend alpha for 8-bit framebuffers. Also, note that for 16-bit RGBA texels there are no compares, the alpha bit simply acts as a write enable. Threshold alpha compare mode may be set by the following command: </p>
+
+<blockquote><pre>
+<a href="../../n64man/gdp/gDPSetAlphaCompare.htm">g*DPSetAlphaCompare</a>(G_AC_THRESHOLD)
+</pre></blockquote>
+
+<p><strong>Note:</strong>  Alpha compare only works in G_CYC_COPY mode for the 16-bit RGBA color and 8-bit image types. You cannot copy the 32-bit RGBA color image type. </p>
+
+<dl>
+  <dt><a name="f15-08"><strong>Figure 15-8 Alpha Compare in Copy Mode for 8-bit Framebuffer </strong></a>
+  <dd><img alt="[Figure 15-8]" src="gif/f15-08.gif">
+</dl>
+
+<p>Another alpha compare mode uses a hardware generated pseudo-random number as the threshold alpha. To set this mode, use the following command.</p>
+
+<blockquote><pre>
+<a href="../../n64man/gdp/gDPSetAlphaCompare.htm">g*DPSetAlphaCompare</a>(G_AC_DITHER)
+</pre></blockquote>
+
+<p>Both G_AC_DITHER and G_AC_THRESHOLD can be used in G_CYC_1CYCLE or G_CYC_2CYCLE mode as well. In these modes, you can readily change the pixel's alpha from frame to frame, allowing various fade effects. In order to get the alpha of the pixel to the comparators, you must set the ALPHA_X_CVG and ALPHA_CVG_SEL bits properly. <a href="#f15-09">Figure 15-9</a> shows a block diagram of the coverage/alpha combiner and alpha comparator logic. These controls are usually set as part of the <a href="../../n64man/gdp/gDPSetRenderMode.htm">g*DPSetRenderMode</a> command. For example, the command <a href="../../n64man/gdp/gDPSetRenderMode.htm">g*DPSetRenderMode</a> (G_RM_TEX_EDGE, G_RM_TEX_EDGE2) will do the right thing with these mode bits. Please see Section 15.7, Table 2, "Antialiased Non-Z-Buffered Rendering Modes, G_RM_AA," for details on which bits are set for a particular RenderMode. </p>
+
+<p>For rendering effects such as smoke, clouds, or explosions, set the texture alpha to the outline of the smoke or explosion and render the texture onto a transparent polygon so that  one can see through the smoke to the objects behind. </p>
+
+<p>In this situation, the correct <a href="../../n64man/gdp/gDPSetRenderMode.htm">g*DPSetRenderMode()</a> to use is G_RM_ZB_CLD_SURF or G_RM_CLD_SURF.</p>
+
+<p>This &QUOT;cloud&QUOT; mode preserves the antialiasing of objects behind the cloud primitive, unlike TEX_EDGE and XLU_SURF modes. </p>
+
+<dl>
+  <dt><a name="f15-09"><strong>Figure 15-9 Alpha Compare in One/Two-Cycle Mode</strong></a>
+  <dd><img alt="[Figure 15-9]" src="gif/f15-09.gif">
+</dl>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="05"><h2>15.5.5 Blender ADD Mode</h2></a>
+
+<p>A special blender mode has been implemented that allows the pixel color to be added to the memory color: </p>
+
+<blockquote><pre>
+#define RM_ADD(clk) \
+    IM_RD | CVG_DST_SAVE | FORCE_BL | ZMODE_OPA |       \
+    GBL_c##clk(G_BL_CLR_IN, G_BL_A_FOG, G_BL_CLR_MEM,   \
+               G_BL_1)
+#define G_RM_ADD       RM_ADD(1)
+#define G_RM_ADD2      RM_ADD(2)
+</pre></blockquote>
+
+<p>Several notes about this mode: </p>
+
+<ul>
+  <li>You must set fog alpha equal to 0xff for this mode to work, e.g. <a href="../../n64man/gdp/gDPSetFogColor.htm">gsDPSetFogColor</a>(255, 255, 255, 255).
+  <li>Since the blender does not clamp the final color (all the inputs are clamped and normal interpolation operations will not under/overflow) the user must guarantee that the results will not overflow or &QUOT;special effects&QUOT; may occur. </ul>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="06"><h2>15.5.6 Color Image Format</h2></a>
+
+<p>There are three color image formats: 32-bit RGBA, 16-bit RGBA, and 8-bit. In addition, there are hidden bits that are available to the RDP memory interface but not readily visible to the programmer, see Figure 15.5.3. These hidden bits come from the fact that the RCP uses
+9-bit RDRAMs. For 16-bit RGBA types, the hidden bits are used for storing coverage. For 32-bit RGBA types, the 3 coverage bits are stored as the 3 MSBs of the 8-bit alpha channel and the hidden bits are ignored. Note that the 32-bit <a href="../../keywords/index/data/graphics.htm#RGBA mode" target="keywords">RGBA mode</a> does not provide increased alpha resolution. For 8-bit color images, the hidden bits are ignored. </p>
+
+<p>The hidden bits are logically the 2 LSBs of each 18-bit word. For memory accesses from other than the RDP memory interface (MI), only a 16-bit word is read/written. Other masters can indirectly set or clear the hidden bits by setting or clearing the LSB of the 16-bit word, respectively. For example, if the CPU writes the 16-bit binary value 10101010_10101010 to memory, the memory interface will actually write the 18-bit binary value 10101010_10101010_00. On the other hand, if the CPU writes the 16-bit binary value 01010101_01010101, the memory interface will actually write the 18-bit binary value 01010101_01010101_11. </p>
+
+<dl>
+  <dt><a name="f15-10"><strong>Figure 15-10 Hidden Bits</strong></a>
+  <dd><img alt="[Figure 15-10]" src="gif/f15-10.gif">
+</dl>
+
+<p><strong>Note:</strong>  Hidden bits are only read/written directly by the RDP Memory Interface. They are logically positioned as the LSBs of every 16-bit word, independent of Color Image type.</p>
+
+<dl>
+  <dt><a name="f15-10-00"></a>
+  <dd><img alt="[Figure ]" src="gif/f15-10-00.gif">
+</dl>
+
+<p><a href="#f15-11">Figure 15-11 &QUOT;Color Image Formats&QUOT;</a> describes the logical frame buffer formats.</p>
+
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="07"><h2>15.5.7 Image Alignment Requirements </h2></a>
+
+<p>The color image pointer, <a href="../../n64man/gdp/gDPSetColorImage.htm">g*DPSetColorImage()</a>, and the depth image pointer,<a href="../../n64man/gdp/gDPSetDepthImage.htm">g*DPSetDepthImage()</a> should be aligned to 64-bits, i.e. the 3 LSBs of the pointer should be zero. </p>
+
+<dl>
+  <dt><a name="f15-11"><strong>Figure 15-11 Color Image Formats</strong></a>
+  <dd><img alt="[Figure 15-11 part1]" src="gif/f15-11.gif">
+</dl>
+<dl>
+  <dt><a name="f15-11-00"></a>
+  <dd><img alt="[Figure 15-11 part2]" src="gif/f15-11-00.gif">
+</dl>
+<dl>
+  <dt><a name="f15-11-01"></a>
+  <dd><img alt="[Figure 15-11 part3]" src="gif/f15-11-01.gif">
+</dl>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="08"><h2>15.5.8 Z Calculation</h2></a>
+
+<p><a href="../../n64man/gdp/gDPSetDepthSource.htm">g*DPSetDepthSource()</a> selects the source of Z for the depth compares used in the <a href="../../keywords/index/data/graphics.htm#Z buffer" target="keywords">Z buffer</a> algorithm. This selects between primitive Z (a register), <a href="../../n64man/gdp/gDPSetPrimDepth.htm">g*DPSetPrimDepth()</a>, and stepped Z (from the triangle or line). <a href="../../n64man/gdp/gDPSetDepthSource.htm">g*DPSetDepthSource()</a> also selects between primitive DeltaZ (a register) and stepped DeltaZ. The 16 bit primitive Z register can supply the 15 integer bits of the Z value and the 16 bit deltaZ register can supply the 16 bits of the DeltaZ value. </p>
+
+<dl>
+  <dt><a name="m15-04"><strong>Equation 15-4 DeltaZ Calculation</strong></a>
+  <dd><blockquote><pre>
+DeltaZpix= | dZdx | + | dZdy |
+      </pre></blockquote>
+</dl>
+
+<p>The DeltaZ value is important in determining surface correlation-- that is, whether this pixel is part of the same surface as the pixel that is stored in memory. When computing whether the pixel is part of the same surface, the worst case DeltaZ is used: </p>
+
+<dl>
+  <dt><a name="m15-05"><strong>Equation 15-5 Max DeltaZ Calculation</strong></a>
+  <dd><blockquote><pre>
+DeltaZmax=MAX(DeltaZpix,DeltaZmem)
+      </pre></blockquote>
+</dl>
+
+<p>The Z buffer compare equations are: </p>
+
+<dl>
+  <dt><a name="m15-06"><strong>Equation 15-6 Max Z Test</strong></a>
+  <dd><blockquote><pre>
+MaxZ=(MemZ==MAXZ)
+      </pre></blockquote>
+</dl>
+<dl>
+  <dt><a name="m15-07"><strong>Equation 15-7 Farther Compare</strong></a>
+  <dd><blockquote><pre>
+Farther=(PixZ+DeltaZmax)&GT;=MemZ
+      </pre></blockquote>
+</dl>
+<dl>
+  <dt><a name="m15-08"><strong>Equation 15-8 Nearer Compare</strong></a>
+  <dd><blockquote><pre>
+Nearer=(PixZ-DeltaZmax)&LT;=MemZ
+      </pre></blockquote>
+</dl>
+<dl>
+  <dt><a name="m15-09"><strong>Equation 15-9 InFront Compare</strong></a>
+  <dd><blockquote><pre>
+InFront=PixZ&lt;MemZ
+      </pre></blockquote>
+</dl>
+
+<p>These signals are used along with coverage information to determine surface correlation for various antialiasing modes. Please see <a href="15-07.htm">Section 15.7 &QUOT;Blender Modes and Assumptions&QUOT;</a>. </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="09"><h2>15.5.9 Z Image Format</h2></a>
+
+<p>The Z buffer logic in the blender uses a fixed point, 0,15.3, 18 bit number for Z calculations. The delta Z is a 16 bit quantity that is used as a s15 number. The linear 18-bit Z that is stepped, is converted to a 14 bit floating point format before being stored. This encoding is shown in the figure 15-12, &QUOT;Z Encoding&QUOT;. </p>
+
+<dl>
+  <dt><a name="f15-12"><strong>Figure 15-12 Z Encoding</strong></a>
+  <dd><img alt="[Figure 15-12]" src="gif/f15-12.gif">
+</dl>
+
+<p>Three bits are stored for the exponent and 11 bits are stored for the mantissa. Here is some pseudo code for converting from the format stored in memory to the Z format used in calculations: </p>
+
+<blockquote><pre>
+/*
+ * Convert 11 bit mantissa and 3 bit exponent
+ * to 0,15.3 number
+ */
+struct {
+     int shift;
+     long add;
+} z_format[8] = {
+     6, 0x00000,
+     5, 0x20000,
+     4, 0x30000,
+     3, 0x38000,
+     2, 0x3c000,
+     1, 0x3e000,
+     0, 0x3f000,
+     0, 0x3f800,
+};
+     zvalue = (mantissa &lt;&lt; z_format[exponent].shift)+
+                 z_format[exponent].add;
+</pre></blockquote>
+
+<p>Notice that converting from a 18 bit fixed point number to a 14 bit floating point number, some precision may be lost. The lose of precision is greatest for small exponents. The highest precision is saved for large Z values, that is, for objects that are far away from the eye. </p>
+
+<p>The DeltaZ is also encoded into 4 bit integer for storage into the Z buffer using the following equation: </p>
+
+<dl>
+  <dt><a name="m15-10"><strong>Equation 15-10 DeltaZ Encoding</strong></a>
+  <dd><blockquote><pre>
+Delta Zmem=log2(DeltaZpix)
+      </pre></blockquote>
+</dl>
+
+<p>This is just a priority encoding of the DeltaZ value. The bit number of the most significant bit that has a value of one is stored. </p>
+
+<p>The memory format for the Z and DeltaZmem is shown in <a href="#f15-13">Figure 15-13</a></p>
+
+<dl>
+  <dt><a name="f15-13"><strong>Figure 15-13 Z Memory Format</strong></a>
+  <dd><img alt="[Figure 15-13]" src="gif/f15-13.gif">
+</dl>
+
+<p><strong>Note:</strong>  Hidden bits are only read/written directly by the RDP Memory Interface. They are logically positioned as the LSBs of every 16-bit word.</p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="10"><h2>15.5.10 Z Accuracy</h2></a>
+
+<p><a href="#f15-14">Figure 15-14</a> shows the worst-case error ratio in Z relative to the near and far planes. </p>
+
+<dl>
+  <dt><a name="f15-14"><strong>Figure 15-14 Z Worst-Case Error</strong></a>
+  <dd><img alt="[Figure 15-14]" src="gif/f15-14.gif">
+</dl>
+
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+</body> </html>

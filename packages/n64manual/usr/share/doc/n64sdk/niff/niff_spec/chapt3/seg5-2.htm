@@ -1,0 +1,669 @@
+<HTML>
+<HEAD>
+<TITLE>Chapter 3 Binary Format</TITLE>
+</HEAD>
+<BODY LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff">
+
+<font face="arial" size="-1">
+<b><font size="3">Chapter 3 Binary Format</b></font>
+<HR>
+
+<b>3-5. ObjList</b>
+<P>
+<u>2. Obj Area</u>
+<P>
+The Obj area describes object-related information. It is mapped as shown below. 
+<p>
+<table border="1" cellpadding="3" cellspacing="3">
+<tr>
+<td>
+<font face="arial" size="-1">
+u32
+</td>
+<td>
+<font face="arial" size="-1">
+obj_tag
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">
+u32
+</td>
+<td>
+<font face="arial" size="-1">
+this_obj_index
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">
+u32
+</td>
+<td>
+<font face="arial" size="-1">
+obj_size
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">
+u32
+</td>
+<td>
+<font face="arial" size="-1">
+obj_name_index
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">
+u32
+</td>
+<td>
+<font face="arial" size="-1">
+obj_state
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">
+u32
+</td>
+<td>
+<font face="arial" size="-1">
+obj_type
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">
+u32
+</td>
+<td>
+<font face="arial" size="-1">
+obj_group
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">
+u32
+</td>
+<td>
+<font face="arial" size="-1">
+obj_pri
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">
+u32
+</td>
+<td>
+<font face="arial" size="-1">
+obj_render_cycle_type
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">
+u32
+</td>
+<td>
+<font face="arial" size="-1">
+obj_render_pri
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">
+u32
+</td>
+<td>
+<font face="arial" size="-1">
+obj_render_type0
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">
+u32
+</td>
+<td>
+<font face="arial" size="-1">
+obj_render_type1
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">
+u32
+</td>
+<td>
+<font face="arial" size="-1">
+have_link_billboard
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">
+u32
+</td>
+<td>
+<font face="arial" size="-1">
+obj_lod_num
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">
+u32
+</td>
+<td>
+<font face="arial" size="-1">
+obj_child_num
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">
+u32
+</td>
+<td>
+<font face="arial" size="-1">
+obj_parent_link
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">
+u32
+</td>
+<td>
+<font face="arial" size="-1">
+obj_shape_link
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">
+u32
+</td>
+<td>
+<font face="arial" size="-1">
+obj_mat_link
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">
+u32
+</td>
+<td>
+<font face="arial" size="-1">
+obj_anim_link
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">
+u32
+</td>
+<td>
+<font face="arial" size="-1">
+obj_coll_link
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">
+u32
+</td>
+<td>
+<font face="arial" size="-1">
+nintendo_extension_block_size
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">
+u32
+</td>
+<td>
+<font face="arial" size="-1">
+user_extension_block_size
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">
+float
+</td>
+<td>
+<font face="arial" size="-1">
+obj_lod_dist(0)
+</td>
+</tr>
+<tr>
+<td colspan="2">
+<font face="arial" size="-1">
+<center>
+...
+</td>
+</tr>
+<tr>
+<td>
+<font face="arial" size="-1">
+float
+</td>
+<td>
+<font face="arial" size="-1">
+obj_lod_dist(obj_lod_num - 1)
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+obj_lod_link(0)
+</td>
+</tr>
+<tr>
+<td colspan="2"><font face="arial" size="-1">
+<center>
+...
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+obj_lod_link(obj_lod_num - 1)
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+obj_child_link(0)
+</td>
+</tr>
+<tr>
+<td colspan="2"><font face="arial" size="-1">
+<center>
+...
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+obj_child_link(obj_child_num - 1)
+</td>
+</tr>
+<tr>
+<td colspan="2"><font face="arial" size="-1">
+<center>
+NintendoExtensionBlock
+</td>
+</tr>
+<tr>
+<td colspan="2"><font face="arial" size="-1">
+<center>
+UserExtensionBlock
+</td></tr></table>
+<p>
+Figure: Obj Area Memory map
+
+<p>
+<table border="1" cellpadding="3" cellspacing="3">
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 obj_tag
+</td>
+<td>
+<font face="arial" size="-1">
+Tag indicating Obj. Set the following flag.
+<pre><font face="courier" size="2">
+<b>TAG_OBJ		0x00020100</b></pre></font>
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 this_obj_index
+</td>
+<td>
+<font face="arial" size="-1">
+Index number of this Obj
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 obj_size
+</td>
+<td>
+<font face="arial" size="-1">
+Size of this Obj.
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 obj_name_index
+</td>
+<td>
+<font face="arial" size="-1">
+Index number of object name.
+The object name is contained in NameList.
+The index number is contained in NameList.
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+<a href="../chapt5/seg1.htm#OBJ_STATE">u32 obj_state</a>
+</td>
+<td>
+<font face="arial" size="-1">
+Specifies object state. The following are currently defined. 
+<pre><font face="courier" size="2">
+<b>OBJ_STATE_CLEAR		0x00000000
+OBJ_STATE_ACTIVE	0x00000001</b></pre></font>
+<P>
+OBJ_STATE_CLEAR ignores all links of this object. <p>
+OBJ_STATE_ACTIVE activates object. <p>
+OBJ_STATE_CLEAR is not typically used. Normally, when data is outputted from CG tool, set to OBJ_STATE_ACTIVE.
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+<a href="../chapt5/seg1.htm#OBJ_TYPE">u32 obj_type</a>
+</td>
+<td>
+<font face="arial" size="-1">
+Specifies object type. Currently, the following are defined. 
+<pre><font face="courier" size="2">
+<b>OBJ_TYPE_NULL		0x00000000
+OBJ_TYPE_3D		0x00000001
+OBJ_TYPE_BILLBOARD	0x00000002</b></pre></font>
+<P>
+OBJ_TYPE_NULL is NULL object. Set this flag if the object contains animation and a child node but not a  shape node (i.e., an object that does have some information but no shape data to display). <p>
+BJ_TYPE_3D contains polygon data. Set this flag if the object contains 3D shape data.<p>
+OBJ_TYPE_BILLBOARD is billboard type object. Set this flag if the object contains billboard type animation. As a 3D object, the shape data of a billboard object links to the Shape node. <p>
+Normally, one of these flags should be set.
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+<a href="../chapt5/seg1.htm#OBJ_GROUP">u32 obj_group</a>
+</td>
+<td>
+<font face="arial" size="-1">
+ID number of group categorized by object type. The following is the default. 
+<pre><font face="courier" size="2">
+<b>OBJ_GROUP_NONE		0x00000000</b></pre></font>
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+<a href="../chapt5/seg1.htm#OBJ_PRI">u32 obj_pri</a>
+</td>
+<td>
+<font face="arial" size="-1">
+Priority sequence of this object in the same group. The following is the default. 
+<pre><font face="courier" size="2">
+<b>OBJ_PRI_NONE		0x00000000</b></pre></font>
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 obj_render_cycle_type
+</td>
+<td>
+<font face="arial" size="-1">
+Cycle type of RDP for object rendering. The following flags are currently defined. 
+<pre><font face="courier" size="2">
+<b>OBJ_RENDER_CYC_1CYC		0x00000000
+OBJ_RENDER_CYC_2CYC		0x00000001</b></pre></font>
+<P>
+Set one of these flags. Set OBJ_RENDER_CYC_1CYC for default.
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+<a href="../chapt5/seg1.htm#OBJ_RENDER_PRI">u32 obj_render_pri</a>
+</td>
+<td>
+<font face="arial" size="-1">
+Sets the priority sequence of object rendering. the object is drawn from the higher sequence. <p>
+The upper 8 bit is defined as an extension flag. The following are currently defined as an extension flag. 
+<pre><font face="courier" size="2">
+<b>OBJ_RENDER_FLAG_NIFF		0x00
+OBJ_RENDER_FLAG_N64		0x01</b></pre></font>
+<P>
+OBJ_RENDER_FLAG_NIFF is the render mode for NIFF. The priority sequence of both rendering and rendering type can be set accordingly as below. 
+<pre><font face="courier" size="2">
+<b>
+OBJ_RENDER_NIFF_OPA_SURF	0x00d00000
+OBJ_RENDER_NIFF_OPA_INTER	0x00b00000
+OBJ_RENDER_NIFF_OPA_DECAL	0x00900000
+OBJ_RENDER_NIFF_TEX_EDGE	0x00700000
+OBJ_RENDER_NIFF_XLU_SURF	0x00500000
+OBJ_RENDER_NIFF_XLU_INTER	0x00300000
+OBJ_RENDER_NIFF_XLU_DECAL	0x00100000
+</b></pre></font>
+<P>
+By setting one of these, both the priority sequence of rendering and rendering type can be set automatically. In this case, obj_render_type* is not referenced. 
+<p>
+When OBJ_RENDER_FLAG_N64 is specified, you should use the lower 24 bit to specify the priority sequence of rendering. In this case, the above flags can be applied. However, render mode itself cannot be specified by this because render mode should be specified by obj_render_type*.
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 obj_render_type0
+</td>
+<td>
+<font face="arial" size="-1">
+When OBJ_RENDER_FLAG_N64 is specified in Obj_render_pri, the rendering mode of Nintendo 64 can be used. This is the rendering mode for 1 cycle.
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 obj_render_type1
+</td>
+<td>
+<font face="arial" size="-1">
+When OBJ_RENDER_FLAG_N64 is specified in Obj_render_pri, the rendering mode of Nintendo 64 can be used. This is the rendering mode for 2 cycles.
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+<a href="../chapt5/seg1.htm#HAVE_LINK_BILLBOARD">u32 have_link_billboard</a>
+</td>
+<td>
+<font face="arial" size="-1">
+Specify the following flag as if Billboard object is contained in the lower hierarchical link. 
+<pre><font face="courier" size="2">
+<b>
+ANY_LINK_BILLBOARD	0x00000001
+</b></pre></font>
+<P>
+If this object does not contain a hierarchical link to a Billboard object, set the following flag. 
+<pre><font face="courier" size="2">
+<b>
+NO_LINK_BILLBOARD&#9;0x00000000
+</b></pre></font>
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+<a href="../chapt5/seg1.htm#OBJ_LOD_NUM">u32 obj_lod_num</a>
+</td>
+<td>
+<font face="arial" size="-1">
+When the object is to be LOD-processed, depending on the LOD level, the links can be divided up. <p>
+If the object is not LOD-processed, set the following flag. 
+<pre><font face="courier" size="2">
+<b>OBJ_NOLOD&#9;0x00000000</b></pre></font>
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+<a href="../chapt5/seg1.htm#OBJ_CHILD_NUM">u32 obj_child_num</a>
+</td>
+<td>
+<font face="arial" size="-1">
+Up to 32 child nodes (linked to the object) can be specified. obj_child_num is the number of child objects linked to this object. If there is no child object contained, set the following flag. 
+<pre><font face="courier" size="2">
+<b>OBJ_NOCHILD&#9;0x00000000</b></pre></font>
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+<a href="../chapt5/seg1.htm#OBJ_PARENT_LINK">u32 obj_parent_link</a>
+</td>
+<td>
+<font face="arial" size="-1">
+Index number of parent object in ObjList. If parent object is not contained (i.e., connected directly to SceneNode), set the following flag.  
+<pre><font face="courier" size="2">
+<b>OBJ_NO_PARENT&#9;0xffffffff</b></pre></font>
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+<a href="../chapt5/seg1.htm#OBJ_SHAPE_LINK">u32 obj_shape_link</a>
+</td>
+<td>
+<font face="arial" size="-1">
+Index number of shape data in ShapeList linked to the object. <p>
+Also, if obj_type = OBJ_TYPE_NULL, specify the following flag.
+<pre><font face="courier" size="2">
+<b>OBJ_NOSHAPE&#9;0xffffffff</b></pre></font>
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+<a href="../chapt5/seg1.htm#OBJ_MAT_LINK">u32 obj_mat_link</a>
+</td>
+<td>
+<font face="arial" size="-1">
+Index number of material data in MatList linked to the object. Set the following flag if no material data is linked. 
+<pre><font face="courier" size="2">
+<b>OBJ_MAT_NOLINK&#9;0xffffffff</b></pre></font>
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+<a href="../chapt5/seg1.htm#OBJ_ANIM_LINK">u32 obj_anim_link</a>
+</td>
+<td>
+<font face="arial" size="-1">
+Index number of animation data in AnimList linked to the object. Set the following flag if no animation data is linked. 
+<pre><font face="courier" size="2">
+<b>OBJ_ANIM_NOLINK&#9;0xffffffff</b></pre></font>
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+<a href="../chapt5/seg1.htm#OBJ_COLL_GROUP_LINK">u32 obj_coll_group_link</a>
+</td>
+<td>
+<font face="arial" size="-1">
+Index number of CollGroup linked to the object. <p>
+Set the following flag if the object does not have Collision data. 
+<pre><font face="courier" size="2">
+<b>OBJ_COLL_GROUP_NOLINK&#9;0xffffffff</b></pre>
+</font>
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 nintendo_extension_block_size
+</td>
+<td>
+<font face="arial" size="-1">
+Nintendo extension block size
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 user_extension_block_size
+</td>
+<td>
+<font face="arial" size="-1">
+User extension block size
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+<a href="../chapt5/seg1.htm#OBJ_LOD_DIST">float obj_lod_dist</a>
+</td>
+<td>
+<font face="arial" size="-1">
+Distance from camera corresponding to the LOD level. When the distance value is less than this level, this Obj data will be linked. <p>
+If OBJ_NOLOD is already set on obj_lod_num, this field  is not applied.<p>
+Suppose obj_lod_num = 0x00000001 (LOD level is set to 1). Having the LOD level set to 1 means that, if the distance between the camera and the object gets closer than the level setting, the object will be displayed. If the distance gets farther than the level setting, the object is not displayed. <p>
+If obj_lod_num >= 2, the object may or may not be displayed, depending on the level setting and the distance between the object and the camera. <p>
+To avoid not displaying object, set the following flag to the maximum obj_lod_dist.  
+<pre><font face="courier" size="2">
+<b>OBJ_LOD_DIST_MAX&#9;0xffffffff</b></pre></font>
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 obj_lod_link
+</td>
+<td>
+<font face="arial" size="-1">
+Index number of Obj node to be linked corresponding to the LOD level. If obj_lod_num = OBJ_NOLOD, this structure is not specified.
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 obj_child_link
+</td>
+<td>
+<font face="arial" size="-1">
+Index number of Object data linked to Obj. If the object contains CHILD_NUM of a child object, the number of the index number will be the same as CHILD_NUM.<p>
+If OBJ_NOCHILD is set on obj_child_num, obj_child_link is not applied.
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+NintendoExtensionBlock
+</td>
+<td>
+<font face="arial" size="-1">
+Nintendo extension block
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+UserExtensionBlock
+</td>
+<td>
+<font face="arial" size="-1">
+User extension block
+</td></tr></table>
+
+<p>
+
+<hr>
+
+<p align="right"><a href="../index.htm">
+<img src="../../../gif/index.gif"
+border="0" width="65" height="17"></a>
+&nbsp; <a href="./seg6.htm">
+<img src="../../../gif/next.gif"
+border="0" width="65" height="17"></a></p>
+
+
+
+
+</body>
+</html>
+
+

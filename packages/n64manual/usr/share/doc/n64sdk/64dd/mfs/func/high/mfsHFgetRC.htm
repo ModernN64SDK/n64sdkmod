@@ -1,0 +1,53 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>mfsHFgetRC</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font face="arial" size="-1">
+<b><font size="3">mfsHFgetRC</b></font>
+
+<hr>
+
+<b>Syntax</b>
+<font face="courier" size="2">
+<pre>s32 mfsHFgetRC(MfsFile handle)</pre></font>
+
+<p><strong>Argument</strong> 
+<dl>
+<dd>handle &nbsp; File handle</dl></dd>
+
+<p><strong>Return value</strong>
+<dl>
+<dd>Update counter value (a negative value is an error)</dl></dd>
+
+<p><strong>Function </strong>
+<dl>
+<dd>Obtains update counter value of file</dl></dd>
+
+<p><strong>Description </strong> 
+<P>
+This function obtains the update counter value of the file specified by handle.</p>
+
+<p>The update counter of the file is set to 0 when the file is created and is incremented whenever data is written to the file or the attribute is changed.  The maximum value is 255, and the value cannot be incremented above 255. The rewriting of the file by another drive can be detected by checking the update counter.</p>
+
+<p>Since the update counter only exists in the RAM area, the MFS_ERR_REFUSE error will occur if this function is used for a ROM area file.</p>
+
+<p><strong>Main errors</strong></p>
+<P>
+<table border="0" cellpadding="3" cellspacing="3">
+<tr><td><font face="arial" size="-1">MFS_ERR_NO</td>
+<td><font face="arial" size="-1">Normal termination</td></tr>
+<tr><td valign="top"><font face="arial" size="-1">MFS_ERR_FATAL</td>
+<td><font face="arial" size="-1">File open error
+<br>The file is not opened</td></tr>
+<tr><td valign="top"><font face="arial" size="-1">MFS_ERR_REFUSE</td>
+<td><font face="arial" size="-1">Illegal operation
+</td></tr></table>
+
+
+
+<hr>
+</body>
+</html>

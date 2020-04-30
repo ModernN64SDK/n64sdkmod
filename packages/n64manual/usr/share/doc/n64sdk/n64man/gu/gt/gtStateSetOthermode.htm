@@ -1,0 +1,126 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../N64man.css">
+<!-- Editor's Notes: JLR made reformating and copy edits. -->
+<title>gtStateSetOthermode</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<h1>gtStateSetOthermode</h1>
+
+<h3>Function</h3>
+
+<p>gtStateSetOthermode</p>
+
+<p><i>Composes RDP&quot;othermode&quot; command.</i></p>
+
+<h3>Syntax</h3>
+<p>
+<blockquote>
+    <pre>#include &quot;gt.h&quot;
+void gtStateSetOthermode(Gfx *om, gtStateOthermode_t mode, int data)</pre>
+</blockquote>
+</p>
+<h3>Arguments</h3>
+<p><dl>
+<dt><B>om</B></dt>
+<dd>Pointer to the othermode word. Usually a field from gtGlobState or gtState structures.</dd>
+<dt><B>mode</B></dt>
+<dd>Specifies which of the following othermodes to modify. </dd>
+<p>
+<blockquote>
+    <dt><strong>GT_CLEAR</strong></dt>
+    <dd>to clear all fields<br>
+        <br>
+        </dd>
+    <dt><strong>GT_ALPHACOMPARE</strong></dt>
+    <dd>for conditional color write on alpha compare <br>
+        <br>
+        </dd>
+    <dt><strong>GT_ZSRCSEL</strong></dt>
+    <dd>to choose primitive Z or pixel Z<br>
+        <br>
+        </dd>
+    <dt><strong>GT_RENDERMODE</strong></dt>
+    <dd>to set the render mode<br>
+        <br>
+        </dd>
+    <dt><strong>GT_ALPHADITHER</strong></dt>
+    <dd>to select the alpha dither type<br>
+        <br>
+        </dd>
+    <dt><strong>GT_RGBDITHER</strong></dt>
+    <dd>to select the color dither type<br>
+        <br>
+        </dd>
+    <dt><strong>GT_COMBKEY</strong></dt>
+    <dd>to enable combine keying<br>
+        <br>
+        </dd>
+    <dt><strong>GT_TEXTCONV</strong></dt>
+    <dd>to do texture conversion<br>
+        <br>
+        </dd>
+    <dt><strong>GT_TEXTFILT</strong></dt>
+    <dd>to set the texture filter<br>
+        <br>
+        </dd>
+    <dt><strong>GT_TEXTLUT</strong></dt>
+    <dd>to set the texture look-up table<br>
+        <br>
+        </dd>
+    <dt><strong>GT_TEXTLOD</strong></dt>
+    <dd>to enable texture level of detail<br>
+        <br>
+        </dd>
+    <dt><strong>GT_TEXTDETAIL</strong></dt>
+    <dd>to enable texture detail<br>
+        <br>
+        </dd>
+    <dt><strong>GT_TEXTPERSP</strong></dt>
+    <dd>to enable texture perspective<br>
+        <br>
+        </dd>
+    <dt><strong>GT_CYCLETYPE</strong></dt>
+    <dd>to choose the cycle type<br>
+        <br>
+        </dd>
+    <dt><strong>GT_PIPELINE</strong></dt>
+    <dd>to set the pipeline mode<br>
+        <br>
+        </dd>
+</dl>
+</blockquote>
+</p>
+
+<p><b>Note:</b>  Some of these modes are incompatible with the turbo microcode features.</p>
+
+<p><b>Data:</b> The new data to set the appropriate othermode bits. These macros are the same data macros defined in gbi.h</p>
+
+<h3>Description</h3>
+
+<p>This library function is used to assemble RDP &quot;othermode&quot; commands for <a href="../../ucode/gspTurbo3D.htm">turbo microcode</a> applications.</p>
+
+<p>The <a href="../../ucode/gspFast3D.htm">gspFast3D</a> microcode presents a more user-friendly &quot;set-and-clear&quot; interface that hides the details of the RDP &quot;othermode&quot; command from the user. This interface is not available with the <a href="../../ucode/gspTurbo3D.htm">gspTurbo3D</a> microcode, so this function is necessary to construct that RDP command. </p>
+
+<h3>Example</h3>
+
+<p>The render mode would usually be set with a macro from gbi.h by using code similar to this:</p>
+<p>
+<blockquote>
+    <pre>gDPSetRenderMode(gptr++, G_RM_OPA_SURF, G_RM_OPA_SURF2);</pre>
+</blockquote>
+</p>
+<p>To construct a similar command for the turbo object state, use this code:</p>
+<p>
+<blockquote>
+    <pre>gtStateSetOthermode(&amp;(state.sp.rdpOthermode), (G_RM_OPA_SURF | G_RM_OPA_SURF2));</pre>
+</blockquote>
+</p>
+<h3>See Also</h3>
+
+<p><a href="../../ucode/gspTurbo3D.htm">gspTurbo3D</a></p>
+</body>
+</html>

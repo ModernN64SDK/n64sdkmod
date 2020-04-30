@@ -1,0 +1,100 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<title>STEP1 [What is N64?] - Chapter 1 Introduction to the N64</title>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Ron Daring 7/20/1999, -->
+</head>
+
+<body bgcolor="#FFFFFF">
+<base target="keywords">
+
+<p><font style="font-size:12pt"><b>1-4 Memory</b></font></p>
+
+<p><b>1-4-1 RDRAM Main Memory</b></p>
+
+<p>
+Main memory is provided by two very high-speed memory chips called RDRAM (Rambus DRAM). <br>
+Each of the two RDRAM chips in the N64 provide a memory map of 2 megabytes by 9 bits for a total memory size of 4 megabytes by 9 bits. </p>
+<P>N64 has been designed so that all three processors (CPU, RSP, and RDP) can share this memory.</p>
+
+<table border="1" cellspacing="0">
+    <tr>
+        <td><img src="img00032.gif" width="360" height="240"> </td>
+    </tr>
+</table>
+
+
+<p><br><b>Figure 1-4-1 RDRAM</b></p>
+<br>
+<br>
+<P>
+Also, N64 provides a tremendous advantage in that any place in RDRAM can be used not only to store the program or data but also to be the frame buffer, the <a
+href="../../../keywords/index/data/graphics.htm#Z buffer" target="keywords">Z buffer</a>, or the audio buffer. In addition, connecting the Memory Pak to the N64 Control Deck expands RDRAM by another 4 megabytes by 9 bits.</p>
+
+<p><b>1-4-2 Memory Management</b></p>
+
+<P>
+You are free to manage memory as appropriate for each game you develop. The N64 Operating System does not force you to use any specific method.  The memory region library that dynamically allocates fixed-length memory blocks now fully supports all features of the <i>malloc</i> and <i>free</i> standard C functions.</p>
+
+<p><b>1-4-3 CPU Addressing</b></p>
+
+<p>
+Be careful when working with CPU addresses.  They are <a
+href="../../../keywords/index/data/system.htm#virtual address"
+target="keywords">virtual addresses</a>, not physical addresses.  The CPU is operated in 32-bit <a
+href="../../../keywords/index/data/system.htm#kernel"
+target="keywords">kernel</a> mode which means that each address space is 32 bits. (Note that this in no way excludes 64-bit integer arithmetic.)  In 32-bit kernel mode, memory is divided into the following five<a
+href="../../../keywords/index/data/system.htm#segment"
+target="keywords"> segments</a>:<br>
+<br>
+<br>
+<font color="#800000"><b>&LT;Start&GT;      &LT;End&GT;    &LT;ID&GT;    &LT;Use&GT;</b></font><br>
+0x00000000 - 0x7fffffff    KUSEG      TLB <a
+href="../../../keywords/index/data/system.htm#map"
+target="keywords">map</a><br>
+0x80000000 - 0x9fffffff    KSEG0      Direct map, cache<br>
+0xa0000000 - 0xbfffffff    KSEG1      Direct map, non-cache<br>
+0xc0000000 - 0xdfffffff    KSSEG      TLB mapping<br>
+0xe0000000 - 0xffffffff    KSEG3      TLB mapping<br>
+<br>
+<img src="img00033.gif" width="427" height="202"> <br>
+<p><br><b>Figure 1-4-2 CPU Addressing</b></p>
+<br>
+<br>
+<p>
+Usually, you'll want to use KSEG0 where mapping between physical and virtual addresses is simple.  In this segment, the address that masks the upper 3 bits of the virtual address becomes the physical address. Of course, you can use the other segments that use the TLB (translation lookaside buffer).</p>
+<br><br>
+<p><b>1-4-4 RDP Addressing</b></p>
+
+<p>
+The RSP uses a <a
+href="../../../keywords/index/data/system.htm#segment address"
+target="keywords">segment address</a> system to identify the RDRAM address where the display list, matrix data, vertex data, or texture data is located. This information is used by the RSP-driven graphics <a
+href="../../../keywords/index/data/system.htm#microcode"
+target="keywords">microcode</a>, which can manage up to 16 segments. <br>
+In the 32-bit address given as the segment address, the four bits from bit 31 to 28 are ignored. The four bits from bit 27 to 24 form a segment ID to identify the base address of one of the 16 segments. The 24 bits from bit 23 to 0 hold the <a
+href="../../../keywords/index/data/system.htm#segment offset"
+target="keywords">segment offset</a>. To find the physical address, simply add the segment offset to the segment base address specified by the segment ID.<br>
+The segment ID is reserved only to sue the physical address, and it is used after  making the segment base address 0.  Besides, it has a function for the clear indication to <a
+href="../../../keywords/index/data/graphics.htm#graphics binary interface"
+target="keywords">GBI</a>.<br>
+<br>
+<img src="img00034.gif" width="420" height="265"> <br>
+<br>
+<p><br><b>Figure 1-4-3 RDP Addressing</b></p>
+<br>
+<br>
+<br>
+<br>
+<p><b>1-4-5 RDP Addressing</b></font><br>
+<br>
+<p>
+The address specification system directly used in RDP is the physical address.  Because the display list is passed to RDP via RSP once, the segment address is supposed to be converted to the physical address at this time.  Therefore, the display list can use the segment address in all cases regardless if it is processed by RSP or RDP. </P>
+<br>
+<br>
+<br>
+
+</body>
+</html>

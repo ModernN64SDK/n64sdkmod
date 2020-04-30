@@ -1,0 +1,321 @@
+<HTML>
+<HEAD>
+<TITLE>Chapter 3 Binary Format</TITLE>
+</HEAD>
+<BODY LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff">
+
+<font face="arial" size="-1">
+<b><font size="3">Chapter 3 Binary Format</b></font>
+<HR>
+
+<b>3-19 LightList</b>
+<P>
+<u>2. Light Area</u>
+<p>
+The Light area stores the actual light data. The Light area is mapped as follows. 
+<p>
+
+<table border="1" cellpadding="3" cellspacing="3">
+<tr>
+<th rowspan="12"><font face="arial" size="-1">
+LightHeader
+</th>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+light_tag
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+this_light_index
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+light_header_size
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+light_size
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+light_name_index
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+light_type
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+float
+</td>
+<td><font face="arial" size="-1">
+ambient_r
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+float
+</td>
+<td><font face="arial" size="-1">
+ambient_g
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+float
+</td>
+<td><font face="arial" size="-1">
+ambient_b
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+dir_light_num
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+nintendo_extension_block_size
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+user_extension_block_size
+</td>
+</tr>
+
+<tr>
+<th rowspan="5"><font face="arial" size="-1">
+</th>
+<td colspan="2"><font face="arial" size="-1">
+<center>
+DirLight(0)
+</center>
+</td>
+</tr>
+<tr>
+<td colspan="2"><font face="arial" size="-1">
+<center>
+...
+</center>
+</td>
+</tr>
+<tr>
+<td colspan="2"><font face="arial" size="-1">
+<center>
+DirLight(dir_light_num - 1)
+</center>
+</td>
+</tr>
+<tr>
+<td colspan="2"><font face="arial" size="-1">
+<center>
+NintendoExtensionBlock
+</center>
+</td>
+</tr>
+<tr>
+<td colspan="2"><font face="arial" size="-1">
+<center>
+UserExtensionBlock
+</center>
+</td>
+</tr>
+</table>
+
+<p>
+Figure: Light Area Memory Map
+
+<p>
+<table border="1" cellpadding="3" cellspacing="3">
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 light_tag
+</td>
+<td>
+<font face="arial" size="-1">
+Tag indicating Light. Set the following tag. 
+<pre><font face="courier" size="2"><b>TAG_LIGHT&#9;0x000f0100</b></pre></font>
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 this_light_index
+</td>
+<td>
+<font face="arial" size="-1">
+Index number of this Light
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 light_header_size
+</td>
+<td>
+<font face="arial" size="-1">
+Size of this LightHeader
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 light_size
+</td>
+<td>
+<font face="arial" size="-1">
+Size of this Light
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 light_name_index
+</td>
+<td>
+<font face="arial" size="-1">
+Index number of Light name in NameList
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+<a href="../chapt5/seg1.htm#LIGHT_TYPE">u32 light_type</a>
+</td>
+<td>
+<font face="arial" size="-1">
+Specifies the type of light. Currently, the following types are defined. 
+<pre><font face="courier" size="2"><b>LIGHT_TYPE_DIRECTION&#9;0X00000000
+LIGHT_TYPE_POSITION&#9;0x00000001</b></pre></font>
+<P>
+LIGHT_TYPE_DIRECTION: Specifies a directional light.<p>
+LIGHT_TYPE_POSITION: Specifies a positional light.
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+float ambient_r
+</td>
+<td>
+<font face="arial" size="-1">
+Red component of ambient color
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+float ambient_g
+</td>
+<td>
+<font face="arial" size="-1">
+Green component of ambient color
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+float ambient_b
+</td>
+<td>
+<font face="arial" size="-1">
+Red component of ambient color
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 dir_light_num
+</td>
+<td>
+<font face="arial" size="-1">
+Number of DirLight
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 nintendo_extension_block_size
+</td>
+<td>
+<font face="arial" size="-1">
+Nintendo extension block size
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 user_extension_block_size
+</td>
+<td>
+<font face="arial" size="-1">
+User extension block size
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+<a href="./seg19-3.htm">DirLight</a>
+</td>
+<td>
+<font face="arial" size="-1">
+The DirLight area describes data related to one type of directional light. 
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+NintendoExtensionBlock
+</td>
+<td>
+<font face="arial" size="-1">
+Nintendo extension block
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+UserExtensionBlock
+</td>
+<td>
+<font face="arial" size="-1">
+User extension block
+</td>
+</tr>
+</table>
+
+<p>
+
+
+<hr>
+
+<p align="right"><a href="../index.htm">
+<img src="../../../gif/index.gif"
+border="0" width="65" height="17"></a>
+&nbsp; <a href="./seg19-3.htm">
+<img src="../../../gif/next.gif"
+border="0" width="65" height="17"></a></p>
+
+</body>
+</html>
+
+

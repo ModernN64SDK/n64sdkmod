@@ -1,0 +1,388 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 29 - n_audio Library</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. 
+             MAP- 10/26/99 edited content, updated format-->
+</head>
+
+<h1>29.3 n_audio Library</h1>
+
+<p>The following changes have been made to past audio libraries, for n_audio.  Please refer to the N64 Function Reference Manual (man pages), for a complete description of the n_audio functions.  All functions that the former audio library supports are  supported in the n_audio library.</p>
+
+<p>The n_audio library is a separate product (naudio.dev) from the N64 development environment (ultra.dev). Please be sure to install n_audio prior to using the OS. </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+
+<h2><a name="01">29.3.1  n_audio Functions Renamed from Previous Audio Libraries </a></h2>
+
+<p><a href="#t29-02">Table 29-2</a> lists the functions in the n_audio library whose names are different from before.</p>
+
+<table border=1>
+<caption><a name="t29-02"><strong>Table 29-2 n_audio Functions Renamed from the Previous Audio Library </strong></a></caption>
+  <tr><th>Audio Library Functions</th><th>n_audio Library Functions</th></tr>
+  <tr><td>alInit()</td><td>n_alInit()</td></tr>
+  <tr><td>alClose()</td><td>n_alClose()</td></tr>
+  <tr><td>alAudioFrame()</td><td>n_alAudioFrame()</td></tr>
+  <tr><td></td><td></td></tr>
+  <tr><td>alSeqNextEvent()</td><td>n_alSeqNextEvent()</td></tr>
+  <tr><td>alSeqNewMarker()</td><td>n_alSeqNewMarker()</td></tr>
+  <tr><td></td><td></td></tr>
+  <tr><td>alCSeqNew()</td><td>n_alCSeqNew()</td></tr>
+  <tr><td>alCSeqNextEvent()</td><td>n_alCSeqNextEvent()</td></tr>
+  <tr><td>alCSeqNewMarker()</td><td>n_alCSeqNewMarker()</td></tr>
+  <tr><td></td><td></td></tr>
+  <tr><td>alSeqpNew()</td><td>n_alSeqpNew()</td></tr>
+  <tr><td>alSeqpPlay()</td><td>n_alSeqpPlay()</td></tr>
+  <tr><td>alSeqpStop()</td><td>n_alSeqpStop()</td></tr>
+  <tr><td>alSeqpDelete()</td><td>n_alSeqpDelete()</td></tr>
+  <tr><td>alSeqpLoop()</td><td>n_alSeqpLoop()</td></tr>
+  <tr><td>alSeqpSendMidi()</td><td>n_alSeqpSendMidi()</td></tr>
+  <tr><td>alSeqpGetSeq()</td><td>n_alSeqpGetSeq()</td></tr>
+  <tr><td>alSeqpGetTempo()</td><td>n_alSeqpGetTempo()</td></tr>
+  <tr><td>alSeqpGetVol()</td><td>n_alSeqpGetVol()</td></tr>
+  <tr><td>alSeqpGetState()</td><td>n_alSeqpGetState()</td></tr>
+  <tr><td>alSeqpSetSeq()</td><td>n_alSeqpSetSeq()</td></tr>
+  <tr><td>alSeqpSetTempo()</td><td>n_alSeqpSetTempo()</td></tr>
+  <tr><td>alSeqpSetVol()</td><td>n_alSeqpSetVol()</td></tr>
+  <tr><td>alSeqpSetBank()</td><td>n_alSeqpSetBank()</td></tr>
+  <tr><td>alSeqpGetChlVol()</td><td>n_alSeqpGetChlVol()</td></tr>
+  <tr><td>alSeqpGetChlFXMix()</td><td>n_alSeqpGetChlFXMix()</td></tr>
+  <tr><td>alSeqpGetChlPan()</td><td>n_alSeqpGetChlPan()</td></tr>
+  <tr><td>alSeqpGetChlPriority()</td><td>n_alSeqpGetChlPriority()</td></tr>
+  <tr><td>alSeqpGetChlProgram()</td><td>n_alSeqpGetChlProgram()</td></tr>
+  <tr><td>alSeqpSetChlVol()</td><td>n_alSeqpSetChlVol()</td></tr>
+  <tr><td>alSeqpSetChlFXMix()</td><td>n_alSeqpSetChlFXMix()</td></tr>
+  <tr><td>alSeqpSetChlPan()</td><td>n_alSeqpSetChlPan()</td></tr>
+  <tr><td>alSeqpSetChlPriority()</td><td>n_alSeqpSetChlPriority()</td></tr>
+  <tr><td>alSeqpSetChlProgram()</td><td>n_alSeqpSetChlProgram()</td></tr>
+  <tr><td></td><td></td></tr>
+  <tr><td>alCSPNew()</td><td>n_alCSPNew()</td></tr>
+  <tr><td>alCSPPlay()</td><td>n_alCSPPlay()</td></tr>
+  <tr><td>alCSPStop()</td><td>n_alCSPStop()</td></tr>
+  <tr><td>alCSPDelete()</td><td>n_alCSPDelete()</td></tr>
+  <tr><td>alCSPSendMidi()</td><td>n_alCSPSendMidi()</td></tr>
+  <tr><td>alCSPGetSeq()</td><td>n_alCSPGetSeq()</td></tr>
+  <tr><td>alCSPGetTempo()</td><td>n_alCSPGetTempo()</td></tr>
+  <tr><td>alCSPGetVol()</td><td>n_alCSPGetVol()</td></tr>
+  <tr><td>alCSPGetState()</td><td>n_alCSPGetState()</td></tr>
+  <tr><td>alCSPSetSeq()</td><td>n_alCSPSetSeq()</td></tr>
+  <tr><td>alCSPSetTempo()</td><td>n_alCSPSetTempo()</td></tr>
+  <tr><td>alCSPSetVol()</td><td>n_alCSPSetVol()</td></tr>
+  <tr><td>alCSPSetBank()</td><td>n_alCSPSetBank()</td></tr>
+  <tr><td>alCSPGetChlVol()</td><td>n_alCSPGetChlVol()</td></tr>
+  <tr><td>alCSPGetChlFXMix()</td><td>n_alCSPGetChlFXMix()</td></tr>
+  <tr><td>alCSPGetChlPan()</td><td>n_alCSPGetChlPan()</td></tr>
+  <tr><td>alCSPGetChlPriority()</td><td>n_alCSPGetChlPriority()</td></tr>
+  <tr><td>alCSPGetChlProgram()</td><td>n_alCSPGetChlProgram()</td></tr>
+  <tr><td>alCSPSetChlVol()</td><td>n_alCSPSetChlVol()</td></tr>
+  <tr><td>alCSPSetChlFXMix()</td><td>n_alCSPSetChlFXMix()</td></tr>
+  <tr><td>alCSPSetChlPan()</td><td>n_alCSPSetChlPan()</td></tr>
+  <tr><td>alCSPSetChlPriority()</td><td>n_alCSPSetChlPriority()</td></tr>
+  <tr><td>alCSPSetChlProgram()</td><td>n_alCSPSetChlProgram()</td></tr>
+</table>
+
+<p>In the table above, only the function names have changed. Function arguments and specifications remain the same as in past audio libraries. </p>
+
+<p>With regard to the functions listed below, in (<a href="#t29-03">Table 29-3</a>), both the function names and arguments have changed.</p>
+
+<table border=1>
+  <caption><a name="t29-03"><strong>Table 29-3 Functions With Name and Argument Changes </strong></a></caption>
+  <tr valign="top"><th>Audio Library Functions</th><th>n_audio Library Functions</th></tr>
+  <tr valign="top"><td>alSynNew(ALSynth *, ALSynConfig *)</td><td>n_alSynNew(ALSynConfig *)</td></tr>
+  <tr valign="top"><td>alSynNew(ALSynth *, ALSynConfig *)</td><td>n_alSynDelete()</td></tr>
+  <tr valign="top"><td>alSynDelete(ALSynth *)</td><td>n_alSynAddPlayer(ALPlayer *)</td></tr>
+  <tr valign="top"><td>alSynAddPlayer(ALSynth *, ALPlayer *)</td><td>n_alSynRemovePlayer(ALPlayer *)</td></tr>
+  <tr valign="top"><td>alSynRemovePlayer(ALSynth *, ALPlayer *)</td><td>n_alSynAllocVoice(N_ALVoice *, ALVoiceConfig *)</td></tr>
+  <tr valign="top"><td>alSynAllocVoice(ALSynth *, ALVoice *, ALVoiceConfig *)</td><td>n_alSynFreeVoice(N_ALVoice *)</td></tr>
+  <tr valign="top"><td>alSynFreeVoice(ALSynth *, ALVoice *)</td><td>n_alSynAllocFX(s16, ALSynConfig *, ALHeap *)</td></tr>
+  <tr valign="top"><td>alSynAllocFX(ALSynth *, s16, ALSynConfig *, ALHeap *)</td><td>n_alSynFreeFX(ALFxRef *)</td></tr>
+  <tr valign="top"><td>alSynFreeFX(ALSynth *, ALFxRef *)</td><td>n_alSynSetVol(N_ALVoice *, s16, ALMicroTime)</td></tr>
+  <tr valign="top"><td>alSynSetVol(ALSynth *, ALVoice *, s16, ALMicroTime)</td><td>n_alSynSetPan(N_ALVoice *, u8)</td></tr>
+  <tr valign="top"><td>alSynSetPan(ALSynth *, ALVoice *, ALPan)</td><td>n_alSynSetPitch(N_ALVoice *, f32)</td></tr>
+  <tr valign="top"><td>alSynSetPitch(ALSynth *, ALVoice *, f32)</td><td>n_alSynSetPriority(N_ALVoice *, s16)</td></tr>
+  <tr valign="top"><td>alSynSetFXMix(ALSynth *, ALVoice *, u8)</td><td>n_alSynSetFXMix(N_ALVoice *, u8)</td></tr>
+  <tr valign="top"><td>alSynSetFXParam(ALSynth *, ALFxRef, s16, void *)</td><td>n_alSynSetFXParam(ALFxRef, s16, void *)</td></tr>
+  <tr valign="top"><td>alSynGetPriority(ALSynth *, ALVoice *)</td><td>n_alSynGetPriority(N_ALVoice *)</td></tr>
+  <tr valign="top"><td>alSynGetFXRef(ALSynth *, s16, s16)</td><td>n_alSynGetFXRef(s16, s16)</td></tr>
+  <tr valign="top"><td>alSynStartVoice(ALSynth *, ALVoice *, ALWaveTable  *)</td><td>n_alSynStartVoice(N_ALVoice *, ALWaveTable *)</td></tr>
+  <tr valign="top"><td>alSynStartVoiceParams(ALSynth *, ALVoice *, ALWaveTable *, f32, s16, ALPan, u8, ALMicroTime)
+</td><td>n_alSynStartVoiceParams(N_ALVoice *, ALWaveTable *, f32, s16, ALPan, u8, ALMicroTime)
+</td></tr>
+  <tr valign="top"><td>alSynStopVoice(ALSynth *, ALVoice *)</td><td>n_alSynStopVoice(N_ALVoice *)</td></tr>
+  <tr valign="top"><td></td><td></td></tr>
+  <tr valign="top"><td>alSndpNew(ALSndPlayer *, ALSndpConfig *)</td><td>n_alSndpNew(N_ALSndPlayer *, ALSndpConfig *)</td></tr>
+  <tr valign="top"><td>alSndpDelete(ALSndPlayer *)</td><td>n_alSndpDelete()</td></tr>
+  <tr valign="top"><td>alSndpAllocate(ALSndPlayer *, ALSound *)</td><td>n_alSndpAllocate(ALSound *)</td></tr>
+  <tr valign="top"><td>alSndpDeallocate(ALSndPlayer *, ALSndId)</td><td>n_alSndpDeallocate(ALSndId)</td></tr>
+  <tr valign="top"><td>alSndpGetState(ALSndPlayer *)</td><td>n_alSndpGetState()</td></tr>
+  <tr valign="top"><td>alSndpPlay(ALSndPlayer *)</td><td>n_alSndpPlay()</td></tr>
+  <tr valign="top"><td>alSndpPlayAt(ALSndPlayer *, ALMicroTime)</td><td>n_alSndpPlayAt(ALMicroTime)</td></tr>
+  <tr valign="top"><td>alSndpStop(ALSndPlayer *)</td><td>n_alSndpStop()</td></tr>
+  <tr valign="top"><td>alSndpSetVol(ALSndPlayer *, s16)</td><td>n_alSndpSetVol(s16)</td></tr>
+  <tr valign="top"><td>alSndpSetPan(ALSndPlayer *, ALPan)</td><td>n_alSndpSetPan(ALPan)</td></tr>
+  <tr valign="top"><td>alSndpSetPitch(ALSndPlayer *, f32)</td><td>n_alSndpSetPitch(f32)</td></tr>
+  <tr valign="top"><td>alSndpSetPriority(ALSndPlayer *, ALSndId, u8)</td><td>n_alSndpSetPriority(ALSndId, u8)</td></tr>
+  <tr valign="top"><td>alSndpSetFXMix(ALSndPlayer *, u8)</td><td>n_alSndpSetFXMix(u8)</td></tr>
+  <tr valign="top"><td>alSndpSetSound(ALSndPlayer *, ALSndId)</td><td>n_alSndpSetSound(ALSndId)</td></tr>
+  <tr valign="top"><td>alSndpGetSound(ALSndPlayer *)</td><td>n_alSndpGetSound()</td></tr>
+</table>
+
+<p>There is no functional change from the old audio library in the functions listed above.</p>
+
+<p>Additional functions are listed in <a href="#t29-04">Table 29-4</a>.</p>
+
+<table border=1>
+  <caption><a name="t29-04"><strong>Table 29-4 Additional Functions </strong></a></caption>
+  <tr valign="top"><th>Function Name</th><th>Function</th></tr>
+  <tr valign="top"><td>n_alSynAddSeqPlayer(ALPlayer *)</td><td>Allocate sequence player in synthesis driver</td></tr>
+  <tr valign="top"><td>n_alSynAddSndPlayer(ALPlayer *)</td><td>Allocate sound player</td></tr>
+</table>
+
+<p>The above functions are differentiated by the type of player that is allocated. Functionally, they are the same as <tt>alSynAddPlayer</tt>(), and <tt>n_alSynAddPlayer</tt>().  Please see the explanation for <tt>alSynAddPlayer</tt> for details. </p>
+
+<p>Structures in which the names have changed are shown in <a href="#t29-05">Table 29-5</a>. </p>
+
+<table border=1>
+<caption><a name="t29-05"><strong>Table 29-5 Structures Which Have Been Renamed </strong></a></caption>
+  <tr><th>Audio Library Functions</th><th>n_audio Library Functions</th></tr>
+  <tr><td>ALVoice</td><td>N_ALVoice</td></tr>
+  <tr><td>ALSynth</td><td>N_ALSynth</td></tr>
+  <tr><td>ALGlobals</td><td>N_ALGlobals</td></tr>
+  <tr><td></td><td></td></tr>
+  <tr><td>ALVoiceState</td><td>N_ALVoiceState</td></tr>
+  <tr><td>ALSeqPlayer</td><td>N_ALSeqPlayer</td></tr>
+  <tr><td>ALCSPlayer</td><td>N_ALCSPlayer</td></tr>
+  <tr><td></td><td></td></tr>
+  <tr><td>ALSoundState</td><td>N_ALSoundState</td></tr>
+  <tr><td>ALSndPlayer</td><td>N_ALSndPlayer</td></tr>
+  <tr><td>ALSndpEvent</td><td>N_ALSndpEvent</td></tr>
+</table>
+
+<p>Usually the program does not handle structure members directly.  Therefore, it is necessary for the programmer to be aware of the above changes in defining the variable.  When handling these structure members directly, refer to the header file in the n_audio library, n_libaudio.h. </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+
+<h2><a name="02">29.3.2 Creating the Application</a></h2>
+
+<p>When using the n_audio library, please include the following header files when recompiling applications that were originally created using the old audio library. </p>
+
+<blockquote>
+<table border=0>
+<tr valign="top"><td>n_libaudio.h</td><td>:</td><td>The header file for the n_audio library</td></tr>
+<tr valign="top"><td>n_libaudio_s_to_n.h</td><td>:</td><td>A macro group for converting the old audio library function to the n_audio library function</td></tr>
+</table>
+</blockquote>
+
+<p>The header files above are usually installed in the "/usr/include/PR" directory. </p>
+
+<p>Also, link in the following libraries: </p>
+
+<blockquote>
+<table border=0>
+  <tr valign="top"><td>libn_audio.a</td><td>:</td><td>The n_audio library</td></tr>
+  <tr valign="top"><td>n_aspMain.o</td><td>:</td><td>The microcode for the n_audio library</td></tr>
+</table>
+</blockquote>
+
+<p>The "libn_audio.a" library will be installed in the "/usr/lib," directory, and the microcode, "n_aspMain.o" will be installed in the "/usr/lib/PR" directory. </p>
+
+<p>Please refer to "Makefile" in the "playseq.naudio" sample program for the directory specification of the header file library, and the method of linking the library. </p>
+
+<p><strong>Note:</strong>  If you regularly use the n_audio library, please rewrite the (former) audio library function to the n_audio library function directly; do not use the header file "n_libaudio_s_to_n.h." </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+
+<h2><a name="03">29.3.3 n_audio Sample Program</a></h2>
+
+<p>To illustrate using the n_audio library, the following example shows the changes and additions needed to modify the sample program (playseq.c) so that it uses the n_audio library (playseq.naudio). The following shows places that need to be changed in the program.</p>
+
+<dl>
+  <dt><strong>File : playseq.c</strong>
+  <dd><pre>
+################ Start of sample program ##################
+
+		*
+		*
+
+##### Changes(1) begin #####
+#include &quot;n_libaudio.h&quot;
+			Include this header file for n_audio. 
+			You must include it first before including "n_libaudio_s_to_n.h."
+#include &quot;n_libaudio_s_to_n.h&quot;
+			Include this header file for n_audio.
+			This file contains a series of macros for converting the former
+			audio library functions to library functions compatible 
+			with n_audio.  
+			If you regularly use the n_audio library, please rewrite
+			each audio library function to the n_audio library function; 
+			don't include this file.
+		
+#define SAMPLES        184
+			Set the sound processing unit to 184 samples.
+#define EXTRA_SAMPLES    0
+			If sound skipping is obvious, set this value 
+			appropriately to adjust for the number surplus
+			audio samples. 	
+
+		
+##### Changes(1) end #####
+
+		*
+		*
+		*
+		*
+
+static
+void gameproc(u8 *argv)
+{
+		*
+		*
+
+    s16
+    *audioOp;
+    u8
+##### Changes(2) begin #####
+        min_only_one = 1,
+			When replay frequency is 32 KHz, 1 frame in
+			every 10 is needed to adjust for the excess 
+			audio samples.
+			
+##### Changes(2) end #####
+        *ptr,
+        *seqPtr,
+        *midiBankPtr;
+    OSMesgQueue
+        seqMessageQ;
+
+		*
+		*
+		*
+
+    /*
+     * Initialize DAC output rate
+     */
+    c.outputRate = osAiSetFrequency(OUTPUT_RATE);
+    fsize = (f32) NUM_FIELDS * c.outputRate / (f32) 60;
+    frameSize = (s32) fsize;
+			Get the required number of audio samples per frame
+    if (frameSize &lt; fsize)
+    frameSize++;
+
+#####  Changes(3) begin  #####
+    frameSize = ((frameSize / SAMPLES) + 1) * SAMPLES;
+			Recalculate the required number of samples per frame, 
+			which was just found above,to be a multiple of 184. 
+			
+    minFrameSize = frameSize - SAMPLES;
+			frameSize is a multiple of 184 and results in more than 
+			the actual required number of samples per frame. 
+			Therefore excess sample data is generated for each frame. 
+			Set minFrameSize to adjust this number of excess samples.
+
+#####  Changes(3) end  #####
+
+    /*
+     * Audio synthesizer initialization
+     */
+    c.maxVVoices = MAX_VOICES;
+    c.maxPVoices = MAX_VOICES;
+
+		*
+		*
+		*
+
+    /*
+     * Note that this must be a do-while in order for seqp's state 
+     * to get updated during the alAudioFrame processing.
+     */
+    do {
+        frame++; 
+
+        /*
+         * Where the task list goes in DRAM
+         */
+        tlistp = tlist[curBuf];
+        cmdlp = cmdList[curBuf];       
+
+        /*
+         * Where the audio goes in DRAM
+         */
+        buf = curAudioBuf % 3;
+        audioOp = (s16 *) osVirtualToPhysical(audioBuffer[buf]);
+
+#####  Changes(4) begin  #####
+        if((samplesLeft &gt; (SAMPLES + EXTRA_SAMPLES)) &amp; min_only_one)
+			If the number of excess samples at the time of retrace is more                                                                                                                         
+                            than 184, you make this frame the "adjustment frame" to adjust	
+			for the excess. In the adjustment frame, the number of samples
+			equal to minFrameSize is generated. Use min_only_one to ensure
+			that the adjustment frame is done only once. When sound
+			break-up is severe, the number of excess samples may be zero.
+			If that is the case, set EXTRA_SAMPLES to an appropriate value
+			to adjust the excess sample data. Audio replay cannot be done
+			properly if the value of EXTRA_SAMPLES is too large. The
+			appropriate value depends on the application.
+				
+        {
+            audioSamples[buf] = minFrameSize;
+            min_only_one = 0;
+        }
+        else if(samplesLeft > (SAMPLES + EXTRA_SAMPLES))
+			Normal frames are processed here. In the case of this sample program,
+			it is possible for the frame to appear consecutively
+			putting in a normal frame under the conditions stated above. In
+			that case, the value of samplesLeft becomes zero and the sound
+			breaks up. By adding this conditional decision, this sample
+			program prevents sound from breaking up. 
+						
+            audioSamples[buf] = frameSize;
+        else
+            Normal frames are here.
+        {
+            audioSamples[buf] = frameSize;
+            min_only_one = 1;
+        }
+#####  Changes(4) end  #####
+
+        /*
+         * Call the frame handler
+         */
+        cmdlp=n_alAudioFrame(cmdlp,&amp;clcount,audioOp, audioSamples[buf]);
+
+        /*
+         * Build the audio task
+         */       
+        tlistp-&gt;t.type = M_AUDTASK;
+        tlistp-&gt;t.flags = 0x0;
+        tlistp-&gt;t.ucode_boot = (u64 *) rspbootTextStart;
+        tlistp-&gt;t.ucode_boot_size = ((s32)rspbootTextEnd - (s32)rspbootTextStart);
+#####  Changes(5) begin  #####
+        tlistp-&gt;t.ucode = (u64 *) n_aspMainTextStart; 
+        tlistp-&gt;t.ucode_data = (u64 *) n_aspMainDataStart;
+			To use the N_Audio microcode, these two lines must be rewritten to n_aspMain.
+#####  Changes(5) end  #####
+        tlistp-&gt;t.ucode_size = 4096;
+        tlistp-&gt;t.ucode_data_size = SP_UCODE_DATA_SIZE; 
+        tlistp-&gt;t.data_ptr = (u64 *) cmdList[curBuf];
+        tlistp-&gt;t.data_size = (cmdlp - cmdList[curBuf]) * sizeof(Acmd);
+
+		*
+		*
+	
+    } while (seqp-&gt;state != AL_STOPPED);
+
+		*
+		*
+		*
+
+}
+
+################## End of sample program ##################
+      </pre>
+</dl>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+</body>
+</html>

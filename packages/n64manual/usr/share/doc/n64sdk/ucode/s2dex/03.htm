@@ -1,0 +1,277 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<title>Sprit Microcode S2DEX document</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<FONT FACE="Arial" SIZE="-1">
+
+<h2>3. Compatibility with F3DEX</h2>
+
+<p>S2DEX GBIs are derived from F3DEX.  Because of this, they are not compatible with Fast3D GBIs.  When using 2SDEX, as with F3DEX, it is necessary to define F3DEX_GBI before including ultra64.h.</p>
+
+<p>In addition, in order to use S2DEX GBIs, it is necessary to include the header file &lt;PR/gs2dex.h&gt;. Insert the include specification after the specification to include &lt;ultra64.h&gt;.</p>
+
+<p>At this point, the S2DEX will be explained in contrast with F3DEX.  In general, GBIs related to 3D primitive operations, 4x4 matrix operations, and write definitions may be considered as not being supported by S2DEX.</p>
+
+<p>Only gSP* and gDP* will be mentioned in the following, but the same is true for gsSP* and gsDP*.</p>
+
+<p align="right"><a href="index.htm"><img
+src="../../gif/index.gif" alt="[UP]" border="0"
+width="65" height="17"></a></p>
+
+<hr>
+
+<h3><a name="01">3.1 GBIs Supported by Both S2DEX and F3DEX
+GBIs</a></h3>
+
+<hr>
+
+<table border="0" cellpadding="10" cols="3">
+    <tr>
+        <td valign="top" nowrap><FONT SIZE="-1">DL Processing Control</FONT></td>
+        <td valign="top" nowrap><FONT SIZE="-1">gSPDisplayList(*)<br>
+        gSPEndDisplayList</FONT></td>
+        <td valign="top" nowrap><FONT SIZE="-1">gSPBranchList</FONT></td>
+    </tr>
+    <tr>
+        <td valign="top" nowrap><FONT SIZE="-1">Set Segment</FONT></td>
+        <td valign="top" nowrap><FONT SIZE="-1">gSPSegment(*)</FONT></td>
+        <td valign="top" nowrap><FONT SIZE="-1">&nbsp;</FONT></td>
+    </tr>
+    <tr>
+        <td valign="top" nowrap><FONT SIZE="-1">Load Microcode</FONT></td>
+        <td valign="top" nowrap><FONT SIZE="-1">gSPLoadUcode*</FONT></td>
+        <td valign="top" nowrap><FONT SIZE="-1">&nbsp;</FONT></td>
+    </tr>
+    <tr>
+        <td valign="top" nowrap><FONT SIZE="-1">Scissoring</FONT></td>
+        <td valign="top" nowrap><FONT SIZE="-1">gDPSetScissor</FONT></td>
+        <td valign="top" nowrap><FONT SIZE="-1">gDPSetScissorFrac</FONT></td>
+    </tr>
+    <tr>
+        <td valign="top" nowrap><FONT SIZE="-1">RDP Mode Setting</FONT></td>
+        <td valign="top" nowrap><FONT SIZE="-1">gSPSetOtherMode<br>
+        gDPSetTexturePersp<br>
+        gDPSetTextureLOD<br>
+        gDPSetTextureFilter<br>
+        gDPSetCombineKey<br>
+        gDPSetAlphaDither<br>
+        gDPSetAlphaCompare<br>
+        gDPSetRenderMode<br>
+        gDPSetDepthImage<br>
+        gDPSetCombineMode </FONT></td>
+        <td valign="top" nowrap><FONT SIZE="-1">gDPSetCycleType<br>
+        gDPSetTextureDetail<br>
+        gDPSetTextureLUT<br>
+        gDPSetTextureConvert<br>
+        gDPSetColorDither<br>
+        gDPSetBlendMask<br>
+        gDPSetDepthSource<br>
+        gDPSetColorImage<br>
+        gDPSetTextureImage </FONT></td>
+    </tr>
+    <tr>
+        <td valign="top" nowrap><FONT SIZE="-1">Set Color Values, etc.</FONT></td>
+        <td valign="top" nowrap><FONT SIZE="-1">gDPSetEnvColor<br>
+        gDPSetFogColor<br>
+        gDPSetPrimColor<br>
+        gDPSetConvert<br>
+        gDPSetKeyGB </FONT></td>
+        <td valign="top" nowrap><FONT SIZE="-1">gDPSetBlendColor<br>
+        gDPSetFillColor<br>
+        gDPSetPrimDepth<br>
+        gDPSetKeyR </FONT></td>
+    </tr>
+    <tr>
+        <td valign="top" nowrap><FONT SIZE="-1">Load to MEM</FONT></td>
+        <td valign="top" nowrap><FONT SIZE="-1">gDPSetTileSize<br>
+        gDPSetTile<br>
+        gDPLoadMultiBlock*<br>
+        gDPLoadMultiTile*<br>
+        gDPLoadTLUT_pal256</FONT></td>
+        <td valign="top" nowrap><FONT SIZE="-1">gDPLoadTile<br>
+        gDPLoadTextureBlock*<br>
+        gDPLoadTextureTile*<br>
+        gDPLoadTLUT_pal16</FONT></td>
+    </tr>
+    <tr>
+        <td valign="top" nowrap><FONT SIZE="-1">Primitives</FONT></td>
+        <td valign="top" nowrap><FONT SIZE="-1">gDPFillRectangle<br>
+        gSPTextureRectangle<br>
+        gsSPTextureRectangleFlip</FONT></td>
+        <td valign="top" nowrap><FONT SIZE="-1">gDPScisFillRectangle<br>
+        gSPScisTextureRectangle</FONT></td>
+    </tr>
+    <tr>
+        <td valign="top" nowrap><FONT SIZE="-1">Sync Processing</FONT></td>
+        <td valign="top" nowrap><FONT SIZE="-1">gDPFullSync<br>
+        gDPPipeSync</FONT></td>
+        <td valign="top" nowrap><FONT SIZE="-1">gDPTileSync<br>
+        gDPLoadSync</FONT></td>
+    </tr>
+    <tr>
+        <td valign="top" nowrap><FONT SIZE="-1">NOOP</FONT></td>
+        <td valign="top" nowrap><FONT SIZE="-1">gSPNoOp<br>
+        gDPNoOpTag</FONT></td>
+        <td valign="top" nowrap><FONT SIZE="-1">gDPNoOp</FONT></td>
+    </tr>
+</table>
+
+<p><br>
+</p>
+
+<hr>
+
+<p><em>(*) </em>In S2DEX, as in F3DEX, 16 segments can be specified by gSPSegment, and the number of DL links which can be specified by gSPDisplayList is 18.</p>
+
+<p align="right"><a href="index.htm"><img
+src="../../gif/index.gif" alt="[UP]" border="0"
+width="65" height="17"></a></p>
+
+<hr>
+
+<h3><a name="02">3.2 GBIs Not Supported by S2DEX</a></h3>
+
+<hr>
+
+<table border="0" cellpadding="10" cols="3">
+    <tr>
+        <td valign="top" nowrap><FONT SIZE="-1">Field Settings</FONT></td>
+        <td valign="top" nowrap><FONT SIZE="-1">gSPViewport<br>
+        gSPPerspNormalize</FONT></td>
+        <td valign="top" nowrap><FONT SIZE="-1">gSPClipRatio</FONT></td>
+    </tr>
+    <tr>
+        <td valign="top" nowrap><FONT SIZE="-1">Matrix Operations</FONT></td>
+        <td valign="top" nowrap><FONT SIZE="-1">gSPMatrix<br>
+        gSPInsertMatrix </FONT></td>
+        <td valign="top" nowrap><FONT SIZE="-1">gSPPopMatrix<br>
+        gSPForceMatrix</FONT></td>
+    </tr>
+    <tr>
+        <td valign="top" nowrap><FONT SIZE="-1">Vertex Operations</FONT></td>
+        <td valign="top" nowrap><FONT SIZE="-1">gSPVertex</FONT></td>
+        <td valign="top" nowrap><FONT SIZE="-1">gSPModifyVertex</FONT></td>
+    </tr>
+    <tr>
+        <td valign="top" nowrap><FONT SIZE="-1">Conditional Branching </FONT></td>
+        <td valign="top" nowrap><FONT SIZE="-1">gSPCullDisplayList</FONT></td>
+        <td valign="top" nowrap><FONT SIZE="-1">gSPBranchLessZ*</FONT></td>
+    </tr>
+    <tr>
+        <td valign="top" nowrap><FONT SIZE="-1">Set Polygon Type</FONT></td>
+        <td valign="top" nowrap><FONT SIZE="-1">gSPSetGeometryMode<br>
+        gSPTexture</FONT></td>
+        <td valign="top" nowrap><FONT SIZE="-1">gSPClearGeometryMode<br>
+        gSPTextureL</FONT></td>
+    </tr>
+    <tr>
+        <td valign="top" nowrap><FONT SIZE="-1">Primitives</FONT></td>
+        <td valign="top" nowrap><FONT SIZE="-1">gSP1Triangle<br>
+        gSP1Quadrangle<br>
+        gSPLineW3D</FONT></td>
+        <td valign="top" nowrap><FONT SIZE="-1">gSP2Triangles<br>
+        gSPLine3D</FONT></td>
+    </tr>
+    <tr>
+        <td valign="top" nowrap><FONT SIZE="-1">Lighting</FONT></td>
+        <td valign="top" nowrap><FONT SIZE="-1">gSPNumLights<br>
+        gSPLightColor<br>
+        gSPLookAt*<br>
+        gDPSetHilite2Tile</FONT></td>
+        <td valign="top" nowrap><FONT SIZE="-1">gSPLight<br>
+        gSPSetLights[0-7]<br>
+        gDPSetHilite1Tile</FONT></td>
+    </tr>
+    <tr>
+        <td valign="top" nowrap><FONT SIZE="-1">Fog</FONT></td>
+        <td valign="top" nowrap><FONT SIZE="-1">gSPFogFactor</FONT></td>
+        <td valign="top" nowrap><FONT SIZE="-1">gSPFogPosition</FONT></td>
+    </tr>
+    <tr>
+        <td valign="top" nowrap><FONT SIZE="-1">For oId Sprite2D</FONT></td>
+        <td valign="top" nowrap><FONT SIZE="-1">gSPSprite2DBase<br>
+        gSPSprite2DDraw</FONT></td>
+        <td valign="top" nowrap><FONT SIZE="-1">gSPSprite2DScaleFlip</FONT></td>
+    </tr>
+</table>
+
+<p align="right"><a href="index.htm"><img
+src="../../gif/index.gif" alt="[UP]" border="0"
+width="65" height="17"></a></p>
+
+<hr>
+
+<h3><a name="03">3.3 Newly Added GBIs</a></h3>
+
+<hr>
+
+<p><br>
+</p>
+
+<table border="0" cellpadding="10" cols="3">
+    <tr>
+        <td valign="top" nowrap><FONT SIZE="-1">Render BG </FONT></td>
+        <td valign="top" nowrap><FONT SIZE="-1">gSPBgRectCopy</FONT></td>
+        <td valign="top" nowrap><FONT SIZE="-1">gSPBgRect1Cyc</FONT></td>
+    </tr>
+    <tr>
+        <td valign="top" nowrap><FONT SIZE="-1">Render Sprite</FONT></td>
+        <td valign="top" nowrap><FONT SIZE="-1">gSPObjRectangle<br>
+        gSPObjSprite</FONT></td>
+        <td valign="top" nowrap><FONT SIZE="-1">gSPObjRectangleR</FONT></td>
+    </tr>
+    <tr>
+        <td valign="top" nowrap><FONT SIZE="-1">2D Matrix Operations</FONT></td>
+        <td valign="top" nowrap><FONT SIZE="-1">gSPObjMatrix</FONT></td>
+        <td valign="top" nowrap><FONT SIZE="-1">gSPObjSubMatrix</FONT></td>
+    </tr>
+    <tr>
+        <td valign="top" nowrap><FONT SIZE="-1">Set Rendering Mode</FONT></td>
+        <td valign="top" nowrap><FONT SIZE="-1">gSPObjRenderMode</FONT></td>
+        <td valign="top" nowrap>&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" nowrap><FONT SIZE="-1">Load Texture Processing</FONT></td>
+        <td valign="top" nowrap><FONT SIZE="-1">gSPObjLoadTxtr</FONT></td>
+        <td valign="top" nowrap>&nbsp;</td>
+    </tr>
+    <tr>
+        <td valign="top" nowrap><FONT SIZE="-1">Complex Commands</FONT></td>
+        <td valign="top" nowrap><FONT SIZE="-1">gSPObjLoadTxRect<br>
+        gSPObjLoadTxSprite</FONT></td>
+        <td valign="top" nowrap><FONT SIZE="-1">gSPObjLoadTxRectR</FONT></td>
+    </tr>
+    <tr>
+        <td valign="top" nowrap><FONT SIZE="-1">Conditional Branching</FONT></td>
+        <td valign="top" nowrap><FONT SIZE="-1">gSPSelectDL</FONT></td>
+        <td valign="top" nowrap><FONT SIZE="-1">gSPSelectBranchDL</FONT></td>
+    </tr>
+</table>
+
+<p align="right"><a href="index.htm"><img
+src="../../gif/index.gif" alt="[UP]" border="0"
+width="65" height="17"></a></p>
+
+<hr>
+
+<h3><a name="04">3.4 Precautions Regarding GBIs</a></h3>
+
+<p><strong>* About overwriting the mode with OtherMode
+</strong></p>
+
+<p>When changing the mode in F3DEX using g[s]SPSetOtherMode, no more than a maximum for 31 bits could be set with a single g[s]SPSetOtherMode command.  With S2DEX, this has been corrected so that 32 bits worth of parameters can be changed with one command.</p>
+
+<p>In addition, normal operation could not be performed in F3DEX if the g[s]DPSetOtherMode command was mixed up with a g*SPSetOtherMode type command when overwriting the mode.  (Normal settings cannot be made with g*SPSetOtherMode.)  This has been corrected in S2DEX so that these can coexist.
+</p>
+
+<p align="right"><a href="index.htm"><img
+src="../../gif/index.gif" alt="[UP]" border="0"
+width="65" height="17"></a></p>
+
+<hr>
+</body>
+</html>

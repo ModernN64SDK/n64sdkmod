@@ -1,0 +1,74 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.>
+<TITLE>guS2DEmuSetScissor</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>guS2DEmuSetScissor<FONT size="+0"> Function</FONT></H1>
+
+<p><h3>Function</h3></p>
+
+<p>guS2DEmuSetScissor</p>
+<P>
+<i>Emulates gDPSetScissor</i>
+</P>
+<H3>Syntax</H3>
+<p>
+<PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gs2dex.htm">gs2dex.h</A> */
+void guS2DEmuSetScissor(u32 ulx, u32 uly, u32 lrx, u32 lry, u8 type);</CODE></PRE></p>
+
+<H3>Arguments</H3>
+<p><DL>
+  <DT><B>ulx</B>
+  <DD>the upper-left X coordinate of scissor box (u10.0, 0 ~ 1023)
+  <DT><B>uly</B>
+  <DD>the upper-left Y coordinate of scissor box (u10.0, 0 ~ 1023)
+  <DT><B>lrx</B>
+  <DD>the lower-right X coordinate of scissor box (u10.0, 0 ~ 1023)
+  <DT><B>lry</B>
+  <DD>the lower-right Y coordinate of scissor box (u10.0, 0 ~ 1023)
+  <DT><B>type</B>
+  <DD>types of texture filter
+  <DD><B>TRUE</B> (Bilinear filtering)
+  <DD><B>FALSE</B> (PointSample)
+</DL></p>
+
+<H3>Return Value</H3>
+<P>
+None.
+</P>
+<H3>Description</H3>
+<P>
+This function sets the scissoring parameters and texture filter referenced by the <A HREF="guS2DEmuBgRect1Cyc.htm">guS2DEmuBgRect1Cyc</A> function. Usually, the range of the scissor box set by <A HREF="../gdp/gDPSetScissor.htm">gDPSetScissor</A> is handled by this function as parameters. For details on scissoring, see <A HREF="../gdp/gDPSetScissor.htm">gDPSetScissor</A>. See also N64 Programming Manual 13.7.5.3 "Bilinear filtering and PointSample" on texture filter. 
+<DL>
+  <DT>* About <B>type</B> argument
+  <DL>
+  <DT><B>TRUE</B>
+  <DD>performs Bilerp interpolation with four texels that surrounds the pixels on screen.
+  <DT><B>FALSE</B>
+  <DD>	selects the closest texel to the pixels on screen.
+  </DL>
+</DL>
+</P>
+<H3>Note</H3>
+<P>
+This function need only be called once before <A HREF="guS2DEmuBgRect1Cyc.htm">guS2DEmuBgRect1Cyc</A> is called. As long as there is no change in the scissor box and texture filter, it need only be called once during game initialization. In other words, you don't need to call it every time a frame is drawn.
+</P>
+<H3>Comment</H3>
+<P>
+The initial values for <B>ulx</B>, <B>uly</B>, <B>lrx</B>, <B>lry</B>, and <B>type</B> are 0, 0, 320, 240, and FALSE respectively, which are settings that draw to a 320x240 pixel frame buffer with PointSample.
+</P>
+<H3>See Also</H3>
+<P>
+<A HREF="guS2DEmuBgRect1Cyc.htm">guS2DEmuBgRect1Cyc</A>, <A HREF="../gdp/gDPSetScissor.htm">gDPSetScissor</A>, and <A HREF="../gdp/gDPSetTextureFilter.htm">gDPSetTextureFilter</A>
+</P>
+<H3>Revision History</H3>
+<P>
+03/01/99  Completely revised.
+</P>
+</BODY>
+</HTML>

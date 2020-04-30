@@ -1,0 +1,59 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Graphics-Chapter 7  Z Buffering</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/23/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<BR>
+<font style="font-size:12pt"><B>7.4  Depth Source</B></FONT>
+<BR>
+<P>
+  There is an internal color register in the RDP called the primitive color.  A similar thing can be done with the Z value, setting a uniform depth for the entire primitive.   This value is called the primitive depth.  By using the primitive depth, you can render texture rectangles at a specific depth.<br><br>
+
+    The primitive depth is set using the gDPSetPrimDepth command, which takes the Z value and the DeltaZ value as arguments. 
+</P>
+<TABLE BORDER=0><TR><TD ROWSPAN=5>&nbsp;</TD><TD>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD COLSPAN=4 NOWRAP ALIGN=LEFT VALIGN=MIDDLE>gDPSetPrimDepth(Gfx *gdl, s32 z, s32 dz)</TD>
+</TR><TR>
+	<TD ROWSPAN=3>&nbsp;</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE>gdl</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE>--</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE>Display list pointer </TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE>z</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE>--</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE>Z value </TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE>dz</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE>--</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE>DeltaZ value</TD>
+<TR></TABLE>
+</TD></TR></TABLE>
+<P>
+Use the gDPSetDepthSource command to update the Z value input source for Z values computed during rendering.  When you specify G_ZS_PIXEL as the source in this command, the Z value of the polygon is utilized.  When you specify G_ZS_PRIM, the primitive depth is utilized. 
+</P>
+<TABLE BORDER=0><TR><TD ROWSPAN=5>&nbsp;</TD><TD>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD COLSPAN=4 NOWRAP ALIGN=LEFT VALIGN=MIDDLE>gDPSetDepthSource(Gfx *gdl, u32 source)</TD>
+</TR><TR>
+	<TD ROWSPAN=4>&nbsp;</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE>gdl</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE>--</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE>Display list pointer </TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE>source</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE>--</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE>Depth source value</TD>
+</TR><TR>
+	<TD ROWSPAN=2 COLSPAN=2>&nbsp;</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE>G_ZS_PIXEL (Use each pixel's Z value and DeltaZ value)</TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE>G_ZS_PRIM (Use primitive depth register's Z value and DeltaZ value)</TD>
+	</TR></TABLE>
+</TD></TR></TABLE>
+</BODY>
+</HTML>

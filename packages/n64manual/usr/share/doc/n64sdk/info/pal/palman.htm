@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<TITLE>Using with PAL</TITLE>
+<!-- Editor Notes: Ron Daring 7/15/1999, -->
+</HEAD>
+
+<BODY bgcolor="#FFFFFF">
+<font face="arial" size="-1">
+
+<TABLE border="1" cellspacing="1" cellpadding="6" bgcolor="#FFFF00">
+  <TR>
+    <TD><FONT face="Arial" size="4" color="#000000"><STRONG>Using with PAL</STRONG></FONT></TD></TR>
+</TABLE>
+
+<H3>PAL Development Techniques</H3>
+<H4><A name="1">1. Operating the Emulator Board in a PAL Environment</H4>
+<P>
+This is for those of you doing development with an INDY+ Emulator Board. Those of you using the PARTNER-N64 may proceed to <A href="#2">2</A>, below.
+</P>
+
+<P></P>
+<P>
+When the OS is booted up, information is obtained from the Plf and the N64 control deck is identified as being a NTSC version or PAL version. That information is set in the variable osTvType. Based on this variable, the VI manager sets various variables that are necessary.
+<BR>
+</P>
+<P>
+However, since there are only NTSC versions of the Plf which is installed on the INDY emulator board (called the development Plf), it must be set as the NTSC version. This is the same for an emulator board which has been modified to a PAL version (by replacing the crystal). Consequently, problems arose in that, when a PAL version game was created, it would operate normally on an actual machine, but the music would not be normal on the emulator board. In order to avoid this problem, forcibly set the osTvType variable to OS_TV_PAL as shown below. 
+</P>
+<DL>
+  <DD><FONT size="2">osTvType = OS_TV_PAL; /* Defined by os.h. Only the PAL version is necessary*/
+<BR>
+osInitialize()<BR>
+</FONT>
+</DL>
+<H4><A name="2">2. Actual Programming for PAL</H4>
+<P>
+Since the horizontal resolution of the PAL format (50 Hz) is higher than that of NTSC format (60 Hz), vertical black bands will appear in the display when it is simply transplanted, creating a horizontally long screen. Therefore, the screen must be widened to a full screen width, but there are several methods for this.
+</P>
+<P>
+With OS2.0I Patch 1 and later, a new FPAL mode has been added. While it may be easy to make such an assumption, it is not a new television format (it is not something that can be put together with the NTSC/PAL/MPAL types). FPAL is an acronym for &QUOT;Full-screen PAL&QUOT; and is simply a library for achieving full-screen display on a PAL format television. In other words, this FPAL basically can be used when converting a NTSC game to PAL. </P>
+<P>
+To use this FPAL, you must first set the mode to FPAL with the osViSetMode function. 
+</P>
+<DL>
+  <DD>osViSetMode(&amp;osViModeTable[OS_VI_FPAL_LAN1]);
+</DL>
+<P>
+or
+</P>
+<DL>
+  <DD>osViSetMode(&amp;osViModeFpalLpn1);
+</DL>
+<P>
+In the FPAL mode, 48 more lines than the conventional PAL mode are added to the number of scan lines according to the difference in resolution between PAL and NTSC. However, since only a 320x240 frame buffer is prepared with NTSC, when an FPAL 320x288 display is performed, the area at the bottom of the screen not considered in NTSC is displayed. </P>
+<P>
+There are 3 ways to avoid this, as noted below.
+</P>
+<P>
+<STRONG>(1) Enlarge the Frame Buffer Size</STRONG>
+</P>
+<P>
+This is simply a method to increase the resolution, and is the default state of the FPAL mode. By, in the case of low resolution,
+preparing a frame buffer (320x288) in which 48 lines are added to the standard frame buffer or, in the case of high resolution,
+preparing a frame buffer (640x576) in which 96 lines are added, rendering can be performed over the entire screen area. With the changes in frame buffer size, it becomes necessary to change the program and graphics data, which processing becomes a burden.</P>
+<P>
+<STRONG>(2) Use osViSetYScale</STRONG>
+</P>
+<P>
+By expanding a 320x240 screen in the vertical direction, i.e. by 240 lines from the top (valid with NTSC), using osViSetYScale,
+full-screen display can be easily accomplished. In the case of the FPAL mode, by calling </P>
+<DL>
+  <DD>osViSetYScale(0.833);
+</DL>
+<P>
+after executing osViSetMode, display can be done over nearly the entire area. In this case, there is no need to change the frame buffer size, and conversion from NTSC is easy. The fault of this method is that the screen is generally out of focus. Since it is expanded vertically, there is also a phenomenon in which each individual pixel is no longer square. Now, while this is mentioned in the precautions below, when using osViSetYScale, it is necessary to return YScale to 1 when a preNMI event occurs or when osViBlack(1) is executed.
+</P>
+<H4>(Conclusion) Ultimately, which one should I use?</H4>
+<P>
+You can see that there are several methods, but as for which is the recommended one... 
+</P>
+<P>
+-(1) is recommended when there is latitude to modify the program in the transplant from NTSC<BR>
+-(2) is recommended for a simple transplant from NTSC to PAL<BR>
+-(1) is recommended if PAL is the original format
+</P>
+<P>
+But if you are converting to PAL, it is recommended that you understand how (2) works.
+</P>
+<HR>
+<P>
+[<A href="palindex.htm">Return to PAL Development index</A>]
+</P>
+</BODY>
+</HTML>

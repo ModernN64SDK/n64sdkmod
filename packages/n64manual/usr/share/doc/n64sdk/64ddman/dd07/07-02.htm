@@ -1,0 +1,384 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<TITLE>07-02</TITLE>
+</HEAD>
+
+<BODY bgcolor="#FFFFFF">
+<font face="arial" size="-1">
+<P>
+<A name="top">
+<STRONG>7.2 Asynchronous Functions </STRONG></a>
+<HR>
+
+<P>
+Asynchronous functions are so named because their actual processing is performed by a different thread (leo manager) than that which called the function, and it is thus performed in asynchrony with the calling thread.  To notify the calling function when processing is completed, a message queue called the post queue is usually specified. When a function is called, this post queue notifies the calling function of termination.  Specific asynchronous functions are as follows.
+
+<UL>
+  <LI><A href="../../n64man/64dd/LeoSpdlMotor.htm">LeoSpdlMotor</A>(<A href="#01">section 7.2.1</A>)
+  <LI><A href="../../n64man/64dd/LeoReadWrite.htm">LeoReadWrite</A>(<A href="#02">section 7.2.2</A>)
+  <LI><A href="../../n64man/64dd/LeoSeek.htm">LeoSeek</A>(<A href="#03">section 7.2.3</A>)
+  <LI><A href="../../n64man/64dd/LeoReadDiskID.htm">LeoReadDiskID</A>(<A href="#04">section 7.2.4</A>)
+  <LI><A href="../../n64man/64dd/LeoReadRTC.htm">LeoReadRTC</A>(<A href="#05">section 7.2.5</A>)
+  <LI><A href="../../n64man/64dd/LeoReadRTC.htm">LeoSetRTC</A>(<A href="#05">section 7.2.5</A>)
+</UL>
+
+<P>
+The following syntax is generally used for asynchronous functions.
+<P>
+<TABLE border="1" cellpadding="3" cellspacing="3">
+  <TR>
+    <TD><FONT face="arial" size="-1"><STRONG>Calling asynchronous functions</STRONG>
+    <P>
+<FONT face="Courier"><STRONG>#include &lt;PR/leo.h&gt;</STRONG></FONT>
+    </P>
+    <P>
+<FONT face="Courier"><STRONG>s32 Leo******( LEOCmd *</STRONG><STRONG><U>cmdBlock</U></STRONG><STRONG>,
+***, ...,</STRONG></FONT><FONT face="Courier"><STRONG>OSMesgQueue
+*</STRONG><STRONG><U>mq</U></STRONG><STRONG>);</STRONG></FONT>
+    </P>
+    <TABLE border="0">
+      <TR>
+        <TD><FONT face="Courier"><U>cmdBlock</U></FONT></TD>
+        <TD><FONT face="arial" size="-1"> &nbsp; pointer to the command block</TD></TR>
+      <TR>
+        <TD><FONT face="Courier"><U>mq</U></FONT></TD>
+        <TD><FONT face="arial" size="-1"> &nbsp; post queue </TD></TR>
+    </TABLE>
+
+</TD></TR>
+</TABLE>
+
+<P>
+A value of 0 is returned if the leo manager is running and -1 is returned if it is not running.  Consequently, checking the return value is usually not necessary.
+</P>
+<P>
+<FONT face="Courier"><U>cmdBlock</U></FONT> allows a function to send commands to the <FONT face="Century">leo</FONT> manager.  The members of this structure are assigned values by each function as appropriate.  Thus, the programmer must simply create the variables and pass their addresses to the functions.  For <FONT face="Courier"><U>mq</U></FONT>, a message queue can both be specified or not specified, and the operation of the function differs with each case. <BR>
+</P>
+<TABLE border="1">
+  <TR>
+    <TD><FONT face="arial" size="-1"><STRONG>Program with the message queue for </STRONG></font><FONT face="Courier"><STRONG><U>mq</U></STRONG></FONT> <FONT face="ARIAL" size="-1"><STRONG>specified</STRONG></FONT></STRONG></FONT></strong>
+    <P>
+<FONT face="Courier"><STRONG>LEOCmd cmdBlock;</STRONG></FONT><STRONG> </STRONG>
+    </P>
+    <P>
+<FONT face="Courier"><STRONG>u32 error;</STRONG></FONT>
+    <P>
+<FONT face="Courier"><STRONG>.....</STRONG>
+       <P>
+<FONT face="Courier"><STRONG>Leo******(&amp;cmdBlock, ***, ..., &amp;diskQ);</STRONG></FONT>
+    <P>
+<FONT face="Courier"><STRONG>osRecvMesg(&amp;diskQ, (OSMesg *)&amp;error,
+OS_MESG_BLOCK);</STRONG></FONT>
+       <P>
+<FONT face="Courier"><STRONG>.....</STRONG></FONT>
+</TD></TR>
+</TABLE>
+
+<P>
+In this case, the message is placed in the specified queue <FONT face="Century">(</FONT><FONT face="Courier">diskQ</FONT> in above example<FONT face="Century">)</FONT> if the function processing terminates.  The content of the message is an error code.  Before the function is called, the message queue must be initialized using the <FONT face="Century">osCreateMesgQueue()</FONT> function.
+</P>
+<TABLE border="1">
+  <TR>
+    <TD><FONT face="arial" size="-1"><STRONG>Program with the message queue for </STRONG><FONT face="Courier"><STRONG><U>mq</U></STRONG></FONT> <font face="arial" size="-1"><STRONG>not specified</STRONG></FONT>
+    <P>
+<FONT face="Courier"><STRONG>volatile LEOCmd cmdBlock;</STRONG></FONT>
+    <P>
+<FONT face="Courier"><STRONG>u32 error;</STRONG>
+    <P>
+<FONT face="Courier"><STRONG>.....</STRONG>
+    <P>
+<FONT face="Courier"><STRONG>Leo******(&amp;cmdBlock, ***, ..., (OSMesgQ
+*)NULL);</STRONG>
+    <P>
+<FONT face="Courier"><STRONG>while(cmdBlock.header.status == LEO_STATUS_BUSY)</STRONG>
+  
+    <P>
+<FONT face="Courier"><STRONG>;</STRONG></FONT>
+    <P>
+<FONT face="Courier"><STRONG>error = GET_ERROR(cmdBlock);</STRONG></FONT>
+    <P>
+<FONT face="Courier"><STRONG>.....</STRONG></FONT>
+</TD></TR>
+</TABLE>
+
+<P>
+This case is very inefficient because the thread that calls this function remains in the executable state until function processing ends, and threads with a lower priority sequence than this thread are not passed <FONT face="Century">CPU</FONT> execution rights.  The error code in the command block must be accessed directly, but this can be done easily using <FONT face="Courier">GET_ERROR()</FONT> macro provided for this purpose.
+</P>
+<P>
+In general, please avoid procedures such as directly accessing members of <FONT face="Courier">cmdBlock</FONT>.  Cases in which it must be directly accessed are described in the sections concerned with those particular functions. 
+</P>
+<P>
+The following describes each function.
+</P>
+<P>
+<A href="index.htm#index"><IMG src="../../gif/index.gif" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<P>
+<A name="01"><u>7.2.1 Forced Mode Changes </u></A>
+<P>
+<TABLE border="1">
+  <TR>
+    <TD><FONT face="arial" size="-1"> <STRONG>LeoSpdlMotor( )function </STRONG></font>
+    <P>
+<FONT face="Courier"><STRONG>#include &lt;PR/leo.h&gt;<BR>
+</STRONG></FONT>
+   
+    <P>
+<FONT  face="Courier"><STRONG>typedef u8 LEOSpdlMode;</STRONG></FONT> 
+    <P>
+<FONT face="Courier"><STRONG>s32 LeoSpdlMotor(LEOCmd *</STRONG><STRONG><U>cmdBlock</U></STRONG><STRONG>,
+LEOSpdlMode </STRONG><STRONG><U>mode</U></STRONG><STRONG>,</STRONG></FONT> 
+    <P>
+<FONT face="Courier"><STRONG>OSMesgQueue *</STRONG><STRONG><U>mq</U></STRONG><STRONG>);</STRONG></FONT>
+     
+    <TABLE border="0">
+      <TR>
+        <TD><FONT face="Courier"><U>mode</U></FONT> <FONT face="Courier">LEO_MOTOR_ACTIVE</FONT></TD>
+        <TD><FONT face="arial" size="-1"> &nbsp; active mode</TD></TR>
+      <TR>
+        <TD><FONT face="Courier">LEO_MOTOR_STANDBY</FONT></TD>
+        <TD><FONT face="arial" size="-1"> &nbsp; standby mode</TD></TR>
+      <TR>
+        <TD><FONT face="Courier">LEO_MOTOR_SLEEP</FONT></TD>
+        <TD><FONT face="arial" size="-1"> &nbsp; sleep mode</TD></TR>
+      <TR>
+        <TD><FONT face="Courier">LEO_MOTOR_BRAKE</FONT></TD>
+        <TD><FONT face="arial" size="-1"> &nbsp; sleep mode(sudden stop)</TD></TR>
+    </TABLE>
+
+</TD></TR>
+</TABLE>
+
+<P>
+<FONT face="arial" size="-1">
+The 64DD state is changed to the specified state using <FONT face="Courier"><U> mode</U></FONT>.
+ 
+<P>
+64DD has the following <FONT face="Century"> 3  modes (states)</FONT>
+ 
+<P>
+<STRONG>Active mode</STRONG>
+ 
+<P>
+An active state in which the motor is turning and reading and writing can quickly be performed.
+ 
+<P>
+<STRONG>Standby mode</STRONG>
+ 
+<P>
+The motor is turning but the head is retracted.  If a read or write command is issued in this state, 64DD is changed to active mode before processing.
+ 
+<P>
+<STRONG>Sleep mode</STRONG>
+ 
+<P>
+The motor is halted and the head is retracted.  If reading or writing is performed in this state, the motor is started and the head is positioned over the magnetic portion, requiring extra time.
+ 
+ 
+ 
+ 
+<P>
+When 64DD receives a read command, it automatically switches to active mode.  When execution of the command is completed, it switches to standby mode and then sleep mode at fixed time intervals.  Although these changes normally occur automatically, the <A href="../../n64man/64dd/LeoSpdlMotor.htm">LeoSpdlMotor()</A> function allows the mode to be changed forcibly.
+ 
+<P>
+Calling LeoSpdlMotor() with LEO_MOTOR_ACTIVE substituted for mode puts 64DD in active mode.  Calling this function with LEO_MOTOR_STANDBY substituted for mode puts 64DD in standby mode.  (However if LeoSpdlMotor() is called with this argument while 64DD is in sleep mode, 64DD does not switch to standby mode but remains in sleep mode: 64DD does not switch directly from sleep mode to standby mode.)  When LeoSpdlMotor() is called with LEO_MOTOR_SLEEP substituted for mode, 64DD waits until the disk stops before going into sleep mode.  When LEO_MOTOR_BRAKE is specified for mode, 64DD goes into sleep mode following rapid halting of the disk.  The differences between interrupting by specifying LEO_MOTOR_SLEEP or LEO_MOTOR_BRAKE in LeoSpdlMotor are as follows.
+ 
+<P>
+<B>LEO_MOTOR_SLEEP</B>
+ 
+<P>
+Halting of the disk takes a certain amount of time (average:  3 sec; maximum: 6 sec). 
+<P>
+Because the disk stops spontaneously, almost no sound is produced when it stops.
+ 
+<P>
+<B>LEO_MOTOR_BRAKE</B>
+ 
+<P>
+The disk is halted rapidly (average: 1.5 sec; maximum: 3 sec.)
+<P>
+In almost all cases, a slight click occurs as a result of the disk's being halted. 
+
+<P>
+For example, when a disk must be replaced during a game, it may be necessary to rapidly stop the rotating disk.  LEO_MOTOR_BRAKE is effective in such cases.
+<P>
+In previous versions of the development drive used before 1997, LEO_MOTOR_BRAKE was not a valid specification;  when it was specified, it had the same effect as specifying LEO_MOTOR_SLEEP.
+The new and previous versions of the drive can be identified by the value of the drive argument to the LeoInquiry function.  This value is 0x14 with the new drive and 0x4 with the previous version of the drive.  
+<P>
+For information on return values <FONT face="Courier"><U>cmdBlock</U></FONT><FONT face="Century">, </FONT><FONT face="Courier"><U>mq</U></FONT>, see the description in section <A href="#top">7.2<FONT face="Century"></FONT>Asynchronous Functions</A>.
+
+<P>
+<B>Note:</B> Because the motor is a mechanical component, it has a notably shorter life than electrical components.  The time required for reading and writing can be reduced by running the motor continously, but this shortens the life of the user's 64DD hardware.  Therefore, continuously running the motor by calling <A href="../../n64man/64dd/LeoSpdlMotor.htm">LeoSpdlMotor()</A> function numerous times when no data are being read should be prohibited.  Whenever it is possible to anticipate a need for data slightly in advance (such as when moving a map, a player's character comes closer just before data are needed), please implement measures such as initiating a seek at that time (use the <A href="../../n64man/64dd/LeoSeek.htm"><FONT face="Century">LeoSeek()</FONT></A>function, section <A href="#03">7.2.3</A>). 
+ 
+<P>
+<A href="index.htm#index"><IMG src="../../gif/index.gif" height="17" width="65" border="0"></A>
+<HR>
+
+<P>
+<A name="02"><u>7.2.2 Reading and Writing</u></A>
+<P>
+
+<TABLE border="1">
+  <TR>
+    <TD><FONT face="arial" size="-1"><STRONG>LeoReadWrite( ) Function </STRONG></FONT>
+    <P>
+<FONT face="Courier"><STRONG>#include &lt;PR/leo.h&gt;<BR>
+</STRONG></FONT>
+     
+    <P>
+<FONT face="Courier"><STRONG>s32 LeoReadWrite( LEOCmd *</STRONG><STRONG><U>cmdBlock</U></STRONG><STRONG>,
+s32 </STRONG><STRONG><U>direction</U></STRONG><STRONG>,</STRONG></FONT> 
+    <P>
+<FONT face="Courier"><STRONG>u32 </STRONG><STRONG><U>startLBA</U></STRONG><STRONG>,
+void *</STRONG><STRONG><U>vaddr</U></STRONG><STRONG>, u32 </STRONG><STRONG><U>nLBAs</U></STRONG><STRONG>,</STRONG></FONT> 
+    <P>
+<FONT face="Courier"><STRONG>OSMesgQueue *</STRONG><STRONG><U>mq</U></STRONG><STRONG>);</STRONG></FONT>
+ 
+    <TABLE border="0">
+      <TR>
+        <TD><FONT face="Courier"><U>direction</U></FONT></TD>
+        <TD><FONT face="Courier">OS_READ read</FONT></TD>
+       </TR>
+      <TR>
+        <TD></TD>
+        <TD><FONT face="Courier">OS_WRITE</FONT> write</TD>
+       </tr>
+      <TR>
+        <TD><FONT face="Courier"><U>startLBA</U></FONT></TD>
+      
+        <TD>read<FONT face="Courier">/</FONT>write initiation <FONT face="Courier">LBA</FONT></TD></TR>
+      <TR>
+        <TD><FONT face="Courier"><U>vaddr</U></FONT></TD>
+     
+        <TD><FONT face="Courier">RDRAM</FONT> virtual address</TD></TR>
+      <TR>
+        <TD><FONT face="Courier"><U>nLBAs</U></FONT></TD>
+     
+        <TD>number of transfer blocks</TD></TR>
+    </TABLE>
+
+</TD></TR>
+</TABLE>
+
+<P>
+Data are transferred between disk blocks, beginning from <FONT face="Courier"><U>startLBA</U></FONT> and extending <FONT face="Courier"><U>nLBAs</U></FONT> number of blocks, and <FONT face="Century">RDRAM</FONT>, starting from <FONT face="Courier"><U>vaddr</U></FONT>. The data are transferred in the read <FONT face="Courier"><U>direction</U></FONT>(from <FONT face="Century">64DD</FONT> to <FONT face="Century">RDRAM</FONT>) if  <FONT face="Courier"><U>direction</U></FONT> is <FONT face="Courier">OS_READ</FONT> and in the write direction (from <FONT face="Century">RDRAM</FONT> to <FONT face="Century">64DD</FONT>) if it is <FONT face="Courier">OS_WRITE</FONT>. 
+</P>
+<P>
+For information on return values, <FONT face="Courier"><U>cmdBlock</U></FONT><FONT face="Century">, or </FONT><FONT face="Courier"><U>mq</U></FONT>, see the description in section <A href="#top">7.2, <FONT face="Century"></FONT>Asynchronous Functions</A>.
+</P>
+<P>
+<A href="index.htm#index"><IMG src="../../gif/index.gif" height="17" width="65" border="0"></A>
+<HR>
+<P>
+<A name="03"><u>7.2.3 Seek</STRONG></u></A>
+
+<P>
+<TABLE border="1">
+  <TR>
+    <TD><FONT face="arial" size="-1"><STRONG>LeoSeek( )function </STRONG></FONT>
+    <P>
+<FONT face="Courier"><STRONG>#include&lt;PR/leo.h&gt;<BR>
+</STRONG></FONT>
+    </P>
+    <P>
+<FONT   face="Courier"><STRONG>s32 LeoSeek(LEOCmd *</STRONG><STRONG><U>cmdBlock</U></STRONG><STRONG>,
+u32 </STRONG><STRONG><U>lba</U></STRONG><STRONG>, OSMesgQueue *</STRONG><STRONG><U>mq</U></STRONG><STRONG>);</STRONG><BR>
+</FONT>
+    </P>
+    <P>
+<FONT face="Courier"><U>lba</U> </FONT>
+    </P>
+</TD></TR>
+</TABLE>
+
+<P>
+<font face="arial" size="-1">
+Seeking moves the drive head to the desired block.  The <A href="../../n64man/64dd/LeoSeek.htm"><FONT face="Century">LeoSeek()</FONT></A>function causes the head to seek the block specified by <FONT face="Courier"><U>lba</U></FONT>.  When the 64DD is in sleep or standby mode before the command is issued, it automatically switches to active mode, and subsequent read or write commands are processed quickly.  (However, if a short time is passed in active mode, the 64DD automatically returns to the standby and sleep modes.)
+</P>
+<P>
+For information on return values, <FONT face="Courier"><U>cmdBlock</U></FONT><FONT face="Century">, or </FONT><FONT face="Courier"><U>mq</U></FONT>, see the description in section <A href="#top">7.2, <FONT face="Century"></FONT>Asynchronous Functions</A>.
+</P>
+<P>
+<B>Note: </B></FONT>Unlike electrical components, the motor has a limited life. Please give adequate consideration to the note in <A href="../dd12/12-00.htm#06">section 12.6</A>.
+</P>
+<P>
+<A href="index.htm#index"><IMG src="../../gif/index.gif" height="17" width="65" border="0"></A>
+<HR> 
+
+<P>
+<A name="04"><u>7.2.4 Reading the Disk ID</u></A>
+<P>
+<TABLE border="1">
+  <TR>
+    <TD><FONT face="arial" size="-1"><STRONG>LeoReadDiskID( )function </STRONG>
+<P>
+<FONT face="Courier"><STRONG>#include&lt;PR/leo.h&gt;<BR>
+</STRONG></FONT>
+    </P>
+    <P>
+<FONT face="Courier"><STRONG>s32 LeoReadDiskID(LEOCmd *</STRONG><STRONG><U>cmdBlock</U></STRONG><STRONG>,
+LEODiskID *</STRONG><STRONG><U>vaddr</U></STRONG><STRONG>,</STRONG></FONT>
+    <P>
+<FONT face="Courier"><STRONG>OSMesgQueue *</STRONG><STRONG><U>mq</U></STRONG><STRONG>);</STRONG></FONT>
+    </P>
+    <P>
+<FONT face="Courier"><U>vaddr</U></FONT> <FONT face="Courier">RDRAM</FONT>virtual address
+    </P>
+</TD></TR>
+</TABLE>
+
+<P>
+Reads the disk <FONT face="Century">ID</FONT> to the specified address <FONT face="Courier"><U>vaddr</U></FONT>.</P>
+<p>For information on the format and usage of the <FONT face="Century">ID</FONT>, please see <A href="../dd06/index.htm">Chapter 6: Disk <FONT face="Century">ID</FONT></A>.</p>
+<P>
+For information on return values, <FONT face="Courier"><U>cmdBlock</U></FONT><FONT face="Century">, or </FONT><FONT face="Courier"><U>mq</U></FONT>, see the description in section <A href="#top">7.2, <FONT face="Century"></FONT>Asynchronous Functions</A>.
+</P>
+<P>
+<A href="index.htm#index"><IMG src="../../gif/index.gif" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<P>
+<A name="05"> <u>7.2.5 Reading and Setting the RTC</u></A>
+ 
+<P>
+<TABLE border="1">
+  <TR>
+    <TD><FONT face="aria" size="-1"><STRONG>LeoReadRTC( ),LeoSetRTC( )functions
+</STRONG></FONT>
+    <P>
+<FONT face="Courier"><STRONG>#include &lt;PR/leo.h&gt;<BR>
+</STRONG></FONT>
+    </P>
+    <P>
+<FONT face="Courier"><STRONG>s32 LeoReadRTC(LEOCmd *</STRONG><STRONG><U>cmdBlock</U></STRONG><STRONG>,
+OSMesgQueue *</STRONG><STRONG><U>mq</U></STRONG><STRONG>);<BR>
+</STRONG></FONT>
+    </P>
+    <P>
+<FONT face="Courier"><STRONG>s32 LeoSetRTC(LEOCmd *</STRONG><STRONG><U>cmdBlock</U></STRONG><STRONG>,
+LEODiskTime *</STRONG><STRONG><U>RTCdata</U></STRONG><STRONG>,</STRONG></FONT><STRONG>
+</STRONG>
+    </P>
+    <P>
+<FONT face="Courier"><STRONG>OSMesgQueue *</STRONG><STRONG><U>mq</U></STRONG><STRONG>);</STRONG></FONT>
+    </P>
+    <P>
+<FONT face="Courier"><U>RTCdata</U></FONT> time setting
+    </P>
+</TD></TR>
+</TABLE>
+
+<P>
+For information on return values, <FONT face="Courier"><U>cmdBlock</U></FONT><FONT face="Century">, or </FONT><FONT face="Courier"><U>mq</U></FONT>, see the description in section <A href="#top">7.2, <FONT face="Century"></FONT>Asynchronous Functions</A>.
+</P>
+<P>
+Details related to these <FONT face="Century">RTC</FONT> functions are discussed in <A href="../dd08/index.htm">Chapter 8: Reading and Setting <FONT face="Century">RTC</FONT></A>
+</P>
+<P>
+<A href="index.htm#index"><IMG src="../../gif/index.gif" height="17" width="65" border="0"></A>
+</P>
+<HR>
+</BODY>
+</HTML>

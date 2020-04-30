@@ -1,0 +1,37 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <title>osFlashClearStatus</title>
+</head>
+<body bgcolor="#FFFFFF">
+<font face="arial" size="-1">
+<h1>
+osFlashAllEraseThrough <font size=+0> [Function]</font></h1>
+<font color="#FF0000">Deletes the entire area of Flash (No status check)</font>
+<h3>
+Syntax</h3>
+
+<font face="courier">#include &lt;ultra64.h&gt;<br>
+void&nbsp; osFlashAllEraseThrough(void);</font>
+
+<h3>
+Description</h3>
+This is a function that deletes the entire data of 1M Flash.
+<p>It is different from <font face="courier">osFlashAllErase</font> in not conducting status check
+when delete ends inside of <font face="courier">osFlashAllEraseThrough</font>.
+<p>The execution of <font face="courier">osFlashAllEraseThrough</font> is conducted immediately, however,
+it takes from several msec to several hundred msec to actually delete data.&nbsp;
+Determine whether or not deleting data is ended by executing <font face="courier">osFlashCheckEraseEnd</font>.
+<p>Do not execute other osFlash functions between <font face="courier">osFlashAllEraseThrough</font>
+and <font face="courier">osFlashCheckEraseEnd</font>. The status of Flash may
+be changed when other osFlash functions are executed prior to the execution
+of <font face="courier">osFlashCheckEraseEnd</font>.
+<h3>
+Reference</h3>
+[<a href="osFlashAllErase.htm">osFlashAllErase</a>] [<a href="osFlashCheckEraseEnd.htm">osFlashCheckEraseEnd</a>]
+
+<h3>
+Revision History</h3>
+07/07/2000&nbsp; This function was added.
+</body>
+</html>

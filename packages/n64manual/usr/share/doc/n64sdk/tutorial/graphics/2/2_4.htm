@@ -1,0 +1,60 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Graphics-CHAPTER 2  Adding Color to a Model</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/22/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<font style="font-size:12pt"><B>2.4  Lighting</B></FONT>
+<br>
+<P>
+ Lighting is a bit more complicated than the primitive color and vertex color processes, since the following two changes are required:
+<BR>
+<UL>
+<LI>Put normal vectors in the model (to be exact, the model vertices)
+<LI>Define the light
+</UL>
+Defining the light will be covered in the next section.  Here we will explain how to add normal vector information to the model.
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=5><TR>
+	<TD NOWRAP COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE><B>List 2-3</B><FONT COLOR="#808000">
+</TR><TR>
+	<TD NOWRAP BGCOLOR="666666" WIDTH="4" ALIGN=LEFT VALIGN=TOP><HR NOSHADE SIZE=0></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>
+<FONT COLOR="#000080"><PRE><CODE>  static Vtx  cube_vtx[] = {
+    /*
+     *  Vertex information when lighting is ON.
+     *  Normal vectors are stored here, rather than vertex color.
+     *  This is for smooth shading.
+     */
+    {-10, -10, -10, 0, 0, 0, -73, -73, -73, 255},
+    { 10, -10, -10, 0, 0, 0,  73, -73, -73, 255},
+    { 10,  10, -10, 0, 0, 0,  73,  73, -73, 255},
+    {-10,  10, -10, 0, 0, 0, -73,  73, -73, 255},
+    {-10, -10,  10, 0, 0, 0, -73, -73,  73, 255},
+    { 10, -10,  10, 0, 0, 0,  73, -73,  73, 255},
+    { 10,  10,  10, 0, 0, 0,  73,  73,  73, 255},
+    {-10,  10,  10, 0, 0, 0, -73,  73,  73, 255},
+  };
+</CODE></PRE></FONT>
+	</TD>
+</TR></TABLE>
+<P>
+The Vtx union for storing vertex information is used as type Vtx_t when setting vertex color, and as type Vtx_tn when setting normal vectors.<br><br>
+     The only difference between type Vtx_t and type Vtx_tn is that one holds "the vertex color RGB components" and the other holds "the normal vector x,y,z components."  All other elements are common to both.
+     The thing you need to be aware of is that when treating them as normal vector component values, each element becomes a signed 8bit number.  Also, the normal vectors need to be normalized.<br><br>
+     In other words, you must scale so that either of the following conditions is met:<br><br>
+
+<tr>sqrt(x * x + y * y + z * z) == 127</tr><br><br> 
+<tr>or </tr><br><br>
+<tr>x * x + y * y + z * z == 127 * 127</tr><br><br>
+
+     Since lighting is one of the N64 shading methods, you can choose to perform either flat shading or smooth shading.<br><br>
+
+     For flat shading, the lighting is calculated using the vertex normal information specified in the last argument of the gSP1Triangle command, and the resulting color is applied to the entire surface.  The surface color will vary depending on the direction of the surface and the light settings, but any one surface will be filled with only one color.
+</P>
+</BODY>
+</HTML>

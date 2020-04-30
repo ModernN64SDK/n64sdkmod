@@ -1,0 +1,36 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-N64 Programming Basics-Chapter 4  N64 Programming Toolbox-Useful Functions for Nusystem</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/20/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<FONT Style="font-size:12pt"><B>4.2  Displaying Character Strings with the Debug Console</B></FONT>
+<br>
+<P>
+ NuSystem provides a group of functions that are very useful for debugging, so we will begin with an explanation of these.
+
+     When you begin developing programs using functions that are new to you, things often do not work out as expected.  Most probably have experienced using printf to output the values of specific variables to the screen so you can check the behavior of a program.  
+     The N64 library has a function called <tt>osSyncPrintf</tt> that works like printf to display character strings in the window of the debugger.  However, <tt>osSyncPrintf</tt> can be inconvenient to use.  For example, when you try to output the values of variables that vary each time a frame is rendered, a large volume of character strings are displayed one after the other on the debugger screen.  
+     The NuSystem debug console can be very useful in this situation.  The debug console implements a virtual console window for the N64 video output so that you can display character strings more easily.  By setting the location where character strings are to be output, characters will not scroll on and on like with the <tt>osSyncPrintf</tt> function.
+
+     First we will start by introducing the functions used for displaying character strings.  They follow the C standard functions.
+</P>
+<br><br>
+<B>nuDebConPrintf</B><br>
+This function displays formatted character strings like printf.   Some specifiers are not supported in some versions of NuSystem, so check the manual before using this function.  To output a 64-bit value, attach the "ll" qualifier.<br><br>
+<B>nuDebConPutc</B><br>
+Outputs one character to the console.<br><br>
+<B>nuDebConCPuts</B><br>
+Outputs the provided character strings to the console.<br><br>
+<B>nuDebConPuts</B><br>
+Outputs the provided character strings to the console.  The null character at the end of the character string is replaced with the linefeed character.  In other words, if you display character strings with this function, they are automatically linefed.
+<br><br>
+<P>
+ If you read about these functions in the manual, you will see that an integer called wndNo must be given as the first argument.  This argument refers to the window number.  NuSystem has four independent debug console windows, and the programmer is free to use any of them.  wndNo is the argument that specifies which of these four windows to display the character strings in.  The macro constants NU_DEB_CON_WINDOW0, ..., ..., NU_DEB_CON_WINDOW3 are defined in the header file &lt;nusys.h&gt; for use as the console window numbers.  Use these macro constants whenever possible to specify the window numbers in your programs.
+</P>
+</BODY>
+</HTML>

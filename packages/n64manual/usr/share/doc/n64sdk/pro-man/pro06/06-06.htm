@@ -1,0 +1,62 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 6 - N64 Operating System Overview</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check.
+             MAP- 11/1/99 edited content, updated format-->
+</head>
+
+<H1>6.6 Input / Output </H1>
+
+<p>The Nintendo 64 system spends a good deal of its time performing I/O operations. The operating system provides an optimized I/O interface layer that directly communicates with the hardware. Some of these interfaces include: </p>
+<DL>
+<DT>
+<strong>VI (the video interface)</strong></DT>
+
+<DD>
+The interface routines communicate with a video manager <A target="keywords" HREF="../../keywords/index/data/system.htm#system thread">system thread</A>, called the VI/Timer manager. This <A target="keywords" HREF="../../keywords/index/data/system.htm#thread">thread</A> receives all <A target="keywords" HREF="../../keywords/index/data/system.htm#vertical retrace">vertical retrace</A> interrupts and programs the video hardware. In addition, it also receives all <A target="keywords" HREF="../../keywords/index/data/system.htm#counter interrupt">counter interrupt</A> messages and executes timer functions. 
+</DD>
+</DL>
+
+<DL>
+<DT>
+<strong>PI (the peripheral interface)</strong></DT>
+
+<DD>
+The PI also has an associated I/O manager thread, the PI manager. It controls access to the ROM cartridge so that two threads do not attempt to DMA from ROM to RAM at the same time. 
+</DD>
+</DL>
+
+<DL>
+<DT>
+<strong>AI (the audio interface)</strong></DT>
+
+<DD>
+This interface programs the audio hardware to output the desired sample rate and manages access to the audio data buffer. 
+</DD>
+</DL>
+
+<DL>
+<DT>
+<strong>DP (the RDP interface)</strong></DT>
+
+<DD>
+The interface is of importance mostly because it has an associated system event when a DP operation is complete. 
+</DD>
+</DL>
+
+<DL>
+<DT>
+<strong>Cont (the controller interface)</strong></DT>
+
+<DD>
+This interface resets, detects, obtains status, queries and reads data from the game controllers.
+</DD>
+</DL>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR>
+</BODY>
+</HTML>

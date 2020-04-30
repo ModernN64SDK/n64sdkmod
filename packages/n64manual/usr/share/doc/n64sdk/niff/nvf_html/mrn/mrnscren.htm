@@ -1,0 +1,126 @@
+<HTML>
+<HEAD>
+<TITLE>mrnscren</TITLE>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../mobile/allman.css">
+<!-- Editor's Notes: 9/23/1999 Ron Daring -->
+</HEAD>
+  <BODY bgcolor="#FFFFFF">
+<h1>Function</h1>
+
+<hr>
+<a name="mrnScreenInit">
+</A>
+<h1><a name="mrnScreenInit">mrnScreenInit</A></h1>
+<a name="mrnScreenInit">
+</A>
+<p><a name="mrnScreenInit"><i>Initializes</i> <TT>mrnScreen</TT></A></p>
+<a name="mrnScreenInit">
+</A>
+<H2><a name="mrnScreenInit">Syntax</A></H2>
+<a name="mrnScreenInit">
+</A>
+<blockquote><a name="mrnScreenInit">
+    </A>
+<pre><a name="mrnScreenInit">#include &lt;mrn/Screen.h&gt;
+int mrnScreenInit( MrnScreen *screen_ptr,
+                   const u32 resolution,
+                   const u32 number_of_frame_buffers,
+                   const u32 frame_buffer_depth,
+                   const u32 z_buffer )
+</A></pre></blockquote>
+<a name="mrnScreenInit">
+</A>
+<H2><a name="mrnScreenInit">Arguments</A></H2>
+<a name="mrnScreenInit">
+</A>
+<dl>
+    <dt><a name="mrnScreenInit"><strong>resolution</strong></A></dt>
+    <dd><a name="mrnScreenInit"><TT>frame_latency</TT> will be decided on NuSystem.<br>
+    Select from the following.<br>
+    </A>
+  <ul>
+      <li><a name="mrnScreenInit"><TT>MRN_SCREEN_RES_NTSC_320_240</TT><br>
+      </A><li><a name="mrnScreenInit"><TT>MRN_SCREEN_RES_NTSC_320_240D</TT><br>
+      </A><li><a name="mrnScreenInit"><TT>MRN_SCREEN_RES_NTSC_640_480I</TT><br>
+      </A><li><a name="mrnScreenInit"><TT>MRN_SCREEN_RES_NTSC_640_480</TT><br></A></ul>
+  <a name="mrnScreenInit">
+    Those ending with <TT>D</TT> indicate defliceres mode.<br>
+    Those ending with <TT>I</TT> indicate interlace rendering mode.<br>
+    </A></dd>
+    <dt><a name="mrnScreenInit"><strong><TT>number_of_frame_buffers</TT></strong></A></dt>
+    <dd><a name="mrnScreenInit">Specify 2 for double buffer, 3 for triple buffer. 
+    </A></dd>
+    <dt><a name="mrnScreenInit"><strong><TT>frame_buffer_depth</TT></strong></A></dt>
+    <dd><a name="mrnScreenInit">Specify the bit width of a pixel (16 or 32). <br>
+    </A></dd>
+    <dt><a name="mrnScreenInit"><strong><TT>z_buffer</TT></strong></A></dt>
+    <dd><a name="mrnScreenInit">Specify 1 if the Z buffer will be used.  Specify 0 if it will not be used.<br>
+    </A></dd>
+</dl>
+<a name="mrnScreenInit">
+</A>
+<H2><a name="mrnScreenInit">Description</A></H2>
+<a name="mrnScreenInit">
+  Initializes <TT>mrnScreen</TT>
+</A>
+<H2><a name="mrnScreenInit">See Also</A></H2>
+<a name="mrnScreenInit">
+</A><a href="mrnscren.htm#MrnScreen">MrnScreen</a><a name="mrnScreenInit">
+
+</A>
+<hr>
+
+<a name="mrnScreenSetMode">
+</A>
+<h1><a name="mrnScreenSetMode">mrnScreenSetMode</A></h1>
+<a name="mrnScreenSetMode">
+</A>
+<p><a name="mrnScreenSetMode"><i>Switch the screen resolution</i></A></p>
+<a name="mrnScreenSetMode">
+</A>
+<H2><a name="mrnScreenSetMode">Syntax</A></H2>
+<a name="mrnScreenSetMode">
+</A>
+<blockquote><a name="mrnScreenSetMode">
+</A>
+<pre><a name="mrnScreenSetMode">#include &lt;mrn/Screen.h&gt;
+int mrnScreenSetMode( MrnScreen *screen_ptr,
+                      const u32 resolution,
+                      const u32 number_of_frame_buffers,
+                      const u32 frame_buffer_depth,
+                      const u32 z_buffer )
+</A></pre></blockquote>
+<a name="mrnScreenSetMode">
+</A>
+<H2><a name="mrnScreenSetMode">Description</A></H2>
+<a name="mrnScreenSetMode">
+  Switch the screen resolution.  The arguments are the same as for <TT>mrnScreenInit()</TT>. 
+
+</A>
+<hr>
+<h1><a name="mrnScreenSetMode">Structure</A></h1><hr>
+<hr>
+
+<a name="MrnScreen">
+</A>
+<h1><a name="MrnScreen">MrnScreen</A></h1>
+<a name="MrnScreen">
+</A>
+<pre><a name="MrnScreen">#include &lt;mrn/Screen.h&gt;
+typedef struct _MrnScreen
+{
+    _msoDeriveFrom( MrnView );
+
+    u32 number_of_frame_buffers;
+    u16 draw_buffer;
+    u16 display_buffer;
+    u8  *frame_buffer_ptr_array[ 3 ];
+    u8  *z_buffer_ptr;
+} MrnScreen;
+</A></pre>
+<a name="MrnScreen">
+<br><br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br><br>
+  </A></BODY>
+</HTML>

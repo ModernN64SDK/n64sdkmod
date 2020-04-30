@@ -1,0 +1,184 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.>
+<TITLE>gSPBgRect1Cyc</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>gSPBgRect1Cyc<FONT size="+0"> [Macro]</FONT></H1>
+
+<p><b>Function</b></font></p>
+
+<p>gSPBgRect1Cyc</p>
+<P>
+<i>Renders Background (BG) image (can enlarge/reduce)</i>
+</P>
+<p><b>Syntax</b></font></p>
+<p>
+<PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gs2dex.htm">gs2dex.h</A> */
+gSPBgRect1Cyc(Gfx *gdl, uObjBg *bg)
+gsSPBgRect1Cyc(         uObjBg *bg)</CODE></PRE></p>
+
+<p><b>Arguments</b></font></p>
+<p>
+<DL>
+  <DT><B>gdl</B>
+  <DD>the display list pointer.
+  <DT><B>bg</B>
+  <DD>the pointer to the BG drawing data structure.
+</DL></p>
+<p><b>Description</b></font></p>
+<P>
+It draws BG image. This macro is the dedicated BG image drawing macro for use in 1-cycle mode. It has the following special features and limitations: 
+
+</P>
+<P>
+<ul>
+<li>Images can be enlarged and reduced.</li>
+<li>Scrolling is possible in a specified closed area, looping up/down or left/right. </li>
+<li>Textures can be inverted horizontally (vertical flipping is not possible). </li>
+<li>Drawing is performed in 1-cycle mode. </li>
+<li>Texture interpolation display is possible. Subpixel movement is possible only in the horizontal direction. </li>
+<li>Anti-aliasing is not possible. </li>
+<li>Texture data is sequentially loaded from DRAM into texture memory (TMEM) and drawn by the macro. </li>
+</ul>
+<P>
+This macro cannot be used in copy mode. For information about modes, see Section 2.2.7 "Drawing Cycle Modes" in the N64 Kantan Manual. For information about setting the cycle type, see <A HREF="../gdp/gDPSetCycleType.htm">gDPSetCycleType</A>. If there is no need to scale a drawing (enlarge/reduce), or if you want to use copy mode, then BG image rendering can be processed faster using g*SPBgRectCopy. 
+</P>
+<p><b>Description</b></font></p>
+<P>
+This macro supports bilinear interpolation display of images. When bilinear interpolation display is used, texels appear less jagged and the image looks smoother when it is enlarged, compared to normal point sampling display. This effect is less apparent when the image is reduced. 
+</P>
+<P>
+The RDP's drawing performance declines when bilinear interpolation is used. The fewer the number of image lines that can be loaded into TMEM at one time, the greater the extent of this decline in performance. For example, when a 640x480 image is reduced by half for drawing in a 320x240 frame, the amount of overhead from bilinear interpolation is far greater than when a 320x240 image is drawn with no scaling. In addition, the RDP's drawing performance drops significantly compared to when point sampling is used. Considering the diminished effect obtained with bilinear interpolation when the image is reduced, you may want to switch to point sampling display. 
+</P>
+<P>
+This macro automatically divides an image into a number of subplanes for drawing. However, if this division process is done carelessly, unnatural wrinkles may emerge in the drawing result. Such wrinkles will be particularly apparent during scrolling. To prevent wrinkles, use the <B>imageYorig</B> of uObjScaleBg_t and perform operations like those shown below (this value is the y-coordinate of the origin for scaling, but it is also the division origin of the subplane). The Comment section below shows the uObjScaleBg_t structure. 
+</P>
+<DL>
+  <DT>* At the time of initialization:
+  <DD>Assign the value <B>imageY</B> to <B>imageYorig</B>
+<p>
+  <DT>* When the value of <B>scaleH</B> has changed:
+  <DD>Assign the value <B>imageY</B> to <B>imageYorig</B>
+<p>
+  <DT>* When <B>imageX</B> and <B>imageY</B> have been wrapped: 
+  <DD>Perform the same kind of process on <B>imageYorig</B> as on <B>imageY</B>
+<p>
+  <DT>* When only <B>imageY</B> is changed (change without wrapping)
+  <DD>Do not change image <B>imageYorig</B>
+</DL>
+
+<P>
+Based on the above operations, the process for dx,dy scrolling of an image would be as follows: 
+</P>
+<P>
+<PRE><CODE>/* Add scroll values */
+bg-&gt;s.imageX += dx;
+bg-&gt;s.imageY += dy;
+/* Screen edge wrapping  */
+if (bg-&gt;s.imageX &lt; 0) {
+  bg-&gt;s.imageX     += bg-&gt;s.imageW;
+  bg-&gt;s.imageY     -= 32;
+  bg-&gt;s.imageYorig -= 32;
+}
+if (bg-&gt;s.imageX &gt;= bg-&gt;s.imageW) {
+  bg-&gt;s.imageX     -= bg-&gt;s.imageW;
+  bg-&gt;s.imageY     += 32;
+  bg-&gt;s.imageYorig += 32;
+}
+if (bg-&gt;s.imageY &lt; 0) {
+  bg-&gt;s.imageY     += bg-&gt;s.imageH;
+  bg-&gt;s.imageYorig += bg-&gt;s.imageH;
+}
+if (bg-&gt;s.imageY &gt;= bg-&gt;s.imageH) {
+  bg-&gt;s.imageY     -= bg-&gt;s.imageH;
+  bg-&gt;s.imageYorig -= bg-&gt;s.imageH;
+</CODE></PRE>
+</P>
+<P>
+Also note that operation is not currently guaranteed for G_IM_FMT_YUV (YUV format). 
+</P>
+<p><b>Comment</b></font></p>
+<P>
+The uObjScaleBg structure is shown below: 
+</P>
+<P>
+<PRE>typedef	struct	{
+  u16 imageX;      /* x-coordinate of upper-left position of texture (u10.5) */ 
+  u16 imageW;      /* Texture width (8-byte alignment, u10.2) */
+  s16 frameX;      /* x-coordinate of upper-left position of transfer destination frame (s10.2) */
+  u16 frameW;      /* Transfer destination frame width (u10.2) */
+
+  u16 imageY;      /* y-coordinate of upper-left position of texture (u10.5) */ 
+  u16 imageH;      /* Texture height (u10.2) */
+  s16 frameY;      /* y-coordinate of upper-left position of transfer destination  frame (s10.2) */
+  u16 frameH;      /* Transfer destination frame height (u10.2) */
+
+  u64 *imagePtr;   /* Address of texture source in DRAM */
+  u16 imageLoad;   /* Method for loading the BG image texture
+                      G_BGLT_LOADBLOCK (use LoadBlock)
+                      G_BGLT_LOADTILE (useLoadTile) */
+  u8  imageFmt;    /* Texel format
+                      G_IM_FMT_RGBA (RGBA format)
+                      G_IM_FMT_YUV (YUV format)
+                      G_IM_FMT_CI (CI format)
+                      G_IM_FMT_IA (IA format)
+                      G_IM_FMT_I (I format) */
+  u8  imageSiz;    /* Texel size
+                      G_IM_SIZ_4b (4 bits/texel)
+                      G_IM_SIZ_8b (8 bits/texel)
+                      G_IM_SIZ_16b (16 bits/texel)
+                      G_IM_SIZ_32b (32 bits/texel) */
+  u16 imagePal;    /* Position of palette for 4-bit color
+                      index texture (4-bit precision, 0~15) */
+  u16 imageFlip;   /* Image inversion on/off (horizontal
+                      direction only)
+                      0 (normal display (no inversion))
+                      G_BG_FLAG_FLIPS (horizontal inversion of texture image) */
+
+  u16 scaleW;      /* x-direction scale value (u5.10) */
+  u16 scaleH;      /* y-direction scale value (u5.10) */
+  s32 imageYorig;  /* image drawing origin (s20.5) */
+  
+  u8  padding[4];  /* Padding */
+  
+} uObjScaleBg_t;   /* 40 bytes */
+
+typedef union {
+  uObjBg_t       b;
+  uObjScaleBg_t  s;
+  long long int  force_structure_alignment;
+} uObjBg;
+</PRE>
+<P>
+<DL>
+  <DT>* Concerning the <B>scaleW</B>, <B>scaleH</B>, and <B>imageYorig</B> elements:
+<P>
+  <DD>BG image scaling is controlled by the <B>scaleW</B>, and <B>scaleH</B> members of the uObjScaleBg_t structure. The scaling process centers around (<B>imageX</B>, <B>imageY</B>) of the BG image. The image is drawn to the (<B>frameX</B>, <B>frameY</B>) position in the frame buffer, just as when no scaling is performed. However, during a horizontal flip, the BG image is drawn to the (<B>frameX</B>+<B>frameW</B>-1, <B>frameY</B>) position in the frame buffer. 
+<P>
+When the image is enlarged, the image is clamped by the frame size. Conversely, when the image is reduced, the frame is sometimes clamped by the image size. This frame clamp can be a little big or a little small, due to errors in calculation. If you want to strictly specify the size, you will need to calculate <B>frameW</B>, <B>frameH</B> with the CPU. For details, see the S2DEX sample program. 
+<p>
+  <DT>* Concerning the <B>imagePtr</B> element:</dt>
+<P>
+  <DD>You cannot specify any position in the first 4096 bytes of RDRAM for <B>imagePtr</B>. These are the physical addresses from <CODE>0x00000000</CODE> to <CODE>0x00000fff</CODE>. A segment-converted imagePtr cannot reside within this range. </dd>
+</DL>
+<P>
+* To learn more about the other elements, please refer to the g*SPBgRectCopy macro.
+</P>
+<P>
+This macro is built into S2DEX Release 1.00 and later versions. However, the same processes can be emulated using <A HREF="../../ucode/s2dex/05.htm#01">guS2DEmuBgRect1Cyc</A>, which was added from S2DEX Release 0.75 and which works by assembling <A HREF="gSPTextureRectangle.htm">gSPTextureRectangle</A> together with a number of other macros. This can be used to draw BG images that can be scaled. For details, see the latest readme for S2DEX microcode Section 5 "Emulation Functions". For information about the uObjScaleBg_t structure, see Section 4.1, "BG Drawing GBIs" in the same manual. 
+</P>
+<p><b>See Also</b></font></p>
+<P>
+<A HREF="gSPBgRectCopy.htm">gSPBgRectCopy</A>
+</P>
+<p><b>Revision History</b></font></p>
+<P>
+02/01/99  Entirely revised.
+</P>
+</BODY>
+</HTML>

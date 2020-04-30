@@ -1,0 +1,113 @@
+<HTML>
+<HEAD>
+<TITLE>Inside NuSystem</TITLE>
+</HEAD>
+
+<BODY bgcolor="#FFFFFF">
+<font face="arial" size="-1">
+
+<P>
+<a name="top"></a><FONT size="3"><b>2. Initialization</b></FONT>
+<p>
+
+<ol>
+  <li><a href="#1">Organization of the Initiator</a>
+  <li><a href="#2">Customizing the Initiator</a>
+  <li><a href="#3">Changing the Memory Map</a>
+</ol>
+
+<hr>
+
+<b><a name="1">2.1 Organization of the Initiator</a></b>
+
+<p>The initiator initializes the N64 OS and NuSystem with a series of processes that are executed from the time of the nuBoot function up to the
+application's mainproc function. 
+</p>
+
+<p>The flow of the NuSystem initiator is diagrammed in Figure 2.1.  By the time the mainproc (application program) executes, the video interface (VI) and peripheral interface (PI) are usable and the Scheduler has been started.</p>
+
+<p align="center"><img src="./images/f020100.gif" alt="Figure 2.1  Initiator Process Flow"><br>
+Figure 2.1  Initiator Process Flow</p>
+
+<p>In addition to these functions, the initiator can also register a callback function in the idle loop in the idle thread. This callback function is executed only when there is no executable thread. Its priority is OS_PRIORITY_IDLE, which is the lowest priority state. The callback is registered in the idle loop by the nuIdleFuncSet function.</p>
+
+<p align="right"><a href="#top">Top of Page</a> <a href="index.htm"><img src="../../../niff/gif/index.gif" border="0" width="65" height="17"></a></p>
+<hr>
+
+<b><a name="2">2.2 Customizing the Initiator</a></b>
+
+<p>
+Customizing the initiator involves setting the video mode and the retrace cycle (arguments used at Scheduler start-up time) and changing the video interface (VI) feature settings.  The video mode setting and the VI feature settings can be changed with the application, but the retrace cycle cannot.  If you want to change the retrace cycle, you need to change the nuScCreateScheduler function's call argument in the nuboot.c source code file.(The retrace count here is the cycle for retrace events transmitted by the VI. In the case of NTSC, the message transmission cycle=60Hz/retrace count). </p>
+
+<p align="right"><a href="#top">Top of Page</a> <a href="index.htm"><img src="../../../niff/gif/index.gif" border="0" width="65" height="17"></a></p>
+<hr>
+
+<b><a name="3">2.3 Changing the Memory Map</a></b>
+
+<p>This section describes the methods for changing the memory map as it relates to the Initiator.</p>
+
+<p>Use the following methods to alter various regions if the memory map from the
+default setting shown in <a href="1.htm#5">Section 1.5</a>, Figure 1.4.</p>
+
+<dl>
+  <dt>1. Code and Data 
+  <dd>Rewrite the spec file to change the location of code and data. 
+</dl>
+
+<dl>
+  <dt>2. Z-Buffer
+  <dd>Use the nuGfxSetZBuffer function to change the location of the Z-buffer.
+</dl>
+
+<dl>
+  <dt>3. Frame Buffer
+  <dd>Use the nuGfxSetCfb function to change the location of the frame buffer. 
+</dl>
+
+<dl>
+  <dt>4. Audio Heap
+  <dd>Specify the location of the audio heap using arguments of the nuAuMgrInit function and the nuAuStlMgrInit function. 
+</dl>
+
+<p>For example, the default maps the Z-Buffer between the system region and the code region.  To change the location with each other, first you must rewrite the spec file and move the location of the code region.  The default setting of the code region is specified in the spec file as follows:</p>
+
+
+<font face="courier" size="2">
+<pre>beginseg
+	name	&quot;code&quot;
+	flags	BOOT OBJECT
+	entry	nuBoot
+	address	NU_SPEC_BOOT_ADDR
+	stack	NU_SPEC_BOOT_STACK
+	....
+	(omitted)
+	....
+endseg</pre>
+</font>
+
+<p>With this segment setting, the NU_SPEC_BOOT_ADDR address entry is defined as 0x80025c00 in the nusys.h header file. If you want to move the code region to the front, specify the address entry as 0x80000400 .</p>
+
+<font face="courier" size="2">
+<pre>beginseg
+	name	&quot;code&quot;
+	flags	BOOT OBJECT
+	entry	nuBoot
+	address	0x80000400
+	stack	NU_SPEC_BOOT_STACK
+	....
+	(omitted)
+	....
+endseg</pre>
+</font>
+
+<p>Then, change the Z-Buffer to a suitable location to be appropriately positioned after the code region by using the nuGfxSetZBuffer function when the application is initialized. </p>
+
+<font face="courier" size="2">
+<pre>nuGfxSetZBuffer((u16*)_codeSegmentEnd);</pre>
+</font>
+
+<p>With these changes, the locations of the code region and the Z-buffer region can be exchanged. </p>
+
+<p align="right"><a href="#top">Top of Page</a> <a href="index.htm"><img src="../../../niff/gif/index.gif" border="0" width="65" height="17"></a></p>
+<hr>
+</body> </html>

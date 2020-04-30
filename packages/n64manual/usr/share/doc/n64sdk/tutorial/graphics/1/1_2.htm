@@ -1,0 +1,151 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Graphics-CHAPTER 1  The Basics of N64 Graphics-Introduction to RSP</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/22/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<font style="font-size:12pt"><B>1.2  Creating a Transformation Matrix</B></FONT>
+<br>
+<P>
+ In a typical graphics process, you render polygons after establishing the position of the model and the camera and setting the view port.  The same is true for the N64; before rendering graphics you must prepare the model view transformation matrix and the projection transformation matrix.
+     There are two ways of indicating a matrix in an N64 program: as a 4x4 two-dimensional array, or as an Mtx union.  By using the latter method and defining the matrix as a union, the array is concealed from the user.  Typical N64 OS matrix manipulation functions come in two versions, one for arrays and one for unions.  The functions that take arguments in array format are named with an F as the last letter (e.g., <tt>guLookAtF</tt>).  Please remember this convention.     
+     Also note that with the union format, each element in the array is expressed in fixed decimal s15.16 format, so you need to be careful when explicitly setting elements.  If you are going to separately set elements inside the program, it is best to use the floating point array format.<br><br>
+
+     Next, we will look at a number of functions that the N64 OS has available for manipulating matrices.
+</P>
+<p>
+<B>Creating a Projection Transformation Matrix</B><BR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD>  </TD>
+  <TD ALIGN=LEFT VALIGN=MIDDLE COLSPAN=2>You can use any of the following functions to create a projection transformation matrix:</TD>
+</TR><TR>
+	<TD> </TD><br>
+	<TD ALIGN=LEFT VALIGN=TOP> <tt>guPerspective(F)</tt></TD>
+	<TD ALIGN=LEFT VALIGN=TOP> Use for perspective transformations</TD>
+</TR><TR>
+	<TD> </TD>
+	<TD ALIGN=LEFT VALIGN=TOP> <tt>guOrtho(F)</tt></TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Use for orthogonal transformations</TD>
+</TR><TR>
+	<TD> </TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP> <tt>guFrustum(F)</tt></TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Use when defining a perspective transformation from the viewing volume.
+</TD>
+</TR></TABLE>
+<P>
+</P>
+<p>
+<B>Creating a Model View Transformation Matrix</B><BR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD> </TD><br>
+	<TD ALIGN=LEFT VALIGN=TOP COLSPAN=2>Use the <tt>guLookAt(F)</tt> function to create a model view transformation matrix:</TD>
+</TR><TR>
+	<TD> </TD>
+	<TD NOWRAP LIGN=LEFT VALIGN=TOP>  <tt>guLookAt(F)</tt>   </TD>
+	<TD ALIGN=LEFT VALIGN=TOP>Defines the model view transformation from the viewpoint, the lookat point and the up vector.</TD>
+</TR></TABLE>
+<P>
+Figure 1-1 shows how you can use the <tt>guLookAt(F)</tt> function to specify the viewpoint and the point that acts as the center of the screen.
+</P>
+<P>
+<br>
+<br>
+<IMG SRC="image01.gif">
+</P>
+<P>
+<B>Figure 1-1  Conceptual drawing of the <tt>guLookAt(F)</tt> function</B>
+</P>
+<P>
+However, in this tutorial we are going to construct a model view transformation that combines scaling, rotation and translation without making use of the <tt>guLookAt(F)</tt> function.<br><br>
+
+     There are many different useful functions available for matrix calculations in addition to the ones below.  They are all easy to use, so we will leave the details to the Function Reference and settle here for a simple explanation of each. 
+</P>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD> </TD>
+	<TD>
+	<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE><tt>guMtxIdent(F)</tt></TD>
+	<TD> </TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE>Initializes the matrix as the identity matrix</TD>
+	</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE><tt>guScale(F)</tt></TD>
+	<TD> </TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE>Sets scale matrix in the given matrix</TD>
+	</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE><tt>guRotate(F)</tt></TD>
+	<TD> </TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE>Sets rotation matrix in the given matrix</TD>
+	</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE><tt>guRotateRPY(F)</tt></TD>
+	<TD> </TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE>Creates rotation matrix from roll, pitch and yaw</TD>
+	</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE><tt>guTranslate(F)</tt></TD>
+	<TD> </TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE>Sets translation matrix in the given matrix</TD>
+	</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE><tt>guMtxCatF</tt></TD>
+	<TD> </TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE>Multiplies floating point matrices</TD>
+	</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE><tt>guMtxCatL</tt></TD>
+	<TD> </TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE>Multiplies fixed point matrices</TD>
+	</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE><tt>guMtxF2L</tt></TD>
+	<TD> </TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE>Converts floating point matrix to fixed point</TD>
+	</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE><tt>guMtxL2F</tt></TD>
+	<TD> </TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE>Converts fixed point matrix to floating point.</TD>
+	</TR></TABLE>
+	</TD>
+</TR></TABLE>
+<P>
+You use these functions in the program to create the projection transformation matrix and the model view transformation matrix.  To give a concrete example of this process we have displayed part of the gfx1.c sample program in the frame below.
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=5><TR>
+	<TD NOWRAP COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE><B>List 1-1</B></TD>
+</TR><TR>
+	<TD NOWRAP BGCOLOR="666666" WIDTH="4" ALIGN=LEFT VALIGN=TOP><HR NOSHADE SIZE=0></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><FONT COLOR="#000080"><PRE><CODE>  /* Function creating the projection transformation matrix  */
+  guPerspective(&amp;projection,
+                &amp;perspNorm,
+                45.0,                                 /* Viewing angle  */
+                (float)SCREEN_WD / (float)SCREEN_HT,  /* Aspect ratio */
+                10.0, 100.0,                          /* Distance to clipping plane */
+                1.0);
+
+  /* Create rotation matrix */
+  guRotateF(fmat1, theta, 1.0, 1.0, 0.5);
+  /* Translation matrix in order to keep the distance from the viewpoint  */
+  guTranslateF(fmat2, 0.0, 0.0, -50.0);
+  /* Multiply 2 matrices  (Put result in fmat1)*/
+  guMtxCatF(fmat1, fmat2, fmat1);
+  /* Convert matrix from floating point to fixed point  */
+  guMtxF2L(fmat1, &amp;modeling);
+</CODE></PRE></FONT>
+	</TD>
+</TR></TABLE>
+<P>
+Most of the calculations done in this code are common to general graphics processes, but let's give a brief explanation will be given of <tt>guPerspective</tt>, the function that creates the projection matrix.  The first argument in this function is the pointer to the matrix union.  <tt>guPerspective</tt> appropriately sets the elements of the array indicated by this argument.  The second argument, <b>perspNorm</b>, helps maintain computational precision by dividing by the w-coordinate value of the calculated screen coordinates.  When you call <tt>guPerspective</tt> the appropriate scaling constant is stored in <b>perspNorm</b>.  Specify this with the gSPPerspNormalize command and pass it to the RSP.<br><br>
+     See Figure 1-2 about the viewing angle, aspect ratio and distance to the clipping plane.
+</P>
+<P>
+<br>
+<br>
+<IMG SRC="image02.gif">
+</P>
+<P>
+<B>Figure 1-2  The 3D world settings of gfx1.c</B>
+</P>
+<P>
+The final argument of <tt>guPerspective</tt> is the scaling constant for the whole matrix.  Every element of the matrix is multiplied by this value within <tt>guPerspective</tt>.  For example, when drawing a small-scale 3D world, you could use the scaling constant to enlarge the overall geometry in order to maintain the computational precision until it is time for rendering.
+</P>
+</BODY>
+</HTML>

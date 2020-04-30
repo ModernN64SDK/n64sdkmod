@@ -1,0 +1,53 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.
+  PWC- updated formatting
+  MAP- added links, updated format
+-->
+<title>osInitRdb</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>osInitRdb</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p>osInitRdb</p>
+
+<p><i>Sets up an outgoing buffer for the rdb debug port</i></p>
+
+<h3>Syntax</h3>
+<p>
+<blockquote>
+    <pre>#include &lt;ultra64.h&gt;     /* <A HREF="../../header/ultra64.htm">ultra64.h</A> */
+void osInitRdb(u8 *sendBuf, u32 bufSize); </pre>
+</blockquote></p>
+
+<h3>Arguments</h3>
+<p>
+<dl>
+    <dt><b>sendBuf</b></dt>
+    <dd>the pointer to the buffer to be used <br>
+        <br>
+        </dd>
+    <dt><strong>bufSize</strong></dt>
+    <dd>the size of the buffer in bytes<br>
+        <br>
+        </dd></dl></p>
+
+<h3>Description</h3>
+
+<p>This provides a buffer to the RDB debug port handling routines. The buffer is used to increase efficiency of game-to-host debug data transfers. The buffer can be of any size but optimally it should be big enough to handle the maximum amount of data transferred at any one given time. For example, if your application prints out 40 lines of debugging info, each of 30 characters, then 1200 bytes would be optimal.</p>
+
+<h3>Features</h3>
+
+<p>The following subsystems will use this buffer if it is available:</p>
+
+<p><a href="osSyncPrintf.htm">osSyncPrintf</a>, logging, profiling, debugging, libultrahost</p>
+<H3>Revision history</H3>
+<P>
+1999/04/30 Changed format
+</P>
+
+</body>
+</html>

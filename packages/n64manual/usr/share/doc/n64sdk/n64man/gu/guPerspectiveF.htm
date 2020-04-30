@@ -1,0 +1,73 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.>
+<TITLE>guPerspectiveF</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>guPerspectiveF<FONT size="+0"> [Function]</FONT></H1>
+
+<p><h3>Function</h3></p>
+
+<p>guPerspective</p>
+<P>
+<i>Creates a perspective projection matrix (floating point)</i>
+</P>
+<H3>Syntax</H3>
+<p>
+<PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gu.htm">gu.h</A> */
+void guPerspectiveF(
+        float mf[4][4],
+        u16 *perspNorm,
+        float fovy,
+        float aspect,
+        float near,
+        float far,
+        float scale);</CODE></PRE></p>
+
+<H3>Arguments</H3>
+<p><DL>
+  <DT><B>mf</B>
+  <DD>The resulting 4x4 projection matrix
+  <DT><B>perspNorm</B>
+  <DD>Pointer to the resulting numerical value
+  <DT><B>fovy</B>
+  <DD>The angle of view in the vertical (y) direction (0.0 ~ 180.0 degrees)
+  <DT><B>aspect</B>
+  <DD>The aspect ratio (width/height) setting the view in the horizontal (x) direction
+  <DT><B>near</B>
+  <DD>Distance from viewpoint to near clipping plane
+  <DT><B>far</B>
+  <DD>Distance from viewpoint to far clipping plane
+  <DT><B>scale</B>
+  <DD>Scale for matrix elements
+  <DD>* Can be used to set the significant number of digits for RSP fixed-point computations.
+</DL></p>
+
+<H3>Returned value</H3>
+<P>
+None.
+</P>
+<H3>Description</H3>
+<P>
+Returns a perspective projection matrix to <B>mf</B>, and returns a numerical value to <B>perspNorm</B> for use by <A HREF="../gsp/gSPPerspNormalize.htm">gSPPerspNormalize</A>.  When this function is called, the result is the creation of the following kind of projection matrix:
+</P>
+<P>
+<IMG SRC="guPerspectiveF00.gif">
+</P>
+<P>
+Both <B>near</B> and <B>far</B> must be positive values.  This function specifies the viewable region of the perspective transformation (the viewing volume), which is shaped like a square-based pyramid with its top cut off.  With this function, the pyramid has bilateral symmetry, whereas with <A HREF="guFrustumF.htm">guFrustumF</A> you can define a pyramid that does not have bilateral symmetry.  Fixed point is handled with the <A HREF="guPerspective.htm">guPerspective</A> function.
+</P>
+<H3>See also</H3>
+<P>
+<A HREF="../gsp/gSPPerspNormalize.htm">gSPPerspNormalize</A>, <A HREF="guFrustum.htm">guFrustum</A>, <A HREF="guFrustumF.htm">guFrustumF</A>, <A HREF="guOrtho.htm">guOrtho</A>, <A HREF="guOrthoF.htm">guOrthoF</A>, and <A HREF="guPerspective.htm">guPerspective</A>
+</P>
+<H3>Revision history</H3>
+<P>
+03/01/99  Completely rewritten.
+</P>
+</BODY>
+</HTML>

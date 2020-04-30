@@ -1,0 +1,314 @@
+<html>
+<HEAD>
+<TITLE>JointNode</TITLE>
+</HEAD>
+<BODY LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff">
+
+<font face="arial" size="-1">
+<b><font size="3">19. JointList</font></b>
+<HR>
+
+<P>
+<b>(1) JointList</b>
+<p>
+<blockquote>
+
+<table border width="600">
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 joint_list_tag</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the tags of JointList.  Please set the tags shown below.
+<font face="courier" size="2">
+<pre>
+<b>
+TAG_JOINT_LIST          0x00250000
+</b>
+</pre>
+</font>
+</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 joint_list_header_size</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the JointListHeader byte size.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 joint_list_size</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the JointList byte size.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 joint_num</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the Joint number.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 joint_num_byte</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the byte size of each Joint.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">Joint </font>
+</td>
+<td>
+<font face="arial" size="-1">This is the Joint area.</font>
+</td>
+</tr>
+
+</table>
+
+<p>
+<a href="./appendix/IK_system_E.htm">Appendix ... about IK System</a>
+<p>
+<a href="./joint_C.htm">Go to the data chunk</a>
+<p>
+
+</blockquote>
+
+<b>(2) Joint</b>
+<blockquote>
+
+<table border width="600">
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 joint_tag</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the tags of Joint.  Please set the tags shown below.
+<font face="courier" size="2">
+<pre>
+<b>
+TAG_JOINT               0x00250100
+</b>
+</pre>
+</font>
+</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 this_joint_index</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the index number for this Joint.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 joint_size</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the Joint byte size.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 joint_name_index</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the Joint name with the index number in NameList.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 joint_type</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the Joint type.<p>
+In NIFF2.0, IK-Chain only handles a 2-joint-chain.  The following flags are defined:
+<font face="courier" size="2">
+<pre>
+<b>
+NIFF2_1ST_JOINT             0x00000000
+NIFF2_2ND_JOINT             0x00000001
+NIFF2_JOINT_UP              0x00000000
+NIFF2_JOINT_DOWN            0x00010000
+</b>
+</pre>
+</font>
+Set NIFF2_1ST_JOINT for the 1st Joint.<p>
+Set NIFF2_2ND_JOINT for the 2nd Joint.<p>
+With NIFF2_JOINT_UP, IK-Chain moves forward in response to the movement of an Effector.  Thus, IK-Chain bends when the Effector moves in the positive direction along the Y axis of the 1st Joint.<p>
+With NIFF2_JOINT_DOWN, IK-Chain moves in the reverse direction in response to the movement of an Effector.  Thus, IK-Chain bends when the Effector moves in the negative direction along the Y axis of the 1st Joint.<p>
+NIFF2_1ST_JOINT, NIFF2_2ND_JOINT and NIFF2_JOINT_UP, NIFF2_JOINT_DOWN are described with bitOR.</font>
+</td>
+</tr>
+
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">float joint_length</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the Joint length.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">float resplane_axis_x<br>
+float resplane_axis_y<br>
+float respalne_axis_z</font>
+</td>
+<td>
+<font face="arial" size="-1">This vector indicates divergence from the direction of the Z axis. It
+indicates the normal vector of the IK resolution plane. Please set
+toward the Z axis (x,y,z)=(0,0,1). </font>
+</td>
+</tr>
+
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 obj_num</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the Obj number linked to Joint.</font>
+</td>
+</tr>
+
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 external_obj_num
+</td>
+<td>
+<font face="arial" size="-1">Describes the Obj number linked to Joint referencing an external file.
+</td>
+</tr>
+
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 joint_index</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the index number of a Joint linked by this Joint.  When linking this Joint to an Effector, please describe the following flag:
+<font face="courier" size="2">
+<pre>
+<b>
+NIFF2_NO_LINK_TO_JOINT&#9;&#9;0xffffffff
+</b>
+</pre>
+</font>
+</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 effector_index</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the index number of the Effector linked to this Joint. When linking this Joint to a Joint, please describe the following flag:
+<font face="courier" size="2">
+<pre>
+<b>
+NIFF2_NO_LINK_TO_EFFECTOR&#9;0xffffffff
+</b>
+</pre>
+</font>
+</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 anim_index</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the index number of the AnimGroup linked to this Joint.
+For the 1st Joint, the resolution plane can be determined using the
+PreferredAxisConstraint channel or the UpVectorConstraint channel.
+If these constraints are not used, then the resolution plane will run
+parallel to the Z axis of ChainRoot.
+For Joint rotation, highest priority goes to rotation around the X axis.
+The actual resolution plane becomes the plane that faces the Z axis
+without conflicting with rotation around the X axis.
+When there is a link to PreferredAxisConstraint, the Joint's Z axis is
+adjusted in the direction of the object which has that constraint. Of
+course, rotation around the X axis has the highest priority.
+When there is a link to UpVectorConstraint, the origin point of the
+1st Joint and the origin points of Effector and Constraint objects are
+calculated so they lay on the resolution plane.
+The 2nd Joint is ignored, even when linked to animation.
+If there are no links to animation, please describe anim_index =
+0xffffffff. </font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 obj_index</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the index number for the Obj linked from the Joint<p>
+When obj_num = 0, this field is not described.</font>
+</td>
+</tr>
+
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 external_obj_file_name_index</font>
+</td>
+<td>
+<font face="arial" size="-1">When the Obj that is linked from the Joint references an external file, this file name is described with an ExternalNameList index number.<p>
+Please do not include the directory name etc. when describing the file name.<p>
+When external_obj_num = 0, this field is not described.</font>
+</td>
+</tr>
+
+
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 external_obj_name_index</font>
+</td>
+<td>
+<font face="arial" size="-1">When the Obj that is linked from the Joint references an external file, that Obj name is described with an ExternalNameList index number.
+<p>
+When external_obj_num = 0, this field is not described.</font>
+</td>
+</tr>
+</table>
+
+<p>
+<a href="./appendix/IK_system_E.htm">Appendix ... about IK System</a>
+<p>
+<a href="./joint_C.htm">Go to the data chunk</a>
+<p>
+
+</blockquote>
+
+<hr>
+
+</body>
+</html>

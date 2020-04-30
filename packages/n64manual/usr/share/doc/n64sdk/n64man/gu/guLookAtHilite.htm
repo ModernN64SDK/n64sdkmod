@@ -1,0 +1,155 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.>
+<TITLE>guLookAtHilite</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>guLookAtHilite</H1>
+
+<p><h3>Function</h3></p>
+
+<p>guLookAtHilite</p>
+<P>
+<i>Creates the viewing matrix (fixed point) and sets the LookAt/Hilite structures</i>
+</P>
+<H3>Syntax</H3>
+<p>
+<PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gu.htm">gu.h</A> */
+void guLookAtHilite(
+        Mtx *m,
+        LookAt *l,
+        Hilite *h,
+        float xEye,
+        float yEye,
+        float zEye,
+        float xAt,
+        float yAt,
+        float zAt,
+        float xUp,
+        float yUp,
+        float zUp,
+        float xl1,
+        float yl1,
+        float zl1,
+        float xl2,
+        float yl2,
+        float zl2,
+        int twidth,
+        int theight);</CODE></PRE></p>
+
+<H3>Arguments</H3>
+<p><DL>
+  <DT><B>m</B>
+  <DD>Pointer to 4x4 viewing matrix resulting from calculation
+  <DT><B>l</B>
+  <DD>Pointer to LookAt structure resulting from calculation
+  <DT><B>h</B>
+  <DD>Pointer to Hilite structure resulting from calculation
+  <DT><B>xEye</B>
+  <DD>x-coordinate of viewpoint
+  <DT><B>yEye</B>
+  <DD>y-coordinate of viewpoint
+  <DT><B>zEye</B>
+  <DD>z-coordinate of viewpoint
+  <DT><B>xAt</B>
+  <DD>x-coordinate of lookat point
+  <DT><B>yAt</B>
+  <DD>y-coordinate of lookat point
+  <DT><B>zAt</B>
+  <DD>z-coordinate of lookat point
+  <DT><B>xUp</B>
+  <DD>x component of upward vector
+  <DT><B>yUp</B>
+  <DD>y component of upward vector
+  <DT><B>zUp</B>
+  <DD>z component of upward vector
+  <DT><B>xl1</B>
+  <DD>x direction for first specular highlight
+  <DT><B>yl1</B>
+  <DD>y direction for first specular highlight
+  <DT><B>zl1</B>
+  <DD>z direction for first specular highlight
+  <DT><B>xl2</B>
+  <DD>x direction for second specular highlight
+  <DT><B>yl2</B>
+  <DD>y direction for second specular highlight
+  <DT><B>zl2</B>
+  <DD>z direction for second specular highlight
+  <DT><B>twidth</B>
+  <DD>Width of texture for specular highlight
+  <DT><B>theight</B>
+  <DD>Height of texture for specular highlight
+</DL></p>
+<H3>Returned value</H3>
+<P>
+None
+</P>
+<H3>Description</H3>
+<P>
+This function returns a viewing matrix to the structure indicated by <B>m</B>.  It also sets the x,y screen coordinate directions in the LookAt structure in order to render specular highlights, and it sets the texture offsets used for the rendering of two specular highlights in the Hilite structure.  For details about the fixed point format, see <A HREF="../gsp/gSPMatrix.htm">gSPMatrix</A>.  Floating point is handled with the <A HREF="guLookAtHiliteF.htm">guLookAtHiliteF</A> function.
+</P>
+<P>
+The arguments that this function shares in common with <A HREF="guLookAt.htm">guLookAt</A> also share the same meanings.  Use <A HREF="../gdp/gDPSetHilite1Tile.htm">gDPSetHilite1Tile</A> or <A HREF="../gdp/gDPSetHilite2Tile.htm">gDPSetHilite2Tile</A> to set the texture parameters (the Hilite structure) for the rendering of specular highlights.  Use the gSPLookAt function to set the texture settings (the LookAt structure) for specular highlights.
+</P>
+<P>
+For details, see Section 11.7.4 "Specular Highlights" in the N64 Programming Manual.
+</P>
+<H3>Note</H3>
+<P>
+If you are only going to render one specular highlight, be sure to set <B>xl2</B>, <B>yl2</B>, and <B>zl2</B> to 0.  Also, note that both <B>twidth</B> and <B>theight</B> must be powers of 2.
+</P>
+<H3>Comment</H3>
+<P>
+The Mtx structure looks like this:
+<PRE><CODE>typedef long  Mtx_t[4][4];
+typedef union {
+     Mtx_t          m;
+     long long int  force_structure_alignment;
+} Mtx;
+</CODE></PRE>
+</P>
+<P>
+The LookAt structure looks like this:
+<PRE><CODE>typedef struct {
+     unsigned char  col[3]; /* Diffuse light value (RGBA) */
+     char           pad1;
+     unsigned char  colc[3]; /* Copy of diffuse light value (RGBA) */
+     char           pad2;
+     signed char    dir[3]; /* Direction toward light source (normalized) */
+     char           pad3;   /* IMPORTANT: dir must be smaller than 127  */
+} Light_t;
+typedef union {
+     Light_t        l;
+     long long int  force_structure_alignment[2];
+} Light;
+typedef struct {
+     Light          l[2];
+} LookAt;
+</CODE></PRE>
+* Note that here the Light structure is not utilized in the normal way: l[0].dir is for the x,y,z components of the viewing space in the x direction of the screen space, while l[1].dir is for the x,y,z components of the viewing space in the y direction of the screen space.
+</P>
+<P>
+The Hilite structure looks like this:
+<PRE><CODE>typedef struct {
+     int       x1, y1, x2, y2; /* Texture offsets for specular highlights */
+} Hilite_t;
+typedef union {
+     Hilite_t  h;
+     long int  force_structure_alignment[4];
+} Hilite;
+</CODE></PRE>
+</P>
+<H3>See also</H3>
+<P>
+<A HREF="../gdp/gDPSetHilite1Tile.htm">gDPSetHilite1Tile</A>, <A HREF="../gdp/gDPSetHilite2Tile.htm">gDPSetHilite2Tile</A>, <A HREF="../gsp/gSPLookAt.htm">gSPLookAt</A>, <A HREF="../gsp/gSPMatrix.htm">gSPMatrix</A>, <A HREF="guLookAt.htm">guLookAt</A>, <A HREF="guLookAtF.htm">guLookAtF</A>, <A HREF="guLookAtHiliteF.htm">guLookAtHiliteF</A>, <A HREF="guLookAtReflect.htm">guLookAtReflect</A>, and <A HREF="guLookAtReflectF.htm">guLookAtReflectF</A>
+</P>
+<H3>Revision history</H3>
+<P>
+03/01/99  Completely rewritten.
+</P>
+</BODY>
+</HTML>

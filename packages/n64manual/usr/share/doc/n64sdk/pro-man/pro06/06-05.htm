@@ -1,0 +1,16 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 6 - N64 Operating System Overview</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check.-->
+</head>
+
+<h1>6.5 Memory Management</h1>
+
+<p>In this operating system, the responsibility of memory management is left up to the game. That is, the operating system provides no <A target="keywords" HREF="../../keywords/index/data/system.htm#heap">heap</A> or dynamic memory allocation mechanism for the game. Since the game can access the entire memory map, it has complete control on how memory is partitioned and used. The operating system simply runs in the <A target="keywords" HREF="../../keywords/index/data/system.htm#kernel">kernel</A> mode (kseg0) with cache and direct mapping enabled.  In this mode, the <A target="keywords" HREF="../../keywords/index/data/system.htm#virtual address">virtual address</A> 0x80000000 is mapped directly to the physical address 0x0. Translation Lookaside Buffer (TLB) is not used by the operating system to provide virtual memory support.  However, low-level routines are available for game developers to program the TLBs directly. Furthermore, a region library is provided to simplify the task of allocating and de-allocating fixed-size memory buffers. </p>
+
+<p>Game developers should be aware of the importance of invalidating and flushing caches before transferring data between either cartridge ROM or RCP and main memory. The operating system provides useful functions to invalidate both instruction and data caches and to write back data cache.</p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+</body> </html>

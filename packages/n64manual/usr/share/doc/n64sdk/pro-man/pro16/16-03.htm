@@ -1,0 +1,45 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 16 - N64 Sprite Library</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. -->
+</head>
+
+<h1>16.3 Tricks and Techniques</h1>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="01"><h2>16.3.1 Sparse Sprites</h2></a>
+
+<p>The buf in a bitmap entry may be NULL, indicating that nothing should be drawn. This area will be 100% transparent. </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="02"><h2>16.3.2 Early-Ending Sprites</h2></a>
+
+<p>Setting the width of a bitmap entry to zero (0) signals an early exit to drawing the sprite's bitmaps. </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="03"><h2>16.3.3 Variable Size Bitmaps</h2></a>
+
+<p>Each bitmap can have a different drawn &QUOT;width&QUOT; and the corresponding texture can have a different width_img. To vary the vertical size of a <a href="../../keywords/index/data/graphics.htm#sprite" target="keywords">sprite</a>, set the actual_height field. If this is bigger than the sprite's bmHeightReal, then this actual_height is used for loading TMEM. </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="04"><h2>16.3.4 Explosions</h2></a>
+
+<p>Each sprite can specify the spacing between tiles in pixels by setting the explx and exply fields. The default value is zero (0). This spacing is not affected by the scaling of the sprite.</p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="05"><h2>16.3.5 Bitmap Re-use</h2></a>
+
+<p>If the buf of the current bitmap matches the buf of the previous bitmap (not counting NULL bufs) in this sprite, then TMEM will not be re-loaded. This very simple form of texture caching is used in the font example.</p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="06"><h2>16.3.6 Sprite Re-use</h2></a>
+
+<p>Each sprite has an associated <a href="../../keywords/index/data/graphics.htm#display list" target="keywords">display list</a> and an associated rsp_dl_next pointer. When <a href="../../n64man/sp/spDraw.htm">spDraw</a> is called, new display list entries are added to the area pointed at by rsp_dl_next. This does not have to correspond to the pre-allocated display list allocated for the sprite; it could point somewhere else. </p>
+
+<p>This allows a sprite to get drawn multiple times, each with a different setting of some parameters (position, scale, color, solid/textured, and so on). Sufficient display list area must be allocated for this to operate correctly. </p>
+
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+</body> </html>

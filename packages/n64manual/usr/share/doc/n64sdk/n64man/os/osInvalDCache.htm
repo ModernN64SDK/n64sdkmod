@@ -1,0 +1,49 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<!--Edited by Matt P., 2/21/2000- added revisions-->
+<TITLE>osInvalDCache</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+<font style="font-size: 12pt"><b>osInvalDCache</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+<P>
+<i>Invalidates CPU data cache lines </i>
+</P>
+<H3>Syntax</H3>
+<PRE>
+<CODE>#include &lt;ultra64.h&gt;        /* <A href="../../header/ultra64.htm">os.h</A> */
+void osInvalDCache(void *vaddr, s32 nbytes);
+</CODE>
+</PRE>
+<H3>Description</H3>
+<P>
+The MIPS R4300 CPU implements an 8 Kbyte direct-mapped data cache with a line size of 16 bytes.  The cache is not synchronized with physical memory and thus cache lines must be invalidated to ensure that old data is not used when more recent data exists in physical memory.  
+</P>
+<P>
+<tt>osInvalDCache</tt> function invalidates all data cache lines that contain the region of [<B>vaddr</B>, <B>vaddr</B>+<B>nbytes</B>- <B>1</B>]. The given address <B>vaddr</B> must be a CPU virtual address, either direct mapped or mapped via the CPU TLB.  If <B>vaddr</B> is not aligned to the cache line boundary, and <B>nbytes</B> is not a multiple of the cache line size, a slightly larger region may be invalidated.  
+</P>
+<P>
+This function is mostly used when data is read from mask ROM to memory by way of DMA.  In this case, the cache data is out of date with respect to physical memory, and thus cache lines associated with the memory read by way of DMA must be invalidated prior to accessing these data. <BR>
+</P>
+<H3>Additional Description</H3>
+<P>
+<tt>osInvalDCache</tt> function does the following operations:<BR>
+If <B>nbytes</B> &lt; 8192: writes back data cache lines with the region of [<B>vaddr</B>, <B>vaddr</B>+<B>nbytes</B>-
+<B>1</B>] and invalidates them.<BR>
+If <B>nbytes</B> &gt;= 8192: writes back all data cache lines and invalidates them. <BR>
+</P>
+<H3>See Also</H3>
+<P>
+<A href="osMapTLB.htm">osMapTLB</A>, <A href="osInvalICache.htm">osInvalICache</A>, <A href="osWritebackDCache.htm">osWritebackDCache</A>
+</P>
+<H3>Revision History</H3>
+<P>
+04/30/1999 Changed Format.
+</P>
+<P>
+11/05/1999 Retranslated "Description."  Added "Additional Description."  
+</P>
+</BODY>
+</HTML>

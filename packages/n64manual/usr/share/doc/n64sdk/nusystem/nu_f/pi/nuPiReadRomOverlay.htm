@@ -1,0 +1,86 @@
+<HTML>
+<HEAD>
+<TITLE>nuPiReadRomOverlay</TITLE>
+<link rel=stylesheet type="text/css" href="../../../n64man/n64man.css">
+<!-- Editor's Notes: 9/15/1999 Ron Daring -->
+</HEAD>
+
+<BODY bgcolor="#FFFFFF">
+
+<P>
+<h1><IMG src="../nusystem2.gif" height="30" width="176">Function</h1>
+</P>
+<HR>
+<P>
+<h2>nuPiReadRomOverlay</h2>
+</P>
+<HR>
+<P>
+<FONT size="4"><STRONG>Format:</STRONG></FONT>
+</P>
+<PRE>
+void nuPiReadRomOverlay(NUPiOverlaySegment* segment)
+</PRE>
+<P>
+<FONT size="4"><STRONG>Argument:</STRONG></FONT>
+</P>
+<PRE>
+<B>segment</B> Pointer of segment structure 
+</PRE>
+<P>
+<FONT size="4"><STRONG>Return value:</STRONG></FONT>
+</P>
+<PRE>
+None
+</PRE>
+<P>
+<FONT size="4"><STRONG>Description:</STRONG></FONT>
+</P>
+<P>
+<i>Reads Overlay segment from ROM </i>
+</P>
+<P>
+DMA transfers segment data, which includes command codes in the Game Pak, to RDRAM using PI and overlays it. The segment to be read is specified by the <TT>PiOverlaySegment</TT> type structure which is specified by <TT>segment</TT>. <TT>NUPiOverlaySegment</TT> type structure is defined as follows:  </P>
+<PRE>
+typedef struct st_PiOverlaySegment {
+    u8* romStart;    /* Starting offset of segment ROM      */
+    u8* romEnd;      /* Ending offset of segment ROM      */
+    u8* ramStart;    /* Starting address of segment CPU        */
+    u8* textStart;   /* Starting address of DRAM of text attribute          */
+    u8* textEnd;     /* Ending address of DRAM of text attribute          */
+    u8* dataStart;   /* Starting address of DRAM of data attribute           */
+    u8* dataEnd;     /* Ending address of DRAM of data attribute       */
+    u8* bssStart;    /* Starting address of DRAM of bss attribute            */
+    u8* bssEnd;      /* Ending address of DRAM of bss attribute            */
+} NUPiOverlaySegment;
+</PRE>
+<P>
+This function processes the following, which are necessary for overlay. 
+</P>
+<UL>
+  <LI>Invalidate instruction cache for text attribute area
+  <LI>Invalidate data cache for data attribute area
+  <LI>DMA transfer of segment data
+  <LI>Clear bss attribute area using zeroes  
+</UL>
+<P>
+Please be aware of the following cautions when DMA transferring overlay segment. 
+</P>
+<OL>
+  <LI>Be sure to overlay after the instruction cache for the area to be overlayed is completely finished. Do not execute a code immediately prior to, during or after the overlay.   
+  <LI>Because of the size of the cache line for instruction cache, 32 byte alignment is recommended for the segment to be overlayed.  
+</OL>
+<P>
+When data of a large size is transferred using PI-DMA, necessary data for audio replay cannot be transferred during that time, and noise could occur in the audio.  Therefore, when the size of data to be transferred at a time is more than 16384 bytes, it is processed so as to transfer the data in 16384 byte units within the function. 
+
+</P>
+<HR>
+<PRE>
+Reference:  <A href="nuPiInit.htm">nuPiInit</A>
+</PRE>
+<HR>
+<P>
+<A href="index.htm"><IMG src="../index.gif" height="17" width="65" border="0"></A>
+</P>
+</BODY>
+</HTML>

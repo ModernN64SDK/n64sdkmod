@@ -1,0 +1,209 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title></title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font face="arial" size="-1">
+<p><a name="01">
+<b>12.1 Mixing of 64DD instructions and PI bus access is prohibited.</b>
+</a>
+
+<p>All 64DD instructions are designed on the assumption that other PI devices are not and will not be accessed (including DDROM objects).  Therefore, be careful to ensure that commands to 64DD and other PI devices are collected and issued from a single thread.  If commands to 64DD are being executed, do not issue commands to other PI devices.  Conversely, if commands to other PI devices are being executed, do not execute 64DD commands.  Please adhere to these requirements carefully.</p>
+
+<p><a href="index.htm#index"><img src="../../gif/index.gif"
+border="0" width="65" height="17"></a></p>
+
+<hr size="1" noshade>
+
+<p><a name="02"><b>12.2 After the IPL starts the game, disk access is prohibited until the first screen.
+</a></b>
+
+<p>First present the initial screen (e.g. title).  Be sure to include the functions that display errors in the portion of the game first started.  If this is not done and any errors occur when the game accesses the disk, the fact that an error occurred  cannot be displayed.  In addition, be sure to include the following in the boot segment read by the IPL:
+</p>
+
+<ul>
+    <li>The initial screen the display, such as the title screen</li>
+    <li>Disk error-handling routines (including error displays)
+    </li>
+</ul>
+
+<p><a href="index.htm#index"><img src="../../gif/index.gif"
+border="0" width="65" height="17"></a></p>
+
+<hr size="1" noshade>
+
+<p><a name="03"><b>12.3 After a disk exchange is detected, be sure to call LeoReadDiskID().  Then check the disk ID read by this function.
+</a></b>
+
+<p>Be sure to call <a href="../../n64man/64dd/LeoReadDiskID.htm">LeoReadDiskID( )</a> immediately after LeoCreateLeoManager() is executed or a disk exchange is detected (disk exchange can be detected by the occurrence of a DISK_MAY_HAVE_CHANGED error).  Ensure that the disk ID read by LeoReadDiskID() is then compared with that of the disk that should have been inserted originally (or will be inserted).  For details, see Chapter 10:  Error Handling Sequences.</p>
+
+<p><a href="index.htm#index"><img src="../../gif/index.gif"
+border="0" width="65" height="17"></a></p>
+
+<hr size="1" noshade>
+
+<p><a name="04"><b>12.4  For master data, insert some type of initial value in blocks that are used or may be used by the game. </b></a>
+
+<p>For example, if the game uses LBA 2000 to 2999 as a data backup area, please be sure to put some type of initial value in that portion of the disk when creating master data.  In addition, during final debugging, please be sure to perform the checks using a disk created from the master data (See Chapter 5 for information on final debugging).  Games on disks that have portions used by the game that do not contain an initial value will be shipped with those portions undefined, which may cause the game program to behave unexpectedly.  In addition, if a variable is used to specify a block, the variable may be destroyed by a bug, and a block may be accessed that was not intended to be accessed. Please take adequate precautions against the erroneous destruction of such variables. </p>
+
+<p><a href="index.htm#index"><img src="../../gif/index.gif"
+border="0" width="65" height="17"></a></p>
+
+<hr size="1" noshade>
+
+<p><a name="05"><b>12.5 Setting the RTC at the time of a Game Pak startup.</a></b>
+
+<p>When the RTC is used with a Game Pak-startup game, please ensure that the time can be set.  (It is not necessary to enable the time to be set at any point during a game.  It would be sufficient, for example, for a menu for setting the time to appear immediately after the game starts.)  This enables the time to be set from within the game, in case the user for any reason attempts to do so.  In addition, please ensure that problems such as game hang-ups do not occur if the user enters an odd time.</p>
+
+<p><a href="index.htm#index"><img src="../../gif/index.gif"
+border="0" width="65" height="17"></a></p>
+
+<hr size="1" noshade>
+
+<p><a name="06"><b>12.6 Set the times for switching to standby and sleep modes to the shortest times possible.</b></a>
+
+<p>Because the motor and its associated components are mechanical parts, their life is notably shorter than that of electrical parts. Using <a href="../../n64man/64dd/LeoModeSelectAsync.htm">LeoModeSelectAsync()</a> to set the times for switching to STANDBY and SLEEP to long intervals causes frequent continous rotation of the motor, shortening the life of the user's 64DD.  Please ensure that the default settings are used.  For the same reason, avoid causing the motor to rotate continuously even though no data are being read and avoid continuously issuing a seek command for the same track. </p>
+
+<p><a href="index.htm#index"><img src="../../gif/index.gif"
+border="0" width="65" height="17"></a></p>
+
+<hr size="1" noshade>
+
+<p><a name="07"><b>12.7 Call LeoReset() if a preNMI state occurs.</b></a>
+
+<p>When a preNMI state occurs, be sure to call the <a href="../../n64man/64dd/LeoReset.htm">LeoReset( )</a> function to interrupt drive access (as soon after the preNMI interrupt occurs as possible).  For details, see Chapter 10:  Error Handling Sequences.
+</p>
+
+<p><a href="index.htm#index"><img src="../../gif/index.gif"
+border="0" width="65" height="17"></a></p>
+
+<hr size="1" noshade>
+
+<p><a name="08"><b>12.8 Ensure that screen display is possible even when startup is performed using a non-startup disk.</b></a>
+
+<p>The user may mistakenly insert the second or other disk of multi-disk disk-startup game, or data disk of a Game Pak-startup game, in place of the first disk of a disk startup game and attempt to start the game with this disk.  In such cases, the program should be able to start properly and display a message such as the following: "This disk is Disk 2 of (game name).  Please insert Disk 1 and turn the power off and on again."</p>
+
+<p><a href="index.htm#index"><img src="../../gif/index.gif"
+border="0" width="65" height="17"></a></p>
+
+<hr size="1" noshade>
+
+<p><a name="09"><b>12.9 Ensure that changes in processing time resulting from retries or errors are adequately handled.</b></a>
+
+<p>The time required for disk access may increase as a result of retries and error correction.  Please ensure that this does not cause malfunctions.  Pay particularly close attention to this possibility when accessing data related to processing for which timing is important, such as audio processing.</p>
+
+<p>As a responsibility of the programmer, careful program checks are recommended (eg, debugging). </p>
+
+<p><a href="index.htm#index"><img src="../../gif/index.gif"
+border="0" width="65" height="17"></a></p>
+
+<hr size="1" noshade>
+
+<p><a name="10"><b>12.10 Use the EPI functions to access the PI bus.  Do not use the Pi functions.</b></a>
+
+<p>The Pi functions (osPiStartDma(), osPiReadIo(), and osPiWriteIo()) are old functions created under the assumption that only a Game Pak ROM will be plugged into the PI bus.  The PI bus is now being put to other uses, including its use by the 64DD, so please use the EPI functions (osEPiStartDMA(), osEPiReadIo(), and osEPiWriteIo()) to access it.</p>
+
+<p><a href="index.htm#index"><img src="../../gif/index.gif"
+border="0" width="65" height="17"></a></p>
+
+<hr size="1" noshade>
+
+<p><a name="11"><b>12.11 Verification is recommended when writing critical data.</b></a>
+
+<p>When very important data are written, it is recommended that these data immediately be read and verified by comparison with the original data.</p>
+
+<p><a href="index.htm#index"><img src="../../gif/index.gif"
+border="0" width="65" height="17"></a></p>
+
+<hr size="1" noshade>
+
+<p><a name="12"><b>12.12 Ensure the safe handling of write interrupts</b></a>
+
+<p>Data in the portion of the disk being written to may be destroyed if the user turns off power to the drive, pushes the reset button, or ejects the disk during a write.</p>
+
+<p>In the worst case, the data to be saved may be lost.  For more information, see 7.9  Write Interrupts.</p>
+
+<p>Data to be saved can be protected by writing it to an area different from that where data were written during the previous save, rather than overwriting  the previous data.  This leaves the previously saved data available in case the data being saved are lost due to a write interrupt.</p>
+
+<p><a href="index.htm#index"><img src="../../gif/index.gif"
+border="0" width="65" height="17"></a></p>
+
+<hr size="1" noshade>
+
+<p><a name="13"><b>12.13 If a disk exchange is detected at a point in the program that uses results from LeoLBAToByte(), LeoByteToLBA(), or LeoReadCapacity( ), execute the function again.</b></a>
+
+<p>For details, please see Chapter 10:  Error Handling Sequences.</p>
+
+<p><a href="index.htm#index"><img src="../../gif/index.gif"
+border="0" width="65" height="17"></a></p>
+
+<hr size="1" noshade>
+
+<p><a name="14"><b>12.14 Consider that a disk may be removed part way through a game.  Also consider the time required for error handling when a disk is reinserted after being removed.</b></a>
+
+<p>When a disk is removed during a game, the time required for disk processing is greater after the disk is reinserted than it would be if the disk had not been removed, due to such tasks as restarting the motor and reading the system information.  Be careful to ensure that these timing changes to result in game hang-ups and other problems.</p>
+
+<p><a href="index.htm#index"><img src="../../gif/index.gif"
+border="0" width="65" height="17"></a></p>
+
+<hr size="1" noshade>
+
+<p><a name="15"><b>12.15 Calling to disk-related functions from multiple threads is problematic.</b></a>
+
+
+<p>Calling disk-related functions from multiple threads makes error-handling very difficult in cases such as when a disk is removed during function execution.  Please ensure that the disk-related functions are concentrated in a single thread. </p>
+
+<p><a href="index.htm#index"><img src="../../gif/index.gif"
+border="0" width="65" height="17"></a></p>
+
+<hr size="1" noshade>
+
+<p><a name="16"><b>12.16 Consider the possibility of battery failure when using the RTC.</b></a>
+
+<p>When the battery dies, a LEO_REAL_TIME_CLOCK_FAILURE error is returned.  When this error is returned, display the error number and prompt the user with a warning.  For details, please see Chapter 10:  Error Handling Sequences.  Implement the steps necessary to enable the user to then set the time and finish the game at their discretion.</p>
+
+<p><a href="index.htm#index"><img src="../../gif/index.gif"
+border="0" width="65" height="17"></a></p>
+
+<hr size="1" noshade>
+
+<p><a name="17"><b>12.17 Give adequate consideration to the accuracy of the RTC when using it.</b></a>
+
+<p>The maximum error of the RTC is ( 60 seconds per month at 25 (C.  Please keep in mind that the clock may progressively deviate further from the actual time.  </p>
+
+<p><a href="index.htm#index"><img src="../../gif/index.gif"
+border="0" width="65" height="17"></a></p>
+
+<hr size="1" noshade>
+
+<p><a name="18"><b>12.18 The IPL is installed in /usr/lib/PR/ in the NW version, in same directory as Partner in PC versions 1.06 or earlier, and in ultra\usr\lib\PR in PC versions 1.07 or later.</b></a>
+
+<p>Please take care to ensure that these files are not deleted of moved.</p>
+
+<p><a href="index.htm#index"><img src="../../gif/index.gif"
+border="0" width="65" height="17"></a></p>
+
+<hr size="1" noshade>
+
+<p><a name="19"><b>12.19 Be careful when using a shared command block.  The next function executed will overwrite the previous results.</b></a>
+
+<p>Although the command block used by the asynchronous functions can be shared by all of these functions, execution of the next function will cause the contents of the command block to be overwritten.  The results of <a href="../../n64man/64dd/LeoReadRTC.htm">LeoReadRTC( )</a> in particular are returned as command block content, so be sure to copy these results elsewhere before the next function is executed.
+</p>
+
+<p><a href="index.htm#index"><img src="../../gif/index.gif"
+border="0" width="65" height="17"></a></p>
+
+<hr size="1" noshade>
+
+<p><a name="20"><b>12.20 LeoBootID is not saved with a Game Pak startup.  </b></a>
+
+<p>leoBootID is a global variable created to store the disk ID when to IPL starts the disk.  The IPL is not executed for a Game Pak startup, so nothing is stored in leoBootID in this case. Storage of the disk ID must therefore be performed entirely by the application.</p>
+
+<p><a href="index.htm#index"><img src="../../gif/index.gif"
+border="0" width="65" height="17"></a></p>
+
+<hr size="1" noshade>
+</body>
+</html>

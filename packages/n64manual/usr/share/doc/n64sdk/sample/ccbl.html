@@ -1,0 +1,1848 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<!--
+**********************************************************************
+			   ccbl Manual
+**********************************************************************
+-->
+<HEAD>
+
+<TITLE>ccbl Manual</TITLE>
+<STYLE TYPE="text/css">
+   
+   body{
+       background-color: CCFFFF;
+   }
+
+   h1{
+       color: blue;
+       text-align: center;
+       font-size: 15pt ;
+
+   }
+
+   h2{
+       color: green;
+       text-align: left;
+       font-size: 12pt ;
+
+   }
+
+   h3{
+       color: black;
+       text-lign: left;
+       font-size: 10pt;
+
+   }
+
+   p{
+       margin-left: 1em;
+       margin-right: 1em;
+
+   }
+
+   div.copyright{
+       color: gray;
+       text-align: center;
+       font-size: 8pt;
+   }
+
+   div.ctrlmethod{
+       text-align: center;
+   }
+
+   div.ctrlmethod table{
+       margin-top: 1em;
+       margin-bottom: 1em;
+   }
+
+   div.attention{
+       text-align: center;
+       margin-top: 1em;
+       margin-bottom: 1em;
+   }
+
+   div.attention td.attention{
+       color: red;
+   }
+
+   div.MenuDescription{
+       text-align: center;
+   }
+
+   div.MenuDescription table.Term{
+       margin-top: 1em;
+       margin-bottom: 1em;
+   }
+
+   div.Example{
+       text-align: center;
+   }
+
+   div.Example th.Title{
+       color: yellow;
+       border-width: 2pt;
+       border-style: none;
+       background-color: green;
+   }
+
+   div.Example p.Example{
+       color: white;
+       margin-left: 2em;
+       border-width: 1pt;
+       border-style: none;
+       padding-top: 5pt ;
+       padding-bottom: 5pt ;
+       padding-left: 10pt ;
+       border-color: gray;
+       background-color: gray;
+   }
+
+   div.Example pre.Example{
+       color: white;
+       margin-left: 2em;
+       border-width: 1;
+       border-style: none;
+       padding-top: 10pt ;
+       padding-bottom: 10pt ;
+       padding-left: 10pt ;
+       padding-right: 10pt ;
+       background-color: gray;
+   }
+
+   div.Example table.Screen{
+       color: white;
+       background-color: gray;
+       padding-top: 10pt ;
+       padding-bottom: 10pt ;
+       padding-left: 10pt ;
+       padding-right: 10pt ;
+   }
+
+   div.Example pre.Screen{
+       color: white;
+   }
+
+   table.Others th{
+       color: yellow;
+       border-width: 2pt;
+       border-style: none;
+       background-color: green;
+   }
+
+   table.Others td p{
+       margin-left: 10pt ;
+   }
+
+<!-- tables and margins do not work well with Navigator 4.5 for some reason
+   table.MenuContents{
+       margin-left: 20pt ;
+   }
+
+   table.ExampleContents{
+       margin-left: 20pt ;
+   }
+
+   table.OthersContents{
+       margin-left: 20pt ;
+   }
+-->
+
+   
+</STYLE>
+</HEAD>
+
+<BODY>
+<FONT face="arial" SIZE="-1">
+
+<H1>ccbl</H1>
+<P align="center">
+<IMG src="ccbl.gif">
+</P>
+<DIV class="copyright">
+
+<P>
+Copyright (C) 1998, NINTENDO Co,Ltd.
+</P>
+<P>
+Copyright (C) 1998, MONEGI CORPORATION.
+</P>
+</DIV>
+<HR>
+<H2>Table of contents</H2>
+<P>
+<A href="#Overview">Overview</A>
+</P>
+<P>
+<A href="#Operation">Operation</A>
+</P>
+<P>
+<A href="#Menu Descriptions">Menu Descriptions</A>
+</P>
+<CENTER>
+<TABLE width="80%" border="0" class="MenuContents">
+  <TR>
+    <TH align="left" valign="top"><font face="arial" size="-1">RSP</font></TH></TR>
+  <TR>
+    <TD>
+    <P>
+<A href="#GEO_MODE"><font face="arial" size="-1">GEO_MODE</font></A>
+    </P>
+</TD></TR>
+  <TR>
+    <TD>
+    <P>
+<A href="#LIGHT_COL"><font face="arial" size="-1">LIGHT_COL</font></A>
+    </P>
+</TD></TR>
+  <TR>
+    <TD>
+    <P>
+<A href="#FOG_POS"><font face="arial" size="-1">FOG_POS</font></A>
+    </P>
+</TD></TR>
+</TABLE>
+
+</CENTER>
+<CENTER>
+<TABLE width="80%" border="0" class="MenuContents">
+  <TR>
+    <TH align="left" valign="top"><font face="arial" size="-1">RDP</font></TH></TR>
+  <TR>
+    <TD>
+    <P>
+<A href="#CYCLE_TYPE"><font face="arial" size="-1">CYCLE_TYPE</font></A>
+    </P>
+</TD></TR>
+  <TR>
+    <TD>
+    <P>
+<A href="#CL_COMBINER-" href="#CL_COMBINER->COMBINE_MD&quot;&gt;CL_COMBINER-&gt;COMBINE_MD</A>
+    </P>
+</TD></TR>
+  <TR>
+    <TD>
+    <P>
+<A href="#CL_COMBINER-" href="#CL_COMBINER->ENV_COLOR&quot;&gt;CL_COMBINER-&gt;ENV_COLOR</A>
+    </P>
+</TD></TR>
+  <TR>
+    <TD>
+    <P>
+<A href="#CL_COMBINER-" href="#CL_COMBINER->PRIM_COLOR&quot;&gt;CL_COMBINER-&gt;PRIM_COLOR</A>
+    </P>
+</TD></TR>
+  <TR>
+    <TD>
+    <P>
+<A href="#BLENDER-" href="#BLENDER->RENDER_MODE&quot;&gt;BLENDER-&gt;RENDER_MODE</A>
+    </P>
+</TD></TR>
+  <TR>
+    <TD>
+    <P>
+<A href="#BLENDER-" href="#BLENDER->BL_COLOR&quot;&gt;BLENDER-&gt;BL_COLOR</A>
+    </P>
+</TD></TR>
+  <TR>
+    <TD>
+    <P>
+<A href="#BLENDER-" href="#BLENDER->FOG_COLOR&quot;&gt;BLENDER-&gt;FOG_COLOR</A>
+    </P>
+</TD></TR>
+  <TR>
+    <TD>
+    <P>
+<A href="#BLENDER-" href="#BLENDER->CD AD AC&quot;&gt;BLENDER-&gt;CD AD
+AC</A>
+    </P>
+</TD></TR>
+  <TR>
+    <TD>
+    <P>
+<A href="#TEX_FILTER"><font face="arial" size="-1">TEX_FILTER</font></A>
+    </P>
+</TD></TR>
+</TABLE>
+
+</CENTER>
+<CENTER>
+<TABLE width="80%" border="0" class="MenuContents">
+  <TR>
+    <TH align="left" valign="top"><font face="arial" size="-1">VI</font></TH></TR>
+  <TR>
+    <TD>
+    <P>
+<A href="#SPECIAL FEATURES"><font face="arial" size="-1">SPECIAL FEATURES</font></A>
+    </P>
+</TD></TR>
+</TABLE>
+
+</CENTER>
+<CENTER>
+<TABLE width="80%" border="0" class="MenuContents">
+  <TR>
+    <TH align="left" valign="top"><font face="arial" size="-1">MISC</font></TH></TR>
+  <TR>
+    <TD>
+    <P>
+<A href="#MODEL"><font face="arial" size="-1">MODEL</font></A>
+    </P>
+</TD></TR>
+  <TR>
+    <TD>
+    <P>
+<A href="#TEXTURE"><font face="arial" size="-1">TEXTURE</font></A>
+    </P>
+</TD></TR>
+  <TR>
+    <TD>
+    <P>
+<A href="#BG_COLOR"><font face="arial" size="-1">BG_COLOR</font></A>
+    </P>
+</TD></TR>
+  <TR>
+    <TD>
+    <P>
+<A href="#BG_MODEL"><font face="arial" size="-1">BG_MODEL</font></A>
+    </P>
+</TD></TR>
+</TABLE>
+
+</CENTER>
+<P>
+<A href="#Example Settings">Example Settings</A>
+</P>
+<CENTER>
+<TABLE width="80%" border="0" class="ExampleContents">
+  <TR>
+    <TD><A href="#Primitive Color"><font face="arial" size="-1">Primitive Color</font></A></TD></TR>
+  <TR>
+    <TD><A href="#Texture Decal"><font face="arial" size="-1">Texture Decal</font></A></TD></TR>
+  <TR>
+    <TD><A href="#Writing"><font face="arial" size="-1">Writing</font></A></TD></TR>
+  <TR>
+    <TD><A href="#Reflection Mapping"><font face="arial" size="-1">Reflection Mapping</font></A></TD></TR>
+  <TR>
+    <TD><A href="#Specular Highlighting"><font face="arial" size="-1">Specular Highlighting</font></A></TD></TR>
+  <TR>
+    <TD><A href="#Fog"><font face="arial" size="-1">Fog</font></A></TD></TR>
+  <TR>
+    <TD><A href="#Trilinear MIP Mapping"><font face="arial" size="-1">Trilinear MIP Mapping</font></A></TD></TR>
+  <TR>
+    <TD><A href="#Anti-aliasing"><font face="arial" size="-1">Anti-aliasing</font></A></TD></TR>
+  <TR>
+    <TD><A href="#Transparent Surface"><font face="arial" size="-1">Transparent Surface</font></A></TD></TR>
+  <TR>
+    <TD><A href="#Texture Edge Mode"><font face="arial" size="-1">Texture Edge Mode</font></A></TD></TR>
+  <TR>
+    <TD><A href="#Decal Surface"><font face="arial" size="-1">Decal Surface</font></A></TD></TR>
+  <TR>
+    <TD><A href="#Interpenetration Mode"><font face="arial" size="-1">Interpenetration Mode</font></A></TD></TR>
+  <TR>
+    <TD><A href="#Particle Effects"><font face="arial" size="-1">Particle Effects</font></A></TD></TR>
+</TABLE>
+
+</CENTER>
+<P>
+<A href="#Miscellaneous Items">Miscellaneous Items</A>
+</P>
+<CENTER>
+<TABLE width="80%" border="0" class="OthersContents">
+  <TR>
+    <TD><A href="#Menu Rendering Mode"><font face="arial" size="-1">Menu Rendering Mode</font></A></TD></TR>
+  <TR>
+    <TD><A href="#Near/Far-Plane Clipping Values"><font face="arial" size="-1">Near/Far-Plane Clipping Values</font></A></TD></TR>
+  <TR>
+    <TD><A href="#Unsupported Combine Modes"><font face="arial" size="-1">Unsupported Combine Modes</font></A></TD></TR>
+  <TR>
+    <TD><A href="#Performance Meter"><font face="arial" size="-1">Performance Meter</font></A></TD></TR>
+  <TR>
+    <TD><A href="#Parameters that ccbl Cannot Set"><font face="arial" size="-1">Parameters that ccbl Cannot Set</font></A></TD></TR>
+</TABLE>
+
+</CENTER>
+<HR>
+<P>
+<A name="Overview"></A>
+</P>
+<H2>Overview</H2>
+<P>
+This program was created as a means of easily learning about the Nintendo64 RDP feature block, particularly the ColorCombiner and Blender features.
+</P>
+<P>
+ccbl is typically started by the Windows application dptest.   Work performed in ccbl cannot be saved be saved or loaded.  However, ccbl can be run by downloading it to the debugging target as a normal N64 application.  It also can be run by writing it to a flash cartridge.
+</P>
+<HR>
+<P>
+<A name="Operation"></A>
+</P>
+<H2>Operation</H2>
+<P>
+Although two controllers are normally used, the program can be operated with only one controller if necessary. 
+</P>
+<DIV class="ctrlmethod">
+
+<TABLE width="80%" border="2" summary="Camera Operations">
+  <CAPTION><font face="arial" size="-1">Camera Operations(Controller 1)</font></CAPTION>
+  <TR>
+    <TD><font face="arial" size="-1">Control Stick</font></TD>
+    <TD><font face="arial" size="-1">Rotates model</font></TD></TR>
+  <TR>
+    <TD><font face="arial" size="-1">Z+Control Stick UP/DOWN</font></TD>
+    <TD><font face="arial" size="-1">Changes camera position</font></TD></TR>
+</TABLE>
+
+<TABLE width="80%" border="2" summary="Menu Operations">
+  <CAPTION><font face="arial" size="-1">Menu Operations (Controller 1)</font></CAPTION>
+  <TR>
+    <TD><font face="arial" size="-1">R Trigger</font></TD>
+    <TD><font face="arial" size="-1">Turns menu ON/OFF</font></TD></TR>
+  <TR>
+    <TD><font face="arial" size="-1">+ Button</font></TD>
+    <TD><font face="arial" size="-1">Moves cursor</font></TD></TR>
+  <TR>
+    <TD><font face="arial" size="-1">A Button</font></TD>
+    <TD><font face="arial" size="-1">Opens next window<BR>
+Determines menu.</font></TD></TR>
+  <TR>
+    <TD><font face="arial" size="-1">B Button</font></TD>
+    <TD><font face="arial" size="-1">Closes window</font></TD></TR>
+  <TR>
+    <TD><font face="arial" size="-1">Control Pad</font></TD>
+    <TD><font face="arial" size="-1">Changes parameters</font></TD></TR>
+</TABLE>
+
+<TABLE width="80%" border="2" summary="Changing Parameters">
+  <CAPTION><font face="arial" size="-1">Changing Parameters(Controller 1)</font></CAPTION>
+  <TR>
+    <TH colspan="2"><font face="arial" size="-1">Hexadecimal Display Parameters(e.g. changing*_COLOR)</font></TH></TR>
+  <TR>
+    <TD><font face="arial" size="-1">Control Pad<IMG src="sample_gif/LtArrow-1.gif" height=12></font></TD>
+    <TD><font face="arial" size="-1">Decreases value by 1</font></TD></TR>
+  <TR>
+    <TD><font face="arial" size="-1">Control Pad<IMG src="sample_gif/RtArrow-1.gif" height=11></font></TD>
+    <TD><font face="arial" size="-1">Increases value by 1</font></TD></TR>
+  <TR>
+    <TD><font face="arial" size="-1">Control Pad<IMG src="sample_gif/UpArrow.gif" width=7></font></TD>
+    <TD><font face="arial" size="-1">Decreases value by 0x10</font></TD></TR>
+  <TR>
+    <TD><font face="arial" size="-1">Control Pad<IMG src="sample_gif/downarrow.gif" width=12></font></td></TD>
+    <TD><font face="arial" size="-1">Increases value by 0x10</font></TD></TR>
+  <TR>
+    <TD><font face="arial" size="-1">L+Control Pad<IMG src="sample_gif/LtArrow-1.gif" height=12></font></TD>
+    <TD><font face="arial" size="-1">Sets to minimum value</font></TD></TR>
+  <TR>
+    <TD><font face="arial" size="-1">L+Control Pad<IMG src="sample_gif/RtArrow-1.gif" height=11></font></TD>
+    <TD><font face="arial" size="-1">Sets to maximum value</font></TD></TR>
+  <TR>
+    <TH colspan="2"><font face="arial" size="-1">Decimal Display Parameters (change FogPosition)</font></TH></TR>
+  <TR>
+    <TD><font face="arial" size="-1">Control Pad<IMG src="sample_gif/downarrow.gif" width=12></font></TD>
+    <TD><font face="arial" size="-1">Decreases by the specified number of decimal places</font></TD></TR>
+  <TR>
+    <TD><font face="arial" size="-1">Control Pad<IMG src="sample_gif/UpArrow.gif" width=7></font></TD>
+    <TD><font face="arial" size="-1">Increases by the specified number of decimal places</font></TD></TR>
+  <TR>
+    <TH colspan="2"><font face="arial" size="-1">Changing the ON/OFF parameter</font></TH></TR>
+  <TR>
+    <TD><font face="arial" size="-1">Control Pad<IMG src="sample_gif/downarrow.gif" width=12></font></TD>
+    <TD><font face="arial" size="-1">Changes the ON/OFF (&gt;/~) Parameter</font></TD></TR>
+</TABLE>
+
+<TABLE width="80%" border="2" summary="">
+  <CAPTION><font face="arial" size="-1">Menu Screen Dump (Controller 2)</font></CAPTION>
+  <TR>
+    <TD><font face="arial" size="-1">L Trigger(*)</font></TD>
+    <TD><font face="arial" size="-1">Processes menu screen dump with osSyncPrintf()</font></TD></TR>
+</TABLE>
+
+<TABLE width="80%" border="2" summary="">
+  <CAPTION><font face="arial" size="-1">Toggling Cover ValueVisualization (Controller 2)</font></CAPTION>
+  <TR>
+    <TD><font face="arial" size="-1">R Trigger</font></TD>
+    <TD><font face="arial" size="-1">Uses RM_VISCVG to visualize cover values.<BR>
+	See the N64 Programming Manual, Section 15.7.11.</font></TD></TR>
+</TABLE>
+
+<TABLE width="80%" border="2" summary="">
+  <CAPTION><font face="arial" size="-1">GBI Macro Output (Controller 2)</font></CAPTION>
+  <TR>
+    <TD><font face="arial" size="-1">Button A(*)</font></TD>
+    <TD><font face="arial" size="-1">Processes settings parameters in GBI format (gSP*,gDP*) with osSyncPrintf()</font></TD></TR>
+  <TR>
+    <TD><font face="arial" size="-1">Button B(*)</font></TD>
+    <TD><font face="arial" size="-1">Processes settings parameters in GBI format (gsSP*,gsDP*) with osSyncPrintf()</font></TD></TR>
+</TABLE>
+</DIV>
+
+<DIV class="attention">
+<TABLE width="80%" border="0" summary="Note">
+  <TR>
+    <TD align="left" valign="top" class="symbol"><font face="arial" size="-1">(*)</font></TD>
+    <TD class="attention"><font face="arial" size="-1">Not supported in programs created using make DPTEST=1 and make FINAL=1</font></TD></TR>
+</TABLE>
+</DIV>
+
+<HR>
+<P>
+<A name="Menu Descriptions"></A>
+</P>
+<H2><font face="arial">Menu Descriptions</font></H2>
+
+<!-- RSP Menu Description -->
+<DIV class="MenuDescription">
+<HR width="90%">
+<TABLE width="90%" border="0" summary="[RSP] Menu Description">
+  <TR>
+    <TH align="left" class="MenuName"><font face="arial" size="-1">RSP</font></TH>
+    <TD class="Outline"><font face="arial" size="-1">Changes RSP parameters</font></TD></TR>
+</TABLE>
+
+<!-- GEO_MODE Description -->
+<A name="GEO_MODE"></A>
+<TABLE width="80%" border="2" class="Term" summary="[RSP]-[GEO_MODE] Description">
+  <TR>
+    <TH align="left" class="MenuName"><font face="arial" size="-1">GEO_MODE</font></TH></TR>
+  <TR>
+    <TD class="Description"><font face="arial" size="-1">
+    <P>
+Changes the geometry mode and enables reflection mapping.
+    </P>
+</font></TD></TR>
+  <TR>
+    <TD class="RelGBI">
+    <TABLE class="RelGBI">
+      <TR>
+        <TH align="left" valign="top"><font face="arial" size="-1">Related GBI functions</font></TH>
+        <TD><font face="arial" size="-1">g*SPSetGeometryMode()</font></TD></TR>
+    </TABLE>
+
+</TD></TR>
+</TABLE>
+
+<!-- GEO_MODE description ends here. -->
+<!-- LIGHT_COL Description -->
+<A name="LIGHT_COL"></A>
+<TABLE width="80%" border="2" class="Term" summary="[RSP]-[LIGHT] Description">
+  <TR>
+    <TH align="left" class="MenuName"><font face="arial" size="-1">LIGHT_COL</font></TH></TR>
+  <TR>
+    <TD class="Description"><font face="arial" size="-1">
+    <P>
+Changes the light color.
+    </P>
+    <P>
+ccbl uses all 8 of the lights that can be used in N64.
+    </P>
+    <P>
+ON/OFF can be implemented by setting the light color to (RGB=[0,0,0]), although RSP processing speed will vary slightly.
+    </P>
+    <P>
+The position of a light cannot be changed.
+    </P>
+    <P>
+The position and direction of the lights are as follows:
+    </P>
+    <CENTER>
+    <TABLE width="90%" border="2" summary="Light position and direction">
+      <TR>
+        <TD><font face="arial" size="-1">DIF1</font></TD>
+        <TD><font face="arial" size="-1">from camera position toward (0,0,0)</font></TD></TR>
+      <TR>
+        <TD><font face="arial" size="-1">DIF2</font></TD>
+        <TD><font face="arial" size="-1">from (0,1,0) toward (0,0,0)</font></TD></TR>
+      <TR>
+        <TD><font face="arial" size="-1">DIF3</font></TD>
+        <TD><font face="arial" size="-1">from (1,0,0) toward (0,0,0)</font></TD></TR>
+      <TR>
+        <TD><font face="arial" size="-1">DIF4</font></TD>
+        <TD><font face="arial" size="-1">from (0,-1,0) toward (0,0,0)</font></TD></TR>
+      <TR>
+        <TD><font face="arial" size="-1">DIF5</font></TD>
+        <TD><font face="arial" size="-1">from (-1,0,0) toward (0,0,0)</font></TD></TR>
+      <TR>
+        <TD><font face="arial" size="-1">DIF6</font></TD>
+        <TD><font face="arial" size="-1">from (-1,1,1) toward (0,0,0)</font></TD></TR>
+      <TR>
+        <TD><font face="arial" size="-1">DIF7</font></TD>
+        <TD><font face="arial" size="-1">toward (0,0,0) while describing a circular orbit that has (0,0,0) on the X-Z plane as its center</font></TD></TR>
+      <TR>
+        <TD><font face="arial" size="-1">AMB</font></TD>
+        <TD><font face="arial" size="-1">ambient light; illuminates the entire model</font></TD></TR>
+    </TABLE>
+
+    </CENTER>
+    <P>
+
+    </P>
+</font></TD></TR>
+  <TR>
+    <TD class="RelGBI">
+    <TABLE border="0" class="RelGBI" summary="Related GBI functions">
+      <TR>
+        <TH align="left" valign="top"><font face="arial" size="-1">Related GBI functions</font></TH>
+        <TD><font face="arial" size="-1">g*SPLightColor()</font></TD></TR>
+      <TR>
+        <TD></TD>
+        <TD><font face="arial" size="-1">g*SPLight()</font></TD></TR>
+      <TR>
+        <TD></TD>
+        <TD><font face="arial" size="-1">g*SPSetLights()</font></TD></TR>
+    </TABLE>
+
+</TD></TR>
+</TABLE>
+
+<!-- LIGHT_COL description ends here. -->
+<!-- FOG_POS Description -->
+<A name="FOG_POS"></A>
+<TABLE width="80%" border="2" class="Term" summary="[RSP]-[FOG_POS] Description">
+  <TR>
+    <TH align="left" class="MenuName"><font face="arial" size="-1">FOG_POS</font></TH></TR>
+  <TR>
+    <TD class="Description"><font face="arial" size="-1">
+    <P>
+Changes the Fog position
+    </P>
+    <P>
+A restriction of g*SPFogPosition() is that min must be less than max.  Thus min cannot be set to a value greater than max nor max to a value less than min (min != max is OK).
+    </P>
+</font></TD></TR>
+  <TR>
+    <TD class="RelGBI">
+    <TABLE border="0" class="RelGBI" summary="Related GBI functions">
+      <TR>
+        <TH align="left"><font face="arial" size="-1">Related GBI functions:</font></TH>
+        <TD><font face="arial" size="-1">g*SPFogPosition()</font></TD></TR>
+    </TABLE>
+
+</TD></TR>
+</TABLE>
+
+<!-- FOG_POS description ends here. -->
+</DIV>
+<!-- RDP Menu Description -->
+<DIV class="MenuDescription">
+
+<HR width="90%">
+<A name="RDP"></A>
+<TABLE width="90%" border="0" summary="[RDP] RDP Menu Description">
+  <TR>
+    <TH align="left" class="MenuName"><font face="arial" size="-1">RDP</font></TH>
+    <TD class="Outline"><font face="arial" size="-1">Changes RDP parameters</font></TD></TR>
+</TABLE>
+
+<!-- CYCLE_TYPE Description -->
+<A name="CYCLE_TYPE"></A>
+<TABLE width="80%" border="2" class="Term" summary="[RDP]-[CYCLE_TYPE] Description">
+  <TR>
+    <TH align="left" class="MenuName"><font face="arial" size="-1">CYCLE_TYPE</font></TH></TR>
+  <TR>
+    <TD class="Description"><font face="arial" size="-1">
+    <P>
+Changes the RDP cycle type.
+    </P>
+</TD></TR>
+  <TR>
+    <TD class="RelGBI">
+    <TABLE border="0" class=" summary=" Related GBI functions">
+      <TR>
+        <TH align="left"><font face="arial" size="-1">Related GBI functions</font></TH>
+        <TD><font face="arial" size="-1">g*DPSetCycleType()</font></TD></TR>
+    </TABLE>
+
+</font></TD></TR>
+</TABLE><P>
+
+<!-- CL_COMBINER->COMBINE_MD Description-->
+<A name="CL_COMBINER-" name="CL_COMBINER->COMBINE_MD&quot;&gt;</A>
+<TABLE width="80%" border="2" class="Term" summary="[RDP]-[CL_COMBINER]-[COMBINE_MD] Description">
+  <TR>
+    <TH align="left" class="MenuName"><font face="arial" size="-1">CL_COMBINER-&gt;COMBINE_MD</font></TH></TR>
+  <TR>
+    <TD class="Description"><font face="arial" size="-1">
+    <P>
+Changes the Color Combiner setting.
+    </P>
+    <P>
+When the cycle type is G_CYC_1CYCLE, the parameter for the second cycle cannot be changed.  The fields in the bottom two lines of the Configuration menu were provided to enable quick selection of the same settings as those of the Combine mode macros defined in gbi.h.
+    </P>
+</font></TD></TR>
+  <TR>
+    <TD class="RelGBI">
+    <TABLE border="0" class=" summary=" Related GBI functions">
+      <TR>
+        <TH align="left"><font face="arial" size="-1">Related GBI functions</font></TH>
+        <TD><font face="arial" size="-1">g*DPSetCombineMode()</font></TD>
+        <TD></TD></TR>
+      <TR>
+        <TD></TD>
+        <TD><font face="arial" size="-1">g*DPSetCombineLERP()</font></TD>
+        <TD></TD></TR>
+    </TABLE>
+
+</TD></TR>
+  <TR>
+    <TD>
+    <DIV class="attention">
+
+    <TABLE width="80%" border="0" summary="Note">
+      <TR>
+        <TD align="left" valign="top" class="symbol"><font face="arial" size="-1"><b>Note: </b></font></TD>
+        <TD class="attention"><font face="arial" size="-1">Setting the parameter to the typical setting causes the macro settings display to indicate **** NO MACRO ****.  This is is a ccbl specification designed to serve as a warning that the typical setting may differ from the macro settings.</font></TD></TR>
+    </TABLE>
+
+    </DIV>
+</TD></TR>
+</TABLE>
+
+<!-- CL_COMBINER->ENV_COLOR Description -->
+<A name="CL_COMBINER-" name="CL_COMBINER->ENV_COLOR&quot;&gt;</A>
+<TABLE width="80%" border="2" class="Term" summary="[RDP]-[CL_COMBINER]-[ENV_COLOR] Description">
+  <TR>
+    <TH align="left" class="MenuName"><font face="arial" size="-1">CL_COMBINER-&gt;ENV_COLOR</font></TH></TR>
+  <TR>
+    <TD class="Description">
+    <font face="arial" size="-1">
+    <P>
+Changes the ambient color used as an input source for the Color Combiner.
+    </P>
+</font></TD></TR>
+  <TR>
+    <TD class="RelGBI">
+    <TABLE border="0" class=" summary=" Related GBI functions">
+      <TR>
+        <TH align="left"><font face="arial" size="-1">Related GBI functions</font></TH>
+        <TD><font face="arial" size="-1">g*DPSetEnvColor()</font></TD></TR>
+    </TABLE>
+
+</TD></TR>
+</TABLE>
+
+<!-- CL_COMBINER->PRIM_COLOR Description -->
+<A name="CL_COMBINER-" name="CL_COMBINER->PRIM_COLOR&quot;&gt;</A>
+<TABLE width="80%" border="2" class="Term" summary="[RDP]-[CL_COMBINER]-[PRIM_COLOR] Description">
+  <TR>
+    <TH align="left" class="MenuName"><font face="arial" size="-1">CL_COMBINER-&gt;PRIM_COLOR</font></TH></TR>
+  <TR>
+    <TD class="Description">
+    <font face="arial" size="-1">
+    <P>
+Changes the Primitive color used as an input source for the Color Combiner.
+    </P>
+</font></TD></TR>
+  <TR>
+    <TD class="RelGBI">
+    <TABLE border="0" class=" summary=" Related GBI functions">
+      <TR>
+        <TH align="left"><font face="arial" size="-1">Related GBI functions</font></TH>
+        <TD><font face="arial" size="-1">g*DPSetPrimColor()</font></TD></TR>
+    </TABLE>
+
+</TD></TR>
+</TABLE>
+
+<!-- BLENDER->RENDER_MODE Description -->
+<A name="BLENDER-" name="BLENDER->RENDER_MODE&quot;&gt;</A>
+<TABLE width="80%" border="2" class="Term" summary="[RDP]-[BLENDER] Description">
+  <TR>
+    <TH align="left" class="MenuName"><font face="arial" size="-1">BLENDER-&gt;RENDER_MODE</font></TH></TR>
+  <TR>
+    <TD class="Description">
+    <font face="arial" size="-1">
+    <P>
+Changes the Render mode setting.
+    </P>
+    <P>
+As with COMBINE_MD, when the cycle type is G_CYC_1CYCLE, the parameter for the second cycle cannot be changed.
+    </P>
+    <P>
+The fields in the bottom two lines of the Configuration menu enable quick selection of the same settings as those of the Render mode macros defined in gbi.h.
+    </P>
+</font></TD></TR>
+  <TR>
+    <TD class="RelGBI">
+    <TABLE border="0" class=" summary=" Related GBI functions">
+      <TR>
+        <TH align="left"><font face="arial" size="-1">Related GBI functions</font></TH>
+        <TD><font face="arial" size="-1">g*DPSetRenderMode()</font></TD></TR>
+    </TABLE>
+
+</TD></TR>
+  <TR>
+    <TD>
+    <DIV class="attention">
+
+    <TABLE width="80%" border="0" summary="Note">
+      <TR>
+        <TD align="left" valign="top" class="symbol"><font face="arial" size="-1"><b>Note: </b></font></TD>
+        <TD class="attention"><font face="arial" size="-1">
+        <P>
+Setting the parameter to the typical setting causes the macro settings display to indicate **** NO MACRO ****.  This is is a ccbl specification designed to serve as a warning that the typical setting may differ from the macro setting.
+        </P>
+        <P>
+Similarly, according to the ccbl specifications, the alpha comparison cannot be set with RENDER MODE when the RM_G_*_PCL_SURFACTANT setting is in effect.
+        </P>
+        <P>
+For more information, see the Particle Effects example in Setting Examples.
+        </P>
+</font></TD></TR>
+    </TABLE>
+
+    </DIV>
+</TD></TR>
+</TABLE>
+
+<!-- BLENDER->BL_COLOR Description -->
+<A name="BLENDER-" name="BLENDER->BL_COLOR&quot;&gt;</A>
+<TABLE width="80%" border="2" class="Term" summary="[RDP]-[BLENDER]-[BL_COLOR] Description">
+  <TR>
+    <TH align="left" class="MenuName"><font face="arial" size="-1">BLENDER-&gt;BL_COLOR</font></TH></TR>
+  <TR>
+    <TD class="Description">
+    <font face="arial" size="-1">
+    <P>
+Changes the Blend Color used as an input source for Blender.
+    </P>
+</font></TD></TR>
+  <TR>
+    <TD class="RelGBI">
+    <TABLE border="0" class=" summary=" Related GBI functions">
+      <TR>
+        <TH align="left"><font face="arial" size="-1">Related GBI functions</font></TH>
+        <TD><font face="arial" size="-1">g*DPSetBlendColor()</font></TD></TR>
+    </TABLE>
+
+</TD></TR>
+</TABLE>
+
+<!-- BLENDER->FOG_COLOR Description -->
+<A name="BLENDER-" name="BLENDER->FOG_COLOR&quot;&gt;</A>
+<TABLE width="80%" border="2" class="Term" summary="[RDP]-[BLENDER]-[FOG_COLOR] Description">
+  <TR>
+    <TH align="left" class="MenuName"><font face="arial" size="-1">BLENDER-&gt;FOG_COLOR</font></TH></TR>
+  <TR>
+    <TD class="Description">
+    <font face="arial" size="-1">
+    <P>
+Changes the Fog Color used as an input source for Blender.
+    </P>
+</font></TD></TR>
+  <TR>
+    <TD class="RelGBI">
+    <TABLE border="0" class=" summary=" Related GBI functions">
+      <TR>
+        <TH align="left"><font face="arial" size="-1">Related GBI functions</font></TH>
+        <TD><font face="arial" size="-1">g*DPSetFogColor()</font></TD></TR>
+    </TABLE>
+
+</TD></TR>
+</TABLE>
+
+<!-- BLENDER->CD AD AC Description -->
+<A name="BLENDER-" name="BLENDER->CD AD AC&quot;&gt;</A>
+<TABLE width="80%" border="2" class="Term" summary="[RDP]-[BLENDER]-[CD AD AC] Description">
+  <TR>
+    <TH align="left" class="MenuName"><font face="arial" size="-1">BLENDER-&gt;CD AD AC</font></TH></TR>
+  <TR>
+    <TD class="Description">
+    <font face="arial" size="-1">
+    <P>
+Changes the settings for color dithering, alpha dithering, and alpha comparison.
+    </P>
+</font></TD></TR>
+  <TR>
+    <TD class="RelGBI">
+    <TABLE border="0" class=" summary=" Related GBI functions">
+      <TR>
+        <TH align="left"><font face="arial" size="-1">Related GBI functions</font></TH>
+        <TD><font face="arial" size="-1">g*DPSetColorDither()</font></TD></TR>
+      <TR>
+        <TD></TD>
+        <TD><font face="arial" size="-1">g*DPSetAlphaDither()</font></TD></TR>
+      <TR>
+        <TD></TD>
+        <TD><font face="arial" size="-1">g*DPSetAlphaCompare()</font></TD></TR>
+    </TABLE>
+
+</TD></TR>
+</TABLE>
+
+<!-- BLENDER->TEX_FILTER Description -->
+<A name="TEX_FILTER"></A>
+<TABLE width="80%" border="2" class="Term" summary="[RDP]-[TEX_FILTER] Description">
+  <TR>
+    <TH align="left" class="MenuName"><font face="arial" size="-1">TEX_FILTER</font></TH></TR>
+  <TR>
+    <TD class="Description"><font face="arial" size="-1">
+    <P>
+Changes the texture filter settings.
+    </P>
+</font></TD></TR>
+  <TR>
+    <TD class="RelGBI">
+    <TABLE border="0" class=" summary=" Related GBI functions">
+      <TR>
+        <TH align="left"><font face="arial" size="-1">Related GBI functions</font></TH>
+        <TD><font face="arial" size="-1">g*DPSetTextureFilter()</font></TD></TR>
+    </TABLE>
+
+</TD></TR>
+</TABLE>
+
+</DIV>
+<!-- VI menu settings -->
+<DIV class="MenuDescription">
+
+<HR width="90%">
+<TABLE width="90%" border="0" summary="[VI] Menu Description">
+  <TR>
+    <TH align="left" class="MenuName"><font face="arial" size="-1">VI</font></TH>
+    <TD class="Outline"><font face="arial" size="-1">Changes the VI related parameters</font></TD></TR>
+</TABLE>
+
+<!-- SPECIAL FEATURES Description -->
+<A name="SPECIAL FEATURES"></A>
+<TABLE width="80%" border="2" class="Term" summary="[VI]-[SPECIAL FEATURES] Description">
+  <TR>
+    <TH align="left" class="MenuName"><font face="arial" size="-1">SPECIAL FEATURES</font></TH></TR>
+  <TR>
+    <TD class="Description"><font face="arial" size="-1">
+    <P>
+Changes the settings for VI gamma correction, gamma dithering, divot filtering, and dither filtering.
+    </P>
+    <P>
+Although these parameters are not directly related to the Color Combiner or Blender, they do play a large role in the N64 screen display.  Thus ccbl was designed to also enable changes in these parameters.
+    </P>
+    <P>
+VI does not operate completely independently.  N64 does not display unchanged the pixel values that Blender writes to the frame buffer.  Rather, VI creates and displays the final colors based on the original color and cover values.   Thus, where display is concerned, VI cannot be ignored.
+    </P>
+</font></TD></TR>
+  <TR>
+    <TD class="RelGBI">
+    <TABLE border="0" class=" summary=" Related GBI functions">
+      <TR>
+        <TH align="left"><font face="arial" size="-1">Related GBI functions</font></TH>
+        <TD><font face="arial" size="-1">osViSetSpecialFeatures()</font></TD></TR>
+    </TABLE>
+
+</TD></TR>
+</TABLE>
+
+</DIV>
+<!-- MISC menu settings -->
+<DIV class="MenuDescription">
+
+<HR width="90%">
+<A name="MISC"></A>
+<TABLE width="90%" border="0" summary="[MISC] Menu Description">
+  <TR>
+    <TH align="left" class="MenuName"><font face="arial" size="-1">MISC</font></TH>
+    <TD class="Outline"><font face="arial" size="-1">Sets the other settings</font></TD></TR>
+</TABLE>
+
+<!-- MODEL Description -->
+<A name="MODEL"></A>
+<TABLE width="80%" border="2" class="Term" summary="[MISC]-[MODEL] Description">
+  <TR>
+    <TH align="left" class="MenuName"><font face="arial" size="-1">MODEL</font></TH></TR>
+  <TR>
+    <TD class="Description"><font face="arial" size="-1">
+    <P>
+Changes the display model.
+    </P>
+    <CENTER>
+    <TABLE width="80%" border="1" summary="Model Descriptions">
+      <CAPTION><font face="arial" size="-1">Model Descriptions</font></CAPTION>
+      <TR>
+        <TH align="left"><font face="arial" size="-1">TETRA</font></TH>
+        <TD><font face="arial" size="-1">A regular tetrahedron (triangular pyramid)</font></TD>
+        <TD></TD></TR>
+      <TR>
+        <TH align="left"><font face="arial" size="-1">CUBE</font></TH>
+        <TD><font face="arial" size="-1">A cube</font></TD>
+        <TD></TD></TR>
+      <TR>
+        <TH align="left"><font face="arial" size="-1">SPHERE</font></TH>
+        <TD><font face="arial" size="-1">A sphere</font></TD>
+        <TD></TD></TR>
+      <TR>
+        <TH align="left"><font face="arial" size="-1">XY-YZ</font></TH>
+        <TD><font face="arial" size="-1">Combination of X-Y and Y-Z planes</font></TD>
+        <TD></TD></TR>
+      <TR>
+        <TH align="left"><font face="arial" size="-1">MOUNTAIN</font></TH>
+        <TD><font face="arial" size="-1">Terrain</font></TD>
+        <TD></TD></TR>
+      <TR>
+        <TH align="left"><font face="arial" size="-1">TRIANGLE</font></TH>
+        <TD><font face="arial" size="-1">A single triangle</font></TD>
+        <TD></TD></TR>
+      <TR>
+        <TH align="left"><font face="arial" size="-1">A</font></TH>
+        <TD><font face="arial" size="-1">The letter A</font></TD>
+        <TD></TD></TR>
+      <TR>
+        <TH align="left"><font face="arial" size="-1">MIZO</font></TH>
+        <TD><font face="arial" size="-1">Terrain with a ditch</font></TD>
+        <TD></TD></TR>
+      <TR>
+        <TH align="left"><font face="arial" size="-1">TORUS2</font></TH>
+        <TD><font face="arial" size="-1">A combination of two doughnuts</font></TD>
+        <TD></TD></TR>
+    </TABLE>
+
+    </CENTER>
+</font></TD></TR>
+</TABLE>
+
+<!-- TEXTURE Description -->
+<A name="TEXTURE"></A>
+<TABLE width="80%" border="2" class="Term" summary="[MISC]-[TEXTURE] Description">
+  <TR>
+    <TH align="left" class="MenuName"><font face="arial" size="-1">TEXTURE</font></TH></TR>
+  <TR>
+    <TD class="Description"><font face="arial" size="-1">
+    <P>
+Changes the texture applied to the model.
+    </P>
+    <CENTER>
+    <TABLE width="80%" border="1" summary="Texture Descriptions">
+      <CAPTION><font face="arial" size="-1">Texture Descriptions</font></CAPTION>
+      <TR>
+        <TH align="left" valign="top"><font face="arial" size="-1">RGBA16 MARIO</font></TH>
+        <TD><font face="arial" size="-1">The file mario.rgb located in $(ROOT)/usr/src/PR/demos/Texture/.  Alpha of 1.</font></TD></TR>
+      <TR>
+        <TH align="left" valign="top"><font face="arial" size="-1">RGBA16 TREE</font></TH>
+        <TD><font face="arial" size="-1">Has an alpha that allows elimination.  Masked using an alpha value a bit smaller than that of the RGB image.</font></TD></TR>
+      <TR>
+        <TH align="left" valign="top"><font face="arial" size="-1">RGBA16 BRICK</font></TH>
+        <TD><font face="arial" size="-1">The file brick.rgb in $(ROOT)/usr/src/PR/demos/Texture/.</font></TD></TR>
+      <TR>
+        <TH align="left" valign="top"><font face="arial" size="-1">RGBA16 CHECKER</font></TH>
+        <TD><font face="arial" size="-1">Has an elimination alpha.  An alpha of 1 is assigned to the white portion of the RGB image and an alpha of 0 to the black portion.</font></TD></TR>
+      <TR>
+        <TH align="left" valign="top"><font face="arial" size="-1">RGBA16 BRICK_MM</font></TH>
+        <TD><font face="arial" size="-1">Designed for MIP mapping, this has a total of 6 levels of MIP mapping textures.  Other textures do not allow trilinear MIP mapping to be properly represented.</font></TD></TR>
+      <TR>
+        <TH align="left" valign="top"><font face="arial" size="-1">RGBA32 GRADIENT</font></TH>
+        <TD><font face="arial" size="-1">A texture with an 8-bit alpha channel.</font></TD></TR>
+      <TR>
+        <TH align="left" valign="top"><font face="arial" size="-1">IA16 GRADIENT</font></TH>
+        <TD><font face="arial" size="-1">A texture for which both the intensity and alpha are 8 bits.  *Garbage* in the central region.</font></TD></TR>
+      <TR>
+        <TH align="left" valign="top"><font face="arial" size="-1">RGBA16 REFLECT</font></TH>
+        <TD><font face="arial" size="-1">Texture that simulates a specular map; used mainly for reflection mapping.  Note that the alpha is 0 for the entire texture.</font></TD></TR>
+      <TR>
+        <TH align="left" valign="top"><font face="arial" size="-1">I8 HIGHLIGHT</font></TH>
+        <TD><font face="arial" size="-1">Texture with an effect like specular highlighting.  Although ccbl does not support specular highlighting, *quasi-specular highlighting* can always be displayed using reflection mapping.</font></TD></TR>
+    </TABLE>
+
+    </CENTER>
+    <P>
+Except for BRICK_MM, all textures are 32*32 pixel images. gDPTextureLoadblock() transfers them to texture memory and sets tiling to 0.  Texture wrapping is set by specifying st with G_TX_WRAP (wrapping).
+    </P>
+    <P>
+Except in the case of BRICK_MM, gSPTexture() is given the following arguments.
+    </P>
+    <DIV class="Example">
+
+    <P class="Example"><font face="arial" size="-1">
+gSPTexture(glistp++,0x8000, 0x8000, 0, G_TX_RENDERTILE, G_ON);
+    </font></P>
+    </DIV>
+    <P>
+    </P>
+    <P><font face="arial" size="-1">
+When BRICK_MM is specified,
+    </font></P>
+    <DIV class="Example">
+
+    <P class="Example"><font face="arial" size="-1">
+gSPTexture(glistp++,0x8000, 0x8000, 5, G_TX_RENDERTILE, G_ON);
+    </font></P>
+    </DIV>
+    <P><font face="arial" size="-1">
+is used.
+    </font></P>
+    <P><font face="arial" size="-1">
+However, when reflection mapping is enabled, gSPTexture() is forcibly set to
+    </font></P>
+    <DIV class="Example">
+
+    <P class="Example"><font face="arial" size="-1">
+gSPTexture(glistp++,(32<<6),(32 <<6), 0, G_TX_RENDERTILE, G_ON);</p>
+    </font></P>
+    </DIV>
+    <P>
+    </P>
+</font></TD></TR>
+</TABLE>
+
+<!-- BG_COLOR Description -->
+<A name="BG_COLOR"></A>
+<TABLE width="80%" border="2" class="Term" summary="[MISC]-[BG_COLOR] Description">
+  <TR>
+    <TH align="left" class="MenuName"><font face="arial" size="-1">BG_COLOR</font></TH></TR>
+  <TR>
+    <TD class="Description"><font face="arial" size="-1">
+    <P>
+Changes the background color.
+    </P>
+    <P>
+Actually writes the specified color when the frame buffer is cleared.
+    </P>
+    <P>
+When IMAGE1,2 is specified, a 16-bit RGBA-format image is copied to clear the frame buffer rather than a color value.
+    </P>
+</font></TD></TR>
+</TABLE>
+
+<!-- BG_MODEL Description -->
+<A name="BG_MODEL"></A>
+<TABLE width="80%" border="2" class="Term" summary="[MISC]-[BG_MODEL] Description">
+  <TR>
+    <TH align="left" class="MenuName"><font face="arial" size="-1">BG_MODEL</font></TH></TR>
+  <TR>
+    <TD class="Description"><font face="arial" size="-1">
+    <P>
+Displays the model, unaffected by the ccbl parameters.
+    </P>
+    <P>
+Render mode uses G_RM_AA_ZB_OPA_SURF.
+    </P>
+    <CENTER>
+    <TABLE width="80%" border="1" summary="Model Descriptions">
+      <CAPTION><font face="arial" size="-1">Model Descriptions</font></CAPTION>
+      <TR>
+        <TH align="left" valign="top"><font face="arial" size="-1">DISABLE</font></TH>
+        <TD><font face="arial" size="-1">Disables display of the BG model</font></TD></TR>
+      <TR>
+        <TH align="left" valign="top"><font face="arial" size="-1">PLANE</font></TH>
+        <TD><font face="arial" size="-1">A simple plane.<BR>
+Used mainly when displaying G_RM_*_DECAL or G_RM_*_INTER.</font></TD></TR>
+      <TR>
+        <TH align="left" valign="top"><font face="arial" size="-1">STARS</font></TH>
+        <TD><font face="arial" size="-1">9 star-shaped models are distributed.<BR>
+Used to show the stacking relation with the display model.</font></TD></TR>
+    </TABLE>
+
+    </CENTER>
+</TD></TR>
+</TABLE>
+
+</DIV>
+<HR>
+<P>
+<A name="Example Settings"></A>
+</P>
+<H2><font face="arial">Example Settings</font></H2>
+<font face="arial" size="-1">
+<P>
+Cycle mode is set to 1 cycle unless otherwise indicated.
+</P>
+<P>
+Default parameter values are used unless otherwise indicated.
+</P>
+<P>
+The (*) symbol indicates settings that are required to view the effect with ccbl.
+</P>
+</font>
+<DIV class="Example">
+
+<HR width="90%">
+<A name="Primitive Color"></A>
+<TABLE width="90%" border="0" class="Example">
+  <TR>
+    <TH align="left" valign="top" class="Title"><font face="arial" size="-1">Primitive color</font></TH></TR>
+  <TR>
+    <TD><font face="arial" size="-1">
+    <P>
+Displays an object using the primitive color.
+    </P>
+    <P>
+Set the Combine mode to PRIMITIVE.(*)
+    </P>
+    <P class="Example"><font face="arial" size="-1">
+[RDP]-&gt;CL_COMBINE-&gt;COMBINE_MODE-&gt;CYCLE1: PRIMITIVE<BR>
+    </P>
+    <P>
+Try changing the primitive color and see the results.
+    </font></P>
+    <P class="Example"><font face="arial" size="-1">
+[RDP]-&gt;CL_COMBINE-&gt;PRIM_COLOR
+    </font></P>
+</font></TD></TR>
+</TABLE>
+
+</DIV>
+<DIV class="Example">
+
+<HR width="90%">
+<A name="Texture Decal"></A>
+<TABLE width="90%" border="0" class="Example">
+  <TR>
+    <TH align="left" valign="top" class="Title"><font face="arial" size="-1">Texture Decal</font></TH></TR>
+  <TR>
+    <TD><font face="arial" size="-1">
+    <P>
+Applies a texel color unchanged.
+    </P>
+    <P>
+Sets Combine mode to DECALRGB. (*)
+    </font></P>
+    <P class="Example"><font face="arial" size="-1">
+[RDP]-&gt;CL_COMBINE-&gt;COMBINE_MODE-&gt;CYCLE1: DECALRGB
+    </font></P>
+</font></TD></TR>
+</TABLE>
+
+</DIV>
+<DIV class="Example">
+
+<HR width="90%">
+<A name="Writing"></A>
+<TABLE width="90%" border="0" class="Example">
+  <TR>
+    <TH align="left" valign="top" class="Title"><font face="arial" size="-1">Writing</font></TH></TR>
+  <TR>
+    <TD><font face="arial" size="-1">
+    <P>
+Sets to a display with writing.
+    </P>
+    <P>
+Set the Geometry mode.
+    </P>
+    <P>
+Settings for [RSP]->GEO_MODE are as follows.
+    </P>
+    <CENTER>
+    <TABLE class="Screen">
+      <TR>
+        <TD>
+<PRE class="Screen">
++[GEO_MODE]---------+        
+| G_SHADE         :O|*        
+| G_LIGHTING      :O|*        
+| G_SHADING_SMOOTH:O|*        
+| G_ZBUFFER       :O|*        
+| G_TEXTURE_GEN   :x|        
+| G_TEXTURE_GEN_L :x|        
+|&gt;G_CULL_FRONT    &lt;x|        
+| G_CULL_BACK     :O|        
+| G_FOG           :x|        
+|- - - - - - - - - -|        
+|  REFLECTION EN  :x|        
++-------------------+        
+</PRE>
+</TD></TR>
+    </TABLE>
+
+    </CENTER>
+    <P>
+Settings for Combine mode are as follows.(*)
+    </font></P>
+    <P class="Example"><font face="arial" size="-1">
+[RDP]-&gt;CL_COMBINE-&gt;COMBINE_MODE-&gt;CYCLE1: SHADE
+    </P>
+    <P>
+Try changing the light color and see the results.
+    </font></P>
+    <P class="Example"><font face="arial" size="-1">
+[RSP]-&gt;LIGHT_COL
+    </P>
+    <P>
+Using MODULATERGB for Combine mode enables a light to be applied to a textured object.
+    </font></P>
+</font></TD></TR>
+</TABLE>
+
+</DIV>
+<DIV class="Example">
+
+<HR width="90%">
+<A name="Reflection Mapping"></A>
+<TABLE width="90%" border="0" class="Example">
+  <TR>
+    <TH align="left" valign="top" class="Title"><font face="arial" size="-1">Reflection Mapping</font></TH></TR>
+  <TR>
+    <TD><font face="arial" size="-1">
+    <P>
+Performs reflection mapping.
+    </P>
+    <P>
+Set the Geometry mode.
+    </P>
+    <P>
+[RSP]->The GEO_MODE setting is as follows.
+    </P>
+    <CENTER>
+    <TABLE class="Screen">
+      <TR>
+        <TD>
+<PRE class="Screen">
++[GEO_MODE]---------+        
+| G_SHADE         :O|*        
+| G_LIGHTING      :O|*        
+| G_SHADING_SMOOTH:O|*        
+| G_ZBUFFER       :O|*        
+| G_TEXTURE_GEN   :O|*        
+| G_TEXTURE_GEN_L :x|        
+| G_CULL_FRONT    :x|        
+| G_CULL_BACK     :O|        
+| G_FOG           :x|        
+|- - - - - - - - - -|        
+|&gt; REFLECTION EN  &lt;O|*        
++-------------------+        
+</PRE>
+</TD></TR>
+    </TABLE>
+
+    </CENTER>
+    <P>
+The Combine mode setting is as follows.(*)
+    </P>
+    <P class="Example"><font face="arial" size="-1">
+[RDP]-&gt;CL_COMBINE-&gt;COMBINE_MODE-&gt;CYCLE1: DECALRGB
+    </font></P>
+Note:  If reflection mapping is enabled without performing only the ccbl settings, the settings performed internally will be insufficient.</font></TD></TR>
+</TABLE>
+
+</DIV>
+<DIV class="Example">
+
+<HR width="90%">
+<A name="Specular Highlighting"></A>
+<TABLE width="90%" border="0" class="Example">
+  <TR>
+    <TH align="left" valign="top" class="Title"><font face="arial" size="-1">Specular Highlighting</font></TH></TR>
+  <TR>
+    <TD><font face="arial" size="-1">
+    <P>
+Uses reflection mapping to simulate specular highlighting.
+    </P>
+    <P>
+TORUS2 is used as the model so that the effect is readily seen.
+    </P>
+    <P>
+Select IA8 HIGHLIGHT for the texture.
+    </P>
+    <P>
+The Geometry mode settings used are the same as for reflection mapping.(*)
+    </P>
+    <P>
+Because reflection mapping is used, the light is assumed be located at the viewpoint.  Thus, only DIF1 is used.
+    </P>
+    <P>
+Light color settings are as follows.(*)
+    </P>
+    <CENTER>
+    <TABLE class="Screen">
+      <TR>
+        <TD>
+<PRE class="Screen">
++[LIGHT COLOR]--+        
+|      R  G  B  |        
+|DIF1: 50 50&gt;00&lt;|        
+|DIF2: 00 00 00 |        
+|DIF3: 00 00 00 |        
+|DIF4: 00 00 00 |        
+|DIF5: 00 00 00 |        
+|DIF6: 00 00 00 |        
+|DIF7: 00 00 00 |        
+|AMB : 00 00 00 |        
++---------------+        
+</PRE>
+</TD></TR>
+    </TABLE>
+
+    </CENTER>
+    <P>
+The Combine mode setting is as follows.(*)
+    </P>
+    <P class="Example"><font face="arial" size="-1">
+[RDP]-&gt;CL_COMBINE-&gt;COMBINE_MODE-&gt;CYCLE1: HILIGHTRGB
+    </P>
+    <P>
+The primitive color is set to the same color as the light color.(*)
+    </font></P>
+    <CENTER>
+    <TABLE class="Screen">
+      <TR>
+        <TD>
+<PRE class="Screen">
++[PRIM COL]-+           
+| RED  : FF |           
+| GREEN: FF |           
+| BLUE : 00 |           
+|&gt;ALPHA&lt; 80 |           
+|- - - - - -|           
+| MIN  : 80 |           
+| LOD  : 80 |           
++-----------+           
+</PRE>
+</TD></TR>
+    </TABLE>
+
+    </CENTER>
+    <P>
+The primitive color becomes the light color.
+    </P>
+    <DIV class="attention">
+
+    <TABLE width="80%" border="0" summary="Note">
+      <TR>
+        <TD align="left" valign="top" class="symbol"><font face="arial" size="-1"><b>Note: </b></font></TD>
+        <TD class="attention"><font face="arial" size="-1">Specular highlighting can always be simulated using reflection mapping.  For examples of the correct settings, see the N64 Programming Manual.</font></TD></TR>
+    </TABLE>
+
+    </DIV>
+</font></TD></TR>
+</TABLE>
+
+</DIV>
+<DIV class="Example">
+
+<HR width="90%">
+<A name="Fog"></A>
+<TABLE width="90%" border="0" class="Example">
+  <TR>
+    <TH align="left" valign="top" class="Title"><font face="arial" size="-1">Fog</font></TH></TR>
+  <TR>
+    <TD><font face="arial" size="-1">
+    <P>
+Uses Fog.
+    </P>
+    <P>
+Set the Geometry mode.
+    </P>
+    <P>
+[RSP]->GEO_MODE settings are as follows.
+    </P>
+    <CENTER>
+    <TABLE class="Screen">
+      <TR>
+        <TD>
+<PRE class="Screen">
++[GEO_MODE]---------+
+| G_SHADE         :O|(*)
+| G_LIGHTING      :O|(*)
+| G_SHADING_SMOOTH:O|
+| G_ZBUFFER       :O|(*)
+| G_TEXTURE_GEN   :x|
+| G_TEXTURE_GEN_L :x|
+| G_CULL_FRONT    :x|
+| G_CULL_BACK     :x|
+| G_FOG           :O|(*)
+|- - - - - - - - - -|
+|&gt; REFLECTION EN  &lt;x|
++-------------------+
+</PRE>
+</TD></TR>
+    </TABLE>
+
+    </CENTER>
+    <P>
+The cycle type is set to 2 cycles.(*)
+    </P>
+    <P class="Example"><font face="arial" size="-1">
+[RDP]-&gt;CYCLE_TYPE-&gt;G_CYC_2CYCLE
+    </font></P>
+    <P>
+To make the effect readily visible, select DECALRGB as the Combine mode, CUBE as the model, and BRICK as the texture.  In addition, specify the following Combine node settings.
+    </P>
+    <P class="Example"><font face="arial" size="-1">
+[RDP]-&gt;CL_COMBINE-&gt;COMBINE_MODE-&gt;CYCLE1: DECALRGB<BR>
+[RDP]-&gt;CL_COMBINE-&gt;COMBINE_MODE-&gt;CYCLE1: PASS2
+    </font></P>
+    <P>
+Set the Rendering mode.(*)
+    </P>
+    <P class="Example"><font face="arial" size="-1">
+[RDP]-&gt;BLENDER-&gt;RENDER_MODE-&gt;CYCLE1: FOG_SHADE_A<BR>
+[RDP]-&gt;BLENDER-&gt;RENDER_MODE-&gt;CYCLE2: AA_ZB_OPA_SURF2
+    </font></P>
+    <P>
+Select the Fog color.(*)
+    </P>
+    <P>
+[RDP]->BLENDER->FOG_COLOR settings are as follows.
+    </P>
+    <CENTER>
+    <TABLE class="Screen">
+      <TR>
+        <TD>
+<PRE class="Screen">
++[FOG COL]--+            
+|&lt;RED  &gt; 80 |            
+| GREEN: 80 |            
+| BLUE : 80 |            
+| ALPHA: 80 |            
++-----------+            
+</PRE>
+</TD></TR>
+    </TABLE>
+
+    </CENTER>
+    <P>
+Set the BG color to a color close to that of the Fog.
+    </P>
+    <P class="Example"><font face="arial" size="-1">
+[MISC]-&gt;BG_COLOR-&gt;GLAY
+    </font></P>
+    <P>
+The positions of the Fog threshold and Fog color saturation can be changed by changing the Fog position ([RSP]->FOG_POS).
+    </P>
+</font></TD></TR>
+</TABLE>
+
+</DIV>
+<DIV class="Example">
+
+<HR width="90%">
+<A name="Trilinear MIP Mapping"></A>
+<TABLE width="90%" border="0" class="Example">
+  <TR>
+    <TH align="left" valign="top" class="Title"><font face="arial" size="-1">Trilinear MIP Mapping</font></TH></TR>
+  <TR>
+    <TD>
+    <font face="arial" size="-1">
+    <P>
+Set the cycle type to 2 cycles.(*)
+    </P>
+    <P class="Example">
+[RDP]-&gt;CYCLE_TYPE-&gt;G_CYC_2CYCLE
+    </P>
+    <P>
+Set the Combine mode.(*)
+    </P>
+    <P class="Example">
+[RDP]-&gt;CL_COMBINE-&gt;COMBINE_MODE-&gt;CYCLE1: TRILERP<BR>
+[RDP]-&gt;CL_COMBINE-&gt;COMBINE_MODE-&gt;CYCLE1: DECALRGB2
+    </P>
+    <P>
+Set the Rendering mode.(*)
+    </P>
+    <P class="Example">
+[RDP]-&gt;BLENDER-&gt;RENDER_MODE-&gt;CYCLE1: PASS<BR>
+[RDP]-&gt;BLENDER-&gt;RENDER_MODE-&gt;CYCLE2: AA_ZB_OPA_SURF2
+    </P>
+    <P>
+Set the texture.(*)
+    </P>
+    <P class="Example">
+[MISC]-&gt;TEXTURE-&gt;RGBA16 BRICK_MM
+    </P>
+    <DIV class="attention">
+
+    <TABLE width="80%" border="0" summary="Note">
+      <TR>
+        <TD align="left" valign="top" class="symbol"><font face="arial" size="-1"><b>Note: </b></font></TD>
+        <TD class="attention"><font face="arial" size="-1">ccbl specifies texture tiling internally when BRICK_MM is used as the texture.</font></TD></TR>
+    </TABLE>
+    </DIV>
+</font></TD></TR>
+</TABLE>
+
+</DIV>
+<DIV class="Example">
+
+<HR width="90%">
+<A name="Anti-aliasing"></A>
+<TABLE width="90%" border="0" class="Example">
+  <TR>
+    <TH align="left" valign="top" class="Title"><font face="arial" size="-1">Anti-aliasing</font></TH></TR>
+  <TR>
+    <TD><font face="arial" size="-1">
+    <P>
+Anti-aliasing in N64 is ultimately performed by VI.  Blender writes the anti-aliasing data (cover values) to the frame buffer when it writes the pixel values to that buffer.
+    </P>
+    <P>
+Using the G_RM_VISCVG, ccbl enables cover values to be visualized.  Try changing the Blender settings and using this feature to see the types of cover values generated.   The result will likely be many very interesting discoveries.
+    </P>
+</font></TD></TR>
+</TABLE>
+
+</DIV>
+<DIV class="Example">
+
+<HR width="90%">
+<A name="Transparent Surface"></A>
+<TABLE width="90%" border="0" class="Example">
+  <TR>
+    <TH align="left" valign="top" class="Title"><font face="arial" size="-1">Transparent Surface</font></TH></TR>
+  <TR>
+    <TD><font face="arial" size="-1">
+    <P>
+Combine mode is set as follows.(*)
+    </P>
+    <P class="Example"><font face="arial" size="-1">
+[RDP]-&gt;CL_COMBINE-&gt;COMBINE_MODE-&gt;CYCLE1: PRIM
+    </P>
+    <P>
+Blender mode is set as follows.(*)
+    </P>
+    <P class="Example"><font face="arial" size="-1">
+[RDP]-&gt;BLENDER-&gt;RENDER_MODE-&gt;CYCLE1: AA_ZB_XLU_SURF
+    </P>
+    <P>
+Change BG_COLOR so that the effect is easily seen.
+    </P>
+    <P class="Example"><font face="arial" size="-1">
+[MISC]-&gt;BG_COLOR-&gt;IMAGE2
+    </font></P>
+    <P>
+Try changing the alpha for the primitive color and see the results.
+    </P>
+    <P class="Example"><font face="arial" size="-1">
+[RDP]-&gt;CL_COMBINER-&gt;PRIM_COLOR-&gt;ALPHA
+    </font></P>
+</font></TD></TR>
+</TABLE>
+
+</DIV>
+<DIV class="Example">
+
+<HR width="90%">
+<A name="Texture Edge Mode"></A>
+<TABLE width="90%" border="0" class="Example">
+  <TR>
+    <TH align="left" valign="top" class="Title"><font face="arial" size="-1">Texture Edge Mode</font></TH></TR>
+  <TR>
+    <TD><font face="arial" size="-1">
+    <P>
+The model and texture are set as follows.
+    </P>
+    <P class="Example"><font face="arial" size="-1">
+[MISC]-&gt;MODEL-&gt;CUBE<BR>
+[MISC]-&gt;TEXTURE-&gt;RGBA16 TREE
+    </font></P>
+    <P><font face="arial" size="-1">
+Combine mode is set as follows.(*)
+    </P></font>
+    <P class="Example"><font face="arial" size="-1">
+[RDP]-&gt;CL_COMBINE-&gt;COMBINE_MODE-&gt;CYCLE1: DECALRGBA
+    </font></P>
+    <P><font face="arial" size="-1">
+Rendering mode is set as follows.(*)
+    </P></font>
+    <P class="Example"><font face="arial" size="-1">
+[RDP]-&gt;BLENDER-&gt;RENDER_MODE-&gt;CYCLE1: AA_ZB_TEX_EDGE
+    </font></P>
+</font></TD></TR>
+</TABLE>
+
+</DIV>
+<DIV class="Example">
+
+<HR width="90%">
+<A name="Decal Surface"></A>
+<TABLE width="90%" border="0" class="Example">
+  <TR>
+    <TH align="left" valign="top" class="Title"><font face="arial" size="-1">Decal Surface</font></TH></TR>
+  <TR>
+    <TD><font face="arial" size="-1">
+    <P><font face="arial" size="-1">
+The model is set as follows.(*)
+    </font></P>
+    <P class="Example"><font face="arial" size="-1">
+[MISC]-&gt;MODEL-&gt;TRIANGLE
+    </font></P>
+    <P><font face="arial" size="-1">
+The model is set as follows.(*)
+    </font></P>
+    <P class="Example"><font face="arial" size="-1">
+[RDP]-&gt;BLENDER-&gt;RENDER_MODE-&gt;CYCLE1: AA_ZB_OPA_DECAL
+    </font></P>
+    <P><font face="arial" size="-1">
+The BG model is set as follows.(*)
+    </font></P>
+    <P class="Example"><font face="arial" size="-1">
+[MISC]-&gt;BG_MODEL-&gt;PLANE
+    </font></P>
+</font></TD></TR>
+</TABLE>
+
+</DIV>
+<DIV class="Example">
+
+<HR width="90%">
+<A name="Interpenetration Mode"></A>
+<TABLE width="90%" border="0" class="Example">
+  <TR>
+    <TH align="left" valign="top" class="Title"><font face="arial" size="-1">Interpenetration Mode</font></TH></TR>
+  <TR>
+    <TD><font face="arial" size="-1">
+    <P>
+The model is set as follows.(*)
+    </P>
+    <P class="Example"><font face="arial" size="-1">
+[MISC]-&gt;MODEL-&gt;TETRA
+    </font></P>
+    <P><font face="arial" size="-1">
+Rendering mode is set as follows.(*)
+    </font></P>
+    <P class="Example"><font face="arial" size="-1">
+[RDP]-&gt;BLENDER-&gt;RENDER_MODE-&gt;CYCLE1: AA_ZB_OPA_INTER
+    </font></P>
+    <P><font face="arial" size="-1">
+The BG model is set as follows.(*)
+    </font></P>
+    <P class="Example"><font face="arial" size="-1">
+[MISC]-&gt;BG_MODEL-&gt;PLANE
+    </font></P>
+    <P><font face="arial" size="-1">
+The BG model is set as follows.
+    </font></P>
+</font></TD></TR>
+</TABLE>
+
+</DIV>
+<DIV class="Example">
+
+<HR width="90%">
+<A name="Particle Effects"></A>
+<TABLE width="90%" border="0" class="Example">
+  <TR>
+    <TH align="left" valign="top" class="Title"><font face="arial" size="-1">Particle Effects</font></TH></TR>
+  <TR>
+    <TD><font face="arial" size="-1">
+    <P>
+Rendering mode is set as follows.(*)
+    </P>
+    <P class="Example"><font face="arial" size="-1">
+[RDP]-&gt;BLENDER-&gt;RENDER_MODE-&gt;CYCLE1: AA_ZB_PCL_SURF
+    </font></P>
+    <P><font face="arial" size="-1">
+Alpha comparison is set as follows.(*)
+    </font></P>
+    <P class="Example"><font face="arial" size="-1">
+[RDP]-&gt;BLENDER-&gt;CD AD AC-&gt;G_AC_DITHER
+    </font></P>
+    <DIV class="attention">
+
+    <TABLE width="80%" border="0" summary="Note">
+      <TR>
+        <TD align="left" valign="top" class="symbol"><font face="arial" size="-1">Note</font></TD>
+        <TD class="attention"><font face="arial" size="-1">With the macros in PR/gbi.h, the alpha comparison is set automatically when the G_RM_*_PCL_SURF setting is specified. Under the ccbl specifications, the alpha comparison cannot be set while in a RENDER_MODE, so be sure to specify the alpha comparison here.</font></TD></TR>
+    </TABLE>
+
+    </DIV>
+    <P><font face="arial" size="-1">
+A common bug is to set the alpha comparison after the rendering mode, so that even if G_RM_*_PCL_SURF is specified as the rendering mode, it is subsequently overwritten with the alpha comparison setting.
+    </font></P>
+</font></TD></TR>
+</TABLE>
+
+</DIV>
+<HR>
+<P>
+<A name="Miscellaneous Items"></A>
+</P>
+<H2><font face="arial">Miscellaneous Items</font></H2>
+<HR align="center" width="90%">
+<P>
+<A name="Menu Rendering Mode"></A>
+</P>
+<CENTER>
+<TABLE width="90%" border="0" class="Others">
+  <TR>
+    <TH align="left" valign="top"><font face="arial" size="-1">Menu Rendering Mode</font></TH></TR>
+  <TR>
+    <TD><font face="arial" size="-1">
+    <P>
+The menu rendering mode used is G_RM_XLU_SURF.<BR>
+Because this mode uses the CVG_DIST_FULL setting, it may corrupt the cover values for the display model.  For a proper display, turn off the menu display.
+    </P>
+</font></TD></TR>
+</TABLE>
+
+</CENTER>
+<HR align="center" width="90%">
+<P>
+<A name="Near/Far-Plane Clipping Values"></A>
+</P>
+<CENTER>
+<TABLE width="90%" border="0" class="Others">
+  <TR>
+    <TH align="left" valign="top"><font face="arial" size="-1">Near/Far-Plane Clipping Values</font></TH></TR>
+  <TR>
+    <TD><font face="arial" size="-1">
+    <P>
+ccblJ sets the near-plane clipping value to 500 and the far-plane clipping value to 20,000.  These are not necessarily recommended values.<BR>
+Values that are appopriate for the application should be selected.
+    </P>
+</font></TD></TR>
+</TABLE>
+
+</CENTER>
+<HR align="center" width="90%">
+<P>
+<A name="Unsupported Combine Modes"></A>
+</P>
+<CENTER>
+<TABLE width="90%" border="0" class="Others">
+  <TR>
+    <TH align="left" valign="top"><font face="arial" size="-1">Unsupported Combine Modes</font></TH></TR>
+  <TR>
+    <TD><font face="arial" size="-1">
+    <P>
+The Combine mode macro settings shown below are not supported.  In addition, parameters for these settings have been omitted.  The Color Combiner parameters can be set directly.
+    </P>
+    <CENTER>
+    <TABLE>
+      <TR>
+        <TD><font face="arial" size="-1">G_CC_TEMPLERP</font></TD></TR>
+      <TR>
+        <TD><font face="arial" size="-1">G_CC_1CYUV2RGB</font></TD></TR>
+      <TR>
+        <TD><font face="arial" size="-1">G_CC_YUV2RGB</font></TD></TR>
+      <TR>
+        <TD><font face="arial" size="-1">G_CC_CHROMA_KEY2</font></TD></TR>
+    </TABLE>
+
+    </CENTER>
+</font></TD></TR>
+</TABLE>
+
+</CENTER>
+<HR align="center" width="90%">
+<P>
+<A name="Performance Meter"></A>
+</P>
+<CENTER>
+<TABLE width="90%" border="0" class="Others">
+  <TR>
+    <TH align="left" valign="top"><font face="arial" size="-1">Performance Meter</font></TH></TR>
+  <TR>
+    <TD><font face="arial" size="-1">
+    <P>
+The nuDebTaskPerfBar1() function of NuSystem is used as the performance meter. For information on the performance meter, see the NuSysytem documentation.<BR>
+The performance meter includes not only the model display time but also latencies such as the time for frame buffer clearing and menu display.
+    </P>
+</font></TD></TR>
+</TABLE>
+
+</CENTER>
+<HR align="center" width="90%">
+<P>
+<A name="Parameters that ccbl Cannot Set"></A>
+</P>
+<CENTER>
+<TABLE width="90%" border="0" class="Others">
+  <TR>
+    <TH align="left" valign="top"><font face="arial" size="-1">Parameters that ccbl Cannot Set</font></TH></TR>
+  <TR>
+    <TD><font face="arial" size="-1">
+    <P>
+ccbl cannot be used to set items that are not closely related to Color Combiner and Blender.<BR>
+In developing an actual application, setting only those parameters that can be set by ccbl will not produce a proper display.  Please use the documentation and sample source code available as references.
+    </P>
+</font></TD></TR>
+</TABLE>
+
+</CENTER>
+</font>
+</BODY>
+</HTML>

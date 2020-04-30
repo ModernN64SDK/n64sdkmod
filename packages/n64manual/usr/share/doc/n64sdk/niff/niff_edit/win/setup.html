@@ -1,0 +1,262 @@
+<html>
+<head>
+<title>Support</title>
+</head>
+
+<body bgcolor="#ffffff" text="#000000">
+<font face="arial" size="-1">
+<b><font size="3">Setup</b></font>
+<P>
+
+
+<a href="index.html"><img src="images/index.gif" alt="INDEX" border="0"></a>
+<a href="environment.html"><img src="images/previous.gif" alt="PREVIOUS" border="0"></a>
+<a href="execute.html"><img src="images/next.gif" alt="NEXT" border="0"></a>
+
+<hr>
+
+<p>This section covers the procedure for installing and uninstalling NIFF Editor and the NIFF conversion and preview tools.</p>
+
+<P>
+<b><a name="n64kit">Nintendo<sup>64</sup>  Developers Kit</a></b>
+
+<p>NIFF Editor is distributed as part of the Nintendo<sup>64</sup> Developers Kit and is automatically installed when you install the kit.  The NIFF Editor and its conversion and preview tools are installed in the following directories when the Nintendo<sup>64</sup> Developers Kit is installed in its default directory.</p>
+
+<P>
+<table border="0" cellspacing="3" cellpadding="3">
+<tr>
+<td valign="top" nowrap rowspan="6"><font face="arial" size="-1">c:\nintendo\n64kit\niff\</td>
+<td valign="top" nowrap><font face="arial" size="-1"></td></tr>
+<tr>
+<td valign="top" nowrap><font face="arial" size="-1">bin\niffedit\</td>
+
+<td><font face="arial" size="-1">NIFF Editor and Help</td>
+</tr>
+<tr>
+<td valign="top" nowrap><font face="arial" size="-1">n64prev\niffconv.bat</td>
+
+<td><font face="arial" size="-1">Converter executable</td>
+</tr>
+<tr>
+<td valign="top" nowrap><font face="arial" size="-1">n64prev\niffprev.bat</td>
+
+<td><font face="arial" size="-1">Preview executable</td>
+</tr>
+<tr>
+<td valign="top" nowrap><font face="arial" size="-1">n64prev\quickprev\quickprev.bat</td>
+
+<td><font face="arial" size="-1">Quick Preview executable</td>
+</tr>
+<tr>
+<td valign="top" nowrap><font face="arial" size="-1">nvfview\nvfconv.bat</td>
+
+<td><font face="arial" size="-1">Converter 2 executable</td>
+</tr>
+<tr>
+<td valign="top" nowrap><font face="arial" size="-1">nvfview\nvfprev.bat</td>
+
+<td><font face="arial" size="-1">Preview 2 executable</td>
+</tr>
+</table>
+
+<p>To install only NIFF Editor for upgrade, etc., please see <a href="#install">Install</a>and <a href="#uninstall">Uninstall</a>.
+
+<P>
+
+<b><a name="install">Install</a></b>
+
+<p>To install NIFF Editor, execute the setup program  (SETUP.EXE) using the following procedure.</p>
+
+<ul>
+<li>From the Start button menu, choose Explorer. <br>
+From Explorer, open the directory containing NIFF Editor. Double-click SETUP.EXE. Follow the on-screen instructions to install NIFF Editor.
+<P>
+<li>Activate the MS-DOS prompt (Windows 95/98) or the command prompt (Windows NT), and change the name of the current directory to the directory containing the setup program. Input "setup". 
+<P>
+<li>From the [Start] button, select the [Run] command to open the Run dialog box. Enter the filename, including the directory path. Follow the on-screen instructions to install NIFF Editor.
+</ul>
+
+
+<p>After successfully installing the software, refer to <a href="execute.html">"Starting and Exiting"</a> to run the program.</p>
+
+<P>
+<b><a name="uninstall">Uninstall</a></b>
+
+<p>To remove NIFF Editor, follow the sequence described below using [Add/Remove] from the [Control Panel].</p>
+
+<ul>
+<li>From the Start button menu, choose [Settings]. From the Settings menu, choose [Control Panel] to open Control Panel. 
+<P>
+<li>In Control Panel, double-click [Add/Remove Programs] to display the [Add/Remove Programs Properties] dialog box. Click the [Install/Uninstall] tab.
+<P>
+<li>From the list of applications, select [NIFF Editor], then click the [Add/Remove] button. 
+</ul>
+
+<p>At the prompt, click [Yes] to remove the program.</p>
+
+<P>
+<b><a name="update">Version Upgrades</a></b>
+
+<p>To upgrade NIFF Editor to a newer version, follow the <a href="#uninstall">uninstall</a> procedures as described above to delete the existing version of NIFF Editor. Follow the <a href="#install">install</a> procedures to install the new version. 
+
+<P>
+<b>Note:</b> To upgrade to a new version of NIFF Editor you must first delete the existing version using [Add/Remove] in Control Panel.</p>
+
+<P>
+<b><a name="tool">Convert and Preview</a></b>
+
+<p>When you choose [Convert] from the [Tools] menu, NIFF Editor outputs a NIFF file and executes a batch file that only converts (NIFFCONV.BAT). When you choose [Preview] from the [Tools] menu, NIFF Editor outputs a NIFF file and executes a batch file that converts and then executes make (NIFFPREV.BAT).</p>
+
+<P>
+<ul>
+<li>Install exeGCC and set up the environment to run exeGCC.  Normally, the directory in which exeGCC is installed is specified in the "root" environment variable in the SETUP.BAT file included with exeGCC.  Please refer to the exeGCC manual for details about installation and environment settings.</p>
+<P>
+<li>Modify MAKEFILE.WIN in the Previewer directory (C:/NINTENDO/N64KIT/NIFF/N64PREV) to match the environment of the installed exeGCC.  Open MAKEFILE.WIN. using Notepad or any other text editor. Find the portion at the beginning of the file which specifies the path for exeGCC and the Include files.
+<p>
+<font face="courier" size="2" color=brown>
+N64GCC_PATH = c:\ultra\gcc\mipse<br>
+N64GCC_BIN = $(N64GCC_PATH)\bin<br>
+N64GCC_INC = c:\ultra\usr\include<br>
+CC = $(N64GCC_BIN)\gcc<br>
+AS = $(N64GCC_BIN)\as<br>
+LD = $(N64GCC_BIN)\ld<br>
+</font>
+<p>
+<li>Modify this portion to match the environment of the installed exeGCC. If there are no conflicts, then no additional changes are necessary.</p>
+
+
+<P>
+<li>When a NIFF file is converted into a display list, NIFF Editor calls NIFFCON.BAT and the settings in this batch file are carried out.  Open NIFFCON.BAT using Notepad or any other text editor to display the following settings.
+<p>
+<font face="courier" color=brown>
+echo off<br>
+set root=c:\ultra<br>
+set gccdir=%ROOT%\gcc<br>
+path %gccdir%\mipse\bin;%root%\sbin;%path%<br>
+set gccsw=-mips3 -mgp32 -mfp32 -D_LANGUAGE_C -D_ULTRA64 -D__EXTENSIONS__<br>
+set n64align=on<br>
+niff2gfx -header model.h niffconv.nif model.c<br>
+if errorlevel 1 goto error<br>
+goto done<br>
+:error<br>
+pause<br>
+:done<br>
+echo on</font>
+<p>
+<li>The first through sixth line set the environment for exeGCC.  If these same settings are already included in the AUTOEXEC.BAT file, delete the six lines here, or comment them out with a REM statement.
+<P>
+The 7th line calls NIFF2GFX.EXE and converts the NIFF file into a display list.  NIFF Editor outputs the currently read NIFF file to a temporary file called NIFFCONV.NIF.  Therefore, do not change the name of the NIFF file that is sent to NIFF2GFX.EXE. The other output filenames and the options can be freely changed. For details about NIFF2GFX.EXE please see the NIFF2GFX User's Manual.</p>
+<P>
+<li>Finally, set up NIFFPREV.BAT which is called from NIFF Editor when a NIFF file is to be previewed. Open NIFFPREV.BAT with Notepad or any other text editor to display the following settings.
+<p>
+<font face="courier" color=brown>
+echo off<br>
+set root=c:\ultra<br>
+set gccdir=%ROOT%\gcc<br>
+path %gccdir%\mipse\bin;%root%\sbin;%path%<br>
+set gccsw=-mips3 -mgp32 -mfp32 -D_LANGUAGE_C -D_ULTRA64 -D__EXTENSIONS__<br>
+set n64align=on<br>
+niff2gfx -header model.h niffprev.nif model.c<br>
+if errorlevel 1 goto error<br>
+make -f makefile.win<br>
+if errorlevel 1 goto error<br>
+"C:\Program Files\Intelligent Systems\IS-VIEWER64\PROGRAM\nload" -n -v -s0x200000 "quickprev\clean.bin"<br>
+if errorlevel 1 goto error<br>
+"C:\Program Files\Intelligent Systems\IS-VIEWER64\PROGRAM\nload" -n -v nuprev.n64<br>
+if errorlevel 1 goto error<br>
+goto done<br>
+:error<br>
+pause<br>
+:done<br>
+echo on<br>
+</font>
+<p>
+<li>This setting is nearly identical to NIFFCONV.BAT, which is used for converting. The only differences are the name of the file that NIFF Editor outputs and that make is executed.
+<P>
+The first six lines set the environment for exeGCC.  If these same settings are already included in the AUTOEXEC.BAT file, delete the six lines here, or comment them out with a REM statement.
+<P>
+The 7th line calls NIFF2GFX.EXE and converts the NIFF file into a display list.  NIFF Editor outputs the currently read NIFF file to a temporary file called NIFFCONV.NIF.  Therefore, do not change the name of the NIFF file sent to NIFF2GFX.EXE.  The other output filenames and the options can be freely changed.  For details about NIFF2GFX.EXE please see the NIFF2GFX User's Manual.
+<P>
+Line 9 executes make, and lines 11 and 13 send the files to IS-Viewer64. There will normally be no need to change these lines.</p>
+</ul>
+
+
+<P>
+<b><a name="quickpreview">Quick Preview</a></b>
+
+<p>Quick Preview is run by executing the QUICKPREV.BAT file included in the N64 Previewer.  Please set up this file following the steps shown below so that it will execute correctly.</p>
+
+<ul>
+<li>The contents of the default QUICKPREV.BAT file are as follows:
+<p>
+<font face="courier" color=brown>
+echo off<br>
+"C:\Program Files\Intelligent Systems\IS-VIEWER64\PROGRAM\nload" -n -v quickprev.n64<br>
+if errorlevel 1 goto error<br>
+..\niff2gfx -b quickprev.nif model.bin<br>
+if errorlevel 1 goto error<br>
+"C:\Program Files\Intelligent Systems\IS-VIEWER64\PROGRAM\nload" -n -v -s0x200000 model.bin<br>
+if errorlevel 1 goto error<br>
+goto done<br>
+:error<br>
+pause<br>
+:done<br>
+echo on<br>
+</font>
+<p>
+<li>
+In line 2, NLOAD.EXE reads the Previewer's quickprev.n64 file into IS-VIEWER64.  In line 4, niff2gfx.exe converts quickprev.nif, which is the temporary file output by NIFF Editor, into a binary file.  In line 6, this converted file is read by NLOAD.EXE into IS-VIEWER64.</p>
+
+<P>
+<li>Finally, specify the name of the temporary NIFF file that NIFF Editor will output for quick preview, as well as the path for quickprev.bat.  These can be set from the [<a href="option.html#quickpreview">Quick Preview</a>] tab in Options from the Tools menu.</p>
+</ul>
+
+<P>
+<b><a name="tool2">Convert 2 and Preview 2</a></b>
+
+<p>To perform conversion and previewing using the  niff2nvf convertor and nvfview previewer included with the Nintendo<font size="-1"><sup>64</sup></font> Developers Kit.  NIFF Editor performs conversion and previewing by executing nvfconv.bat and nvfprev.bat. To use Convert2 and Preview2, use the following setup procedures.</p>
+
+<ul>
+<li>The content of the default NVFCONV.BAT for performing NVF conversions is as follows:
+<p>
+<font face="courier" color=brown>
+echo off<br>
+niff2nvf nvfconv.nif model.nvf<br>
+if errorlevel 1 goto error<br>
+goto done<br>
+:error<br>
+pause<br>
+:done<br>
+echo on<br>
+</font>
+<p>
+<li>Line 2 converts the NIFF file to an NVF file using NIFF2NVF.EXE</p>
+<P>
+<li>The content of the default NVFPREV.BAT file for converting to NVF and previewing is as follows:
+<p>
+<font face="courier" color=brown>
+echo off<br>
+niff2nvf nvfprev.nif model.nvf<br>
+if errorlevel 1 goto error<br>
+nvf2bin scene.nvf model.nvf nvfview.bin<br>
+if errorlevel 1 goto error<br>
+"C:\Program Files\Intelligent Systems\IS-VIEWER64\PROGRAM\nload" -n -e nvfview.N64<br>
+if errorlevel 1 goto error<br>
+"C:\Program Files\Intelligent Systems\IS-VIEWER64\PROGRAM\nload" -n -s 0x200000 nvfview.bin<br>
+if errorlevel 1 goto error<br>
+goto done<br>
+:error<br>
+pause<br>
+:done<br>
+echo on<br>
+</font>
+<p>
+<li>
+Line 2 converts the NIFF file to an NVF file using NIFF2NVF.EXE. Line 4 converts the NVF file to a binary file. And lines 4 and 6 load the Previewer and the resulting binary file into IS-Viewer64.</p>
+</ul>
+
+<hr>
+
+
+</body>
+</html>

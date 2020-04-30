@@ -1,0 +1,63 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Author's Comments: JLR made formating edits for 4.1.
+MAP- added links, updated format>
+<title>alSynSetPitch</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>alSynSetPitch</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p>alSynSetPitch, n_alSynSetPitch</p>
+
+<p><i>Sets the pitch of the specified voice</i></p>
+
+<h3>Syntax</h3>
+<p>
+<blockquote>
+  <pre>#include &lt;libaudio.h&gt;     /* <a href="../../header/libaudio.htm">libaudio.h</a> */
+
+void alSynSetPitch(ALSynth *drvr, ALVoice *voice, float pitch);</pre>
+  <pre>#include &lt;n_libaudio.h&gt;     /* <a href="../../header/n_libaudio.htm">n_libaudio.h</a> */
+
+void n_alSynSetPitch(           N_ALVoice *voice,   f32 pitch);</pre>
+</blockquote>
+</p>
+<h3>Arguments</h3>
+<p>
+<dl>
+  <dt><strong>drvr</strong></dt>
+  <dd>Pointer to the synthesizer driver<br>
+    <br>
+  </dd>
+  <dt><strong>voice</strong></dt>
+  <dd>Pointer to a voice<br>
+    <br>
+  </dd>
+  <dt><strong>pitch</strong></dt>
+  <dd>Pitch value<br>
+    <br>
+  </dd>
+</dl>
+</p>
+<h3>Description</h3>
+
+<p><tt>alSynSetPitch</tt> sets the rate that indicates how the synthesizer will play sound of a wavetable. The pitch can range from between 0 and 2.0 (but not 0). If the sample rate of the wavetable is the same as the output rate set by <a href="../os/osAiSetFrequency.htm">osAiSetFrequency</a>, then: A value of 1.0 will play the sound with no pitch change. A value of 0.5 will play the sound pitch shifted down an octave. A value of 2.0 will play the pitch shifted up one octave. Negative pitch values are not supported (undefined). 0 for pitch value cannot be specified as division by 0 cannot be operated. Values greater than 2.0 will be automatically adjusted to 2.0.</p>
+
+<p>For details on n_audio library, see "Chapter 28: n_audio library" in the N64 Programming Manual.</p>
+
+<h3>Note</h3>
+<p>Call <tt>alSynSetPitch</tt> from within the AlVoiceHandler only.</p>
+
+<h3>See Also</h3>
+
+<p><a href="alSynSetVol.htm">alSynSetVol</a>, <a href="alSynSetPan.htm">alSynSetPan</a>, <a href="alSynSetFXMix.htm">alSynSetFXMix</a>, <a href="alSynStartVoiceParams.htm">alSynStartVoiceParams</a>, and <a
+href="../os/osAiSetFrequency.htm">osAiSetFrequency</a></p>
+<h3>Revision History</h3>
+<p>1999/04/30  Changed Format</p>
+<br><br>
+
+</body>
+</html>

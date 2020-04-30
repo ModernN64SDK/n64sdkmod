@@ -1,0 +1,55 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.
+  PWC- updated formatting
+  MAP- updated format
+-->
+<TITLE>osContReset</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+<font style="font-size: 12pt"><b>osContReset</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p><i>Resets the SI devices</i></P>
+
+<H3>Syntax</H3>
+<p>
+<PRE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/os.htm">os.h</A> */
+s32 osContReset(OSMesgQueue *mq, OSContStatus *status);</PRE></p>
+
+<H3>Description</H3>
+<P>
+<tt>osContReset</tt> resets all the direct SI devices that are connected to the controller ports. Specifically, it sets the current positon of a 3D stick on a standard controller back to the neutral position. If it's a voice recognition system, osContReset resets the parameters set by the initialization functions back to the default values.
+
+mq is the message queue for initialized messages associated with  OS_EVENT_SI events.  Please see <a href="osSetEventMesg.htm">osSetEventMesg</a> in the <i>N64 Online Function Reference Manual</i>, to learn how to make this association.
+
+SI device type and status are returned to status. You must supply a memory block large enough for MAXCONTROLLER structures of type osContStatus. Regarding the <a  href="osContSetCh.htm">osContSetCh</a> function, it is fine to set the number of direct-type SI devices to be used, to a value less than the value set for MAXCONTROLLERS, if the number of direct-type devices used will not be changed in the future. Please see the function <a href="osContInit.htm">osContInit</a> for details on OSContStatus structure.
+</P>
+
+<p><PRE><CODE>typedef struct {
+    u16     type;   /* The type of SI device inserted in the controller port */
+    u8      status; /* The status of the joyport */
+    u8      errno;  /* Error from the SI device */
+}OSContStatus;</CODE></PRE></p>
+
+<H3>Notes</H3>
+
+<P>
+This function is utilized at the time of SI device development, and is not normally required when creating applications.
+</P>
+
+<H3>See Also</H3>
+<P>
+<A HREF="osContInit.htm">osContInit</A>, <A HREF="osContStartQuery.htm">osContStartQuery</A>, <A HREF="osContStartReadData.htm">osContStartReadData</A>, <A HREF="osContSetCh.htm">osContSetCh</A>, and <A HREF="osSetEventMesg.htm">osSetEventMesg</A>
+</P>
+
+<H3>Revision History</H3>
+<P>
+1999/02/01  Completely revised<br>
+1999/04/30  Changed format
+</P>
+
+</BODY>
+</HTML>

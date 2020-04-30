@@ -1,0 +1,2132 @@
+<HTML>
+<HEAD>
+<TITLE>NVF Specification</TITLE>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<!-- Editor's Notes: 9/20/1999 Ron Daring -->
+</HEAD>
+<BODY LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff">
+<a name="top">
+
+<h1>NVF Specification</h1>
+<HR>
+
+<P>
+
+
+
+<ol>
+ <li><a href="#place">NVF Intro</a>
+ <li><a href="#structure">Basic Structure of NVF</a>
+ <li><a href="nvfhier.htm">NVF <u>Scene Graph</u></a>
+ <li><a href="#noderef">NVF Node Reference</a>
+ <li><a href="#limitation">Problems/Limitations</a>
+ <li><a href="mgkintro.htm">MGK <u>Library Introduction</u></a>
+</ol>
+
+<p align="right">
+ <a href="../index.htm">
+  <img src="../../gif/index.gif" border="0" width="65" height="17"></a>
+</p>
+<hr>
+
+<P>
+
+<a name="place">
+<b>
+Introduction to NVF
+</b>
+<P>
+Whereas NIFF is designed as an intermediate format, created by converting the CG tool data, NVF is designed as a format closer to the target, meant for displaying NIFF on the N64. NIFF is converted to NVF and then stored in the N64 ROM area. The previewer (<a href="../nvfview/seg1.htm">nvfview</a> etc..) loads NVF from the N64 ROM area into main memory and then displays the data.
+
+<p align="right">
+ <a href="index.htm">
+  <img src="../../gif/index.gif" border="0" width="65" height="17"></a>
+</p>
+<hr>
+
+<P>
+<a name="structure">
+<b>
+The Basic Structure of NVF
+</b>
+<P>
+
+<u>Data type</u>
+<P>
+The following basic data types were defined in NVF.
+<ul>
+ <li>long<br>
+  A 4-byte integer. Uses the network byte order. 
+<P> 
+<li>short<br>
+  A 2-byte integer. Uses the network byte order.
+<P> 
+<li>char<br>
+  A 1-byte integer. 
+<P>
+ <li>float<br>
+  A 4-byte floating-point. Follows the IEEE 754 format shown below.
+
+<P>  
+<table border="1" cellpadding="3" cellspacing="3">
+   <tr>
+    <td width="25%" colspan="8" align="center"><font face="arial" size="-1">Byte 0</td>
+    <td width="25%" colspan="8" align="center"><font face="arial" size="-1">Byte 1</td>
+    <td width="25%" colspan="8" align="center"><font face="arial" size="-1">Byte 2</td>
+    <td width="25%" colspan="8" align="center"><font face="arial" size="-1">Byte 3</td>
+   </tr>
+   <tr>
+    <td colspan="1"><font face="arial" size="-1">Sign: 1</td>
+    <td colspan="8"><font face="arial" size="-1">Exponent: 8</td>
+    <td colspan="23"><font face="arial" size="-1">Mantissa: 23</td>
+   </tr>
+  </table></ul>
+
+<P>
+<ul>
+<li>node
+<P>
+  A 4-byte integer specifying the node index. However, the following values have special interpretations: 
+  <dl>
+   <dt>0xFFFFFFFF<br>
+   Indicates that the node is NULL.
+<P>
+   <dt>0x80000000 &nbsp; 0xFFFFFFFE<br>
+   Indicates that the node exists in an external NVF. In this case, the lower 31 bits comprise the index of the external node table. 
+  </dl>
+</ul>
+
+<P>
+<u>Format</u>
+<P>
+NVF was created based on IFF. (Although NIFF and IFF have similar names, they are completely unrelated.) 
+<p>
+The IFF file is composed of fixed format Chunks.
+<P>
+<table border="1" cellpadding="3" cellspacing="3">
+ <tr>
+  <td align="center"><font face="arial" size="-1">CHUNK MAGIC 4 bytes</td>
+ </tr>
+ <tr>
+  <td align="center"><font face="arial" size="-1">CHUNK DATA SIZE 4 bytes</td>
+ </tr>
+ <tr>
+  <td align="center"><font face="arial" size="-1">DATA<br>The length is the byte size specified by CHUNK DATA SIZE.</td>
+ </tr>
+</table>
+<p>
+The length is the byte size specified by CHUNK DATA SIZE.
+
+<P>
+However, the Chunks are not enumerated as they are in the file. There is a special Chunk called 'FORM' which comprises a number of Chunks, and all the Chunks are contained in this. At the present time, one file can contain only one FORM.
+<P>
+<table border="1" cellpadding="3" cellspacing="3">
+ <tr>
+  <td colspan="2" align="center"><font face="arial" size="-1">CHUNK MAGIC 4 bytes('FORM')</td>
+ </tr>
+ <tr>
+  <td colspan="2" align="center"><font face="arial" size="-1">CHUNK DATA SIZE 4 bytes</td>
+ </tr>
+ <tr>
+  <td rowspan="4"><font face="arial" size="-1">DATA</td><td align="center"><font face="arial" size="-1">FORM MAGIC 4 bytes'NVFB'</td>
+ </tr>
+ <tr>
+  <td align="center"><font face="arial" size="-1">CHUNK 1</td>
+ <tr>
+  <td align="center"><font face="arial" size="-1">CHUNK 2</td>
+ </tr>
+ <tr>
+  <td align="center"><font face="arial" size="-1">....</td>
+ </tr>
+</table>
+<p>
+In NVF, 1 Chunk expresses 1 node. There are various types of nodes, and each of them has its own Chunk Magic. However, there are three kinds of Chunks which are used for purposes other than nodes, as described below.
+<ul>
+ <li>NHDR
+<P>
+  This is the header. It holds information relating to the entire NVF. Naturally, it appears only once in the form. The format is shown below. 
+  <blockquote>
+   <pre><font face="courier" size="2">
+  Header 'NHDR' {
+    long    num_of_nodes
+    long    num_of_root_nodes
+    long    root_node_index[num_of_root_nodes]
+    long    symbol_table_size
+    char    symbol_table[symbol_table_size]
+    long    comment_size
+    char    comment[comment_size]
+  }
+   </pre></font>
+  </blockquote>
+<P>
+ <li>REFR
+<P>
+  This Chunk describes the relationship between nodes. It appears only once in the form. The format is shown below. 
+  <blockquote>
+   <pre><font face="courier" size="2">
+  ReferenceList 'REFR' {
+    long    num_of_references
+    {
+      short type( 0: FtoF, 1: FtoL, 2: LtoF, 3: LtoL )
+      short size
+      node  target
+      short target_field
+      short target_index
+      node  reference
+      short reference_field
+      short reference_index
+    } reference[num_of_references]
+  }
+   </pre></font>
+  </blockquote>
+<P>
+ <li>XTRN
+<P>
+  This Chunk describes external nodes. It appears only once in the form. The format is shown below. 
+  <blockquote>
+   <pre><font face="courier" size="2">
+  ExternalSymbolList 'XTRN' {
+    long    num_of_symbols
+    {
+      long   module_id
+      long   node_name_entry
+    } symbol[num_of_symbols]
+  }
+   </pre></font>
+  </blockquote>
+</ul>
+
+<p align="right">
+ <a href="index.htm">
+  <img src="../../gif/index.gif" border="0" width="65" height="17"></a>
+</p>
+<hr>
+
+<P>
+<a name="noderef">
+<b>NVF Node Reference</b>
+<P>
+<table border="1" cellpadding="3" cellspacing="3">
+ <tr>
+  <td width="30%" valign="top">
+   <table border="0">
+    <tr>
+     <td><font face="arial" size="-1"><font face="Arial" size="-1">AGEO</td>
+<td><a href="#AnimatedGeometry"><font face="arial" size="-1"><font face="Arial" size="-1">AnimatedGeometry</a></td>
+    </tr>
+    <tr>
+     <td><font face="arial" size="-1"><font face="Arial" size="-1">ANMF</td><td><a href="#Animation"><font face="arial" size="-1"><font face="Arial" size="-1">Animation</a></td>
+    </tr>
+    <tr>
+     <td><font face="arial" size="-1"><font face="Arial" size="-1">BGCL</td><td><a href="#BackgroundColor"><font face="arial" size="-1"><font face="Arial" size="-1">BackgroundColor</a></td>
+    </tr>
+    <tr>
+     <td><font face="arial" size="-1"><font face="Arial" size="-1">CSCL</td><td><a href="#ClassicScale"><font face="arial" size="-1"><font face="Arial" size="-1">ClassicScale</a></td>
+    </tr>
+    <tr>
+     <td><font face="arial" size="-1"><font face="Arial" size="-1">FNCC</td><td><a href="#ConstantFunction"><font face="arial" size="-1"><font face="Arial" size="-1">ConstantFunction</a></td>
+    </tr>
+    <tr>
+     <td><font face="arial" size="-1"><font face="Arial" size="-1">DFOG</td><td><a href="#DepthFog"><font face="arial" size="-1"><font face="Arial" size="-1">DepthFog</a></td>
+    </tr>
+    <tr>
+     <td><font face="arial" size="-1"><font face="Arial" size="-1">DRUC</td><td><a href="#DirUpConstraint"><font face="arial" size="-1"><font face="Arial" size="-1">DirUpConstraint</a></td>
+    </tr>
+    <tr>
+     <td><font face="arial" size="-1"><font face="Arial" size="-1">DIRC</td><td><a href="#DirectionConstraint"><font face="arial" size="-1"><font face="Arial" size="-1">DirectionConstraint</a></td>
+    </tr>
+    <tr>
+     <td><font face="arial" size="-1"><font face="Arial" size="-1">LGTD</td><td><a href="#DirectionalLight"><font face="arial" size="-1"><font face="Arial" size="-1">DirectionalLight</a></td>
+    </tr>
+    <tr>
+     <td><font face="arial" size="-1">ENVG</td><td><a href="#EnvelopeGeometry"><font face="arial" size="-1">EnvelopeGeometry</a></td>
+    </tr>
+    <tr>
+     <td><font face="arial" size="-1">EVVC</td><td><a href="#EnvelopeVertexC"><font face="arial" size="-1">EnvelopeVertexC</a></td>
+    </tr>
+    <tr>
+     <td><font face="arial" size="-1">EVVN</td><td><a href="#EnvelopeVertexN"><font face="arial" size="-1">EnvelopeVertexN</a></td>
+    </tr>
+    <tr>
+     <td><font face="arial" size="-1">FLOT</td><td><a href="#Float"><font face="arial" size="-1">Float</a></td>
+    </tr>
+    <tr>
+     <td><font face="arial" size="-1">GEOM</td><td><a href="#Geometry"><font face="arial" size="-1">Geometry</a></td>
+    </tr>
+    <tr>
+     <td><font face="arial" size="-1">FNCH</td><td><a href="#HermiteFunction"><font face="arial" size="-1">HermiteFunction</a></td>
+    </tr>
+   </table>
+  </td>
+
+<P>
+  <td width="30%" valign="top">
+   <table border="0" cellpadding="3" cellspacing="3">
+    <tr>
+     <td><font face="Arial" size="-1">LTST</td><td><a href="#LightSet"><font face="Arial" size="-1">LightSet</a></td>
+    </tr>
+    <tr>
+     <td><font face="Arial" size="-1">FNCL</td><td><a href="#LinearFunction"><font face="Arial" size="-1">LinearFunction</a></td>
+    </tr>
+    <tr>
+     <td><font face="Arial" size="-1">LODD</td><td><a href="#Lod"><font face="Arial" size="-1">Lod</a></td>
+    </tr>
+    <tr>
+     <td><font face="Arial" size="-1">MRKR</td><td><a href="#Marker"><font face="Arial" size="-1">Marker</a></td>
+    </tr>
+    <tr>
+     <td><font face="Arial" size="-1">MTRL</td><td><a href="#Material"><font face="Arial" size="-1">Material</a></td>
+    </tr>
+    <tr>
+     <td><font face="Arial" size="-1">MDUL</td><td><a href="#Module"><font face="Arial" size="-1">Module</a></td>
+    </tr>
+    <tr>
+     <td><font face="Arial" size="-1">NOPR</td><td><a href="#Nop"><font face="Arial" size="-1">Nop</a></td>
+    </tr>
+    <tr>
+     <td><font face="Arial" size="-1">ORNT</td><td><a href="#Orientation"><font face="Arial" size="-1">Orientation</a></td>
+    </tr>
+    <tr>
+     <td><font face="Arial" size="-1">ORIC</td><td><a href="#OrientationConstraint"><font face="Arial" size="-1">OrientationConstraint</a></td>
+    </tr>
+    <tr>
+     <td><font face="Arial" size="-1">PCAM</td><td><a href="#PerspectiveCamera"><font face="Arial" size="-1">PerspectiveCamera</a></td>
+    </tr>
+    <tr>
+     <td><font face="Arial" size="-1">POSC</td><td><a href="#PositionConstraint"><font face="Arial" size="-1">PositionConstraint</a></td>
+    </tr>
+    <tr>
+     <td><font face="Arial" size="-1">ROTX</td><td><a href="#RotationX"><font face="Arial" size="-1">RotationX</a></td>
+    </tr>
+    <tr>
+     <td><font face="Arial" size="-1">RXYZ</td><td><a href="#RotationXYZ"><font face="Arial" size="-1">RotationXYZ</a></td>
+    </tr>
+    <tr>
+     <td><font face="Arial" size="-1">ROTY</td><td><a href="#RotationY"><font face="Arial" size="-1">RotationY</a></td>
+    </tr>
+   </table>
+  </td>
+  <td width="30%" valign="top">
+   <table border="0">
+    <tr>
+     <td><font face="Arial" size="-1">ROTZ</td><td><a href="#RotationZ"><font face="Arial" size="-1">RotationZ</a></td>
+    </tr>
+    <tr>
+     <td><font face="Arial" size="-1">RZXY</td><td><a href="#RotationZXY"><font face="Arial" size="-1">RotationZXY</a></td>
+    </tr>
+    <tr>
+     <td><font face="Arial" size="-1">SCAL</td><td><a href="#Scale"><font face="Arial" size="-1">Scale</a></td>
+    </tr>
+    <tr>
+     <td><font face="Arial" size="-1">SHAP</td><td><a href="#Shape"><font face="Arial" size="-1">Shape</a></td>
+    </tr>
+    <tr>
+     <td><font face="Arial" size="-1">SK22</td><td><a href="#Skeleton2d2"><font face="Arial" size="-1">Skeleton2d2</a></td>
+    </tr>
+    <tr>
+     <td><font face="Arial" size="-1">SKP2</td><td><a href="#SkeletonPx2"><font face="Arial" size="-1">SkeletonPx2</a></td>
+    </tr>
+    <tr>
+     <td><font face="Arial" size="-1">SKU2</td><td><a href="#SkeletonUv2"><font face="Arial" size="-1">SkeletonUv2</a></td>
+    </tr>
+    <tr>
+     <td><font face="Arial" size="-1">SWCH</td><td><a href="#Switch"><font face="Arial" size="-1">Switch</a></td>
+    </tr>
+    <tr>
+     <td><font face="Arial" size="-1">TXTR</td><td><a href="#Texture"><font face="Arial" size="-1">Texture</a></td>
+    </tr>
+    <tr>
+     <td><font face="Arial" size="-1">TXIM</td><td><a href="#TextureImage"><font face="Arial" size="-1">TextureImage</a></td>
+    </tr>
+    <tr>
+     <td><font face="Arial" size="-1">TLUT</td><td><a href="#TextureLut"><font face="Arial" size="-1">TextureLut</a></td>
+    </tr>
+    <tr>
+     <td><font face="Arial" size="-1">XFMI</td><td><a href="#TransformInfo"><font face="Arial" size="-1">TransformInfo</a></td>
+    </tr>
+    <tr>
+     <td><font face="Arial" size="-1">XLAT</td><td><a href="#Translation"><font face="Arial" size="-1">Translation</a></td>
+    </tr>
+    <tr>
+     <td><font face="Arial" size="-1">VTXI</td><td><a href="#VertexInterpolator"><font face="Arial" size="-1">VertexInterpolator</a></td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+</table>
+
+<p align="right">
+ <a href="index.htm">
+  <img src="../../gif/index.gif" border="0" width="65" height="17"></a>
+</p>
+<hr>
+
+<P>
+<a name="AnimatedGeometry">
+<b>AnimatedGeometry</b>
+<P>
+<blockquote>
+ <pre><font face="courier" size="2">
+  AnimatedGeometry 'AGEO' {
+    long    name_entry
+    node    vertex
+    float   time        :0
+  }
+ </pre></font>
+</blockquote>
+<P>
+Defines geometry with attached animation.
+
+<p align="right">
+ <a href="#noderef">NVF Node Reference Table</a>
+ <a href="index.htm">
+  <img src="../../gif/index.gif" border="0" width="65" height="17"></a>
+</p>
+<hr>
+
+<P>
+<a name="Animation">
+<b>Animation</b>
+<blockquote>
+<P>
+ <pre><font face="courier" size="2">
+  Animation 'ANMF' {
+    long    name_entry
+    long    function_index               :0
+    float   time                         :1
+
+    long    num_of_elements
+    float   value[num_of_elements]       :2
+    float   diffential[num_of_elements]  :3
+
+    long    num_of_functions
+    node    function[num_of_functions]
+  }
+ </pre></font>
+</blockquote>
+ <P>
+  Defines floating point vector animation. num_of_elements indicates the size of vector. 
+
+
+<p align="right">
+ <a href="#noderef">NVF Node Reference Table</a>
+ <a href="index.htm">
+  <img src="../../gif/index.gif" border="0" width="65" height="17"></a>
+</p>
+<hr>
+
+<P>
+<a name="BackgroundColor">
+<b>BackgroundColor</b>
+<blockquote>
+<P>
+ <pre><font face="courier" size="2">
+  BackgroundColor 'BGCL' {
+    long    name_entry
+    float4  color                :0
+    short   depth                :1
+  }
+ </pre></font>
+</blockquote>
+ <P>
+  Designate background color. Depth is fixed as <TT>0xFFFC</TT>. 
+
+
+<p align="right">
+ <a href="#noderef">NVF Node Reference Table</a>
+ <a href="index.htm">
+  <img src="../../gif/index.gif" border="0" width="65" height="17"></a>
+</p>
+<hr>
+<P>
+<a name="ClassicScale">
+<b>ClassicScale</b>
+<P>
+<blockquote>
+ <pre><font face="courier" size="2">
+  ClassicalScale 'CSCL' {
+    long    name_entry
+    float3  scale               :0
+    long    num_of_children
+    node    child[num_of_children]
+  }
+ </pre></font>
+</blockquote>
+<P>
+  ClassicScale specifies the scaling rate, or degree of enlargement. All children are influenced by this coordinate transformation. 
+
+<p align="right">
+ <a href="#noderef">NVF Node Reference Table</a>
+ <a href="index.htm">
+  <img src="../../gif/index.gif" border="0" width="65" height="17"></a>
+</p>
+<hr>
+
+<P>
+<a name="ConstantFunction">
+<b>ConstantFunction</b>
+<P>
+<blockquote>
+ <pre><font face="courier" size="2">
+  ConstantFunction 'FNCC' {
+    long    name_entry
+    char    num_of_elements
+    char    continuity
+            # 0: Noncontinuous
+            # 1: C0 Continuous
+            # 2: C1 Continuous
+    float   junction
+            # The junction point time for continuous animation.
+            # It is ignored for noncontinuous animation.
+
+    long    num_of_keys
+    {
+      float time
+      float value[num_of_elements]
+    } key[num_of_keys]
+  }
+ </pre></font>
+</blockquote>
+<P>
+Defines the animation keyframe function. ConstantFunction switches constants over time, so you could call it a zero-order interpolation function. The function node is not functional on its own. It starts functioning after being referenced from the animation node.
+
+<p align="right">
+ <a href="#noderef">NVF Node Reference Table</a>
+ <a href="index.htm">
+  <img src="../../gif/index.gif" border="0" width="65" height="17"></a>
+</p>
+<hr>
+
+<P>
+<a name="DepthFog">
+<b>DepthFog</b>
+<P>
+<blockquote>
+ <pre><font face="courier" size="2">
+  Fog 'DFOG' {
+    long    name_entry
+    float   fog_near   :0
+    float   fog_far    :1
+    float4  fog_color  :2
+  }
+ </pre></font>
+</blockquote>
+<P>
+  Sets the Fog. The behavior when effective Fog appears in the scene graph numerous times is undefined. 
+<p align="right">
+ <a href="#noderef">NVF Node Reference Table</a>
+ <a href="index.htm">
+  <img src="../../gif/index.gif" border="0" width="65" height="17"></a>
+</p>
+<hr>
+
+<P>
+<a name="DirectionConstraint">
+<b>DirectionConstraint</b>
+<P>
+<blockquote>
+ <pre><font face="courier" size="2">
+
+  DirConstraint 'DIRC' {
+    long    name_entry
+    float3  direction           :0
+    long    num_of_children
+    node    child[num_of_children]
+  }
+ </pre></font>
+</blockquote>
+<P>
+Points x axis to global directions. Also, corrects y axis to make a right angle with x axis. All children are affected by this coordinate transformation.
+
+<p align="right">
+ <a href="#noderef">NVF Node Reference Table</a>
+ <a href="index.htm">
+  <img src="../../gif/index.gif" border="0" width="65" height="17"></a>
+</p>
+<hr>
+<hr>
+
+<P>
+
+<a name="DirUpConstraint">
+<b>DirUpConstraint</b>
+<P>
+<blockquote>
+ <pre><font face="courier" size="2">
+  DirUpConstraint 'DRUC' {
+    long    name_entry
+    float3  direction           :0
+    float3  up_vector           :1
+    long    num_of_children
+    node    child[num_of_children]
+  }
+ </pre></font>
+</blockquote>
+<P>
+Points X axis to global direction and 
+y axis to the direction of the global up_vector. Also corrects y axis to make a right angle with x axis. All children are affected by this coordinate transformation.
+
+<p align="right">
+ <a href="#noderef">NVF Node Reference Table</a>
+ <a href="index.htm">
+  <img src="../../gif/index.gif" border="0" width="65" height="17"></a>
+</p>
+<hr>
+
+<P>
+<a name="DirectionalLight">
+<b>DirectionalLight</b>
+<P>
+<blockquote>
+ <pre><font face="courier" size="2">
+  DirectionalLight 'LGTD' {
+    long    name_entry
+    float3  direction  :0
+    float3  color      :1
+            # Values from 0 ~ 1
+  }
+ </pre></font>
+</blockquote>
+<P>
+Defines the directional light source. The light source node does not function on its own. It starts functioning after being referenced from the light source set node
+
+<p align="right">
+ <a href="#noderef">NVF Node Reference Table</a>
+ <a href="index.htm">
+  <img src="../../gif/index.gif" border="0" width="65" height="17"></a>
+</p>
+<hr>
+
+
+<P>
+<a name="EnvelopeGeometry">
+<b>EnvelopeGeometry</b>
+<P>
+<blockquote>
+ <pre><font face="courier" size="2">
+  EnvelopeGeometry 'ENVG' {
+    long    name_entry
+    node    vertex
+    long    num_of_joints
+    {
+      float9 orientation         :0 (index = joint_index * 9)
+      float9 scaled_orientation  :1 (index = joint_index * 9)
+      float3 translation         :2 (index = joint_index * 3)
+      float3 scale               :3 (index = joint_index * 3)
+    } joint[num_of_joints]
+  }
+ </pre></font>
+</blockquote>
+<P>
+Defines the geometry of the Flexible envelope. The vertex type must be either EnvelopeVertexC or EnvelopeVertexN. 
+
+<p align="right">
+<a href="#noderef">NVF Node Reference Table</a>
+ <a href="index.htm">
+  <img src="../../gif/index.gif" border="0" width="65" height="17"></a>
+</p>
+<hr>
+
+<P>
+<a name="EnvelopeVertexC">
+<b>EnvelopeVertexC</b>
+<P>
+<blockquote>
+ <pre><font face="courier" size="2">
+  EnvelopeVertexC 'EVVC' {
+    long    name_entry
+    long    segment
+    short   num_of_joints
+
+    # The following is the description for all rigid groups:
+    short   num_of_rigid_groups
+    {
+      short  joint_index
+      short  num_of_vertices
+      {
+        short3  coord
+        char4   normal/color
+        short2  tex_coord
+      } vtx[num_of_vertices]
+    } rigid_group[num_of_rigid_groups]
+
+    # The following is the description for all morph group:
+    short   num_of_morph_groups
+    {
+      short  primary_joint_index
+      short  secondary_joint_index
+      short  num_of_vertices
+      short  num_of_coords
+      short  table_size
+             #Plan to support 9,17,33,65
+      {
+        float3  coord[num_of_coords]
+      } table[table_size]
+      {
+        short   coord_index
+        char4   color
+        short2  tex_coord
+      } vtx[num_of_vertices]
+    } morph_group[num_of_morph_groups]
+
+    # The following is the description for all combine group:
+    short   num_of_combine_groups
+    {
+      short  num_of_vertices
+      short  num_of_coords
+      short  num_of_joint_groups
+      {
+        short  joint_index
+        short  num_of_joint_vertices
+        {
+          short   vtx_index
+          float3  coord
+                  # The result of multiplying the actual "coord" by "weight"
+          float   weight
+        } joint_vertex[num_of_joint_vertices]
+      } joint_group[num_of_joint_groups]
+      {
+        short   coord_index
+        char4   color
+        short2  tex_coord
+      } vtx[num_of_vertices]
+    } combine_group[num_of_combine_groups]
+
+    # The following is information for triangle setup:
+    long    num_of_vertex_groups
+    {
+      short   rigid_group_index
+      short   rigid_vtx_offset
+      char    rigid_vtx_cache_offset
+      char    rigid_vtx_load_count
+      short   morph_group_index
+      short   morph_vtx_offset
+      char    morph_vtx_cache_offset
+      char    morph_vtx_load_count
+      short   combine_group_index
+      short   combine_vtx_offset
+      char    combine_vtx_cache_offset
+      char    combine_vtx_load_count
+
+      char    num_of_rgba_modification
+      {
+        char    vertex_index
+        char4   rgba
+      } rgba_modification[num_of_rgba_modification]
+
+      char    num_of_st_modification
+      {
+        char    vertex_index
+        short2  st
+      } st_modification[num_of_st_modification]
+
+      char    num_of_xy_modification
+      {
+        char    vertex_index
+        short2  xy
+      } xy_modification[num_of_xy_modification]
+
+      char    num_of_z_modification
+      {
+        char    vertex_index
+        long    z
+      } z_modification[num_of_z_modification]
+
+      char    modify_primitive_color(<u> 0:No Modification, 1:Modification</u> )
+      long    primitive_color[modify_primitive_color]
+
+      long    num_of_triangles
+      char3   triangle[num_of_triangles]
+    } vertex_group[num_of_vertex_groups]
+  }
+ </pre></font>
+</blockquote>
+<P>
+Defines the vertices of the Flexible Envelope.
+However, normals are not calculated. (Therefore, lighting is impossible.) The vertices of the Flexible Envelope are classified into three types:
+rigid vertex, morph vertex and combine vertex.
+
+<ol>
+ <li> A rigid vertex is a vertex which has 100% weight for any and every joint.  
+<P>
+<li> A morph vertex is a vertex which has weight for only two joints. The inner product of the x axes of the two joints works as a parameter to change the weight. 
+<P>
+ <li> A combine vertex refers to all other vertices. </ol>
+
+<P>
+The method for calculating each type of vertex is explained below. 
+<ul>
+ <li>rigid vertex<br>
+    The transformation matrix of the joint is used for the coordinate transformation, just like in a conventional coordinate transformation. 
+<P>
+ <li>morph vertex<br>
+    The angles of the two joints are used as parameters for morphing. A table is created in degree units of 180/(the number of tables - 1).
+<P>
+ <li>combine vertex<br>
+    The basic implementation for weighted vertices. 
+</ul>
+
+<p align="right">
+<a href="#noderef">NVF Node Reference Table</a>
+ <a href="index.htm">
+  <img src="../../gif/index.gif" border="0" width="65" height="17"></a>
+</p>
+<hr>
+
+<P>
+<a name="EnvelopeVertexN">
+<b>EnvelopeVertexN</b>
+<P>
+<blockquote>
+ <pre><font face="courier" size="2">
+  EnvelopeVertexN 'EVVN' {
+    long    name_entry
+    long    segment
+    short   num_of_joints
+
+    # The following is the description for all rigid group:
+    short   num_of_rigid_groups
+    {
+      short  joint_index
+      short  num_of_vertices
+      {
+        short3  coord
+        char4   normal/color
+        short2  tex_coord
+      } vtx[num_of_vertices]
+    } rigid_group[num_of_rigid_groups]
+
+    # The following is the description for all morph group:
+    short   num_of_morph_groups
+    {
+      short  primary_joint_index
+      short  secondary_joint_index
+      short  num_of_vertices
+      short  num_of_coords
+      short  num_of_normals
+      short  table_size
+             # <u>Plan to sussport 9,17,33,65</u>
+      {
+        float3  coord[num_of_coords]
+        float3  normal[num_of_normals]
+      } table[table_size]
+      {
+        short   coord_index
+        short   normal_index
+        short2  tex_coord
+      } vtx[num_of_vertices]
+    } morph_group[num_of_morph_groups]
+
+    # The following is the description for all combine group:
+    short   num_of_combine_groups
+    {
+      short  num_of_vertices
+      short  num_of_coords
+      short  num_of_normals
+      short  num_of_joint_groups
+      {
+        short  joint_index
+        short  num_of_joint_coords
+        short  num_of_joint_normals
+        {
+          short   coord_index
+          float3  coord
+                  # The result of multiplying the actual "coord" by "weight"
+          float   weight
+        } joint_vertex[num_of_joint_coords]
+        {
+          short   normal_index
+          float3  normal
+                  # The result of multiplying the actual "normal" by "weight"
+        } joint_vertex[num_of_joint_normals]
+      } joint_group[num_of_joint_groups]
+      {
+        short   coord_index
+        short   normal_index
+        short2  tex_coord
+      } vtx[num_of_vertices]
+    } combine_group[num_of_combine_groups]
+
+    # The following is the information for triangle setup:
+    long    num_of_vertex_groups
+    {
+      short   rigid_group_index
+      short   rigid_vtx_offset
+      char    rigid_vtx_cache_offset
+      char    rigid_vtx_load_count
+      short   morph_group_index
+      short   morph_vtx_offset
+      char    morph_vtx_cache_offset
+      char    morph_vtx_load_count
+      short   combine_group_index
+      short   combine_vtx_offset
+      char    combine_vtx_cache_offset
+      char    combine_vtx_load_count
+
+      char    num_of_rgba_modification
+      {
+        char    vertex_index
+        char4   rgba
+      } rgba_modification[num_of_rgba_modification]
+
+      char    num_of_st_modification
+      {
+        char    vertex_index
+        short2  st
+      } st_modification[num_of_st_modification]
+
+      char    num_of_xy_modification
+      {
+        char    vertex_index
+        short2  xy
+      } xy_modification[num_of_xy_modification]
+
+      char    num_of_z_modification
+      {
+        char    vertex_index
+        long    z
+      } z_modification[num_of_z_modification]
+
+      char    modify_primitive_color(<u> 0:No Modification, 1:Modification</u> )
+      long    primitive_color[modify_primitive_color]
+
+      long    num_of_triangles
+      char3   triangle[num_of_triangles]
+    } vertex_group[num_of_vertex_groups]
+  }
+ </pre></font>
+</blockquote>
+<P>
+Defines the vertices of the Flexible Envelope.
+Unlike <a href="#EnvelopeVertexC">EnvelopeVertexC</a> normal lines are also calculated.
+(In other words, Lighting is possible.)
+The data contents are almost the same as for <a href="#EnvelopeVertexC">EnvelopeVertexC</a>.
+
+<p align="right">
+ <a href="#noderef">NVF Node Reference Table</a>
+ <a href="index.htm">
+  <img src="../../gif/index.gif" border="0" width="65" height="17"></a>
+</p>
+<hr>
+
+<P>
+<a name="Float">
+<b>Float</b>
+<P>
+<blockquote>
+ <pre><font face="courier" size="2">
+  Float 'FLOT' {
+    long    name_entry
+    long    num_of_elements
+    float   value[ num_of_elements ]  :0
+  }
+ </pre></font>
+</blockquote>
+<P>
+This does nothing except hold floating point values. It is convenient for collectively managing the values set in the time field of Animation, etc.. 
+
+<p align="right">
+ <a href="#noderef">NVF Node Reference Table</a>
+ <a href="index.htm">
+  <img src="../../gif/index.gif" border="0" width="65" height="17"></a>
+</p>
+<hr>
+
+<P>
+<a name="Geometry">
+<b>Geometry</b>
+<P>
+<blockquote>
+ <pre><font face="courier" size="2">
+  Geometry 'GEOM' {
+    long    name_entry
+    long    segment
+    long    num_of_vertices
+    {
+      short3  coord
+      char4   normal/color
+      short2  tex_coord
+    } vtx[num_of_vertices]
+    long    num_of_vertex_groups
+    {
+      short   vertex_offset
+      char    vertex_cache_offset
+      char    vertex_load_count
+              # The above three parameters are for vertex loading.
+
+      char    num_of_rgba_modification
+      {
+        char    vertex_index
+        char4   rgba
+      } rgba_modification[num_of_rgba_modification]
+
+      char    num_of_st_modification
+      {
+        char    vertex_index
+        short2  st
+      } st_modification[num_of_st_modification]
+
+      char    num_of_xy_modification
+      {
+        char    vertex_index
+        short2  xy
+      } xy_modification[num_of_xy_modification]
+
+      char    num_of_z_modification
+      {
+        char    vertex_index
+        long    z
+      } z_modification[num_of_z_modification]
+
+      char    modify_primitive_color(<u> 0:No Modification, 1:Modification</u> )
+      long    primitive_color[modify_primitive_color]
+
+      long    num_of_triangles
+              # The above parameters are the vertex-change parameters.
+      char3   triangle[num_of_triangles]
+    } vertex_group[num_of_vertex_groups]
+  }
+ </pre></font>
+</blockquote>
+<P>
+Defines the geometry. In Geometry, triangles are classified according to their modification_group. A number of modification_groups are then gathered together forming a vertex_group. The Geometry drawing process is illustrated below. 
+<P>
+<blockquote>
+ <pre><font face="courier" size="2">
+  for each vertex_group do
+    Read vertices into vertex cache.
+    Changes the vertices in accordance with the vertex-change parameters. 
+    Changes Primitive_color
+    Draw triangles.
+  done
+ </pre></font>
+</blockquote>
+
+<p align="right">
+<a href="#noderef">NVF Node Reference Table</a>
+ <a href="index.htm">
+  <img src="../../gif/index.gif" border="0" width="65" height="17"></a>
+</p>
+<hr>
+
+<P>
+<a name="HermiteFunction">
+<b>HermiteFunction</b>
+<P>
+<blockquote>
+ <pre><font face="courier" size="2">
+  HermiteFunction 'FNCH' {
+    long    name_entry
+    char    num_of_elements
+    char    continuity
+            # 0: Discontinuous
+            # 1: C0 Continuous
+            # 2: C1 Continuous
+    float   junction
+
+    long    num_of_keys
+    {
+      float time
+      float value[num_of_elements]
+      float differential[num_of_elements]
+    } key[num_of_keys]
+  }
+ </pre></font>
+</blockquote>
+<P>
+Defines a key frame function of animation. HermiteFunction is a trilinear interpolation function. A function node does not function alone. It will function only after it is referenced from an
+animation node. The interpolation formula is as follows:
+<p>
+<center>
+<IMG SRC="Image1.gif"> Then <p>
+<IMG SRC="Image2.gif"><p>
+</center>
+
+<p align="right">
+<a href="#noderef">NVF Node Reference Table</a>
+ <a href="index.htm">
+  <img src="../../gif/index.gif" border="0" width="65" height="17"></a>
+</p>
+<hr>
+
+<P>
+<a name="LightSet">
+<b>LightSet</b>
+<P>
+<blockquote>
+ <pre><font face="courier" size="2">
+  LightSet 'LTST' {
+    long    name_entry
+    float3  ambient  :0
+            #<u>Value from 0-1.</u>
+    long    num_of_lights
+    node    lights[num_of_lights]
+  }
+ </pre></font>
+</blockquote>
+<P>
+Defines a set of light sources. This node is related to the material node and performs lighting. 
+
+<p align="right">
+ <a href="#noderef">NVF Node Reference Table</a>
+ <a href="index.htm">
+  <img src="../../gif/index.gif" border="0" width="65" height="17"></a>
+</p>
+<hr>
+
+<P>
+<a name="LinearFunction">
+<b>LinearFunction</b>
+<P>
+<blockquote>
+ <pre><font face="courier" size="2">
+  LinearFunction 'FNCL' {
+    long    name_entry
+    char    num_of_elements
+    char    continuity
+            # 0: Disontinuous
+            # 1: C0 Continuous
+            # 2: C1 Continuous
+    float   junction
+
+    long    num_of_keys
+    {
+      float time
+      float value[num_of_elements]
+    } key[num_of_keys]
+  }
+ </pre></font>
+</blockquote>
+<P>
+Defines the animation keyframe function. LinearFunction is a first-order interpolation function. The function node is not functional on its own. It starts functioning after being referenced
+from the animation node. 
+
+<p align="right">
+ <a href="#noderef">NVF Node Reference Table</a>
+ <a href="index.htm">
+  <img src="../../gif/index.gif" border="0" width="65" height="17"></a>
+</p>
+<hr>
+
+<p>
+<a name="Lod">
+<b>Lod</b>
+<P>
+<blockquote>
+ <pre><font face="courier" size="2">
+  LOD 'LODD' {
+    long    name_entry
+    char    group( 0~31 )
+    char    num_of_levels
+    float   range[num_of_levels-1]
+    node    level[num_of_levels]
+  }
+ </pre></font>
+</blockquote>
+<P>
+The LOD node selects the appropriate node from the nodes enumerated in "level" corresponding to the present distance between the global_translation and the camera. The LOD node is
+not evaluated until evaluation of the active camera is finished. 
+
+<p align="right">
+ <a href="#noderef">NVF Node Reference Table</a>
+ <a href="index.htm">
+  <img src="../../gif/index.gif" border="0" width="65" height="17"></a>
+</p>
+<hr>
+
+<P>
+<a name="Marker">
+<b>Marker</b>
+<P>
+<blockquote>
+ <pre><font face="courier" size="2">
+  Marker 'MRKR' {
+    long  name_entry
+    short type
+    short group_index
+  }
+ </pre></font>
+</blockquote>
+<P>
+This node is used for displaying the coordinate icons. The red coordinate icon corresponds to the X axis, the green to the Y axis, and the blue to the Z axis. 
+
+<p align="right">
+<a href="#noderef">NVF Node Reference Table</a>
+ <a href="index.htm">
+  <img src="../../gif/index.gif" border="0" width="65" height="17"></a>
+</p>
+<hr>
+
+<P>
+<a name="Material">
+<b>Material</b>
+<P>
+<blockquote>
+ <pre><font face="courier" size="2">
+  Material 'MTRL' {
+    long    name_entry
+    node    light_set
+    float4  ambient              :0
+            # Value from 0 ~ 255
+    float4  emission             :1
+            # Value from 0 ~ 255
+    float4  diffuse              :2
+            # Value from 0 ~ 255
+    float4  primitive_color      :3
+            # Value from 0 ~ 255
+    char    lighting
+            # 0: No lighting
+            # 1: With lighting
+    char    shade_model
+            # 0: flat
+            # 1: smooth
+    char    effect
+            # 0: none
+            # 1: specular
+            # 2: reflection
+    char    env_color_mode
+            # &1: emission
+            # &2: ambient
+            # Specifies which components to add to env_color. The components added to 
+            # env_color are not added to shade_color.
+    {
+      char4   CC0color
+              # In order of A, B, C, D
+              #  0: CombColor
+              #  1: Tex0Color
+              #  2: Tex1Color
+              #  3: PrimColor
+              #  4: ShadeColor
+              #  5: EnvColor
+              #  6: KeyCenter(B only),KeyScale(C only),1.0(A,D only)
+              #  7: CombAlpha(C only),Noise(A only),K4(B only),0.0(D only)
+              #  8: Tex0Alpha(C only)
+              #  9: Tex1Alpha(C only)
+              # 10: PrimAlpha(C only)
+              # 11: ShadeAlpha(C only)
+              # 12: EnvAlpha(C only)
+              # 13: LODFrac(C only)
+              # 14: PrimLODFrac(C only)
+              # 15: K5(C only)
+              # 31: 0.0
+      char4   CC0alpha
+              # In order to A, B, C, D
+              #  0: CombAlpha(A,B,D only),LODFrac(C only)
+              #  1: Tex0Alpha
+              #  2: Tex1Alpha
+              #  3: PrimAlpha
+              #  4: ShadeAlpha
+              #  5: EnvAlpha
+              #  6: PrimLODFrac(C only),1.0(A,B,D only)
+              #  7: 0.0
+      char4   CC1color
+              # The same as CC0color
+      char4   CC1alpha
+              # The same as CC0alpha
+    } cc_mode[2]
+  }
+ </pre></font>
+</blockquote>
+<P>
+Defines the material. The material mechanism has been changed significantly since NIFF1.0. In NIFF1.0, shade was monochrome, but in NIFF2.0, colors were added in consideration of ambient, emission, and diffuse. Because of this change, the method for setting the color combiner is also different. Shade is calculated using the following expression. 
+<P>
+<blockquote>
+ <pre><font face="courier" size="2">
+  shade = mat_emission + light_ambient*mat_ambient + light[0]*mat_diffuse[0]*d[0] + ....
+ </pre></font>
+</blockquote>
+<P>
+Here, d[I] is the "diffuse" coefficient determined from the direction of light source "I" and the normal line of the vertex. 
+
+<p align="right">
+ <a href="#noderef">NVF Node Reference Table</a>
+ <a href="index.htm">
+  <img src="../../gif/index.gif" border="0" width="65" height="17"></a>
+</p>
+<hr>
+
+
+<P>
+<a name="Module">
+<b>Module</b>
+<P>
+<blockquote>
+ <pre><font face="courier" size="2">
+  Module 'MDUL' {
+    long    name_entry
+    long    module_id
+  }
+ </pre></font>
+</blockquote>
+<P>
+Defines Module. The Module behaves as if the whole Module has become a child of this node. 
+
+<p align="right">
+ <a href="#noderef">NVF Node Reference Table</a>
+ <a href="index.htm">
+  <img src="../../gif/index.gif" border="0" width="65" height="17"></a>
+</p>
+<hr>
+
+<P>
+<a name="Nop">
+<b>Nop</b>
+<P>
+<blockquote>
+ <pre><font face="courier" size="2">
+  Nop 'NOPR' {
+    long    name_entry
+    long    num_of_children
+    node    child[num_of_children]
+  }
+ </pre></font>
+</blockquote>
+<P>
+  Does nothing
+
+<p align="right">
+ <a href="#noderef">NVF Node Reference Table</a>
+ <a href="index.htm">
+  <img src="../../gif/index.gif" border="0" width="65" height="17"></a>
+</p>
+<hr>
+
+<P>
+<a name="Orientation">
+<b>Orientation</b>
+<P>
+<blockquote>
+ <pre><font face="courier" size="2">
+  Orientation 'ORNT' {
+    long    name_entry
+    float3  ex                  :0
+    float3  ey                  :1
+    long    num_of_children
+    node    child[num_of_children]
+  }
+ </pre></font>
+</blockquote>
+<P>
+Orientation specifies the direction of the X axis and the direction of the Y axis to create a rotation matrix. The Y axis is corrected so that it is orthogonal to the X axis. All children are influenced by this coordinate transformation. In addition, ex and ey are assured to be stored in a contiguous area, and ex[3] is handled in the same manner as ey[0]. By utilizing this, it becomes possible to attach 6-element animation. If you use 6-element animation the keyframe compression rate will probably be lower than with 3-element animation, but the tradeoff is a boost in processing speed. 
+
+<p align="right">
+ <a href="#noderef">NVF Node Reference Table</a>
+ <a href="index.htm">
+  <img src="../../gif/index.gif" border="0" width="65" height="17"></a>
+</p>
+<hr>
+
+<P>
+<a name="OrientationConstraint">
+<b>OrientationConstraint</b>
+<P>
+<blockquote>
+ <pre><font face="courier" size="2">
+  OriConstraint 'ORIC' {
+    long    name_entry
+    float9  orientation         :0
+    long    num_of_children
+    node    child[num_of_children]
+  }
+ </pre></font>
+</blockquote>
+<P>
+OriConstraint specifies the rotation matrix as a global matrix. All children are influenced by this coordinate transformation. 
+
+<p align="right">
+<a href="#noderef">NVF Node Reference Table</a>
+ <a href="index.htm">
+  <img src="../../gif/index.gif" border="0" width="65" height="17"></a>
+</p>
+<hr>
+
+<P>
+<a name="PerspectiveCamera">
+<b>PerspectiveCamera</b>
+<P>
+<blockquote>
+ <pre><font face="courier" size="2">
+  PerspectiveCamera 'PCAM' {
+    long    name_entry
+    float   field_of_view_y  :0
+    float   aspect_ratio     :1
+    float   clip_near        :2
+    float   clip_far         :3
+    float   tan_clip_left    :4
+    float   tan_clip_right   :5
+    float   tan_clip_top     :6
+    float   tan_clip_bottom  :7
+    long    group_mask
+  }
+ </pre></font>
+</blockquote>
+<P>
+Defines the camera perspective. field_of_view_y is specified in degrees. 
+
+<p align="right">
+ <a href="#noderef">NVF Node Reference Table</a>
+ <a href="index.htm">
+  <img src="../../gif/index.gif" border="0" width="65" height="17"></a>
+</p>
+<hr>
+
+<P>
+<a name="PointLight">
+<b>DirectionalLight</b>
+<P>
+<blockquote>
+ <pre><font face="courier" size="2">
+  PointLight 'LGTP' {
+    long    name_entry
+    float3  position               :0
+    float3  color                  :1
+            # Value from 0 ~ 1
+    float   constant_attenuation   :2
+    float   linear_attenuation     :3
+    float   quadratic_attenuation  :4
+  }
+ </pre></font>
+</blockquote>
+<P>
+Defines pseudo light source.  A light source node does not function alone. It will function only after it is referenced from an light source set node.
+
+<p align="right">
+ <a href="#noderef">NVF Node Reference Table</a>
+ <a href="index.htm">
+  <img src="../../gif/index.gif" border="0" width="65" height="17"></a>
+</p>
+<hr>
+
+<P>
+<a name="PositionConstraint">
+<b>PositionConstraint</b>
+<P>
+<blockquote>
+ <pre><font face="courier" size="2">
+  PositionConstraint 'POSC' {
+    long    name_entry
+    float3  translation      :0
+    long    num_of_children
+    node    child[num_of_children]
+  }
+ </pre></font>
+</blockquote>
+<p>
+PositionConstraint specifies the translation with global vectors. All children are influenced by this coordinate transformation. 
+
+
+<p align="right">
+ <a href="#noderef">NVF Node Reference Table</a>
+ <a href="index.htm">
+  <img src="../../gif/index.gif" border="0" width="65" height="17"></a>
+</p>
+<hr>
+
+<P>
+<a name="RotationX">
+<b>RotationX</b>
+<P>
+<blockquote>
+ <pre><font face="courier" size="2">
+  RotationX 'ROTX' {
+    long    name_entry
+    float   rotation            :0
+            # radian value
+    long    num_of_children
+    node    child[num_of_children]
+  }
+ </pre></font>
+</blockquote>
+ <P>
+RotationX rotates in order around the X axex.
+All children are influenced by this coordinate transformation.
+
+<p align="right">
+ <a href="#noderef">NVF Node Reference Table</a>
+ <a href="index.htm">
+  <img src="../../gif/index.gif" border="0" width="65" height="17"></a>
+</p>
+<hr>
+
+<P>
+<a name="RotationXYZ">
+<b>RotationXYZ</b>
+<P>
+<blockquote>
+ <pre><font face="courier" size="2">
+  RotationXYZ 'RXYZ' {
+    long    name_entry
+    float3  rotation            :0
+            # radian value
+    long    num_of_children
+    node    child[num_of_children]
+  }
+ </pre></font>
+</blockquote>
+<P>
+RotationXYZ rotates in order around the X, Y and Z axes. All children are influenced by this coordinate transformation. 
+
+<p align="right">
+ <a href="#noderef">NVF Node Reference Table</a>
+ <a href="index.htm">
+  <img src="../../gif/index.gif" border="0" width="65" height="17"></a>
+</p>
+<hr>
+
+<P>
+<a name="RotationY">
+<b>RotationY</b>
+<P>
+<blockquote>
+<pre><font face="courier" size="2">
+  RotationY 'ROTY' {
+    long    name_entry
+    float   rotation            :0
+            # radian value
+    long    num_of_children
+    node    child[num_of_children]
+  }
+ </pre></font>
+</blockquote>
+<P>
+RotationY rotates around the Y axis. All children are influenced by this coordinate transformation. 
+
+<p align="right">
+ <a href="#noderef">NVF Node Reference Table</a>
+ <a href="index.htm">
+  <img src="../../gif/index.gif" border="0" width="65" height="17"></a>
+</p>
+<hr>
+
+<P>
+<a name="RotationZ">
+<b>RotationZ</b>
+<P>
+<blockquote>
+ <pre><font face="courier" size="2">
+  RotationZ 'ROTZ' {
+    long    name_entry
+    float   rotation            :0
+            # radian value
+    long    num_of_children
+    node    child[num_of_children]
+  }
+ </pre></font>
+</blockquote>
+  
+<P>
+RotationY rotates around the Z axis. All children are influenced by this coordinate transformation. 
+
+<p align="right">
+ <a href="#noderef">NVF Node Reference Table</a>
+ <a href="index.htm">
+  <img src="../../gif/index.gif" border="0" width="65" height="17"></a>
+</p>
+<hr>
+
+<P>
+<a name="RotationZXY">
+<b>RotationZXY</b>
+<P>
+<blockquote>
+ <pre><font face="courier" size="2">
+  RotationZXY 'RZXY' {
+    long    name_entry
+    float3  rotation            :0
+            # radian value
+    long    num_of_children
+    node    child[num_of_children]
+  }
+ </pre></font>
+</blockquote>
+<P>
+RotationZXY rotates in order around the Z, X and Y axes. All children are influenced by this coordinate transformation. 
+
+<p align="right">
+ <a href="#noderef">NVF Node Reference Table</a>
+ <a href="index.htm">
+  <img src="../../gif/index.gif" border="0" width="65" height="17"></a>
+</p>
+<hr>
+
+<P>
+<a name="Scale">
+<b>Scale</b>
+<P>
+<blockquote>
+ <pre><font face="courier" size="2">
+  Scale 'SCAL' {
+    long    name_entry
+    float3  scale         :0
+    long    num_of_children
+    node    child[num_of_children]
+  }
+ </pre></font>
+</blockquote>
+<P>
+Scale specifies the SOFTIMAGE format scale of enlargement. This method of enlargement is particularly effective with character animation. All children are influenced by this coordinate
+transformation. 
+
+<p align="right">
+ <a href="#noderef">NVF Node Reference Table</a>
+ <a href="index.htm">
+  <img src="../../gif/index.gif" border="0" width="65" height="17"></a>
+</p>
+<hr>
+
+<P>
+<a name="Shape">
+<b>Shape</b>
+<P>
+<blockquote>
+ <pre><font face="courier" size="2">
+  Shape 'SHAP' {
+    long    name_entry
+    char    group( 0~31 )
+    char    flags
+            # &1: front face culling
+            # &2: back face culling
+            # &4: z buffer enable
+            # &8: use vertex alpha
+            # &16: use vertex color
+    short   priority
+            # <u>Interprited by group.</u>
+    {
+      long    blend_color
+      char    alpha_compare( 0:none, 1:threashold, 2:dither )
+      char    alpha_dither( 0:disable, 1:pattern, 2:not_pattern, 3:noise )
+    } alpha[2]
+    char    cycle[2]( 0:fill, 1:1 cyc., 2:2 cyc. 3:copy )
+    {
+      char4   BL0
+              # <u>Order of P, A, M, B</u>
+              # <u>About P and  M</u> 
+              #  0: InColor
+              #  1: MemColor
+              #  2: BlendColor
+              #  3: FogColor
+              # <u>About A</u>
+              #  0: InAlpha
+              #  1: FogAlpha
+              #  2: ShadeAlpha
+              #  3: 0.0
+              # <u>About B</u>
+              #  0: 1-A
+              #  1: MemAlpha
+              #  2: 1.0
+              #  3: 0.0
+      char4   BL1
+              # <u> Same as BL0.</u>
+      short   render_mode
+              # &8: AA_EN
+              # &0x10: Z_CMP
+              # &0x20: Z_UPD
+              # &0x40: IM_RD
+              # &0x80: CLR_ON_CVG
+              # &0x300 = 0x000: CVG_DST_CLAMP
+              # &0x300 = 0x100: CVG_DST_WRAP
+              # &0x300 = 0x200: CVG_DST_FULL
+              # &0x300 = 0x300: CVG_DST_SAVE
+              # &0xC00 = 0x000: ZMODE_OPA
+              # &0xC00 = 0x400: ZMODE_INTER
+              # &0xC00 = 0x800: ZMODE_XLU
+              # &0xC00 = 0xC00: ZMODE_DEC
+              # &0x1000: CVG_X_ALPHA
+              # &0x2000: ALPHA_CVG_SEL
+              # &0x4000: FORCE_BL
+    } render_mode[2]
+    node    geometry
+    node    material
+    node    texture
+  }
+ </pre></font>
+</blockquote>
+<P>
+Integrates geometry, material and texture, and creates the drawing object.
+
+<p align="right">
+<a href="#noderef">NVF Node Reference Table</a>
+ <a href="index.htm">
+  <img src="../../gif/index.gif" border="0" width="65" height="17"></a>
+</p>
+<hr>
+
+<P>
+<a name="Skeleton2d2">
+<b>Skeleton2d2</b>
+<P>
+<blockquote>
+ <pre><font face="courier" size="2">
+  Skeleton2D2 'SK22' {
+    long    name_entry
+    long    flip
+    float   bone_length[2]       :0
+    float3  joint1_scale         :1
+    float3  joint2_scale         :2
+    float3  effector_pos         :3
+    float3  axis                 :4
+    long    num_of_children1
+    node    children1[num_of_children1]
+    long    num_of_children2
+    node    children2[num_of_children2]
+    long    num_of_children_e
+    node    children_e[num_of_children_e]
+  }
+ </pre></font>
+</blockquote>
+<P>
+Defines Skeleton. Skeleton is the node used for processing inverse kinematics. "axis" is a vector indicating the extent to which the Z axis differs from its original direction. The inverse kinematics algorithm is omitted here. 
+
+<p align="right">
+<a href="#noderef">NVF Node Reference Table</a>
+ <a href="index.htm">
+  <img src="../../gif/index.gif" border="0" width="65" height="17"></a>
+</p>
+<hr>
+
+
+<P>
+<a name="SkeletonPx2">
+<b>SkeletonPx2</b>
+<P>
+<blockquote>
+ <pre><font face="courier" size="2">
+  SkeletonPX2 'SKP2' {
+    long    name_entry
+    float3  z_pos                :5
+    long    flip
+    float   bone_length[2]       :0
+    float3  joint1_scale         :1
+    float3  joint2_scale         :2
+    float3  effector_pos         :3
+    float3  axis                 :4
+    long    num_of_children1
+    node    children1[num_of_children1]
+    long    num_of_children2
+    node    children2[num_of_children2]
+    long    num_of_children_e
+    node    children_e[num_of_children_e]
+  }
+ </pre></font>
+</blockquote>
+ <P>
+Defines Skeleton. Skeleton is the node used for processing inverse kinematics. "axis" is a vector indicating the extent to which the Z axis differs from its original direction. The difference between SkeletonPx2 and <a href="#Skeleton2d2">Skeleton2d2</a> is that SkeletonPx2 can specify the Z axis direction by using z_pos. The inverse kinematics algorithm is omitted here. 
+
+<p align="right">
+<a href="#noderef">NVF Node Reference Table</a>
+ <a href="index.htm">
+  <img src="../../gif/index.gif" border="0" width="65" height="17"></a>
+</p>
+<hr>
+
+
+<P>
+<a name="SkeletonUv2">
+<b>SkeletonUv2</b>
+<P>
+<blockquote>
+ <pre><font face="courier" size="2">
+  SkeletonUV2 'SKU2' {
+    long    name_entry
+    float3  resplane_pos         :5
+    long    flip
+    float   bone_length[2]       :0
+    float3  joint1_scale         :1
+    float3  joint2_scale         :2
+    float3  effector_pos         :3
+    float3  axis                 :4
+    long    num_of_children1
+    node    children1[num_of_children1]
+    long    num_of_children2
+    node    children2[num_of_children2]
+    long    num_of_children_e
+    node    children_e[num_of_children_e]
+  }
+ </pre></font>
+</blockquote>
+<P>
+Defines Skeleton. Skeleton is the node used for processing inverse kinematics. "axis" is a vector indicating the extent to which the Z axis differs from its original direction. The difference between SkeletonUv2 and <a href="#Skeleton2d2">Skeleton2d2</a> is that SkeletonUv2 can specify the Y axis direction by using resplane_pos. The inverse kinematics algorithm is omitted here. 
+
+<p align="right">
+<a href="#noderef">NVF Node Reference Table</a>
+ <a href="index.htm">
+  <img src="../../gif/index.gif" border="0" width="65" height="17"></a>
+</p>
+<hr>
+
+<P>
+<a name="Switch">
+<b>Switch</b>
+<P>
+<blockquote>
+ <pre><font face="courier" size="2">
+  Switch 'SWCH' {
+    long    name_entry
+    long    which_choice  :0
+    long    num_of_choice
+    node    choice[num_of_choice]
+  }
+ </pre></font>
+</blockquote>
+<P>
+Switch selects the node specified by which_choice. When which_choice is 0xFFFFFFFF, no "choice" is selected. 
+
+<p align="right">
+ <a href="#noderef">NVF Node Reference Table</a>
+ <a href="index.htm">
+  <img src="../../gif/index.gif" border="0" width="65" height="17"></a>
+</p>
+<hr>
+
+<P>
+<a name="Texture">
+<b>Texture</b>
+<P>
+<blockquote>
+ <pre><font face="courier" size="2">
+  Texture 'TXTR' {
+    long    name_entry
+    node    image
+    node    lut
+    short   scaling_s
+    short   scaling_t
+    char    mipmap
+            # 0: Do not use MipMap
+            # 1: Use MipMap
+    char    texture_detail
+            # 0: clamp
+            # 1: sharp
+            # 2: detail
+    char    filter
+            # 0: nearest
+            # 1: bilinear
+            # 2: average
+    char    perspective_correction
+            # 0: No perspective correction
+            # 1: Do perspective correction
+    char    yuv_color_convert
+            # 0: Do not use YUV color conversion
+            # 1: Use YUV color conversion
+    char    num_of_tiles
+	    # The maximum is 7 tiles.(For the sake of "run time" optimization)
+    {
+      long    texel_offset
+      char    format
+              # 0: I4
+              # 1: I8
+              # 2: IA31
+              # 3: IA44
+              # 4: IA88
+              # 5: RGBA5551
+              # 6: RGBA8888
+              # 7: YUV
+              # 8: CI4
+              # 9: CI8
+      char    lut_offset
+              # The actual LUT offset is the sum of the Texture's lut_offset
+              # and the tile's lut_offset.
+      short   stride
+              # The width of the title in "word" units
+      long    s0         :0 ( index = tile number)
+      long    t0         :1 ( index = tile number)
+      long    s1         :2 ( index = tile number)
+      long    t1         :3 ( index = tile number)
+      char    clamp_mode_s
+              # &1: mirror
+              # &2: clamp
+      char    clamp_mode_t
+              # The same as clamp_mode_s
+      char    shift_s
+      char    shift_t
+      char    mask_s
+      char    mask_t
+    } tile[num_of_tiles]
+  }
+ </pre></font>
+</blockquote>
+<P>
+Defines the Texture. The image and the color table are not defined in the Texture node. What mainly is defined is tile-related information. It is assured that the order of fields of Animation s0, t0, s1, t1 is as follows: s0[0], t0[0], s1[0], t1[0], s0[1], t0[1], s1[1], and t1[1].
+
+<p align="right">
+<a href="#noderef">NVF Node Reference Table</a>
+ <a href="index.htm">
+  <img src="../../gif/index.gif" border="0" width="65" height="17"></a>
+</p>
+<hr>
+
+<P>
+<a name="TextureImage">
+<b>TextureImage</b>
+<P>
+<blockquote>
+<pre><font face="courier" size="2">
+
+  TextureImage 'TXIM' {
+    long    name_entry
+    long    segment
+
+    short   offset0
+    short   size0
+    char8   texel0[size0]
+
+    short   offset1
+    short   size1
+    char8   texel1[size1]
+  }
+ </pre></font>
+</blockquote>
+ <P>
+Defines the texture image.
+
+<p align="right">
+ <a href="#noderef">NVF Node Reference Table</a>
+ <a href="index.htm">
+  <img src="../../gif/index.gif" border="0" width="65" height="17"></a>
+</p>
+<hr>
+
+<P>
+<a name="TextureLut">
+<b>TextureLut</b>
+<P>
+<blockquote>
+ <pre><font face="courier" size="2">
+  TextureLUT 'TLUT' {
+    long    name_entry
+    char    segment
+    char    format
+            # 0:RGBA5551
+            # 1:IA88
+    short   lut_size
+    short   lut[lut_size]
+  }
+ </pre></font>
+</blockquote>
+<P>
+Defines the texture color table.
+
+<p align="right">
+ <a href="#noderef">NVF Node Reference Table</a>
+ <a href="index.htm">
+  <img src="../../gif/index.gif" border="0" width="65" height="17"></a>
+</p>
+<hr>
+
+<P>
+<a name="TransformInfo">
+<b>TransformInfo</b>
+<P>
+<blockquote>
+ <pre><font face="courier" size="2">
+  TransformInfo 'XFMI' {
+    long    name_entry
+  output:
+    float3  global_scale        :0
+    float3  global_cls_scale    :1
+    float3  global_position     :2
+    float9  global_orientation  :3
+    <!--  -->float9  scaled_orientation  :4<!--  -->
+  }
+ </pre></font>
+</blockquote>
+<P>
+This does nothing, but it is used when referencing the coordinate transformation inforamtion.
+
+<p align="right">
+<a href="#noderef">NVF Node Reference Table</a>
+ <a href="index.htm">
+  <img src="../../gif/index.gif" border="0" width="65" height="17"></a>
+</p>
+<hr>
+
+<P>
+<a name="Translation">
+<b>Translation</b>
+<P>
+<blockquote>
+ <pre><font face="courier" size="2">
+  Translation 'XLAT' {
+    long    name_entry
+    float3  translation      :0
+    long    num_of_children
+    node    child[num_of_children]
+  }
+ </pre></font>
+</blockquote>
+<P>
+Translation specifies the translation. All children are influenced by this coordinate transformation. 
+
+<p align="right">
+ <a href="#noderef">NVF Node Reference Table</a>
+ <a href="index.htm">
+  <img src="../../gif/index.gif" border="0" width="65" height="17"></a>
+</p>
+<hr>
+
+<P>
+<a name="VertexInterpolator">
+<b>VertexInterpolator</b>
+<P>
+<blockquote>
+ <pre><font face="courier" size="2">
+  VertexInterpolator 'VTXI' {
+    long    name_entry
+    long    segment
+	    # The segment number of the vertex storage buffer.
+
+    # The following is the coordinate information
+    short   coord_interpolation_type;
+            # 0: constant
+            # 1: linear
+    short   num_of_coord_tables
+            # When num_of_coord_tables is set to 1, the coord component is not interpolated.
+    short   num_of_coords
+    {
+      float   key
+      short3  coord[num_of_coords]
+    } coord_table[num_of_coord_tables]
+
+    # The following is the normal line information
+    short   normal_interpolation_type;
+            # 0: constant
+            # 1: linear
+    short   num_of_normal_tables
+            # When num_of_normal_tables is set to 1, 
+            # the normal component is not interpolated.
+    short   num_of_normals
+    {
+      float   key
+      char4  normal[num_of_normals]
+    } normal_table[num_of_normal_tables]
+
+    # The following is the texture coordinate informtion
+    short   tex_coord_interpolation_type;
+            # 0: constant
+            # 1: linear
+    short   num_of_tex_coord_tables
+            # When num_of_tex_coord_tables is set to 1,
+            # the tex_coord component is not interpolated.
+    short   num_of_tex_coords
+    {
+      float   key
+      short2  tex_coord[num_of_tex_coords]
+    } tex_coord_table[num_of_tex_coord_tables]
+
+    # The following information is for vertex setup.
+    short   num_of_vertices
+    {
+      short   coord_index
+      short   normal_index
+      short   tex_coord_index
+    } index[num_of_vertices]
+
+    # The following information is for triangle setup.
+    long    num_of_vertex_groups
+    {
+      short   vertex_offset
+      char    vertex_cache_offset
+      char    vertex_load_count
+
+      char    num_of_rgba_modification
+      {
+        char    vertex_index
+        char4   rgba
+      } rgba_modification[num_of_rgba_modification]
+
+      char    num_of_st_modification
+      {
+        char    vertex_index
+        short2  st
+      } st_modification[num_of_st_modification]
+
+      char    num_of_xy_modification
+      {
+        char    vertex_index
+        short2  xy
+      } xy_modification[num_of_xy_modification]
+
+      char    num_of_z_modification
+      {
+        char    vertex_index
+        long    z
+      } z_modification[num_of_z_modification]
+
+      char    modify_primitive_color( <u>0:No Modificarion, 1:Modification</u>)
+      long    primitive_color[modify_primitive_color]
+
+      long    num_of_triangles
+      char3   triangle[num_of_triangle]
+    } vertex_group[num_of_vertex_groups]
+  }
+ </pre></font>
+</blockquote>
+<P>
+Defines the interpolation vertices. These are used in AnimatedGeometry. 
+
+<p align="right">
+ <a href="#noderef">NVF Node Reference Table</a>
+ <a href="index.htm">
+  <img src="../../gif/index.gif" border="0" width="65" height="17"></a>
+</p>
+<hr>
+
+<P>
+<a name="limitation">
+<b>Problems / Limitations</b>
+<P>
+<u>Material Compatibility</u><BR>
+<P>
+<ul>
+ <li>EnvColor/TriColor<br>
+  EnvColor and TriColor are handled differently in <a href="../nvfview/seg1.htm">nvfview</a> than they are in  a href="../n64prev/seg1.htm">n64prev</a>. In <a href="../nvfview/seg1.htm">nvfview</a>, ambient and emission may be used for EnvColor, and TriColor is not used. In addition, NVF has parameters that cannot be specified by NIFF1.0, but they are interpreted as follow by <a href="../niff2nvf/index.htm">niff2nvf</a>.
+  <p>
+  <table border="0" cellpadding="3" cellspacing="3">
+   <tr>
+    <td width="40%"><font face="arial" size="-1">ambient</td><td align="right"><font face="arial" size="-1">255</td><td align="right"><font face="arial" size="-1">255</td>
+    <td align="right"><font face="arial" size="-1">255</td><td align="right"><font face="arial" size="-1">255</td>
+   </tr>
+   <tr>
+    <td><font face="arial" size="-1">diffuse</td><td align="right"><font face="arial" size="-1">255</td><td align="right"><font face="arial" size="-1">255</td>
+    <td align="right"><font face="arial" size="-1">255</td><td align="right"><font face="arial" size="-1">255</td>
+   </tr>
+   <tr>
+    <td><font face="arial" size="-1">emission</td><td align="right"><font face="arial" size="-1">255</td><td align="right"><font face="arial" size="-1">255</td>
+    <td align="right"><font face="arial" size="-1">255</td><td align="right"><font face="arial" size="-1">255</td>
+   </tr>
+   <tr>
+    <td><font face="arial" size="-1">env_color_mode</td>
+    <td align="left" colspan="4"><font face="arial" size="-1">emission is output to env_color</td>
+   </tr>
+  </table>
+  <p>
+  In other words, TriColor is always white. 
+  <p>
+ <li>Color Combiner<br>
+  Since all shading results are stored in ShadeColor/VtxColor with NIFF2.0 material, there is no longer any need to use PrimitiveColor. 
+</ul>
+
+<P>
+<u>Large textures</u>
+<p>
+In NVF, textures which exceed 4KB cannot be used.
+Such large textures are split by converters like 
+<a href="../niff2nvf/index.htm">niff2nvf</a>.
+<P>
+<u>Increased number of nodes</u>
+<P>
+NVF displays a scene by taking nodes with very small functions and combining them together. Therefore, a scene which is simply converted from NIFF to NVF has many meaningless nodes. This increase in the number of nodes leads to an increase in processing time by the viewer's CPU and lowers the viewer's frame rate.
+<P>
+<u>The applicable range of ClassicScale</u>
+<P>
+Most Skeletons and Constraints are not influenced by ClassicScale. Rather, these nodes are influenced by Scale. 
+
+<p align="right">
+ <a href="index.htm">
+  <img src="../../gif/index.gif" border="0" width="65" height="17"></a>
+</p>
+<hr>
+
+</font>
+
+</body>
+</html>

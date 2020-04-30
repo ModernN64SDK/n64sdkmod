@@ -1,0 +1,58 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../n64man.css">
+<title>MusHandleSetReverb()</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check-->
+</head>
+
+<h1>MusHandleSetReverb()</h1>
+
+<h2>Syntax</h2>
+
+<pre>
+int MusHandleSetReverb(musHandle handle, int reverb);
+</pre>
+
+<h2>Arguments</h2>
+
+<dl>
+  <dt><b>handle</b>
+  <dd>the sound handle
+  <dt><b>reverb</b>
+  <dd>the reverb offset 
+</dl>
+
+<h2>Description</h2>
+
+<p>It sets the reverb offset value for the channels associated with the specified sound handle. The reverb offset is used as a base value for the reverb settings defined in the sound data, and the sound data's settings are scaled based on the remaining possible settings (128 - reverb).</p>
+
+<p>The handle must be a sound handle returned by <a href="MusStartSong.html">MusStartSong()</a>, <a href="MusStartSongFromMarker.html">MusStartSongFromMarker()</a>, <a href="MusStartEffect.html">MusStartEffect()</a>, or <a href="MusStartEffect2.html">MusStartEffect2()</a>.  If a handle of zero is supplied, this function will always return zero.</p>
+
+<p>The reverb value should be within the range of 0 to 0x7F (127). The default reverb offset for all channels is 0. This value is used in the following manner to calculate the channel's reverb level:</p>
+<p>
+<PRE><FONT FACE="Courier,Courier New">   channelreverb = reverb+(((128-reverb)*datareverb)>>7)</PRE>
+</p>
+
+<h2>Return Value</h2>
+
+<p>Number of channels which have been changed.</p>
+
+<h2>Example</h2>
+
+<pre>void ReverbFromDepth(unsigned long handle, int depth)
+{
+  /* depth in range 0-32767 */
+  MusHandleSetReverb(handle, depth&gt;&gt;8);
+}
+</pre>
+
+<h2>See Also</h2>
+<p>
+<a href="MusStartSong.html">MusStartSong()</a>,
+<a href="MusStartEffect.html">MusStartEffect()</a>,
+<a href="MusStartEffect2.html">MusStartEffect2()</a>
+</p>
+
+</body>
+</html>

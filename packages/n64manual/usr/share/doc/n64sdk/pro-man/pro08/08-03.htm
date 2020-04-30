@@ -1,0 +1,21 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 8 - Input/Output Functionality</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. 
+             MAP- 11/16/99 edited content, updated format-->
+</head>
+
+<h1>8.3 Synchronous I/O vs. Asynchronous I/O </h1>
+
+<p>Synchronous I/O and asynchronous are two fundamental methods of servicing I/O requests.   In synchronous systems, the <A target="keywords" HREF="../../keywords/index/data/system.htm#calling process">calling process</A> is blocked after issuing an I/O request, thus allowing I/O to overlap with the execution of other processes.   In asynchronous systems, the process is allowed to continue execution after initiating an I/O operation. Most systems implement the synchronous I/O method since it is easier to use and generally preferred by high-level language programmers.</p>
+
+<p>However, in the Nintendo 64 environment, asynchronous I/O is the preferred choice, mainly because of the asynchronous nature of the real-time game environment.   For example, a game might want to start <A target="keywords" HREF="../../keywords/index/data/system.htm#paging">paging</a> in the next scene data in the background while working on the graphics task list.  Therefore, asynchronous I/O has the potential to enhance the throughput on a <A target="keywords" HREF="../../keywords/index/data/system.htm#thread">thread</A> basis. Furthermore, synchronous I/O can be easily implemented on top of the asynchronous facility by having the calling process blocked on a message queue immediately after initiating the I/O operation. </p>
+
+<p>Therefore, all interrupt-based DMA operations are asynchronous operations and all asynchronous notification is handled via the message queue facility. </p>
+
+
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+</body> </html>

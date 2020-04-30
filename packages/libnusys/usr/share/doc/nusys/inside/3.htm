@@ -1,0 +1,99 @@
+<HTML>
+<HEAD>
+<TITLE>Inside NuSystem</TITLE>
+</HEAD>
+
+<BODY bgcolor="#FFFFFF">
+<font face="arial" size="-1">
+
+<P>
+<a name="top"></a><FONT size="3"><b>3. Scheduler</b></FONT>
+<p>
+
+<ol>
+  <li><a href="#1">Organization of the Scheduler</a>
+  <li><a href="#2">Customizing the Scheduler</a>
+</ol>
+
+<hr>
+
+<b><a name="1">3.1 Organization of the Scheduler</a></b>
+
+<p>The Scheduler directs high-priority system processes that manage other processes and resources. The role of the Scheduler is to decide how new processes should enter the system, in what order they should be executed, and how resources should be allocated to the processes. </p>
+
+<p>The NuSystem Scheduler has two primary roles. One is to send retrace and PRE-NMI event messages to threads registered as clients and set the timing for thread swapping. The other is to control the priority of graphics tasks and audio tasks. 
+</p>
+
+<p>The first role is needed because the N64 OS has a preemptive multithread organization, and the timing of thread swapping is largely dependent on event messages. </p>
+
+<p align="center"><img src="./images/f030100.gif" alt="Figure 3.1  Thread Swapping"><br>
+Figure 3.1  Thread Swapping</p>
+
+<p>In Figure 3.1, thread B has higher priority than thread A and is waiting for a retrace message. When thread B receives a retrace message from the Scheduler, CPU control shifts from thread A to thread B, and thread B executes. Once thread B returns to a retrace wait state, processing of thread A begins again.  As shown, a retrace event can significantly affect thread swapping.</p>
+
+<p>Only one retrace event message queue can be registered in the N64OS. For this reason, only one thread can receive retrace event messages.</p>
+
+<p>The Scheduler receives retrace events and passes them on to the threads that are registered as clients. In this way a number of threads can receive retrace messages. The process is carried out by the Scheduler's event handler thread. 
+</p>
+
+<p align="center"><img src="./images/f030200.gif" alt="Figure 3.2  Message flow after retrace and interruption by PRE-NMI event"><br>
+Figure 3.2  Message flow after retrace and interruption by PRE-NMI event</p>
+
+<p>After a PRE_NMI is received, the event handler thread performs the following process: </p>
+
+<blockquote>
+<p>(1) The NU_SC_PRENMI_GET bit of the nuScPreNMIFlag variable is set to 1.</p>
+<p>(2) If a client is registered to receive a PRE_NMI, then a PRE_NMI message is passed on to that client after the PRE_NMI is received. </p>
+<p>(3) The NU_SC_BEFORE_RESET bit of nuScPreNMIFlag is set to 1 after a specific number of frames have passed after the generation of the         PRE-NMI event (calculated as the number of frames that can pass in 0.5 second - 3). Also, the screen is cleared for every frame after that, the Y-Scale is set to 1.0, and osAfterPreNMI() is called. (When the nuScPreNMIFlag NU_SC_BEFORE_RESET is 1, no graphics task or audio task is executed. However, a task termination message is sent). </p>
+</blockquote>
+
+<p>Performance of the above processes ensures that the reset is conducted safely. </p>
+
+<p>The Scheduler's other role of managing the reality serial processor (RSP) stack is related to the N64 architecture. </p>
+
+<p>N64 uses the RSP to process audio and graphics. Every single frame of audio must be processed, so audio processing must have precedence even in the middle of graphics processing. RSP scheduling is necessary in order to establish this priority.</p>
+
+<p>NuSystem uses two threads for RSP scheduling - the graphics task thread and the audio task thread. Processing is simplified by dividing threads between graphics and audio, so the groups are managed separately as a graphics task and an audio task. The audio task thread has higher priority than the graphics task thread. RSP tasks also have high priority, so if a graphics task is in the middle of execution, it will yield to the execution of an audio task, setting a flag so that another new graphics task does not start. </p>
+
+<p align="center"><img src="./images/f030300.gif" alt="Figure 3.3  RSP Task Switching"><br>
+Figure 3.3  RSP Task Switching</p>
+
+<p>In Figure 3.3, an audio task request comes during the execution of graphics task 1. The audio task thread halts the graphics task and executes the audio task. After the audio task is finished, the graphics task begins again. When there is a request for a graphics task, the graphics task thread checks the state of the RSP, and if there is an audio task being executed, it waits until that task is finished. </p>
+
+<p>The initiator activates the Scheduler by calling the nuScCreateScheduler function. This function activates three Scheduler threads: the event thread, the graphics task thread, and the audio task thread. The retrace, signal processor (SP), display processor (DP), and PRE-NMI event messages are then assigned to the Scheduler's message queue. This initialization function also activates the Video Interface (VI) Manager and specifies the video mode. </p>
+
+<p align="right"><a href="#top">Top of Page</a> <a href="index.htm"><img src="../../../niff/gif/index.gif" border="0" width="65" height="17"></a></p>
+<hr>
+
+<b><a name="2">3.2 Customizing the Scheduler</a></b>
+
+<p>The scheduler itself really has no parts to be customized, but depending on the applications there may be cases where customization is required.If you are going to customize, please take the following points into consideration: </p>
+
+<dl>
+  <dt>1. Thread priority
+  <dd>Be careful about the priority of the three threads that make up the scheduler. In particular, the event handler thread must have higher priority than the other threads. 
+</dl>
+
+<dl>
+  <dt>2. Exclusive control over variables accessed by numerous threads
+  <dd>If there is a variable that will be accessed by numerous threads, you must establish exclusive control over access to that variable. There are two ways to realize this exclusive control: by masking interrupts, or by using messages.
+</dl>
+
+<dl>
+  <dt>3. Understand how the RSP operates
+  <dd>If you are going to customize the thread that controls tasks in the RSP, you should have a good understanding about RSP tasks. In particular, pay close attention to the need to control graphics tasks and audio tasks. Simple graphics tasks are not that difficult to control. But then you add audio tasks, you need to keep the order of priority in mind, and this makes control more difficult.
+</dl>
+
+<dl>
+  <dt>4. Prevent loss of a PRE_NMI event
+  <dd>The PRE_NMI event settings are made when the scheduler is initialized. If at the time a PRE_NMI event has already been generated, a PRE_NMI event message will be immediately sent, so you need to make sure this message is not lost
+</dl>
+
+<dl>
+  <dt>5. Processing of PRE_NMI messages
+  <dd>A period of 0.5 second is guaranteed between the time the PRE-NMI event is generated and the time the NMI, that is to say the reset,occurs. At the time of the NMI, the Y-scale must be returned to 1.0, RSP tasks must be halted, and DMA transfers with the PI must be stopped. By carrying out these processes with the scheduler's event handler thread, you free the application from having to perform any process. This helps streamline the program and it also boosts stability.
+</dl>
+
+<p align="right"><a href="#top">Top of Page</a> <a href="index.htm"><img src="../../../niff/gif/index.gif" border="0" width="65" height="17"></a></p>
+<hr>
+</body> </html>

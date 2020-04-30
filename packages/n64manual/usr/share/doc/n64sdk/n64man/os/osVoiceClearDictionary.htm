@@ -1,0 +1,80 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits
+MAP- added links, updated format>
+<TITLE>osVoiceClearDictionary</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+<font style="font-size: 12pt"><b>osVoiceClearDictionary</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p><i>Initializes Voice Recognition System word registration dictionary</p></i>
+<P>
+<h3>Syntax</h3>
+</P>
+<P>
+#include &lt;ultra64.h&gt;     /* <A HREF="../../header/ultra64.htm">ultra64.h</A> */
+</P>
+<P>
+s32 osVoiceClearDictionary(OSVoiceHandle *hd, u8 words);<BR>
+
+</P>
+<P>
+<h3>Description</h3>
+</P>
+<P>
+The <tt>osVoiceClearDictionary</tt> function initializes the registered word dictionary for the Voice Recognition System.  The dictionary is initialized so that the specified number of words can be registered in the dictionary.  Words cannot be registered with the <a href="osVoiceSetWord.htm">osVoiceSetWord</a> before the dictionary is initialized with the <tt>osVoiceClearDictionary</tt> function. 
+</P>
+<P>
+hd is the Voice Recognition System control structure.  The Voice Recognition System must be initialized with the <a href="osVoiceInit.htm">osVoiceInit</a> function before the <tt>osVoiceClearDictionary</tt> function is called.  The number of words to be registered is specified in words.  1-255 words can be registered in the dictionary. 
+</P>
+<P>
+The returned value is an error code.  A 0 (zero) is returned when processing ends normally.  If an error occurs, this function has the following error codes. 
+</P>
+<P>
+<B>CONT_ERR_NO_CONTROLLER</B>
+</P>
+<BLOCKQUOTE>
+<p>Nothing is connected to the controller port.</p>
+</BLOCKQUOTE>
+<P>
+<B>CONT_ERR_DEVICE</B>
+</P>
+<BLOCKQUOTE>
+<p>Something other than the Voice Recognition System is connected to the controller port. </p>
+</BLOCKQUOTE>
+<P>
+<B>CONT_ERR_VOICE_NO_RESPONSE</B>
+</P>
+<BLOCKQUOTE>
+<p>There was no response from the Voice Recognition System.  There may be a problem with the hardware. </p>
+</BLOCKQUOTE>
+<P>
+<B>CONT_ERR_CONTRFAIL</B>
+</P>
+<BLOCKQUOTE>
+<p>There was a data transmission failure.  There is a problem in the Voice Recognition System connection. </p>
+</BLOCKQUOTE>
+<P>
+<B>CONT_ERR_INVALID</B>
+</P>
+<BLOCKQUOTE>
+<p>There is an error in the function call method or in the argument.  This error will not occur if the function is being used correctly.</p>
+</BLOCKQUOTE>
+<P>
+<h3>See also</h3>
+<p><A href="osVoiceCheckWord.htm">osVoiceCheckWord</A>, <A href="osVoiceControlGain.htm">osVoiceControlGain</A>,
+<A href="osVoiceCountSyllables.htm">osVoiceCountSyllables</A>, <A href="osVoiceGetReadData.htm">osVoiceGetReadData</A>,
+<A href="osVoiceInit.htm">osVoiceInit</A>, <A href="osVoiceMaskDictionary.htm">osVoiceMaskDictionary</A>,
+<A href="osVoiceSetWord.htm">osVoiceSetWord</A>, <A href="osVoiceStartReadData.htm">osVoiceStartReadData</A>, and 
+<A href="osVoiceStopReadData.htm">osVoiceStopReadData</A>
+
+</P>
+<h3>Revision History</h3>
+<p>1999/04/30  Changed Format</p>
+<br><br>
+
+</BODY>
+</HTML>

@@ -1,0 +1,94 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../n64man.css">
+<title>MusInitialize()</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check-->
+</head>
+
+<h1>MusInitialize()</h1>
+
+<h2>Syntax</h2>
+
+<pre>
+int MusInitialize(musConfig *config);
+</pre>
+
+<h2>Arguments</h2>
+
+<dl>
+  <dt><b>config</b>
+  <dd>the address of configuration structure
+</dl>
+
+<h2>Description</h2>
+
+<p>It initializes the music player. This function installs music player to the scheduler thread and configures it. Once called, the library API functions can be used.  If the relevant entries in the configuration structure are present, then a default sample bank and a default sound effect bank will be defined.</p>
+
+<p>The configuration structure assigned to "config" contains the following data:</p>
+
+<pre>  
+typedef struct
+{
+  int           <a href="chapter_libuse.html#control_flag">control_flag</a>;
+  int           <a href="chapter_libuse.html#channels">channels</a>;
+  OSSched       <a href="chapter_libuse.html#sched">*sched</a>;
+  int           <a href="chapter_libuse.html#thread_priority">thread_priority</a>;
+  unsigned char <a href="chapter_libuse.html#heap">*heap</a>;
+  int           <a href="chapter_libuse.html#heap_length">heap_length</a>;
+  unsigned char <a href="chapter_libuse.html#ptr">*ptr</a>;
+  unsigned char <a href="chapter_libuse.html#wbk">*wbk</a>;
+  void          <a href="chapter_libuse.html#default_fxbank">*default_fxbank</a>;
+  int           <a href="chapter_libuse.html#fifo_length">fifo_length</a>;
+  int           <a href="chapter_libuse.html#syn_updates">syn_updates</a>;
+  int           <a href="chapter_libuse.html#syn_output_rate">syn_output_rate</a>;
+  int           <a href="chapter_libuse.html#syn_rsp_cmds">syn_rsp_cmds</a>;
+  int           <a href="chapter_libuse.html#syn_retraceCount">syn_retraceCount</a>;
+  int           <a href="chapter_libuse.html#syn_num_dma_bufs">syn_num_dma_bufs</a>;
+  int           <a href="chapter_libuse.html#syn_dma_buf_size">syn_dma_buf_size</a>;
+  OSPiHandle    <a href="chapter_libuse.html#diskrom_handle">*diskrom_handle</a>;
+} musConfig;
+</pre>
+
+<h2>Return Value</h2>
+
+<p>The amount of memory, from the heap, used by the music player and audio manager.</p>
+
+<h2>Example</h2>
+
+<pre>int InitMusicPlayer(void)
+{
+  musConfig init;
+
+  init.control_flag = 0; 
+  init.channels = 24;
+  init.sched = &amp;scheduler;
+  init.thread_priority = 12;
+
+  init.heap = &amp;audio_heap[0];
+  init.heap_length = AUDIO_HEAP_SIZE;
+
+  init.fifo_length = 64;
+
+  init.ptr = &amp;ptr_buffer[0];
+  init.wbk = &amp;_wbankSegmentRomStart[0];
+
+  init.default_fxbank = NULL;
+
+  init.syn_output_rate = 44100;
+  init.syn_updates = 256;
+  init.syn_rsp_cmds = 4096;
+  init.syn_retraceCount = 1;
+  init.syn_num_dma_bufs = 36;
+  init.syn_dma_buf_size = 0x1000;
+
+  /* Please delete the following command */
+  /* if using a sample stored in 64DD ROM */
+  /* init.diskrom_handle = osDriveRomInit(); */
+
+  return (MusInitialize(&amp;init));
+}
+</pre>
+
+</body>
+</html>

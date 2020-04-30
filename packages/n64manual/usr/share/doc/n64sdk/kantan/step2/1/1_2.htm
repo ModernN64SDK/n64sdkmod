@@ -1,0 +1,32 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<title>STEP2 [A Guide to the N64 Programming] - Chapter 1 N64 Programming</title>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!--
+Editors Notes:
+  PWC- updated formatting
+-->
+<base target="keywords">
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<p><font style="font-size:12pt"><b>1-2 Boot</b></font><br>
+<br>
+<br>
+At the beginning of every N64 game application, the boot function specified by a programmer is activated.  (For convenience, it is called the boot function,  but strictly speaking, whatever is specified by the entry command in the <a href="../../../keywords/index/data/system.htm#ROM spec file" target="keywords">spec file</a> becomes the <a href="../../../keywords/index/data/system.htm#boot" target="keywords">boot</a> function.)  This boot function is similar to the typical C program's main function in that it is the first function called in the program. <br>
+<br>
+<br>
+<b>1-2-1 The Boot Function</b><br>
+<br>
+<br>
+The boot function initializes the operating system and passes control to the first <a href="../../../keywords/index/data/system.htm#thread" target="keywords">thread</a> to begin processing (thread A in the following illustration). Note that control migrates as threads pass control and end. When thread A finishes, it becomes the <a href="../../../keywords/index/data/system.htm#idle thread" target="keywords">idle thread</a>.</p>
+<table border="1" cellspacing="0" cellpadding="4"><tr><td><img src="img00013.gif"></td></tr></table>
+<p><br>
+<b>Figure 1-2-1 Boot flow</b><br><br>
+<br>
+The registration of the thread that is actually operating can also be carried out by the initialization thread where the execution has been transferred from thread A. Also, you can end thread A and create a new idle thread. In either case, note that you always need the idle thread.</p>
+</body>
+</html>

@@ -1,0 +1,33 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<title>07-08</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font face="arial" size="-1">
+<p> <strong>7.8 Retry and Error Correction </strong>
+<hr>
+
+<p>This section describes important retry procedures and error correction performed using library functions.
+ 
+
+<p>
+<b>Retry</b>
+
+<p>With all of the asynchronous functions, the occurrence of all but certain error causes the device driver to perform an internal retry up to 64 times.  This is implemented so that even when transient vibration or impact occurs, the functions terminate normally without issuing detailed error reports to the game program.  Information such as the number of retries cannot be determined from the game program.  Retries are continued for a maximum of approximately 2 seconds.  The programmer must ensure that problems such as hang-ups do not occur even if a retry occurs.
+ 
+
+<p>
+<b>Error Correction</b>
+
+<p>This pertains only to reading from disk.  As is described in <a href="../dd11/index.htm">"Chapter 11, 64DD Hardware Specifications"</a>, 1 disk block consists of 85 sectors.  If the program attempts to read a certain block and between 1 and 4 of the 85 sectors are unreadable due to errors, C2 correction data - data calculated for each block and used for error correction - are used to restore the unreadable data and obtain data for all 85 sectors.  That is, the data for that block can be obtained.  This is called C2 error correction.  When correction is possible, C2 error correction is performed internally to the device driver.  Whether correction was performed cannot be determined from the game program.  When C2 error correction cannot be performed (when the number of unreadable sectors is 5 or more), an UNRECOVERED_READ_ERROR error is returned.
+</p>
+
+<p><A href="index.htm#index"><img src="../../gif/index.gif" border="0"
+width="65" height="17"></a></p>
+<P>
+<hr>
+</body>
+</html>

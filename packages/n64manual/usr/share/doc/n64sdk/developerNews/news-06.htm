@@ -1,0 +1,49 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<TITLE>Developers News 1.6</TITLE>
+</HEAD>
+
+<BODY bgcolor="#FFFFFF">
+<font face="arial" size="-1">
+
+<HR>
+<H1 align="center"><IMG src="gif/devnews.gif" height="44" width="453">1.6</H1>
+<P>
+Bug information and programming guides for the N64 will be periodically released.  All information that will become unnecessary with software (library, etc.) and hardware upgrades used in development will be noted together.  Please utilize this information after confirming that the information concerns your specific upgrade. 
+</P>
+<HR>
+<b><A name="top"></A>Contents:</b>
+
+<ol>
+<li><A href="#p1">PAL Version Game and Development Environment</A>
+</ol>
+
+<p align="right">December 20, 1996
+
+</P>
+<hr>
+<A name="p1"></A>1. PAL Version Game and Development Environment
+
+<P>
+The OS gets information from the PIf during boot-up and the N64 Control Deck performs NTSC/PAL identification.  That information is set in the variable osTvType.  The OS sets various data based on this variable. 
+</P>
+<P>
+However, since there are only NTSC versions of the PIf which is mounted on the INDY emulator board (referred to as development PIf), the setting will always be for NTSC.  This is also true for emulator boards which have been retrofitted for PAL (the crystal has been replaced).  Because of this, when creating PAL games, the games will operate normally on an actual control deck, but problems arise with the music being abnormal when they are run with an emulator board.  To avoid this problem, forcibly set the variable osTvType to OS_TV_PAL before calling osInitialize(), as shown below.
+</P>
+<BLOCKQUOTE>
+
+<PRE>
+<font face="courier" size="2">
+osTvType = OS_TV_PAL; /* Defined in os.h. Necessary only for PAL games. */
+<A href="../n64man/os/osInitialize.htm">osInitialize()</A>
+</font>
+</PRE>
+</BLOCKQUOTE>
+
+<P align="right">
+<A href="#top"><IMG src="../gif/index.gif" height="17" width="65" border="0"></A>
+</P>
+<HR>
+</BODY>
+</HTML>

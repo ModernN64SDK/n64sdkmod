@@ -1,0 +1,117 @@
+<html>
+<head>
+<title>[N64 CITextureEditor] 2.6.3 TLF format</title>
+</head>
+<body><FONT FACE="Arial" SIZE="-1">
+<center>
+<h1><font color=#0000c0><font color=#ff0000>N64</font> <font color=#ff8000>CI</font><font color=#ff0000>T</font>exture<font color=#ff0000>E</font>ditor</font> <font color=#808080>TLF Format</font></h1>
+<!--#config timefmt="%Y %m/%d(%a) %X"-->
+<font size=-1><!--#echo var="LAST_MODIFIED"--></font><br>
+</center>
+<hr>
+<p align="right"><a href="../ja/tlf.html">Japanese</a></p>
+<ol>
+ <li><b>TLF</b>
+ <ul>
+  <p>
+This is the file that holds the color palette information of the texture.
+There are files for 4bitCI and 8bitCI.
+Each is a binary file with the following configuration:
+  </p>
+  <table border=1>
+   <tr>
+    <th bgcolor=#c0c0c0>
+     Header area<br>
+     (64bytes)<br>
+    </th>
+    <td nowrap bgcolor=#f0c080>
+     u32 color_index_tag<br>
+     u32 color_num<br>
+     u32 color_type<br>
+     (52byte reserved area)<br>
+   </tr>
+   <tr>
+    <th bgcolor=#c0c0c0>
+     Color area
+    </th>
+    <td nowrap bgcolor=#f0c080>
+     u32 color_array(0)<br>
+     u32 color_array(1)<br>
+            :<br>
+            :<br>
+    </td>
+   </tr>
+  </table>
+  <p>
+ </ul>
+ <li><b>Explanation</b>
+ <p>
+ <ul>
+  <li>[u32 color_index_tag]
+  <ul>
+   <p>
+For convenience, this ID is used to identify whether the file is a TLF file.
+   </p>
+   <p>
+   For 4bitCI
+   TAG_COLOR_PALETTE_16 = 0x00200100<br>
+   For 8bitCI
+   TAG_COLOR_PALETTE_256 = 0x00200200<br>
+   </p>
+  </ul>
+  <li>[u32 entry_num]
+  <ul>
+   <p>
+The number of colors entered in the color palette.
+   </p>
+   <p>
+   For 4bitCI
+   PALETTE_COLOR_NUM_16 = 0x00000010<br>
+   For 8bitCI
+   PALETTE_COLOR_NUM_256 = 0x00000100<br>
+   </p>
+  </ul>
+  <li>[u32 color_type]
+  <ul>
+   <p>
+The type of the color stored in the palette
+   </p>
+   <p>
+   For 16bitRGBA
+   PALETTE_COLOR_TYPE_RGBA16 = 0x00000000<br>
+   For 16bitIA
+   PALETTE_COLOR_TYPE_IA16 = 0x00000001<br>
+   </p>
+  </ul>
+  <li>[u32 color_array]
+  <ul>
+   <p>
+The actual data inside the palette.
+The actual color values are stored in order from palette number 0.
+Each color value is a 16bit value, so 2 are stored in each color_array.
+For a 4bitCI, there are a total of 16 colors in the palette, so color_array is the 8 units of data from 0~7.
+For an 8bitCI, there are a total of 256 colors in the palette, so color_array is the 128 units of data from 0~127.
+   </p>
+  </ul>
+ </ul>
+</ol>
+<p align="right"><a href="../ja/tlf.html">Japanese</a></p>
+<hr>
+<table width=100%>
+ <tr>
+  <td valign=top>
+  </td>
+  <td valign=top align=right nowrap>
+   <font size=-1>
+   Copyright (C) 1998-1999 NINTENDO Co.,Ltd.<br>
+   Copyright (C) 1998-1999 NINTENDO OF AMERICA, Inc.<br>
+   Copyright (C) 1998-1999 MONEGI CORPORATION.<br>
+   Copyright (C) 1998-1999 INTELLIGENT SYSTEMS Co.,Ltd.<br>
+   All rights reserved.<br>
+   </font>
+
+  </td>
+ </tr>
+</table>
+</body>
+</html>

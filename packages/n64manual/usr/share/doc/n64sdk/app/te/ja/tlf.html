@@ -1,0 +1,120 @@
+<html>
+<head>
+<title>[N64 CITextureEditor] 2.6.3 TLF format</title>
+</head>
+<body>
+<center>
+<h1><font color=#0000c0><font color=#ff0000>N64</font> <font color=#ff8000>CI</font><font color=#ff0000>T</font>exture<font color=#ff0000>E</font>ditor</font> <font color=#808080>TLF Format</font></h1>
+<!--#config timefmt="%Y年%m月%d日(%a) %X"-->
+<font size=-1><!--#echo var="LAST_MODIFIED"--></font><br>
+<a href="https://ntsc.nintendo.co.jp/"><img src="../images/ntsc.gif" alt="NTSC-ONLINE" border=0></a>
+</center>
+<hr>
+<p align="right"><a href="../us/tlf.html">English</a></p>
+<ol>
+ <li><b>TLFとは</b>
+ <ul>
+  <p>
+  テクスチャのカラーパレット情報を格納するファイル。
+  4bitCI及び8bitCI用のファイルがある。
+  それぞれバイナリファイルで下記のような構造になっている。
+  </p>
+  <table border=1>
+   <tr>
+    <th bgcolor=#c0c0c0>
+     Header領域<br>
+     (64byte)<br>
+    </th>
+    <td nowrap bgcolor=#f0c080>
+     u32 color_index_tag<br>
+     u32 color_num<br>
+     u32 color_type<br>
+     (予備領域52byte)<br>
+   </tr>
+   <tr>
+    <th bgcolor=#c0c0c0>
+     Color領域
+    </th>
+    <td nowrap bgcolor=#f0c080>
+     u32 color_array(0)<br>
+     u32 color_array(1)<br>
+     　　：<br>
+     　　：<br>
+    </td>
+   </tr>
+  </table>
+  <p>
+ </ul>
+ <li><b>説明</b>
+ <p>
+ <ul>
+  <li>[u32 color_index_tag]
+  <ul>
+   <p>
+   便宜上、このファイルがTLFファイルかを識別するために使用する識別IDです。
+   </p>
+   <p>
+   4bitCIの場合
+   TAG_COLOR_PALETTE_16 = 0x00200100<br>
+   8bitCIの場合
+   TAG_COLOR_PALETTE_256 = 0x00200200<br>
+   </p>
+  </ul>
+  <li>[u32 entry_num]
+  <ul>
+   <p>
+   カラーパレットにエントリされているカラー数。
+   </p>
+   <p>
+   4bitCIの場合
+   PALETTE_COLOR_NUM_16 = 0x00000010<br>
+   8bitCIの場合
+   PALETTE_COLOR_NUM_256 = 0x00000100<br>
+   </p>
+  </ul>
+  <li>[u32 color_type]
+  <ul>
+   <p>
+   パレット内に格納されているカラーのタイプ
+   </p>
+   <p>
+   16bitRGBAの場合
+   PALETTE_COLOR_TYPE_RGBA16 = 0x00000000<br>
+   16bitIAの場合
+   PALETTE_COLOR_TYPE_IA16 = 0x00000001<br>
+   </p>
+  </ul>
+  <li>[u32 color_array]
+  <ul>
+   <p>
+   実際のパレット内のデータ。
+   パレット番号0から順に実際のカラー値を格納していく。
+   カラー値はそれぞれ16bit値なので、それぞれのcolor_arrayに
+   2個ずつ格納していく。
+   4bitCIの場合、パレット内のカラーの総数は16個になるので、color_arrayは
+   0～7までの8個のデータになる。
+   8bitCIの場合、パレット内のカラーの総数は256個になるので、color_arrayは
+   0～127までの128個のデータになる。
+   </p>
+  </ul>
+ </ul>
+</ol>
+<p align="right"><a href="../us/tlf.html">English</a></p>
+<hr>
+<table width=100%>
+ <tr>
+  <td valign=top>
+  </td>
+  <td valign=top align=right nowrap>
+   <font size=-1>
+   Copyright (C) 1998-1999 <a href="https://ntsc.nintendo.co.jp/">NINTENDO Co.,Ltd.</a><br>
+   Copyright (C) 1998-1999 MONEGI CORPORATION.<br>
+   Copyright (C) 1998-1999 <a href="http://www.intsys.co.jp/">INTELLIGENT SYSTEMS Co.,Ltd.</a><br>
+   All rights reserved.<br>
+   </font>
+   <a href="https://ntsc.nintendo.co.jp/"><img src="../images/ntsc.gif" alt="NTSC-ONLINE" border=0></a>
+  </td>
+ </tr>
+</table>
+</body>
+</html>

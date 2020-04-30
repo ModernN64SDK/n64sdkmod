@@ -1,0 +1,295 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 25 - Graphics Microcode</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. -->
+</head>
+
+<h1>25.3 F3DEX Microcode</h1>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="01"><h2>25.3.1 F3DEX Microcode Series Functions </h2></a>
+
+<p>The following provides information on functions added or changed in F3DEX(.NoN), F3DLX(.NoN), F3DLX.Rej, F3DLP.Rej, and L3DEX.</p>
+
+<blockquote><pre>
+<a href="../../n64man/gsp/gSPVertex.htm">gSPVertex</a> (Gfx *pkt, Vtx *v, u32 n, u32 v0)
+<a href="../../n64man/gsp/gSPVertex.htm">gsSPVertex</a>(Vtx *v, u32 n, u32 v0)
+</pre></blockquote>
+
+<p>Changing the <a href="../../keywords/index/data/graphics.htm#vertex cache" target="keywords">vertex cache</a> size changed the range of values for n and v0. However, the maximum number of vertices that can be loaded at one time is 32. To load more vertices, loading must be performed two or more times. </p>
+
+<table border=1 align="center">
+  <caption><a name="t25-01"><strong>Table 25-1  Vertex Cache Size for Each Microcode Version</strong></a></caption>
+  <tr><th>Microcode</th><th>Vertex Cache Size</th><th>Range of n</th><th>Range of v0</th></tr>
+  <tr><td>F3DEX/F3DEX.NoN</td><td align="center">32</td><td align="center">1~32</td><td align="center">0~31</td></tr>
+  <tr><td>F3DLX/F3DLX.NoN</td><td align="center">32</td><td align="center">1~32</td><td align="center">0~31</td></tr>
+  <tr><td>F3DLX.Rej</td><td align="center">64</td><td align="center">1~32(*)</td><td align="center">0~63</td></tr>
+  <tr><td>F3DLP.Rej</td><td align="center">80</td><td align="center">1~32(*)</td><td align="center">0~79</td></tr>
+  <tr><td>L3DEX</td><td align="center">32</td><td align="center">1~32</td><td align="center">0~31</td></tr>
+</table>
+<p>(*) If loading 33 or more vertices is desired, use <a href="../../n64man/gsp/gSPVertex.htm">gSPVertex</a> multiple times.</p>
+
+<p>
+<b>gSP2Traingles</b>
+</p>
+
+<blockquote><pre>
+<a href="../../n64man/gsp/gSP2Triangles.htm">gSP2Triangles</a> (pkt, v00, v01, v02, flag0,  v10, v11, v12, flag1)
+<a href="../../n64man/gsp/gSP2Triangles.htm">gsSP2Triangles</a>(v00, v01, v02, flag0,  v10, v11, v12, flag1)
+</pre></blockquote>
+
+<p>The <a href="../../n64man/gsp/gSP2Triangles.htm">gSP2Triangles</a> functions perform processing equivalent to the following: 
+<blockquote><pre>
+<a href="../../n64man/gsp/gSP1Triangle.htm">gSP1Triangle</a>(pkt++, v00, v01, v02, flag0);
+<a href="../../n64man/gsp/gSP1Triangle.htm">gSP1Triangle</a>(pkt++, v10, v11, v12, flag1);
+</pre></blockquote>
+
+<p>That is, they render two triangles. By processing two <a href="../../n64man/gsp/gSP1Triangle.htm">g*SP1Triangle</a> commands with one DL command, the DL size in memory can be reduced.</p>
+
+<p>An improvement in performance can be achieved with F3DLP.Rej and F3DLX.Rej if the <a href="../../n64man/gsp/gSP2Triangles.htm">gSP2Triangles</a> functions are used. Use of these microcode versions provides an advantage where speed is concerned.</p>
+
+<p>
+<b>gSP1Quadrangle</b>
+</p>
+
+<blockquote><pre>
+<a href="../../n64man/gsp/gSP1Quadrangle.htm">gSP1Quadrangle</a> (pkt, v0, v1, v2, v3, flag)
+<a href="../../n64man/gsp/gSP1Quadrangle.htm">gsSP1Quadrangle</a>(v0, v1, v2, v3, flag)
+</pre></blockquote>
+
+<p>These functions render rectangles {v0, v1, v2, v3}. "flag" is used for <a href="../../keywords/index/data/graphics.htm#flat shading" target="keywords">flat-shading</a>. The specified rectangle is actually partitioned into 2 triangles. The direction of the partitioning is fixed. The possibility of having the SP dynamically compute the partitioning direction was examined, but this was not implemented because the obtained increase in DP rendering performance relative to the SP <A HREF="../../keywords/index/data/system.htm#overhead" target="keywords">overhead</A> was not as great as expected. </p>
+
+<p>Beginning with Release 0.96, <a href="../../n64man/gsp/gSP1Quadrangle.htm">g*SP1Quadrangle</a> is emulated by <a href="../../n64man/gsp/gSP2Triangles.htm">g*SP2Triangles</a>.</p>
+
+<blockquote><pre>
+<a href="../../n64man/gsp/gSPSetGeometryMode.htm">gSPSetGeometryMode</a> (Gfx *gdl, unsigned int mode)
+<a href="../../n64man/gsp/gSPSetGeometryMode.htm">gsSPSetGeometryMode</a>(          unsigned int mode)
+</pre></blockquote>
+
+<p>
+<b>G_CLIPPING</b>
+</p>
+
+<p>G_CLIPPING has been added as a mode. This flag is valid only in F3DLX and F3DLX.NoN. It is ignored by other microcode versions.</p>
+
+<p>If this flag is cleared, clipping is not performed. This is expected to increase speed. </p>
+
+<p>Specifically, in the <a href="../../n64man/gsp/gSPVertex.htm">gSPVertex</a> function after clearing G_CLIPPING, data necessary for clipping is not calculated.  Moreover, with commands such as gSP*Triangle and <a href="../../n64man/gsp/gSP1Quadrangle.htm">gSP1Quadrangle</a>, <a href="../../keywords/index/data/graphics.htm#clipping" target="keywords">clipping</a> is not performed. </p>
+
+<p>Therefore, please note that with the DLs listed below, the data necessary for clipping cannot be acquired, so the operation of gsSP1Triangle cannot be guaranteed.</p>
+
+<blockquote><pre>
+<a href="../../n64man/gsp/gSPClearGeometryMode.htm">gsSPClearGeometryMode</a>(G_CLIPPING),    // clipping off
+<a href="../../n64man/gsp/gSPVertex.htm">gsSPVertex</a>(v, 3, 0),                  // load 3 vertices
+<a href="../../n64man/gsp/gSPSetGeometryMode.htm">gsSPSetGeometryMode</a>(G_CLIPPING),      // clipping on
+<a href="../../n64man/gsp/gSP1Triangle.htm">gsSP1Triangle</a>(0,1,2,0),               // TRI rendering
+</pre></blockquote>
+
+<p>Similarly, please note that when clipping is OFF, normal operation will not occur even if the loaded vertices are specified by gSPCullDisplayList.</p>
+
+<p>The default condition is G_CLIPPING ON. </p>
+
+<p>
+<b>gSPCullDisplayList</b>
+</p>
+
+<blockquote><pre>
+<a href="../../n64man/gsp/gSPCullDisplayList.htm">gSPCullDisplayList</a> (Gfx *gdl, unsigned int v0, unsigned int vn)
+<a href="../../n64man/gsp/gSPCullDisplayList.htm">gsSPCullDisplayList</a>(          unsigned int v0, unsigned int vn)
+</pre></blockquote>
+
+<p>Due to the increase in size of the vertex cache, the ranges of v0 and vn have been changed. They are the same size as v0 in <a href="../../n64man/gsp/gSPVertex.htm">gSPVertex</a>. A requirement, however, is v0 &LT;= vn. </p>
+
+<p>Although these functions operate the same in F3DEX(.NoN), F3DLX(.NoN), and L3DEX as in Fast3D, caution is required because they behave differently in F3DLX.Rej and F3DLP.Rej than in Fast3D. </p>
+
+<p>
+<b>gSPClipRatio </b>
+</p>
+<blockquote><pre>
+<a href="../../n64man/gsp/gSPClipRatio.htm">gSPClipRatio</a> (Gfx *gdl, r)
+<a href="../../n64man/gsp/gSPClipRatio.htm">gsSPClipRatio</a>(          r)
+</pre></blockquote>
+
+<p>The operation of <a href="../../n64man/gsp/gSPClipRatio.htm">gSPClipRatio()</a> in F3DEX(.NoN) and F3DLX(.NoN) is the same as in Fast3D. However, it is different from Fast3D in F3DL*.Rej, where it is used to modify the size of the reject box. The initial value of gSPClipRatio( ) in F3DL*.Rej is FRUSTRATIO_2.</p>
+<p>
+<b>gSPModifyVertex</b>
+</p>
+
+<blockquote><pre>
+<a href="../../n64man/gsp/gSPModifyVertex.htm">gSPModifyVertex</a> (Gfx *gdl, 
+                 unsigned int vtx, unsigned int where, unsigned int val)
+<a href="../../n64man/gsp/gSPModifyVertex.htm">gsSPModifyVertex</a>(unsigned int vtx, unsigned int where, unsigned int val)
+</pre></blockquote>
+
+<p>Due to the increase in size of the vertex cache, the range of vtx has been changed. It is the same size as v0 in gSPVertex. </p>
+
+<p>
+<b>gSPBranchLessZ</b>
+</p>
+
+<blockquote><pre>
+<a href="../../n64man/gsp/gSPBranchLessZ.htm">gSPBranchLessZ</a> (Gfx *gdl, Gfx *branchdl, unsigned int vtx,
+                                float zval, float near, float far, int flag)
+<a href="../../n64man/gsp/gSPBranchLessZ.htm">gsSPBranchLessZ</a>(          Gfx *branchdl, unsigned int vtx,
+                                float zval, float near, float far, int flag)
+</pre></blockquote>
+
+<p>If the depth of the vertex specified by vtx is less than or equal to zval, BranchDisplayList is executed for the DL indicated by branchdl. If it is greater than zval, nothing is done. This allows easy model <a href="../../keywords/index/data/graphics.htm#LOD" target="keywords">LOD</a> processing. The following is a model with three LODs. </p>
+
+<blockquote><pre>
+Gfx model_near[] = {                // model for distance of 32 - 200
+        .....
+        <a href="../../n64man/gsp/gSPEndDisplayList.htm">gsSPEndDisplayList()</a>,
+};
+Gfx model_mid[] = {                // model for distance of 201 - 800
+        .....
+        <a href="../../n64man/gsp/gSPEndDisplayList.htm">gsSPEndDisplayList()</a>,
+};
+Gfx model_far[] = {                // model for distance of 801 - 1600
+        .....
+        <a href="../../n64man/gsp/gSPEndDisplayList.htm">gsSPEndDisplayList()</a>,
+};
+Gfx model[] = {
+        <a href="../../n64man/gsp/gSPVertex.htm">gsSPVertex</a>(testvtx, 1, 0),
+        <a href="../../n64man/gsp/gSPBranchLessZ.htm">gsSPBranchLessZ</a>(model_near, 0,  200, 32, 2000, G_BZ_PERSP),
+        <a href="../../n64man/gsp/gSPBranchLessZ.htm">gsSPBranchLessZ</a>(model_mid,  0,  800, 32, 2000, G_BZ_PERSP),
+        <a href="../../n64man/gsp/gSPBranchLessZ.htm">gsSPBranchLessZ</a>(model_far,  0, 1600, 32, 2000, G_BZ_PERSP),
+        <a href="../../n64man/gsp/gSPEndDisplayList.htm">gsSPEndDisplayList()</a>,        // no rendering for distance of 1601 or greater
+};
+</pre></blockquote>
+
+<p>These commands require the perspective parameters indicated below.</p>
+
+<table border=1 align="center">
+  <caption><a name="t25-01"><strong>Table 25-2  g[s]SPBranchLessZ Parameters</strong></a></caption>
+
+
+  <tr><th nowrap>Parameter</th><th>Value</th></tr>
+  <tr><td align="center">near</td><td>Near plane location (value specified by <a href="../../n64man/gu/guPerspective.htm">guPerspective</a>/<a href="../../n64man/gu/guOrtho.htm">guOrtho</a>)</td></tr>
+  <tr><td align="center">far</td><td>Far plane location(value specified by <a href="../../n64man/gu/guPerspective.htm">guPerspective</a>/<a href="../../n64man/gu/guOrtho.htm">guOrtho</a>)</td></tr>
+  <tr><td align="center">flag</td><td>G_BZ_PERSP specified for perspective projections;<br>G_BZ_ORTHO specified for orthogonal projections</td></tr>
+</table>
+
+<p>These commands assume that the values of the viewport Z-direction parameters vp.vscale[2] and vp.vtrans[2] are both G_MAXZ/2. In this case, the depth value is greater than or equal to 0 and less than or equal to G_MAXZ.   In general, it is not necessary to change the range of the depth value in the application. However, if this value must be changed, please use <a href="../../n64man/gsp/gSPBranchLessZrg.htm">g*SPBranchLessZrg</a> instead.  </p>
+
+<p>This <a href="../../keywords/index/data/graphics.htm#GBI" target="keywords">GBI</a> is supported beginning with F3DEX Release 1.02 and can be used in the same manner with F3DEX/LX/LX.Rej/LP.Rej/ and L3DEX. </p>
+
+<p>
+<b>gSPBranchLessZrg</b>
+<blockquote><pre>
+<a href="../../n64man/gsp/gSPBranchLessZrg.htm">gSPBranchLessZrg</a> (Gfx *gdl, Gfx *branchdl, unsigned int vtx,
+                float zval, float near, float far, int flag,
+                int zmin, int zmax)
+<a href="../../n64man/gsp/gSPBranchLessZrg.htm">gsSPBranchLessZrg</a>(Gfx *branchdl, unsigned int vtx,
+                float zval, float near, float far, int flag,
+                int zmin, int zmax)
+</pre></blockquote>
+
+<p>In most applications, a depth greater than or equal to 0 and less than or equal to G_MAXZ is used. However, if circumstances make changing this range desirable, use <a href="../../n64man/gsp/gSPBranchLessZrg.htm">g[s]SPBranchLessZrg</a> instead of <a href="../../n64man/gsp/gSPBranchLessZ.htm">g[s]SPBranchLessZ</a>. With <a href="../../n64man/gsp/gSPBranchLessZrg.htm">g[s]SPBranchLessZrg</a>, the parameters shown below must be provided in addition to the <a href="../../n64man/gsp/gSPBranchLessZ.htm">g[s]SPBranchLessZ</a> parameters near, far, and flag.</p>
+
+<table border=1 align="center">
+  <caption>Table  25-3  g[s]SPBranchLessZrg Parameters</caption
+  <tr><th nowrap>Parameter</th><th>Value</th></tr>
+  <tr><td align="center">zmin</td><td>minimum depth (= vp.vtrans[2] - vp.vscale[2])</td></tr>
+  <tr><td align="center">zmax</td><td>maximum depth (= vp.vtrans[2] + vp.vscale[2])</td></tr>
+</table>
+
+<p>The remaining parameters are the same. This GBI is supported and can be used in the same manner in F3DEX/LX/LX.Rej/LP.Rej, and F3DEX.</p>
+
+<p>
+<b>gSPLoadUcode</b>
+<blockquote><pre>
+<a href="../../n64man/gsp/gSPLoadUcode.htm">gSPLoadUcode</a>(Gfx *gdl, u64 *uc_start, u64 *uc_dstart)
+<a href="../../n64man/gsp/gSPLoadUcode.htm">gsSPLoadUcode</a>(u64 *uc_start, u64 *uc_dstart)
+</pre></blockquote>
+
+<table border=1 align="center">
+  <caption>Table 25-4 gSPLoadUcode Parameters</caption>
+
+  <tr><th nowrap>Parameter</th><th>Value</th></tr>
+  <tr><td align="center">uc_start</td><td>Start of the microcode text section (physical address)</td></tr>
+  <tr><td align="center">uc_dstart</td><td>Start of the microcode data section (physical address)</td></tr>
+</table>
+<p>
+This function loads specified microcodes.  However, F3DEX, F3DLX, F3DLX_Rej, F3DLP_Rej and L3DEX are the only loadable microcodes included in this package.  Fast3D and Turbo3D cannot be loaded.  Because microcode loading increases overhead, discretion in loading is recommended to obtain good performance.  For practical purposes, this means intermittently switching between the microcode types used for rendering.  As an example, a clip-capable microcode such as F3DLX would be used for rendering landscapes and fast microcode such as F3DLX.Rej used for rendering characters. As with previous releases, switching between F3DEX and L3DEX when rendering lines can be done without CPU involvement. </p>
+
+<p>When microcode is loaded with this GBI, the graphics and the internal state of the RSP are initialized (segment address, viewport, geometry mode, matrix, link information of display).  Thus, RSP-related settings must be reset immediately after microcode loading.  Furthermore, the DL linking information is initialized. Caution is therefore recommended when using these commands in a DL called using g[s]SPDisplayList, because control will not return to the calling DL.  This is unavoidable due to the implementation of the specification.</p>
+
+<p>To enable use of the <a href="../../n64man/gsp/gSPLoadUcode.htm">g*SPLoadUcode</a> function of this command, t.flag, which is a member of the OSTask structure, must be set to OS_TASK_LOADABLE as shown below. </p>
+
+<blockquote><pre>
+OSTask *tp;
+tp->t.flag = OS_TASK_LOADABLE | OS_TASK_DP_WAIT;
+</pre></blockquote>
+
+<p>To make this flag valid, a patch must be applied to the OS. Please see the "OS Patches" section of the README file for information on applying the patch. Applying the patch makes the OS upward/host compatible. This patch is already contained in OS's using the N64 Software Library 2.0H or later. </p>
+<p>
+
+<blockquote><pre>
+<a href="../../n64man/gsp/gSPLoadUcodeL.htm">gSPLoadUcodeL</a>(Gfx *gdl, ucode_name)
+<a href="../../n64man/gsp/gSPLoadUcodeL.htm">gsSPLoadUcodeL</a>(ucode_name)
+</pre></blockquote>
+
+</p>
+<p>These functions allow easy handling of <a href="../../n64man/gsp/gSPLoadUcode.htm">g*SPLoadUcode</a>.  Commands (a) and (b) below are equivalent. </p>
+
+<blockquote><pre>
+(a) <a href="../../n64man/gsp/gSPLoadUcode.htm">gsSPLoadUcode</a>(OS_K0_TO_PHYSICAL(&amp;gspF3DEX_fifoTextStart),
+                   OS_K0_TO_PHYSICAL(&amp;gspF3DEX_fifoDataStart))
+(b) <a href="../../n64man/gsp/gSPLoadUcodeL.htm">gsSPLoadUcodeL</a>(gspF3DEX_fifo)
+</pre></blockquote>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="02"><h2>25.3.2 Rejection Processing </h2></a>
+
+<p>The rejection processing described below allows only rendering of triangles whose 3 vertices fall within a fixed range. If even 1 vertex falls outside this range, no part of the triangle is rendered. </p>
+
+<p>This range is called the "reject box."  Although the size of the reject box varies depending on the conditions, in the X and Y directions it is roughly twice the size of a 320 x 240 image (if the screen size is 320 x 240) in the initial state, as illustrated in the figure below. </p>
+
+<p>The range can be changed using <a href="../../n64man/gsp/gSPClipRatio.htm">g*SPClipRatio</a>. Values from FRUSTRATIO_2 to FRUSTRATIO_6 can be specified. </p>
+
+<p>In the Z direction (the depth direction of the screen), rejection is performed according to the Far plane. No rejection is performed according to the Near plane. </p>
+
+<dl>
+  <dt><a name="f25-00-00"></a>
+  <dd><img alt="[Figure]" src="gif/f25-00-00.gif">
+</dl>
+
+<p>Because of reject processing, a large triangle may not be rendered if one of its vertices falls outside the screen, even though it should appear in the screen. </p>
+
+<p>In this case, the triangle must be partitioned into smaller triangles, and steps must be taken to prevent the occurrence of unnatural "<a href="../../keywords/index/data/graphics.htm#polygon" target="keywords">polygon</a> fragmentation." </p>
+
+<p>Reject processing with F3DLX.Rej and F3DLP.Rej can allow faster processing of "2 Triangles" commands. </p>
+
+<p>When making DL, it is advantageous to use <a href="../../n64man/gsp/gSP2Triangles.htm">g*SP2Triangles</a>, if possible. 
+</p>
+
+<p>The gspF3DLX.fifo.o version provides texture perspective correction, while gspF3DLP.Rej.o version does not. F3DLP.Rej is slightly faster than F3DLX.Rej. This lightens SP processing, but because there are no changes in DP itself, DP often is not fast enough in parallel with SP. In such cases, consideration must be given to setting the render mode to a mode such as RA mode (G_RM_RA_ZB_OPA_SURF). </p>
+
+<p>This microcode does not support G_CULL_BOTH. </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="03"><h2>25.3.3 GBI Compatibility</h2></a>
+
+<p>The GBI (Graphics Binary Interface) for the microcode in this package and the GBI for the previous Fast3D microcode are not compatible at the binary level. However, the package has been created so that these differences are eliminated by gbi.h. Using a compile option, the appropriate GBI can be assigned for each case even with the same DL.</p>
+
+<p>Specifically, the GBI for the microcode in this package is outputted by defining the keyword "F3DEX_GBI" before including gbi.h (usually gbi.h is included if ultra64.h is included). </p>
+
+<p>For example, if the DL is described in the file static_ex.c, add #define F3DEX_GBI to the file before the include for ultra64.h, as shown below.
+
+<blockquote><pre>
+static_ex.c:
+        |
+        |#define  F3DEX_GBI
+        |#include &lt;ultra64.h&gt;
+        |
+</pre></blockquote>
+</p>
+
+<p>The microcode for F3DEX, F3DLX, F3DLX.Rej, and F3DLP.Rej are compatible at the GBI binary level. Consequently, the same DL can be used with each microcode. However, due to the reject processing described in the previous section, the operation of these versions varies slightly even with the same command. Consequently, the same image may not necessarily be rendered even with the same DL, so care is necessary in this regard. </p>
+
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+</body> </html>

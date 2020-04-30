@@ -1,0 +1,57 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../n64man.css">
+<title>MusHandleGetPtrBank()</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check-->
+</head>
+
+<h1>MusHandleGetPtrBank()</h1>
+
+<h2>Syntax</h2>
+
+<pre>
+void *MusHandleGetPtrBank(musHandle handle);
+</pre>
+
+<h2>Arguments</h2>
+
+<dl>
+  <dt><b>handle</b>
+  <dd>the sound handle
+</dl>
+
+<h2>Description</h2>
+
+<p>It gets the address of the sample bank being used by the channels associated with the specified sound handle as they are currently being processed.</p>
+
+<p>The handle must be a sound handle returned by <a href="MusStartSong.html">MusStartSong()</a>, <a href="MusStartSongFromMarker.html">MusStartSongFromMarker()</a>, <a href="MusStartEffect.html">MusStartEffect()</a>, or <a href="MusStartEffect2.html">MusStartEffect2()</a>.  If a handle of zero is supplied, this function will always return zero.</p>
+
+<h2>Return Value</h2>
+
+<p>Sample bank address.</p>
+
+<h2>Example</h2>
+
+<pre>void GameSongSetFxBank(musHandle song_handle, void *fx_bank)
+{
+  void *ptr_bank;
+
+  ptr_bank = MusHandleGetPtrBank(song_handle);
+  <a href="MusFxBankSetPtrBank.html">MusFxBankSetPtrBank</a>(fx_bank, ptr_bank);
+}
+</pre>
+
+<h2>See Also</h2>
+<p>
+<a href="MusPtrBankInitialize.html">MusPtrBankInitialize()</a>,
+<a href="MusPtrBankGetCurrent.html">MusPtrBankGetCurrent()</a>,
+<a href="MusPtrBankSetCurrent.html">MusPtrBankSetCurrent()</a>,
+<a href="MusPtrBankSetSingle.html">MusPtrBankSetSingle()</a>,
+<a href="MusStartSong.html">MusStartSong()</a>,
+<a href="MusStartEffect.html">MusStartEffect()</a>,
+<a href="MusStartEffect2.html">MusStartEffect2()</a>
+</p>
+
+</body>
+</html>

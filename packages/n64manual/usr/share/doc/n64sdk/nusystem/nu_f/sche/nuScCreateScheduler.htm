@@ -1,0 +1,79 @@
+<HTML>
+<HEAD>
+<TITLE>nuScCreateScheduler</TITLE>
+</HEAD>
+
+<BODY bgcolor="#FFFFFF">
+<font face="arial" size="-1">
+
+<P>
+<FONT size="5"><b><IMG src="../nusystem2.gif" height="30" width="176">Function</b></FONT>
+</P>
+<HR>
+<P>
+<FONT size="3"><b>nuScCreateScheduler</b></FONT>
+</P>
+<HR>
+<P>
+<b>Syntax</b>
+</P>
+<font face="courier" size="2">
+<PRE>
+void nuScCreateScheduler(u8 videoMode, u8 numFields)
+</PRE>
+</font>
+<P>
+<b>Arguments</b>
+</P>
+<font face="courier" size="2">
+<PRE>
+videoMode       video mode setting(OS_VI_NTSC_LAN1) 
+numFields        notification cycle of retrace(1=60Hz,2=30Hz...) 
+</PRE>
+</font>
+<P>
+<b>Return Value</b>
+</P>
+<font face="courier" size="2">
+<PRE>
+None
+</PRE>
+</font>
+<P>
+<b>Description</b>
+</P>
+<P>
+<i>Initialization and startup of the Scheduler</i>
+</P>
+<P>
+Set VI and start VI manager.  It also creates and activates the thread for RCP task control.  Since the function is called for initialization when starting up, it is not necessary to call this function from the application for NuSystem.
+</P>
+<P>
+With the N64OS, the messages are sent to the related message queues when an interruption such as retrace or PRE NMI occurs. Since there is only one message queue that can be registered, multiple threads are not able to receive messages.  Therefore, NuSystem has a feature, called the Scheduler, which sends the retrace and PRE NMI messages to multiple threads.    The Scheduler receives retrace and PRE NMI interrupts from the N64 hardware and sends the event messages to registered clients. The nuScAddClient function is used to register clients.
+</P>
+<P>
+During initialization of the scheduler, the VI manager is started, the video mode is set in "videoMode," and the retrace announcement cycle is set in "numFields."   The screen is then blacked out with the osViBlack function.   In addition, a system event handler thread is created as a VI (V-SYNC), SP, and DP event handler, and a graphics task thread and audio task thread are created for RCP task management.   Furthermore, osTvType is referenced and frameRate is set.
+</P>
+<P>
+The system event handler thread receives the VI and PRE NMI events from the N64OS and sends the messages to the registered clients.<BR>
+<BR>
+When a PRE NMI event is received, the Y-Scale from two frames earlier (during which 0.5 seconds elapsed), is set to 1.0, the screen is cleared by osViSetBlack(TRUE), and osAfterPreNMI() is called. Once this occurs graphics tasks and audio tasks are prohibited from starting, in preparation for a reset.
+</P>
+<P>
+The graphics task thread receives the graphics task message and executes the graphics task. Normally, the graphics task message is created and sent by the nuGfxTaskStart function.
+</P>
+<P>
+The audio task thread receives the audio task message and executes the audio task. Normally, the audio task message is created and sent by the Audio Manager.   If a graphics task is executed by the RSP while executing an audio task, the graphics task is stopped and the audio task is executed.  The graphics task is restarted after the audio task is completed.
+</P>
+<hr>
+<P>
+<b>Revision History</b>
+<P>
+2/1/99 Added text regarding processing after a PRE NMI event has occurred.
+</P>
+<HR>
+<P align="right">
+<A href="index.htm"><IMG src="../index.gif" height="17" width="65" border="0"></A>
+</P>
+</BODY>
+</HTML>

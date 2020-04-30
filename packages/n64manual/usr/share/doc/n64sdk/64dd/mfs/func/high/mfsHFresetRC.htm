@@ -1,0 +1,58 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>mfsHFresetRC</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font face="arial" size="-1">
+<b><font size="3">mfsHFresetRC</b></font>
+
+<hr>
+
+<p><strong>Syntax</strong> 
+<font face="courier" size="2">
+<pre>s32 mfsHFresetRC(MfsFile handle)</pre></font>
+
+<p><strong>Arguments</strong> 
+<dl>
+<dd>handle File handle</dl></dd>
+
+<p><strong>Return value</strong>
+<dl>
+<dd>Error</dl></dd>
+
+<p><strong>Function</strong>
+<dl>
+<dd>Resets update counter value</dl></dd>
+
+<p><strong>Description</strong> 
+<P>This function sets the update counter value of the file specified by handle to 0.</p>
+
+<p>This function sets the update counter value of the file specified by handle to 0.
+The update counter of the file is set to 0 when the file is created and is incremented whenever data is written to the file or the attribute is changed.  The maximum value is 255, and the value cannot be incremented above 255.
+The rewriting of the file by another drive can be detected by checking the update counter.</p>
+
+<p>Since the update counter only exists in the RAM area, the MFS_ERR_REFUSE error will occur if this function is used for a ROM area file.</p>
+
+<p><strong>Main errors</strong></p>
+<P>
+<table border="0" cellpadding="3" cellspacing="3">
+<tr><td><font face="arial" size="-1">MFS_ERR_NO	</td>
+<td><font face="arial" size="-1">Normal termination</td></tr>
+<tr><td valign="top"><font face="arial" size="-1">MFS_ERR_FATAL		</td>
+<td><font face="arial" size="-1">File open error
+<br>The file is not opened.</td></tr>
+<tr><td valign="top"><font face="arial" size="-1">MFS_ERR_DEVICE</td>
+<td><font face="arial" size="-1">Device error
+<br>An error occurred in an internally called Leo function.
+<br>Since a Leo function error is stored in the variable mfsError, check this variable to perform processing.</td></tr>
+
+<tr><td valign="top"><font face="arial" size="-1">MFS_ERR_PROTECT	</td>
+<td><font face="arial" size="-1">Write protected
+<br>The file attribute is write protected, or the volume attribute is write protected, or the parent directory is write protected.</td></tr></table>
+
+
+<hr>
+</body>
+</html>

@@ -1,0 +1,72 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits
+MAP- added revisions, links>
+<TITLE>osVoiceStopReadData</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+<font style="font-size: 12pt"><b>osVoiceStopReadData</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p><i>Forcibly stops voice recognition processing by the Voice Recognition System</p></i>
+</P>
+<P>
+<h3>Syntax</h3>
+</P>
+<P>
+#include &lt;ultra64.h&gt;     /* <A HREF="../../header/ultra64.htm">ultra64.h</A> */
+</P>
+<P>
+s32 osVoiceStopReadData(OSVoiceHandle *hd);
+</P>
+<P>
+<h3>Description</h3>
+</P>
+<P>
+The <tt>osVoiceStopReadData</tt> function is for forcibly stopping recognition processing once recognition by the Voice Recognition System has been started. 
+</P>
+<P>
+hd is the Voice Recognition System control structure. The Voice Recognition System must be initialized with the <A HREF="osVoiceInit.htm">osVoiceInit</A> function before the <tt>osVoiceStopReadData</tt> function is called.
+</P>
+<P>
+The returned value is an error code. A 0 (zero) is returned when processing ends normally. If an error occurs, this function has the following error codes. 
+</P>
+<DL>
+  <DT><B>CONT_ERR_NO_CONTROLLER</B>
+  <DD>Nothing is connected to the controller port. 
+</DL>
+<DL>
+  <DT><B>CONT_ERR_DEVICE</B>
+  <DD>Something other than the Voice Recognition System is connected to the controller port. 
+</DL>
+<DL>
+  <DT><B>CONT_ERR_VOICE_NO_RESPONSE</B>
+  <DD>There was no response from the Voice Recognition System. There may be a problem with the hardware. 
+  <DD><BR><!--  -->
+  (Note)This error was reported to have occurred once in a while even with normal hardware.  Therefore, be sure to start over again with initializing the  voice recognition system when this error occurs.  <!--  -->
+</DL>
+<DL>
+  <DT><B>CONT_ERR_CONTRFAIL</B>
+  <DD>There was a data transmission failure. There is a problem in the Voice Recognition System connection. 
+</DL>
+<DL>
+  <DT><B>CONT_ERR_INVALID</B>
+  <DD>There is an error in the function call method or in the argument. This error will not occur if the function is being used correctly. 
+</DL>
+<P>
+<h3>See also</h3>
+<p><A href="osVoiceCheckWord.htm">osVoiceCheckWord</A>, <A href="osVoiceClearDictionary.htm">osVoiceClearDictionary</A>,
+<A href="osVoiceControlGain.htm">osVoiceControlGain</A>, <A href="osVoiceCountSyllables.htm">osVoiceCountSyllables</A>,
+<A href="osVoiceGetReadData.htm">osVoiceGetReadData</A>, <A href="osVoiceInit.htm">osVoiceInit</A>,
+<A href="osVoiceMaskDictionary.htm">osVoiceMaskDictionary</A>, <A href="osVoiceSetWord.htm">osVoiceSetWord</A>, and <A href="osVoiceStartReadData.htm">osVoiceStartReadData</A></p>
+</P>
+<h3>Revision History</h3>
+<p>1999/04/30  Changed Format<br>
+1999/08/04  Added (Note) to CONT_ERR_VOICE_NO_RESPONSE
+
+<br><br>
+
+</BODY>
+</HTML>

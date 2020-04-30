@@ -1,0 +1,58 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.
+  PWC- updated formatting
+-->
+<TITLE>osPfsChecker</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+<font style="font-size: 12pt"><b>osPfsChecker</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p><i>Inspects and repairs the Controller Pak's file system</i></P>
+
+<H3>Syntax</H3>
+<p><PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/os.htm">os.h</A> */
+s32 osPfsChecker(OSPfs *pfs);</CODE></PRE></p>
+
+<H3>Description</H3>
+<P>
+<tt>osPfsChecker</tt>  inspects the file management area of the Controller Pak, where it manages the file notes address. If it finds a damaged area, it attempts a repair operation. If a repair operation is performed, the status bit of the OSPfs structure pointed to by pfs is set to PFS_CORRUPTED. When this is done, data will be lost in most cases.
+</P>
+<P>
+The pfs file handle that points to the OSPfs is initialized by the <a href="osPfsInitPak.htm">osPfsInitPak</a> function. See <tt>osPfsInitPak</tt> to determine how to create this handle.
+</P>
+<P>
+Since <tt>osPfsInitPak</tt> calls <tt>osPfsChecker</tt> internally, the application programmer will not usually need to use the <tt>osPfsChecker</tt> function.
+</P>
+<P>
+If this function (<tt>osPfsChecker</tt>) is called successfully, 0 is returned. If an error occurs, one of the following error codes will be returned: 
+</P>
+<p>
+<DL>
+  <DT><B>PFS_ERR_NOPACK</B>
+  <DD>Either the Controller Pak is not inserted into the specified Controller or the Controller is not properly connected. To determine which is the case, use <a href="osContStartQuery.htm">osContStartQuery</a> or <a href="osContGetQuery.htm">osContGetQuery</a>. 
+  <BR><BR>
+  <DT><B>PFS_ERR_CONTRFAIL</B>
+  <DD>Data transfer to or from the Controller has failed. If a transfer error occurs, up to three tries will be done internally. Therefore, it is rather rare to see this error. If this error has returned, it is possible that either the Controller is not connected properly, or the Controller Pak or Controller Socket is damaged. 
+  <BR><BR>
+  <DT><B>PFS_ERR_INCONSISTENT</B>
+  <DD>There is a problem in the file system's management area. If this error is returned, either the Controller Pak is not connected properly, or the Controller Pak itself is damaged. 
+  <BR><BR>
+</DL></p>
+
+<H3>See Also</H3>
+<P>
+<A HREF="osContInit.htm">osContInit</A>, <A HREF="osContStartQuery.htm">osContStartQuery</A>, <A HREF="osContGetQuery.htm">osContGetQuery</A>, and <A HREF="osPfsInitPak.htm">osPfsInitPak</A>
+</P>
+
+<H3>Revision History</H3>
+<P>
+1999/02/01 Completely revised<br>
+1999/04/30 Changed format
+</P>
+
+</BODY>
+</HTML>

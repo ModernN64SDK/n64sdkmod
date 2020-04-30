@@ -1,0 +1,96 @@
+<HTML>
+<HEAD>
+<TITLE>nuContPakFileOpenJis</TITLE>
+</HEAD>
+
+<BODY bgcolor="#FFFFFF">
+<font face="arial" size="-1">
+
+<P>
+<FONT size="5"><b><IMG src="../nusystem2.gif" height="30" width="176">Function</b></FONT>
+
+<HR>
+<P>
+<FONT size="3"><b>nuContPakFileOpenJis</b></FONT>
+<p>
+<HR>
+<P>
+<b>Syntax</b>
+<font face="courier" size="2">
+<pre>s32 nuContPakFileOpenJis(NUContPakFile *file, u8* noteName, u8* extName, u32 mode, s32 size)</pre>
+</font>
+
+<p><b>Arguments</b>
+<font face="courier" size="2">
+<pre>
+file        Controller Pak file structure<br>
+*noteName   note name (JIS)	Terminal NULL (Converted to N64 font code 16 bytes)<br>
+*extName    extension (JIS) 	Terminal NULL (Converted to N64 font code 1 byte)<br>
+mode        specifies whether to create a new game note if no game note exists.
+            NU_CONT_PAK_CREATE    Create game note if no note exists
+            NU_CONT_PAK_NOCREATE  Do not create game note<br>
+size        size for game note when the mode is NU_CONT_PAK_CREATE. 
+            When mode is NU_CONT_PAK_NOCREATE the value is invalid.</pre>
+</font>
+
+<p><b>Return Value</b>
+<font face="courier" size="2">
+<pre>None</pre>
+</font>
+
+<p><b>Description</b>
+
+<p><i>Opens the Controller Pak game note</i>
+
+<p>This function works the same as nuContPakFileOpen, except that the note name and extension can be specified using JIS code.  The conversion from JIS code to N64 font code is performed internally.  At that time, demarcations for voiced sounds (daku-ten and handaku-ten) are converted to the corresponding 1 byte N64 font code.  For details, see the explanation for the nuContPakFileOpen function.
+
+<p><b>Errors</b>
+<p>
+<table border="1" cellspacing="1">
+    <tr>
+	<td><font face="arial" size="-1">PFS_ERR_NOPACK</font></td>
+	<td><font face="arial" size="-1">Nothing is inserted in the specified Controller.</font></td>
+    </tr>
+    <tr>
+	<td><font face="arial" size="-1">PFS_ERR_NEW_PACK</font></td>
+	<td><font face="arial" size="-1">The Controller Pak may have been changed. Please perform the Open process again.</font></td>
+    </tr>
+    <tr>
+ 	<td><font face="arial" size="-1">PFS_ERR_INCONSISTENT</font></td>
+ 	<td><font face="arial" size="-1">There is an inconsistency in the file system management area.</font></td>
+    </tr>
+    <tr>
+	<td><font face="arial" size="-1">PFS_ERR_CONTRFAIL</font></td>
+   	<td><font face="arial" size="-1">Data transfer with Controller has failed.</font></td>
+    </tr>
+    <tr>
+	<td><font face="arial" size="-1">PFS_ERR_INVALID</font></td>
+	<td><font face="arial" size="-1">Invalid parameter or the game note does not exist.</font></td>
+    </tr>
+    <tr>
+	<td><font face="arial" size="-1">PFS_DATA_FULL</font></td>
+	<td><font face="arial" size="-1">The Controller Pak does not have enough free space.</font></td>
+    </tr>
+    <tr>
+	<td><font face="arial" size="-1">PFS_DIR_FULL</font></td>
+	<td><font face="arial" size="-1">Cannot create game note since maximum number already exist.</font></td>
+    </tr>
+    <tr>
+	<td><font face="arial" size="-1">PFS_ERR_EXIST</font></td>
+	<td><font face="arial" size="-1">Cannot create game note because that game note already exists.</font></td></tr>
+</table>
+
+
+<p><b>See Also</b>
+<p><a href="nuContPakOpen.htm">nuContPakOpen</a>, <a
+href="nuContPakFileOpen.htm">nuContPakFileOpen</a>, <a
+href="nuContPakJisToN64.htm">nuContPakJisToN64</a>, and <a
+href="nuContPakN64ToJis.htm">nuContPakN64ToJis</a>
+
+<p>
+<hr>
+
+<p align="right"><a href="index.htm"><img src="../index.gif" border="0"
+width="65" height="17"></a>
+</body>
+</html>

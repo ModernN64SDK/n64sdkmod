@@ -1,0 +1,99 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<link rel=stylesheet type="text/css" HREF="../N64man.css">
+<!--
+Editors Notes:
+  JLR made reformating and copy edits.
+  PWC- updated formatting
+-->
+
+<TITLE>gDPSetConvert</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>gDPSetConvert [Macro]</H1>
+<h2>Function</h2>
+<p>gDPSetConvert<p><i>
+Sets the matrix coefficients for converting from YUV pixels to RGB</i></P>
+
+<p><b>Syntax</p></b>
+<p><PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gbi.htm">gbi.h</A> */
+gDPSetConvert(Gfx *gdl, s32 k0, s32 k1, s32 k2, s32 k3, s32 k4, s32 k5)
+gsDPSetConvert(         s32 k0, s32 k1, s32 k2, s32 k3, s32 k4, s32 k5)</CODE></PRE></p>
+
+<p><b>Arguments</p></b>
+<p><DL>
+  <DT><B>gdl</B>
+  <DD>Display list pointer.
+  <DT><B>k0</B>
+  <DD>K0 term of the YUV-RGB conversion matrix (9-bit precision, -256~255).
+  <DT><B>k1</B>
+  <DD>K1 term of the YUV-RGB conversion matrix (9-bit precision, -256~255).
+  <DT><B>k2</B>
+  <DD>K2 term of the YUV-RGB conversion matrix (9-bit precision, -256~255).
+  <DT><B>k3</B>
+  <DD>K3 term of the YUV-RGB conversion matrix (9-bit precision, -256~255).
+  <DT><B>k4</B>
+  <DD>K4 term of the YUV-RGB conversion matrix (9-bit precision, -256~255).
+  <DT><B>k5</B>
+  <DD>K5 term of the YUV-RGB conversion matrix (9-bit precision, -256~255).
+</DL></p>
+<p><b>Description</b></p>
+<p><DL>
+  <DT>Sets the matrix coefficients used to convert YUV pixels into RGB.  Conceptually, the equations are as shown below:
+  <DD>R = C0 * (Y-16) + C1 * V
+  <DD>G = C0 * (Y-16) + C2 * U - C3 * V
+  <DD>B = C0 * (Y-16) + C4 * U
+  <DD>
+<BR>
+  <DT>Color conversion in the RDP is performed via the texture filter (TF) and the color combiner (CC).<BR>
+The following calculations are executed in the TF:
+  <DD>R' = Y + K0 * V
+  <DD>G' = Y + K1 * U + K2 * V
+  <DD>B' = Y + K3 * U
+  <DD>
+<BR>
+  <DT>The following calculations are executed in the CC:
+  <DD>R = (R' - K4) * K5 + R'
+  <DD>G = (G' - K4) * K5 + G'
+  <DD>B = (B' - K4) * K5 + B'
+  <DD>
+<BR>
+  <DT>The relationships between Cn and Kn are shown below:
+  <DD>K0 = C1/C0
+  <DD>K1 = C2/C0
+  <DD>K2 = C3/C0
+  <DD>K3 = C4/C0
+  <DD>K4 = 16 + 16/(C0 - 1.0)
+  <DD>K5 = C0 - 1.0
+  <DD>
+<BR>
+  <DT>The values normally used for the conversion from YUV to RGB are shown below:
+  <DD>K0 = 175
+  <DD>K1 = -43
+  <DD>K2 = -89
+  <DD>K3 = 222
+  <DD>K4 = 114
+  <DD>K5 = 42	
+</DL>
+</p>
+<p><b>Note</b></p>
+<P>
+The CC and TF must be appropriately set when executing a color conversion.  To learn more about these settings, see <A HREF="gDPSetCombineMode.htm">gDPSetCombineMode</A> and <A HREF="gDPSetTextureConvert.htm">gDPSetTextureConvert</A>.
+</P>
+<P>
+For further details, see Sections 12.5.2 "Color Space Conversion" and 12.6 "CC: Color Combiner" in the N64 Programming Manual.
+</P>
+
+<p><b>See Also</b></p>
+<P>
+<A HREF="gDPSetCombineMode.htm">gDPSetCombineMode</A>, <A HREF="gDPSetTextureConvert.htm">gDPSetTextureConvert</A>, 
+</P>
+
+<p><b>Revision History</p></b>
+<p>02/01/99&nbsp;&nbsp;&nbsp;Completely rewritten</p>
+
+</BODY>
+</HTML>

@@ -1,0 +1,64 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<TITLE>osWritebackDCacheAll</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+<font style="font-size: 12pt"><b>osWritebackDCacheAll</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+<P>
+osWritebackDCache, osWritebackDCacheAll
+</P>
+<P>
+<i>Writes back CPU data cache lines to physical memory</i>
+</P>
+<H3>Syntax</H3>
+<PRE>
+<CODE>#include &lt;ultra64.h&gt;        /* <A href="../../header/ultra64.htm">os.h</A> */
+void osWritebackDCache(void *vaddr, s32 nbytes);
+void osWritebackDCacheAll(void);
+</CODE>
+</PRE>
+<H3>Description</H3>
+<P>
+The MIPS R4300 CPU implements an 8 Kbyte direct-mapped data cache with a line size of 16 bytes.  
+This cache uses a "write back" format.  This means that, usually data stores are done only to a cache.  When a cache miss occurs the cache is written back to memory for the first time, once the cache line is replaced.  Thus, the content of the cache and the physical memory do not always agree.  Due to this fact, if you are going to use rewritten memory you must write back the data cache content to memory.
+</P>
+<P>
+<A href="osWritebackDCache.htm">osWritebackDCache</A> function writes back all data cache lines that contain the region [<B>vaddr</B>,
+<B>vaddr</B> + <B>nbytes</B>- <B>1</B>].  The argument address <B>vaddr</B> must be a CPU virtual address, either direct mapped or mapped by way of the CPU TLB.  If <B>vaddr</B> is not aligned to the cache line boundary, and <B>nbytes</B> is not a multiple of the cache line size, a slightly larger region may be written back to memory.  
+</P>
+<P>
+<tt>osWritebackDCacheAll</tt> function writes back all cached locations to physical memory.
+</P>
+<P>
+This function is used in the situation where a direct memory access (DMA) device needs to read data in the memory, but the data is still stored in the cache.  In this case, the memory is out of date with respect to the cache, and the cache lines must be written back prior to performing the DMA operaiton. 
+</P>
+<H3>Additional Description</H3>
+<P>
+<tt>osWritebackDCacheAll</tt> function and <tt>osWritebackDCachel</tt> function do the following operations.  
+</P>
+<P>
+<tt>osWritebackDCacheAll:</tt><BR>
+Writes back data cache lines that are not invalid, and invalidates them. 
+</P>
+<P>
+<tt>osWritebackDCache:</tt><BR>
+If <B>nbytes</B> &lt; 8192  : writes back data cache lines that contain the region of [<B>vaddr</B>, <B>vaddr</B>+<B>nbytes</B>-
+<B>1</B>](does not invalidate them.)<BR>
+If <B>nbytes</B> &gt;= 8192 : writes back data cache lines that are not invalid, and invalidates them.  
+</P>
+<H3>See Also</H3>
+<P>
+<A href="osMapTLB.htm">osMapTLB</A>, <A href="osInvalDCache.htm">osInvalDCache</A>, <A href="osInvalICache.htm">osInvalICache</A>
+</P>
+<H3>Revision History</H3>
+<P>
+04/30/1999 Changed Format
+</P>
+<P>
+11/05/1999 Retranslated "Description."  Added "Additional Description." 
+</P>
+</BODY>
+</HTML>

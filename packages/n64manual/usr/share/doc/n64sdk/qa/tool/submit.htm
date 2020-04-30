@@ -1,0 +1,126 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN"
+--Editor notes-MAP- edited content 10/21/99
+PWC 2/23/00-->
+<HTML>
+<HEAD><link rel="stylesheet" type="text/css" href="../style.css">
+<TITLE>Master ROM  Submission</TITLE>
+</HEAD>
+
+<BODY>
+
+<A name="index"></A>
+<IMG src="../../gif/n64_logo2.gif" height="21" width="136">
+<h3><FONT color="#FF8000">Q&A</FONT>- Master ROM Submission</h3>
+
+
+<P>
+<TABLE border="0">
+  <TR>
+    <TD valign="top" width="50"><A href="submit.htm#01"><b>QA1</b></A></TD>
+    <TD>I don't understand the process for submitting a Master ROM</TD></TR>
+  <TR>
+    <TD valign="top" width="50"><A href="submit.htm#02"><b>QA2</b></A></TD>
+    <TD>How do I burn a program into Flash ROM?</TD></TR>
+  <TR>
+    <TD valign="top" width="50"><A href="submit.htm#03"><b>QA3</b></A></TD>
+    <TD>What are the contents of the Master ROM check?</TD></TR>
+  <TR>
+    <TD valign="top" width="50"><A href="submit.htm#04"><b>QA4</b></A></TD>
+    <TD>When I change the library to libultra_rom.a, the program abnormally terminates.</TD></TR>
+  <TR>
+    <TD valign="top" width="50"><A href="submit.htm#05"><b>QA5</b></A></TD>
+    <TD>Where is the nrdc utility?</TD></TR>
+  <TR>
+    <TD valign="top" width="50"><A href="submit.htm#06"><b>QA6</b></A></TD>
+    <TD>ROM file name extentions for versions for other countries.<IMG src="../../gif/new52.gif"></TD></TR>
+</TABLE>
+
+<HR>
+<P>
+<A name="01"><FONT  color="#FF0000"><b>Q1</b></FONT></A>
+<b> I don't really understand the procedure for submitting a Master ROM.</b>
+</P>
+<P>
+<FONT   color="#008000"><b>A1</b></FONT> Refer to the "<A href="../../info/submission/contents.html">N64 Software Submission Requirements</A>."
+</P>
+<P align="right">
+<A href="submit.htm#index">top</A>
+</P>
+<HR>
+<P>
+<A name="02"><FONT  color="#FF0000"><b>Q2</b></FONT></A>
+<b> How do I burn a program into Flash ROM?</b>
+</P>
+<P>
+<FONT  color="#008000"><b>A2</b></FONT> To burn a program into Flash ROM, it is necessary to create a master ROM image.  See "Nintendo 64 ROM Registration Instructions" in the <A href="../../info/submission/ntsc/01-04.html">N64 Software Submission Requirements</a> document. <P>
+If you want to check the operation of the Flash ROM, you can  execute the program up to makemask. The processing from Ndrc on is not necessary. <BR>
+</P>
+<P>
+Once a ROM image has been made, write it to a cartridge using a Flash Gang Writer.  The latest version of the gang writer control software <b>isf.exe</b>. <P>
+There is no host computer interface routine in the master submission library.  Since osSyncPrintf is defined as an idle function it won't generate a link error. However, since it takes a great deal of memory and processing time, remove osSyncPrintf with make option at #ifdef, etc.<BR>
+</P>
+<P align="right">
+<A href="submit.htm#index">top</A>
+</P>
+<HR>
+<P>
+<A name="03"><FONT   color="#FF0000"><b>Q3</b></FONT></A>
+<b> I am close to submitting a Master ROM. Could you please tell me the content of the master ROM check that you perform there? </b>
+</P>
+<P>
+<FONT  color="#008000"><b>A3</b></FONT> Think of the ROM check as  an operation of checking the precautions in "Programming Precautions" using special devices and equipment. 
+</P>
+<P>
+Before submitting your master ROM, carefully read the "Programming Precautions" and confirm that there isn't anything that might pose a problem.  This will reduce the possibility of an NG result. 
+</P>
+<P align="right">
+<A href="submit.htm#index">top</A>
+</P>
+<HR>
+<P>
+<A name="04"><FONT   color="#FF0000"><b>Q4</b></FONT></A>
+<b> When I switched the linked library from the debugging library (libultra_d.a, etc.) to the master submission library (libgultra_rom.a, etc.), the program malfunctioned. </b>
+</P>
+<P>
+<FONT  color="#008000"><b>A4</b></FONT> It could be that alignment of the variables that require the alignment of the DMA buffer, etc. was not performed properly.  An osError (ERR_OSPISTARTDMA_ADDR) will be generated if the alignment of the buffer in the argument in the EPi function or LeoReadWrite in the debugging library is not properly done. This check is not performed with the master submission library functions. 
+ 
+<P>
+Even when the alignment is OK in the debugging library, it is not guaranteed that the alignment of the variables will be OK in the master submission library.  Explicitly define the variable alignment. </P>
+<P>
+The comments in the source code of the N64 OS demo programs state that "individual objects are 16-bit aligned when they are linked," but this is talking about the SGI compiler, and it will be different in the case of exeGCC.  In addition, even if a variable declaration is written in the head of the file, (since the symbols don't have to be aligned in the order in which they were declared in the objects,) when multiple variables are defined, the first variables do not have to be 16-bit aligned.  Since the method of defining variables differs depending on the processing system, see the manual for the individual compiler. 
+</P>
+<P align="right">
+<A href="submit.htm#index">top</A>
+</P>
+<HR>
+<P>
+<A name="05"><FONT  color="#FF0000"><b>Q5</b></FONT></A>
+<b> I am currently in the middle of creating a Master ROM, but where can I get the "NINTENDO 64 Master Data Utility Nrdc?" </b>
+</P>
+<P>
+<FONT  color="#008000"><b>A5</b></FONT> Nrdc is supplied on a floppy disk when we contract with your company regarding N64.
+</P>
+<P align="right">
+<A href="submit.htm#index">top</A>
+<HR>
+
+<P>
+<A name="06"><FONT  color="#FF0000"><b>Q6</b></FONT></A>
+<b>Currently, I am creating a Master ROM for NOA. For submittal, the file extensions are as follows for Japan and NOA.
+
+<p>Japan: <font face=courier>UXXXX00.SRB</font><br>
+NOA: <font face=courier>UXXXX00.NUS</font>
+
+<p>Should I just rename the file and submit it as <font face=courier>UXXXX00.NUS</font> after using NCRD with <font face=courier>UXXXX00.SRB</font>?</b>
+
+<P>
+<FONT  color="#008000"><b>A6</b></FONT> You should use the overseas version of NRDC, but renaming is fine, too.
+
+<P align="right">
+<A href="submit.htm#index">top</A>
+
+
+
+<HR>
+</BODY>
+</HTML>

@@ -1,0 +1,46 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 11 - RSP Graphics Programming</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. -->
+</head>
+
+<h1>11.8 Vertex Fog State</h1>
+
+<p>Fog alters the color of objects based on their distance from the eye position.  Fog can be used to make objects blend into the background color as they get farther away.  One problem which can be fixed by fog is that when an object goes beyond the far <a href="../../keywords/index/data/graphics.htm#clipping" target="keywords">clipping</a> boundary and is clipped away it suddenly disappears.  If fog is enabled the object can be made to look more and more like the background color until, when the object reaches the far clipping plane, the object is exactly the same color as the background and no
+one notices when it disappears. </p>
+
+<p>The use of fog requires that the following steps be taken: </p>
+
+<ol>
+  <li>run in two cycle mode.
+  <li>Set the render mode to blend the fog color with the <A target="keywords" HREF="../../keywords/index/data/graphics.htm#primitive" target="keywords">primitive</a> color. 
+  <li>Set the fog position. 
+  <li>Enable fog. 
+  <li>Set the Fog Color.
+</ol>
+
+<p>For example:</p>
+
+<blockquote><pre>
+<a href="../../n64man/gdp/gDPSetCycleType.htm">gsDPSetCycleType</a>(G_CYC_2_CYCLE),    /* 2 cycle mode */
+<a href="../../n64man/gdp/gDPSetRenderMode.htm">gsDPSetRenderMode</a>(G_RM_FOG_SHADE_A,
+        G_RM_AA_ZB_OPA_SURF2),    /* blend fog in AA ZB mode */
+<a href="../../n64man/gsp/gSPFogPosition.htm">gsSPFogPosition</a>(FOG_MIN, FOG_MAX    /* set fog position */
+<a href="../../n64man/gsp/gSPSetGeometryMode.htm">gsSPSetGeometryMode</a>(G_FOG),        /* Enable fog */
+<a href="../../n64man/gdp/gDPSetFogColor.htm">gsDPSetFogColor</a>(RED,GREEN,BLUE,ALPHA),    /* set the fog color */
+</pre></blockquote>
+
+<p>FOG_MIN specifies the position where fog begins and FOG_MAX represents where fog is thickest.  Both values are integers and are <A target="keywords" HREF="../../keywords/index/data/system.htm#map">mapped</a> linearly such that 0={at the near clipping plane}, and 1000={at the far clipping plane}.  FOG_MAX is generally set to 1000 so that objects are completely "fogged out" when they hit the far plane, but not before then.  FOG_MIN is set to the position where fog starts.   A value
+of 0 will make the object slowly change to fog color as it retreats from the viewer, while a larger value (i.e., 800) will make the object clearly visible until it gets 80% of the way to the far plane where it will finally begin to "fog out." </p>
+
+<p>Note that perspective makes distant objects look *much* farther away than nearby objects.  Because of this some objects which don't appear to be very far away may be more affected by fog than expected even though the FOG_MIN value is fairly high.  To remedy this problem simply increase the FOG_MIN value until you get the desired effect.  For example if you set FOG_MIN to 500, but objects which are about midway between the far and near planes look foggier than they should, just increase the value of FOG_MIN until they look better. </p>
+
+<p>Fog works well when the horizon is a constant color (the same as the fog color).  When the horizon color is complicated (i.e., clouds, gradient colors, etc), you can make objects become transparent when they are distant.   To do this don't set the G_RM_FOG_SHADE_A render mode or the Fog color.  Just enable fog, use a transparent render mode, and swap FOG_MAX and FOG_MIN. FOG_MIN should be set to 1000 to make the object completely transparent when it is at the far clipping plane.  FOG_MAX should be a large enough value that fog has no effect until the object is farther away than any other objects are likely to be (i.e., beyond mountains and other terrain, etc.).   Because transparency is used, the <a href="../../keywords/index/data/graphics.htm#Z buffer" target="keywords">Z-buffer</a> will not keep things behind the transparent-fogged object from being hidden, so it should only be enabled for objects which are already fairly far from the viewer.  This special transparent-fog mode should be used with caution (as compared with the regular fog effect described in the preceding paragraphs which should work consistently).   </p>
+
+<p>Fog is independent of lighting and texture mapping so it may be used in conjunction with any, all, or none of these other effects. </p>
+
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+</body> </html>

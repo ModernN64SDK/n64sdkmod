@@ -1,0 +1,56 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<!--
+Editors Notes:
+  PWC- updated formatting
+-->
+<TITLE>gspLine3D</TITLE>
+</HEAD>
+
+<BODY bgcolor="#FFFFFF">
+
+<H1>gspLine3D</H1>
+<P>
+<i>Changed to the high compatible L3DEX microcode</i>
+</P>
+<H2>Function</H2>
+<P>
+<STRONG>gspLine3D, gspLine3D.dram</STRONG>
+</P>
+<P>
+<i>High-quality 3D line RSP microcode</i>
+</P>
+<H2>Description</H2>
+<P>
+This is optimized, high-quality, completely functional, and 3D line RSP microcode. It supports 3D clipping, matrix stack, and gouraud shading.
+</P>
+<P>
+The DRAM version of the microcode directs the output (RDP display list) to a memory buffer (DRAM), not to the RDP.
+</P>
+<P>
+All the process is performed with high accuracy to create high-quality images.
+</P>
+<H2>GBI</H2>
+<P>
+All <A href="../gsp/gSP1Triangle.htm">gSP1Triangle</A> commands create the three edges of the triangles to be drawn. Please note, when drawing two triangles next to each other, both shared edges are drawn. So, this takes additional time for processing. The command (<A href="../gsp/gSP1Triangle.htm">gSP1Triangle</A>) is not efficient, so line microcode should be used only for debugging.
+</P>
+<H2>Performance</H2>
+<P>
+The calculation for line attributes is dealt with by using vectors efficiently so that the load when using gouraud shading attributes can be ignored when generating other attributes.
+</P>
+<H2>Default RDP state</H2>
+<P>
+The default RDP state is same as the default state written in <A href="gspFast3D.htm">gspFast3D</A>. 
+</P>
+<H2>Known Issue</H2>
+<P>
+None
+</P>
+<H2>See Also</H2>
+<P>
+<A href="gspFast3D.htm">gspFast3D</A>, <A href="gspTurbo3D.htm">gspTurbo3D</A>, <A href="../os/osSpTaskStart.htm">osSpTaskStart</A>, <A href="../gsp/gSPLine3D.htm">gSPLine3D</A>
+</P>
+</BODY>
+</HTML>

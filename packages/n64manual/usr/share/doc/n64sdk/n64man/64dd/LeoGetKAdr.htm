@@ -1,0 +1,70 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Author's Comments: MAP created file 9/28/99>
+<title>LeoGetKAdr</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>LeoGetKAdr</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p>LeoGetKAdr, LeoGetAAdr, LeoGetAAdr2</p>
+
+<p><i>Obtains the storage offset address for a character</i><br>
+</p>
+
+<h3>Syntax</h3>
+
+<pre>
+#include&lt;PR/leo.h&gt;     /* <A HREF="../../header/leo.htm">leo.h</A> */
+
+int LeoGetKAdr(int <u>sjis</u>);
+int LeoGetAAdr(int code, int *<u>dx</u>, int *<u>dy</u>, int *<u>cy</u>);
+int LeoGetAAdr2(int ccode, int *<u>dx</u>, int *<u>dy</u>, int *<u>cy</u>);</pre>
+
+<h3>Description</h3>
+
+<p>A variety of different kanji and ASCII character fonts are held in the mask ROM (DDROM) in the N64 Disk Drive. The application programmer can use these three functions to get the storage address of the desired character.
+<br>
+</p>
+
+<p><tt>LeoGetKAdr</tt> gets the storage offset address for a kanji character specified by the shift-JIS code in the <b>sjis</b> argument.<br>
+</p>
+
+<p>The shift-JIS codes take values with the lower two digits ranging 0x40-0x7e and 0x80-0xfc in hexiadecimal values. In "APPENDIX B: Drive-built-in Font Data" of the 64DD Programming Manual, the table that corresponds to values with the lower two digits 0x7f, 0xfd, 0xfe, and 0xff in hexiadecimal values left blank, which doesn't indicate a blank character. Those blanks mean no corresponding characters to the codes are provided. It is not guaranteed that a specific character is displayed if these codes are specified.<br>
+
+Use code 0x8140 for a blank character.<br>
+</p>
+
+<p>An error value -1 will be returned when a value out of the range of 0x8140 to 0x9872 is specified for <b>sjis</b>.
+</p>
+
+<p><a href="LeoGetAAdr.htm">LeoGetAAdr</a> gets the storage offset address for an ASCII character for the character information data specified by the <b>code</b> argument. The <b>dx</b> argument specified the character width, <b>dy</b> the height, and <b>cy</b> the alignment. 
+An error value of -1 will be returned when a value out of the range of 0 to 0x907 is specified for code.  See "APPENDIX B: Drive-built-in Font Data" of the 64DD Programming Manual for information regarding which character code specifically corresponds to which character.<br>
+</p>
+
+<p><a href="LeoGetAAdr2.htm">LeoGetAAdr2</a> gets the storage offset address for a ASCII character for the character information data specified by the <b>code</b> argument. The <b>dx</b> argument specified the character width, <b>dy</b> the height, and <b>cy</b> the alignment.  Character Information data can be obtained from the <a href="64ddtool/asccode.htm">asccode</a> tool.
+</p>
+
+<p><tt>LeoGetAAdr</tt> links with all the data tables regarding characters. <tt>LeoGetAAdr2</tt> can be the faster way to go if your use of characters is limited in a game. Using <tt>LeoGetAAdr2</tt> can make the size smaller. It is better to use <tt>LeoGetAAdr</tt> if your game uses all of the characters as is the case, for example, when the game user is presented with a menu of characters to input their name.
+<br>
+</p>
+
+<p>The term "offset" refers to the offset from the font portion of the DDROM. You must add DDROM_FONT_START to it in order to make the number refer to the offset from the start (top) of the DDROM. After adding DDROM_FONT_START, pass the resulting number to the <a href="../os/osEPiStartDma.htm">osEPiStartDma</a> function.
+<br>
+</p>
+
+<p>To learn more about the meaning of the <b>dx</b>, <b>dy</b>, and <b>cy</b> arguments, see the "Font Data" section of the 64DD Programming Manual.
+</p>
+
+<h3>See Also</h3>
+
+<p><a href="LeoCreateLeoManager.htm">Leo*CreateLeoManager</a>,
+<a href="64ddtool/asccode.htm">asccode</a></p>
+<h3>Revision History</h3>
+<p>04/30/1999  Changed Format</p>
+<br><br>
+
+</body>
+</html>

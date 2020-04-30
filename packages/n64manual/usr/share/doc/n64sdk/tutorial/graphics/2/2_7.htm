@@ -1,0 +1,56 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Graphics-CHAPTER 2  Adding Color to a Model</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/22/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<font style="font-size:12pt"><B>2.7  Combine Mode & Rendering Mode</B></FONT>
+<br>
+<P>
+ As we explained in the previous section, you need to set the geometry mode for each color you add, but that is not sufficient.  You also need to be aware of the RDP settings.  However, this is a very complex topic, so here we will only explain the procedure for doing the settings, and will be covered in later parts of the tutorial, starting with Chapter 4.<br><br>
+
+     One of the things you need to set in the RDP is the combine mode.  You set the appropriate mode using the gDPSetCombineMode macro.<br><br>
+     For example, to add color using primitive color (in other words, not using shading), you would instruct the RDP to conduct rendering using primitive color as follows:
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=5><TR>
+	<TD NOWRAP COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE><B>List 2-6</B>
+</TR><TR>
+	<TD NOWRAP BGCOLOR="666666" WIDTH="4" ALIGN=LEFT VALIGN=TOP><HR NOSHADE SIZE=0></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>
+<FONT COLOR="#000080"><PRE><CODE>  gDPSetCombineMode(glistp++, G_CC_PRIMITIVE, G_CC_PRIMITIVE);
+</CODE></PRE></FONT>
+	</TD>
+</TR></TABLE>
+<P>
+On the other hand, if you want to use a shading method (vertex color or lighting), you would set the mode as follows to render based on shading:
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=5><TR>
+	<TD NOWRAP COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE><B>List 2-7</B>
+</TR><TR>
+	<TD NOWRAP BGCOLOR="666666" WIDTH="4" ALIGN=LEFT VALIGN=TOP><HR NOSHADE SIZE=0></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>
+<FONT COLOR="#000080"><PRE><CODE>  gDPSetCombineMode(glistp++, G_CC_SHADE, G_CC_SHADE);
+</CODE></PRE></FONT>
+	</TD>
+</TR></TABLE>
+<P>
+  Another essential RDP mode is the so-called rendering mode.  At the present time, the same rendering mode can be used by all three coloring methods.
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=5><TR>
+	<TD NOWRAP COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE><B>List 2-8</B>
+</TR><TR>
+	<TD NOWRAP BGCOLOR="666666" WIDTH="4" ALIGN=LEFT VALIGN=TOP><HR NOSHADE SIZE=0></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>
+<FONT COLOR="#000080"><PRE><CODE>  gDPSetRenderMode(glistp++, G_RM_OPA_SURF, G_RM_OPA_SURF2);
+</CODE></PRE></FONT>
+	</TD>
+</TR></TABLE>
+<P>
+ The explanation for rendering mode is also rather lengthy, so it will be explained gradually from Chapters 5 through 7.
+</P>
+</BODY>
+</HTML>

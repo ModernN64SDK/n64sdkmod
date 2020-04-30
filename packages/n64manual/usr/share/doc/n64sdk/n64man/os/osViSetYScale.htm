@@ -1,0 +1,62 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.>
+<TITLE>osViSetYScale</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>osViSetYScale<FONT size="+0"> [Function]</FONT></H1>
+
+<h3>Function</h3>
+
+<p>osViSetYScale</p>
+<P>
+<i>Set the Y scale for VI</i>
+</P>
+<H3>Syntax</H3>
+<p><PRE><CODE>#include &lt;ultra64.h&gt;        /* <A href="../../header/os.htm">os.h</A> */
+void osViSetYScale(f32 yscale);</CODE></PRE></p>
+
+<H3>Arguments</H3>
+<p><DL>
+  <DT><B>yscale</B>
+  <DD>Coefficient for Y scale processing
+</DL></p>
+<H3>Return Value</H3>
+<P>
+None.
+</P>
+<H3>Description</H3>
+<P>
+This function sets the enlargement ratio in the vertical direction.  The number of pixels actually rendered are displayed enlarged 1/<B>yscale</B> times.  <B>yscale</B> can be specified in the range of 0.05~1.00.
+Use Y scale processing only in low-resolution non-interlaced modes, such as LAN1, LAN2, LPN1, and LPN2. 
+</P>
+<P>
+osViSetYScale is traditionally used when transplanting a program that was created in NTSC mode to PAL.  If the VI mode is just changed to PAL when transplanting to PAL, the top and bottom of the screen get cut off.  <BR>
+The simplest way to display the full screen is to stretch the screen vertically by executing the following command. <BR>
+</P>
+<P>
+osViSetYScale(0.833);
+</P>
+<P>
+However, in this case, the screen will be slightly more blurry than in the NTSC mode due to enlargement processing. <BR>
+(Full-screen display can be accomplished without using this function if the FPAL mode is used, but this requires extra rendering of the additional lines.)
+</P>
+<H3>Precautions</H3>
+<P>
+Y scale processing is disabled when <A href="osViSetMode.htm">osViSetMode</A> is executed. <BR>
+In addition, when the Y scale processing coefficient (<B>yscale</B>) is set to value other than 1.0, be sure to return it to 1.0 when a PreNMI event occurs or before executing <A href="osViBlack.htm">osViBlack</A>. 
+</P>
+<H3>See Also</H3>
+<P>
+<A href="osViBlack.htm">osViBlack</A>, <A href="osViExtendVStart.htm">osViExtendVStart</A>, <A href="osViGetCurrentMode.htm">osViGetCurrentMode</A>, and <A href="osViSetXScale.htm">osViSetXScale</A>
+</P>
+<H3>Revision History</H3>
+<P>
+02/01/99  Completely rewritten. 
+</P>
+</BODY>
+</HTML>

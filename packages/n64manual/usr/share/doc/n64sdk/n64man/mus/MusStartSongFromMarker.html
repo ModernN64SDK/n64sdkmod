@@ -1,0 +1,72 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../n64man.css">
+<title>MusStartSongFromMarker()</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check-->
+</head>
+
+<h1>MusStartSongFromMarker()</h1>
+
+<h2>Syntax</h2>
+
+<pre>
+musHandle MusStartSongFromMarker(void *addr, int marker);
+</pre>
+
+<h2>Arguments</h2>
+
+<dl>
+  <dt><b>addr</b>
+  <dd>the address of binary song data 
+  <dt><b>marker</b>
+  <dd>the marker number to start from 
+</dl>
+
+<h2>Description</h2>
+
+<p>It starts the binary song located at the specified address from the specified marker. The song data must be 32-bit aligned to allow for the pointers within the data to be accessed. The song started will use the default sample bank unless an override has been set with the <a href="MusPtrBankSetSingle.html">MusPtrBankSetSingle()</a> function. If a sample bank override has been specified, this function will use it and then clear the override.</p>
+
+<p>The address of the song supplied in addr must be 32-bit aligned.</p>
+
+<p>The marker value must be in the range 0 to 255 and be located in the specified song. If the marker is not found in the specified song, this function may not return a value , and will have unpredictable results.</p>
+
+<p>When this function is called for a new song, the song data is modified to reflect the song's base address (a list of offsets inside the song data are converted to pointers), Therefore to move this song to a new address, the original data must be reacquired.
+</p>
+
+<h2>Return Value</h2>
+
+<p>Sound handle value.</p>
+
+<h2>Example</h2>
+
+<pre>void GameSongCallback(musHandle handle, int marker)
+{
+  if (handle==gamesong_handle)
+    gamesong_position = marker;
+}
+
+void GameSongStart(void)
+{
+  gamesong_position = 0;
+  gamesong_handle = MusStartSongFromMarker(&amp;song_data, 1);
+  <a href="MusSetMarkerCallback.html">MusSetMarkerCallback</a>(GameSongCallback);
+}
+</pre>
+
+<h2>See Also</h2>
+<p>
+<a href="MusSetMarkerCallback.html">MusSetMarkerCallback()</a>,
+<a href="MusStartSong.html">MusStartSong()</a>,
+<a href="MusHandleAsk.html">MusHandleAsk()</a>,
+<a href="MusHandleSetFreqOffset.html">MusHandleSetFreqOffset()</a>,
+<a href="MusHandleSetPan.html">MusHandleSetPan()</a>,
+<a href="MusHandleSetVolume.html">MusHandleSetVolume()</a>,
+<a href="MusHandleStop.html">MusHandleStop()</a>,
+<a href="MusSetMasterVolume.html">MusSetMasterVolume()</a>,
+<a href="MusAsk.html">MusAsk()</a>,
+<a href="MusStop.html">MusStop()</a>
+</p>
+
+</body>
+</html>

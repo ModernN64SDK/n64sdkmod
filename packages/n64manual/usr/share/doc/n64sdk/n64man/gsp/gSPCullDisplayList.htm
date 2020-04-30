@@ -1,0 +1,155 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.>
+<TITLE>gSPCullDisplayList</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>gSPCullDisplayList [Macro]</H1>
+
+<p><b>Function</b></p>
+
+<p>gSPCullDisplayList</p>
+<P>
+<i>Does volume culling</i>
+</P>
+<p><b>Syntax</b></p>
+<p>
+<PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gbi.htm">gbi.h</A> */
+gSPCullDisplayList(Gfx *gdl, u32 v0, u32 vn)
+gsSPCullDisplayList(         u32 v0, u32 vn)</CODE></PRE></p>
+
+<p><b>Arguments</b></p>
+<p>
+<DL>
+  <DT><B>gdl</B>
+  <DD>the display list pointer.
+  <DD> 
+  <DT><B>v0</B>
+  <DD>the index of first vertex to check (v0 &lt; vn)
+	<TABLE BORDER="1" CELLSPACING="0" CELLPADDING="3">
+	<TR>
+	<TD NOWRAP ALIGN="left" VALIGN="middle">
+		F3DEX<BR>
+		F3DEX.NoN<BR>
+		F3DLX<BR>
+		F3DLX.NoN<BR>
+		L3DEX</TD>
+	<TD NOWRAP ALIGN="left" VALIGN="middle">0~31</TD>
+	</TR>
+	<TR>
+	<TD NOWRAP ALIGN="left" VALIGN="middle">F3DLX.Rej</TD>
+	<TD NOWRAP ALIGN="left" VALIGN="middle">0~63</TD>
+	</TR>
+	<TR>
+	<TD NOWRAP ALIGN="left" VALIGN="middle">F3DLP.Rej</TD>
+	<TD NOWRAP ALIGN="left" VALIGN="middle">0~79</TD>
+	</TR>
+	</TABLE>
+<BR>
+* For the F3DEX2 microcode group (F3DEX2, F3DLX2, F3DLP2, and L3DEX2), the values are as follows:
+	<TABLE BORDER="1" CELLSPACING="0" CELLPADDING="3">
+	<TR>
+	<TD NOWRAP ALIGN="left" VALIGN="middle">
+		F3DEX2<BR>
+		F3DEX2.NoN<BR>
+		F3DLX2<BR>
+		F3DLX2.NoN<BR>
+		L3DEX2</TD>
+	<TD NOWRAP ALIGN="left" VALIGN="middle">0~31</TD>
+	</TR>
+	<TR>
+	<TD NOWRAP ALIGN="left" VALIGN="middle">F3DEX2.Rej<BR>F3DLX2.Rej</TD>
+	<TD NOWRAP ALIGN="left" VALIGN="middle">0~63</TD>
+	</TR>
+	</TABLE>
+  <BR>
+  <DT><B>vn</B>
+  <DD>the index of last vertex check (vn &gt; v0)
+	<TABLE BORDER="1" CELLSPACING="0" CELLPADDING="3">
+	<TR>
+	<TD NOWRAP ALIGN="left" VALIGN="middle">
+		F3DEX<BR>
+		F3DEX.NoN<BR>
+		F3DLX<BR>
+		F3DLX.NoN<BR>
+		L3DEX</TD>
+	<TD NOWRAP ALIGN="left" VALIGN="middle">0~31</TD>
+	</TR>
+	<TR>
+	<TD NOWRAP ALIGN="left" VALIGN="middle">F3DLX.Rej</TD>
+	<TD NOWRAP ALIGN="left" VALIGN="middle">0~63</TD>
+	</TR>
+	<TR>
+	<TD NOWRAP ALIGN="left" VALIGN="middle">F3DLP.Rej</TD>
+	<TD NOWRAP ALIGN="left" VALIGN="middle">0~79</TD>
+	</TR>
+	</TABLE>
+<BR>
+* F3DEX2 microcode group (F3DEX2, F3DLX2, F3DLP2, and L3DEX2), the values are as follows:
+	<TABLE BORDER="1" CELLSPACING="0" CELLPADDING="3">
+	<TR>
+	<TD NOWRAP ALIGN="left" VALIGN="middle">
+		F3DEX2<BR>
+		F3DEX2.NoN<BR>
+		F3DLX2<BR>
+		F3DLX2.NoN<BR>
+		L3DEX2</TD>
+	<TD NOWRAP ALIGN="left" VALIGN="middle">0~31</TD>
+	</TR>
+	<TR>
+	<TD NOWRAP ALIGN="left" VALIGN="middle">F3DEX2.Rej<BR>F3DLX2.Rej</TD>
+	<TD NOWRAP ALIGN="left" VALIGN="middle">0~63</TD>
+	</TR>
+	</TABLE>
+</DL></p>
+<p><b>Description</b></p>
+<P>
+This macro measures whether or not the viewing volume and bounding volume intersect. If the bounding volume of an object is completely outside of the viewing volume, this function operates like the <A HREF="gSPEndDisplayList.htm">gSPEndDisplayList</A> macro, and the remaining portion of the display list is skipped. 
+</P>
+<P>
+The vertices of the bounding volume form a complete boundary around the object to be culled. Although normally eight vertices are used as the object bounding cube, any number of vertices can be used within the allowable range. These bounding vertices are specified before this macro with <A HREF="gSPVertex.htm">gSPVertex</A> and can be placed anywhere in the vertex buffer. 
+</P>
+<P>
+
+<B>v0</B> and <B>vn</B> indicate the first and last index within the bounding volume. The bounding volume vertices can be the same as the object vertices, but whatever the case the entire object must be contained in the bounding volume. 
+</P>
+<P>
+For details, please see Section 11.6.4 "Volume Culling" in the N64 Online Programming Manual. 
+</P>
+
+<p><b>Note</b></p>
+<P>
+Make sure that <B>v0</B> and <B>vn</B> satisfy the relationship (<B>v0</B> &lt; <B>vn</B>). 
+</P>
+<P>
+To load the bounding volume vertices only for use by this macro, set the RSP rendering state lighting to OFF so the lighting calculation is not performed when the vertices are loaded. 
+</P>
+<P>
+Basically, not much processing time is required for execution of this command, other than for bounding volume vertex transformations. The RSP geometry engine maintains the various clipping codes inside the vertex buffer. This macro performs culling by simply using those clipping codes. Also, it is not affected by <A HREF="gSPClipRatio.htm">gSPClipRatio</A>; the clipping volume becomes the viewing volume defined by the projection matrix and the viewport.
+</P>
+<p><b>Comment</b></p>
+<P>
+To use this macro properly, the properties of the object must be carefully considered. For example, if level ground is always visible, then there is no need to use this macro. But the macro is extremely effective for objects that perform complex movements, such as when a complicated character or viewing volume enters or leaves. 
+</P>
+
+<p><b>Example</b></p>
+<P>
+Volume culling of an object with a cubic bounding volume stored in the 8-vertex array "bound_vtx" can be performed as follows: 
+<PRE><CODE>gSPVertex(glist++, bound_vtx, 8, 0);    /* Load vertex indices 0~8 */
+<B>gSPCullDisplayList</B>(glist++, 0, 7);    /* Cull using vertices 0~7 */
+</CODE></PRE>
+</P>
+<p><b>See Also</b></p>
+<P>
+<A HREF="gSPVertex.htm">gSPVertex</A>
+</P>
+<p><b>Revision History</b></p>
+<P>
+02/01/99  Entirely revised.
+</P>
+</BODY>
+</HTML>

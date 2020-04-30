@@ -1,0 +1,58 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Graphics-Chapter 8  Advanced Rendering Techniques</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/23/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<font style="font-size:12pt"><B>8.3  The Combiner in 2-Cycle Mode</B></FONT>
+<br>
+<P>
+ First we will start with an example where the Combiner is used for 2 cycles.  We will try interpolating the color using one texture and shade color as well as noise as the sources.
+     There are many ways of combining these source colors, but for this example, we will multiply the shade color by the noise component, which is the same calculation made in the gfx4.c sample program when __NOISE__ is defined.<br><br>
+     We will perform this calculation in the first cycle.  Then, in the second cycle, we'll use the result of this calculation and the texel as the sources, and interpolate both based on the appropriate coefficient.  When you define __INTERPOLATION__ on line 45 of gfx8.c, the environment color register is used for the interpolation coefficient, and the combine mode is set as shown below:
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=5><TR>
+	<TD NOWRAP COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE><B>List 8-1</B></FONT>
+</TR><TR>
+	<TD NOWRAP BGCOLOR="666666" WIDTH="4" ALIGN=LEFT VALIGN=TOP><HR NOSHADE SIZE=0></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>
+<FONT COLOR="#000080"><PRE><CODE>  /* Set RDP cycle type */
+  gDPSetCycleType(glistp++, G_CYC_2CYCLE);
+
+  /* Enable textures, set scaling parameters */
+  gSPTexture(glistp++, 0x8000, 0x8000, 0, G_TX_RENDERTILE, G_ON);
+
+  gDPSetEnvColor(glistp++, interp, interp, interp, 255);
+  gSPSetGeometryMode(glistp++, G_ZBUFFER | G_SHADE | G_SHADING_SMOOTH 
+                                                   | G_CULL_BACK);
+  /* Color interpolation using 2-Cycle mode  */
+  gDPSetCombineLERP(glistp++, NOISE,      0,       SHADE,      0,
+                                  0,      0,           0,      0,
+                           COMBINED, TEXEL1, ENVIRONMENT, TEXEL1,
+                                  0,      0,           0,      1);
+</CODE></PRE></FONT>
+	</TD>
+</TR></TABLE>
+<P>
+ The 10th argument in gDPSetCombineLERP is the COMBINED macro, which indicates the value calculated in the first cycle.  In the second cycle, the value in the environment color  register is used as the coefficient to interpolate the result of the first cycle and the texel.<br><br>
+
+     There are two points to note here.  First, the Color Combiner coefficient in the second cycle is not TEXEL0 but TEXEL1.  In other words, in the second cycle, the texture set as the primitive tile is referenced as TEXEL1.  Second, in this sample program, transparent polygons are not rendered, so no alpha value is interpolated and the output from the second cycle is 1.<br><br>
+
+     In this example, the Blender functions are only active for one cycle.  For this reason, in the part where you set the rendering mode (line 340), the second argument gets G_RM_NOOP, and nothing is blended in the first cycle.
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=5><TR>
+	<TD NOWRAP COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE><B>List 8-2</B>
+</TR><TR>
+	<TD NOWRAP BGCOLOR="666666" WIDTH="4" ALIGN=LEFT VALIGN=TOP><HR NOSHADE SIZE=0></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>
+<FONT COLOR="#000080"><PRE><CODE>  /* Opaque - anti-aliasing - Z buffering  */
+  gDPSetRenderMode(glistp++, G_RM_NOOP, G_RM_AA_ZB_OPA_SURF2);
+</CODE></PRE></FONT>
+	</TD>
+</TR></TABLE>
+</BODY>
+</HTML>

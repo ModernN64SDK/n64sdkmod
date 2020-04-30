@@ -1,0 +1,49 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 7 - Operating System Functionality</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check.-->
+</head>
+
+<h1>7.6 Thread Functions</h1>
+
+<p>There are eight functions associated with <A target="keywords" HREF="../../keywords/index/data/system.htm#thread">threads</A>. Please refer to the reference pages for specifics about the arguments, return values, and behavior of these functions. </p>
+
+
+<dl>
+  <dt><a href="../../n64man/os/osCreateThread.htm"><strong>osCreateThread</strong></a><br>
+  <dd>This function is called once per thread to notify the system that a thread is to be created.  Calling this function  initializes its thread data structure with the starting program counter, initial <A target="keywords" HREF="../../keywords/index/data/system.htm#stack">stack</A> pointer, and other information.  When the initialization of TCB (Thread Control Block) is completed, the state of the thread becomes waiting.  Furthermore, it is necessary to call <a href="../../n64man/os/osStartThread.htm">osStartThread</a> to make the thread runnable.<br>
+</dl> 
+<dl>
+  <dt><a href="../../n64man/os/osDestroyThread.htm"><strong>osDestroyThread</strong></a>
+  <dd>This function removes a thread from the system. Once called, the thread cannot be run any more. 
+</dl>
+<dl>
+  <dt><a href="../../n64man/os/osYieldThread.htm"><strong>osYieldThread</strong></a>
+  <dd>This function notifies the operating system that the running thread wishes to yield the CPU to any other thread with higher or equal priority. If all other runnable threads have lower priority, the running thread will continue. (In practice, it is not possible for a runnable thread to have higher priority than the running thread.) 
+</dl>
+<dl>
+  <dt><a href="../../n64man/os/osStartThread.htm"><strong>osStartThread</strong></a>
+  <dd>This function call makes a thread runnable. If the specified thread is of higher priority than the running thread, the running thread will yield the CPU. If not, the running thread will continue and the thread specified by <a href="../../n64man/os/osStartThread.htm">osStartThread</a> function will wait until it becomes the highest priority thread in the system.  (Note that it is different from the waiting state.)
+</dl>
+<dl>
+  <dt><a href="../../n64man/os/osStopThread.htm"><strong>osStopThread</strong></a>
+  <dd>This function changes the state of a thread to stopped, after which the thread will not be able to run until <a href="../../n64man/os/osStartThread.htm">osStartThread</a> function is called again.  If the thread waiting on a message queue is stopped, it will be removed from that queue. 
+</dl>
+<dl>
+  <dt><a href="../../n64man/os/osGetThreadId.htm"><strong>osGetThreadId</strong></a>
+  <dd>This function returns the ID of a thread assigned when the thread was created. It is used only by the debugger. 
+</dl>
+<dl>
+  <dt><a href="../../n64man/os/osSetThreadPri.htm"><strong>osSetThreadPri</strong></a>
+  <dd>This function changes the priority of a thread. If the running thread is no longer the highest-priority runnable thread in the system as a result of this change, it will yield the CPU to the new highest-priority thread. 
+</dl>
+<dl>
+  <dt><a href="../../n64man/os/osGetThreadPri.htm"><strong>osGetThreadPri</strong></a>
+  <dd>This function returns the running thread's priority level. 
+</dl>
+
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+</body> </html>

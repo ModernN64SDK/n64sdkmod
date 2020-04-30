@@ -1,0 +1,152 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 14 - Texture Rectangles (Hardware Sprites)</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. -->
+</head>
+
+<h1>14.4 Multi-Tile Effects</h1>
+
+<p>There are eight tile descriptors available in the tile memory of the RDP. These tile descriptors contain information about the type and size of tiles and where these tiles are located in TMEM. In two-cycle mode, texture from two tiles is available for each pixel. Many effects are possible by manipulation of tile descriptors and combining of the textured pixels. </p>
+
+<p>In the <a href="../../n64man/gdp/gDPLoadTexture.htm">g*DPLoadTexture*</a> commands, a simple two-tile system is used for loading and <a href="../../keywords/index/data/graphics.htm#rendering" target="keywords">rendering</a>. In this system, the G_TX_LOADTILE is used for loading a tile starting at TMEM address 0 and the tile descriptor G_TX_RENDERTILE is set up for rendering the tile. This is a
+double-buffering scheme which avoids having to insert tile sync commands in the load macro. Notice that since each tile is loaded at TMEM address 0 and the G_TX_RENDERTILE is always used for rendering, we cannot use these macro for loading multiple tiles into TMEM.</p>
+
+<p>In order to allow the user to manage TMEM for multi-tile effects, the load macros g*DPLoadMultiTile and g*DPLoadMultiBlock were created. These macros allow the user to specify the TMEM address of the tile and the tile descriptor number to use when rendering
+this tile. </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="01"><h2>14.4.1 Simple Morph</h2></a>
+
+<p>One simple use of two tiles is to linearly interpolate, using a parameter to indicate the blend amount, between the tiles. A register value in the color combiner, such as primitive alpha, can be used as the &QUOT;blender&QUOT; to blend between the two textures as shown in Example 14-22.</p>
+
+<dl>
+  <dt><a name="e14-22"><strong>Example 14-22 Interpolate Between Two Tiles</strong></a>
+  <dd><blockquote><pre>
+#define MY_MORPH TEXEL1,TEXEL0,PRIMITIVE_ALPHA,TEXEL0,
+        TEXEL1,TEXEL0,PRIMITIVE,TEXEL0
+<a href="../../n64man/gdp/gDPSetCycleType.htm">gsDPSetCycleType</a>(G_CYC_2CYCLE),
+<a href="../../n64man/gdp/gDPSetTextureLOD.htm">gsDPSetTextureLOD</a>(G_TL_TILE),
+<a href="../../n64man/gdp/gDPSetPrimColor.htm">gsDPSetPrimColor</a>(0,0,0,0,0,128),                /* 0.5 blend */
+<a href="../../n64man/gdp/gDPSetCombineMode.htm">gsDPSetCombineMode</a>(MY_MORPH,G_CC_PASS2),
+gsDPLoadMultiTile(face0,
+        0,                          /* TMEM address in 64-bit words */
+        G_TX_RENDERTILE,            /* tile */
+        G_IM_FMT_RGBA,G_IM_SIZ_16b,
+        32,32,
+        0,0,31,31,
+        0,
+        G_TX_NOMIRROR,G_TX_NOMIRROR,
+        G_TX_NOMASK,G_TX_NOMASK,
+        G_TX_NOLOD,G_TX_NOLOD),
+gsDPLoadMultiTile(face1,
+        256,                        /* TMEM address in 64-bit words */
+        G_TX_RENDERTILE+1,          /* tile */
+        G_IM_FMT_RGBA,G_IM_SIZ_16b,
+        32,32,
+        0,0,31,31,
+        0,
+        G_TX_NOMIRROR,G_TX_NOMIRROR,
+        G_TX_NOMASK,G_TX_NOMASK,
+        G_TX_NOLOD,G_TX_NOLOD),
+<a href="../../n64man/gsp/gSPTextureRectangle.htm">gsSPTextureRectangle</a>(glistp++,
+        50&lt;&lt;2,50&lt;&lt;2,82&lt;&lt;2,82&lt;&lt;2,
+        G_TX_RENDERTILE,
+        0,0,
+        1&lt;&lt;10,1&lt;&lt;10);
+      </pre></blockquote>
+</dl>
+
+<p>By making the primitive <a href="../../keywords/index/data/graphics.htm#alpha" target="keywords">alpha</a> an animation variable, a simple &QUOT;<a href="../../keywords/index/data/graphics.htm#morphing" target="keywords">morphing</a>&QUOT; effect can be achieved. 
+</p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="02"><h2>14.4.2 Smoothing Flip-Book Animations</h2></a>
+
+<p>Often <a href="../../keywords/index/data/graphics.htm#sprite" target="keywords">sprite</a> animations are a sequence of key frames which are selected at the appropriate time by some animation variable. The linear interpolation between two images as described in &QUOT;Simple Morphing&QUOT; above can be used to smoothly transit between two key frames. Imagine a series of n images in an animation selected using an animation variable frame. The integer part of frame is called frame_I and the fractional part is called frame_f. An algorithm for smoothing the sequence is described in Example 14-23. </p>
+
+<dl>
+  <dt><a name="e14-23"><strong>Example 14-23 Smoothing an Animation Sequence</strong></a>
+  <dd>
+      <ol>
+        <li>Load tiles frame_I and frame_I+1 into TMEM
+        <li>Set primitive alpha = 256 * frame_f
+        <li>Render the rectangle using MY_MORPH combiner mode
+      </ol>
+</dl>
+
+<p>The frames do not necessarily have to be related in time. For example, you could interpolate between different flame images that are randomly selected to create a fire effect. </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="03"><h2>14.4.3 Shrinking Sprites</h2></a>
+
+<p>In the previous discussion of scaling in <a href="14-01.htm#02">Section 14.1.2 &QUOT;Bilinear Filtering&QUOT;</a>, we only discussed scaling a sprite to a larger size since scaling it smaller would result in <a href="../../keywords/index/data/graphics.htm#aliasing" target="keywords">aliasing</a> effects. It is possible to effectively shrink an image by interpolating between two tiles, one of which is a half the size of the other tile. This is shown in Figure 14.4.1. Prim_lod_frac is a register in the color combiner that can be used to indicate the fractional distance between the two &QUOT;<a href="../../keywords/index/data/graphics.htm#LOD" target="keywords">LOD</a>&QUOT; of the sprite.</p>
+
+<dl>
+  <dt><a name="f14-15"><strong>Figure 14-15 Shrinking a Sprite</strong></a>
+  <dd><img alt="[Figure 14-15]" src="gif/f14-15.gif">
+</dl>
+
+<p>One of the tile descriptor parameters is the shift (see <a href="../pro13/13-04.htm#08">Section 13.4.8 &QUOT;Shift S,T&QUOT;</a>) that describes how many places to bitwise shift the tile coordinates for the primitive. This implies that one tile's size is related to the other's by some integer shift, but the tiles don't necessarily have to be power of two sizes. Example 14-24 shows the code to create a sprite that is 0.75 the size of the larger image. The user must scale the size of the rectangle primitive by the desired amount as well.</p>
+
+<dl>
+  <dt><a name="e14-24"><strong>Example 14-24 Shrinking a Sprite</strong></a>
+  <dd><blockquote><pre>
+#define MY_LOD TEXEL1,TEXEL0,PRIM_LOD_FRAC,TEXEL0,
+        TEXEL1,TEXEL0,PRIM_LOD_FRAC,TEXEL0
+<a href="../../n64man/gdp/gDPSetCycleType.htm">gsDPSetCycleType</a>(G_CYC_2CYCLE),
+<a href="../../n64man/gdp/gDPSetTextureLOD.htm">gsDPSetTextureLOD</a>(G_TL_TILE),
+<a href="../../n64man/gdp/gDPSetPrimColor.htm">gsDPSetPrimColor</a>(0,128,0,0,0,0),        /* 0.5 lod_frac */ 
+<a href="../../n64man/gdp/gDPSetCombineMode.htm">gsDPSetCombineMode</a>(MY_LOD,G_CC_PASS2),
+gsDPLoadMultiTile(face0,
+        0,                          /* TMEM address in 64-bit words */
+        G_TX_RENDERTILE,            /* tile */
+        G_IM_FMT_RGBA,G_IM_SIZ_16b,
+        32,32,
+        0,0,31,31,
+        0,
+        G_TX_NOMIRROR,G_TX_NOMIRROR,
+        G_TX_NOMASK,G_TX_NOMASK,
+        G_TX_NOLOD,G_TX_NOLOD),
+gsDPLoadMultiTile(face1,
+        256,                        /* TMEM address in 64-bit words */
+        G_TX_RENDERTILE+1,          /* tile */
+        G_IM_FMT_RGBA,G_IM_SIZ_16b,
+        16,16,
+        0,0,15,15,
+        0,
+        G_TX_NOMIRROR,G_TX_NOMIRROR,
+        G_TX_NOMASK,G_TX_NOMASK,
+        G_TX_NOLOD,G_TX_NOLOD),
+<a href="../../n64man/gsp/gSPTextureRectangle.htm">gsSPTextureRectangle</a>(glistp++,
+        50&lt;&lt;2,50&lt;&lt;2,82&lt;&lt;2,82&lt;&lt;2,
+        G_TX_RENDERTILE,
+        8&lt;&lt;5,8&lt;&lt;5,
+        1&lt;&lt;10,1&lt;&lt;10);
+      </pre></blockquote>
+</dl>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="04"><h2>14.4.4 Texture Decals</h2></a>
+
+<p>We can use the alpha of one tile to select between the <a href="../../keywords/index/data/graphics.htm#texel" target="keywords">texel</a> color of two different tiles to create a texture decal. Figure 14-16 shows an example of a flag created using <a href="../../keywords/index/data/graphics.htm#texture decal" target="keywords">texture decals</a>. The insignia of the flag has transparency around it's edges. After performing <a href="../../keywords/index/data/graphics.htm#mirror" target="keywords">mirror</a> and <a href="../../keywords/index/data/graphics.htm#wrap" target="keywords">wrap</a> once, the texture is given a <a href="../../keywords/index/data/graphics.htm#clamp" target="keywords">clamp</a>. In the color combiner, the texture alpha is used to interpolate between the flag stripes and the insignia. Where the alpha is zero, the stripes will show, where the alpha is one, the insignia will show. </p>
+
+<dl>
+  <dt><a name="f14-16"><strong>Figure 14-16 Texture Decals</strong></a>
+  <dd><img alt="[Figure 14-16]" src="gif/f14-16.gif">
+</dl>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="05"><h2>14.4.5 Interference Effects</h2></a>
+
+<p>Multiplying two textures together, especially while sliding the textures relative to each other can create interference patterns. For example, a horizontal stripe pattern multiplied by a vertical stripe pattern creates a set of bright spots at the intersection of the points. If the stripes are slid relative to each other, the points will move also. Multiplying can also be used to modulate one image with another. For example, <a href="#f14-17">Figure 14-17</a> shows a complex wave resulting from the modulation of two simple waves. </p>
+
+<dl>
+  <dt><a name="f14-17"><strong>Figure14-17 Modulation</strong></a>
+  <dd><img alt="[Figure 14-17]" src="gif/f14-17.gif">
+</dl>
+
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+</body> </html>

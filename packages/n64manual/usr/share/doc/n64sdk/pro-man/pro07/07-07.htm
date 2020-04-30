@@ -1,0 +1,101 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 7 - Operating System Functionality</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check.
+             MAP- 11/15/99 edited content, updated format-->
+</head>
+
+<H1>7.7 Exceptions and Interrupts </H1>
+
+<p>The N64 CPU uses a number of exception types.  Most share a common vector, where the operating system receives them, reads the CAUSE register, and determines which of the 16 normal causes occurred.  With the exception of the Interrupt cause (which may occur externally), all exceptions are internally generated within the CPU. For example, an attempt to fetch a word from an invalid address will generate an address error exception. </p>
+
+<P>The operating system has exception handlers for Coprocessor Unusable, Breakpoint, and Interrupt exceptions.   All other exceptions are considered to be faults and are passed to the <A target="keywords" HREF="../../keywords/index/data/system.htm#fault handler">fault handler</A>.  The fault handler stops the faulted thread, sends a <A target="keywords" HREF="../../keywords/index/data/system.htm#message">message</a> to any <A target="keywords" HREF="../../keywords/index/data/system.htm#thread">threads</A> (i.e., rmon) registered for the OS_EVENT_FAULT event, and <A target="keywords" HREF="../../keywords/index/data/system.htm#dispatch">dispatches</A> the next runnable thread from the <A target="keywords" HREF="../../keywords/index/data/system.htm#system execution queue">system run queue</A>.  If the debugger is present, a message is sent from the target to the host and the debugger (according to the request) can show you exactly where the fault occurred.  Breakpoint exceptions are also handled in this way. The debugger will stop all user threads in the event of a breakpoint or a fault. </p>
+
+<P>When an interrupt occurs, the CAUSE register is examined to see which interrupt caused the exception. N64 CPU supports eight interrupts described in the table below. </p>
+<TABLE BORDER alien="center" >
+<CAPTION><A NAME="f07-01"></A><strong>Table 7-1</strong></CAPTION>
+
+<TR>
+<TH>Name</TH>
+
+<TH>Cause</TH>
+
+<TH>Description</TH>
+</TR>
+
+<TR>
+<TD>Software 1</TD>
+
+<TD>CAUSE_SW1</TD>
+
+<TD>Software generated interrupt 1</TD>
+</TR>
+
+<TR>
+<TD>Software 2</TD>
+
+<TD>CAUSE_SW2</TD>
+
+<TD>Software generated interrupt 2</TD>
+</TR>
+
+<TR>
+<TD>RCP</TD>
+
+<TD>CAUSE_IP3</TD>
+
+<TD>RCP interrupt asserted</TD>
+</TR>
+
+<TR>
+<TD>Cartridge</TD>
+
+<TD>CAUSE_IP4</TD>
+
+<TD>A peripheral has generated an interrupt</TD>
+</TR>
+
+<TR>
+<TD>Pre-nm</TD>
+
+<TD>CAUSE_IP5</TD>
+
+<TD>User has pushed reset button on console</TD>
+</TR>
+
+<TR>
+<TD>RDB Read</TD>
+
+<TD>CAUSE_IP6</TD>
+
+<TD>Indy has read the value in the <A target="keywords" HREF="../../keywords/index/data/system.htm#RDB port">RDB port</A></TD>
+</TR>
+
+<TR>
+<TD>RDB Write</TD>
+
+<TD>CAUSE_IP7</TD>
+
+<TD>Indy has written a value to the RDB port</TD>
+</TR>
+
+<TR>
+<TD>Counte</TD>
+
+<TD>CAUSE_IP8</TD>
+
+<TD>Internal counter has reached its terminal count</TD>
+</TR>
+</TABLE>
+
+<p>If the RCP interrupts N64 CPU, then an RCP register is read to see which of the RCP interrupts is being asserted. Thus, processing RCP interrupts is a two stage process - first the cause of the CPU interrupt is determined, then the cause of the RCP interrupt is isolated. </p>
+
+<P>Normally, the Nintendo 64 game threads run with all interrupts enabled. It is possible to change the interrupt masks of the N64 CPU and RCP via a <A target="keywords" HREF="../../keywords/index/data/system.htm#system call">system call</A>. Clearly, this must be used with great caution, as disabling a critical interrupt can cause the system to <A target="keywords" HREF="../../keywords/index/data/system.htm#lock up">lock up</a> or prevent real time response. </p>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR>
+</BODY>
+</HTML>

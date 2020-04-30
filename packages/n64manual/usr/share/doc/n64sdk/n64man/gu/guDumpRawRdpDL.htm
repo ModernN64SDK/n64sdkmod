@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.>
+<title>guDumpRawRdpDL</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<h1>guDumpRawRdpDL</h1>
+
+<p><h3>Function</h3></p>
+
+<p>guParseRdpDL, guDumpRawRdpDL</p>
+
+<p><i>Prints out low-level display list in a human readable format</i></p>
+
+<p><h3>Syntax</h3></p>
+<p>
+<blockquote>
+    <pre>#include &quot;gu.h&quot;
+void guParseRdpDL(u64 *rdp_dl, u64 nbytes, u8 flags)
+void guDumpRawRdpDL(u64 *rdp_dl, u64 nbytes)</pre>
+</blockquote>
+</p>
+<p><h3>Arguments</h3></p>
+<p>
+<dl>
+    <dt><strong>rdp_dl</strong></dt>
+    <dd>Pointer to RDP display list in DRAM which is passed onto task header. For more details, see <a href="../os/osSpTaskLoad.htm">osSpTaskLoad</a><br>
+        <br>
+        </dd>
+    <dt><strong>nbytes</strong></dt>
+    <dd>Number of bytes, returned by graphics task, in RDP display list. For more details, see <a href="../os/osSpTaskLoad.htm">osSpTaskLoad</a><br>
+        <br>
+        </dd>
+    <dt><strong>flags</strong></dt>
+    <dd>The following flags are bitORed to enable a function printing out additional information on the display list. </dd>
+</dl>
+
+<blockquote>
+    <dl>
+        <dt><strong>GU_PARSERDP_VERBOSE</strong></dt>
+        <dd>The function prints out the additional information on the display list. It is usually used for debugging.<br>
+            <br>
+            </dd>
+        <dt><strong>GU_PARSERDP_PRAREA</strong></dt>
+        <dd>The function prints out information on the area/number of spans for each primitive.<br>
+            <br>
+            </dd>
+    </dl>
+</blockquote>
+</p>
+<p><h3>Description</h3></p>
+
+<p>This function uses <a href="../tool/rmonPrintf.htm">rmonPrintf</a> to dump reality display processor (RDP) list in a human-readable format. It also detects common display list errors. Therefore, application needs to launch rmon thread before it calls the function. Area information for each primitive and the number of spans for a primitive can be printed out, depending on which option's been chosen. The types of commands are primitive, attribute, synchronous, and load commands. The number of each command type is printed out after display list dump.</p>
+
+<p>RDP display list is output in a format of graphic microcode which executes on RSP. Use proper microcode for RSP to output display list onto DRAM buffer that the user uses. It is possible to use <a href="guParseRdpDL.htm">guParseRdpDL</a> in DRAM to print out display list. And <a href="../os/osDpSetNextBuffer.htm">osDpSetNextBuffer</a> can be used to send the display list in DRAM to RDP. This enables to seperately deal with problmes that occur in application, RSP, and RDP.</p>
+
+<p><a href="guParseRdpDL.htm">guParseRdpDL</a> will detect the following conditions.
+:</p>
+
+<ul>
+    <li>color/z images not residing in the first 2M</li>
+    <li>image pointer not residing in the first 2M</li>
+    <li>image pointer not aligned accurately</li>
+    <li>failed to synchronize</li>
+    <li>incorrect primitive factor</li>
+    <li>a rectangle not scissored</li>
+</ul>
+
+<p>guDumpRawRdpDL dumps sequencial-64 bit word RDP display list in hexiadecimal values after the decimal word values.
+</p>
+
+<H3>Known Issue</H3>
+
+<p>The number of cycles needed to load a texture is not calculated in advance. Also it is not always easy to check if it synchronizes. The calculation of the triangle area may be incorrect. The predicted number of clocks doesn't include DRAM delay, cycle type, and read/modify/write mode. In other words, it is only used to obtain the summary of display list performance. 
+</p>
+
+<H3>See Also</H3>
+
+<p><a href="../tool/rmonPrintf.htm">rmonPrintf</a>, <a
+href="../os/osSpTaskLoad.htm">osSpTaskLoad</a>, and <a
+href="../os/osDpSetNextBuffer.htm">osDpSetNextBuffer</a></p>
+</body>
+</html>

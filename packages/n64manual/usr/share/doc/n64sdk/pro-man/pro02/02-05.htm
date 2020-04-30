@@ -1,0 +1,53 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 2 - Software Development Troubleshooting</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check.-->
+</head>
+
+<h1>2.5 Debugging CPU Faults </h1>
+
+<p><a href="../../n64man/tool/gdis.htm">gdis</a> disassembler is a powerful debugging aide that can help you turn a cryptic crash <A target="keywords" HREF="../../keywords/index/data/system.htm#dump">dump</A> (i.e the text that is printed in your <a href="../../n64man/tool/gload.htm">gload</a> window when your program takes
+an exception) into useful debugging information. </p>
+<p>
+For example, you can <A target="keywords" HREF="../../keywords/index/data/system.htm#disassemble">disassemble</A> the section named &QUOT;code&QUOT; (as specified in the spec file) in the &QUOT;Chrome&QUOT; example application executable as follows: 
+</p>
+
+<dl>
+  <dd><kbd>% <a href="../../n64man/tool/gdis.htm">gdis</a> -S -t .code.text letters</kbd>
+</dl>
+
+<p>Here is a portion of the output.</p>
+
+<blockquote>
+<pre>
+[ 156] 0x80200060:  3c 0e 00 ff       lui       t6,0xff
+[ 156] 0x80200064:  35 ce b0 00       ori       t6,t6,0xb000
+[ 156] 0x80200068:  af ae 00 60       sw        t6,96(sp)
+  157:     for (I=0; I&lt;sizeof(argbuf)/4; I++, argp++) {
+[ 157] 0x8020006c:  af a0 00 6c       sw        zero,108(sp)
+  158:     <a href="../../n64man/os/osPiRawReadIo.htm">osPiRawReadIo</a>((u32)argp, &amp;argbuf[I]); /* Assume no DMA */
+[ 158] 0x80200070:  8f af 00 6c       lw        t7,108(sp)
+[ 158] 0x80200074:  8f a4 00 60       lw        a0,96(sp)
+[ 158] 0x80200078:  27 b9 00 20       addiu     t9,sp,32
+[ 158] 0x8020007c:  00 0f c0 80       sll       t8,t7,2
+[ 158] 0x80200080:  0c 08 05 4c       jal       <a href="../../n64man/os/osPiRawReadIo.htm">osPiRawReadIo</a>
+[ 158] 0x80200084:  03 19 28 21       addu      a1,t8,t9
+[ 157] 0x80200088:  8f a8 00 6c       lw        t0,108(sp)
+[ 157] 0x8020008c:  8f aa 00 60       lw        t2,96(sp)
+[ 157] 0x80200090:  25 09 00 01       addiu     t1,t0,1
+[ 157] 0x80200094:  2d 21 00 10       sltiu     at,t1,16
+[ 157] 0x80200098:  25 4b 00 04       addiu     t3,t2,4
+[ 157] 0x8020009c:  af ab 00 60       sw        t3,96(sp)
+[ 157] 0x802000a0:  14 20 ff f3       bne       at,zero,0x80200070
+[ 157] 0x802000a4:  af a9 00 6c       sw        t1,108(sp)
+  159:     }
+</pre>
+</blockquote>
+
+<p>Notice that the C source is interleaved with the disassembled code, and that the PC is given in the second column. </p>
+<p>When your program crashes, you can look up the <A target="keywords"  HREF="../../keywords/index/data/system.htm#error PC">error PC</A> listed in the crash dump (it is identified as &QUOT;epc&QUOT;) to determine where the program crashed and find the corresponding line in the source/disassembly listing. </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+</body> </html>

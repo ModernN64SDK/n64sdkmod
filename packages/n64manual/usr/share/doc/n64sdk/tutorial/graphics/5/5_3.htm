@@ -1,0 +1,36 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Graphics-Chapter 5 Semi-Transparent Objects & the Alpha Value</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/23/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<font style="font-size:12pt"><B>5.3  Semi-transparent Objects and the Rendering Mode</B></FONT>
+<br>
+<P>
+ If you modified the sample program in the previous chapter and mapped with the rgba16sign1_a texture, which has some transparent parts, you would notice that the polygon does not become transparent in the way you might expect.  That is to say, if you tried to map texture data incorporating alpha value information in the same way as done with all of the sample programs up to now, you would not be able to achieve transparency effects.  This is because the rendering mode in the Blender has not been set correctly.<br><br>
+
+     In the sample programs up to now, all tasks could be accomplished by specifying G_RM_OPA_SURF for the rendering mode.  The "OPA" in this mode name stands for opaque.  This is the mode for the rendering of opaque surfaces, and transparency effects will not show up in this mode, even when you map textures that have alpha values.  That is why G_RM_XLU_SURF and G_RM_XLU_SURF2 are used as the rendering modes in the gfx5.c sample program.  The "XLU" in the mode names stands for transparent.<br><br>
+
+     We will not get into too much detail about the Blender in this chapter, but we will talk a little about the operations of the Blender so you will understand the differences between G_RM_OPA_SURF and G_RM_XLU_SURF.<br><br>
+     The Blender is a unit like the Combiner that performs linear arithmetic to mix colors.  Unlike the combining that goes on in the Combiner, the Blender takes the pixel color & alpha passed from the Combiner, and blends this with the pixel color & alpha present in the framebuffer.  Moreover, when operating in 2-Cycle mode, the Blender output from the first cycle can be fed back as input for the second cycle.
+     The smaller the alpha value output from the Combiner (or calculated in the first cycle), the more transparent the pixel, so the smaller the proportion of mixing with the pixel in the frame buffer.  Conversely, if the alpha value is large, then the pixel is opaque, so mixing is performed to replace the pixel currently in the framebuffer.<br><br> 
+     
+     Although the Blender has this important role of blending colors, the rendering mode determines what coefficients are present in the linear arithmetic and it is possible, depending on the mode, for no blending to be performed and the pixel color & alpha to be simply overwritten in the framebuffer.  The G_RM_OPA_SURF is one such mode, and when this mode is set, the pipeline color will be overwritten to the framebuffer no matter how many pixel alpha values there are.   
+     Typically, the calculation is made with the following kind of linear expression:
+</P>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>new frame buffer color =</TD>
+	</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>pixel color * 1 + framebuffer color * 0</TD>
+</TR></TABLE>
+<P>
+ That is why you cannot use the G_RM_OPA_SURF mode in programs where you want to make the most of alpha values for texture mapping like the gfx5.c sample program.  When G_RM_XLU_SURF mode is used, blending is performed in relation to alpha values, so you can achieve transparency effects without any problems.<br><br>
+
+     The various rendering modes are considered in detail in Chapters 6 and 7, so refer to these for more information.
+</P>
+</BODY>
+</HTML>

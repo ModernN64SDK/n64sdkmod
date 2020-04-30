@@ -1,0 +1,57 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.>
+<TITLE>gSPLookAtY</TITLE>
+</HEAD>
+
+<BODY bgcolor="#FFFFFF">
+
+<H1>gSPLookAtY</H1>
+
+<p><b>Function</b></font></p>
+<P>
+gSPLookAt, gsSPLookAt, gSPLookAtX, gsSPLookAtX, gSPLookAtY, gsSPLookAtY</P>
+<P>
+<i>Loads a LookAt structure into RSP for specular highlighting and reflection mapping</i>
+</P>
+<p><b>Syntax</b></font></p>
+<p>
+<BLOCKQUOTE><PRE>
+#include &quot;gbi.h&quot;
+typedef union {
+        Light l[2];
+} LookAt;
+
+gSPLookAt(Gfx *gdl, LookAt *l)
+gsSPLookAt(         LookAt *l)
+</PRE>
+</BLOCKQUOTE></p>
+<p><b>Arguments</b></font></p>
+<p>
+<DL>
+  <DT><STRONG>*gdl</STRONG>
+  <DD>the pointer to the graphics display list <BR>
+<BR>
+  <DT><STRONG>*l</STRONG>
+  <DD>the pointer to the LookAt structure<BR>
+<BR>
+</DL></p>
+<p><b>Description</b></font></p>
+<P>
+The gSPLookAt macro loads a LookAt structure into the light buffer. This structure is required for specular highlighting or reflection mapping.
+</P>
+<P>
+The LookAt structure can be set up with the utility macros <A href="../gu/guLookAtHilite.htm">guLookAtHilite</A> and <A href="../gu/guLookAtReflect.htm">guLookAtReflect</A>, or it can be set up directly with the <A href="../gdsp/gdSPDefLookAt.htm">gdSPDefLookAt</A> macro. The LookAt structure contains colors as well as x and y screen space coordinate directions. 
+</P>
+<p><b>Note</b></font></p>
+<P>
+Niether gSPLookAtX nor gSPLookAtY are open to application developers. These are embedded in the gSPLookAt macro.
+</P>
+<p><b>See Also</b></font></p>
+<P>
+<A href="../gu/guLookAtHilite.htm">guLookAtHilite</A>, <A href="../gu/guLookAtReflect.htm">guLookAtReflect</A>, and <A href="../gdsp/gdSPDefLookAt.htm">gdSPDefLookAt</A>
+</P>
+</BODY>
+</HTML>

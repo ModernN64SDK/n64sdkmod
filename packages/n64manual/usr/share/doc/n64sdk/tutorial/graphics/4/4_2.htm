@@ -1,0 +1,57 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Graphics-Chapter 4  The Color Combiner</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/22/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<font style="font-size:12pt"><B>4.2  Source Color & Source Alpha </B></FONT>
+<br>
+<P>
+In this section, we will provide a simple overview of the source colors/alphas that can be used as the input source for each coefficient. 
+</P>
+<P>
+<B>Shade color & alpha</B><BR>
+This is the color and alpha that result from the shading calculation.  You use this source when the geometry mode is set to G_SHADE.  Of course, when lighting is performed the shade color results from the lighting calculation.
+</P>
+<P>
+<B>Primitive color & alpha</B><BR>
+  This is the color & alpha set in the primitive color register with the gDPSetPrimColor command.
+</P>
+<P>
+<B>Environment color & alpha</B><BR>
+  This is the color & alpha set in the environment color register with the gDPSetEnvColor command.
+</P>
+<P>
+<B>Texel color & alpha</B><BR>
+The texel color and alpha obtained from the texture.  In one-cycle mode, you can use only texel 0, whereas in two-cycle mode you can use both texel 0 and texel 1.   Chapter 10 covers an example of a multi-tile texture in two-cycle mode.</P>
+<P>
+<B>Combined color & alpha</B><BR>
+The color & alpha calculated in the Combiner in the first cycle when the mode is set to two-cycle mode.  These are used as the source for the calculations in the second cycle.  Chapter 8 covers an example of two-cycle mode.
+</P>
+<P>
+<B>LOD Coefficient</B><BR>
+ This is input source that can get the LOD factor when LOD processing is performed.  LOD is explained in Chapter 9.
+</P>
+<P>
+<B>Primitive LOD Coefficient</B><BR>
+This is input source that can get the primitive LOD coefficient set by gDPSetPrimColor.</P>
+<P>
+<B>Key</B><BR>
+This is input source that can get the chroma key<SUP>*2</SUP> factor.  It is set by gDPSetKeyR and gDPSetKeyGB.<br>
+<br><SUP>*2</SUP>Chroma key operation cannot be guaranteed at this time.
+<P>
+<B>Convert K4, K5</B><BR>
+ This is input source that can get the YUV<SUP>*3</SUP>--RGB conversion factors K4, K5.  These can be set with the gDPSetConvert command.<BR>
+<br><SUP>*3</SUP>Operation of YUV textures cannot be guaranteed at this time.
+</P>
+<P>
+The programmer can freely use the primitive color register and environment color register as general-purpose color registers.  Thus, for example, the primitive color register does not have to be used only for the storage of primitive color, but can also be used for the linear interpolation factor in order to realize fade-in and fade-out effects.  Also, the primitive LOD coefficient can be used for other purposes when LOD calculations are not being performed.<br><br>
+
+     In the next section, we will explain how these source colors and source alphas are specified with commands.
+</P>
+</BODY>
+</HTML>

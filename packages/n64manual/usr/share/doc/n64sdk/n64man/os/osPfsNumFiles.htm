@@ -1,0 +1,62 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.
+  PWC- updated formatting
+-->
+<TITLE>osPfsNumFiles</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+<font style="font-size: 12pt"><b>osPfsNumFiles</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p><i>Acquires the maximum note number and the number of notes used</i></P>
+
+<H3>Syntax</H3>
+
+<p><PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/os.htm">os.h</A> */
+s32 osPfsNumFiles(OSPfs *pfs,  s32 *max_files,  s32 *files_used);</CODE></PRE></p>
+
+<H3>Description</H3>
+<P>
+<tt>osPfsNumFiles</tt> acquires the maximum note number and the number of notes used in the Controller Pak. When called, this function returns the number of notes used to the location pointed to by the <B>files_used</B> argument, and it returns the total number of notes to the location pointed to by the <B>max_files</B> argument, which is 16.
+</P>
+<P>
+OSPfs structure pfs is a file handle which was initialized by a function <a href="osPfsInitPak.htm">osPfsInitPak</a>. For how to create this handle, refer to <tt>osPfsInitPak</tt>. 
+</P>
+<P>
+If this function is called successfully, 0 is returned. If an error occurs, one of the following error codes is returned: 
+</P>
+<p>
+<DL>
+  <DT><B>PFS_ERR_NOPACK</B>
+  <DD>Either the Controller Pak is not inserted into the specified Controller or the Controller is not properly connected. To determine which is the case, use <a href="osContStartQuery.htm">osContStartQuery</a> or <a href="osContGetQuery.htm">osContGetQuery</a>. 
+      <BR><BR>
+  <DT><B>PFS_ERR_NEW_PACK</B>
+  <DD>A different Controller Pak has been inserted. To use the inserted Controller Pak, initialize it by calling <tt>osPfsInitPak</tt>.
+      <BR><BR>
+  <DT><B>PFS_ERR_INCONSISTENT</B>
+  <DD>There is a problem in the file system's management area. Usually this error does not occur because <a href="osPfsChecker.htm">osPfsChecker</a> is called internally when you initialize the file system by calling <tt>osPfsInitPak</tt>. If this error is returned, either the Controller Pak is not connected properly, or the Controller Pak itself is damaged. 
+      <BR><BR>
+  <DT><B>PFS_ERR_CONTRFAIL</B>
+  <DD>NData transfer to or from the Controller has failed. If a transfer error occurs, up to three tries will be done internally. Therefore, it is rather rare to see this error. If this error has returned, it is possible that either the Controller is not connected properly, or the Controller Pak or Controller Socket is damaged. 
+      <BR><BR>
+  <DT><B>PFS_ERR_INVALID</B>
+  <DD>If this error is returned, an incorrect argument was specified when this function was called, the specified game note does not exist, or the Pfs function has been called without being initialized using <tt>osPfsInitPak</tt>. Also, if the functions for the Controller were executed after the file handle structure pfs was initialized by other than <tt>osPfsInitPak</tt>, this error occurs.For instance, if <tt>osPfsNumFiles</tt> is executed after the initialization function for rumble pak <a href="osMotorInit.htm">osMotorInit</a> is used to initialize OSPfs structure, then this error occurs. 
+      <BR><BR>
+</DL></p>
+
+<H3>See Also</H3>
+<P>
+<A HREF="osContInit.htm">osContInit</A>, <A HREF="osPfsAllocateFile.htm">osPfsAllocateFile</A>, <A HREF="osPfsChecker.htm">osPfsChecker</A>, <A HREF="osPfsFileState.htm">osPfsFileState</A>, <A HREF="osPfsInitPak.htm">osPfsInitPak</A>, <A HREF="osPfsIsPlug.htm">osPfsIsPlug</A>, and <A HREF="osPfsReadWriteFile.htm">osPfsReadWriteFile</A>
+</P>
+
+<H3>Revision History</H3>
+<P>
+1999/02/01 Completely revised<br>
+1999/04/30 Changed format
+</P>
+
+</BODY>
+</HTML>

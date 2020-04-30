@@ -1,0 +1,55 @@
+<HTML>
+<HEAD>
+<TITLE>mrnblend</TITLE>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../mobile/allman.css">
+<!-- Editor's Notes: 9/22/1999 Ron Daring -->
+</HEAD>
+  <BODY bgcolor="#FFFFFF">
+<h1>Function</h1>
+<hr>
+<a name="mrnBlenderModeSet">
+</A><h1><a name="mrnBlenderModeSet">mrnBlenderModeSet</A></h1><a name="mrnBlenderModeSet">
+</A><p><a name="mrnBlenderModeSet"><i>Sets values in</i> <TT>MrnBlenderMode</TT></A></p><a name="mrnBlenderModeSet">
+</A><H2><a name="mrnBlenderModeSet">Syntax</A></H2><a name="mrnBlenderModeSet">
+</A><blockquote><a name="mrnBlenderModeSet">
+</A><pre><a name="mrnBlenderModeSet">#include &lt;mrn/BlenderMode.h&gt;
+void mrnBlenderModeSet( MrnBlenderMode *mode_ptr,
+                          const u8 cycle_type,
+                          const u8 p1, const u8 m1, const u8 a1, const u8 b1,
+                          const u8 p2, const u8 m2, const u8 a2, const u8 b2,
+                          const u16 render_mode_flags );
+</A></pre></blockquote><a name="mrnBlenderModeSet">
+</A><H2><a name="mrnBlenderModeSet">Description</A></H2><a name="mrnBlenderModeSet">
+</A><pre><a name="mrnBlenderModeSet">
+  Sets values in MrnBlenderMode.
+    p1, m1, a1, and b1 are for the 1st cycle.
+    p2, m2, a2, and b2 are for the 2nd cycle.
+  Select the various arguments from the following macros.
+    cycle_type:  MRN_BLENDER_MODE_CYCLE_TYPE_*
+    p1,p2:       MRN_BLENDER_MODE_P_*
+    m1,m2:       MRN_BLENDER_MODE_M_*
+    a1,a2:       MRN_BLENDER_MODE_A_*
+    b1,b2:       MRN_BLENDER_MODE_B_*
+  render_mode_flags is set by the logical sum of MRN_BLENDER_MODE_*.
+</A></pre><a name="mrnBlenderModeSet">
+
+
+</A><hr>
+<h1><a name="mrnBlenderModeSet">Structure</A></h1><hr>
+<a name="MrnBlenderMode">
+</A><h1><a name="MrnBlenderMode">MrnBlenderMode</A></h1><a name="MrnBlenderMode">
+</A><blockquote><pre><a name="MrnBlenderMode">
+#include &lt;mrn/BlenderMode.h&gt;
+typedef struct _MrnBlenderMode
+{
+    u8                  cycle_type;
+    u32                 blender_code;
+    MvmColor4c          blend_color;
+    u32                 alpha_compare_mode;
+    Gfx                 render_mode_gfx[ 5 ];
+    /* blender_code must get reflected. */
+} MrnBlenderMode;
+</A></pre></blockquote><a name="MrnBlenderMode">
+<br><br><br>
+</A></BODY>
+</HTML>

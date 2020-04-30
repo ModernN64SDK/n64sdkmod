@@ -1,0 +1,101 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Graphics-Chapter 7  Z Buffering</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/23/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<BR>
+<font style="font-size:12pt"><B>7.6  VI Mode and Special Functions</B></FONT>
+<BR>
+<P>
+Next we will move on to a different subject in this section and talk about the video interface (VI).<br><br>
+     One of the main settings relating to the video interface is the VI mode.  The VI mode must be set appropriately in order to use high-resolution displays and a 32bit framebuffer.  The VI mode is set using the <tt>osViSetMode</tt> function.
+     However, what you pass to the <tt>osViSetMode</tt> function is not an integer value indicating the VI mode, but rather the address of the table holding the settings for the various VI parameters.  
+</P>
+<TABLE BORDER=0><TR><TD ROWSPAN=3>&nbsp;</TD><TD>
+	<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD COLSPAN=5 NOWRAP ALIGN=LEFT VALIGN=MIDDLE>void osViSetMode(OSViMode *mode);</TD>
+	</TR><TR>
+	<TD ROWSPAN=2>&nbsp;</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE>mode</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE>--</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE>VI mode</TD>
+	<TD ROWSPAN=2>&nbsp;</TD>
+	</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE>Return value </TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE>--</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=MIDDLE>None</TD>
+</TR></TABLE>
+</TD></TR></TABLE>
+<P>
+  The display mode is set in the VI.  The VI supports a total of 56 display modes: 14 NTSC, 14 PAL, 14 MPAL, and 14 full-screen PAL (FPAL).  For each of these modes, you can set attributes for interlace or non-interlace, 16bit color pixels or 32bit color pixels, and low resolution or high resolution.<br><br>The 56 modes are indicated with five switches for high/low resolution, 16/32bit color pixels, anti-aliasing/point sampling, filtering/non-filtering and MPALÅ^PALÅ^FPALÅ^NTSC format.  The symbol names for these modes are defined in <os.h>.  So for example, OS_VI_NTSC_LPN1 indicates support for low-resolution, point sampling, non-interlace and 16bit color pixels.  OS_VI_PAL_LPN1 indicates support for the same, but in PAL format.<br><br>
+     The last four characters in the symbol name (LPN1, etc.) are made up from the following codes:
+</P>
+<TABLE BORDER=0><TR><TD ROWSPAN=2>&nbsp;</TD><TD>
+	<TABLE BORDER=1 CELLSPACING=0 CELLPADDING=3><TR>
+	<TD ROWSPAN=2 ALIGN=LEFT VALIGN=MIDDLE>1st character</TD>
+	<TD COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE>H = High resolution</TD>
+	</TR><TR>
+	<TD COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE>L = Low resolution</TD>
+	</TR><TR>
+	<TD ROWSPAN=2 ALIGN=LEFT VALIGN=MIDDLE>2nd character</TD>
+	<TD COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE>A = Anti-aliasing</TD>
+	</TR><TR>
+	<TD COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE>P = Point sampling</TD>
+	</TR><TR>
+	<TD ROWSPAN=4 ALIGN=LEFT VALIGN=MIDDLE>3rd character</TD>
+		<TD ROWSPAN=2 ALIGN=LEFT VALIGN=MIDDLE>Low resolution</TD>
+		<TD ALIGN=LEFT VALIGN=MIDDLE>N = Non-interlace</TD>
+	</TR><TR>
+		<TD ALIGN=LEFT VALIGN=MIDDLE>F = Interlace</TD>
+	</TR><TR>
+		<TD ROWSPAN=2 ALIGN=LEFT VALIGN=MIDDLE>High resolution</TD>
+		<TD ALIGN=LEFT VALIGN=MIDDLE>N = Non-interlace</TD>
+	</TR><TR>
+		<TD ALIGN=LEFT VALIGN=MIDDLE>F = De-flickered interlace</TD>
+	</TR><TR>
+	<TD ROWSPAN=2 ALIGN=LEFT VALIGN=MIDDLE>4th character</TD>
+	<TD COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE>1 = 16bit pixel size</TD>
+	</TR><TR>
+	<TD COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE>2 = 32bit pixel size</TD>
+	</TR></TABLE>
+</TD></TR></TABLE>
+<P>
+ There is a systematic naming convention followed for these VI mode symbol names.  You can read more about this in the Function Reference.  Here we will provide an explanation using concrete examples.<br><br>
+
+     If you take a look at the <tt>SetupResolution</tt> function in gfx7.c, you will see how the VI mode changes according to the macro definitions.  When the __HIRES__ macro is defined, the VI mode is changed as follows to high-resolution, anti-aliasing, non-interlace and a 16bit framebuffer.
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=5><TR>
+	<TD NOWRAP COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE><B>List 7-4</B></TD>
+</TR><TR>
+	<TD NOWRAP BGCOLOR="666666" WIDTH="4" ALIGN=LEFT VALIGN=TOP><HR NOSHADE SIZE=0></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><FONT COLOR="#000080"><PRE><CODE>  osViSetMode(&amp;osViModeTable[OS_VI_NTSC_HAN1]);
+</CODE></PRE></FONT>
+	</TD>
+</TR></TABLE>
+<P>
+    In the same way, when the __32BIT__ macro is defined (and __HIRES__ is not defined) then the VI mode is set to low-resolution, anti-aliasing, non-interlace and a 32bit framebuffer.
+
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=5><TR>
+	<TD NOWRAP COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE><B>List 7-5</B></TD>
+</TR><TR>
+	<TD NOWRAP BGCOLOR="666666" WIDTH="4" ALIGN=LEFT VALIGN=TOP><HR NOSHADE SIZE=0></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><FONT COLOR="#000080"><PRE><CODE>  osViSetMode(&amp;osViModeTable[OS_VI_NTSC_LAN2]);
+</CODE></PRE></FONT>
+	</TD>
+</TR></TABLE>
+<P>
+When you use an array like that in List 7-4 and 7-5, the entire array is linked.  If you want to avoid this, set something like &osViModeNtscHan1 using individual VI mode variables.<br><br>
+
+     You can switch gamma correction on and off in the gfx7.c sample program using the <tt>osViSetSpecialFeatures</tt> function.   On line 51, change __GAMMA__ to either OS_VI_GAMMA_ON or OS_VI_GAMMA_OFF and then run the program to see what difference gamma correction makes to the brightness of the image output to the screen.  The <tt>osViSetSpecialFeatures</tt> function can be used to switch the settings ON/OFF for four different special features: gamma correction, gamma correction dithering, divot elimination, and dither filtering.<br><br>
+
+     Note that when you call <tt>osViSetMode</tt> the VI special feature settings are all set to that VI mode's default values.  In NuSystem, gamma correction is turned off by default, so you will notice a brighter screen display when you define __HIRES__ or __32BIT__ and change the VI mode to one with gamma correction turned on.<br><br>
+
+     Of course, when you change the resolution and framebuffer size you must also change the view port settings and display list to match those changes.  The size of the framebuffer and the Z buffer also change.  We will not go into detail in this tutorial, but if you look at gfx7.c, you will see how to customize the framebuffer and the Z buffer when using NuSystem and how to clear the 32bit framebuffer.
+</P>
+</BODY>
+</HTML>

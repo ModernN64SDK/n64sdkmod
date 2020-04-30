@@ -1,0 +1,713 @@
+------------------------------------------------------------------
+N64-HVQM2 library  version 1.2
+Programming Guide
+------------------------------------------------------------------
+
+This document explains the procedure for expanding HVQM data and 
+playing back motion video using the N64-HVQM2 library.
+
+=====================
+  HVQM2 data format
+=====================
+
+Presently supports "HVQM2 1.0" format HVQM2 files.  These files 
+can be created using the motion picture compression tool 
+hvqm2enc (version 1.2 and later).
+
+A "HVQM2 1.0" format HVQM2 file begins with a "file header" that 
+is immediately proceeded by a series of "records."  This series 
+of records is called the "HVQM2 stream."  The application reads 
+the necessary information from the file header and then reads 
+these records in succession to decode and play the video.
+
+Each record begins with a "record header."  The data directly 
+after this header (and up until the next record header) is 
+called the "record body."
+
+HVQM2 1.0 has two types of records: "audio records and "video 
+records," which are distinguished by the record header.  In a 
+normal HVQM2 file, the audio records and video records are 
+interleaved in step with the playback time axis.  
+
+The composition of each header is defined in lib/HVQM2File.h
+
+
+File Header
+===========
+
+The composition of the file header is defined by the HVQM2Header 
+structure.
+
+
+Primary members of the HVQM2Header structure:
+------------------------------------------------------------------
+  Member                     Explanation
+------------------------------------------------------------------
+file_version            "HVQM2 1.0" is stored as a ASCIIZ 
+			character string
+file_size               File size (bytes). Must be an integer 
+			multiple of 4
+width                   Image width (in pixels)
+height                  Image height (in pixels)
+h_sampling_rate         Presently, always 2
+v_sampling_rate         2 for 4:1:1 mode, 1 for 4:2:2 mode
+total_frames            Total number of video records
+usec_per_frame          Frame interval [usec]
+max_frame_size          Maximum size of video record (record 
+			body) [bytes]
+max_sp_packets          Size of intermediate data buffer needed 
+			for RSP version of decoder
+audio_format            Audio data format. Either of the 
+			following:
+                                 HVQM2_AUDIO_PCM
+                                 HVQM2_AUDIO_IMA_ADPCM
+                        (Presently, only HVQM2_AUDIO_IMA_ADPCM)
+channels                Number of audio channels (Presently, 
+			only 1)
+sample_bits             Number of bits of 1 audio sample (1 
+			channel) (Presently, only 4)
+otal_audio_records      Total number of audio records
+samples_per_sec         Number of audio samples per second (for 1
+			channel)
+max_audio_record_size   Maximum size of audio record (record 
+			body) [bytes]
+------------------------------------------------------------------
+
+
+Record Header
+=============
+
+The composition of the record header is defined by the 
+HVQM2Record structure.
+
+Members of the HVQM2Record structure:
+------------------------------------------------------------------
+Member                      Explanation
+------------------------------------------------------------------
+type                    The record type.  Can be either of the 
+			following:
+                            HVQM2_AUDIO (audio record)
+                            HVQM2_VIDEO (video record)
+format                  Format of the record
+size                    Size (in bytes) of the record body. Must 
+			be an integer multiple of 4
+------------------------------------------------------------------
+
+A different "format" is defined for each record type.
+
+In the case of audio records, when the audio data format (the 
+HVQM2 file header's audio_format) is HVQM2_AUDIO_IMA_ADPCM, the 
+two following kinds of formats can be defined:
+
+         HVQM2_AUDIO_KEYFRAME
+         HVQM2_AUDIO_PREDICT
+
+In the case of video records, the three following kinds of 
+formats can be defined:
+
+         HVQM2_VIDEO_KEYFRAME
+         HVQM2_VIDEO_PREDICT
+         HVQM2_VIDEO_HOLD
+
+
+"size" indicates the size of the record body.  Note that 0 is a 
+valid entry.  When the type is HVQM2_VIDEO and the format is 
+HVQM2_VIDEO_HOLD the size is normally 0. In this case, the next 
+record header comes immediately after the previous record header. 
+
+
+Audio Record Body
+=================
+
+The "audio header" is situated at the start of the audio record 
+body.  The composition of the audio header is defined by the 
+HVQM2Audio structure.
+
+
+Members of the HVQM2Audio structure:
+------------------------------------------------------------------
+Member                   Explanation
+------------------------------------------------------------------
+samples                 The number of samples in this record
+------------------------------------------------------------------
+
+The "samples" worth of actual audio sample data is located 
+directly after this audio header.
+   
+
+Video Record Body
+=================
+
+The application does not need to know about the contents of the 
+video record body.  It simply passes the address of the video 
+record body to the image decoder.  
+
+
+
+=====================================
+  The flow of HVQM2 movie playback
+=====================================
+
+
+
+General Procedure
+==================
+
+
+Below is a rough outline of the procedure by which HVQM2 data is 
+played back using 
+the N64-HVQM2 library:
+
+   
+
+1. Initialize library (Only needs to be done once)
+
+	-- Call  hvqm2Init*() and initialize the HVQM2 decoder.
+
+2.  Playback new HVQM2 movie
+
+	-- Read the HVQM2 file header
+  
+3.  Initial settings for movie playback
+
+	-- Call hvqm2Setup*() and perform the setup for image 
+	   decoding
+	-- Set the frequency of audio playback with 
+	   osAiSetFrequency() (the value is set in 
+	   samples_per_sec in the file header)
+	-- Initialize frame buffer, PCM buffer etc.
+	-- Initialize counters etc. for playback timing.
+
+4.  Loop movie playback
+
+	While reading the stream of records: 
+
+	-- if it is an audio record, use adpcmDecode() to 
+	   convert it to PCM data and then with proper timing 
+	   send it to the audio interface using 
+	   osAiSetNextBuffer().
+
+	-- if it is a video record, call hvqm2Decode*() (if 
+	   necessary activating an RSP task) to decode the image 
+	   into the frame buffer and then with proper timing 
+	   display it using osViSwapBuffer().
+
+
+Synchronizing Video and Audio
+=============================
+
+If audio is played back exactly at the sampling rate 
+(samples_per_sec) and video is displayed at the display interval 
+(usec_per_frame), then by starting both with the same timing 
+they should be played back in sync.  However, in reality, 
+playback of both can be early or late due to a number of 
+factors.  For this reason, some kind of mechanism is needed to 
+achieve synchronization.
+
+The audio should continue to playback with no interruption at a 
+set pitch. This is because it would be a strain on the ears to 
+stop, skip or change the playback rate of the audio in order to 
+achieve synchronization.
+
+Accordingly, the most realistic way to achieve synchronization 
+would be to adjust the timing of the display of video.  As a 
+rule, the video is decoded faster than the display timing.  The 
+completed frame buffer is held, and the image displayed when the 
+display timing comes up.  If the decoding of an image is greatly 
+delayed, causing the chronic delay of subsequent frames, then 
+you can catch back up by skipping (discarding) a number of video 
+records.
+
+One way to calculate the video display timing is by using the 
+Nintendo 64 timer and counter.  But you need to be careful about 
+the fact that the calculation may not exactly match the progress 
+of the audio playback.  osAiSetFrequency() sets a playback rate 
+closest to the specified sampling rate.  That is to say, you may 
+not necessarily play back at the specified sampling rate. The 
+value returned by osAiSetFrequency() indicates the playback rate 
+that is actually set, and you need to calculate the timing based 
+on this.
+
+There is another way to calculate the video display timing: you 
+calculate the theoretical passage of time by dividing the number 
+of samples that have already been played by the stipulated 
+sampling rate.  If you use this method, the speed of movie 
+playback will automatically follow any changes in the audio 
+playback rate.  However, the counter for the number of played 
+audio samples only operates in units of blocks sent to the audio 
+interface, so you need to supplement the time after the final 
+count with osGetTime().
+
+
+Audio Playback
+==============
+
+Normally, you need to playback audio without any interruptions.  
+To accomplish this, you must do two things.  The first is to 
+prepare a number of PCM data buffers and to be sure to complete 
+the preparation of the next set of PCM data while the current 
+set of PCM data is being played.  For this, in some cases it 
+might be necessary to perform the process of reading, decoding 
+and playing audio records from inside a handler for events like 
+VI retraces that run periodically, and to read audio records 
+independently from video records and to give them priority.  The 
+second thing you need to do is to prepare a suitable buffering 
+mechanism as a precaution for when the audio interface FIFO 
+becomes full.
+
+There is one other thing you need to be careful about when 
+playing back audio records.  One audio record sample (one 
+channel) is 4bits.  When this is converted, using adpcmDecode(), 
+to 16bit PCM and expanded to stereo it becomes 4bytes.  The 
+transfer byte size for osAiSetBuffer() must be a multiple of 8, 
+so when the transfer byte size is not a multiple of 8 (that is 
+to say, when the number of original samples is an odd number), 
+you will need to appropriately buffer the extra 4bytes.
+
+
+Display of Video
+================
+
+Video frames are displayed at the time interval indicated by 
+usec_per_frame in the file header.  The display timing is not 
+exactly in sync with the VI retrace cycle, but the actual timing 
+for display is off by at most 1 retrace cycle, and this is only 
+a temporary occurrence, so it is not a big problem.  The 
+important thing is to make the video advance in step with the 
+audio (or to advance the video in real time).  It is never a 
+problem to complete the preparation of a video frame before its 
+scheduled time of display.  Simply wait for the scheduled time 
+and then display (swap screens).  However, if a delay arises in 
+the reading and decoding of video records, you may need to skip 
+a number of video records in order to catch back up with the 
+audio.
+
+After skipping over video records you need to make the first 
+video record that is decoded a key frame (set the record format 
+to HVQM2_VIDEO_KEYFRAME).
+   
+You need at least 2 frame buffers in order to prepare the next 
+frame while the present frame is being displayed, and because 
+decoding of one frame requires the previous frame.  But if you 
+prepare 3 or more frame buffers you can make more efficient use 
+of time by decoding a frame in advance while waiting for the 
+next display timing.  You can also average out the time it takes 
+to decode data.
+
+
+============================
+  Decoding Audio Records
+============================
+
+
+ADPCM Decoder's Output Data Format
+==================================
+
+The ADPCM decoder supports 16bit PCM data. It can also expand 
+monaural samples into stereo (outputting PCM data twice per 
+ADPCM sample).
+
+
+How to Use the ADPCM Decoder
+============================
+
+As an example, we load the audio record's record header into 
+record_header and the record body into record_body.
+
+    extern HVQM2Record record_header;
+    extern u8 record_body[];
+
+The record can then be decoded in the following way:
+
+    extern s16 pcmbuf[PCMBUFSIZE];
+
+    ADPCMstate state;
+    HVQM2Audio *audio_headerP;
+    u32 samples;
+    u32 format;
+
+    format = record_header.format;
+    audio_headerP = (HVQM2Audio *)record_body;
+    samples = audio_headerP->samples;
+    adpcmDecode( &audio_headerP[1], format, samples, pcmbuf, 1, 
+     &state );
+
+
+With this, all samples inside the record are converted to 16bit 
+PCM data, expanded into stereo and stored in pcmbuf.  Here the 
+required number of pcmbuf array elements is equal to samples * 2.
+"state" does not need to be initialized.
+
+It is also possible to divide up a record for decoding.  For 
+example, if the number of samples to be decoded is 1000 or less, 
+you could do the following:
+
+    int i;
+    void *instreamP;
+    s16 *outbufP;
+
+    instreamP = &audio_headerP[1];
+    outstreamP = pcmbuf;
+    while ( samples > 0 ) {
+      u32 samples_here = samples > 1000 ? 1000 : samples;
+      adpcmDecode( instreamP, format, samples_here, outstreamP, 
+         1, &state );
+      samples -= samples_here;
+      instreamP = NULL;
+      outstreamP = NULL;
+    }
+
+In this case, the output data is concatenated inside pcmbuf.  For
+the second and subsequent times pcmbuf is specified in 
+outstreamP, the output data will be overwritten to pcmbuf.
+
+
+============================
+   Decoding Video Records
+============================
+
+Video Decoder Types and Output Data Format
+==========================================
+
+There are four video decoders: the CPU versions hvqm2Decode1() 
+and hvqm2Decode2() and the RSP versions hvqm2DecodeSP1() and 
+hvqm2DecodeSP2().  Please select the type best suited to your 
+needs.
+
+The two CPU functions hvqm2Decode1() and hvqm2Decode2() complete 
+the entire decoding process within the function (in the CPU).  
+The two RSP functions hvqm2DecodeSP1() and hvqm2DecodeSP2() 
+execute only the first half of decoding within the function, and 
+then output intermediate data to a buffer so the RSP microcode 
+can execute the rest of the process.  hvqm2DecodeSP1() supports 
+the hvqm2sp1 microcode, while hvqm2DecodeSP2() supports the 
+hvqm2sp2 microcode.
+
+hvqm2Decode1() creates 16bit RGBA image data, as does 
+hvqm2DecodeSP1() (combined with hvqm2sp1).  hvqm2Decode2() 
+creates 32bit RGBA image data in two formats, as does 
+hvqm2DecodeSP2() (combined with hvqm2sp2).   Both can be used 
+as-is for textures and sprites, and displayed as-is from a frame 
+buffer.
+
+The 32bit RGBA format gives higher picture quality than the 
+16bit RGBA format.
+
+
+Initializing the Decoder
+========================
+
+The image decoder only needs to be initialized once at the 
+start.  Please initialize it with hvqm2Init*().
+
+
+Setup for HVQM2 Movie Playback
+==============================
+
+You need to set up the image decoder when you play an HVQM2 
+movie for the first time.  Read the HVQM2 file header and then 
+call hvqm2Setup*().  For example, if you are using 
+hvqm2Decode1() to decode video records, you would read the HVQM2 
+file header
+
+    extern HVQM2Header header;
+
+and then call
+
+    hvqm2Setup1( &header, OUTBUF_WIDTH );
+
+
+OUTBUF_WIDTH, which is the second argument in the hvqm2Setup*() 
+function, specifies the width (in pixels) of the output buffer 
+(frame buffer) specified in hvqm2Decode*() as viewed as a 2D 
+plane.  This must be the same width or wider than the image.  
+When the image is narrower than the output buffer, the image is 
+written from the left side of the output buffer, and nothing is 
+written in the remaining space to the right.  When 0 is 
+specified for OUTBUF_WIDTH the width of the output buffer is 
+assumed to be the same size as the image.  (The width of the 
+image is indicated inside the HVQM2 file header.)
+
+To expand a small image within a section of the frame buffer, 
+you would specify OUTBUF_WIDTH for the width of the frame buffer 
+when calling the hvqm2Setup*() function, and specify the upper-
+left corner of the section for the address of the output buffer 
+in hvqm2Decode*().
+
+
+Using the CPU Version Image Decoder
+===================================
+
+As an example, we load the audio record's record header into 
+record_header and the record body into record_body.
+
+    extern HVQM2Record record_header;
+    extern u32 record_body[];
+
+The address of record_body must have 32bit alignment.  Below is 
+an example of how this record would be decoded with the CPU 
+version image decoder:
+
+    extern u16 workbuf[];
+    u16 *outbuf;
+    u16 *prevbuf;
+    u32 format;
+
+    format = record_header.format;
+    hvqm2Decode1(record_body, format, outbuf, prevbuf, workbuf);
+
+
+With this, the data of record_body is decoded and the image data 
+is expanded in 16bit RGBA format in outbuf.
+
+In "prevbuf," which is the fourth argument of hvqm2Decode1(), 
+you must specify the address of the buffer that holds the 
+decoded image of the previous video record.  The exception is 
+when the format is HVQM2_VIDEO_KEYFRAME, in which case the 
+prebuf argument is ignored.  (The first video record in the 
+HVQM2 stream always has the format HVQM2_VIDEO_KEYFRAME.)
+
+When the format is HVQM2_VIDEO_HOLD, the HVQM2 decoder simply 
+takes the image data in prevbuf and copies it into outbuf.  This 
+is kind of a wasteful process, so you can speed things up by 
+continuously using (displaying) prevbuf without calling the 
+HVQM2 decoder.
+
+"workbuf" is a data region needed temporarily by hvqm2Decode1().  It must have 16bit alignment.  The required size of this area is determined from the size of the image to be decoded and the HVQM2 data compression format.  If the image width is W and the height is H, then the required size would be (W/8) x (H/8) x 12bytes for the 4:1:1 format, and (W/8) x (H/4) x 8bytes for the 4:2:2 format.  The image width, height and compression format can be obtained from the HVQM2 file header in the following way:
+
+    #include <HVQM2File.h>
+
+    extern HVQM2Header;    /* Buffer in which HVQM2 file header 
+				is loaded */
+
+    u32 width;
+    u32 height;
+    u8  type;
+
+    width  = HVQM2Header.width;              /* Image width */
+    height = HVQM2Header.height;             /* Image height */
+    type   = HVQM2Header.v_sampling_rate;
+	    /* If 1 then 4:2:2, if 2 then 4:1:1 */
+
+If you use hvqm2Decode2() instead of hvqm2Decode1() you can 
+obtain higher quality 32bit RGBA image data.  The output buffer 
+specified in hvqm2Decode2() must have 32bit alignment.  Other 
+than that, the arguments are the same as for hvqm2Decode1().
+
+
+Using the RSP Version Image Decoder
+===================================
+
+The RSP version decoder is used in the same way as the CPU 
+version, except for some small differences like the addition of 
+two extra arguments.  The following builds on the above 
+explanation for use of the CPU version.
+
+   extern HVQM2Info infobuf[]; /* Intermediate data area for the 
+					HVQM2 microcode */
+   HVQM2Arg arg;               /* Parameters for the HVQM2 
+					microcode */
+   u32 status;
+
+   status = hvqm2DecodeSP1(record_body, format, outbuf, prevbuf, 
+				workbuf, &arg, infobuf);
+
+The arguments record_body, format, outbuf, prevbuf, and workbuf 
+are the same here as for the CPU version decoder.
+
+"arg" holds the parameters that hvqm2DecodeSP1() communicates to 
+the RSP microcode.  Nothing needs to be set in the application.  
+Simply define (reserve) one HVQ2Arg structure and pass that 
+address to hvqm2DecodeSP1().
+
+"infobuf" is the starting address of the buffer holding the 
+intermediate data for the RSP microcode.  The necessary size of 
+this buffer is different for every video record.  The maximum 
+value is indicated by max_sp_packets in the HVQM2 file header.  
+The size must be big enough for that much of an array of 
+HVQM2Info structures.  That is to say, the buffer must be 
+(sizeof(HVQM2Info) x max_sp_packets) bytes in size.
+
+When the "status" value returned by hvqm2DecodeSP1() is 1, the 
+RSP microcode must be activated in order to complete decoding of 
+the image.  Please set the OSTask structure as follows:
+
+   #include <ultra64.h>
+   #include <hvqm2dec.h>
+
+   u64 hvqm_yieldbuf[HVQM2_YIELD_DATA_SIZE/8];	/* yield data 
+						buffer */
+
+   OSTask hvqmtask;
+
+   hvqmtask.t.type            = M_HVQM2TASK;
+   hvqmtask.t.flags           = 0;
+   hvqmtask.t.ucode_boot      = (u64 *)rspbootTextStart;
+   hvqmtask.t.ucode_boot_size = (int)rspbootTextEnd - (int)rspbootTextStart;
+   hvqmtask.t.ucode           = (u64 *)hvqm2sp1TextStart;
+   hvqmtask.t.ucode_size      = (int)hvqm2sp1TextEnd - (int)hvqm2sp1TextStart;
+   hvqmtask.t.ucode_data      = (u64 *)hvqm2sp1DataStart;
+   hvqmtask.t.ucode_data_size = HVQM2_UCODE_DATA_SIZE;
+   hvqmtask.t.data_ptr        = (u64 *)&arg;
+   hvqmtask.t.yield_data_ptr  = hvqm_yieldbuf;
+   hvqmtask.t.yield_data_size = HVQM2_YIELD_DATA_SIZE;
+
+   
+The standard N64OS rspboot microcode is used for the boot 
+microcode.  
+
+There are two kinds of HVQM2 microcode: the hvqm2sp1 microcode, 
+which corresponds to hvqm2DecodeSP1() and outputs 16bit RBGA 
+format image data, and the hvqm2sp2 microcode, corresponds to 
+hvqm2DecodeSP2() and outputs 32bit RBGA format image data.  In 
+the above example, the hvqm2sp1 microcode is activated.
+
+After the OSTask structure is set as shown above, start the 
+microcode the same way you would for graphics and audio.
+
+
+(Example)
+
+   #include <ultra64.h>
+
+   osWritebackDCacheAll();	      /* Data cache write-back */
+   osInvalDCache(outbuf, OUTBUFSIZE); /* Invalidate the output 
+					buffer cache */
+   osSpTaskStart(&hvqmtask);	      /* Start the microcode */
+
+   /* Wait for the end of microcode processing  */
+   osRecvMesg(&rspMessageQ, NULL, OS_MESG_BLOCK);
+
+This completes expansion of the image.
+
+If you use hvqm2DecodeSP2() instead of hvqm2DecodeSP1() you can 
+obtain higher quality 32bit RGBA image data.  The output buffer 
+specified in hvqm2Decode2() must have 32bit alignment.  Other 
+than that, the arguments are the same as for hvqm2Decode1().
+
+One more thing: hvqm2DecodeSP*() inputs the contents of previm 
+and record_body and outputs data to outbuf, arg and infobuf.  
+Meanwhile, the HVQM2 microcode inputs the contents of arg and 
+infobuf, and outputs data to outbuf.  If the necessary input/
+output data is properly stored, hvqm2DecodeSP*() and the 
+microcode do not need to intercommunicate when running, and they 
+can each run independently.  It is also possible to run them in 
+parallel.
+
+
+================================
+  Summary of Library Functions
+================================
+
+
+-- adpcmDecode()
+
+   Decodes HVQM2 audio records and outputs 16bit PCM data to the 
+   buffer.
+
+
+-- hvqm2Decode1()
+
+   Decodes HVQM2 video records and outputs 16bit RGBA format  
+   image data to the buffer.  This function completes the entire  
+   decoding process (no need for microcode).
+
+
+-- hvqm2Setup1()
+
+   For setting up the hvqm2Decode1() image decoder in order to  
+   play an HVQM2 movie.
+
+
+-- hvqm2Init1()
+
+   Only needs to be called once at the start when using  
+   hvqm2Decode1()
+
+
+-- hvqm2Decode2()
+
+   Decodes HVQM2 video records and outputs 32bit RGBA format  
+   image data to the buffer.  This function completes the entire  
+   decoding process (no need for microcode).
+
+
+-- hvqm2Setup2()
+
+   For setting up the hvqm2Decode2() image decoder in order to  
+   play an HVQM2 movie.
+
+
+-- hvqm2Init2()
+
+   Only needs to be called once at the start when using  
+   hvqm2Decode2()
+
+
+-- hvqm2DecodeSP1()
+
+   Executes the first half of the decoding process on an HVQM2  
+   video record and creates intermediate data for the HVQM2  
+   microcode.  After this function is called, the hvqm2sp1 RSP  
+   microcode is executed (as needed) to complete the decoding  
+   process.  The decoded image is in 16bit RGBA format.
+
+
+-- hvqm2SetupSP1()
+
+   For setting up the hvqm2DecodeSP1() image decoder in order to  
+   play an HVQM2 movie.
+
+
+-- hvqm2InitSP1()
+
+   Only needs to be called once at the start when using  
+   hvqm2DecodeSP1()
+
+
+-- hvqm2DecodeSP2()
+
+   Executes the first half of the decoding process on an HVQM2  
+   video record and creates intermediate data for the HVQM2  
+   microcode.  After this function is called, the hvqm2sp2 RSP  
+   microcode is executed (as needed) to complete the decoding  
+   process.  The decoded image is in 32bit RGBA format.
+
+
+-- hvqm2SetupSP2()
+
+   For setting up the hvqm2DecodeSP2() image decoder in order to  
+   play an HVQM2 movie.
+
+
+-- hvqm2InitSP2()
+
+   Only needs to be called once at the start when using  
+   hvqm2DecodeSP2()
+
+
+These functions are all included in libhvqm2.a in the lib 
+directory.  For details about each function, see the 
+FUNCTIONS.TXT file.
+
+
+============================
+  Summary of the Microcode
+============================
+
+
+-- hvqm2sp1 (hvqm2sp1.o)
+
+   Completes decoding of the image from the intermediate data  
+   created by hvqm2DecodeSP1() and outputs 16bit RGBA format  
+   image data to the buffer.
+
+
+-- hvqm2sp2 (hvqm2sp2.o)
+
+   Completes decoding of the image from the intermediate data  
+   created by hvqm2DecodeSP2() and outputs 32bit RGBA format  
+   image data to the buffer.
+
+
+These two sets of microcode are stored in the rspcode directory.

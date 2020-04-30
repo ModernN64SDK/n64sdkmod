@@ -1,0 +1,2640 @@
+<HTML>
+<HEAD>
+<TITLE>nd Function Reference</TITLE>
+</HEAD>
+<BODY LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff">
+
+<font face="arial" size="-1">
+<b><font size="3">nd Function Reference</font></b>
+
+<hr size=3><p>
+<a NAME="NDGENINSTANCE"></a><font size="3"><b>ndGenInstance</b></font>
+
+<dl>
+<dt><b>Function name</b></dt><p>
+<dd>ndGenInstance</dd>
+
+<p><dt><b>Syntax</b></dt><p>
+<dd>NDD_INSTANCE *ndGenInstance(NDD_INSTANCE *parent, u16 type, u16 prio, int
+gid);</dd>
+
+<p><dt><b>Description</b></dt><p>
+<dd>Creates and links an instance structure.</dd>
+
+<p><dt><b>Arguments</b></dt><p>
+
+<dl>
+<dt>NDD_INSTANCE *parent;</dt>
+<dd>Parent instance pointer.</dd>
+
+<dt>u16 type;</dt>
+<dd>Instance type.</dd>
+
+<dt>u16 prio;</dt>
+<dd>Priority code. This affects the order of evaluation of display instances.</dd>
+<dd>The specifiable range varies depending on the type.</dd>
+
+<dt>int gid;</dt>
+<dd>Instance group ID.</dd></dl>
+
+<p><dt><b>Return value</b></dt><p>
+
+<dl>
+<dt>NDD_INSTANCE *;</dt>
+<dd>The created instance pointer.</dd>
+</dl>
+
+<p><dt><b>Note</b></dt><p>
+<dd>Creates the instance. The characteristics depend on the type.</dd>
+</dl>
+
+<hr size=3><p>
+<a NAME="NDCHANGEPRIORITY"></a><font size="3"><b>ndChangePriority</b></font>
+
+<dl>
+<dt><b>Function name</b></dt><p>
+<dd>ndChangePriority</dd>
+
+<p><dt><b>Syntax</b></dt><p>
+<dd>u16 ndChangePriority(NDD_INSTANCE *isp, u16 newprio);</dd>
+
+<p><dt><b>Description</b></dt><p>
+<dd>Changes the priority of one instance.</dd>
+
+<p><dt><b>Arguments</b></dt><p>
+
+<dl>
+<dt>NDD_INSTANCE *isp;</dt>
+<dd>Instance pointer.</dd>
+
+<dt>u16 newprio;</dt>
+<dd>New priority value.</dd>
+</dl>
+
+<p><dt><b>Return value</b></dt><p>
+
+<dl>
+<dt>u16;</dt>
+<dd>Old priority value.</dd></dl>
+
+<p><dt><b>Note</b></dt><p>
+<dd>Links to the most significant specified priority.</dd>
+</dl>
+
+<hr size=3><p>
+<a NAME="NDCHANGEPARENT"></a><font size="3"><b>ndChangeParent</b></font>
+
+<dl>
+<dt><b>Function name</b></dt><p>
+<dd>ndChangeParent</dd>
+
+<p><dt><b>Syntax</b></dt><p>
+<dd>NDD_INSTANCE ndChangeParent(NDD_INSTANCE *isp, NDD_INSTANCE *newparent);</dd>
+
+<p><dt><b>Description</b></dt><p>
+<dd>Changes the parent of the instance.</dd>
+
+<p><dt><b>Arguments</b></dt><p>
+
+<dl><dt>NDD_INSTANCE *isp;</dt>
+<dd>Target's instance pointer.</dd>
+
+<dt>NDD_INSTANCE *newparent;</dt>
+<dd>New parent instance pointer.</dd>
+</dl>
+
+<p><dt><b>Return value</b></dt><p>
+
+<dl>
+<dt>NDD_INSTANCE *;</dt>
+<dd>Parent instance up until now.</dd></dl>
+
+<p><dt><b>Note</b></dt><p>
+<dd>newparent must not be NULL.</dd>
+</dl>
+
+<hr size=3><p>
+<a NAME="NDDELETEINSTANCEGID"></a><font size="3"><b>ndDeleteInstanceGID</b></font>
+
+<dl>
+<dt><b>Function name</b></dt><p>
+<dd>ndDeleteInstanceGID</dd>
+
+<p><dt><b>Syntax</b></dt><p>
+
+<dd>
+void ndDeleteInstanceGID(NDD_INSTANCE *isp, int type, int gid, int mask);</dd>
+
+<dt>
+<p><b>Description</b></dt><p>
+
+<dd>
+Deletes the instance, matching the parameters specified by type, gid,
+and mask.</dd>
+
+<p>The instance that is deleted is the one that hits [GID] &amp; mask ==
+gid with [TYPE] == type. However, when -1 is specified for type, type is
+not checked.
+<p>All children of isp are evaluated. If a parent is hit upon in the search,
+all of its children are deleted.
+<dt>
+<p><b>Arguments</b></dt><p>
+
+<dl>
+<dt>
+NDD_INSTANCE *isp;</dt>
+
+<dt>
+int type;</dt>
+
+<dt>
+int gid;</dt>
+
+<dt>
+int mask;</dt>
+</dl>
+
+<dt>
+<p><b>Note</b></dt><p>
+
+<dd>
+This function cannot be used inside an instance callback.</dd>
+</dl>
+
+<hr size=3><p><a NAME="NDINIT"></a>
+<font size="3"><b>
+ndInit</b></font>
+
+<dl>
+<dt>
+<b>Function name</b></dt><p>
+
+<dd>
+ndInit</dd>
+
+<dt>
+<p><b>Syntax</b></dt><p>
+
+<dd>
+void ndInit(void);</dd>
+
+<dt>
+<p><b>Description</b></dt><p>
+
+<dd>
+Initializes the module.</dd>
+
+<dt>
+<p><b>Note</b></dt><p>
+
+<dd>
+This function must be called before using the overall 'nd' API. The current
+scene is prepared. Even if the scene is not set, the base for displaying
+the object is prepared.</dd>
+</dl>
+
+<hr size=3><p><a NAME="NDENTRYANIMATION"></a>
+<font size="3"><b>
+ndEntryAnimation</b></font>
+
+<dl>
+<dt>
+<b>Function name</b></dt><p>
+
+<dd>
+ndEntryAnimation</dd>
+
+<dt>
+<p><b>Syntax</b></dt><p>
+
+<dd>
+NDD_INSTANCE *ndEntryAnimation(NDD_INSTANCE *parent, int animno, int id,
+NDD_INSTANCE *tarinst);</dd>
+
+<dt>
+<p><b>Description</b></dt><p>
+
+<dd>
+Creates one timekeeper instance and the number of channels' worth of animation
+instances from the animation reference table.</dd>
+
+<dt>
+<p><b>Arguments</b></dt><p>
+
+<dl>
+<dt>
+NDD_INSTANCE *parent;</dt>
+
+<dd>
+Parent instance pointer.</dd>
+
+<dt>
+int animno;</dt>
+
+<dd>
+Animation number.</dd>
+
+<dt>
+int id;</dt>
+
+<dd>
+Instance ID.</dd>
+
+<dt>
+NDD_INSTANCE *tarinst;</dt>
+
+<dd>
+Instance pointer attaching the animation.</dd>
+</dl>
+
+<dt>
+<p><b>Return value</b></dt><p>
+
+<dd>
+NDD_INSTANCE *;</dd>
+
+<br>Animation timekeeper instance pointer.
+<dt>
+<p><b>Note</b></dt><p>
+
+<dd>
+Cannot be used inside an instance callback.</dd>
+</dl>
+
+<hr size=3><p><a NAME="NDENTRYANIMATIONRAW"></a>
+<b>
+<font size="3">ndEntryAnimationRaw</font></b>
+
+<dl>
+<dt>
+<b>Function name</b></dt><p>
+
+<dd>
+ndEntryAnimationRaw</dd>
+
+<dt>
+<p><b>Syntax</b></dt><p>
+
+<dd>
+NDD_INSTANCE *ndEntryAnimationRaw(NDD_INSTANCE *parent, NDR_ANIM *anp,
+int gid, NDD_INSTANCE *tarinst);</dd>
+
+<dt>
+<p><b>Description</b></dt><p>
+
+<dd>
+Creates one timekeeper instance and the number of channels' worth of animation
+instances from the animation reference table.</dd>
+
+<dt>
+<p><b>Arguments</b></dt><p>
+
+<dl>
+<dt>
+NDD_INSTANCE *parent;</dt>
+
+<dd>
+Parent instance pointer.</dd>
+
+<dt>
+NDR_ANIM *anp;</dt>
+
+<dd>
+Pointer to the animation reference table.</dd>
+
+<dt>
+int gid;</dt>
+
+<dd>
+Instance group ID.</dd>
+
+<dt>
+NDD_INSTANCE *tarinst;</dt>
+
+<dd>
+Instance pointer attaching the animation.</dd>
+</dl>
+
+<dt>
+<p><b>Return value</b></dt><p>
+
+<dd>
+NDD_INSTANCE *;</dd>
+
+<br>Animation timekeeper instance pointer.
+<dt>
+<p><b>Note</b></dt><p>
+
+<dd>
+Cannot be used inside an instance callback.</dd>
+</dl>
+
+<hr size=3><p><a NAME="NDENTRYOBJECT"></a>
+<b>
+<font size="3">ndEntryObject</font></b>
+
+<dl>
+<dt>
+<b>Function name</b></dt><p>
+
+<dd>
+ndEntryObject</dd>
+
+<dt>
+<p><b>Syntax</b></dt><p>
+
+<dd>
+NDD_INSTANCE *ndEntryObject(NDD_INSTANCE *parent, int objno, int shapeno,
+int animno, int gid, int flag);</dd>
+
+<dt>
+<p><b>Description</b></dt><p>
+
+<dd>
+Creates one instance from the object reference table.</dd>
+
+<dt>
+<p><b>Arguments</b></dt><p>
+
+<dl>
+<dt>
+NDD_INSTANCE *parent;</dt>
+
+<dd>
+Parent instance pointer. If NULL, hangs down from object root.</dd>
+
+<dt>
+int objno;</dt>
+
+<dd>
+Index of the object reference table.</dd>
+
+<dt>
+int shapeno;</dt>
+
+<dd>
+Offset of the shape reference table. The object reference table "shape"
+and the list at the position calculated by adding the numeric value specified
+here is registered in the shape held by the object. The shape maintained
+by the object is registered from the "shape" of the object reference table
+and the list of positions obtained by adding the numeric values specified
+by "shape".</dd>
+
+<dt>
+int animno;</dt>
+
+<dd>
+Offset of the animation reference table. To pass animation simultaneously,
+pass the animation of the table derived from adding this value to the values
+of NDR_OBJ.geom_anim.</dd>
+
+<dt>
+int gid;</dt>
+
+<dd>
+The instance ID base value. "gid" specified by NDR_OBJ is added to this
+value and the sum is registered in the created object instance structure.</dd>
+
+<dt>
+int flag;</dt>
+
+<dd>
+Bit-assigned creation flag. Effective when the bit is 1.</dd>
+
+<dd>
+bit 0 ... Set together with NDR_OBJ animation link.</dd>
+
+<dd>
+bit 1 ... Evaluates by tracing link toward end of the parent-child relationship.</dd>
+</dl>
+
+<dt>
+<p><b>Return value</b></dt><p>
+
+<dd>
+NDD_INSTANCE *;</dd>
+
+<br>Pointer to top parent among the created instances.
+<dt>
+<p><b>Note</b></dt><p>
+
+<dd>
+ndEntryObjectRaw is called internally.</dd>
+
+<dd>
+Cannot be used inside an instance callback.</dd>
+</dl>
+
+<hr size=3><p><a NAME="NDENTRYOBJECTRAW"></a>
+<b>
+<font size="3">ndEntryObjectRaw</font></b>
+
+<dl>
+<dt>
+<b>Function name</b></dt><p>
+
+<dd>
+ndEntryObjectRaw</dd>
+
+<dt>
+<p><b>Syntax</b></dt><p>
+
+<dd>
+NDD_INSTANCE *ndEntryObjectRaw(NDD_INSTANCE *parent, NDR_OBJ *rop, int
+gid);</dd>
+
+<dt>
+<p><b>Description</b></dt><p>
+
+<dd>
+Creates one instance from the object reference table. The link is not followed,
+and the animation instance is not created.</dd>
+
+<dt>
+<p><b>Arguments</b></dt><p>
+
+<dl>
+<dt>
+NDD_INSTANCE *parent;</dt>
+
+<dd>
+Parent instance pointer. If NULL, hangs down from object root.</dd>
+
+<dt>
+NDR_OBJ *rop;</dt>
+
+<dd>
+Pointer to the object reference table.</dd>
+
+<dt>
+int gid;</dt>
+
+<dd>
+Instance ID base value. "gid" specified by NDR_OBJ is added to this value
+and the sum is registered in the created object instance structure.</dd>
+</dl>
+
+<dt>
+<p><b>Return value</b></dt><p>
+
+<dd>
+NDD_INSTANCE *;</dd>
+
+<br>Created instance pointer.
+<dt>
+<p><b>Note</b></dt><p>
+
+<dd>
+Cannot be used inside an instance callback.</dd>
+</dl>
+
+<hr size=3><p><a NAME="NDATTACHANIMATION"></a>
+<b>
+<font size="3">ndAttachAnimation</font></b>
+
+<dl>
+<dt>
+<b>Function name</b></dt><p>
+
+<dd>
+ndAttachAnimation</dd>
+
+<dt>
+<p><b>Syntax</b></dt><p>
+
+<dd>
+void ndAttachAnimation(NDD_INSTANCE *parent, NDD_INSTANCE *isp, int objno,
+int animno, int gid, int flag)</dd>
+
+<dt>
+<p><b>Description</b></dt><p>
+
+<dd>
+References the animation link in the object reference table and attaches
+the animation to the existing object instance.</dd>
+
+<dt>
+<p><b>Arguments</b></dt><p>
+
+<dl>
+<dt>
+NDD_INSTANCE *parent;</dt>
+
+<dd>
+Parent instance pointer. If NULL, hangs down from animation root.</dd>
+
+<dt>
+NDD_INSTANCE *isp;</dt>
+
+<dd>
+Pointer of object instance attaching the animation.</dd>
+
+<dt>
+int objno;</dt>
+
+<dd>
+Object number on the global resource list.</dd>
+
+<dt>
+int animno;</dt>
+
+<dd>
+Offset of the animation reference table. To pass animation simultaneously,
+pass the animation of the table derived from adding this value to the values
+of NDR_OBJ.geom_anim.</dd>
+
+<dt>
+int gid;</dt>
+
+<dd>
+The instance ID base value. "gid" specified by NDR_OBJ is added to this
+value and the sum is registered in the created object instance structure.</dd>
+
+<dt>
+int flag;</dt>
+
+<dd>
+Bit-assigned creation flag. Effective when the bit is 1.</dd>
+
+<dd>
+bit 0 ... Unused.</dd>
+
+<dd>
+bit 1 ... Evaluates by tracing link toward end of the parent-child relationship.</dd>
+</dl>
+
+<dt>
+<p><b>Return value</b></dt><p>
+
+<dd>
+NDD_INSTANCE *;</dd>
+
+<dd>
+Pointer to the top parent among the created instances.</dd>
+
+<dt>
+<p><b>Note</b></dt><p>
+
+<dd>
+The object instance passed by "isp" is handled as an object that was created
+according to the NDR_OBJ structure list specified by objno.</dd>
+
+<dd>
+Cannot be used inside an instance callback.</dd>
+</dl>
+
+<hr size=3><p><a NAME="NDENTRYDEFORMVTX"></a>
+<b>
+<font size="3">ndEntryDeformVtx</font></b>
+
+<dl>
+<dt>
+<b>Function name</b></dt><p>
+
+<dd>
+ndEntryDeformVtx</dd>
+
+<dt>
+<p><b>Syntax</b></dt><p>
+
+<dd>
+NDD_INSTANCE *ndEntryDeformVtx(NDD_INSTANCE *isp, NDR_DEFORM *dmfp, int
+ofs, int gid);</dd>
+
+<dt>
+<p><b>Description</b></dt><p>
+
+<dd>
+Passes the vertex deform instance.</dd>
+
+<dt>
+<p><b>Arguments</b></dt><p>
+
+<dl>
+<dt>
+NDD_INSTANCE *isp;</dt>
+
+<dd>
+Parameters</dd>
+
+<dt>
+NDR_DEFORM *dmfp;</dt>
+
+<dd>
+Pointer to the vertex deform structure.</dd>
+
+<dt>
+int ofs;</dt>
+
+<dd>
+Offset for when the raw vertex data list is referenced.</dd>
+
+<dt>
+int gid;</dt>
+
+<dd>
+Instance group ID.</dd>
+</dl>
+
+<dt>
+<p><b>Return value</b></dt><p>
+
+<dd>
+NDD_INSTANCE *;</dd>
+
+<dd>
+Pointer of the created vertex deform instance.</dd>
+
+<dt>
+<p><b>Note</b></dt><p>
+
+<dd>
+This instance must be a child of the parent deform_root_instp.</dd>
+</dl>
+
+<hr size=3><p><a NAME="NDENTRYDEFORMVTXCOL"></a>
+<b>
+<font size="3">ndEntryDeformVtxcol</font></b>
+
+<dl>
+<dt>
+<b>Function name</b></dt><p>
+
+<dd>
+ndEntryDeformVtxcol</dd>
+
+<dt>
+<p><b>Syntax</b></dt><p>
+
+<dd>
+NDD_INSTANCE *ndEntryDeformVtxcol(NDD_INSTANCE *isp, NDR_DEFORM *dmfp,
+int ofs, int gid);</dd>
+
+<dt>
+<p><b>Description</b></dt><p>
+
+<dd>
+Passes the vertex color deform instance.</dd>
+
+<dt>
+<p><b>Arguments</b></dt><p>
+
+<dl>
+<dt>
+NDD_INSTANCE *isp;</dt>
+
+<dd>
+Pointer to the active vertex instance.</dd>
+
+<dt>
+NDR_DEFORM *dmfp;</dt>
+
+<dd>
+Pointer to the vertex color deform structure.</dd>
+
+<dt>
+int ofs;</dt>
+
+<dd>
+Offset for when the raw vertex color data list is referenced.</dd>
+
+<dt>
+int gid;</dt>
+
+<dd>
+Instance group ID.</dd>
+</dl>
+
+<dt>
+<p><b>Return value</b></dt><p>
+
+<dd>
+NDD_INSTANCE *;</dd>
+
+<dd>
+Pointer of the created vertex color deform instance.</dd>
+
+<dt>
+<p><b>Note</b></dt><p>
+
+<dd>
+This instance must be a child of the parent deform_root_instp. The system
+function malloc() is used internally to reserve three memory sites. Since
+the callback at the end is set, the memory reserved by malloc() is released
+within the callback routine.</dd>
+</dl>
+
+<hr size=3><p><a NAME="NDENTRYDEFORMVTXNV"></a>
+<b>
+<font size="3">ndEntryDeformVtxnv</font></b>
+
+<dl>
+<dt>
+<b>Function name</b></dt><p>
+
+<dd>
+ndEntryDeformVtxnv</dd>
+
+<dt>
+<p><b>Syntax</b></dt><p>
+
+<dd>
+NDD_INSTANCE *ndEntryDeformVtxnv(NDD_INSTANCE *isp, NDR_DEFORM *dmfp, int
+ofs, int gid);</dd>
+
+<dt>
+<p><b>Description</b></dt><p>
+
+<dd>
+Passes the vertex normal deform instance.</dd>
+
+<dt>
+<p><b>Arguments</b></dt><p>
+
+<dl>
+<dt>
+NDD_INSTANCE *isp;</dt>
+
+<dd>
+Pointer to the active vertex instance.</dd>
+
+<dt>
+NDR_DEFORM *dmfp;</dt>
+
+<dd>
+Pointer to the vertex normal deform structure.</dd>
+
+<dt>
+int ofs;</dt>
+
+<dd>
+Offset for when the raw vertex normal data list is referenced.</dd>
+
+<dt>
+int gid;</dt>
+
+<dd>
+Instance group ID.</dd>
+</dl>
+
+<dt>
+<p><b>Return value</b></dt><p>
+
+<dd>
+NDD_INSTANCE *;</dd>
+
+<dd>
+Pointer of the created vertex normal deform instance.</dd>
+
+<dt>
+<p><b>Note</b></dt><p>
+
+<dd>
+This instance must be a child of the parent deform_root_instp. The system
+function malloc() is used internally to reserve three memory sites. Since
+the callback at the end is set, the memory reserved by malloc() is released
+within the callback routine.</dd>
+</dl>
+
+<hr size=3><p><a NAME="NDENTRYDEFORMVTXST"></a>
+<b>
+<font size="3">ndEntryDeformVtxst</font></b>
+
+<dl>
+<dt>
+<b>Function name</b></dt><p>
+
+<dd>
+ndEntryDeformVtxst</dd>
+
+<dt>
+<p><b>Syntax</b></dt><p>
+
+<dd>
+NDD_INSTANCE *ndEntryDeformVtxst(NDD_INSTANCE *isp, NDR_DEFORM *dmfp, int
+ofs, int gid);</dd>
+
+<dt>
+<p><b>Description</b></dt><p>
+
+<dd>
+Makes an entry of the vertex texture coordinate deform instance.</dd>
+
+<dt>
+<p><b>Arguments</b></dt><p>
+
+<dl>
+<dt>
+NDD_INSTANCE *isp;</dt>
+
+<dd>
+Pointer for the active vertex instance</dd>
+
+<dt>
+NDR_DEFORM *dmfp;</dt>
+
+<dd>
+Pointer for the vertex texture coordinate deform structure</dd>
+
+<dt>
+int ofs;</dt>
+
+<dd>
+Offset when referring to the raw vertex texture coordinate data list</dd>
+
+<dt>
+int gid;</dt>
+
+<dd>
+Instance group ID</dd>
+</dl>
+
+<dt>
+<p><b>Return value</b></dt><p>
+
+<dd>
+NDD_INSTANCE *;</dd>
+
+<dd>
+Pointer for the created vertex texture coordinate deform instance</dd>
+
+<dt>
+<p><b>Note</b></dt><p>
+
+<dd>
+This instance is linked to the exclusive parent (deform_root_instp). Three (3) memories
+are reserved inside using the system function malloc(). Also, a call back
+for terminating is set, and the memory reserved by malloc() is released
+inside the call back routine.</dd>
+</dl>
+
+<hr size=3><p><a NAME="NDENTRYDEFORMSHAPE"></a>
+<b><font size="3">ndEntryDeformShape</font></b>
+
+<dl>
+<dt>
+<b>Function name</b></dt><p>
+
+<dd>
+ndEntryDeformShape</dd>
+
+<dt>
+<p><b>Syntax</b></dt><p>
+
+<dd>
+NDD_INSTANCE *ndEntryDeformShape(NDD_INSTANCE *isp, int ofs_rawvtx, int
+ofs_rawvtxcol, int ofs_rawvtxnv, int ofs_rawvtxst, int gid, int flag);</dd>
+
+<dt>
+<p><b>Description</b></dt><p>
+
+<dd>
+Takes the shape being referenced by the object instance and substitutes
+it for the modulated vertex information.</dd>
+
+<dt>
+<p><b>Arguments</b></dt><p>
+
+<dl>
+<dt>
+NDD_INSTANCE *isp;</dt>
+
+<dd>
+Pointer to the object instance of the modulation target.</dd>
+
+<dt>
+int ofs_rawvtx;</dt>
+
+<dd>
+int ofs_rawvtxcol;</dd>
+
+<dt>
+int ofs_rawvtxnv;</dt>
+
+<dt>
+int ofs_rawvtxst;</dt>
+
+<dd>
+Offset for when each data list is referenced.</dd>
+
+<dt>
+int gid;</dt>
+
+<dd>
+Instance group ID.</dd>
+
+<dt>
+int flag;</dt>
+
+<dd>
+Bit-assigned creation flag. Effective when the bit is 1.</dd>
+
+<dd>
+bit 0 ... Passes the vertex deform.</dd>
+
+<dd>
+bit 1 ... Passes the vertex color deform.</dd>
+
+<dd>
+bit 2 ... Passes the vertex normal deform.</dd>
+
+<dd>
+bit 3 ... Makes an entry of the vertex texture coordinate deform.</dd>
+</dl>
+
+<dt>
+<p><b>Return value</b></dt><p>
+
+<dd>
+NDD_INSTANCE *;</dd>
+
+<dd>
+The created active vertex instance's pointer.</dd>
+
+<dt>
+<p><b>Note</b></dt><p>
+
+<dd>
+The upper instance of ndEntryDeformVtx(), ndEntryDeformVtxnv(), ndEntryDeformVtxcol(),
+and ndEntryDeformVtxst() are created. Inside the function, the creation
+of each deform instance is evaluated while watching the parameter flag.
+It has two Vtx buffers in order to adjust to the asynchronous construction
+of Gfx. The system function malloc() is used internally to reserve three
+memory sites.</dd>
+
+<dd>
+Since the callback at the end is set, the memory reserved by malloc() is
+released within the callback routine.</dd>
+</dl>
+
+<hr size=3><p><a NAME="NDATTACHDEFORM"></a>
+<b>
+<font size="3">ndAttachDeform</font></b>
+
+<dl>
+<dt>
+<b>Function name</b></dt><p>
+
+<dd>
+ndAttachDeform</dd>
+
+<dt>
+<p><b>Syntax</b></dt><p>
+
+<dd>
+void ndAttachDeform(NDD_INSTANCE *isp, int rawvtxno, int rawvtxcolno, int
+rawvtxnvno, int rawvtxstno, int gid, int flag);</dd>
+
+<dt>
+<p><b>Description</b></dt><p>
+
+<dd>
+Passes the deform if it is prepared for the hierarchical object instance.</dd>
+
+<dt>
+<p><b>Arguments</b></dt><p>
+
+<dl>
+<dt>
+NDD_INSTANCE *isp;</dt>
+
+<dd>
+Pointer of the object instance that becomes the target for creation of
+the active vertex instance.</dd>
+
+<dt>
+int rawvtxno;</dt>
+
+<dt>
+int rawvtxcolno;</dt>
+
+<dt>
+int rawvtxnvno;</dt>
+
+<dt>
+int rawvtxstno;</dt>
+
+<dd>
+Offset for when each data list is referenced.</dd>
+
+<dt>
+int gid;</dt>
+
+<dd>
+Instance group ID.</dd>
+
+<dt>
+int flag;</dt>
+
+<dd>
+Bit-assigned creation flag. Effective when the bit is 1.</dd>
+
+<dd>
+bit 0 ... Unused.</dd>
+
+<dd>
+bit 1 ... Evaluates by tracing link toward the end of the parent-child relationship.</dd>
+
+<dd>
+bit 2 ... Passes the vertex deform.</dd>
+
+<dd>
+bit 3 ... Passes the vertex color deform.</dd>
+
+<dd>
+bit 4 ... Passes the vertex normal deform.</dd>
+
+<dd>
+bit 5 ... Makes an entry of the vertex texture coordinate deform.</dd>
+</dl>
+
+<dt>
+<p><b>Return value</b></dt><p>
+
+<dt>
+<p><b>Note</b></dt><p>
+</dl>
+
+<hr size=3><p><a NAME="NDSETUPSCENE"></a>
+<b>
+<font size="3">ndSetupScene&nbsp</font></b>
+
+<dl>
+<dt>
+<b>Function name</b></dt><p>
+
+<dd>
+ndSetupScene</dd>
+
+<dt>
+<b>Function name</b></dt><p>
+
+<dd>
+void ndSetupScene(NDD_RESINFO *rip, int gid, int flag);</dd>
+
+<dt>
+<p><b>Description</b></dt><p>
+
+<dd>
+Constructs the scene from the scene reference table.</dd>
+
+<dt>
+<p><b>Arguments</b></dt><p>
+
+<dl>
+<dt>
+NDD_RESINFO *rip;</dt>
+
+<dd>
+Resouce Information</dd>
+
+<dt>
+int gid;</dt>
+
+<dd>
+Group ID at the time the object instance was registered.</dd>
+
+<dt>
+int flag;</dt>
+
+<dd>
+Flag for creating the flags that set the creation conditions. The following
+are effective when each bit is 1:</dd>
+
+<dd>
+bit 0 ... Set together with the NDR_OBJ animation link.</dd>
+
+<dd>
+bit 1 ... Evaluates by tracing link toward the end of the parent-child relationship.</dd>
+
+<dd>
+bit 2 ... Passes the vertex deform.</dd>
+
+<dd>
+bit 3 ... Passes the vertex color deform.</dd>
+
+<dd>
+bit 4 ... Passes the vertex normal deform</dd>
+
+<dd>
+bit 5 ... Makes an entry of the vertex texture coordinate deform.</dd>
+</dl>
+
+<dt>
+<p><b>Note</b></dt><p>
+
+<dd>
+Refer to rip->resinfo->scene for the scene data structure used for making
+settings.</dd>
+</dl>
+
+<hr size=3><p><a NAME="NDSETUPSCREEN"></a>
+<b>
+<font size="3">ndSetScreen</font></b>
+
+<dl>
+<dt>
+<b>Function name</b></dt><p>
+
+<dd>
+ndSetScreen</dd>
+
+<dt>
+<p><b>Syntax</b></dt><p>
+
+<dd>
+void ndSetScreen(int top, int bottom, int left, int right);</dd>
+
+<dt>
+<p><b>Description</b></dt><p>
+
+<dd>
+Sets the width and height of the screen display area.</dd>
+
+<dt>
+<p><b>Arguments</b></dt><p>
+
+<dl>
+<dt>
+int top;</dt>
+
+<dt>
+int bottom;</dt>
+
+<dt>
+int left;</dt>
+
+<dt>
+int right;</dt>
+
+<dd>
+The display range in units of pixels.</dd>
+</dl>
+</dl>
+
+<hr size=3><p><a NAME="NDRESINIT"></a>
+<b>
+<font size="3">ndResInit&nbsp</font></b>
+
+<dl>
+<dt>
+<b>Function name</b></dt><p>
+
+<dd>
+ndResInit</dd>
+
+<dt>
+<p><b>Syntax</b></dt><p>
+
+<dd>
+void ndResInit(int olplim, int slplim, int alplim, int rvlplim, int rvclplim,
+int rvnlplim, int rvslplim);</dd>
+
+<dt>
+<p><b>Description</b></dt><p>
+
+<dd>
+Initializes the resource module.</dd>
+
+<dt>
+<p><b>Arguments</b></dt><p>
+
+<dl>
+<dt>
+int olplim;</dt>
+
+<dt>
+int slplim;</dt>
+
+<dt>
+int alplim;</dt>
+
+<dt>
+int rvlplim;</dt>
+
+<dt>
+int rvclplim;</dt>
+
+<dt>
+int rvnlplim;</dt>
+
+<dt>
+int rvslplim;</dt>
+
+<dd>
+The list management pointer and the maximum number for each data class.</dd>
+</dl>
+
+<dt>
+<p><b>Note</b></dt><p>
+<dd>
+The pointer list is reserved by the system
+function malloc().</dt>
+</dl>
+
+<hr size=3><p><a NAME="NDRESENTRY"></a>
+<b>
+<font size="3">ndResEntry&nbsp</font></b>
+
+<dl>
+<dt>
+<b>Function name</b></dt><p>
+
+<dd>
+ndResEntry</dd>
+
+<dt>
+<p><b>Syntax</b></dt><p>
+
+<dd>
+NDD_RESINFO *ndResEntry(NDR_RESINFO *rrp, int usemask);</dd>
+
+<dt>
+<p><b>Description</b></dt><p>
+
+<dd>
+Adds the specified resource to the global resource list.</dd>
+
+<dt>
+<p><b>Arguments</b></dt><p>
+
+<dl>
+<dt>
+NDR_RESINFO *rrp;</dt>
+
+<dd>
+Pointer to the resource information structure for reference use.</dd>
+
+<dt>
+int usemask;</dt>
+
+<dd>
+Specifies in bits the data type to be passed from the rrp contents.</dd>
+</dl>
+
+<dt>
+<p><b>Return value</b></dt><p>
+
+<dd>
+NDR_RESINFO *drp;</dd>
+
+<dd>
+Pointer to the resource information structure.</dd>
+
+<dt>
+<p><b>Note</b></dt><p>
+</dl>
+
+<hr size=3><p><a NAME="NDRESRELEASE"></a>
+<b>
+<font size="3">ndResRelease</font></b>
+
+<dl>
+<dt>
+<b>Function name</b></dt><p>
+
+<dd>
+ndResRelease</dd>
+
+<dt>
+<p><b>Syntax</b></dt><p>
+
+<dd>
+void ndResRelease(NDD_RESINFO *drp);</dd>
+
+<dt>
+<p><b>Description</b></dt><p>
+
+<dd>
+Releases the specified resource from the global list.</dd>
+
+<dt>
+<p><b>Arguments</b></dt><p>
+
+<dl>
+<dt>
+NDD_RESINFO *drp;</dt>
+
+<dd>
+Pointer to the resource information structure.</dd>
+</dl>
+
+<dt>
+<p><b>Return value</b></dt><p>
+
+<dt>
+<p><b>Note</b></dt><p>
+
+<dd>
+The argument drp is released.</dd>
+
+<dd>
+Only the resource that was just passed can be released.</dd>
+</dl>
+
+<hr size=3><p><a NAME="NDDELETEINSTANCE"></a>
+<b>
+<font size="3">ndDeleteInstance</font></b>
+
+<dl>
+<dt>
+<b>Function name</b></dt><p>
+
+<dd>
+ndDeleteInstance</dd>
+
+<dt>
+<p><b>Syntax</b></dt><p>
+
+<dd>
+void ndDeleteInstance(NDD_INSTANCE *isp);</dd>
+
+<dt>
+<p><b>Description</b></dt><p>
+
+<dd>
+Delete instance and matching the parameters.</dd>
+
+<dt>
+<p><b>Note</b></dt><p>
+
+<dd>
+The function cannot be used inside an instance callback.</dd>
+</dl>
+
+<hr size=3><p><a NAME="NDGETINSTANCETRXPOINTER"></a>
+<b>
+<font size="3">ndGetInstanceTRXPointer</font></b>
+
+<dl>
+<dt>
+<b>Function name</b></dt><p>
+
+<dd>
+ndGetInstanceTRXPointer</dd>
+
+<dt>
+<p><b>Syntax</b></dt><p>
+
+<dd>
+TRX *ndGetInstanceTRXPointer(NDD_INSTANCE *isp);</dd>
+
+<dt>
+<p><b>Description</b></dt><p>
+
+<dd>
+Return transform buffer pointer from instance pointer.</dd>
+
+<dt>
+<p><b>Arguments</b></dt><p>
+
+<dl>
+<dt>
+NDD_INSTANCE *isp;</dt>
+
+<dd>
+Instance pointer</dd>
+</dl>
+
+<dt>
+<p><b>Note</b></dt><p>
+
+<dd>
+Depending on data type, the position of TRX is varied.</dd>
+</dl>
+
+<hr size=3><p><a NAME="NDSETUPIDENTTRX"></a>
+<b>
+<font size="3">ndSetupIdentTRX</font></b>
+
+<dl>
+<dt>
+<b>Function name</b></dt><p>
+
+<dd>
+ndSetupIdentTRX</dd>
+
+<dt>
+<p><b>Syntax</b></dt><p>
+
+<dd>
+void ndSetupIdentTRX(TRX *p)</dd>
+
+<dt>
+<p><b>Description</b></dt><p>
+
+<dd>
+Return matrix</dd>
+
+<dt>
+<p><b>Arguments</b></dt><p>
+
+<dl>
+<dt>
+TRX *p;</dt>
+
+<dt>
+Pointer of transform matrix</dt>
+</dl>
+
+<dt>
+<p><b>Note</b></dt><p>
+
+<dd>
+Assign 9 parameters of 0,0,0, 0,0,0, 1,1,1 and returns matrix corresponding
+to Parallel translation, rotation, enlargement and reduction.</dd>
+</dl>
+
+<hr size=3><p><a NAME="NDPROGRESSANIMTIME"></a>
+<b>
+<font size="3">ndProgressAnimTime</font></b>
+
+<dl>
+<dt>
+<b>Function name</b></dt><p>
+
+<dd>
+ndProgressAnimTime</dd>
+
+<dt>
+<p><b>Syntax</b></dt><p>
+
+<dd>
+int ndProgressAnimTime(NDD_INST_ANIMTK *ntkp);</dd>
+
+<dt>
+<p><b>Description</b></dt><p>
+
+<dd>
+Time advance process for timekeeper.</dd>
+
+<dt>
+<p><b>Arguments</b></dt><p>
+
+<dl>
+<dt>
+NDD_INST_ANIMTK *ntkp</dt>
+
+<dd>
+The animation timekeeper instance pointer.</dd>
+</dl>
+
+<dt>
+<p><b>Return value</b></dt><p>
+
+<dd>
+int;</dd>
+
+<dd>
+Execution result. At present, 1 must be returned.</dd>
+
+<dt>
+<p><b>Note</b></dt><p>
+
+<dd>
+Called by ndEvalInstance</dd>
+</dl>
+
+<hr size=3><p><a NAME="NDSETANIMCHANNEL"></a>
+<b>
+<font size="3">ndSetAnimChannel</font></b>
+
+<dl>
+<dt>
+<b>Function name</b></dt><p>
+
+<dd>
+ndSetAnimChannel</dd>
+
+<dt>
+<p><b>Syntax</b></dt><p>
+
+<dd>
+int ndSetAnimChannel(NDD_INST_ANIM *niap);</dd>
+
+<dt>
+<p><b>Description</b></dt><p>
+
+<dd>
+Key frame animation channel process.</dd>
+
+<dt>
+<p><b>Arguments</b></dt><p>
+
+<dl>
+<dt>
+NDD_INST_ANIM *niap;</dt>
+
+<dd>
+Animation instance pointer.</dd>
+</dl>
+
+<dt>
+<p><b>Return value</b></dt><p>
+
+<dd>
+int;</dd>
+
+<dd>
+Execution result.</dd>
+
+<dt>
+<p><b>Note</b></dt><p>
+
+<dd>
+Called by ndEvalInstance.</dd>
+</dl>
+
+<hr size=3><p><a NAME="NDRELOADDYNAMICVERTEX"></a>
+<b>
+<font size="3">ndReloadDynamicVertex</font></b>
+
+<dl>
+<dt>
+<b>Function name</b></dt><p>
+
+<dd>
+ndReloadDynamicVertex</dd>
+
+<dt>
+<p><b>Syntax</b></dt><p>
+
+<dd>
+void ndReloadDynamicVertex(NDD_INST_DYNAMICVTX *nidp);</dd>
+
+<dt>
+<p><b>Description</b></dt><p>
+
+<dd>
+References the modulation tables of the various deform instances and assembles
+Vtx.</dd>
+
+<dt>
+<p><b>Arguments</b></dt><p>
+
+<dl>
+<dt>
+NDD_INST_DYNAMICVTX *nidp;</dt>
+
+<dd>
+The active vertex instance's internal structure pointer.</dd>
+</dl>
+
+<dt>
+<p><b>Return value</b></dt><p>
+
+<dt>
+<p><b>Note</b></dt><p>
+
+<dd>
+Since it depends in part on the drawing driver, two Vtx tables are prepared
+for making settings.</dd>
+</dl>
+
+<hr size=3><p><a NAME="NDDEFORMVERTEX"></a>
+<b>
+<font size="3">ndDeformVertex</font></b>
+
+<dl>
+<dt>
+<b>Function name</b></dt><p>
+
+<dd>
+ndDeformVertex</dd>
+
+<dt>
+<p><b>Syntax</b></dt><p>
+
+<dd>
+void ndDeformVertex(NDD_INST_DEFORM_VTX *nidvp);</dd>
+
+<dt>
+<p><b>Description</b></dt><p>
+
+<dd>
+Deforms the vertex.</dd>
+
+<dt>
+<p><b>Arguments</b></dt><p>
+
+<dl>
+<dt>
+NDD_INST_DEFORM_VTX *nidvp;</dt>
+
+<dd>
+The vertex deform instance's internal structure pointer.</dd>
+</dl>
+
+<dt>
+<p><b>Return value</b></dt><p>
+
+<dt>
+<p><b>Note</b></dt><p>
+</dl>
+
+<hr size=3><p><a NAME="NDDEFORMVERTEXNV"></a>
+<b>
+<font size="3">ndDeformVertexNv</font></b>
+
+<dl>
+<dt>
+<b>Function name</b></dt><p>
+
+<dd>
+ndDeformVertexNv</dd>
+
+<dt>
+<p><b>Syntax</b></dt><p>
+
+<dd>
+void ndDeformVertexNv(NDD_INST_DEFORM_VTXNV *nidcp);</dd>
+
+<dt>
+<p><b>Description</b></dt><p>
+
+<dd>
+Defroms the vertex normal.</dd>
+
+<dt>
+<p><b>Arguments</b></dt><p>
+
+<dl>
+<dt>
+NDD_INST_DEFORM_VTXNV *nidcp;</dt>
+
+<dd>
+The vertex normal deform instance's internal structure pointer.</dd>
+</dl>
+
+<dt>
+<p><b>Return value</b></dt><p>
+
+<dt>
+<p><b>Note</b></dt><p>
+</dl>
+
+<hr size=3><p><a NAME="NDDEFORMVERTEXCOLOR"></a>
+<b>
+<font size="3">ndDeformVertexColor</font></b>
+
+<dl>
+<dt>
+<b>Function name</b></dt><p>
+
+<dd>
+ndDeformVertexColor</dd>
+
+<dt>
+<p><b>Syntax</b></dt><p>
+
+<dd>
+void ndDeformVertexColor(NDD_INST_DEFORM_VTXCOL *nidcp);</dd>
+
+<dt>
+<p><b>Description</b></dt><p>
+
+<dd>
+Deformas the vertex color.</dd>
+
+<dt>
+<p><b>Arguments</b></dt><p>
+
+<dl>
+<dt>
+NDD_INST_DEFORM_VTXCOL *nidcp;</dt>
+
+<dd>
+The vertex color deform instance's internal structure pointer.</dd>
+</dl>
+
+<dt>
+<p><b>Return value</b></dt><p>
+
+<dt>
+<p><b>Note</b></dt><p>
+</dl>
+
+<hr size=3><p><a NAME="NDDEFORMVERTEXST"></a>
+<b>
+<font size="3">ndDeformVertexSt</font></b>
+
+<dl>
+<dt>
+<b>Function name</b></dt><p>
+
+<dd>
+ndDeformVertexSt</dd>
+
+<dt>
+<p><b>Syntax</b></dt><p>
+
+<dd>
+void ndDeformVertexSt(NDD_INST_DEFORM_VTXST *nidcp);</dd>
+
+<dt>
+<p><b>Description</b></dt><p>
+
+<dd>
+Deforms the vertex normal.</dd>
+
+<dt>
+<p><b>Arguments</b></dt><p>
+
+<dl>
+<dt>
+NDD_INST_DEFORM_VTXNV *nidcp;</dt>
+
+<dd>
+Vertex texture deform instance's internal structure pointer</dd>
+</dl>
+
+<dt>
+<p><b>Return value</b></dt><p>
+
+<dt>
+<p><b>Note</b></dt><p>
+</dl>
+
+<hr size=3><p><a NAME="NDMAKECAMERAMATRIX"></a>
+<b>
+<font size="3">ndMakeCameraMatrix</font></b>
+
+<dl>
+<dt>
+<b>Function name</b></dt><p>
+
+<dd>
+ndMakeCameraMatrix</dd>
+
+<dt>
+<p><b>Syntax</b></dt><p>
+
+<dd>
+void ndMakeCameraMatrix(float mf[4][4])</dd>
+
+<dt>
+<p><b>Description</b></dt><p>
+
+<dd>
+Create Camera matrix(LookAt) from Camera information.</dd>
+
+<dt>
+<p><b>Note</b></dt><p>
+
+<dd>
+It is not the matrix related to Perspective or PROJECTION_VIEW.</dd>
+</dl>
+
+<hr size=3><p><a NAME="NDMULTITRX"></a>
+<b>
+<font size="3">ndMultiTrx</font></b>
+
+<dl>
+<dt>
+<b>Function name</b></dt><p>
+
+<dd>
+ndMultiTrx</dd>
+
+<dt>
+<p><b>Syntax</b></dt><p>
+
+<dd>
+void ndMultiTrx(float mf[4][4], TRX *trxp, u32 order);</dd>
+
+<dt>
+<p><b>Description</b></dt><p>
+
+<dd>
+Evaluates TRX structure and creates 4x4 matrix.</dd>
+
+<dt>
+<p><b>Arguments</b></dt><p>
+
+<dl>
+<dt>
+float mf[4][4];</dt>
+
+<dd>
+Buffer storing matrix to be created.</dd>
+
+<dt>
+TRX *trxp;</dt>
+
+<dd>
+Transform data structure of matrix.</dd>
+
+<dt>
+u32 order;</dt>
+
+<dd>
+Rotation component order.</dd>
+</dl>
+
+<dt>
+<p><b>Note</b></dt><p>
+
+<dd>
+Created 4x4 Matrix is stored in buffer of instance work, and used for displaying.</dd>
+</dl>
+
+<hr size=3><p><a NAME="NDEVALINSTANCEONE"></a>
+<b>
+<font size="3">ndEvalInstanceOne</font></b>
+
+<dl>
+<dt>
+<b>Function name</b></dt><p>
+
+<dd>
+ndEvalInstanceOne</dd>
+
+<dt>
+<p><b>Syntax</b></dt><p>
+
+<dd>
+int ndEvalInstanceOne(NDD_INSTANCE *isp, float mf[4][4], float cmf[4][4],
+int forceupd);</dd>
+
+<dt>
+<p><b>Description</b></dt><p>
+
+<dd>
+Frame evaluation for instance specified by isp.</dd>
+
+<dt>
+<p><b>Arguments</b></dt><p>
+
+<dl>
+<dt>
+NDD_INSTANCE *isp;</dt>
+
+<dd>
+Instance pointer.</dd>
+
+<dt>
+float mf[4][4];</dt>
+
+<dd>
+Model view matrix.</dd>
+
+<dt>
+float cmf[4][4];</dt>
+
+<dd>
+Model view matrix updated by the instance.</dd>
+
+<dt>
+int forceupd;</dt>
+
+<dd>
+Flag for forcing matrix creation. Forced by 1.</dd>
+</dl>
+
+<dt>
+<p><b>Return value</b></dt><p>
+
+<dd>
+int;</dd>
+
+<dd>
+Matrix update flag. When the "forceupd" argument value and its own matrix
+are updated, 1 returns the "or" value.</dd>
+
+<dt>
+<p><b>Note</b></dt><p>
+
+<dd>
+mf is used for the basic model view matrix. Even if the matrix is not evaluated,
+mf is returned to cmf.</dd>
+</dl>
+
+<hr size=3><p><a NAME="NDEVALINSTANCE"></a>
+<b>
+<font size="3">ndEvalInstance</font></b>
+
+<dl>
+<dt>
+<b>Function name</b></dt><p>
+
+<dd>
+ndEvalInstance</dd>
+
+<dt>
+<p><b>Syntax</b></dt><p>
+
+<dd>
+void ndEvalInstance(NDD_INSTANCE *isp, float mf[4][4], int forceupd);</dd>
+
+<dt>
+<p><b>Description</b></dt><p>
+
+<dd>
+Frame evaluation is performed on every instances under the instance specified
+by isp.</dd>
+
+<dt>
+<p><b>Arguments</b></dt><p>
+
+<dl>
+<dt>
+NDD_INSTANCE *isp;</dt>
+
+<dd>
+Instance pointer.</dd>
+
+<dt>
+float mf[4][4];</dt>
+
+<dd>
+Model view matrix.</dd>
+
+<dt>
+int forceupd;</dt>
+
+<dd>
+Flag for forcing matrix creation. Forced by 1.</d></dd>
+</dl>
+
+<dt>
+<p><b>Note</b></dt><p>
+
+<dd>
+mf is used for the basic model view matrix.</dd>
+
+<dd>
+Since the callback at the end and 64 bytes buffer is prepared in local,
+it may create huge stack.</dd>
+</dl>
+
+
+<hr size=3><p><a NAME="NDCLEARFB"></a>
+<b>
+<font size="3">ndClearFB</font></b>
+
+<dl>
+<dt>
+<b>Function name</b></dt><p>
+
+<dd>
+ndClearFB</dd>
+
+<dt>
+<p><b>Syntax</b></dt><p>
+
+<dd>
+Gfx *ndClearFB(Gfx *gp, u16 fill_depth, u16 fill_col);</dd>
+
+<dt>
+<p><b>Description</b></dt><p>
+
+<dt>
+<p><b>Arguments</b></dt><p>
+
+<dl>
+<dt>
+Gfx *gp;</dt>
+
+<dd>
+Display list pointer</dd>
+
+<dt>
+u16 fill_depth;</dt>
+
+<dd>
+The value filling the Z buffer.</dd>
+
+<dt>
+u16 fill_col;</dt>
+
+<dd>
+The value filling the color value.</dd>
+</dl>
+
+<dt>
+<p><b>Return value</b></dt><p>
+
+<dd>
+Gfx *gp;</dd>
+
+<dd>
+Dislay list pointer.</dd>
+
+<dt>
+<p><b>Note</b></dt><p>
+</dl>
+
+<hr size=3><p><a NAME="NDEVALLIGHT"></a>
+<b>
+<font size="3">ndEvalLight</font></b>
+
+<dl>
+<dt>
+<b>Function name</b></dt><p>
+
+<dd>
+ndEvalLight</dd>
+
+<dt>
+<p><b>Syntax</b></dt><p>
+
+<dd>
+int ndEvalLight(float *tarpos, NDD_LIGHT *lp, RGBAQUAD *color, s8 *nv);</dd>
+
+<dt>
+<p><b>Description</b></dt><p>
+
+<dt>
+<p><b>Arguments</b></dt><p>
+
+<dl>
+<dt>
+float *tarpos;</dt>
+
+<dd>
+Position of the target that is bathed in light. Three values x,y,z. If
+NULL, calculate as the origin (0,0,0).</dd>
+
+<dt>
+NDD_LIGHT *lp;</dt>
+
+<dd>
+Pointer to light structure.</dd>
+
+<dt>
+RGBQUAD *color;</dt>
+
+<dd>
+Pointer to the RGBAQUAD structure storing the color value.</dd>
+
+<dt>
+s8 *nv;</dt>
+
+<dd>
+Pointer storing the light vector. Three values x,y,z(3 bytes) in S0.7 format.</dd>
+</dl>
+
+<dt>
+<p><b>Return value</b></dt><p>
+
+<dd>
+int;</dd>
+
+<dd>
+0 is returned when light is null on evaluation.</dd>
+
+<dt>
+<p><b>Note</b></dt><p>
+
+<dd>
+The NDD_LIGHT structure has the following limitations: * The normal passed
+by fnv must be normalized. * If NDC_LFLAG_ATTENUATION is set for flag,
+valid value must be assigned for start and end. * NDC_LFLAG_CUTOFF is valid
+only when NDC_LFLAG_HAVEPOS. These can be checked by sacrificing the execution
+speed, but they are ignored since they are game-use managers. When the
+return value "0" is returned, color and nv are not set.</dd>
+</dl>
+
+<hr size=3><p><a NAME="NDRELOADLIGHTREG"></a>
+<b>
+<font size="3">ndReloadLightReg</font></b>
+
+<dl>
+<dt>
+<b>Function name</b></dt><p>
+
+<dd>
+ndReloadLightReg</dd>
+
+<dt>
+<p><b>Syntax</b></dt><p>
+
+<dd>
+Gfx *ndReloadLightReg(Gfx *gp, NDD_LIGHT *lp, u32 newcolor, s8 *newlvec);</dd>
+
+<dt>
+<p><b>Description</b></dt><p>
+
+<dt>
+<p><b>Arguments</b></dt><p>
+
+<dl>
+<dt>
+Gfx *gp;</dt>
+
+<dd>
+Display list pointer.</dd>
+
+<dt>
+NDD_LIGHT *lp;</dt>
+
+<dd>
+Pointer to the light structure.</dd>
+
+<dt>
+u32 newcolor;</dt>
+
+<dd>
+The newly set color value. It must be stored in 0xRRGGBB00 format from
+the high-order bit. The lower 8 bits are handled internally as 0x00.</dd>
+
+<dt>
+s8 *newlvec;</dt>
+
+<dd>
+Pointer to the newly set vector. See the S0.7 format values xy,z (3 bytes).
+NULL is not accepted.</dd>
+</dl>
+
+<dt>
+<p><b>Return value</b></dt><p>
+
+<dd>
+Gfx *gp;</dd>
+
+<dd>
+Display list pointer.</dd>
+
+<dt>
+<p><b>Note</b></dt><p>
+
+<dd>
+References color, power and stored_nv is the NDD_LIGHT structure, defines
+the heap for require parts, and loads the RSP command into the buffer.
+Since this function has been optimized for internal use, please know it
+thorughly if the user is to be free to call it at will.</dd>
+</dl>
+
+<hr size=3><p><a NAME="NDSETUPLIGHTSET"></a>
+<b>
+<font size="3">ndSetupLightset</font></b>
+
+<dl>
+<dt>
+<b>Function name</b></dt><p>
+
+<dd>
+ndSetupLightset</dd>
+
+<dt>
+<p><b>Syntax</b></dt><p>
+
+<dd>
+Gfx *ndSetupLightset(Gfx *gp, float *tarpos, NDD_LIGHTSET *lightset);</dd>
+
+<dt>
+<p><b>Description</b></dt><p>
+
+<dd>
+Evaluates the initialized lightset passed by "lightset" together with the
+object that becomes the target, and loads only the part that has changed
+to the display list.</dd>
+
+<dt>
+<p><b>Arguments</b></dt><p>
+
+<dl>
+<dt>
+Gfx *gp;</dt>
+
+<dd>
+Display list pointer.</dd>
+
+<dt>
+float *tarpos;</dt>
+
+<dd>
+The position of the target that is bathed in the light. Three value x,y,z.
+If NULL, calculate as the origin (0,0,0).</dd>
+
+<dt>
+NDD_LIGHTSET *lightset;</dt>
+
+<dd>
+Pointer to the lightset structure.</dd>
+</dl>
+
+<dt>
+<p><b>Return value</b></dt><p>
+
+<dd>
+Gfx *gp;</dd>
+
+<dd>
+Display list pointer.</dd>
+
+<dt>
+<p><b>Note</b></dt><p>
+
+<dd>
+The "tarpos" argument is passed to ndEvalLight() and evaluated. If the
+result is NULL, it is replaced with the origin ~ and evaluated.</dd>
+</dl>
+
+<hr size=3><p><a NAME="NDINITLIGHTS"></a>
+<b>
+<font size="3">ndInitLights</font></b>
+
+<dl>
+<dt>
+<b>Function name</b></dt><p>
+
+<dd>
+ndInitLights</dd>
+
+<dt>
+<p><b>Syntax</b></dt><p>
+
+<dd>
+int ndInitLights( NDD_LIGHTSET *lightset );</dd>
+
+<dt>
+<p><b>Description</b></dt><p>
+
+<dd>
+Resets the RDP's light settings, determines the number of lights, and allocates
+the light number to each light structure.</dd>
+
+<dt>
+<p><b>Arguments</b></dt><p>
+
+<dl>
+<dt>
+NDD_LIGHTSET *lightset;</dt>
+
+<dd>
+Pointer to the lightset structure.</dd>
+</dl>
+
+<dt>
+<p><b>Return value</b></dt><p>
+
+<dd>
+int;</dd>
+
+<dd>
+Number of effective lights.</dd>
+
+<dt>
+<p><b>Note</b></dt><p>
+
+<dd>
+References the _ENABLE bit of the flag of each light structure, calculates
+the required number of lights, and allocates each light number. These are
+the light numbers that are evaluated by the RSP. However, the user does
+not have to pay any special attention to them. They are referenced and
+used when resetting with the API function.</dd>
+</dl>
+
+<hr size=3><p><a NAME="NDSETUPOBJECTREGISTER"></a>
+<b>
+<font size="3">ndSetupObjectRegister</font></b>
+
+<dl>
+<dt>
+<b>Function name</b></dt><p>
+
+<dd>
+ndSetupObjectRegister</dd>
+
+<dt>
+<p><b>Syntax</b></dt><p>
+
+<dd>
+Gfx *ndSetupObjectRegister( Gfx *gp, NDD_INST_OBJ *niop );</dd>
+
+<dt>
+<p><b>Description</b></dt><p>
+
+<dd>
+References the object instance structure, and resets the registers specified
+for resetting.</dd>
+
+<dt>
+<p><b>Arguments</b></dt><p>
+
+<dl>
+<dt>
+Gfx *gp;</dt>
+
+<dd>
+Pointer to the display list buffer.</dd>
+
+<dt>
+NDD_INST_OBJ *niop;</dt>
+
+<dd>
+Pointer to the object instance structure.</dd>
+</dl>
+
+<dt>
+<p><b>Return value</b></dt><p>
+
+<dd>
+Gfx *;</dd>
+
+<dd>
+Gfx buffer pointer after updating.</dd>
+
+<dt>
+<p><b>Note</b></dt><p>
+
+<dd>
+Called by ndDrawObjectInstance</dd>
+</dl>
+
+<hr size=3><p><a NAME="NDDRAWSHAPE"></a>
+<b>
+<font size="3">ndDrawShape</font></b>
+
+<dl>
+<dt>
+<b>Function name</b></dt><p>
+
+<dd>
+ndDrawShape</dd>
+
+<dt>
+<p><b>Syntax</b></dt><p>
+
+<dd>
+Gfx *ndDrawShape( Gfx *gp, NDR_SHAPE *shp );</dd>
+
+<dt>
+<p><b>Description</b></dt><p>
+
+<dd>
+Loads the Gfx structure into the drawing buffer in accordance with the
+contents of the shape structure.</dd>
+
+<dt>
+<p><b>Arguments</b></dt><p>
+
+<dl>
+<dt>
+Gfx *gp;</dt>
+
+<dd>
+Pointer to the display list buffer.</dd>
+
+<dt>
+NDR_SHAPE *shp;</dt>
+
+<dd>
+Pointer to the shape structure for reference use.</dd>
+</dl>
+
+<dt>
+<p><b>Return value</b></dt><p>
+
+<dd>
+Gfx *;</dd>
+
+<dd>
+Gfx buffer pointer after updating.</dd>
+
+<dt>
+<p><b>Note</b></dt><p>
+
+<dd>
+Called by ndDrawObjectInstance</dd>
+</dl>
+
+<hr size=3><p><a NAME="NDDRAWOBJECTINSTANCE"></a>
+<b>
+<font size="3">ndDrawObjectInstance</font></b>
+
+<dl>
+<dt>
+<b>Function name</b></dt><p>
+
+<dd>
+ndDrawObjectInstance</dd>
+
+<dt>
+<p><b>Syntax</b></dt><p>
+
+<dd>
+int ndDrawObjectInstance( NDD_INST_OBJ *niop );</dd>
+
+<dt>
+<p><b>Description</b></dt><p>
+
+<dd>
+Display one object.</dd>
+
+<dt>
+<p><b>Arguments</b></dt><p>
+
+<dl>
+<dt>
+Gfx *gp;</dt>
+
+<dd>
+Pointer to the display list buffer.</dd>
+
+<dt>
+NDD_INST_OBJ *niop;</dt>
+
+<dd>
+Pointer to the object instance structure.</dd>
+</dl>
+
+<dt>
+<p><b>Return value</b></dt><p>
+
+<dd>
+Gfx *;</dd>
+
+<dd>
+Gfx buffer pointer after updating</dd>
+
+<dt>
+<p><b>Note</b></dt><p>
+
+<dd>
+Called by ndBuildInstanceGfx</dd>
+</dl>
+
+<hr size=3><p><a NAME="NDBUILDINSTANCEGFXATPRIO"></a>
+<b>
+<font size="3">ndBuildInstanceGfxAtPrio</font></b>
+
+<dl>
+<dt>
+<b>Function name</b></dt><p>
+
+<dd>
+ndBuildInstanceGfxAtPrio</dd>
+
+<dt>
+<p><b>Syntax</b></dt><p>
+
+<dd>
+Gfx *ndBuildInstanceGfxAtPrio(Gfx *gp, NDD_INSTANCE *isp, u16 start, u16
+end);</dd>
+
+<dt>
+<p><b>Description</b></dt><p>
+
+<dd>
+Draws instances of the specific priority after the specified instance pointer.</dd>
+
+<dt>
+<p><b>Arguments</b></dt><p>
+
+<dl>
+<dt>
+Gfx *gp;</dt>
+
+<dd>
+Display list pointer</dd>
+
+<dt>
+NDD_INSTANCE *isp;</dt>
+
+<dd>
+The instance pointer. if NULL is given, then everything that follows the
+root of the object is evaluated.</dd>
+
+<dt>
+u16 start;</dt>
+
+<dd>
+The priority that is to be drawn. Start is included in the priority that
+is to be drawn.</dd>
+
+<dt>
+u16 end;</dt>
+
+<dd>
+The priority that is not to be drawn. Please not end will not be drawn.</dd>
+</dl>
+
+<dt>
+<p><b>Return value</b></dt><p>
+
+<dd>
+Gfx *;</dd>
+
+<dd>
+Updated display list pointer.</dd>
+
+<dt>
+<p><b>Note</b></dt><p>
+
+<dd>
+Please assign larger value(higher priority) to start.</dd>
+</dl>
+
+<hr size=3><p><a NAME="NDBUILDSCENEGFX"></a>
+<b>
+<font size="3">ndBuildSceneGfx</font></b>
+
+<dl>
+<dt>
+<b>Function name</b></dt><p>
+
+<dd>
+ndBuildSceneGfx</dd>
+
+<dt>
+<p><b>Syntax</b></dt><p>
+
+<dd>
+Gfx *ndBuildSceneGfx(Gfx *gp, float mul[4][4]);</dd>
+
+<dt>
+<p><b>Description</b></dt><p>
+
+<dd>
+Build up display list of scene part from the current scene structure.</dd>
+
+<dt>
+<p><b>Arguments</b></dt><p>
+
+<dl>
+<dt>
+Gfx *gp;</dt>
+
+<dd>
+Display list pointer.</dd>
+
+<dt>
+float mul[4][4];</dt>
+
+<dd>
+Camera matrix</dd>
+</dl>
+
+<dt>
+<p><b>Note</b></dt><p>
+
+<dd>
+Matrix of camera 'mul' will be multiplied on projection matrix.</dd>
+</dl>
+
+<hr size=3><p><a NAME="NDBUILDINSTANCEGFX"></a>
+<b>
+<font size="3">ndBuildInstanceGfx</font></b>
+
+<dl>
+<dt>
+<b>Function name</b></dt><p>
+
+<dd>
+ndBuildInstanceGfx</dd>
+
+<dt>
+<p><b>Syntax</b></dt><p>
+
+<dd>
+Gfx *ndBuildInstanceGfx(Gfx *gp, NDD_INSTANCE *isp);</dd>
+
+<dt>
+<p><b>Description</b></dt><p>
+
+<dd>
+Build up display list of scene part from the current scene structure.</dd>
+
+<dt>
+<p><b>Arguments</b></dt><p>
+
+<dl>
+<dt>
+Gfx *gp;</dt>
+
+<dd>
+Display list pointer</dd>
+
+<dt>
+NDD_INSTANCE *isp;</dt>
+
+<dd>
+Instance pointer of an object. By assigning NULL, it will evaluate every
+instance under the route of object.</dd>
+</dl>
+
+<dt>
+<p><b>Return value</b></dt><p>
+
+<dd>
+Gfx *;</dd>
+
+<dd>
+Updated display list pointer.</dd>
+
+<dt>
+<p><b>Note</b></dt><p>
+
+<dd>
+ndBuildInstanceGfxAtPrio() is called internally by determining every priority.</dd>
+</dl>
+
+<hr size="3">
+
+<p align="right"><a href="./index.htm#REFER">
+nd Function List</a>
+
+</body>
+</html>

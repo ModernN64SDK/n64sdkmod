@@ -1,0 +1,293 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<title>Audio Library NCL RD3 Revised version (n_audio)</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<FONT FACE="Arial" SIZE="-1">
+
+<h2>4. Installing n_audio</h2>
+
+<p align="right"><a href="index.htm"><img
+src="../../gif/index.gif" alt="[UP]" border="0"
+width="65" height="17"></a></p>
+
+<hr>
+
+<h3><a name="01">4.1 Installation</a></h3>
+
+<p>Following is the procedure for installing the n_audio library. </p>
+
+<p>1. Log-in to the hardware to which this will be installed using the root.
+
+<p>2. Copy the following 3 files to the appropriate directory: 
+</p>
+
+<blockquote>
+    <pre><FONT SIZE="3">Example)
+/usr/tmp/dist 
+        naudio 
+        naudio.dev 
+        naudio.idb </FONT></pre>
+</blockquote>
+
+<p>3. Start Software Manager from the menu</p>
+
+<p>4. Specify the directory to which the files were just copied (example /usr/tmp/dist), then select <br>
+&quot;Customize Installation ...&quot;.</p>
+
+<p>5. After selecting the check boxes, execute the installation.
+</p>
+
+<p><em>Note)</em> When this product is installed uncompress/usr/src/PR/n_aspMain.o.Z will be executed automatically. If an error occurs, go to the directory in which n_aspMain.o.Z is installed, and type the
+following:
+</p>
+
+<blockquote>
+    <pre><FONT SIZE="3">uncompress n_aspMain.o.Z</FONT></pre>
+</blockquote>
+
+<p align="right"><a href="index.htm"><img
+src="../../gif/index.gif" alt="[UP]" border="0"
+width="65" height="17"></a></p>
+
+<hr>
+
+<h3><a name="02">4.2 Header Files and Libraries</a></h3>
+
+<p>When using n_audio, include the following header files: </p>
+
+<table border="0" cols="2">
+    <tr>
+        <td nowrap><FONT SIZE="-1">n_libaudio.h </FONT></td>
+        <td nowrap><FONT SIZE="-1">: Header file for n_audio</FONT></td>
+    </tr>
+    <tr>
+        <td nowrap><FONT SIZE="-1">n_libaudio_s_to_n.h</FONT></td>
+        <td nowrap><FONT SIZE="-1">: macros to convert previous audio functions to n_audio functions</FONT></td>
+    </tr>
+</table>
+
+<p>Link the following libraries</p>
+
+<table border="0" cols="2">
+    <tr>
+        <td nowrap><FONT SIZE="-1">libn_audio.a</FONT></td>
+        <td nowrap><FONT SIZE="-1">: n_audio library</FONT></td>
+    </tr>
+    <tr>
+        <td nowrap><FONT SIZE="-1">n_aspMain.o</FONT></td>
+        <td nowrap><FONT SIZE="-1">: Audio microcode for n_audio </FONT></td>
+    </tr>
+</table>
+
+<p><em>Note)</em> When using n_audio, do not use n_libaudio_s_to_n.h, but rewrite the audio function to n_audio directly.</p>
+
+<p align="right"><a href="index.htm"><img
+src="../../gif/index.gif" alt="[UP]" border="0"
+width="65" height="17"></a></p>
+
+<hr>
+
+<h3><a name="03">4.3 Sample</a></h3>
+
+<p>As an example of setting the required number of data that is created in a frame to a multiple of 184, the sample program "playseq" (which is included with the N64 development software) has been changed to be compatible with n_audio.
+</p>
+
+<p>File : playseq.c</p>
+
+<blockquote>
+    <pre><FONT SIZE="3">################ Sample Program starts here ##################
+
+    .
+    .
+
+##### Change (1) starts here #####
+#include &quot;n_libaudio.h&quot; <font color="#FF0000">&lt;---------- include file of header file for n_audio
+                                    Always include this before the header file, n_libaudio_s_to_n.h.</font>
+#include &quot;n_libaudio_s_to_n.h&quot; <font color="#FF0000">&lt;--- include file of header file for n_audio
+                                    This file has macros to convert previous audio functions to n_audio functions.  When using n_audio permanently, do not 
+include this file, but rewrite each audio function to n_audio functions.
+</font>
+#define SAMPLES       184   <font color="#FF0000">&lt;------ Define process unit of sound as 184 samples</font>
+#define EXTRA_SAMPLES   0   <font color="#FF0000">&lt;------ When sound breaks are obvious, make an adjustment by setting this values as you think fit. (Details to be discussed later)</font>
+extern u8 n_aspMainTextStart[], n_aspMainTextEnd[];
+extern u8 n_aspMainDataStart[], n_aspMainDataEnd[];
+                            <font color="#FF0000">&lt;------ These four declarations are necessary to use n_audio</font>
+##### Change (1) ends here #####
+
+     .
+     .
+     . 
+     . 
+
+static
+void gameproc(u8 *argv)
+{
+
+         .
+         .
+
+    s16
+            *audioOp;
+    u8
+##### Change (2) starts here ##### 
+            min_only_one = 1, <font color="#FF0000">&lt;---In case of playback frequency of 32 kHz, it is calculated that 1 frame is needed for every 10 frames for adjusting extra sample (to be discussed later).</font>
+##### Changes (2) ends here #####
+            *seqPtr,
+            *midiBankPtr;
+    OSMesgQueue
+            seqMessageQ;
+
+         .
+         .
+         .
+
+    /*
+     * Initialize DAC output rate
+     */
+
+    c.outputRate = osAiSetFrequency(OUTPUT_RATE);
+    fsize = (f32) NUM_FIELDS * c.outputRate / (f32) 60;
+    frameSize = (s32) fsize; <font color="#FF0000">&lt;------Look for the number of samples needed for 1 frame.</font>
+    if (frameSize &lt; fsize)
+        frameSize++;
+##### Change (3) starts here#####
+    frameSize = ((frameSize / SAMPLES) + 1) * SAMPLES;
+                    <font color="#FF0000">&lt;-------Convert the number of samples needed for 1 frames, which was found above, to the multiple of 184.</font>
+
+    minFrameSize = frameSize - SAMPLES;
+                    <font color="#FF0000">&lt;------ frameSize will be a multiple of 184, and will be larger than the number of samples actually needed for 1 frame.  Therefore, there will be extra sample for every frame.  This minFrameSize is set in order to adjust this extra sample. 
+</font>
+
+##### Change (3) ends here #####
+
+    /*
+     * Audio synthesizer initialization
+     */
+
+    c.maxVVoices = MAX_VOICES;
+    c.maxPVoices = MAX_VOICES;
+
+         .
+         .
+         .
+
+    /*
+     * Note that this must be a do-while in order for seqp's state
+     * to get updated during the alAudioFrame processing.
+     */
+
+    do {
+        frame++;
+
+        /*
+         * Where the task list goes in DRAM
+         */
+
+        tlistp = tlist[curBuf];
+        cmdlp = cmdList[curBuf];
+
+        /*
+         * Where the audio goes in DRAM
+         */
+
+        buf = curAudioBuf % 3;
+        audioOp = (s16 *) osVirtualToPhysical(audioBuffer[buf]);
+#####  Change (4) starts here #####
+        (void)osRecvMesg(&amp;retraceMessageQ, NULL, OS_MESG_BLOCK);
+                    <font color="#FF0000">&lt;-------Retrace stand-by is here for easy understanding of the process.</font>
+
+        /*
+         * Find out how many samples left in the currently running
+         * audio buffer
+         */
+
+        samplesLeft = IO_READ(AI_LEN_REG)&gt;&gt;2;
+                    <font color="#FF0000">&lt;-------The number of remaining samples in the audio buffer that is currently being referenced.  This will be called as an extra sample from now on. 
+</font>
+
+        (void)osRecvMesg(&amp;taskMessageQ, NULL, OS_MESG_BLOCK);
+                    <font color="#FF0000">&lt;-------Before registering the next audio buffer, check if the previous audio task is completed.</font>
+        /*
+         * Set next AI buffer made in previous loop
+         */
+
+        osAiSetNextBuffer(audioBuffer[pbuf],audioSamples[pbuf]&lt;&lt;2);
+                    <font color="#FF0000">&lt;-------Registers the next audio buffer in AI.  Therefore, if the value of samples Left found above is 0, there is the possibility that the sound has breaks.  The 4 commands so far are in the same order as the previous playseq, though they are placed in a different location.
+</font>
+
+        if((samplesLeft &gt; (SAMPLES + EXTRA_SAMPLES)) &amp; min_only_one)
+                    <font color="#FF0000">&lt;-------If the number of extra samples when retracing is 184 or more, this frame will be regarded as an adjusting frame in order to adjust the extra portion. Samples of the quantity of mifFrameSize are created in an adjusting frame. However, it is controlled by min_only_one so that an adjusting frame does not succeed more than once. When the sound breaks are apparent, it may be because the extra sample is 0.  On that occasion, set the value of EXTRA_SAMPLES and adjust the extra of the sample. However, even if the value of EXTRA_SAMPLES is too large, the sound will not be played back properly.  Please adjust the suitable value using the application. 
+</font>
+        {
+            audioSamples[buf] = minFrameSize;
+            min_only_one = 0;
+        }
+        else   <font color="#FF0000">&lt;------------ Normal frame is here.</font>
+        {
+            audioSamples[buf] = frameSize;
+            min_only_one = 1;
+        }
+##### Change (4) ends here #####
+
+        /*
+         * Call the frame handler
+         */
+
+        cmdlp=alAudioFrame(cmdlp,&amp;clcount,audioOp,audioSamples[buf]);
+                
+        /*
+         * Build the audio task
+         */
+                
+        tlistp-&gt;t.type = M_AUDTASK;
+        tlistp-&gt;t.flags = 0x0;
+        tlistp-&gt;t.ucode_boot = (u64 *) rspbootTextStart;
+        tlistp-&gt;t.ucode_boot_size = ((s32)rspbootTextEnd -
+                                        (s32)rspbootTextStart);
+##### Change (5) starts here #####
+        tlistp-&gt;t.ucode = (u64 *) n_aspMainTextStart;
+        tlistp-&gt;t.ucode_data = (u64 *) n_aspMainDataStart;
+                    <font color="#FF0000">&lt;------ These 2 lines need to be rewritten to n_aspMain to use n_audio microcode. 
+</font>
+##### Change (5) ends here #####
+        tlistp-&gt;t.ucode_size = 4096;
+        tlistp-&gt;t.ucode_data_size = SP_UCODE_DATA_SIZE;
+        tlistp-&gt;t.data_ptr = (u64 *) cmdList[curBuf];
+        tlistp-&gt;t.data_size = (cmdlp - cmdList[curBuf]) * sizeof(Acmd);
+
+             .
+             .
+             .
+
+        /*
+         * Flush the cache and start task on RSP
+         */
+
+        osWritebackDCacheAll();
+        osSpTaskStart(tlistp);
+        CleanDMABuffs();
+
+             .
+             .
+             .
+
+    } while (seqp-&gt;state != AL_STOPPED);
+
+         .
+         .
+         .
+}
+################## Sample Program ends here ##################</FONT></pre>
+</blockquote>
+
+<p align="right"><a href="index.htm"><img
+src="../../gif/index.gif" alt="[UP]" border="0"
+width="65" height="17"></a></p>
+
+<hr>
+</body>
+</html>

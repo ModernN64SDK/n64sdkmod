@@ -1,0 +1,80 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 25 - Graphics Microcode</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. -->
+</head>
+
+<h1>25.1 Types of Microcode</h1>
+
+<P>
+<font face="arial" size="-1" color="#000000">
+
+<a name="01"></a>
+
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="01"><h2>25.1.1 <a href="../../n64man/ucode/gspFast3D.htm">gspFast3D</a></h2></a>
+
+<p><a href="../../n64man/ucode/gspFast3D.htm">gspFast3D</a> microcode is the most full-featured of the microcode types. It is also the microcode used in the majority of the demo applications. <a href="../../n64man/ucode/gspFast3D.htm">gspFast3D</a> supports 3D triangles, 3D <a href="../../keywords/index/data/graphics.htm#clipping" target="keywords">clipping</a>, Z-buffering, <a href="../../keywords/index/data/graphics.htm#near/far plane" target="keywords">near and far</a> clipping, lighting, <a href="../../keywords/index/data/graphics.htm#MIP map" target="keywords">mip-mapped</a> textures, <a href="../../keywords/index/data/graphics.htm#perspective correction" target="keywords">perspective</a> textures, fog, and <a href="../../keywords/index/data/graphics.htm#matrix stack" target="keywords">matrix stack</a> operations. It does not support the <a href="../../keywords/index/data/graphics.htm#GBI" target="keywords">GBI</a> command, <a href="../../n64man/gsp/gSPLine3D.htm">gSPLine3D</a>. </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="02"><h2>25.1.2 <a href="../../n64man/ucode/gspFast3D.htm">gspF3DNoN</a></h2></a>
+
+<p><a href="../../n64man/ucode/gspFast3D.htm">gspF3DNoN</a> microcode is similar to <a href="../../n64man/ucode/gspFast3D.htm">gspFast3D</a> microcode, except it does not handle near plane clipping in the same manner. When using <a href="../../n64man/ucode/gspFast3D.htm">gspFast3D</a> microcode, objects between the eye and the near plane are clipped. When using <a href="../../n64man/ucode/gspFast3D.htm">gspF3DNoN</a> microcode, objects between the eye and the near plane are not clipped. However, the area between the eye and the near clipping plane does not implement Z-buffering. This means that objects that fall into this area must be rendered in order from far to near. </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="03"><h2>25.1.3 <a href="../../n64man/ucode/gspLine3D.htm">gspLine3D</a></h2></a>
+
+<p><a href="../../n64man/ucode/gspLine3D.htm">gspLine3D</a> microcode contains many of the features contained in <a href="../../n64man/ucode/gspFast3D.htm">gspFast3D</a>, except that instead of rendering triangles, it draws 3D lines. This is useful for producing wireframe effects. If a <a href="../../n64man/gsp/gSP1Triangle.htm">gSP1Triangle</a> command is encountered it will render the three edges of the triangle, but not the center portion of the triangle. </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="04"><h2>25.1.4 <a href="../../n64man/ucode/gspTurbo3D.htm">gspTurbo3D</a></h2></a>
+
+<p><a href="../../n64man/ucode/gspTurbo3D.htm">gspTurbo3D</a> microcode is a reduced-feature, reduced-precision, microcode that delivers significantly faster performance.  The features not supported by <a href="../../n64man/ucode/gspTurbo3D.htm">gspTurbo3D</a> are: Clipping, lighting, perspective-corrected textures, and matrix stack operations.  The quality of the <a href="../../keywords/index/data/graphics.htm#anti-aliasing" target="keywords">anti-aliasing</a> also suffers, due to the lack of precision used by <a href="../../n64man/ucode/gspTurbo3D.htm">gspTurbo3D</a>.  This loss of precision can also manifest itself as various visual artifacts, depending on the content. <a href="../../n64man/ucode/gspTurbo3D.htm">gspTurbo3D</a> uses a different format for the <a href="../../keywords/index/data/graphics.htm#display list" target="keywords">display list</a>.</p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="05"><h2>25.1.5 <a href="../../n64man/ucode/gspSprite2D.htm">gspSprite2D</a></h2></a>
+
+<p><a href="../../n64man/ucode/gspSprite2D.htm">gspSprite2D</a> microcode is optimized for rendering 2D <a href="../../keywords/index/data/graphics.htm#sprite" target="keywords">sprite</a> images.  Sprites are implemented as textured screen rectangles. <a href="../../n64man/ucode/gspSprite2D.htm">gspSprite2D</a> does not support 3D lines, 3D triangles, vertex operations, matrix operations, lighting, or fog.  All of the DP commands such as <a href="../../keywords/index/data/graphics.htm#blender" target="keywords">blender</a> modes, and <a href="../../keywords/index/data/graphics.htm#color combiner mode" target="keywords">color combiner modes</a> are supported.  Z-buffering can be used to arrange the order of the sprites from front to back.  </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="06"><h2>25.1.6 <a href="../../n64man/ucode/gspF3DEX.htm">gspF3DEX</a> (Fast3D Series Improved Version) </h2></a>
+
+<p>The F3DEX series is a tuned version of the previous Fast3D and Line3D microcode.  The new version uses .fifo exclusively as the method by which commands are passed from the RSP to the RDP.  In addition, the <a href="../../keywords/index/data/graphics.htm#vertex cache" target="keywords">vertex cache</a> size is increased, and the matrix stack is increased from 10 levels to 18 levels.  The seven microcode versions in this series are listed below. Among them are several versions designed to improve performance by restricting function.</p>
+
+<ol>
+  <li>gspF3DEX.fifo.o
+  <li>gspF3DEX.NoN.fifo.o
+  <li>gspF3DLX.fifo.o
+  <li>gspF3DLX.NoN.fifo.o
+  <li>gspF3DLX.Rej.fifo.o
+  <li>gspF3DLP.Rej.fifo.o
+  <li>gspL3DEX.fifo.o
+</ol>
+
+<p>The features of each microcode are as follows.</p>
+
+<dl>
+  <dt><a href="../../n64man/ucode/gspF3DEX.htm">F3DEX</a> - gspF3DEX.fifo.o / gspF3DEX.NoN.fifo.o
+  <dd>F3DEX is the extended version of Fast3D microcode.  The vertex cache size is increased to 32, and <a href="../../n64man/gsp/gSP2Triangles.htm">g*SP2Triangles</a>, a GBI command for displaying two triangles at once, is supported.  The GBI command <a href="../../n64man/gsp/gSP1Quadrangle.htm">g*SP1Quadrangle</a> (which displayed rectangles) that was supported in F3DEX version 1.21 and earlier, is no longer supported. (Emulation is supported in 2Tri). 
+</dl>
+<dl>
+  <dt><a href="../../n64man/ucode/gspF3DEX.htm">F3DLX</a> - gspF3DLX.fifo.o / gspF3DLX.NoN.fifo.o
+  <dd>With F3DLX, the <a href="../../keywords/index/data/graphics.htm#sub pixel" target="keywords">subpixel</a> calculation in the F3DEX microcode is simplified.  This microcode retains compatibility with F3DEX and GBI, and improves processing capacity of the RSP.  This is done by reducing the precision in calculating each <a href="../../keywords/index/data/graphics.htm#polygon" target="keywords">polygon</a>'s vertex.  The extended functionality unique to F3DLX enables the DL command to turn the clipping process On or Off. 
+</dl>
+<dl>
+  <dt><a href="../../n64man/ucode/gspF3DEX.htm">F3DLX.Rej</a> - gspF3DLX.Rej.fifo.o
+  <dd>This version substitutes rejection processing for clipping. The vertex cache size is 64 and the <a href="../../n64man/gsp/gSP2Triangles.htm">g*SP2Triangles</a> commands are supported. Optimization can be achieved assuming the 2Tri operation will be performed.  The triangle can not be fully rendered when one of the vertexes occurs outside the defined reject area. Therefore, it is not appropriate for rendering large triangles. Perspective texture correction is implemented. 
+</dl>
+<dl>
+  <dt><a href="../../n64man/ucode/gspF3DEX.htm">F3DLP.Rej</a> - gspF3DLP.Rej.fifo.o
+  <dd>F3DLP.Rej has similar functionality to F3DLX.Rej, however perspective texture correction is not implemented. Therefore, the processing speed in RSP is far more faster. The vertex cache is 80. </dl>
+<dl>
+  <dt><a href="../../n64man/ucode/gspF3DEX.htm">L3DEX</a> - gspL3DEX.fifo.o
+  <dd>L3DEX is Line3D microcode that can handle 32 vertexes. It is equivalent to Line3D in Fast3D. A polygon rendered by F3DEX can be displayed in a wireframe. </dl>
+
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+</body> </html>

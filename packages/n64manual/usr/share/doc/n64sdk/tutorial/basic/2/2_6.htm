@@ -1,0 +1,55 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-N64 Programming Basics-Chapter 2  Mechanism of N64 Programming</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/20/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<FONT Style="font-size:12pt"><B>2.6  The basic2 Rendering Routine</B></FONT>
+<br>
+<P>
+Below is the source for <tt>vsyncCallback</tt>, the basic2 rendering callback function that was just registered.  As you can see, this function does nothing itself, but relies on a function called Draw to complete the tasks.  
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=5><TR>
+	<TD NOWRAP COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE><B>List 2-4</B>  <B>See basic2 "main.c"</B>
+</TR><TR>
+	<TD NOWRAP BGCOLOR="666666" WIDTH="4" ALIGN=LEFT VALIGN=TOP><HR NOSHADE SIZE=0></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>
+<FONT COLOR="#000080"><PRE><CODE>void  vsyncCallback(int pendingTaskCount)
+{
+    Draw();
+}
+</CODE></PRE></FONT>
+	</TD>
+</TR></TABLE>
+<P>
+The <tt>Draw</tt> function directly writes values to the framebuffer holding the video output image, and prepares the image for output.  Since the same value is written to all pixels, the screen output is a single color.  However, the color changes as time passes.  More specifically, since the RGB intensity value is provided by  the unsigned char type variable, <tt>col</tt>, (appropriately multiplied), the screen color gradually changes in proportion to the increase in  <tt>col</tt>.</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=5><TR>
+	<TD NOWRAP COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE><B>List 2-5</B>  <B>See basic2 "graphic.c"</B>
+</TR><TR>
+	<TD NOWRAP BGCOLOR="666666" WIDTH="4" ALIGN=LEFT VALIGN=TOP><HR NOSHADE SIZE=0></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>
+<FONT COLOR="#000080"><PRE><CODE>/* Function in charge of drawing */
+void  Draw(void)
+{
+  int                     i, j;
+  static unsigned char    col = 0;
+
+  /* Directly write into the framebuffer */
+  for(j = 0; j &lt; SCREEN_WD * SCREEN_HT; j++)
+    nuGfxCfb_ptr[j] = GPACK_RGBA5551(col, 2 * col, 3 * col, 1);
+  col++;
+
+  (The rest is omitted)
+}
+</CODE></PRE></FONT>
+	</TD>
+</TR></TABLE>
+<P>
+The other processes performed by the <tt>Draw</tt> function will be explained in a later chapter.
+</P>
+</BODY>
+</HTML>

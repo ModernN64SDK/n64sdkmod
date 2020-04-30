@@ -1,0 +1,66 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.>
+<TITLE>guAlignF</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>guAlignF<FONT size="+0"> [Function]</FONT></H1>
+
+<p><h3>Function</h3></p>
+
+<p>guAlignF</p>
+<P>
+<i>Creates a modeling matrix for rotation around an arbitrary axis (aligned, floating-point)</i>
+</P>
+<H3>Syntax</H3>
+<p>
+<PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gu.htm">gu.h</A> */
+void guAlignF(float mf[4][4], float a, float x, float y, float z);</CODE></PRE></p>
+
+<H3>Arguments</H3>
+<p><DL>
+  <DT><B>mf</B>
+  <DD>4x4 matrix resulting from calculation
+  <DT><B>a</B>
+  <DD>Angle of rotation (in degrees) around an arbitrary axis
+  <DT><B>x</B>
+  <DD>X component of axis of rotation
+  <DT><B>y</B>
+  <DD>Y component of axis of rotation
+  <DT><B>z</B>
+  <DD>Z component of axis of rotation
+</DL></p>
+<H3>Returned value</H3>
+<P>
+None
+</P>
+<H3>Description</H3>
+<P>
+This macro performs an alignment process (in which the arbitrary axis represented by the line passing through the origin and a point (<B>x</B>, <B>y</B>, <B>z</B>) is rotated so it points in the same direction as the negative Z axis), and then returns a modeling matrix to the structure indicated by <B>mf</B> for use in rotating by an angle of <B>a</B> degrees in the positive direction around this arbitrary axis. The result of calling this macro is the creation of a modeling matrix like the one shown below.  Note that a unit matrix is returned when h = 0.
+</P>
+<P>
+<IMG SRC="guAlignF00.gif"><BR>
+(* Note that the values (x,y,z) here are normalized inside the function)
+
+</P>
+<P>
+Fixed-point is handled using <A HREF="guAlign.htm">guAlign</A>.
+</P>
+<H3>Note</H3>
+<P>
+The vector <IMG SRC="guAlignF01.gif" ALIGN="absmiddle"> does not have to be normalized ahead of time.  This is done inside the function.  However, when <IMG SRC="guAlignF02.gif" ALIGN="absmiddle"> = 0, the operation of this macro cannot be guaranteed.
+</P>
+<H3>See also</H3>
+<P>
+<A HREF="guAlign.htm">guAlign</A>, <A HREF="guRotate.htm">guRotate</A>, <A HREF="guRotateF.htm">guRotateF</A>, <A HREF="guScale.htm">guScale</A>, <A HREF="guScaleF.htm">guScaleF</A>, <A HREF="guTranslate.htm">guTranslate</A>, and <A HREF="guTranslateF.htm">guTranslateF</A>
+</P>
+<H3>Revision history</H3>
+<P>
+03/01/99 Completely rewritten
+</P>
+</BODY>
+</HTML>

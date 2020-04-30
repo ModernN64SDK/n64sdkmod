@@ -1,0 +1,262 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!--
+Editors Notes:
+  PWC- updated formatting
+-->
+<title>STEP2 [A Guide to the N64 Programming] - Chapter 2 Drawing Structure and Samples</title>
+<base target="keywords">
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<p><font style="font-size:12pt; font-weight:bold">2-6 3D Rendering Process</font><br>
+<br>
+<br>
+N64 displays 3D images as textured polygons. The actual 3D image is an aggregate of polygons provided with <a href="../../../keywords/index/data/graphics.htm#geometry" target="keywords">geometric</a> conversion information at each vertex and placed in the virtual view space. <br>
+<br>
+<br>
+<b>2-6-1 Kinds of 3D Images</b><br>
+<br>
+<br>
+Each 3D image is classified as either a 3D object or a 3D model depending on the number of the vertices and how the object is used. <br>
+<br>
+<b><li>3D object</li></b><br>
+ 3D object is a single closed object that treats and displays all vertex information as such. Here is an example of a 3D object: </p>
+
+<table border="1" cellspacing="0">
+    <tr>
+        <td><img src="img00011.gif"> </td>
+    </tr>
+</table>
+
+<p><br>
+<b>Figure 2-6-1 3D object</b><br>
+<br>
+<br>
+<b><li>3D model</li></b><br>
+A 3D model is a combination of several separate 3D objects. Each of the 3D objects is a part of the 3D model.<br>
+For example, when you draw a car, you create the body and each of the wheels as separate parts (3D objects). Then you combine the parts to create the car (3D model).</p>
+
+<table border="1" cellspacing="0">
+    <tr>
+        <td><img src="img00012.gif"> </td>
+    </tr>
+</table>
+
+<p><br>
+<b>Figure 2-6-2 3D model</b><br>
+<br>
+<br>
+<br>
+<b>2-6-2 Procedure</b><br>
+<img src="img00013.gif"><br>
+The procedure is best illustrated with a sample program.  See [<a
+href="../furoku/c.htm">Appendix C Sample Description</a>]about the sample program. Note that the gfx function used in this 3D sample is not part of the standard N64 library of functions; it is defined within the sample for use in this sample.<br>
+<br>
+<br>
+<b>1. Main 3D Drawing Routine</b><br>
+Below is a routine list which becomes the executing core of the 3D image drawing. As the process flow, first the <a href="../../../keywords/index/data/graphics.htm#display list" target="keywords">display list</a> and entry (transfer) the display list to RCP.  RCP creates the actual displaying data and outputs the video signal via the frame buffer. <br>
+<br>
+<pre>void entry(void)
+{
+ Gfx *gp; /* points to the display list */
+ float r;v,s;
+
+ r=v=0.0;
+ s=PI2/50000.0;
+ while(1)
+ {
+/* Move one unit of the camera (to set the
+      rotational rate of the 3D model) */
+  v += s;
+  r += v;
+  if(ABS(v)&gt;PI2/100.0) s=-s;
+</pre><br>
+<b><li>Construct the display list</li></b><br>
+The following code snippets reserve the necessary memory area for the construction of the display list, set up the RCP executing process in the reserved area (to draw the 3D model) and provide a termination process for the display list.<br>
+<br>
+<pre>/* Start to construct the display list */
+  gp = gfxBegin(1024);</pre> </p>
+
+<table border="1" cellspacing="0" cellpadding="4">
+    <tr>
+        <td>This code checks to see if execution setup has already been completed. If not, the code reserves the GBI command area for a new construction. If setup has already been completed, this code jumps to the RCP transfer process. 
+        </td>
+    </tr>
+</table>
+
+<p><br>
+<pre>/* Set the drawing mode of RSP and RDP */
+  gp = setup_SP_DP(gp);</pre> </p>
+
+<table border="1" cellspacing="0"  cellpadding="4">
+    <tr>
+        <td>This code constructs the command that sets up the RCP drawing mode (needed for 3D drawing) and stores it in the display list. 
+        </td>
+    </tr>
+</table>
+
+<p><br>
+<pre>/*  The projection matrix setting */
+  gp = gfxPerspective(gp,30,(float)SCREEN_WD/SCREEN_HT,64,
+      1000,1.0);</pre> </p>
+
+<table border="1" cellspacing="0" cellpadding="4">
+    <tr>
+        <td>This code sets up the projection matrix for use by the coordinate transformation process in the display list. 
+        </td>
+    </tr>
+</table>
+
+<p><br><pre>
+/* The model view matrix setting */
+  gp = gfxLookAt(gp,sinf(r)*400,220,cosf(r)*400,0,0,0,0,1,0);</pre>
+</p>
+
+<table border="1" cellspacing="0" cellpadding="4">
+    <tr>
+        <td>This code sets up the model view matrix for use by visual effect calculations in the display list. 
+        </td>
+    </tr>
+</table>
+
+<p><br><pre>
+/*  Polygon drawing */
+  gp = draw_polygon(gp);</pre> </p>
+
+<table border="1" cellspacing="0" cellpadding="4">
+    <tr>
+        <td>This code creates a display list for polygon drawing. It calls the actual display polygon as a separately accommodated display list. 
+        </td>
+    </tr>
+</table>
+
+<p><br><pre>
+/* End construction of the display list */
+  gfxEnd(gp);</pre> </p>
+
+<table border="1" cellspacing="0" cellpadding="4">
+    <tr>
+        <td>This code provides the display list termination process. <br>
+        <li>Caution 1: Watch out for an unterminated display list. If it is transferred to the RCP, it will cause the RCP to hang (stop responding).</li>
+        <li>Caution 2: Be sure to put the <a href="../../../n64man/gdp/gDPFullSync.htm">gDPFullSync</a> function at the end of each display list. Otherwise, the RDP end <a href="../../../keywords/index/data/system.htm#message" target="keywords">message</a> won't ever come. </li>
+        </td>
+    </tr>
+</table>
+
+<p><br>
+<b><li>Transfer the display list to the RCP to execute the drawing process</li></b><br>
+The following code transfers the display list to the RCP where the display list is interpreted and executed.
+<br>
+<br><pre>
+/* Transfer completed display list to RCP */
+  gfxFlush( );</pre> </p>
+
+<table border="1" cellspacing="0" cellpadding="4">
+    <tr>
+        <td>This code transfers the completed display list to the RCP and makes the RCP execute the process based on the display list. It also provides for the use of the frame buffer that writes the created image data. 
+        </td>
+    </tr>
+</table>
+
+<p><br>
+<b><li>Synchronize the CPU with the RCP</li></b><br>
+The following function uses the CPU retrace message process to ensure that the CPU and RCP processing are in sync with each other: <br>
+<br><pre>
+/*  Wait for the retrace*/
+  gfxWaitSync( );
+ }
+}</pre><br>
+<br>
+<br>
+<b>2. Display List Construction Process</b><br>
+The 3d.c sample code constructs the display list by using four techniques. The following explanation describes the two main techniques (the RSP and RDP drawing modes and the RSP 3D model data (polygon) drawing process). <br>
+<br>
+<b><li>RSP and RDP Drawing Modes</li></b><br>
+The following routines set up the RCP drawing mode that actually creates the commands that render the drawing reflected in the display list. The <a href="../../../n64man/gsp/gSP_INDEX.htm">gSP </a> and <a href="../../../n64man/gdp/gDP_INDEX.htm">gDP</a> functions are included in the N64 library. For more information, please see the online <a href="../../../n64man/n64man.htm" target="index">"N64 Function Reference Manual"</a> (HTML manual pages). <br>
+<br><pre>
+/*  Set up lighting information */
+static Lights1 lightset = <a href="../../../n64man/gdsp/gdSPDefLights.htm">gdSPDefLights1</a>(
+ 127, 127, 127,  /* ambient light color            */
+ 255, 255, 255,  /* diffuse light color            */
+ 24, 70, 66);    /* diffuse light position         */
+</pre></p>
+
+<table border="1" cellspacing="0" cellpadding="4">
+    <tr>
+        <td>Set the light structure.</td>
+    </tr>
+</table>
+
+<p><br><pre>
+EXCONTPAD *pad;
+
+static Gfx *setup_SP_DP(Gfx *gp)
+{
+/* Set all sorts*/
+/* Clear the geometry pipeline mode */
+ <a href="../../../n64man/gsp/gSPClearGeometryMode.htm">gSPClearGeometryMode</a>(gp++,G_SHADE |
+  G_SHADING_SMOOTH | G_CULL_BOTH
+  | G_FOG | G_LIGHTING | G_TEXTURE_GEN
+  | G_TEXTURE_GEN_LINEAR | G_LOD );
+
+/* Set the geometry pipeline mode */
+ <a href="../../../n64man/gsp/gSPSetGeometryMode.htm">gSPSetGeometryMode</a>(gp++,G_SHADE | G_LIGHTING |
+  G_SHADING_SMOOTH
+  | G_ZBUFFER | G_CULL_BACK);
+
+/* Set the number of lights used */
+ <a href="../../../n64man/gsp/gSPNumLights.htm">gSPNumLights</a>(gp++,2);
+
+/* Set the light structure */
+ <a href="../../../n64man/gsp/gSPSetLightsM.htm">gSPSetLights1</a>(gp++,lightset);
+
+/* Set the texturing parameter */
+ <a href="../../../n64man/gsp/gSPTexture.htm">gSPTexture</a>(gp++,0,0,0,0,G_OFF);
+
+/* Set the RDP cycle type  */
+ <a href="../../../n64man/gdp/gDPSetCycleType.htm">gDPSetCycleType</a>(gp++,G_CYC_1CYCLE);
+
+/* Set the color combine mode */
+ <a href="../../../n64man/gdp/gDPSetCombineMode.htm">gDPSetCombineMode</a>(gp++,G_CC_SHADE,G_CC_SHADE);
+
+/* Set the <a href="../../../keywords/index/data/graphics.htm#rendering" target="keywords">rendering</a> mode of the <a href="../../../keywords/index/data/graphics.htm#blender" target="keywords">blender</a> (within the RDP) */
+ <a href="../../../n64man/gdp/gDPSetRenderMode.htm">gDPSetRenderMode</a>(gp++,G_RM_ZB_OPA_SURF,
+  G_RM_ZB_OPA_SURF2);
+
+/* Set the compare mode of the <a href="../../../keywords/index/data/graphics.htm#alpha value" target="keywords">alpha value</a> */
+ <a href="../../../n64man/gdp/gDPSetAlphaCompare.htm">gDPSetAlphaCompare</a>(gp++,G_AC_NONE);
+
+/* Set the dithering mode of the color data */
+ <a href="../../../n64man/gdp/gDPSetColorDither.htm">gDPSetColorDither</a>(gp++,G_CD_DISABLE);
+
+/* Set the dithering mode of the alpha value */
+ <a href="../../../n64man/gdp/gDPSetAlphaDither.htm">gDPSetAlphaDither</a>(gp++,G_AD_NOISE);
+ return gp;
+}
+</pre><br>
+<b><li>RSP 3D Model Data (Polygon) Drawing Process</li></b><br>
+The following code calls another (second) display list to draw (output) the polygon model. The second display list provides the geometry conversion from the vertex data in that the RSP can turn it into polygon data that the RDP can recognize. The <a href="../../../n64man/gsp/gSP_INDEX.htm">gSP</a> functions are included in the N64 library. For more information, please see the online <a href="../../../n64man/n64man.htm" target="keywords">"N64 Function Reference Manual"</a> (HTML manual pages). <br>
+<br><pre>
+/* Polygon drawing */
+static Gfx *draw_polygon(Gfx *gp)
+{
+
+/* Call another (second) display list for polygon drawing */
+ <a href="../../../n64man/gsp/gSPDisplayList.htm">gSPDisplayList</a>(gp++,n64_model0);
+ return gp;
+}</pre></p>
+
+<table border="1" cellspacing="0" cellpadding="4">
+    <tr>
+        <td>Now the second display list (with the converted data) is inside the display list currently being constructed. 
+        </td>
+    </tr>
+</table>
+
+</body>
+</html>

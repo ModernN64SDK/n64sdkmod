@@ -1,0 +1,531 @@
+<HTML>
+<!--Editor notes-MAP- edited content 10/21/99
+PWC 2/23/00-->
+<head>
+<link rel="stylesheet" type="text/css" href="../style.css">
+<title>Other Audio Questions</title>
+</HEAD>
+
+<BODY>
+
+<A name="index"></a>
+<IMG src="../../gif/n64_logo2.gif" height="21" width="136">
+<h3><FONT color="#FF8000">Q&A</FOnt>- Other Audio Questions</h3>
+
+<P>
+
+<TABLE border="0">
+ <TR>
+ <TD valign="top" width="50"><A href="audio.htm#01"><b>QA1</b></A></TD>
+ <TD>Delta time processing.</TD>
+ </TR>
+ <TR>
+ <TD valign="top" width="50"><A href="audio.htm#02"><b>QA2</b></A></TD>
+ <TD>Default priority of voices.</TD>
+ </TR>
+ <TR>
+ <TD valign="top" width="50"><A href="audio.htm#03"><b>QA3</b></A></TD>
+ <TD>RSP processing time per sound.</TD>
+ </TR>
+ <TR>
+ <TD valign="top" width="50"><A href="audio.htm#04"><b>QA4</b></A></TD>
+ <TD>About alAudioFrame().</TD>
+ </TR>
+ <TR>
+ <TD valign="top" width="50"><A href="audio.htm#05"><b>QA5</b></A></TD>
+ <TD>About Max Voice.</TD>
+ </TR>
+ <TR>
+ <TD valign="top" width="50"><A href="audio.htm#06"><b>QA6</b></A></TD>
+ <TD>Release time priority.</TD>
+ </TR>
+ <TR>
+ <TD valign="top" width="50"><A href="audio.htm#07"><b>QA7</b></A></TD>
+ <TD>Finding the number of momentarily simultaneous sounds.</TD>
+ </TR>
+ <TR>
+ <TD valign="top" width="50"><A href="audio.htm#08"><b>QA8</b></A></TD>
+ <TD>The no free updates error.</TD>
+ </TR>
+ <TR>
+ <TD valign="top" width="50"><A href="audio.htm#09"><b>QA9</b></A></TD>
+ <TD>About alInit.</TD>
+ </TR>
+ <TR>
+ <TD valign="top" width="50"><A href="audio.htm#10"><b>QA10</b></A></TD>
+ <TD>The data alignment gets messed up when I'm using vibrato.</TD>
+ </TR>
+ <TR>
+ <TD valign="top" width="50"><A href="audio.htm#11"><b>QA11</b></A></TD>
+ <TD>attackTime raises the gain from 0 to attackVolume all at once.</TD>
+ </TR>
+ <TR>
+ <TD valign="top" width="50"><A href="audio.htm#12"><b>QA12</b></A></TD>
+ <TD>I can only get echo and other effects to work in mono.</TD>
+ </TR>
+ <TR>
+ <TD valign="top" width="50"><A href="audio.htm#13"><b>QA13</b></A></TD>
+ <TD>Using tremolo and vibrato processing - Method 1.</TD>
+ </TR>
+ <TR>
+ <TD valign="top" width="50"><A href="audio.htm#14"><b>QA14</b></A></TD>
+ <TD>Using tremolo and vibrato processing - Method 2.</TD>
+ </TR>
+ <TR>
+ <TD valign="top" width="50"><A href="audio.htm#15"><b>QA15</b></A></TD>
+ <TD>Is there a way to cancel an effect?</TD>
+ </TR>
+ <TR>
+ <TD valign="top" width="50"><A href="audio.htm#16"><b>QA16</b></A></TD>
+ <TD>When I set maxVVoices or maxPVoices, there are tones that won't play.</TD>
+ </TR>
+ <TR>
+ <TD valign="top" width="50"><A href="audio.htm#17"><b>QA17</b></A></TD>
+ <TD>What are the contents of &quot;.sbk&quot; and &quot;midicomp&quot; and how do I create them?</TD>
+ </TR>
+ <TR>
+ <TD valign="top" width="50"><A href="audio.htm#18"><b>QA18</b></A></TD>
+ <TD>Where is the viper directory?</TD>
+ </TR>
+ <TR>
+ <TD valign="top" width="50"><A href="audio.htm#19"><b>QA19</b></A></TD>
+ <TD>Is monaural mode necessary?</TD>
+ </TR>
+ <TR>
+ <TD valign="top" width="50"><A href="audio.htm#20"><b>QA20</b></A></TD>
+ <TD>How did you realize headphone mode?</TD>
+ </TR>
+ <TR>
+ <TD valign="top" width="50"><A href="audio.htm#21"><b>QA21</b></A></TD>
+ <TD>How do you change the DSP audio effect settings?</TD>
+ </TR>
+</TABLE>
+
+<HR>
+
+<P>
+<A name="01"><FONT color="#FF0000"><b>Q1</b></FONT></A>
+<b> In order to initialize a sequence by means of a program change so that a specific sample is used, do I have to embed it at the head of the file without any delta time? </b>
+
+
+<P>
+<FONT color="#008000"><b>A1</b></FONT>
+ I don't think you have to embed it. I don't think that that kind of control is provided on the player side. Considering the real time nature of the game sounds, it is best to make the time lag as small as possible between the start of the sequence and its playback. If the smoothness of the processing time is a crucial problem, inserting a delta time would be a possibility, but initialization processing generally doesn't become a problem with the delay present in most MIDI instruments. 
+
+
+<P align="right">
+<A href="audio.htm#index">top</a>
+
+
+<HR>
+
+<P>
+<A name="02"><FONT color="#FF0000"><b>Q2</b></FONT></A>
+<b> What is the default value when the priority of a voice hasn't been set?</b>
+
+
+<P>
+<FONT color="#008000"><b>A2</b></FONT>
+ It is "5".
+
+<p>
+This is set by AL_DEFAULT_PRIORITY(5). See libaudio.h. 
+
+
+<P align="right">
+<A href="audio.htm#index">top</a>
+
+
+<HR>
+
+<P>
+<A name="03"><FONT color="#FF0000"><b>Q3</b></FONT></A>
+<b> What percent of the RCP's capacity is used per each sound with the N64. </b>
+
+
+<P>
+<FONT color="#008000"><b>A3</b></FONT>
+ I can't accurately answer this question without knowing the actual sound. However, it is possible to measure this if your company has a target sound. The processing time for an entire sound (Y) can be obtained using the following approximation formula, wherein x is the number of sounds and b is the processing time required for the effect and/or initialization. 
+
+<font face="courier" size="2">
+<blockquote><pre>Y = a X + b</pre></blockquote></font>
+
+<p>
+In the above formula, a is the processing time per one sound. The percentage of the total processing time by the RCP can then be obtained by dividing this figure by the overall RCP processing time. 
+
+<p>
+Now, if you want to know the specific RCP performance for various sounds using the above formula, I think it would be better to measure the time it takes to process the target sounds. 
+
+<p>
+As a general scale, it is said that about 1% of RSP processing is used for one sound at a playback rate of 44.1 kHz. 
+
+
+<P align="right">
+<A href="audio.htm#index">top</a>
+
+
+<HR>
+
+<P>
+<A name="04"><FONT color="#FF0000"><b>Q4</b></FONT></A>
+<b> Even when no sound is being produced (when neither a sequence nor a sound is being played back,) <a href="../../n64man/al/alAudioFrame.htm">alAudioFrame()</a> will still generate around 350~380 commands. What are these doing? Does this happen because something would happen to mess up the application if they weren't performed? </b>
+
+
+<P>
+<FONT color="#008000"><b>A4</b></FONT>
+ I can't get a clear picture of this since I don't know what argument you are using with <a href="../../n64man/al/alAudioFrame.htm">alAudioFrame()</a>, but <a href="../../n64man/al/alAudioFrame.htm">alAudioFrame()</a> will always generate commands. These are generally essential commands. 
+
+
+<P align="right">
+<A href="audio.htm#index">top</a>
+
+
+<HR>
+
+<P>
+<A name="05"><FONT color="#FF0000"><b>Q5</b></FONT></A>
+<b> When there is one MIDI data, and MaxVoice is set to 1, there are times when nothing will be played back. I have to set MaxVoice to 2 to get the data to be played back. Is this a bug? Is there some other way to do this?</b>
+
+<p>
+<b>Example</b>
+
+<font face="courier" size="2">
+<blockquote><pre>_SE_00 
+PROGRAM.PIANO 
+C_4,20 
+END </pre></blockquote></font>
+
+<P>
+<FONT color="#008000"><b>A5</b></FONT>
+ This is not a bug. A single Voice is not released until its envelope completes the release stage. The envelope enters the release stage after it receives a "note OFF" signal. If the time difference from "note OFF" to "note ON" is shorter than the length of the release stage, then a second sound will not be played. 
+
+<p>
+This kind of problem can be avoided by shortening the release time in the envelope or by lengthening the time between "note OFF" and "note ON". 
+
+
+<P align="right">
+<A href="audio.htm#index">top</a>
+
+
+<HR>
+
+<P>
+<A name="06"><FONT color="#FF0000"><b>Q6</b></FONT></A>
+<b> What is the priority of release times?</b>
+
+
+<P>
+<FONT color="#008000"><b>A6</b></FONT>
+ The release sound has the lowest priority, i.e., priority 0 (zero). 
+
+
+<P align="right">
+<A href="audio.htm#index">top</a>
+
+
+<HR>
+
+<P>
+<A name="07"><FONT color="#FF0000"><b>Q7</b></FONT></A>
+<b> What would be a good way to calculate the number of sounds being simultaneously played at any moment? </b>
+
+
+<P>
+<FONT color="#008000"><b>A7</b></FONT>
+ Using the oscillator is the quickest way to find the accurate number of sounds simultaneously being played at any moment. You can check the number of active voices at each moment by increasing the count by 1 when you come to an init, and decreasing the count by 1 when you come to a stop. 
+
+
+<P align="right">
+<A href="audio.htm#index">top</a>
+
+
+<HR>
+
+<P>
+<A name="08"><FONT color="#FF0000"><b>Q8</b></FONT></A>
+<b> When I set the tremolo or vibrato, I get the "Synthesizer:no free updates" error.</b>
+
+
+<P>
+<FONT color="#008000"><b>A8</b></FONT>
+ This is the synthesizer driver telling you that there is not enough buffer (UpdateBuffer) available to store the parameter changes from the player generated in one round of processing. 
+
+<p>
+Since the number of pitch and/or volume overwrites per frame increases when the tremolo or vibrato cycle is very fine, there won't be enough of this buffer. To avoid this error, increase the value of maxUpdates specified in the configuration of the synthesizer driver to a commensurate value (so that the error doesn't occur). 
+
+<p>
+If tempo changes have no effect even if maxUpdates is increased, it is possible that processing is being dropped. Maybe your vibrato cycle is too short. 
+
+
+<P align="right">
+<A href="audio.htm#index">top</a>
+
+
+<HR>
+
+<P>
+<A name="09"><FONT color="#FF0000"><b>Q9</b></FONT></A>
+<b> With regard to <a href="../../n64man/al/alInit.htm">alInit</a> how exactly do I stop RSP processing and discard task lists?</b>
+
+
+<P>
+<FONT color="#008000"><b>A9</b></FONT>
+ There are no instructions from SGI as to stopping (inhibiting) the RSP or discarding tasks. However, I imagine that a simple method would be to create an "enable/disable audio task start-up flag" in the main program to turn the RSP ON and OFF. The timing for turning the flag ON again would change depending on whether initialization was before or after <a href="../../n64man/al/alAudioFrame.htm">alAudioFrame</a>. 
+
+<p>
+I suggest that you check the following 3 points with respect to this matter. 
+
+
+<ol>
+ <li>Can you see what kinds of changes occur on the second call-back of dmaNew processing or a global work which is being used? 
+<P>
+ <li>Is the sequencer being released before the driver is closed?
+<P>
+ <li>Does processing proceed well even when it is set up so that the oscillator is not used at all?</li>
+</ol>
+
+<P align="right">
+<A href="audio.htm#index">top</a>
+
+
+<HR>
+
+<P>
+<A name="10"><FONT color="#FF0000"><b>Q10</b></FONT></A>
+<b> The data alignment gets messed up when I'm using vibrato. </b>
+
+
+<P>
+<FONT color="#008000"><b>A10</b></FONT>
+ This problem doesn't lie in you using vibrato, it lies with the alignment of the data structure. When the game was compiled, did yeild_data_ptr, dram_stack, output_buff, or output_buf_size get moved to an area that doesn't have 16-byte alignment? Try putting these structures back in their original segments, or try allotting them from the audio heap (alHeap). 
+
+
+<P align="right">
+<A href="audio.htm#index">top</a>
+
+
+<HR>
+
+<P>
+<A name="11"><FONT color="#FF0000"><b>Q11</b></FONT></A>
+<b> attackTime raises the gain from 0 to attackVolume all at once</b>
+
+
+<P>
+<FONT color="#008000"><b>A11</b></FONT>
+ It appears that the envelope becomes irregular when the tremolo is specified within a bank. Since there is no problem when the tremolo delay is a relatively large value (e.g., 100), this probably can be corrected by revising the tremolo call-back routine (update0sc in Payseq.c, etc.). 
+
+
+<P align="right">
+<A href="audio.htm#index">top</a>
+
+
+<HR>
+
+<P>
+<A name="12"><FONT color="#FF0000"><b>Q12</b></FONT></A>
+<b> I can only get the echo and other effects to work in mono. Could it be that the PAN information is not being received?</b>
+
+
+<P>
+<FONT color="#008000"><b>A12</b></FONT>
+ That's correct. The only thing you can do to avoid this is to create your own original sequencer driver. 
+
+
+<P align="right">
+<A href="audio.htm#index">top</a>
+
+
+<HR>
+
+<P>
+<A name="13"><FONT color="#FF0000"><b>Q13</b></FONT></A>
+<b> How do I use tremolo and vibrato processing? Could I get some samples that use &quot;init0sc&quot;, &quot;update0sc&quot;, and &quot;stop0sc&quot;?</b>
+
+
+<P>
+<FONT color="#008000"><b>A13</b></FONT>
+ A typical way of using this process is written in playseq.c. Since this is configured as a call-back routine, such as the waveform DMA routine from ROM, by simply registering this in the sequence player (the 3 lines from line 967 in playseq.c: seqc.xxx0sc=&xxx0sc), the player will subsequently call it. 
+
+
+<P align="right">
+<A href="audio.htm#index">top</a>
+
+
+<HR>
+
+<P>
+<A name="14"><FONT color="#FF0000"><b>Q14</b></FONT></A>
+<b> I've read that "by simply registering this in the sequence player, the player will subsequently call it," but can this be controlled with the sequence data? How should I set </b>
+
+<font face="courier" size="2">
+<blockquote><pre>oscType, oscDepth, oscDelay</pre></blockquote></font>
+
+<p>
+<b>and others that are similar? </b>
+
+
+<P>
+<FONT color="#008000"><b>A14</b></FONT>
+ These can be used according to program changes if they are set in the bank file (if vibType, vibRate, vibDepth, VebDelay are written in each Instrument). They cannot be directly controlled by the sequence. The only way to manipulate the parameters in a sequence is to access the player itself. 
+
+
+<P align="right">
+<A href="audio.htm#index">top</a>
+
+
+<HR>
+
+<P>
+<A name="15"><FONT color="#FF0000"><b>Q15</b></FONT></A>
+<b> Is there a way to cancel an effect?</b>
+
+
+<P>
+<FONT color="#008000"><b>A15</b></FONT>
+ Use &quot;<a href="../../n64man/al/alCSPSetChlFXMix.htm">alCSPSetChIFXMix</a>&quot; to set the effect send to 0 (zero). 
+
+
+<P align="right">
+<A href="audio.htm#index">top</a>
+
+
+<HR>
+
+<P>
+<A name="16"><FONT color="#FF0000"><b>Q16</b></FONT></A>
+<b> When I set maxVVoices or maxPVoices, there are tones that won't play.</b>
+
+
+<P>
+<FONT color="#008000"><b>A16</b></FONT>
+ This is probably due to a long release time. The synthesizer driver will continue to hold the voice during the release time, even though the waveform is completed, for instance. In addition, the release time is constant, regardless of the volume during release. Thus, voice resources are consumed, even though you can't actually hear the release sound. Consequently, low-priority sounds will be canceled by voice-overlays. 
+
+
+<P align="right">
+<A href="audio.htm#index">top</a>
+
+
+<HR>
+
+<P>
+<A name="17"><FONT color="#FF0000"><b>Q17</b></FONT></A>
+<b> What are the contents of &quot;.sbk&quot; and &quot;<a href="../../n64man/tool/midicomp.htm">midicomp</a>&quot;, and how do I create them? </b>
+
+
+<P>
+<FONT color="#008000"><b> A17</b></FONT>
+&quot;.sbk&quot; files are collections of &quot;.seq&quot; files (songs) created by the <a href="../../n64man/tool/sbc.htm">sbc</a> command. 
+
+<p>
+<a href="../../n64man/tool/sbc.htm">sbc</a> [-o output_file] seqfile0 seqfile1 seqfile2
+
+<p>
+An &quot;.sbk&quot; file can be created with the following command from data that have been compressed by &quot;<a href="../../n64man/tool/midicomp.htm">midicomp</a>&quot;. See the sample (/user/src/PR/playseq/) for how to use the data. 
+
+<p>
+<a href="../../n64man/tool/midicomp.htm">midicomp</a> (standard MIDI(.MID)&gt; &lt;output name.cmf&gt;
+
+<p>
+See the N64 Function Reference Manual, "Tools," for details. 
+
+
+<P align="right">
+<A href="audio.htm#index">top</a>
+
+
+<HR>
+
+<P>
+<A name="18"><FONT color="#FF0000"><b>Q18</b></FONT></A>
+<b> Where is the "viper" directory referred to in the Programming Manual? </b>
+
+
+<P>
+<FONT color="#008000"><b>A18</b></FONT>
+ This directory is not supported by the current version. 
+
+
+<P align="right">
+<A href="audio.htm#index">top</a>
+
+
+<HR>
+
+<P>
+<A name="19"><FONT color="#FF0000"><b>Q19</b></FONT></A>
+<b> Does N64 software require some setting in the game menu etc. to switch between stereo mode and monaural mode, like other machines do? </b>
+
+<p>
+<b>Do you use a library to switch modes?</b>
+
+
+<P>
+<FONT color="#008000"><b>A19</b></FONT>
+ No, there is no special requirement. There should be no problem with just stereo mode.
+
+<p>
+However, if you pan all the way to the left or right, and are playing on a monaural TV with a stereo cable, then there will be times when you hear no sound, either to the left or to the right, depending on which pin (L or R) is plugged into the Television.
+
+<p>
+There is no mode-switching library prepared. You can handle this problem by centering the pan of both channels.
+
+
+<P align="right">
+<A href="audio.htm#index">top</a>
+
+
+<HR>
+
+<P>
+<A name="20"><FONT color="#FF0000"><b>Q20</b></FONT></A>
+<b> Nintendo titles have a headphone mode. How do you do that? How is listening different?</b>
+
+
+<P>
+<FONT color="#008000"><b>A20</b></FONT>
+ Sorry, that's a trade secret.
+
+<p>
+Nintendo has a proprietary driver that makes sounds very clean-sounding with headphones.
+
+
+<P align="right">
+<A href="audio.htm#index">top</a>
+
+
+<HR>
+
+<P>
+<A name="21"><FONT color="#FF0000"><b>Q21</b></FONT></A>
+<b> What's the best way to change the DSP effect settings once the audio has been initialized?</b>
+
+<p>
+<b> Do you need to forcibly overwrite the parameters?</b>
+
+
+<P>
+<FONT color="#008000"><b>A21</b></FONT>
+ If you're using the "standard library," if you want to change the audio effects after initialization you need to reinitialize.
+
+<p>
+If you want to change the effects without reinitializing, you'll have to modify the library.
+
+<p>
+The library source is public, so go ahead and check the contents.
+
+<p>
+The free function n_alSynFreeFX()is available for effects, but we don't plan to include that in future releases.
+
+<p>
+The latest version of N64 Sound Tools supports effect switching.
+
+
+<P align="right">
+<A href="audio.htm#index">top</a>
+
+
+<HR>
+
+</BODY>
+</HTML>

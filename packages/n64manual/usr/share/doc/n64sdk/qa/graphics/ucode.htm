@@ -1,0 +1,232 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN"
+Editor notes- MAP added revisions 9/29/99
+pwc 2/21/00>
+<HTML>
+<HEAD><link rel=stylesheet type="text/css" href="../style.css">
+<TITLE>Microcode</TITLE>
+</HEAD>
+
+<BODy>
+<A name="index"></a>
+<IMG src="../../gif/n64_logo2.gif" height="21" width="136">
+
+<h3><FONT color="#FF8000">Q&A</FONT>- Microcode</h3>
+
+
+<P>
+<TABLE>
+  <TR>
+    <TD><B><A href="ucode.htm#qa1">QA1</A></B></TD>
+    <TD>What are the differences between Fast3D / Fast3D.dram / Fast3D.fifo?</TD></TR>
+  <TR>
+    <TD><B><A href="ucode.htm#qa2">QA2</A></B></TD>
+    <TD>Can the microcode be switched in one interrupt?</TD></TR>
+  <TR>
+    <TD><B><A href="ucode.htm#qa3">QA3</A></B></TD>
+    <TD>How do I determine optimum buffer space for the fifo microcode?</TD></TR>
+  <TR>
+    <TD><B><A href="ucode.htm#qa4">QA4</A></B></TD>
+    <TD>What happened to the Z Sort microcode?</TD></TR>
+  <TR>
+    <TD><B><A href="ucode.htm#qa5">QA5</font></A></B></TD>
+    <TD>Unsupported microcodes...</TD></TR>
+  <TR>
+    <TD><B><A href="ucode.htm#qa6">QA6</font></A></B></TD>
+    <TD>How do I use the JPEG microcode?</TD></TR>
+  <TR>
+    <TD><B><A href="ucode.htm#qa7">QA7</font></A></B></TD>
+    <TD>The microcode's rendering processing hangs up...</TD></TR>
+  <TR>
+    <TD><B><A href="ucode.htm#qa7">QA8</font></A></B></TD>
+    <TD>DEBUG_DL_PRT() (Microcode for F3DEX2 debug)</TD></TR>
+
+</TABLE>
+
+<HR>
+<P>
+<B><FONT color="#ff0000"><A name="qa1">Q1</A></FONT> There are currently [three] types of Fast3D microcodes - Fast3D / Fast3D.dram / Fast3D.fifo - but what are the concrete differences between them?</B>
+
+<P>
+<FONT color="#008000"><B>A1</FONT></B> Fast3D / Fast3D.dram / Fast3D.fifo are all full-feature microcodes and they are essentially identical.  The place where they differ is in the method of handling data between the RSP and RDP. 
+
+<P>
+Fast3D directly sends the RDP display list created by the RSP to the RDP, using DMEM (the RSP's internal work memory) as a buffer. 
+
+<P>
+In contrast to this, Fast3D.dram and Fast3D.fifo operate by reserving an optional RDP display list buffer (output_buffer) inside RDRAM and having the RDP read this. 
+
+<P>
+Furthermore, while the RDP starts to operate from when RSP has written the entire RDP display list to the output_buffer in Fast3D.dram, in Fast3D.fifo, the RDP operates without waiting for the RSP to finish since the output_buffer is used in a FIFO fashion. 
+
+<P>
+Since, with Fast3D, if you want to overlay RDP processing, since the buffer memory space in DMEM is small, data cannot be added to the RSP and you have to wait for the RSP.
+
+<P>
+By reserving a big enough output_buffer with Fast3D.dram, the RSP wait is eliminated, but the total RCP processing is not very efficient, consisting of (RSP processing time) + (RDP processing time), and there are problems that develop in a debugging application,  so that only the fifo is supported in the upwardly compatible F3DEX series currently released. 
+
+<P>
+The transfer of data between the RSP and RDP is most efficient with Fast3D.fifo.  In addition, with respect to the size of the output_buffer and performance, you can temporarily secure an output_buffer size (around 128Kbyte~256Kbyte) and if it isn't enough from a performance standpoint, you can add to it, or if it is sufficient for performance, you can eliminate some of it to find the optimum size for each game.  (Use the upwardly compatible <A href="../../n64man/ucode/gspF3DEX.htm">gspF3DEX.fifo</A>.)
+
+<P align="right">
+<A href="ucode.htm#index">top</A>
+
+
+
+<HR>
+<P>
+<B><A name="qa2"><FONT color="#ff0000">Q2</FONT></A> Can the microcode be switched in one interrupt (VI retrace)?  For instance, if the player is calculated and rendered using the F3DLX.Rej.fifo microcode, can the ground be drawn with F3DEX.fifo?  Since it is processing in one interrupt, I don't know when the switch should be made, or how it should be made.  Can it even be done? </B>
+
+<P>
+<B><FONT color="#008000">A2</FONT></B> It can be done.  Microcode switches during one interrupt include sound->graphics switching by making the graphics task yield using the scheduler, and graphics->graphics switching within the graphics task.  The content of your question deals with graphics->graphics switching, and up until now, you have been switching tasks using the CPU.  However, since there are functions which load microcode from the F3DEX1.21 microcode group into the display list, you should be able to switch relatively easily.  (Of course, too much loading results in a lot of overhead.)
+
+<P align="right">
+<A href="ucode.htm#index">top</A>
+
+<HR>
+<P>
+
+
+<B><FONT color="#ff0000"><A name="qa3">Q3</A></FONT> I am using the fifo microcode, but how should I determine the buffer size in the main memory to which the RSP writes temporarily? 
+Assuming that I can optimize this buffer, on what kind of data should I base the determination?</B> 
+
+<P>
+<B><FONT color="#008000">A3</FONT></B> Around 100KB are reserved for Super Mario64, but, this could not generally be called the optimum buffer size for fifo.  It is more efficient from a speed standpoint to find a size in which the RSP is not caused to wait by the RDP.
+
+<P>
+However, since that much buffer space is rather large, it is clear that a lot of memory must be reserved in RDRAM. 
+
+<P>
+In other words, this is determined according to these trade-offs, but decide on a tentative buffer amount (128Kbytes, etc.).  Then, indicate about how much would be required for the RCP to operate at the same time that a video image that you wish to display is being output.  
+
+<P>
+The buffer size must then be changed based on this to find the optimum size. 
+
+<P>
+Incidentally, following are examples for the F3DEX2 series (excerpted from the F3DEX2 readme file). 
+<blockquote>
+<Pre>
+gspF3DEX2(.NoN) 	0x410 Bytes 
+gspF3DEX2.Rej 	0x600 Bytes 
+gspF3DLX2.Rej 	0x600 Bytes 
+gspL3DEX2 	0x540 Bytes
+gspS2DEX2 	0x800 Bytes
+</pre></blockquote>
+
+<P align="right">
+<A href="ucode.htm#index">top</A>
+
+<HR>
+
+<P>
+<A name="qa4"><FONT color="#FF0000"><b>Q4</b></FONT></A>
+<b> What is the current status of the Z Sort microcode?</b>
+
+<P>
+<FONT color="#008000"><b>A4</b></FONT> Its release has been announced.  It is now a matter of distributing the Z Sort microcode, but the Z Sort microcode libraries have not yet been completed.  Consequently, the microcode still hasn't been officially released. 
+
+<P>
+There is no official release schedule for the Z Sort microcode.  There are various reasons for this, including the following.
+
+<OL>
+  <LI>Since it is not compatible with F3D GBI, it is not easy to incorporate into games
+  <LI>Preprocessing by the CPU is necessary to run the microcode
+  <LI>A minimum RSP and CPU scheduling sample (including sound processing) using a game has not been created
+  <LI>There are no tools for output with Z Sort structures
+</OL>
+<P>
+The current latest version 0.34 is available as a beta evaluation version at NTSC-ONLINE. 
+
+<P>
+<b>Note:</b>  While you can expect that using this microcode and library will be effective for games which currently cause bottlenecks in the RDP, please note that it will have no effect on those with bottlenecks in the CPU and/or RSP.  In addition, even if the RDP processing is affected, this cannot be guaranteed to improve the overall performance of the game application.  Please, keep these things in mind when using and evaluating this microcode. 
+
+<P>
+Since the current version 0.34 is a beta version, please be forewarned that the specifications may vastly differ in the future.  Now, while the majority of this is outside the scope of support, it would be extremely helpful if you would contact NTSC regarding bugs, etc.
+
+<P align="right">
+<A href="ucode.htm#index">top</A>
+
+<HR>
+<P>
+
+
+<A name="qa5"><FONT color="#FF0000"><b>Q5</b></FONT></A>
+<b> Which microcodes are currently officially supported?</b>
+
+<P>
+<FONT color="#008000"><b>A5</b></FONT> As of February 1, 1999
+
+<P>
+<b>(Officially supported microcodes)</b>
+
+<UL>
+  <LI>F3DEX(2),L3DEX(2) microcodes
+  <LI>S2DEX(2) microcode
+  <LI>aspMain, n_aspMain microcodes
+  <LI>The Fast3D, Line3D microcodes (These are within the scope of support in as much as we will "fix bugs," but it is recommended that you use "F3DEX, L3DEX microcodes and S2DEX2.")
+</UL>
+<P>
+<b>(Not supported)</b>
+
+<UL>
+  <LI>Turbo3D microcode
+  <LI>Sprite2D microcode
+  <LI>The Fast3D, Line3D microcodes (These are within the scope of support in as much as we will "fix bugs," but it is recommended that you use "F3DEX, L3DEX microcodes and S2DEX2.")
+</UL>
+<P>
+<b>(Supported, but as beta versions)</b> ... accepting test reports, bugs, and requests
+
+<UL>
+  <LI>JPEG microcode
+  <LI>Z Sort microcode
+</UL>
+<P align="right">
+<A href="ucode.htm#index">top</A>
+
+<HR>
+<P>
+
+
+<A name="qa6"><FONT color="#FF0000"><b>Q6</b></FONT></A>
+<b> Where can I find the "JPEG Microcode" mentioned in the All Manual?</b>
+
+<P>
+<FONT color="#008000"><b>A6</b></FONT> The JPEG microcode is currently in beta version release.  The SGI version has been uploaded to NTSC-ONLINE and can be found there.
+
+<P align="right">
+<A href="ucode.htm#index">top</A>
+
+<HR>
+<P>
+
+
+<A name="qa7"><FONT color="#FF0000"><b>Q7</b></FONT></A>
+<b> By slightly modifying the program, the microcode will either do rendering processing well or it will hang up.</b>
+
+<P>
+<FONT color="#008000"><b>A7</b></FONT> There are two causes for the program hanging while waiting for microcode processing to finish.
+
+<P>
+One is that there is a problem in the contents of the display list which is created, causing the RCP to crash. 
+
+<P>
+The other is that the contents of the display list were changed before rendering processing by the RSP was completely done, causing an improper display list to be processed.
+
+<P>
+Now, program so that the vertex data and matrix data used by the display list are saved until processing by the RSP is completed. 
+
+<P align="right">
+<A href="ucode.htm#index">top</A>
+
+<HR>
+<p>
+<A name="qa8"><FONT color="#FF0000"><b>Q8</b></FONT></A>
+<B>When I use the F2DEX2 ver. 2.08 debug microcode, the address of the display list currently being processed is returned by the macro DEBUG_DL_PTR(), but can I use this even when rspboot or the audio microcode is loaded? </B>
+
+<P>
+<FONT color="#008000"><b>A8</b></FONT> F3DEX2d writes the physical address of each GBI to the DMEM work memory before processing that GBI.  Since this processing is not performed by any other microcodes, it won't make any difference even if that work memory is read by DBUG_DL_PTR().
+<P align="right">
+<A href="ucode.htm#index">top</A>
+
+<hr>
+</BODY>
+</HTML>

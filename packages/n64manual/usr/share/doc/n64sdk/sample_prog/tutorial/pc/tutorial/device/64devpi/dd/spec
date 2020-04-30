@@ -1,0 +1,39 @@
+#include  <nusys.h>
+
+/* code area */
+beginseg
+        name    "code"
+        flags   BOOT OBJECT
+        entry   nuBoot
+        address NU_SPEC_BOOT_ADDR
+        stack   NU_SPEC_BOOT_STACK
+        include "codesegment.o"
+        include "$(ROOT)/usr/lib/PR/rspboot.o"
+        include "$(ROOT)/usr/lib/PR/gspF3DEX2.fifo.o"
+        include "$(ROOT)/usr/lib/PR/gspL3DEX2.fifo.o"
+        include "$(ROOT)/usr/lib/PR/gspF3DEX2.Rej.fifo.o"
+        include "$(ROOT)/usr/lib/PR/gspF3DEX2.NoN.fifo.o"
+        include "$(ROOT)/usr/lib/PR/gspF3DLX2.Rej.fifo.o"
+        include "$(ROOT)/usr/lib/PR/gspS2DEX2.fifo.o"
+endseg
+
+beginseg
+        name "fs_dat0"
+        flags RAW
+        lba 100
+        include "picture.bin"
+endseg
+
+beginseg
+        name "fs_sys"
+        flags RAW
+        lba 1417
+        include "system.bin"
+endseg
+
+beginwave
+        name    "64devdd"
+        include "code"
+        include "fs_dat0"
+        include "fs_sys"
+endwave

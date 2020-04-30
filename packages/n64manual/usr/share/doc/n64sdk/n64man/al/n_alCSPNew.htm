@@ -1,0 +1,97 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<link rel=stylesheet type="text/css" HREF="../N64man.css">
+<!--
+Editors Notes:
+  MAP- created file
+-->
+
+<title>n_alCSPNew</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>n_alCSPNew</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p>alCSPNew, n_alCSPNew<br><p><i>
+Initializes a compressed MIDI sequence player</i></p>
+
+<p><b>Syntax</b></p>
+<p>
+<blockquote>
+  <pre>#include &lt;libaudio.h&gt;     /* <a href="../../header/libaudio.htm">libaudio.h</a> */
+void alCSPNew(    ALCSPlayer *seqp, ALSeqpConfig *config);</pre>
+  <pre>#include &lt;n_libaudio.h&gt;     /* <a href="../../header/n_libaudio.htm">n_libaudio.h</a> */
+void n_alCSPNew(N_ALCSPlayer *seqp, ALSeqpConfig *config);</pre>
+</blockquote>
+</p>
+<p><b>Arguments</b></p>
+<p>
+<dl>
+  <dt><strong>seqp</strong></dt>
+  <dd>Pointer to the compressed MIDI sequence player structure to initialize <br>
+    <br>
+  </dd>
+  <dt><strong>config</strong></dt>
+  <dd>Pointer to the sequence player configuration structure<br>
+    (Note: Bothe alSeqpNew and alCSPNew use the same configuration structure.)<br>
+    <br>
+  </dd>
+</dl>
+</p>
+<p><b>Description</b></p>
+
+<p><a href="alCSPNew.htm">alCSPNew</a> initializes a compressed MIDI sequence player (seqp) for the configuration specified in config, and it signs into the synthesis driver as a client. It allocates memory from the (initialized) ALHeap structure.
+</p>
+
+<p>The arguments in the ALSeqpConfig structure (config) determine how many resources are allocated from the heap. This structure is defined in the &lt;libaudio.h&gt; file. The values are as follows:
+
+
+<dl>
+  <dt><strong>maxVoices</strong></dt>
+  <dd>The maximum number of voices to support <br>
+    <br>
+  </dd>
+  <dt><strong>maxEvents</strong></dt>
+  <dd>The maximum number of internal events to support <br>
+    <br>
+  </dd>
+  <dt><strong>maxChannels</strong></dt>
+  <dd>The maximum number of MIDI channels to support, usually 16 or smaller.<br>
+    <br>
+  </dd>
+  <dt><strong>debugFlags</strong></dt>
+  <dd>are flags used to report common audio errors. It is set to zero to turn off error reporting. To turn on error reporting, "OR" together the following values. NO_SOUND_ERR_MASK controls error messages that occur when there is no sound that covers the requested sound at the specified pitch. NOTE_OFF_ERR_MASK controls error messages that occur when a "note off" occurs when there is no voice currently playing that note on the specified channel. NO_VOICE_ERR_MASK controls error messages that occur when there are no more voices available to satisfy the request to allocate a voice. <br>
+    <br>
+  </dd>
+  <dt><strong>*initOsc</strong></dt>
+  <dd>Points to the procedure that handles the initialization of oscillatores used to perform vibrato and tremelo. If vibrato and tremelo are not used, this value must be set to zero. <br>
+    <br>
+  </dd>
+  <dt><strong>*updateOsc</strong></dt>
+  <dd>Points to the procedure that handles the updating of oscillators used to perform vibrato and tremelo. If vibrato and tremelo are not used, this value must be set to zero. <br>
+    <br>
+  </dd>
+  <dt><strong>*stopOsc</strong></dt>
+  <dd>Points to the procedure that handles the shutting down of oscillators used to perform vibrato and tremelo. If vibrato and tremelo are not used, this value must be set to zero. <br>
+    <br>
+  </dd>
+  <dt><strong>heap</strong></dt>
+  <dd>Pointer to an initialized audio heap.<br>
+    <br>
+  </dd>
+</dl>
+
+<p>An example showing how to set up and use oscillators is presented in the Playseq demo application. </p>
+
+<p>For details on n_audio library, see "Chapter 28: n_audio library" in the N64 Programming Manual.</p>
+
+<p><b>See Also</b></p>
+
+<p>alHeapNew, <a href="alHeapAlloc.htm">alHeapAlloc</a>, <a
+href="alCSPDelete.htm">alCSPDelete</a></p>
+<h3>Revision History</h3>
+<p>1999/04/30  Changed Format</p>
+<br><br>
+</body>
+</html>

@@ -1,0 +1,81 @@
+<HTML>
+<HEAD>
+<TITLE>nuContGBPakFread</TITLE>
+</HEAD>
+
+<BODY bgcolor="#FFFFFF">
+<font face="arial" size="-1">
+
+<P>
+<FONT size="5"><b><IMG src="../nusystem2.gif" height="30" width="176">Function</b></FONT>
+
+<HR>
+<P>
+<FONT size="3"><b>nuContGBPakFread</b></FONT>
+<p>
+<HR>
+<P>
+<b>Syntax</b>
+<font face="courier" size="2">
+<pre>s32 nuContGBPakFread(NUContPakFile *handle, u16 address, u8 *buffer, u16 size)</pre>
+</font>
+
+<p><b>Arguments</b>
+<font face="courier" size="2">
+<pre>
+handle      GB Pak control structure (shared with Controller Pak structure)
+address     Game Boy Game Pak address
+buffer      data buffer
+size        byte size</pre>
+</font>
+
+<p><b>Return Value</b>
+<font face="courier" size="2">
+<pre>Error</pre>
+</font>
+
+<p><b>Description</b>
+
+<p><i>Reads data from a high-performance Game Boy Game Pak</i>
+
+<p>Reads "size" bytes of data into the "buffer" from the specified "address" of the Game Boy Game Pak.
+
+<p>This function can read data even when the Game Boy Game Pak's CPU address and the read size are not multiples of 32. It also internally checks the connector and, after the data is read, checks the status. Furthermore, it checks the address, and if access is to a RAM area in MBC 1,2,3 it enables access and then reads the data. After access it write-protects the area.
+
+<p>Since power for the Game Boy Game Pak is not turned on as part of the function before reading, please perform reading or writing after turning power ON and checking the Game Boy Game Pak ID. Also, this function does not turn the power off, so if you are not going to perform a read/write operation after this function, please turn the power OFF with the nuContGBPakPower function.
+
+<p>Since this function uses osGbpakCheckConnector() it only supports Game Paks with MBC 1,2,3 or which do not use a memory controller.
+
+<p><b>Errors</b>
+<p>
+<table border="1" cellspacing="1">
+    <tr>
+        <td><font face="arial" size="-1">PFS_ERR_NOPACK</font></td>
+        <td><font face="arial" size="-1">Nothing is inserted in the specified Controller.</font></td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">PFS_ERR_DEVICE</font></td>
+        <td><font face="arial" size="-1">Some device other than a GB Pak is inserted in the Controller.</font></td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">PFS_ERR_CONTRFAIL</font></td>
+        <td><font face="arial" size="-1">Data transfer with Controller has failed. Either the Controller is not connected properly, <br>
+        or there may be some problem with the GB Pak or the Controller connector.</font></td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">PFS_ERR_NO_GBCART</font></td>
+        <td><font face="arial" size="-1">Game Boy Game Pak is not inserted in the GB Pak.</font></td>
+    </tr>
+    <tr>
+        <td><font face="arial" size="-1">PFS_ERR_NEW_GBCART</font></td>
+        <td><font face="arial" size="-1">Game Boy Game Pak has been removed and reinserted.</font></td>
+    </tr>
+</table>
+
+<p>
+<hr>
+
+<p align="right"><a href="index.htm"><img src="../index.gif" border="0"
+width="65" height="17"></a>
+</body>
+</html>

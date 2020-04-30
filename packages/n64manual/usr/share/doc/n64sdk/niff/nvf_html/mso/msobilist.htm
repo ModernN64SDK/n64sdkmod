@@ -1,0 +1,68 @@
+<HTML>
+<HEAD>
+<TITLE>msobilist</TITLE>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../../../mobile/allman.css">
+<!-- Editor's Notes: 9/23/1999 Ron Daring -->
+</HEAD>
+  <BODY bgcolor="#FFFFFF">
+<h1>_msoBilistBase</h1>
+<p><i>Macro group for bi-directional list</i></p>
+<pre>
+Macro
+* _msoBilistBaseDefine( nodetype )
+  The type of list for the nodetype is defined by the name nodetypeList.
+
+* _msoBilistBaseBegin( list_ptr )
+  Returns the head of the list
+
+* _msoBilistBaseEnd( list_ptr )
+  Returns the end of the list  (This does not mean that there is a value at the end.)
+
+* _msoBilistBaseIsEmpty( list_ptr )
+  Returns whether or not the list is empty
+
+* _msoBilistBaseInit( list_ptr )
+  Initializes a list
+
+* _msoBilistBaseInsert( list_ptr, node_ptr, new_node_ptr )
+  Adds new_node before node_ptr
+
+* _msoBilistBaseRemove( list_ptr, node_ptr )
+  Removes node_ptr
+
+* _msoBilistBasePushFront( list_ptr, node_ptr )
+  Adds a node at the head of the list
+
+* _msoBilistBasePushBack( list_ptr, node_ptr )
+  Adds a node to the end of the list
+
+* _msoBilistBasePushListFront( list_ptr, push_list_ptr )
+  Adds all nodes in the push_list to the head of the list
+
+* _msoBilistBasePushListBack( list_ptr, push_list_ptr )
+  Adds all nodes in the push_list to the end of the list
+
+* _msoBilistBasePopFront( list_ptr )
+  Deletes a node from the head of list
+
+* _msoBilistBasePopBack( list_ptr )
+  Deletes a node from the end of list
+
+Usage Example
+* When you wish to create a list of MxxObject's called MxxObjectList and to create 
+   mxxObjectListPushFront( ), it is accomplished as follows.
+  _msoBilistBaseDefine( MxxObject );
+  #define _mxxObjectListPushFront(list_ptr,node_ptr) \
+          _msoBilistBasePushFront(list_ptr,node_ptr)
+
+* Scanning MxxObject
+  for ( node_ptr = mxxObjectListBegin( list_ptr );
+        node_ptr != mxxObjectListEnd( list_ptr );
+        node_ptr = node_ptr->next )
+  {
+      ....
+  }
+
+</pre>
+  </BODY>
+</HTML>

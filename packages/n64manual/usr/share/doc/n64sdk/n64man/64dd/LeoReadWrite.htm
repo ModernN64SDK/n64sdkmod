@@ -1,0 +1,67 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Author's Comments: JLR made formating edits.
+MAP updated format, links 9/28/99>
+<title>LeoReadWrite</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>LeoReadWrite</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p><i>Reads and writes to the N64 Disk Drive</i></p>
+
+<p><b>Syntax</b></p>
+<pre><p>
+#include &lt;PR/leo.h&gt;     /* <A HREF="../../header/leo.htm">leo.h</A> */
+
+s32 LeoReadWrite(LEOCmd *cmdBlock, s32 direction, u32 startLBA, 
+                 void *vaddr, u32 nLBAs, OSMesgQueue *mq);</pre></p>
+<p><b>Description</b></p>
+
+<p><b>Note:</b> None of the N64 Disk Drive-related instructions involve ROM DMA (including DMA to ROM in the drive). In fact, the instructions are designed on the assumption that ROM DMA will not be carried out. To learn more about this, please see "Chapter 12: Programming Cautions" in the N64 Disk Drive Programming Manual. 
+</p>
+
+<p><tt>LeoReadWrite</tt> reads and writes between RDRAM and the N64 Disk Drive.
+This function is used to set up various parameters of the command block specified by the <b>cmdBlock</b> argument in accordance with the following arguments specified on the call side: <br></p>
+<ul>
+<LI>The transfer direction specified by the <b>direction</b> argument.<br> 
+<LI>The starting LBA specified by the <b>startLBA</b> argument. <br>
+<LI>The RDRAM address specified by the <b>vaddr</b> argument. <br>
+<LI>The transfer LBA size specified by the <b>nLBAs</b> argument. <br>
+<LI>The message queue specified by the <b>mq</b> argument that indicates the command processing has ended. </LI><br>
+</ul>
+
+<p><b>nLBAs</b> specifies the size of the logical block to be transferred.</p>
+
+<p>Use 16-byte alignment to store the RDRAM virtual address specified by the <b>vaddr</b> argument. This can be easily done by using <A HREF="../os/OS_DCACHE_ROUNDUP_ADDR.htm">OS_DCACHE_ROUNDUP_ADDR</A>.
+</p>
+
+<p>The cmdBlock._nbytes element stores the current extent to which the read or write has been performed. So even if an error is returned, the data that has been correctly read up to that point can be used.
+</p>
+
+<p>Nothing needs to be set for the command block <b>cmdBlock</b> argument. When processing of this function ends, an error code is returned to the message queue mq. An error could arise, so the programmer needs to check this error code.
+
+<p>For more information about the errors that may be returned, their causes, and ways to deal with them, please see  "Chapter 10: Error-Handling" in the N64 Disk Drive Programming Manual. </p>
+
+<p>The return value is -1 if Leo Manager has not been created, and 0 if it has. Usually no check is necessary. </p>
+
+<p><b>Example</b></p>
+<pre><p>
+<font face="Courier">LEOCmd cmdBlock;</font>
+<font face="Courier">u32 error;</font>
+<font face="Courier">.....</font>
+<font face="Courier">LeoReadWrite(&amp;cmdBlock, OS_READ, 5, (void*)0x80200000,</font>
+<font face="Courier">             100, &amp;diskQ);</font>
+<font face="Courier">osRecvMesg(&amp;diskQ, (OSMesg *)&amp;error, OS_MESG_BLOCK);</font></pre></p>
+
+<p><b>See Also</b></p>
+
+<p><a href="LeoCreateLeoManager.htm">Leo*CreateLeoManager</a></p>
+<h3>Revision History</h3>
+<p>04/30/1999  Changed Format</p>
+<br><br>
+
+</body>
+</html>

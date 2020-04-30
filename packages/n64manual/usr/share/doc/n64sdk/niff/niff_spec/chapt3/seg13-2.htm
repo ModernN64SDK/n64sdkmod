@@ -1,0 +1,588 @@
+<HTML>
+<HEAD>
+<TITLE>Chapter 3 Binary Format</TITLE>
+</HEAD>
+<BODY LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff">
+
+<font face="arial" size="-1">
+<b><font size="3">Chapter 3 Binary Format</b></font>
+<HR>
+<P>
+<b>3-13 Material List</b>
+
+<P>
+<u>2. Mat Area</u>
+
+<p>
+<table border="1" cellpadding="3" cellspacing="3">
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+mat_tag
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+this_mat_index
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+mat_size
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+mat_name_index
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+mat_type
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+mat_shade_type
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+mat_color_type0
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+mat_color_type1
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+mat_alpha_type0
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+mat_alpha_type1
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+float
+</td>
+<td><font face="arial" size="-1">
+prim_red
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+float
+</td>
+<td><font face="arial" size="-1">
+prim_green
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+float
+</td>
+<td><font face="arial" size="-1">
+prim_blue
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+float
+</td>
+<td><font face="arial" size="-1">
+prim_alpha
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+user_flag0
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+user_flag1
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+user_flag2
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+user_flag3
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+user_flag4
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+user_flag5
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+user_flag6
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+user_flag7
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+local_light_index
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+tex_num
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+nintendo_extension_block_size
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+user_extension_block_size
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+tex_index(0)
+</td>
+</tr>
+<tr>
+<td colspan="2"><font face="arial" size="-1">
+<center>
+...
+</center>
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+tex_index(tex_num - 1)
+</td>
+</tr>
+<tr>
+<td colspan="2"><font face="arial" size="-1">
+<center>
+NintendoExtensionBlock
+</center>
+</td>
+</tr>
+<tr>
+<td colspan="2"><font face="arial" size="-1">
+<center>
+UserExtensionBlock
+</td></tr></table>
+<p>
+
+Figure: Mat Area Memory Map
+
+<p>
+<table border="1" cellpadding="3" cellspacing="3">
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 mat_tag
+</td>
+<td>
+<font face="arial" size="-1">
+Tag indicating Mat. Set the following flag.  
+<pre><font face="courier" size="2"><b>TAG_MAT&#9;0x000a0100</b></pre></font>
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 this_mat_index
+</td>
+<td><font face="arial" size="-1">
+Index number of this Mat area. 
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 mat_size
+</td>
+<td>
+<font face="arial" size="-1">
+Size of this Mat area
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 mat_name_index
+</td>
+<td>
+<font face="arial" size="-1">
+Index number in NameList that describes Mat name. 
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+<a href="../chapt5/seg1.htm#MAT_TYPE">u32 mat_type</a>
+</td>
+<td>
+<font face="arial" size="-1">
+Material in NIFF has three types: mat_shade_type, mat_color_type, and mat_alpha_type. 
+<p>
+mat_shade_type is the field primaly to specify the setting for shooting.  mat_color_type is the field to specify the setting of color value. 
+<p>
+mat_alpha_typeis the field to specify the setting for Alpha value.  Also, mat_color_type and mat_alpha_type have two fields each for application on N64.
+<P>
+You can specify how to refer to flags for Color setting and Alpha setting at mat_type field  for customaization.  The following flags are already specified at present.
+<pre><font face="courier" size="2">
+<b>MAT_TYPE_NIFF&#9;0x00000000
+MAT_TYPE_N64&#9;0x01010101
+</b></pre></font>
+<P>
+MAT_TYPE_NIFF sets the conbination of color value and that of Alpha value respectively using colors to be set in the NIFF format.  Flags set in these fields for mat_color_type* or mat_alpha_type* specify the exclusive flag for MAT_TYPE_N.
+<P>
+MAT_TYPE_N64 can use flags specified in mat_color type* and mat_alpha_type* to be able to specify all setting in color combiner of NINTENDO64.  However, in case of the usage of color value which is not set in NIFF, you need to allocate colors to several user_flag on convertor to convert from NIFF to N64 in advance.
+<P>
+For details, please see Chapter 4, "Note for material type setting."
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+<a href="../chapt5/seg1.htm#MAT_SHADE_TYPE">u32 mat_shade_type</a>
+</td>
+<td>
+<font face="arial" size="-1">
+This field primarily specifies the shading attributes of materials. The following flags are currently defined. 
+<pre><font face="courier" size="2"><b>
+MAT_SHADE_LIGHT_OFF&#9;0x00000000
+MAT_SHADE_LIGHT_LOCAL&#9;0x00000001
+MAT_SHADE_LIGHT_GLOBAL&#9;0x00000002
+MAT_SHADE_FLAT&#9;&#9;0x00000000
+MAT_SHADE_SMOOTH&#9;0x00000010
+MAT_SHADE_USE_HILIGHT&#9;0x00000100
+MAT_SHADE_USE_REFLECT&#9;0x00000200</b></pre></font>
+<P>
+The MAT_SHADE_LIGHT_* flag specifies the effect of light on materials.
+<p>
+If MAT_SHADE_LIGHT_OFF is set,the lighting process specified is not performed.
+<p>
+If MAT_SHADE_LIGHT_LOCAL is set, the Light in LightList that has the index specified by the local_light_index of this Mat area is used.
+<p>
+MAT_SHADE_LIGHT_GLOBAL is used, the Light that links to Scene is used.<p>
+MAT_SHADE_FLAT and MAT_SHADE_SMOOTH are flags that specify shading information of triangles.<br>
+If MAT_SHADE_FLAT is set, triangles are drawn using the spefified material.<p>
+If MAT_SHADE_SMOOTH is set, triangles are drawn using the specified material with color graduated between vertices.<p>
+MAT_SHADE_USE_HILIGHT specifies the use of highlight texture mapping.<p>
+MAT_SHADE_USE_REFLECT specifies the use of reflection texture mapping.
+<p>
+The MAT_SHADE_LIGHT_* flag must always be specified and only one MAT_SHADE_LIGHT_* setting can be specified.<p>
+Either MAT_SHADE_FLAT or MAT_SHADE_SMOOTH must always be specified. The use of MAT_SHADE_USE_HILIGHT and MAT_SHADE_USE_REFLECT is optional. Only one or the other may be specified.
+
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+<a href="../chapt5/seg1.htm#MAT_COLOR_TYPE">u32 mat_color_type0</a>
+</td>
+<td>
+<font face="arial" size="-1">
+Sets color gradations of materials. For details, please see, "Note for material type setting."
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+<a href="../chapt5/seg1.htm#MAT_COLOR_TYPE">u32 mat_color_type1</a>
+</td>
+<td>
+<font face="arial" size="-1">
+Sets color gradations of materials.  Used only when specifying a 2-cycle mode rendering type. For details, please see, "Note for material type setting."
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+<a href="../chapt5/seg1.htm#MAT_COLOR_TYPE">u32 mat_alpha_type0</a>
+</td>
+<td>
+<font face="arial" size="-1">
+Sets alpha gradations of materials. For details, please see, "Note for material type setting."
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+<a href="../chapt5/seg1.htm#MAT_COLOR_TYPE">u32 mat_alpha_type1</a>
+</td>
+<td>
+<font face="arial" size="-1">
+Sets alpha gradations of materials. Used only when specifying a 2-cycle mode rendering type. For details, please see, "Note for material type setting."
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+float prim_red
+</td>
+<td>
+<font face="arial" size="-1">
+Red component of primitive color <p>
+0 <img src="../../../gif/equalless.gif">prim_red <img src="../../../gif/equalless.gif">1.0
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+float prim_green
+</td>
+<td>
+<font face="arial" size="-1">
+Green component of primitive color<p>
+0 <img src="../../../gif/equalless.gif">prim_red  <img src="../../../gif/equalless.gif">1.0
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+float prim_blue
+</td>
+<td>
+<font face="arial" size="-1">
+Blue component of primitive color<p>
+0 <img src="../../../gif/equalless.gif"> prim_red  <img src="../../../gif/equalless.gif">1.0
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+float prim_alpha
+</td>
+<td>
+<font face="arial" size="-1">
+Alpha component of primitive color<p>
+0  <img src="../../../gif/equalless.gif"> prim_red  <img src="../../../gif/equalless.gif"> 1.0
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 usr_flag0
+</td>
+<td>
+<font face="arial" size="-1">
+32-bit user-defined flag. With the converter to be released by NCL, there may be cases where a user flag is allocated data in advance. For details, please see, "Note for material type setting."
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 usr_flag1
+</td>
+<td>
+<font face="arial" size="-1">
+32-bit user-defined flag. With the converter to be released by NCL, there may be cases where a user flag is allocated data in advance. For details, please see, "Note for material type setting."
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 usr_flag2
+</td>
+<td>
+<font face="arial" size="-1">
+32-bit user-defined flag. With the converter to be released by NCL, there may be cases where a user flag is allocated data in advance. For details, please see, "Note for material type setting."
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 usr_flag3
+</td>
+<td>
+<font face="arial" size="-1">
+32-bit user-defined flag. With the converter to be released by NCL, there may be cases where a user flag is allocated data in advance. For details, please see, "Note for material type setting."
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 usr_flag4
+</td>
+<td>
+<font face="arial" size="-1">
+32-bit user-defined flag. With the converter to be released by NCL, there may be cases where a user flag is allocated data in advance. For details, please see, "Note for material type setting."
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 usr_flag5
+</td>
+<td>
+<font face="arial" size="-1">
+32-bit user-defined flag. With the converter to be released by NCL, there may be cases where a user flag is allocated data in advance. For details, please see, "Note for material type setting."
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 usr_flag6
+</td>
+<td>
+<font face="arial" size="-1">
+32-bit user-defined flag. With the converter to be released by NCL, there may be cases where a user flag is allocated data in advance. For details, please see, "Note for material type setting."
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 usr_flag7
+</td>
+<td>
+<font face="arial" size="-1">
+32-bit user-defined flag. With the converter to be released by NCL, there may be cases where a user flag is allocated data in advance. For details, please see, "Note for material type setting."
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 local_light_index
+</td>
+<td>
+<font face="arial" size="-1">
+Specifies the index number in LightList of Light that is referred to when specifying MAT_SHADE_LIGHT_LOCAL. Applies only when MAT_SHADE_LIGHT_LOCAL is specified. (In other cases, this data area exists but its contents are ignored.)
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 tex_num
+</td>
+<td>
+<font face="arial" size="-1">
+The number of textures to be used with Mat. Either 0, 1, or 2. 
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 nintendo_extension_block_size
+</td>
+<td>
+<font face="arial" size="-1">
+Size of Nintendo extension block 
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 user_extension_block_size
+</td>
+<td>
+<font face="arial" size="-1">
+Size of user extension block
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 tex_index
+</td>
+<td>
+<font face="arial" size="-1">
+Index number in TexList of the texture used with Mat. 
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+NintendoExtensinoBlock
+</td>
+<td>
+<font face="arial" size="-1">
+Nintendo extension block
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+UserExtensionBlock
+</td>
+<td>
+<font face="arial" size="-1">
+User extension block
+</td></tr></table>
+
+<p>
+
+
+<hr>
+
+<p align="right"><a href="../index.htm">
+<img src="../../../gif/index.gif"
+border="0" width="65" height="17"></a>
+&nbsp; <a href="./seg14.htm">
+<img src="../../../gif/next.gif"
+border="0" width="65" height="17"></a></p>
+
+</body>
+</html>
+
+

@@ -1,0 +1,102 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits
+MAP- added links, updated format>
+<TITLE>osVoiceCountSyllables</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+<font style="font-size: 12pt"><b>osVoiceCountSyllables</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p><i>Counts the number of semi-syllables in a word</p></i>
+</P>
+<P>
+<h3>Syntax</h3>
+</P>
+<P>
+#include &lt;ultra64.h&gt;     /* <A HREF="../../header/ultra64.htm">ultra64.h</A> */
+</P>
+<P>
+void osVoiceCountSyllables(u8 *word, s32 *syllables);<BR>
+
+</P>
+<P>
+<h3>Description</h3>
+</P>
+<P>
+The <tt>osVoiceCountSyllables</tt> function is for calculating how many syllables there are when registering a specific word in the Voice Recognition System.  By using this function, you can later determine how many words can be registered in the dictionary.  It is convenient to use the function during debugging or when asking the game player to input registered words.  
+</P>
+<P>
+"word" specifies the word (SJIS) to registered.  The number of semisyllables resulting from the calculation is returned to *syllables. 
+</P>
+<P>
+The total number of semisyllables which can be registered in the Voice Recognition System dictionary is 880 (440 syllables).  If more than this are registered with the <a href="osVoiceSetWord.htm">osVoiceSetWord</a> function, a CONT_ERR_VOICE_MEMORY error will occur.  
+</P>
+<P>
+<h3>Reference</h3>
+</B>
+</P>
+<P>
+The number of semisyllables is calculated as follows.  One semisyllable per word must be added as an offset value. 
+</P>
+<CENTER>
+<TABLE border="1">
+  <TR align="center">
+    <TD><b>Type of Syllable</TD>
+    <TD><b>Number of Semisyllables</TD>
+    <TD><b>Conditions</b></TD></TR>
+  <TR>
+    <TD>Vowel only</TD>
+    <TD align="center">2</TD>
+    <TD>Start of word</TD></TR>
+  <TR>
+    <TD>Vowel only</TD>
+    <TD align="center">1</TD>
+    <TD>Anywhere but start of word</TD></TR>
+  <TR>
+    <TD>Consonant + vowel</TD>
+    <TD align="center">2</TD>
+    <TD>Start of word, or anywhere but when start of word is Romanized by k, t, c, or p</TD></TR>
+  <TR>
+    <TD>Consonant + vowel</TD>
+    <TD align="center">3</TD>
+    <TD>Anywhere but start of word, anywhere except when preceding character is a small "tsu," or when start of word is Romanized by k, t, c, or p</TD></TR>
+  <TR>
+    <TD>Consonant + diphthong</TD>
+    <TD align="center">2</TD>
+    <TD>Small "ya" and the like.  Start of word or when start of word is Romanized by k, t, c, or p</TD></TR>
+  <TR>
+    <TD>Consonant + diphthong</TD>
+    <TD align="center">3</TD>
+    <TD>Small "ya" and the like. Anywhere but start of word, anywhere except when preceding character is a small "tsu," or when start of word is Romanized by k, t, c, or p</TD></TR>
+  <TR>
+    <TD>"n"</TD>
+    <TD align="center">1</TD>
+    <TD>none</TD></TR>
+  <TR>
+    <TD>Long "-"</TD>
+    <TD align="center">1</TD>
+    <TD>none</TD></TR>
+  <TR>
+    <TD>Assimilated sound - small "tsu"</TD>
+    <TD align="center">1</TD>
+    <TD>none</TD></TR>
+</TABLE>
+
+</CENTER>
+<P>
+<h3>See also</h3>
+<p><A href="osVoiceClearDictionary.htm">osVoiceClearDictionary</A>,
+<A href="osVoiceControlGain.htm">osVoiceControlGain</A>, <A href="osVoiceGetReadData.htm">osVoiceGetReadData</A>,
+<A href="osVoiceInit.htm">osVoiceInit</A>, <A href="osVoiceMaskDictionary.htm">osVoiceMaskDictionary</A>,
+<A href="osVoiceSetWord.htm">osVoiceSetWord</A>, <A href="osVoiceStartReadData.htm">osVoiceStartReadData</A>, and 
+<A href="osVoiceStopReadData.htm">osVoiceStopReadData</A>
+</P>
+<h3>Revision History</h3>
+<p>1999/04/30  Changed Format</p>
+<br><br>
+
+</BODY>
+</HTML>

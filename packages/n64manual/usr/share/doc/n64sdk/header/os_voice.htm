@@ -1,0 +1,113 @@
+<HTML><HEAD>
+<TITLE></TITLE>
+</HEAD></BODY>
+<PRE>
+<FONT COLOR="red">/*---------------------------------------------------------------------*
+        Copyright (C) 1998 Nintendo.
+        
+        $RCSfile: os_voice.h,v $
+        $Revision: 1.1 $
+        $Date: 1998/10/09 08:01:21 $
+ *---------------------------------------------------------------------*/</FONT>
+
+#ifndef _OS_VOICE_H_
+#define	_OS_VOICE_H_
+
+#ifdef _LANGUAGE_C_PLUS_PLUS
+extern &quot;C&quot; {
+#endif
+
+#include &lt;PR/ultratypes.h&gt;
+
+#if defined(_LANGUAGE_C) || defined(_LANGUAGE_C_PLUS_PLUS)
+
+<FONT COLOR="red">/**************************************************************************
+ *
+ * Type definitions
+ *
+ */</FONT>
+
+typedef struct {		<FONT COLOR="red">/* Voice Recognition System */</FONT>
+  OSMesgQueue	*__mq;		<FONT COLOR="red">/* SI Message Queue */</FONT>
+  int		__channel;	<FONT COLOR="red">/* Controller Port # */</FONT>
+  s32		__mode;
+  u8		cmd_status;	<FONT COLOR="red">/* Command Status */</FONT>
+} OSVoiceHandle;
+
+typedef struct {		<FONT COLOR="red">/* Voice Recognition System */</FONT>
+  u16	warning;
+  u16	answer_num;		<FONT COLOR="red">/* 0-5 */</FONT>
+  u16	voice_level;
+  u16	voice_sn;
+  u16	voice_time;
+  u16	answer[5];
+  u16	distance[5];
+} OSVoiceData;
+	
+
+#endif <FONT COLOR="red">/* defined(_LANGUAGE_C) || defined(_LANGUAGE_C_PLUS_PLUS) */</FONT>
+
+<FONT COLOR="red">/**************************************************************************
+ *
+ * Global definitions
+ *
+ */</FONT>
+
+<FONT COLOR="red">/* definition for Voice Recognition System */</FONT>
+
+#define	VOICE_WARN_TOO_SMALL	0x0400
+#define	VOICE_WARN_TOO_LARGE	0x0800
+#define	VOICE_WARN_NOT_FIT	0x4000
+#define	VOICE_WARN_TOO_NOISY	0x8000
+
+#define	VOICE_STATUS_READY	0
+#define	VOICE_STATUS_START	1
+#define	VOICE_STATUS_CANCEL	3
+#define	VOICE_STATUS_BUSY	5
+#define	VOICE_STATUS_END	7
+
+
+#if defined(_LANGUAGE_C) || defined(_LANGUAGE_C_PLUS_PLUS)
+
+<FONT COLOR="red">/**************************************************************************
+ *
+ * Macro definitions
+ *
+ */</FONT>
+
+
+<FONT COLOR="red">/**************************************************************************
+ *
+ * Extern variables
+ *
+ */</FONT>
+
+
+<FONT COLOR="red">/**************************************************************************
+ *
+ * Function prototypes
+ *
+ */</FONT>
+
+<FONT COLOR="red">/* Voice Recognition System */</FONT>
+extern s32 osVoiceInit(OSMesgQueue *, OSVoiceHandle *, int);
+extern s32 osVoiceCheckWord(u8 *data);
+extern s32 osVoiceClearDictionary(OSVoiceHandle *, u8);
+extern s32 osVoiceControlGain(OSVoiceHandle *, s32, s32);
+extern s32 osVoiceSetWord(OSVoiceHandle *, u8 *);
+extern s32 osVoiceStartReadData(OSVoiceHandle *);
+extern s32 osVoiceStopReadData(OSVoiceHandle *);
+extern s32 osVoiceGetReadData(OSVoiceHandle *, OSVoiceData *);
+extern s32 osVoiceMaskDictionary(OSVoiceHandle *, u8 *, int);
+extern void osVoiceCountSyllables(u8 *, u32 *);
+
+
+#endif  <FONT COLOR="red">/* defined(_LANGUAGE_C) || defined(_LANGUAGE_C_PLUS_PLUS) */</FONT>
+
+#ifdef _LANGUAGE_C_PLUS_PLUS
+}
+#endif
+
+#endif <FONT COLOR="red">/* !_OS_VOICE_H_ */</FONT>
+</PRE>
+</BODY>

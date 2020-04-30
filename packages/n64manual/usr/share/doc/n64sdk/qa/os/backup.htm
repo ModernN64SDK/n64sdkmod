@@ -1,0 +1,172 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN"
+Editor Notes: MAP added revisions 9/29/99
+PWC Edited 2/21/00>
+<HTML>
+<HEAD><link rel=stylesheet type="text/css" href="gif/style.css">
+<TITLE>EEPROM/SRAM</TITLE>
+</HEAD>
+
+<BODY>
+
+
+<P>
+<A name="index"></A>
+
+<IMG src="../../gif/n64_logo2.gif" height="21" width="136"> 
+<h3><FONT color="#FF8000">Q&A</font>- EEPROM/SRAM</h3>
+
+<P>
+<TABLE border="0">
+  <TR>
+    <TD valign="top" width="50"><font face="arial"><A href="backup.htm#01"><b>QA1</b></A></TD>
+    <TD><font face="arial">What kind of backup medium is used in the cartridge?  </TD></TR>
+  <TR>
+    <TD valign="top" width="50"><font face="arial"><A href="backup.htm#02"><b>QA2</b></A></TD>
+    <TD><font face="arial">Initializing the EEPROM...  </TD></TR>
+  <TR>
+    <TD valign="top" width="50"><font face="arial"><A href="backup.htm#03"><b>QA3</b></A></TD>
+    <TD><font face="arial">Processing when EEPROM sizes are different.</TD></TR>
+  <TR>
+    <TD valign="top" width="50"><font face="arial"><A href="backup.htm#04"><b>QA4</b></A></TD>
+    <TD><font face="arial">When make is reached in the pfs sample, it is executed, but it doesn't run...</TD></TR>
+<TR>
+    <TD valign="top" width="50"><font face="arial"><A href="backup.htm#04"><b>QA5</b></A></TD>
+    <TD><font face="arial">Can I burn the SRAM in a FLASH cartridge using the N64 Flash Gang Writer?</TD></TR>
+</TABLE>
+
+<HR>
+<P>
+<A name="01"><FONT  color="#FF0000"><b>Q1</b></FONT></A>
+<b> What types of backup media can be installed in the cartridges?  What is the development environment for them? </b>
+
+<P>
+<FONT   color="#008000"><b>A1</b></FONT> The following 3 types can currently be used. 
+
+<OL>
+  <LI>4Kbit EEPROM
+  <LI>16Kbit EEPROM
+  <LI>256Kbit S-RAM
+</OL>
+<P>
+Their respective development environments are listed below. 
+
+<OL>
+  <LI>In the case of an INDY emulator, the EEPROM is mounted on a board called the Joy Bus Board for connecting the controller. This is also installed as standard on development FLASH cartridges. 
+Since it is not installed on PARTNER cartridges (there is only a socket), it is being sold by the Nintendo Tokyo Branch Sales Department.
+<P>
+<LI>Use a 16 bit unit inserted into the EEPROM socket.  This also is being sold by the Nintendo Tokyo Branch Sales Department.<BR>
+<p>
+<LI>This is the basic development environment for PARTNER.  
+<br>Insert an SRAM board "NUS-03A," <FONT   color="#FF8000">(Photo 1)</FONT> in the connector on the PARTNER <FONT  color="#FF8000">(Photo 2)</FONT> and perform development.  For debugging, a 256Kbit SRAM is already installed in the current FLASH cartridge (8F16FB-128M), while the old model (8F16F-128M) uses both the 2-port adapter "NUS-DCC Board ASSY" <FONT color="#FF8000">(Photo 3)</FONT> and the SRAM board "NUS-03A" <FONT  color="#FF8000">(Photo 4)</FONT>.
+</OL>
+
+<P>
+There are also IS-VIEWER64 units with 256K-SRAM built-in and those without.  Those without use both the 2-port adapter "NUS-DCC Board ASSY" <FONT color="#FF8000">(Photo 3)</FONT> and the S-RAM board "NUS-03A" <FONT color="#FF8000">(Photo 4)</FONT>.
+
+<P>
+<IMG src="gif/nus03a.gif" height="240" width="320"><FONT color="#FF8000"><b> Photo 1</b></FONT>
+
+<P>
+<IMG src="gif/partner.gif" height="240" width="320"><FONT color="#FF8000"><b> Photo 2</b></FONT>
+
+<P>
+<IMG src="gif/nusdcc.gif" height="240" width="320"><FONT color="#FF8000"><b> Photo 3</b></FONT>
+
+<P>
+<IMG src="gif/withflsh.gif" height="259" width="240"><FONT color="#FF8000"><b> Photo 4</b></FONT>
+
+ 
+
+<P align="right">
+<A href="backup.htm#index">top</A>
+
+<HR>
+<P>
+<A name="02"><FONT color="#FF0000"><b>Q2</b></FONT></A>
+<b>The following items are noted in the "Programming Precautions" regarding the backup memory (EEPROM).  
+</b>
+
+<BLOCKQUOTE>
+"Please make it so that it will initialize normally, even if the contents of the backup memory are undetermined. Specific values are written in the backup memory when it is shipped from the plant, but those values are not guaranteed to be the same in the future."
+</BLOCKQUOTE>
+<P><b>
+With respect to this, how can I tell if the backup memory is in the state it was in when shipped from the plant? Even though the value itself cannot be specified, can it be determined whether or not it is an original factory ROM by checking, e.g, if the same value is continuously repeated? </b>
+
+<P>
+<FONT   color="#008000"><b>A2</b></FONT> The contents of the EEPROM at the time of shipping can in no way be guaranteed.
+
+<P>
+Even if the initialization data are cleared with FFH, it is dangerous for the game creator to say that "it is in the shipped condition if FF continues for x number of bytes." 
+
+<P>
+Trouble was also found when saving, even with past products, but this kind of processing is definitely something that you do not want to do. 
+
+<P>
+Therefore, how about trying the following initialization conditions? 
+
+<OL>
+  <LI>Check to see that a specific ID [NINTENDO64] is registered at a specific address.
+<P>
+  <LI>If the ID matches, use the game as the initialized data.
+<P>
+  <LI>If the ID is not present at the specified address, it could have been missing when the memory was shipped or the memory may have been corrupted.  Therefore, either initialize or write the necessary data, and write the ID to the specified address.
+</OL>
+<P>
+By building this kind of routine, there will probably be no problems even if the data are unstable when the memory was shipped from the plant. 
+
+<P>
+This procedure is only one example, but should be performed to protect the memory.
+
+<P>
+This may go without saying, but problems may arise if procedures 2 and 3 are reversed. The memory may crash depending on the save processing method, if the power is turned OFF after writing the ID in step 3, because there will be an ID when the power is next turned ON even though step 2 has still not been performed. 
+
+<P>
+Saved data should probably be handled as though the data have been corrupted to some extent.  
+
+<P>
+There are additional software tools which will allow normal save processing to be performed even though any one byte has been corrupted (such as double IDs, save processing completion flags, etc.)
+
+<P>
+Since the EEPROM is small at 4Kbits or 16Kbits, they probably can't all be used, but since this kind of data saving activity is important, please build the system taking all of these possibilities into consideration to prevent the user from incurring  problems. 
+
+<P align="right">
+<A href="backup.htm#index">top</A>
+
+<HR>
+<P>
+<A name="03"><FONT   color="#FF0000"><b>Q3</b></FONT></A>
+<b> In games with an on-board EEPROM, the EEPROM is checked during the game, and if an "EEPROM not on-board" or "Wrong size EEPROM on-board" result is returned, the manual says to "stop the continuation of the application program." What kind of processing should be done?  Should there be some kind of message displayed, or is there some sort of minimum action with which I should comply?</b>
+
+<P>
+<FONT color="#008000"><b>A3</b></FONT>
+ Since it is highly likely that you are using an unofficial cartridge if this kind of error occurs, there is no standard for the specific type of processing that should be done.  Simply stop the program.  You may also create a loop displaying a message to the effect that there is a problem with the backup memory.
+
+<P align="right">
+<A href="backup.htm#index">top</A>
+
+<HR>
+<P>
+<A name="04"><FONT color="#FF0000"><b>Q4</b></FONT></A>
+<b> When make is reached in the pfs sample, it is executed, but it doesn't run.  What could be causing this?</b>
+
+<P>
+<FONT color="#008000"><b>A4</b></FONT>  The most common cause is that the 5th connector in the INDY emulator board (it looks like a modular jack) has not been inserted.  This terminal is connected to the EEPROM as the 5th serial signal.  Please refer to the <A href="../../kantan/step2/index.htm" target="index">Kantan Manual  STEP 2, Chapter 5,</A> for the proper insertion method. 
+
+<P align="right">
+<A href="backup.htm#index">top</A>
+<HR>
+<P>
+<A name="05"><FONT color="#FF0000"><b>Q5</b></FONT></A>
+<b> Can I burn the SRAM in a FLASH cartridge using the N64 Flash Gang Writer? </b>
+
+<P>
+<FONT color="#008000"><b>A4</b></FONT> Unfortunately, you cannot write to SRAM using the NUS FLASH Gang Writer (the hardware is not compatible). 
+
+
+<P align="right">
+<A href="backup.htm#index">top</A>
+ 
+<HR>
+
+</BODY>
+</HTML>

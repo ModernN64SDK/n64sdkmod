@@ -1,0 +1,70 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<!--
+Editors Notes:
+  JLR made formating edits for 4.1.
+  PWC- updated formatting
+  MAP- added links, updated format
+-->
+
+<title>alHeapInit</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>alHeapInit</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+
+<p><i>
+Initializes an audio heap for use with the Nintendo 64 Audio Library</i>
+
+<p><b>Syntax</b></p>
+<p>
+<blockquote>
+    <pre>#include &lt;libaudio.h&gt;     /* <a href="../../header/libaudio.htm">libaudio.h</a> */
+void alHeapInit(ALHeap *hp, u8 *base, s32 len);</pre>
+</blockquote>
+</p>
+<p><b>Arguments</b></p>
+<p>
+<dl>
+    <dt><strong>hp</strong></dt>
+    <dd>Pointer to the ALHeap heap structure to initialize <br>
+        <br>
+        </dd>
+    <dt><strong>base</strong></dt>
+    <dd>Pointer to the start of the DRAM heap<br>
+        <br>
+        </dd>
+    <dt><strong>len</strong></dt>
+    <dd>Length, in bytes, of the DRAM heap<br>
+        <br>
+        </dd>
+</dl>
+</p>
+<p><b>Description</b></p>
+
+<p>The audio heap functionality provides a way for the application to provide memory to the audio library.</p>
+
+<p>At initialization time, the application passes a pointer to the heap when it calls such functions as <a href="alInit.htm">alInit</a>, <a href="alSeqpNew.htm">alSeqpNew</a>, <a href="alCSPNew.htm">alCSPNew</a>, and <a href="alSndpNew.htm">alSndpNew</a>. When these calls return, they have completed all the memory allocation that they will need. In addition to using the audio heap for library initialization routines, typical applications use the heap for dynamical allocation of application controlled buffers.</p>
+
+<p>The audio heap functionality provides a convenient way to ensure that buffers are aligned to 16-byte boundaries. This is highly recommended for any buffer that is shared between the reality serial processor (RSP) and the central processing unit (CPU).</p>
+
+<p>After the audio library is initialized and the application has allocated all the buffers that it needs, the heap structure can be examined to see if the amount of space originally allocated for the heap was of the appropriate size. </p>
+
+<p><b>Note</b></p>
+
+<p>Memory allocated from audio heaps cannot be freed.</p>
+
+<p><b>See Also</b></p>
+
+<p><a href="alHeapAlloc.htm">alHeapAlloc</a>, <a
+href="alHeapCheck.htm">alHeapCheck</a>, <a
+href="alInit.htm">alInit</a>, <a href="alSeqpNew.htm">alSeqpNew</a>, <a
+href="alCSPNew.htm">alCSPNew</a>, <a href="alSndpNew.htm">alSndpNew</a></p>
+<h3>Revision History</h3>
+<p>1999/04/30  Changed Format</p>
+<br><br>
+</body>
+</html>

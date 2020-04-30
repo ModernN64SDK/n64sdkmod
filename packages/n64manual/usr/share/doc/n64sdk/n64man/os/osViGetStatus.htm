@@ -1,0 +1,76 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.
+  PWC- updated formatting
+-->
+<TITLE>osViGetStatus</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>osViGetStatus </h1>
+
+<h3>Function</h3>
+
+<P>osViGetStatus</p>
+
+<p><i>Gets the VI status</i></P>
+
+<H3>Syntax</H3>
+<PRE>
+#include &lt;ultra64.h&gt;        /* <A href="../../header/os.htm">os.h</A> */
+u32 osViGetStatus(void);</PRE></p>
+
+<H3>Arguments</H3>
+<P>
+None.
+</P>
+<H3>Return Value</H3>
+<PRE>
+Contents of VI status register
+</PRE>
+<p>
+<TABLE border="1" cellspacing="0" cellpadding="3">
+  <TR>
+    <TD nowrap align="left" valign="middle">VI_CTRL_TYPE_16</TD>
+    <TD nowrap align="left" valign="middle">16-bit pixel size</TD></TR>
+  <TR>
+    <TD nowrap align="left" valign="middle">VI_CTRL_TYPE_32</TD>
+    <TD nowrap align="left" valign="middle">32-bit pixel size</TD></TR>
+  <TR>
+    <TD nowrap align="left" valign="middle">VI_CTRL_GAMMA_DITHTER_ON</TD>
+    <TD nowrap align="left" valign="middle">Gamma dither mode enabled</TD></TR>
+  <TR>
+    <TD nowrap align="left" valign="middle">VI_CTRL_GAMMA_ON</TD>
+    <TD nowrap align="left" valign="middle">Gamma correction enabled</TD></TR>
+  <TR>
+    <TD nowrap align="left" valign="middle">VI_CTRL_DIVOT_ON</TD>
+    <TD nowrap align="left" valign="middle">Divot mode enabled</TD></TR>
+  <TR>
+    <TD nowrap align="left" valign="middle">VI_CTRL_SERRATE_ON</TD>
+    <TD nowrap align="left" valign="middle">Serrate mode enabled</TD></TR>
+  <TR>
+    <TD nowrap align="left" valign="middle">VI_CTRL_DITHER_FILTER_ON</TD>
+    <TD nowrap align="left" valign="middle">Dither filter mode enabled</TD></TR>
+</TABLE></p>
+<H3>Description</H3>
+<P>
+This function returns the contents of the VI status register. 
+The VI status can be obtained by masking (AND) the contents of the register with the above the bit patterns.
+However, determine the pixel size by comparing the return value with either VI_CTRL_TYPE_32 or VI_CTRL_TYPE_16 after getting the AND with VI_CTRL_TYPE_32. 
+The bit pattern is defined in &lt;<A href="../../header/rcp.htm">rcp.h</A>&gt;. 
+</P>
+<H3>See Also</H3>
+<P>
+<A href="osViSetMode.htm">osViSetMode</A>, <A href="osViSetSpecialFeatures.htm">osViSetSpecialFeatures</A>
+</P>
+
+<H3>Revision History</H3>
+<P>
+02/01/99 Completely revised.
+</P>
+
+</BODY>
+</HTML>

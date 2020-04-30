@@ -1,0 +1,47 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-N64 Programming Basics-Chapter 4  N64 Programming Toolbox-Useful Functions for Nusystem</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/20/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<FONT Style="font-size:12pt"><B>4.3    Advanced Uses of the Debug Console</B></FONT>
+<br>
+<P>
+As we explained, NuSystem can display data in four console windows.  If you simply open all four windows in the entire screen, the consoles will overlap and the character string data will be difficult to view.  Of course, with Nusystem, the four console windows do not necessarily have to fill up the entire screen.  The programmer is free to specify the size and position of each window.
+     The following five functions have been prepared for changing the console window settings: 
+</P>
+<B>nuDebConWindowPos</B><br>
+This sets the position of the window.  The arguments required are the window number and the coordinates of the point at the upper-left corner of the window.  Specify the coordinate values with the screen coordinates.<br><br>
+<B>nuDebConWindowSize</B><br>
+This sets the size of the window.  The arguments are the window number, and the number of columns and the number of lines in the window.  The specifiable ranges are 1 to 40 columns and 1 to 30 lines. <br><br>
+<b>nuDebConWindowSet</B><br>
+This sets the window's position and size at once.  If you want to change both the position and size of a window at the same time, this function is more efficient than calling <tt>nuDebConWindowPos</tt> and <tt>nuDebConWindowSize</tt> separately.
+<br><br>
+<B>nuDebConWindowShow</B><br>
+This sets a specific console window to display/not display.  It is more efficient to not display unnecessary windows. <br><br>
+<b>nuDebConScroll</B><br>
+This specifies whether or not to scroll when character strings line feed down to the very bottom line of the window.  If scrolling is disabled, the data continues to be output starting back at the top of the console window.<br><br>
+<P>
+ In addition to these console window attributes, you can also set attributes like position and text color to the character strings.
+     The following four functions are used to specify character attributes: 
+</P>
+<br><br>
+<B>nuDebConTextColor</B><br>
+This sets the color of the character strings.  When you call this function, all subsequent character strings are displayed in the window in the specified color.  The character color is specified with the integers 0 to 15, but macro constants like NU_DEB_CON_TEXT_BLACK and NU_DEB_CON_TEXT_WHITE etc. have also been defined, so please use these macros whenever possible in your program.<br><br>
+<B>nuDebConTextPos</B><br>
+This sets the position where display of the next character string will start.  The position is specified using column and line numbers.
+<br><br>
+<B>nuDebConTextAttr</B><br>
+This sets the attribute of the character string.  Choices include NU_DEB_CON_ATTR_NORMAL (normal text) and NU_DEB_CON_ATTR_BLINK (blinking text).  When you call this function, all subsequent character strings are assigned the specified attribute.<br><br>
+<B>nuDebConClear</B><br>
+ This clears the displayed character strings.<br><br><br>
+<P>
+  This covers most of the functions relating to the debug console.  However, you cannot display character strings by simply assembling these functions together.  The reason is that the debug console is strictly a virtual console window.  In order to output character strings to the debug console window, each character must be cut out from the font image and lined up for display internally.  That is to say, a task must be activated internally and a display list used to output the character strings.  To have NuSystem activate the console display task, you must call the <tt>nuDebConDisp</tt> function.  In other words, after calling your series of character string display functions you must then call <tt>nuDebConDisp</tt>.<br><br>
+     For an example of the debug console in actual use, see the source of the sample program basic4 and section 4.6 later in this chapter. 
+</P>
+</BODY>
+</HTML>

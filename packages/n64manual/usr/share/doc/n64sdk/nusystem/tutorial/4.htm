@@ -1,0 +1,273 @@
+<HTML>
+<HEAD>
+<TITLE>NuSystem Tutorial</TITLE>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<!-- Editor's Notes: 9/8/1999 Ron Daring -->
+</HEAD>
+
+<BODY bgcolor="#FFFFFF">
+
+
+<P>
+<FONT size="3"><b>4 The Controller</b></FONT>
+<p>
+
+In this section we introduce a program that reads the Controller data and operates a square shape based on those values.</p>
+
+<p>The source code is located in the nu1 directory below the sample directory.</p>
+
+<p align="right"><a href="index.htm"><img
+src="../../gif/index.gif" border="0" width="65" height="17"></a></p>
+
+<hr>
+
+<b><a name="1">4.1 Controller Routine</a></b>
+
+<p>The main routine of nu1 is shown below:</p>
+
+<blockquote>
+<font face="courier" size="2">
+    <pre>/*  global variable  */
+NUContData	contdata[1]; /* Controller 1 read data */
+u8 contPattern;		     /* pattern of the connected Controller */
+
+/*------------------------
+	main
+--------------------------*/
+void mainproc(void)
+{
+  /*  initialize graphic  */
+  nuGfxInit();
+
+  /* initialize controller manager */
+  contPattern = nuContInit();
+
+  /* initialize for stage00() */
+  initStage00();
+  /* register callback */
+  nuGfxFuncSet((NUGfxFunc)stage00);
+  /*  turn display on*/
+  nuGfxDisplayOn();
+
+  while(1)
+    ;
+}</pre>
+</font>
+</blockquote>
+
+<p>In order to read the Controller data you must initialize the <!--  -->SI manager and<!--  --> controller manager with the <TT>nuContInit</TT> function. </p>
+
+<p><TT>nuContInit</TT> returns the bit pattern of the connected Controller.</p>
+
+<p>The updateGame00() function of stage00.c reads the Controller data and updates variables based on the values. </p>
+
+<p>The updateGame00() function
+moves the square according to Control Stick data, switches the direction of rotation according to data from the A Button, and accelerates the rotation according to the length of time that the B Button is pressed.</p>
+
+<blockquote>
+<font face="courier" size="2">
+    <pre>/* extern NUContData    contdata[1]; read Controller 1 data */
+
+void updateGame00(void)
+{  
+  static float vel = 1.0;
+
+  /* read Controller 1 data */
+  nuContDataGetEx(contdata,0);
+
+  /* change display position according to Control Stick data  */
+  triPos_x = contdata-&gt;stick_x;
+  triPos_y = contdata-&gt;stick_y;
+
+  /* reverse direction with A button */
+  if(contdata[0].trigger &amp; A_BUTTON)
+    {
+      vel = -vel;
+      osSyncPrintf(&quot;A button Push\n&quot;);
+    }
+
+  /* accelerate rotation during B button push */
+  if(contdata[0].button &amp; B_BUTTON)
+    theta += vel * 3.0;
+  else
+    theta += vel;
+}</pre>
+</font>
+</blockquote>
+
+<p>"updateGame00()" first reads the data of Controller 1 into the <TT>NUContData</TT> structure contdata[] using nuContDataGetEx().</p>
+
+<p>The trigger data is set in the trigger member of the <TT>NUContData</TT> structure, and the button status is set in the button member of the <TT>NUContData</TT> structure, so processing of each button can be branched with the "&" bit. </p>
+
+<p>(To read about button names see <TT>osContGetReadData</TT> in the N64 Function Reference Manual.)
+</p>
+
+<p>Control Stick data can be read with the stick_x, stick_y members.</p>
+
+<p align="right"><a href="index.htm"><img
+src="../../gif/index.gif" border="0" width="65" height="17"></a></p>
+
+<hr>
+
+<b><a name="2">4.2  Debug Console</a></b>
+
+<p>For software debugging, it is convenient to output the current variable values and messages to the TV screen. </p>
+
+<p>NuSystem has a function to display console output on the screen.</p>
+
+<p>Up to four console windows can be displayed. </p>
+
+<p>You can also give attributes to the windows/characters.</p>
+
+<p>For details, please refer to the debug-related functions (<TT>nuDebConDisp</TT>, etc.) in the NuSystem Function Manual.</p>
+
+<p>If a Controller Pak is inserted, the makeDL00() function of stage00.c will display the current XY value of the Control Stick. If a Controller Pak is not inserted, the function will output a message to that effect. </p>
+
+<p>The first character in the <TT>nuDebCon*</TT> function argument specifies the window
+number.</p>
+
+<blockquote>
+<font face="courier" size="2">
+    <pre>
+/* contPattern is the value returned by nuContInit() */
+  if(contPattern &amp; 0x1)
+    {
+      /*  changes character's display position */
+      nuDebConTextPos(0,12,23);
+      /* printf is not available, so character string is created using sprintf of N64OS */
+      sprintf(conbuf,&quot;triPos_x=%5.1f&quot;,triPos_x);
+      /* display created character on screen */
+      nuDebConCPuts(0, conbuf);
+
+      /*Y vertex displayed in same way*/
+      nuDebConTextPos(0,12,24);
+      sprintf(conbuf,&quot;triPos_y=%5.1f&quot;,triPos_y);
+      nuDebConCPuts(0, conbuf);
+    }
+  else
+    {
+      nuDebConTextPos(0,9,24);
+      nuDebConCPuts(0, &quot;Controller1 not connect&quot;);
+    }
+
+  /*  character written to frame buffer */
+  nuDebConDisp(NU_SC_SWAPBUFFER);</pre>
+</font>
+</blockquote>
+
+<p>"nuDebConDisp()" produces the display list internally and activates the graphics task. </p>
+
+<p>The argument, called internally by <TT>nuDebConDisp</TT>, is the frame buffer swap flag passed to the argument of the <TT>nuGfxTaskStart</TT> function.</p>
+
+<p>By using the N64OS debug function osSyncPrintf() you can output a message to the host computer rather than display on the screen.</p>
+
+<p>In the sample, a message is output when the A Button is pushed.</p>
+
+<p>The symptoms differ depending on the development tool, but running a process that frequently outputs messages can lead to problems, so you should avoid methods that monitor variables for every frame.</p>
+
+<p align="right"><a href="index.htm"><img
+src="../../gif/index.gif" border="0" width="65" height="17"></a></p>
+
+<hr>
+
+<b><a name="3">4.3 Dual Display List Buffers</a></b>
+
+<p>In the sample in the previous section, nu0, there is only one display list buffer. Here we present a sample which swaps between the use of two display list buffers.</p>
+
+<blockquote>
+<font face="courier" size="2">
+    <pre>/*   The following are defined in graphic.c
+  Gfx          gfx_glist[2][GFX_GLIST_LEN];
+  Dynamic      gfx_dynamic[2];
+  u32          gfx_gtask_no = 0;
+*/
+
+void makeDL00(void)
+{
+  Dynamic* dynamicp;
+  char conbuf[20]; 
+
+  /* specify display list buffers */
+  dynamicp = &amp;gfx_dynamic[gfx_gtask_no];
+  glistp = &amp;gfx_glist[gfx_gtask_no][0];
+
+     :
+     :
+
+  /* swap display list buffer  */
+  gfx_gtask_no ^= 1;
+}</pre>
+</font>
+</blockquote>
+
+<p>When there are two display list buffers, the RCP can read the display list value and process a graphic. At the same time, the CPU can safely create the next display list.</p>
+
+<p>With the RCP and CPU being run in parallel, the check by <TT>pendingGfx</TT> is less stringent than the check made in the nu0 software sample.</p>
+
+<blockquote>
+<font face="courier" size="2">
+    <pre>void stage00(int pendingGfx)
+{
+  /* process graphic if 2 or fewer RCP tasks are being processed or waiting for processing */
+  if(pendingGfx &lt; 3)
+    /* create display list/start task process  */
+    makeDL00();		
+
+  /* advance game process */
+  updateGame00(); 
+}</pre>
+</font>
+</blockquote>
+
+<p>Because debug console is a separate task, the task number increases by 1, so be careful. This is why the call to makeDL() is not made unless <TT>pendingGfx</TT> is less than 3. </p>
+
+<p>When this is done, creation of the next display list can even begin in the middle of the current graphics task.
+</p>
+
+<p>Of course, in this sample the RCP draw is completed within 1 frame, so there is really no need for dual display list buffers. </p>
+
+<p>But dual display list buffers are extremely efficient when the display list takes a long to time to build.
+</p>
+
+<p align="right"><a href="index.htm"><img
+src="../../gif/index.gif" border="0" width="65" height="17"></a></p>
+
+<hr>
+
+<b><a name="4">4.4 Dropped Frames and Dropped Processes</a></b>
+
+<p>In the stage00() function described above, if there are 3 or more pending graphic task processes, then <TT>makeDL00</TT> will be skipped and the display will not be updated. </p>
+
+<p>But updateGame() is still processed, and the square's rotation parameter will be updated in each retrace frame. </p>
+
+<p>The result is that the rotation speed will remain stable, but omissions (dropped frames) become possible in the display.</p>
+
+<p>
+By making the following changes to stage00(), makeDL00() and updateGame00() are rewritten so they operate at the same time, and the square's rotation parameter will also be updated when there are 3 or more pending graphic task processes. </p>
+
+<p>The result is that the speed will slow (a process drop).</p>
+
+<blockquote>
+<font face="courier" size="2">
+    <pre>void stage00(int pendingGfx)
+{
+  /* process graphic if 1 or fewer RCP tasks are being processed or waiting for processing */
+  if(pendingGfx &lt; 3)
+    {
+      /* create display list, start task process */
+      makeDL00();		
+      /* advance game process */
+      updateGame00(); 
+    }
+}</pre>
+</font>
+</blockquote>
+
+<p>Try experimenting with frame drops and process drops by replacing shadetri() with something for which the display list takes a long time to build.</p>
+
+<p align="right"><a href="index.htm"><img
+src="../../gif/index.gif" border="0" width="65" height="17"></a></p>
+
+<hr>
+</body>
+</html>

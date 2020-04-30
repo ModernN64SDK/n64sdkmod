@@ -1,0 +1,51 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../n64man.css">
+<title>MusAsk()</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check-->
+</head>
+
+<h1>MusAsk()</h1>
+
+<h2>Syntax</h2>
+
+<pre>
+int MusAsk(unsigned long flags);
+</pre>
+
+<h2>Arguments</h2>
+
+<dl>
+  <dt><b>flags</b>
+  <dd>sound source type
+</dl>
+
+<h2>Description</h2>
+
+<p>It determines how many channels are currently being processed by the specified type. This function is used to test if sound effects, songs, or both are in use.</p>
+
+<p>The argument flags must contain MUSFLAG_SONGS, MUSFLAG_EFFECTS, or both OR'ed together.</p>
+
+<h2>Return Value</h2>
+
+<p>Number of channels currently being processed.</p>
+
+<h2>Example</h2>
+
+<pre>void SilenceAllSound(int frames)
+{
+  <a href="MusStop.html">MusStop</a>(MUSFLAG_SONGS|MUSFLAG_EFFECTS,frames);
+  while (MusAsk(MUSFLAG_SONGS|MUSFLAG_EFFECTS))
+  CallNormalProcessing();
+}
+</pre>
+
+<h2>See Also</h2>
+<p>
+<a href="MusStop.html">MusStop()</a>,
+<a href="MusHandleAsk.html">MusHandleAsk()</a>
+</p>
+
+</body>
+</html>

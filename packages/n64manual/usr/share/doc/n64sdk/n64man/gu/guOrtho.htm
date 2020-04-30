@@ -1,0 +1,90 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.>
+<TITLE>guOrtho</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>guOrtho<FONT size="+0"> [Function]</FONT></H1>
+
+<p><h3>Function</h3></p>
+
+<p>guOrtho</p>
+<P>
+<i>Creates an orthogonal projection matrix (fixed point)</i>
+</P>
+<H3>Syntax</H3>
+<p>
+<PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gu.htm">gu.h</A> */
+void guOrtho(
+        Mtx *m,
+        float l,
+        float r,
+        float b,
+        float t,
+        float n,
+        float f,
+        float scale);</CODE></PRE></p>
+
+<H3>Arguments</H3>
+<p><DL>
+  <DT><B>m</B>
+  <DD>Pointer to 4x4 projection matrix resulting from calculation
+  <DT><B>l</B>
+  <DD>Near plane's lower-left x coordinate
+  <DT><B>r</B>
+  <DD>Near plane's upper-right x coordinate
+  <DT><B>b</B>
+  <DD>Near plane's lower-left y coordinate
+  <DT><B>t</B>
+  <DD>Near plane's upper-right y coordinate
+  <DT><B>n</B>
+  <DD>z-coordinate of near clipping plane
+  <DT><B>f</B>
+  <DD>z-coordinate of far clipping plane
+  <DT><B>scale</B>
+  <DD>Scale for matrix elements
+  <DD>* Can be used to set the significant number of digits for RSP fixed-point computations.
+</DL></p>
+<H3>Returned value</H3>
+<P>
+None
+</P>
+<H3>Description</H3>
+<P>
+Returns an orthogonal projection matrix to the structure specified by <B>m</B> for a parallel view of the orthogonal projection.  When this function is called, the result is the creation of the following kind of projection matrix:
+</P>
+<P>
+<IMG SRC="guOrtho00.gif">
+</P>
+<P>
+The near clipping plane is a rectangle with the lower-left vertex at
+(<B>l</B>, <B>b</B>, -<B>n</B>) and the upper-right vertex at (<B>r</B>, <B>t</B>, -<B>n</B>).  The far clipping plane is a rectangle with the lower-left vertex at (<B>l</B>, <B>b</B>, -<B>f</B>) and the upper-right vertex at (<B>r</B>, <B>t</B>, -<B>f</B>).  Both near and far (<B>n</B> and <B>f</B>) can take either positive or negative values.  For details about the fixed-point format, see <A HREF="../gsp/gSPMatrix.htm">gSPMatrix</A>.  Floating point is handled with the <A HREF="guOrthoF.htm">guOrthoF</A> function.
+</P>
+<H3>Note</H3>
+<P>
+In this function, the near plane and far plane are proportionate with the z plane in the world coordinate system, which differs from the specifications made with <A HREF="guPerspective.htm">guPerspective</A>.  In the case of guPerspective, distances are always specified using positive values.  Also, the resolution of the Z buffer declines as the distance between the near plane and far plane increases.
+</P>
+<H3>Comment</H3>
+<P>
+The Mtx structure looks like this:
+<PRE><CODE>typedef long  Mtx_t[4][4];
+typedef union {
+     Mtx_t          m;
+     long long int  force_structure_alignment;
+} Mtx;
+</CODE></PRE>
+</P>
+<H3>See also</H3>
+<P>
+<A HREF="../gsp/gSPMatrix.htm">gSPMatrix</A>, <A HREF="guFrustum.htm">guFrustum</A>, <A HREF="guFrustumF.htm">guFrustumF</A>, <A HREF="guLookAt.htm">guLookAt</A>, <A HREF="guLookAtF.htm">guLookAtF</A>, <A HREF="guOrthoF.htm">guOrthoF</A>, <A HREF="guPerspective.htm">guPerspective</A>, and <A HREF="guPerspectiveF.htm">guPerspectiveF</A>
+</P>
+<H3>Revision history</H3>
+<P>
+03/01/99  Completely rewritten.
+</P>
+</BODY>
+</HTML>

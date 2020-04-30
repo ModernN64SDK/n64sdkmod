@@ -1,0 +1,68 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.
+  PWC- updated formatting
+  MAP- updated format
+-->
+<TITLE>osPfsRepairId</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+<font style="font-size: 12pt"><b>osPfsRepairId</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p><i>Repairs the Controller Pak file system</i></P>
+
+<H3>Syntax</H3>
+<p><PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/os.htm">os.h</A> */
+s32 osPfsRepairId(OSPfs *pfs);</CODE></PRE></p>
+
+<H3>Description</H3>
+<P>
+It checks the Controller Pak ID area, assigns a new ID if this area is damaged, and repairs the Controller Pak file system. 
+</P>
+<P>
+This function can be used if a PFS_ERR_ID_FATAL error code is returned by the <a href="osPfsInitPak.htm">osPfsInitPak</a> function. For information, see <tt>osPfsInitPak</tt>.
+</P>
+<P>
+The OSPfs structure pfs is a file handle initialized by the function <tt>osPfsInitPak</tt>. For information on creating this handle, see <tt>osPfsInitPak</tt>
+</P>
+<P>
+If the function call is successful, a 0 is returned as the return value. If an error occurs, one of following error codes is returned:
+</P>
+
+<p><DL>
+  <DT><B>PFS_ERR_NOPACK</B>
+  <DD>Either the Controller Pak is not inserted into the specified Controller or the Controller is not properly connected. To determine which is the case, use <a href="osContStartQuery.htm">osContStartQuery</a> or <a href="osContGetQuery.htm">osContGetQuery</a>. 
+      <BR><BR>
+  <DT><B>PFS_ERR_NEW_PACK</B>
+  <DD>A different Controller Pak has been inserted; internally specified controller pak is recognized by comparing ID each Controller pak has. To use the inserted Controller Pak, initialize it by calling <tt>osPfsInitPak</tt>.
+      <BR><BR>
+  <DT><B>PFS_ERR_CONTRFAIL</B>
+  <DD>Data transfer to or from the Controller has failed. If a transfer error occurs, up to three tries will be done internally. Therefore, it is rather rare to see this error. If this error has returned, it is possible that either the Controller is not connected properly, or the Controller Pak or Controller Socket is damaged. 
+      <BR><BR>
+  <DT><B>PFS_ERR_ID_FATAL</B>
+  <DD>Recovery failed. Possible causes are an abnormality in the controller Joyport or Controller Pak. 
+      <BR><BR>
+  <DT><B>PFS_ERR_DEVICE</B>
+  <DD>A peripheral device other than a Controller Pak (eg, Rumble Pak, 64GB Pak) has been inserted in the controller. Whether a Controller Pak has been inserted is determined by whether the device has RAM. This error is issued if there is no RAM present. 
+      <BR><BR>
+  <DT><B>PFS_ERR_INVALID</B>
+  <DD>The <tt>Pfs</tt> function was called without initialization by <tt>osPfsInitPak</tt>. This error also can be issued if the file handle structure pfs is initialized by a function other than the Controller Pak initialization function <tt>osPfsInitPak</tt> and a Controller Pak function is then executed. An example would be if the Rumble Pak initialization function <a href="osMotorInit.htm">osMotorInit</a> were used to initialize the structure pfs and <tt>osPfsRepairId</tt> were then executed. Game program processing should be modified if this error is returned. 
+      <BR><BR>
+</DL></p>
+
+<H3>See Also</H3>
+<P>
+<A HREF="osContInit.htm">osContInit</A>, <A HREF="osContStartQuery.htm">osContStartQuery</A>, <A HREF="osContGetQuery.htm">osContGetQuery</A>, <A HREF="osPfsAllocateFile.htm">osPfsAllocateFile</A>, <A HREF="osPfsChecker.htm">osPfsChecker</A>, <A HREF="osPfsDeleteFile.htm">osPfsDeleteFile</A>, <A HREF="osPfsFileState.htm">osPfsFileState</A>, <A HREF="osPfsFindFile.htm">osPfsFindFile</A>, <A HREF="osPfsFreeBlocks.htm">osPfsFreeBlocks</A>, <A HREF="osPfsInitPak.htm">osPfsInitPak</A>, <A HREF="osPfsIsPlug.htm">osPfsIsPlug</A>, and <A HREF="osPfsReadWriteFile.htm">osPfsReadWriteFile</A>
+</P>
+
+<H3>Revision History</H3>
+<P>
+1999/02/01 Completely revised<br>
+1999/04/30 Changed format
+</P>
+
+</BODY>
+</HTML>

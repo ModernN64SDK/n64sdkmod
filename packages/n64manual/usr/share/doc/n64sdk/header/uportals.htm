@@ -1,0 +1,139 @@
+<HTML><HEAD>
+<TITLE></TITLE>
+</HEAD></BODY>
+<PRE><FONT COLOR="red">/*====================================================================
+ * uportals.h
+ *
+ * Copyright 1995, Silicon Graphics, Inc.
+ * All Rights Reserved.
+ *
+ * This is UNPUBLISHED PROPRIETARY SOURCE CODE of Silicon Graphics,
+ * Inc.; the contents of this file may not be disclosed to third
+ * parties, copied or duplicated in any form, in whole or in part,
+ * without the prior written permission of Silicon Graphics, Inc.
+ *
+ * RESTRICTED RIGHTS LEGEND:
+ * Use, duplication or disclosure by the Government is subject to
+ * restrictions as set forth in subdivision (c)(1)(ii) of the Rights
+ * in Technical Data and Computer Software clause at DFARS
+ * 252.227-7013, and/or in similar or successor clauses in the FAR,
+ * DOD or NASA FAR Supplement. Unpublished - rights reserved under the
+ * Copyright Laws of the United States.
+ *====================================================================*/</FONT>
+
+<FONT COLOR="red">/**************************************************************************
+ *
+ *  uportals.h - header file for the ultraportals library
+ *
+ *  $Revision: 1.12 $
+ *  $Date: 1997/02/11 08:40:49 $
+ *  $Source: /hosts/gate3/exdisk2/cvs/N64OS/Master/cvsmdev2/PR/include/uportals.h,v $
+ *
+ **************************************************************************/</FONT>
+
+
+
+#ifndef __ULTRAPORTALS_H__
+#define __ULTRAPORTALS_H__
+
+#include &lt;ultra64.h&gt;
+#include &quot;matrix.h&quot;
+#include &quot;vector.h&quot;
+
+#ifdef __cplusplus
+extern &quot;C&quot; {
+#endif
+
+#ifndef ENABLEPORTALS
+#define ENABLEPORTALS
+#endif
+
+#define UP_MAXPVERTS 	16		<FONT COLOR="red">/* max number of portal verts	*/</FONT>
+#define UP_MAXCELLS	50		<FONT COLOR="red">/* max number of cells		*/</FONT>
+#define UP_CELLNL	32		<FONT COLOR="red">/* max length of cell names 	*/</FONT>
+#define UP_OBNL		32		<FONT COLOR="red">/* max length of obejct names 	*/</FONT>
+    
+typedef struct
+{
+    vec3	min, max;		<FONT COLOR="red">/* min and max pts of the box	*/</FONT>
+} upBox;
+
+typedef struct _upPortalData * _portalptr;
+typedef struct _upCellData * _cellptr;
+typedef struct _upObjectData * _objectptr;
+
+typedef struct _upPortalData
+{
+    int 	numverts;		<FONT COLOR="red">/* number of verts in the portal*/</FONT>
+    _cellptr	attached_cell;		<FONT COLOR="red">/* cell on the 'other side'	*/</FONT>
+    vec3	verts[UP_MAXPVERTS];	<FONT COLOR="red">/* the actual vertices		*/</FONT>
+#ifdef MVTVIEW
+    int         mvt_id;                 <FONT COLOR="red">/* if has mvt, this is the id   */</FONT>
+#endif
+} upPortalData;
+
+typedef struct _upCellData
+{
+    int 	numportals;		<FONT COLOR="red">/* number of portals		*/</FONT>
+    int 	numobjects;		<FONT COLOR="red">/* number of objects		*/</FONT>
+    int 	rendered;		<FONT COLOR="red">/* last frame number rendered	*/</FONT>
+    _portalptr	*portals;		<FONT COLOR="red">/* array for the actual portals	*/</FONT>
+    _objectptr  *objects;		<FONT COLOR="red">/* array for 'detail' objects	*/</FONT>
+    upBox	bbox;			<FONT COLOR="red">/* bounding box of the cell	*/</FONT>
+    Gfx		*dlist;			<FONT COLOR="red">/* associated display list	*/</FONT>
+    char	name[UP_CELLNL];	<FONT COLOR="red">/* name of the cell		*/</FONT>
+    float 	eyeheight;		<FONT COLOR="red">/* height to constrain eyept to */</FONT>
+    int		zone;			<FONT COLOR="red">/* current zone number		*/</FONT>
+} upCellData;
+
+typedef struct _upObjectData
+{
+    int 	rendered;		<FONT COLOR="red">/* last frame number rendered   */</FONT>
+    upBox	bbox;			<FONT COLOR="red">/* bounding box for the object 	*/</FONT>
+    Gfx		*dlist;			<FONT COLOR="red">/* associated display list	*/</FONT>
+    char	name[UP_OBNL];		<FONT COLOR="red">/* name of the object		*/</FONT>
+} upObjectData;
+
+typedef struct
+{
+    int 	numcells;		<FONT COLOR="red">/* how many cells are there?	*/</FONT>
+    upCellData	cells[UP_MAXCELLS];   	<FONT COLOR="red">/* the actual cells		*/</FONT>
+    Gfx		*rootdlist;		<FONT COLOR="red">/* display list for all cells	*/</FONT>
+    vec2	portalmin, portalmax;	<FONT COLOR="red">/* XY bbox used by upCheckCells */</FONT>
+    float	near, far;		<FONT COLOR="red">/* near, far clipping planes	*/</FONT>
+    FMatrix	viewmat;		<FONT COLOR="red">/* viewing matrix (world-&gt;eye)	*/</FONT>
+    FMatrix	projmat;		<FONT COLOR="red">/* proj matrix (eye-&gt;screen)	*/</FONT>
+    FMatrix 	compmat;		<FONT COLOR="red">/* view * proj (world-&gt;screen)	*/</FONT>
+    int		portaldepth;		<FONT COLOR="red">/* depth of the portal stack	*/</FONT>
+    int		framecount;		<FONT COLOR="red">/* current frame number		*/</FONT>
+} upLocateData;
+
+<FONT COLOR="red">/*
+ * Functions:
+ */</FONT>
+extern void upInit();		<FONT COLOR="red">/* generated automatically by flt2walk	*/</FONT>
+extern Gfx *upAddVisibleCells(Gfx * glistp, vec3 eyept);
+extern void upTogglePortalBounds();
+extern void upToggleScissorBox();
+
+<FONT COLOR="red">/*
+ * Globals:
+ */</FONT>
+extern upLocateData 	upLocator;	<FONT COLOR="red">/* also extern by test_portals.h */</FONT>
+
+<FONT COLOR="red">/*
+ * Macros:
+ */</FONT>
+#define UP_HUGEVAL  3.40282347e+37
+#define PT_IN_BOX(p,box) ((p)[0] &gt; (box).min[0] &amp;&amp; (p)[0] &lt; (box).max[0] &amp;&amp;\
+			  (p)[1] &gt; (box).min[1] &amp;&amp; (p)[1] &lt; (box).max[1] &amp;&amp;\
+			  (p)[2] &gt; (box).min[2] &amp;&amp; (p)[2] &lt; (box).max[2])
+
+
+#ifdef __Cplusplus
+}
+#endif
+
+#endif
+</PRE>
+</BODY>

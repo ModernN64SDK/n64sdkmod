@@ -1,0 +1,78 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.>
+<title>osPfsInit</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<h1>osPfsInit</h1>
+
+<h3>Function</h3>
+
+<p>osPfsInit</p>
+
+<p><i>Initializes the Controller Pak file handle</i></p>
+
+<h3>Syntax</h3>
+<p>
+<blockquote>
+    <pre>#include &lt;ultra64.h&gt;
+s32 osPfsInit(OSMesgQueue *mq, OSPfs *pfs, int controller_no);</pre>
+</blockquote></p>
+
+<h3>Description</h3>
+
+<p><em><strong>Warning: </strong></em>Please use <a href="osPfsInitPak.htm">osPfsInitPak</a>, instead of this (as of Feb 15, 1997).</p>
+
+<p>A file system called PFS is used in the Controller Pak. This system is partitioned into 32-byte units and managed in units of this size. The maximum size of the PFS file system is currently 32K bytes.</p>
+
+<p>When the PFS function is used to control the file system, the OSPfs structure pointed to by the pfs argument is used like a file handle to access files. This function (osPfsInit) initializes that OSpfs structure. The controller_no argument specifies the number of the controller (0-3) into which the Controller Pak is inserted. The message queue (mq) argument is the queue used while waiting for the message indicating that initialization is finished. It is associated with OS_EVENT_SI. For information on how to make this association, please see <a href="osSetEventMesg.htm">osSetEventMesg</a>. Because the function (osPfsInit) waits internally for the message queue (mq), this queue must not be shared. In addition, because of synchronous initialization at a low level of the OS, you must call <a href="osContInit.htm">osContInit</a> before calling this function (osPfsInit).</p>
+
+<p>If this function is called successfully, 0 is returned. If an error occurs, one of the following error codes is returned: </p>
+<p>
+<dl>
+    <dt><strong>PFS_ERR_NOPACK</strong></dt>
+    <dd>Either the Controller Pak is not inserted into the specified Controller or the Controller is not properly connected. To determine which is the case, use <a href="osContStartQuery.htm">osContStartQuery</a> or <a href="osContGetQuery.htm">osContGetQuery</a>. </dd>
+    <dt><strong>PFS_ERR_NEW_PACK</strong></dt>
+    <dd>A different Controller Pak has been inserted. To use the inserted Controller Pak, initialize it by calling <a href="osPfsInitPak.htm">osPfsInitPak</a>.</dd>
+    <dt><strong>PFS_ERR_CONTRFAIL</strong></dt>
+    <dd>Data transfer to or from the Controller has failed. If a transfer error occurs, up to three tries will be done internally. Therefore, it is rather rare to see this error. If this error has returned, it is possible that either the Controller is not connected properly, or the Controller Pak or Controller Socket is damaged. </dd>    <dt><strong>PFS_ERR_ID_FATAL</strong></dt>
+    <dd>The Controller Pak's ID area is destroyed. Although it attempted to repair the destroyed area, it failed. The Controller Pak is damaged, not connected properly, or a device that without SRAM has been inserted. </dd>
+    <dt><strong>PFS_ERR_DEVICE</strong></dt>
+    <dd>When it initializes the file syste, the device ID in the ID area located in Page 0 is checked. However, no device ID was found. In other words, a device other than Controller pak has been inserted to the controller.</dd>
+</dl></p>
+
+<h3>Example</h3>
+<p>
+<blockquote>
+    <pre width="132">main()
+{
+        OSMesgQueue        intMesgQueue;
+        OSMesg                intMesgBuf[1];
+        OSContStatus        sdata[MAXCONTROLLERS];
+        u8                cont_pattern, pak_pattern;
+        OSPfs                pfs[MAXCONTROLLERS];
+
+        osCreateMesgQueue(&amp;intMesgQueue, intMesgBuf, 1);
+
+        osSetEventMesg(OS_EVENT_SI, &amp;intMesgQueue, dummyMessage);
+        osContInit(&amp;intMesgQueue, &amp;cont_pattern, &amp;sdata[0]);
+        osPfsIsPlug(&amp;intMesgQueue, &amp;pak_pattern);
+        for (i = 0; i &lt; MAXCONTROLLERS; i++) {
+                if (pak_pattern &amp; (1&lt;&lt;i)){
+                        ret = osPfsInit(&amp;pifMesgQueue, &amp;pfs[i], i);
+                }
+                if ((ret == PFS_ERR_ID_FATAL) ||(ret == PFS_ERR_DEVICE))
+
+                pak_pattern &amp;= ~(1&lt;&lt;i);
+        }
+}</font></pre></blockquote></p>
+
+<h3>See Also</h3>
+
+<p><a href="osContInit.htm">osContInit</a>, <a href="osContStartQuery.htm">osContStartQuery</a>, <a href="osContGetQuery.htm">osContGetQuery</a>, and <a href="osPfsInitPak.htm">osPfsInitPak</a></p>
+</body>
+</html>

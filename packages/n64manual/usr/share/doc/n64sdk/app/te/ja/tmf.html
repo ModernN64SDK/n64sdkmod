@@ -1,0 +1,133 @@
+<html>
+<head>
+<title>[N64 CITextureEditor] 2.6.2 TMF format</title>
+</head>
+<body>
+<center>
+<h1><font color=#0000c0><font color=#ff0000>N64</font> <font color=#ff8000>CI</font><font color=#ff0000>T</font>exture<font color=#ff0000>E</font>ditor</font> <font color=#808080>TMF Format</font></h1>
+<!--#config timefmt="%Y年%m月%d日(%a) %X"-->
+<font size=-1><!--#echo var="LAST_MODIFIED"--></font><br>
+<a href="https://ntsc.nintendo.co.jp/"><img src="../images/ntsc.gif" alt="NTSC-ONLINE" border=0></a>
+</center>
+<hr>
+<p align="right"><a href="../us/tmf.html">English</a></p>
+<ol>
+ <li><b>TMFとは</b>
+ <ul>
+  <p>
+  テクスチャイメージを格納するファイル。
+  4bitインデックス及び8bitインデックスファイルがある。
+  それぞれバイナリファイルで下記のような構造になっている。
+  </p>
+  <table border=1>
+   <tr>
+    <th bgcolor=#c0c0c0>
+     Header領域<br>
+     (64byte)
+    </th>
+    <td nowrap bgcolor=#f0c080>
+     u32 tex_img_tag<br>
+     u32 tex_img_width<br>
+     u32 tex_img_height<br>
+     u32 tex_pixel_depth<br>
+     (予備領域48byte)<br>
+    </td>
+   </tr>
+   <tr>
+    <th bgcolor=#c0c0c0>
+     Image領域
+    </th>
+    <td nowrap bgcolor=#f0c080>
+     u32 pixel_index_array(0)<br>
+     u32 pixel_index_array(1)<br>
+     　　　：<br>
+     　　　：<br>
+    </td>
+   </tr>
+  </table>
+  <p>
+ </ul>
+ <li><b>説明</b>
+ <ul>
+  <p>
+  <li>[u32 tex_img_tag]
+  <ul>
+   <p>
+   便宜上、このファイルがTMFファイルかを識別するために使用する識別IDです。
+   </p>
+   <p>
+   4bitCIの場合
+   TAG_TEX_IMG_4_CI = 0x00120200<br>
+   8bitCIの場合
+   TAG_TEX_IMG_8_CI = 0x00120300<br>
+   </p>
+  </ul>
+  <li>[u32 tex_img_width]
+  <ul>
+   <p>
+   テクスチャイメージの横ラインのピクセル数を記述する。
+   </p>
+  </ul>
+  <li>[u32 tex_img_height]
+  <ul>
+   <p>
+   テクスチャイメージの縦のライン数を記述する。
+   </p>
+  </ul>
+  <li>[u32 tex_pixel_depth]
+  <ul>
+   <p>
+   ピクセルあたりに使用するbit数を記述する。
+   </p>
+   <p>
+   4bitCIの場合
+   TEX_PIXEL_DEPTH_4_CI = 0x00000004<br>
+   8bitCIの場合
+   TEX_PIXEL_DEPTH_8_CI = 0x00000008<br>
+   </p>
+  </ul>
+  <li>[u32 pixel_index_array]
+  <ul>
+   <p>
+   ピクセル毎にパレット内のどのカラーを使用するかを
+   記述するエリア。
+   </p>
+   <p>
+   基本的にピクセルデータはイメージデータの左下から順に
+   記述される。
+   </p>
+   <p>
+   4bitCIの場合、イメージデータの左下から順に8ピクセルずつ、
+   pixel_index_arrayに格納されていく。
+   なお、u32はNIFFと同様、ビッグエンディアンでデータを格納する。
+   </p>
+   <p>
+   8bitの場合、イメージデータの左下から順に4ピクセルずつ、
+   pixel_index_arrayに格納されていく。
+   </p>
+   <p>
+   それぞれ最後のデータが32bitに満たない場合は、残りのデータを
+   0x0で埋める。
+   </p>
+  </ul>
+ </ul>
+</ol>
+<p align="right"><a href="../us/tmf.html">English</a></p>
+<hr>
+<table width=100%>
+ <tr>
+  <td valign=top>
+  </td>
+  <td valign=top align=right nowrap>
+   <font size=-1>
+   Copyright (C) 1998-1999 <a href="https://ntsc.nintendo.co.jp/">NINTENDO Co.,Ltd.</a><br>
+   Copyright (C) 1998-1999 MONEGI CORPORATION.<br>
+   Copyright (C) 1998-1999 <a href="http://www.intsys.co.jp/">INTELLIGENT SYSTEMS Co.,Ltd.</a><br>
+   All rights reserved.<br>
+   </font>
+   <a href="https://ntsc.nintendo.co.jp/"><img src="../images/ntsc.gif" alt="NTSC-ONLINE" border=0></a>
+  </td>
+ </tr>
+</table>
+</body>
+</html>

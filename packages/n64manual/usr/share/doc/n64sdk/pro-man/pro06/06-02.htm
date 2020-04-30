@@ -1,0 +1,23 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 6 - N64 Operating System Overview</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check.
+             MAP- 11/1/99 edited content, updated format-->
+</head>
+
+<H1>6.2 Threads</H1>
+
+<p>All code that runs under the operating system, runs in the same address space. That is, the game runs as one process.  While it is possible to structure a game application as one monolithic program, it is usually advantageous to subdivide it into smaller, more manageable subprograms called <A target="keywords" HREF="../../keywords/index/data/system.htm#thread">threads</A>.  With its own stack, each thread usually performs one function, often repetitively.  This subdivision leads to simplicity for each thread.  Thus, it is easier to understand the structure of the program and to minimize interference between threads. The threads section describes these threads, how they are <A target="keywords" HREF="../../keywords/index/data/system.htm#scheduling">scheduled</A>, and how various operations may be performed on them. 
+</p>
+
+<P>Threads may be created, destroyed, stopped, or blocked (the latter by waiting on a <A target="keywords" HREF="../../keywords/index/data/system.htm#message">message</a>). Threads normally run until they require some resource or <A target="keywords" HREF="../../keywords/index/data/system.htm#event">event</A> to continue, at which point they yield the CPU to another thread.  Each thread has an assigned priority level, used to determine which thread has access to the CPU at any given time.   In response to an external event, a thread may be forced to yield control of the CPU. The operating system preserves the state of the thread properly for restarting at a later time.  Thus, the system can be described as preemptive.  Threads may even be preempted during <A target="keywords" HREF="../../keywords/index/data/system.htm#system call">system calls</A> when <A target="keywords" HREF="../../keywords/index/data/system.htm#preemption">preemption</A> will not cause any problems.</p>
+
+<P>There is no concept of a <A target="keywords" HREF="../../keywords/index/data/system.htm#swap clock">swap clock</A> or <A target="keywords" HREF="../../keywords/index/data/system.htm#round robin scheduling">"round-robin" scheduling</a> as is found in UNIX and other time-sharing systems.   Thus, two or more threads that run at the same priority level do not alternate in use of the CPU.  The thread that "has" the CPU runs until it yields or is preempted by a higher priority thread in response to an exception. </p>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR>
+</BODY>
+</HTML>

@@ -1,0 +1,37 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 2 - Software Development Troubleshooting</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check.-->
+</head>
+
+<H1>2.1 OS (Operating System)</H1>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="01"></A>
+<H2>
+2.1.1 Game locks up immediately</H2>
+<p>A common error is to start the rmon <A target="keywords" HREF="../../keywords/index/data/system.htm#thread">thread</A> at the same priority as the <A target="keywords" HREF="../../keywords/index/data/system.htm#boot">boot</A> thread.  Rmon then immediately goes to sleep and locks up the system.  The recommended
+way for starting the system is to create an <A target="keywords" HREF="../../keywords/index/data/system.htm#idle thread">idle thread</A> in the boot procedure at a high priority.  From the idle thread start all the other application threads, then lower the priority to zero and loop forever to become the idle thread.  Note that the rmon thread is not needed for printfs. See the <A HREF="../../n64man/os/osSyncPrintf.htm">osSyncPrintf</A>() man page. </p>
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="02"></A>
+<H2>
+2.1.2 Game encounters a CPU exception </H2>
+<p>During the development of your game, you may unintentionally encounter various CPU exceptions (or faults) such as TLB miss, address error, or divide-by-zero.  Currently, the <A target="keywords" HREF="../../keywords/index/data/system.htm#system fault handler">system fault handler</A> saves the <A target="keywords" HREF="../../keywords/index/data/system.htm#context">context</A> of the faulted thread, stops the faulted thread from execution, sends a <A target="keywords" HREF="../../keywords/index/data/system.htm#message">message</a> to any thread registered for the OS_EVENT_FAULT <A target="keywords" HREF="../../keywords/index/data/system.htm#event">event</A>, and <A target="keywords" HREF="../../keywords/index/data/system.htm#dispatch">dispatches</A> the next runnable thread from the <A target="keywords" HREF="../../keywords/index/data/system.htm#system execution queue">system execution queue</A>.   If rmon is running, it would register for the OS_EVENT_FAULT event, receive the message from the exception handler, stop all user threads (except the idle thread), and send the faulted thread context to the host.  If <A HREF="../../n64man/tool/gload.htm">gload</A> is  running on the host, it would receive the faulted thread context and print its content to the screen.  If <A HREF="../../n64man/tool/gvd.htm">gvd</A> is running on the host, it would receive the fault notification and point you to where the fault occurred.   If rmon is not running on the target, you probably experience strange behavior (i.e. hang) in your game since the faulted thread can no longer run. 
+</p>
+
+<P>If you want to catch the OS_EVENT_FAULT event (instead of using rmon), you can use two internal OS functions to find the faulted thread and handle the exception yourself.</p>
+<BLOCKQUOTE>
+<PRE><A HREF="../../n64man/os/osGetCurrFaultedThread.htm">_osGetCurrFaultedThread()
+</A><A HREF="../../n64man/os/osGetNextFaultedThread.htm">_osGetNextFaultedThread()</A></PRE>
+</BLOCKQUOTE>
+<p>Please refer to the "N64 Online Function Reference Manual (man pages) for more
+information. </p>
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR>
+</BODY>
+</HTML>

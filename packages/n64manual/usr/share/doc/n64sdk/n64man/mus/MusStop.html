@@ -1,0 +1,55 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../n64man.css">
+<title>MusStop()</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check-->
+</head>
+
+<h1>MusStop()</h1>
+
+<h2>Syntax</h2>
+
+<pre>
+void MusStop(unsigned long flags, int speed);
+</pre>
+
+<h2>Arguments</h2>
+
+<dl>
+  <dt><b>flags</b>
+  <dd>sound source type
+  <dt><b>speed</b>
+  <dd>the number of video frames before channels are silenced 
+</dl>
+
+<h2>Description</h2>
+
+<p>It stops and silences the channels processing the specified sound source type. This function allows the programmer to stop all songs, all sound effects or both within the specified amount of time, which frees the channels associated with them.</p>
+
+<p>The flags argument must contain MUSFLAG_SONGS, MUSFLAG_EFFECTS or both OR'ed together.</p>
+
+<p>The speed value is the number of video frames before the channels will be stopped. Any positive integer is valid. A value of zero will stop the sound handle's channels immediately.</p>
+
+<h2>Return Value</h2>
+
+<p>None</p>
+
+<h2>Example</h2>
+
+<pre>void SilenceAllSound(int frames)
+{
+  MusStop(MUSFLAG_SONGS|MUSFLAG_EFFECTS,frames);
+  while (<a href="MusAsk.html">MusAsk</a>(MUSFLAG_SONGS|MUSFLAG_EFFECTS))
+    CallNormalProcessing();
+}
+</pre>
+
+<h2>See Also</h2>
+<p>
+<a href="MusAsk.html">MusAsk()</a>,
+<a href="MusHandleStop.html">MusHandleStop()</a>
+</p>
+
+</body>
+</html>

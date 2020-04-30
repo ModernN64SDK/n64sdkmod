@@ -1,0 +1,100 @@
+<HTML>
+<HEAD>
+<TITLE>osThreadProfileReadCount</TITLE>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: MAP- created file>
+
+</HEAD>
+<BODY bgcolor="#ffffff" link="#0000ff" vlink="#800080">
+<font style="font-size: 12pt"><b>osThreadProfileReadCount</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+<P>
+<i>Gets the number times threads have been switched</i>
+</P>
+<H3>Syntax</H3>
+<PRE><CODE>#include &lt;ultra.h&gt;        /* <A HREF="../../header/os.htm">os.h</A> */
+u32     osThreadProfileReadCount(OSId);
+</CODE></PRE>
+<H3>Description</H3>
+<P>
+The thread profiler performs measurement operations for individual threads, referring to the ID provided as an argument when the thread was created with the <a href="osCreateThread.htm">osCreateThread</a> function. 
+</P>
+<P>
+When using a measurement function of the thread profiler, use 1-62 as the ID given to the <a href="osCreateThread.htm">osCreateThread</a> function.  Threads with an ID of 63 or greater will be treated as an error, and their execution times and execution counts will all be accumulated as thread No. 63. 
+</P>
+<P>
+Since the ID's for system threads, such as VI or PI, etc., created in N64OS are all 0 (zero), their results will be accumulated as thread No. 0. 
+</P>
+<P>
+<A HREF="osThreadProfileInit.htm">osThreadProfileInit</A> prepares for profile execution by initializing the internal work necessary for the thread profiler.  Be sure to call <A HREF="osThreadProfileInit.htm">osThreadProfileInit</A> before calling any other thread profiler function. 
+</P>
+<P>
+Call <a href="osThreadProfileClear.htm">osThreadProfileClear</a> to initialize the profile data (count,time) of only the thread with the specified ID. 
+</P>
+<P>
+Call <a href="osThreadProfileStart.htm">osThreadProfileStart</a> to start the thread profiler's measurement operation. 
+</P>
+<P>
+Call <A HREF="osThreadProfileStop.htm">osThreadProfileStop</A> to stop the thread profiler's operation.  The profiled data will be saved, but the measurement operation is interrupted. 
+</P>
+<P>
+Call <tt>osThreadProfileReadCount</tt> to obtain the number of times that a switch was initiated to a thread with a specified ID.
+</P>
+<P>
+Call <a href="osThreadProfileReadTime.htm">osThreadProfileReadTime</a> to obtain the cumulative execution time for the thread of the specified ID.  Units are CPU count register cycles (about 21.33 nanoseconds). 
+</P>
+<P>
+Read-type functions with a Th attached to the end use the pointer to the OSThread structure as their argument instead of id.  In this case, the information for a thread currently being executed can be obtained by putting NULL in the argument. 
+</P>
+<P>
+A normal value cannot be obtained if a thread is specified that presents an id that is larger than 63 when <a href="osCreateThread.htm">osCreateThread</a> is called.  In this case, Read-type functions will always return a 0 (zero) as an error value. 
+</P>
+<P>
+In addition, Read-type functions can be used at any time after <a href="osThreadProfileInit.htm">osThreadProfileInit</a> has been called. 
+</P>
+<P>
+If the debug library is being used, the following errors will be displayed on the Development Tools console.
+</P>
+<table border="1">
+  <tr><td>ERR_OSTHPROFILESTART_FLAG<br>
+      ERR_OSTHPROFILESTOP_FLAG<br>
+      ERR_OSTHPROFILEREADCOUNT_FLAG<br>
+      ERR_OSTHPROFILEREADCOUNTTH_FLAG<br>
+      ERR_OSTHPROFILEREADTIME_FLAG<br>
+      ERR_OSTHPROFILEREADTIMETH_FLAG</td>
+  <td>A non-initialize function was executed before profiling was initialized.</td></tr>
+  <tr><td>ERR_OSTHPROFILESTART_START</td>
+  <td>A Start command has been issued for profiling even though profiling has already been started.</td></tr>
+  <tr><td>ERR_OSTHPROFILEREADCOUNTTH_LAR<br>
+      ERR_OSTHPROFILEREADTIMETH_LAR</td>
+  <td>The ID given by the thread during osCreateThread exceeds the standard value. </td></tr>
+  <tr><td>ERR_OSTHPROFILEREADCOUNT_LAR<br>
+      ERR_OSTHPROFILEREADTIME_LAR</td>
+  <td>The ID specified as the read target exceeds the standard value.</td></tr>
+  <tr><td>ERR_OSTHPROFILESTOP_LAR</td>
+  <td>The ID of the thread currently in operation exceeds the standard value.</td></tr>
+</table>
+<H3>Notes</H3>
+<P>
+The thread profiler cannot be used with the liburtra_rom library.
+</P>
+<P>
+Values cannot be initialized with <a href="osThreadProfileInit.htm">osThreadProfileInit</a> while the profiler is running.<br>
+If you wish to initialize, you must call <a href="osThreadProfileStop.htm">osThreadProfileStop</a> to stop operation.
+</P>
+<H3>See Also</H3>
+<P>
+<A HREF="osCreateThread.htm">osCreateThread</A>, 
+<A HREF="osThreadProfileInit.htm">osThreadProfileInit</A>,
+<A HREF="osThreadProfileClear.htm">osThreadProfileClear</A>, 
+<A HREF="osThreadProfileStart.htm">osThreadProfileStart</A>, 
+<A HREF="osThreadProfileStop.htm">osThreadProfileStop</A>, 
+<A HREF="osThreadProfileReadCountTh.htm">osThreadProfileReadCountTh</A>, 
+<A HREF="osThreadProfileReadTime.htm">osThreadProfileReadTime</A>, and  
+<A HREF="osThreadProfileReadTimeTh.htm">osThreadProfileReadTimeTh</A>
+</P>
+<H3>Revision History</H3>
+<P>
+</P>
+
+</BODY>
+</HTML>

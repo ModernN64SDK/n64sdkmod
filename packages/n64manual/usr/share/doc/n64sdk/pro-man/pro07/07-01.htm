@@ -1,0 +1,25 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 7 - Operating System Functionality</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check.-->
+</head>
+
+<H1>7.1 Overview</H1>
+
+<p>Threads, <A target="keywords" HREF="../../keywords/index/data/system.htm#message">messages</a>, and <A target="keywords" HREF="../../keywords/index/data/system.htm#event">events</A> work together to form the core of the Nintendo 64 operating system.  Nintendo 64 applications run under a small, multithreaded operating system.  Simply put, this means that the N64 CPU switches between several independent components called <A target="keywords" HREF="../../keywords/index/data/system.htm#thread">threads</A>.   Each thread consists of a sequence of instructions, a
+<A target="keywords" HREF="../../keywords/index/data/system.htm#stack">stack</A>, and (possibly) static data that is used only by the thread.  Subdividing an application into threads has several advantages.  You can effectively isolate each part of the application to avoid interference. You can divide your application into small, easily-debugged modules.  Since each thread can be written independently to perform exactly one function, complexity is reduced. </p>
+
+<P>Messages are a mechanism by which threads communicate with one another. While this could be done using shared global variables, such an approach is often unsafe.  One thread must know when it is safe to read data that is being written by another.   Message passing makes communication between threads an atomic operation; a message is either available or not available, and the associated data arrives at the receiving thread at one time. </p>
+
+<P>A second, perhaps more important function of messages is to provide synchronization between threads.  Often a thread reaches a point in its execution where it cannot continue until another thread has completed some task. In this case, the running thread has no useful work to do, so it should yield the processor until the task is completed.  You use messages to provide the mechanism for the thread to wait until that time. </p>
+
+<P>Often a thread needs to wait for an exception such as an interrupt. Exceptions are trapped by the operating system and turned into events.  Threads may register to receive notification of system events by requesting that the operating system send them a message whenever a system event occurs. </p>
+
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR>
+</BODY>
+</HTML>

@@ -1,0 +1,45 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Author's Comments: MAP- created file  9/28/99>
+<TITLE>LeoReset</TITLE>
+</HEAD>
+
+<BODY bgcolor="#FFFFFF">
+
+<font style="font-size: 12pt"><b>LeoReset</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+<P><i>Is a dedicated preNMI process function</i></P>
+<P>
+<h3>Syntax</h3>
+<P>
+#include &lt;PR/ <A HREF="../../header/leo.htm">leo.h</a>&gt; void LeoReset(void); 
+</P>
+<P>
+<h3>Description</h3>
+</P>
+<P>
+Stops execution of subsequent leo manager commands and clears the command queue. This function also stops the issuance of any subsequent commands to the leo manager.
+</P>
+<P>
+LEO_ERROR_WAITING_NMI is sent as the error code for the interrupted command and the cleared commands as well for any commands issued after the execution of LeoReset.
+</P>
+<P>
+<B>Note:</B> Make sure to call this function if a preNMI is detected. Following the execution of this function none of the asynchronous functions that are issued will be executed. 
+</P>
+<P>
+This function has been created specifically for preNMI. Please do not use it for any other purpose. <BR>
+</P>
+<P>
+<h3>See Also</h3>
+</P>
+<P>
+<A href="LeoCreateLeoManager.htm">Leo*CreateLeoManager</A>, <A href="LeoClearQueue.htm">LeoClearQueue</A>
+</P>
+<h3>Revision History</h3>
+<P>
+01/21/99  Added description<br>
+04/30/99  Changed Format
+</P>
+</BODY>
+</HTML>

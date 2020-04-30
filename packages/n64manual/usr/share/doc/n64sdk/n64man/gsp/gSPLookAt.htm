@@ -1,0 +1,66 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.>
+<TITLE>gSPLookAt</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>gSPLookAt [Macro]</H1>
+
+<p><b>Function</b></font></p>
+
+<p>gSPLookAt</p>
+<P>
+<i>Loads a LookAt structure intoRSP</i>
+</P>
+<p><b>Syntax</b></font></p>
+<p>
+<PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gbi.htm">gbi.h</A> */
+gSPLookAt(Gfx *gdl, LookAt *l)
+gsSPLookAt(         LookAt *l)</CODE></PRE></p>
+
+<p><b>Arguments</b></font></p>
+<p>
+<DL>
+  <DT><B>gdl</B>
+  <DD>the display list pointer. 
+  <DT><B>l</B>
+  <DD>the LookAt structure address. 
+</DL></p>
+<p><b>Description</b></font></p>
+<P>
+gSPLookAt Loads a LookAt structure into the Light buffer in order to perform specular highlighting and reflection mapping. The LookAt structure can be set with the utility commands <A HREF="../gu/guLookAtHilite.htm">guLookAtHilite</A> and <A HREF="../gu/guLookAtReflect.htm">guLookAtReflect</A>, or it can be set directly with <A HREF="../gdsp/gdSPDefLookAt.htm">gdSPDefLookAt</A>. The LookAt structure contains colors and the x,y screen coordinates. For details, please see Section 11.7.5.1, Structure Definition" in the N64 Online Programming Manual. 
+</P>
+<p><b>Note</b></font></p>
+<P>
+The LookAt structure is shown below: 
+<PRE><CODE>typedef struct {
+        unsigned char	col[3];	/* Diffuse light value (RGBA) */
+        char		pad1;
+        unsigned char	colc[3];/* Copy of the diffuse light value (RGBA) */
+        char		pad2;
+        signed char	dir[3];	/* Direction toward the light source (normalized) */
+        char		pad3;	/* IMPORTANT: "dir" must be less than 127 */
+} Light_t;
+typedef union {
+        Light_t		l;
+        long long int	force_structure_alignment[2];
+} Light;
+typedef struct {
+        Light		l[2];
+} LookAt;
+</CODE></PRE>
+</P>
+<p><b>See Also</b></font></p>
+<P>
+<A HREF="../gdsp/gdSPDefLookAt.htm">gdSPDefLookAt</A>, <A HREF="../gu/guLookAtHilite.htm">guLookAtHilite</A>, and <A HREF="../gu/guLookAtReflect.htm">guLookAtRelect</A>
+</P>
+<p><b>Revision History</b></font></p>
+<P>
+02/01/99  Entirely revised.
+</P>
+</BODY>
+</HTML>

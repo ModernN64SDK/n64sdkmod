@@ -1,0 +1,276 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.>
+<TITLE>gSPBgRectCopy</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>gSPBgRectCopy [Macro]</FONT></H1>
+
+<p><b>Function</b></font></p>
+
+<p>
+<P>
+<i>Renders background image (BG)</i>
+</P>
+<p><b>Syntax</b></font></p>
+<p>
+<PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gs2dex.htm">gs2dex.h</A> */
+gSPBgRectCopy(Gfx *gdl, uObjBg *bg)
+gsSPBgRectCopy(         uObjBg *bg)</CODE></PRE></p>
+
+<p><b>Arguments</b></font></p>
+<p>
+<DL>
+  <DT><B>gdl</B>
+  <DD>the display list pointer. 
+  <DT><B>bg</B>
+  <DD>the pointer to the BG drawing data structure. 
+</DL></p>
+<p><b>Description</b></font></p>
+<P>
+This macro is the dedicated BG image drawing macro for use in copy mode. It has the following special features and limitations: </P>
+<ul>
+<Li>Images cannot be enlarged or reduced. </li>
+<li>Scrolling is possible in a closed area, looping up/down or left/right.</li>
+<li>Textures can be inverted horizontally (vertical flipping is not possible)</li>
+<li>Drawing is performed only in copy mode. </li>
+<li>Texture interpolation display and subpixel movement are not possible.</li>
+<li>Anti-aliasing is not possible. </li>
+<li>Texture data is sequentially loaded from DRAM into texture memory (TMEM) and drawn by the macro. </li>
+</ul>
+<P>
+The greatest advantage of this macro is that it offers the fastest drawing speed, since it assumes that drawing is being performed in copy mode. Accordingly, in order to use this macro the cycle type must be copy mode. For information about modes, see Section 2.2.7, "Drawing Cycle Modes" in the N64 Kantan Manual. For information about setting the cycle type, see <A HREF="../gdp/gDPSetCycleType.htm">gDPSetCycleType</A>. If you want to enlarge or reduce an image, use <A HREF="gSPBgRect1Cyc.htm">gSPBgRect1Cyc</A>. For additional details, please see the latest readme for S2DEX microcode Section 4.1, "BG Drawing GBIs". 
+</P>
+<p><b>Note</b></font></p>
+<P>
+It is allowable for the BG image to be larger than the transfer frame. However, operation cannot be guaranteed if the transfer frame is larger than the BG image. Make sure that the transfer frame is not larger than the BG image. 
+</P>
+<P>
+The right and left ends of the BG image are connected in the y-direction with a one-step shift. That is, the pixel to the right of the right-edge pixel (<B>imageW</B>-1,  n) of the BG image becomes (0, n+1). This is necessary to boost RDRAM access efficiency when loading a texture. For information about the uObjBg structure, see the Comment section below. 
+</P>
+<P>
+Also note that operation is not currently guaranteed for G_IM_FMT_YUV (YUV format). 
+</P>
+<p><b>Comment</b></p>
+<P>
+The uObjBg structure is shown below:
+</P>
+<PRE>typedef struct {
+  u16 imageX;     /* x-coordinate of upper-left position of texture (u10.5) */ 
+  u16 imageW;     /* Texture width (8-byte alignment, u10.2) */
+  s16 frameX;     /* x-coordinate of upper-left position of transfer destination frame (s10.2) */
+  u16 frameW;     /* Transfer destination frame width (u10.2) */
+
+  u16 imageY;     /* y-coordinate of upper-left position of texture (u10.5)  */ 
+  u16 imageH;     /* Texture height (u10.2) */
+  s16 frameY;     /* y-coordinate of upper-left position of transfer destination frame (s10.2) */
+  u16 frameH;     /* Transfer destination frame height (u10.2)  */
+
+  u64 *imagePtr;  /* Address of texture source in DRAM */
+  u16 imageLoad;  /* Method for loading the BG image texture
+                     G_BGLT_LOADBLOCK (use LoadBlock)
+                     G_BGLT_LOADTILE (use LoadTile) */
+  u8  imageFmt;   /* Texel format
+                     G_IM_FMT_RGBA (RGBA format)
+                     G_IM_FMT_YUV (YUV format)
+                     G_IM_FMT_CI (CI format)
+                     G_IM_FMT_IA (IA format)
+                     G_IM_FMT_I (I format) */
+  u8  imageSiz;   /* Texel size
+                     G_IM_SIZ_4b (4 bits/texel)
+                     G_IM_SIZ_8b (8 bits/texel)
+                     G_IM_SIZ_16b (16 bits/texel)
+                     G_IM_SIZ_32b (32 bits/texel) */
+  u16 imagePal;   /* Position of palette for 4-bit color 
+                     index texture (4-bit precision, 0~15) */
+  u16 imageFlip;  /* Image inversion on/off (horizontal direction only)
+                     0 (normal display (no inversion))
+                     G_BG_FLAG_FLIPS (horizontal inversion of texture image) */
+
+  /* The following is set in the initialization routine guS2DInitBg */
+  u16 tmemW;      /* TMEM width for one frame line (word size)
+  u16 tmemH;      /* TMEM height for a single load (quadruple value, s13.2)
+  u16 tmemLoadSH; /* SH value
+  u16 tmemLoadTH; /* TH value or Stride value
+  u16 tmemSizeW;  /* imagePtr skip value for one image line
+  u16 tmemSize;   /* imagePtr skip value for a single load */
+} uObjBg_t;       /* 40 bytes */
+
+typedef union {
+  uObjBg_t      b;
+  uObjScaleBg_t s;
+  long long int force_structure_alignment;
+} uObjBg;
+</PRE>
+<P>
+The BG function in the S2DEX microcode transfers data from the BG image buffer to the actual rectangular area in the frame buffer (see the figure below). You can scroll by using <B>imageX</B>, <B>imageY</B> to specify which position in the BG image buffer corresponds to the upper-left corner of the rectangular area in the frame buffer at the time (the transfer frame). <B>imageX</B>, <B>imageY</B> can be specified in u10.5 format, but note that the values are rounded to integer values due to copy mode restrictions. 
+</P>
+<CENTER><IMG SRC="gSPBgRectCopy00.gif"></CENTER>
+<P>
+The size of the BG image is set by <B>imageW</B>, <B>imageH</B>. The starting address (address of the upper-left corner) is specified by <B>imagePtr</B>. In other words, the BG image can be regarded as texture data that starts at address <B>imagePtr</B> and is <B>imageW</B> wide and <B>imageH</B> tall.
+</P>
+<P>
+The size of the transfer frame is specified by <B>frameW</B>, <B>frameH</B> and the position on the screen of the upper-left corner of the transfer frame is specified by <B>frameX</B>, <B>frameY</B>. These latter two values (<B>frameX</B>, <B>frameY</B>) can take negative numbers. If the transfer frame protrudes from the scissor box specified by g*DPSetScissor, the microcode will clip the protruding portion. 
+<DL>
+  <DT>Concerning the <B>imageW</B> element:
+  <DD> 
+  <DD>The value of <B>imageW</B> must be aligned to 8 bytes. Because the actual <B>imageW</B> value used is in u10.2 format, the value that is actually assigned is quadruple this value (see the table below). 
+  <DD> <br>
+<TABLE BORDER="1" CELLSPACING="0" CELLPADDING="3">
+<TR>
+<TD NOWRAP ALIGN="center" VALIGN="middle">
+<B>imageSiz</B>value
+</TD><TD NOWRAP ALIGN="center" VALIGN="middle">
+<B>imageW</B>restriction
+</TD>
+</TR><TR>
+<TD NOWRAP ALIGN="center" VALIGN="middle">
+G_IM_SIZ_4b
+</TD><TD NOWRAP ALIGN="center" VALIGN="middle">
+Multiple of 64
+</TD>
+</TR><TR>
+<TD NOWRAP ALIGN="center" VALIGN="middle">
+G_IM_SIZ_8b
+</TD><TD NOWRAP ALIGN="center" VALIGN="middle">
+Multiple of 32
+</TD>
+</TR><TR>
+<TD NOWRAP ALIGN="center" VALIGN="middle">
+G_IM_SIZ_16b
+</TD><TD NOWRAP ALIGN="center" VALIGN="middle">
+Multiple of 16
+</TD>
+</TR><TR>
+<TD NOWRAP ALIGN="center" VALIGN="middle">
+G_IM_SIZ_32b
+</TD><TD NOWRAP ALIGN="center" VALIGN="middle">
+Multiple of 8
+</TD></TR></TABLE><br>
+  <DD> 
+  <DD>In order to scroll horizontally, the imageW value must be greater than <B>frameW</B>. The values in the table below take the u10.2 format into account. When G_IM_SIZ_16b is used, the imageW value must be 4 pixels larger. 
+  <DD> 
+  <DD><br>
+<TABLE BORDER="1" CELLSPACING="0" CELLPADDING="3">
+<TR>
+<TD NOWRAP ALIGN="center" VALIGN="middle">
+<B>imageSiz</B>value
+</TD><TD NOWRAP ALIGN="center" VALIGN="middle">
+<B>imageW</B>value
+</TD>
+</TR><TR>
+<TD NOWRAP ALIGN="center" VALIGN="middle">
+G_IM_SIZ_4b
+</TD><TD NOWRAP ALIGN="center" VALIGN="middle">
+frameW+64 &lt;= imageW
+</TD>
+</TR><TR>
+<TD NOWRAP ALIGN="center" VALIGN="middle">
+G_IM_SIZ_8b
+</TD><TD NOWRAP ALIGN="center" VALIGN="middle">
+frameW+32 &lt;= imageW
+</TD>
+</TR><TR>
+<TD NOWRAP ALIGN="center" VALIGN="middle">
+G_IM_SIZ_16b
+</TD><TD NOWRAP ALIGN="center" VALIGN="middle">
+frameW+16 &lt;= imageW
+</TD>
+</TR><TR>
+<TD NOWRAP ALIGN="center" VALIGN="middle">
+G_IM_SIZ_32b
+</TD><TD NOWRAP ALIGN="center" VALIGN="middle">
+frameW+ 8 &lt;= imageW
+</TD></TR></TABLE><br>
+  <DT> 
+  <DT>Concerning the <B>imageFmt</B> element:
+    <DL>
+    <DT><B>G_IM_FMT_RGBA</B>
+    <DD>Each texel comprises four elements of information: RGB (red, green, blue) and alpha (opacity). 
+    <DT><B>G_IM_FMT_YUV</B>
+    <DD>Each texel comprises a Y (intensity) component and a UV (color difference) component. 
+    <DT><B>G_IM_FMT_CI</B>
+    <DD>Each texel is comprised of index information specifying palette data. 
+    <DT><B>G_IM_FMT_IA</B>
+    <DD>Each texel is comprised of I (intensity) information and alpha information. 
+    <DT><B>G_IM_FMT_I</B>
+    <DD>Each texel is a texture with only I information. Since this is extremely compact, it is useful when only a few colors are being used. 
+    </DL>
+  <DD> &nbsp;
+  <DD>The texture format and size of a BG image are specified by assigning G_IM_FMT_* and G_IM_SIZ_* to <B>imageFmt</B> and <B>imageSiz</B>, respectively. The texture image format can be selected from among eight types. Please refer to the following table for valid combinations of format and size, and select the most suitable format for the texture compression method and type. To use a 4-bit color index texture, specify a texture lookup table (TLUT) number in <B>imagePal</B>. 
+  <DD><br> 
+<TABLE BORDER="1" CELLSPACING="0" CELLPADDING="3">
+<TR>
+<TD COLSPAN=2 ROWSPAN=2> </TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle" COLSPAN=4><B>G_IM_SIZ_</B> (size)</TD>
+</TR><TR>
+<TD NOWRAP ALIGN="center" VALIGN="middle"><B>4b</B></TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle"><B>8b</B></TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle"><B>16b</B></TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle"><B>32b</B></TD>
+</TR><TR>
+<TD NOWRAP ALIGN="center" VALIGN="middle" ROWSPAN=5><B>G_IM_FMT_<BR></B> (format)</TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle"><B>RGBA</B></TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">&nbsp;</TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">&nbsp;</TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">X<BR>(5/5/5/1)</TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">X<BR>(8/8/8/8)</TD>
+</TR><TR>
+<TD NOWRAP ALIGN="center" VALIGN="middle"><B>YUV</B></TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">&nbsp;</TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">&nbsp;</TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">X</TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">&nbsp;</TD>
+</TR><TR>
+<TD NOWRAP ALIGN="center" VALIGN="middle"><B>CI</B></TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">X</TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">X</TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">&nbsp;</TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">&nbsp;</TD>
+</TR><TR>
+<TD NOWRAP ALIGN="center" VALIGN="middle"><B>IA</B></TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">X<BR>(3/1)</TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">X<BR>(4/4)</TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">X<BR>(8/8)</TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">&nbsp;</TD>
+</TR><TR>
+<TD NOWRAP ALIGN="center" VALIGN="middle"><B>I</B></TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">X</TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">X</TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle">&nbsp;</TD>
+<TD NOWRAP ALIGN="center" VALIGN="middle"> <BR> </TD>
+</TR></TABLE><br>
+  <DT> 
+  <DT>Concerning the <B>imageLoad</B>element:
+  <DD> 
+  <DD>There are two ways to load texture for a BG image. One involves the use of LoadBlock (G_BGLT_LOADBLOCK) and the other uses LoadTile (G_BGLT_LOADTILE). With the gSPBgRectCopy macro, either of these two methods can be selected for the application at hand using <B>imageLoad</B>. 
+  <DD> &nbsp;
+  <DD>Although LoadBlock achieves the maximum performance under certain conditions, it may not be usable, or the processing overhead may become excessively large when those conditions are not satisfied. On the other hand, LoadTile always performs suitably. Therefore, you should switch between these two options, using LoadBlock under conditions in which it operates effectively, and using LoadTile at all other times. 
+  <DD> &nbsp;
+  <DD>There are restrictions on the BG image widths usable with LoadBlock. The <B>imageW</B> values that can be processed when <B>imageSiz</B> is 16 bits are shown below:
+  <DD> &nbsp;
+  <DD><CODE>4, 8, 12, 16, 20, 24, 28, 32, 36, 40, 48, 64, 72, 76, 100, 108, 128, 144, 152, 164, 200, 216, 228, 256, 304, 328, 432, 456, 512, 684, 820, 912</CODE>
+  <DD> &nbsp;
+  <DD>The <B>imageW</B> values usable when <B>imageSiz</B> is 8 bits is similar to the above sequence, with every term doubled. Similarly, when imageSiz is 4 bits, the imageW values will be the sequence obtained by quadrupling each term, and when imageSiz is 32 bits, they will be the sequence obtained by halving each term. (See Section 13, Appendix A "LoadBlock Line Limits" in the N64 Programming Manual.) When the BG image width cannot be processed by LoadBlock, only LoadTile can be used. 
+  <DD> &nbsp;
+  <DD>To draw one line of the transfer frame, LoadBlock reads the entire line of the corresponding BG image. For a normal scrolling BG surface, a slightly larger BG image must be prepared for the BG update area. Therefore, <B>imageW</B> must be larger than <B>frameW</B>. For this reason, extra data is loaded. In contrast, LoadTile only loads the required amount of data. 
+  <DD>&nbsp; 
+  <DD>Since LoadBlock is processed faster than LoadTile, when the difference is several pixels, it is better to use LoadBlock. However, when <B>imageW</B> is significantly larger than <B>frameW</B>, the processing for loading the extra data becomes a major overhead, and it is better to use LoadTile. 
+  <DD> 
+  <DD>For example, assume that a BG surface that covers the entire screen (320x240) is defined. Since the transfer frame is the entire screen, <B>frameW</B> = 320 pixels. If 8 pixels are prepared as the BG update area, then <B>imageW</B> = 328 pixels. In this case, since there is only a slight difference between <B>frameW</B> and <B>imageW</B>, you would use LoadBlock with 328 pixels. 
+</DL>
+</P>
+<p><b>See Also</b></font></p>
+<P>
+[<A HREF="gSPBgRect1Cyc.htm">gSPBgRect1Cyc</A>]
+</P>
+<p><b>Revision History</b></font></p>
+<P>
+02/01/99  Entirely revised.
+</P>
+</BODY>
+</HTML>

@@ -1,0 +1,52 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<!--
+Editors Notes:
+  PWC- updated formatting
+  JLR-- Did reformating
+  MAP- updated format
+-->
+<title>vadpcm_enc</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>vadpcm_enc</b></font><font style="font-size: 9pt"><b> (tool command)</b></font>
+
+<p><i>
+Functions as an ADOCM encoder for N64 audio</i></p>
+
+<h3>Syntax</h3>
+
+<p>vadpcm_enc -c codebook [-t] [-l minLoopLength] aifcFile codedFile</p>
+
+<h3>Description</h3>
+
+<p>vadpcm_enc encodes AIFC or AIFF sound files and produces a compressed binary file that is used by the Nintendo 64 audio library. The encoding algorithm is based on a switched ADPCM algorithm which uses a codebook to define a table of prediction coefficients. Coefficients from the table are selected adaptively during encoding to give the best sound quality. The Nintendo 64 compressed sound format currently supports a single loop point that should be defined in the input file's Instrument Chunk. The codebook and loop point definitions are embedded in the final output file. </p>
+
+<p>Command Line Options</p>
+
+<dl>
+    <dt><strong>-c &lt;filename&gt;</strong></dt>
+    <dd>Specifies a file that contains the prediction coefficient codebook constructed by the <a href="tabledesign.htm">tabledesign</a>.</dd>
+    <dt><strong>-t</strong></dt>
+    <dd>Truncates the encoded file after the loop end point. The portion of the sound after the loop end point is never used in audio playback. </dd>
+    <dt><strong>-l &lt;value&gt;</strong></dt>
+    <dd>Sets the minimum loop length in the encoded file (see the following Note). </dd>
+</dl>
+
+<h3>Note</h3>
+
+<p>There is a restriction in the audio library that requires that in a single call to <a href="../al/alAudioFrame.htm">alAudioFrame</a> a sound must only pass through two loop crossings. To ensure less than two loop crossings, the ADPCM encoder can stretch loops by repeating them. The currently defined default minimum loop length is 1600 samples. This default length can be changed by using a command line option. Loops shorter than the minimum loop length will be repeated until the total loop length is larger than the minimum length. In a given application, the required minimum loop length depends on the number of samples requested in a single call to <tt>alAudioFrame</tt> and the maximum pitch shift incurred by the samples. For further information, see Chapter 19 in the N64 Programming Manual. </p>
+
+<h3>See Also</h3>
+
+<p><a href="tabledesign.htm">tabledesign</a>, <a href="vadpcm_dec.htm">vadpcm_dec</a></p>
+<h3>Revision History</h3>
+<p>1999/04/30  Changed Format</p>
+<br><br>
+
+</body>
+</html>

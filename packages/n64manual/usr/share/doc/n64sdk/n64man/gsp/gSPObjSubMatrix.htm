@@ -1,0 +1,65 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.>
+<TITLE>gSPObjSubMatrix</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>gSPObjSubMatrix [Macro]</H1>
+
+<p><b>Function</b></font></p>
+
+<p>gSPObjSubMatrix</p>
+<P>
+<i>Sets the 2D matrix for a rotating sprite</i>
+</P>
+<p><b>Syntax</b></font></p>
+<p>
+<PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gs2dex.htm">gs2dex.h</A> */
+gSPObjSubMatrix(Gfx *gdl, uObjSubMtx *mtx) 
+gsSPObjSubMatrix(         uObjSubMtx *mtx)</CODE></PRE><p>
+
+<p><b>Arguments</b></font></p>
+<p>
+<DL>
+  <DT><B>gdl</B>
+  <DD>the pointer to the display list. 
+  <DT><B>mtx</B>
+  <DD>the pointer to the 2D matrix structure 
+</DL></p>
+<p><b>Description</b></font></p>
+<P>
+Loads the 2D matrix parameters of the uObjSubMtx structure into the 2D matrix area in the RSP. The uObjSubMtx structure is a subset of the uObjMtx structure. It holds the 2D matrix elements {<B>X</B>, <B>Y</B>, <B>BaseScaleX</B>, <B>BaseScaleY</B>} used by g*SPObjRectangleR. This macro is used primarily in concert with g*SPObjRectangleR. 
+</P>
+<H3>Comment</H3>
+<P>
+The uObjSubMtx structure is shown below: 
+</P>
+<P>
+<PRE><CODE>typedef struct {
+  s16 X, Y;        /* s10.2 */
+  u16 BaseScaleX;  /* u5.10 */
+  u16 BaseScaleY;  /* u5.10 */
+} uObjSubMtx_t; 
+typedef union {
+  uObjSubMtx_t   m;
+  long long int  force_structure_alignment;
+} uObjSubMtx;
+</CODE></PRE>
+</P>
+<P>
+This macro only changes the 2D matrix parameters that are member variables of the uObjSubMtx structure {<B>X</B>, <B>Y</B>, <B>BaseScaleX</B>, <B>BaseScaleY</B>}. It has no effect on the values of the other parameters {<B>A</B>, <B>B</B>, <B>C</B>, <B>D</B>}. 
+</P>
+<p><b>See Also</b></font></p>
+<P>
+<A HREF="gSPObjMatrix.htm">gSPObjMatrix</A>, <A HREF="gSPObjRectangleR.htm">gSPObjRectangleR</A>
+</P>
+<p><b>Revision History</b></font></p>
+<P>
+02/01/99  Entirely revised.
+</P>
+</BODY>
+</HTML>

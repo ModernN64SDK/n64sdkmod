@@ -1,0 +1,416 @@
+<HTML>
+<HEAD>
+<TITLE>ObjNode</TITLE>
+</HEAD>
+<BODY LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff">
+
+<font face="arial" size="-1">
+<b><font size="3">6. ObjNode</font></b>
+<HR>
+
+<P>
+<b>(1) ObjNode</b>
+<p>
+
+<blockquote>
+
+<table border="1" width="600">
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 obj_render_pri</font>
+</td>
+<td>
+<font face="arial" size="-1">Sets the priority for rendering objects as well as the N64 blender mode.  Set NIFF mode for simple rendering, or set N64GBI mode for precise setting of N64 macros.When N64GBI mode is used, this field only describes the rendering priority.  In this case, the render mode is set in the obj_render_type_* field.  The N64 mode defined in NIFF1.0 has been discarded.<p>
+
+When in NIFF mode, there is only one obj_render_pri field, even at
+2-cycle times, so the G_RM_PASS flag must be used automatically in
+the NIFF --> N64 converter.
+The switch between NIFF mode and N64GBI mode is identified by the high-order 8-bit flag.  Describe either of the flags shown below for this high-order 8 bit.
+
+<font face="courier" size="2">
+<pre>
+<b>
+OBJ_RENDER_FLAG_NIFF&#9;0x00
+OBJ_RENDER_FLAG_N64GBI&#9;0x04
+</b>
+</pre>
+</font>
+
+For NIFF mode, the following flags are defined for the low-order 24 bits.  Please set one of these flags.
+
+<font face="courier" size="2">
+<pre>
+<b>
+OBJ_RENDER_NIFF_OPA_SURF&#9;0xd00000
+OBJ_RENDER_NIFF_OPA_INTER&#9;0xb00000
+OBJ_RENDER_NIFF_OPA_DECAL&#9;0x900000
+OBJ_RENDER_NIFF_TEX_EDGE&#9;0x700000
+OBJ_RENDER_NIFF_XLU_SURF&#9;0x500000
+OBJ_RENDER_NIFF_XLU_INTER&#9;0x300000
+OBJ_RENDER_NIFF_XLU_DECAL&#9;0x100000
+</b>
+</pre>
+</font>
+
+Set OBJ_RENDER_NIFF_OPA_SURF to render an opaque surface.<p>
+Set OBJ_RENDER_NIFF_OPA_INTER to render an opaque interpenetrating surface.<p>
+Set OBJ_RENDER_NIFF_OPA_DECAL to render an opaque surface that is pasted like a decal on another surface.<p>
+Set OBJ_RENDER_NIFF_TEX_EDGE to use the texture's alpha channel as an "edge"<p>
+Set OBJ_RENDER_NIFF_XLU_SURF to render a transparent surface.<p>
+Set OBJ_RENDER_NIFF_XLU_INTER to render a transparent interpenetrating surface.<p>
+Set OBJ_RENDER_NIFF_XLU_DECAL to render a transparent surface that is pasted like a decal on another surface.<p>
+Since each one of these modes fundamentally differs depending on the model and the material, they have been left to the user to set.  When converting from the BCG tool to NIFF, either provide the interface for these settings from the user, or as default values output OBJ_RENDER_NIFF_OPA_SURF for opaque surfaces and OBJ_RENDER_NIFF_XLU_SURF for translucent surfaces.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 obj_render_type0<br>
+u32 obj_render_type1</font>
+</td>
+<td><font face="arial" size="-1">When OBJ_RENDER_FLAG_N64GBI is set in the obj_render_pri field, the render mode is specified in this field.  obj_render_type0 indicates the render mode for the 1st cycle, while obj_render_type1 indicates the render mode for the 2nd cycle.<p>
+The various flags have been set, as shown below.  Please set the render mode as you like.  Create the NIFF --> N64 converter such that the render mode is assembled and output according to this table and the anti-alias and ZBUFFER information.  (For example, when anti-alias and ZBUFFER are both used, the OPA_SURF mode is G_RM_AA_ZB_OPA_SURF)
+
+<font face="courier" size="2">
+<pre>
+<b>
+/******************************************************
+N64 Style
+
+In the document of NIFF1.0, we describe the flag setting
+render mode.
+But this may be hard to use, especially for designers.
+So we changed N64 type render mode definition.
+Please set the following name and new n64 style bit.
+These names are "#define" macro name
+in /usr/include/PR/gbi.h, they are 
+usually used by N64 programmers.
+
+********************************************************/
+
+/********************************************************
+ obj_render_type0 and obj_render_type0_for_fog
+
+31          22 21                         0
+[     0x4     |       render_macro        ]
+
+**********************************************************/
+
+#define OBJ_RENDER_TYPE0_GBI_MODE     0x01000000
+
+/* render_macro */
+
+#define OBJ_RENDER_TYPE0_OPA_SURF     0x100
+#define OBJ_RENDER_TYPE0_XLU_SURF     0x101
+#define OBJ_RENDER_TYPE0_OPA_DECAL    0x102
+#define OBJ_RENDER_TYPE0_XLU_DECAL    0x103
+#define OBJ_RENDER_TYPE0_OPA_INTER    0x104
+#define OBJ_RENDER_TYPE0_XLU_INTER    0x105
+#define OBJ_RENDER_TYPE0_TEX_EDGE     0x106
+#define OBJ_RENDER_TYPE0_TEX_INTER    0x107
+#define OBJ_RENDER_TYPE0_SUB_SURF     0x108
+#define OBJ_RENDER_TYPE0_PCL_SURF     0x109
+#define OBJ_RENDER_TYPE0_OPA_TERR     0x10a
+#define OBJ_RENDER_TYPE0_TEX_TERR     0x10b
+#define OBJ_RENDER_TYPE0_SUB_TERR     0x10c
+#define OBJ_RENDER_TYPE0_CLD_SURF     0x10d
+#define OBJ_RENDER_TYPE0_OVL_SURF     0x10e
+#define OBJ_RENDER_TYPE0_ADD          0x10f
+#define OBJ_RENDER_TYPE0_NOOP         0x110
+#define OBJ_RENDER_TYPE0_PASS         0x111
+#define OBJ_RENDER_TYPE0_FOG_SHADE_A  0x112
+#define OBJ_RENDER_TYPE0_FOG_PRIM_A   0x113
+
+
+
+/**************************************************
+ obj_render_type1 and obj_render_type1_for_fog
+
+31          22 21                         0
+[     0x4     |       render_macro        ]
+
+***************************************************/
+
+#define OBJ_RENDER_TYPE1_GBI_MODE     0x01000000
+
+/* render_macro */
+
+#define OBJ_RENDER_TYPE1_OPA_SURF     0x200
+#define OBJ_RENDER_TYPE1_XLU_SURF     0x201
+#define OBJ_RENDER_TYPE1_OPA_DECAL    0x202
+#define OBJ_RENDER_TYPE1_XLU_DECAL    0x203
+#define OBJ_RENDER_TYPE1_OPA_INTER    0x204
+#define OBJ_RENDER_TYPE1_XLU_INTER    0x205
+#define OBJ_RENDER_TYPE1_TEX_EDGE     0x206
+#define OBJ_RENDER_TYPE1_TEX_INTER    0x207
+#define OBJ_RENDER_TYPE1_SUB_SURF     0x208
+#define OBJ_RENDER_TYPE1_PCL_SURF     0x209
+#define OBJ_RENDER_TYPE1_OPA_TERR     0x20a
+#define OBJ_RENDER_TYPE1_TEX_TERR     0x20b
+#define OBJ_RENDER_TYPE1_SUB_TERR     0x20c
+#define OBJ_RENDER_TYPE1_CLD_SURF     0x20d
+#define OBJ_RENDER_TYPE1_OVL_SURF     0x20e
+#define OBJ_RENDER_TYPE1_ADD          0x20f
+#define OBJ_RENDER_TYPE1_NOOP         0x210
+
+
+</b>
+</pre>
+</font>
+</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 obj_render_cycle_type_for_fog</font>
+</td>
+<td><font face="arial" size="-1">Describes the N64RDP cycle type when an object is located in a scene using Fog.  The following flags have been defined:
+
+<font face="courier" size="2">
+<pre>
+<b>
+OBJ_RENDER_CYC_1CYC&#9;0x00000000
+OBJ_RENDER_CYC_2CYC&#9;0x00000001
+</b>
+</pre>
+</font>
+
+Set either of the above flags. Please specify OBJ_RENDER_CYC_2CYC as the default.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 obj_render_pri_for_fog
+</td>
+<td><font face="arial" size="-1">Describes the object rendering priority as well as the N64 blender mode when an object is located in a scene using Fog.  Set NIFF mode for simple rendering, or set N64GBI mode for precise setting of N64 macros.  When N64GBI mode is used, this field only describes the rendering priority.  In this case, the render mode is set in the obj_render_type_* field.  The N64 mode defined in NIFF1.0 has been discarded.<p>
+When in NIFF mode, there is only one obj_render_pri field, even at 2-cycle times, so the G_RM_FOG_SHADE_A flag must be used automatically in the NIFF --> N64 converter.<p>
+The switch between NIFF mode and N64GBI mode is identified by the high-order 8-bit flag.  Describe either of the flags shown below for this high-order 8 bit.
+
+<font face="courier" size="2">
+<pre>
+<b>
+OBJ_RENDER_FLAG_NIFF&#9;0x00
+OBJ_RENDER_FLAG_N64GBI&#9;0x04
+</b>
+</pre>
+</font>
+
+For NIFF mode, the following flags are defined for the low-order 24 bits.  Please set one of these flags.
+
+<font face="courier" size="2">
+<pre>
+<b>
+OBJ_RENDER_NIFF_OPA_SURF&#9;0xd00000
+OBJ_RENDER_NIFF_OPA_INTER&#9;0xb00000
+OBJ_RENDER_NIFF_OPA_DECAL&#9;0x900000
+OBJ_RENDER_NIFF_TEX_EDGE&#9;0x700000
+OBJ_RENDER_NIFF_XLU_SURF&#9;0x500000
+OBJ_RENDER_NIFF_XLU_INTER&#9;0x300000
+OBJ_RENDER_NIFF_XLU_DECAL&#9;0x100000
+</b>
+</pre>
+</font>
+
+Set OBJ_RENDER_NIFF_OPA_SURF to render an opaque surface.<p>
+Set OBJ_RENDER_NIFF_OPA_INTER to render an opaque interpenetrating surface.<p>
+Set OBJ_RENDER_NIFF_OPA_DECAL to render an opaque surface that is pasted like a decal on another surface.<p>
+Set OBJ_RENDER_NIFF_TEX_EDGE to use the texture's alpha channel as an "edge"<p>
+Set OBJ_RENDER_NIFF_XLU_SURF to render a transparent surface.<p>
+Set OBJ_RENDER_NIFF_XLU_INTER to render a transparent interpenetrating surface.<p>
+Set OBJ_RENDER_NIFF_XLU_DECAL to render a transparent surface that is pasted like a decal on another surface.<p>
+Since each one of these modes fundamentally differs depending on the model and the material, they have been left to the user to set.  When converting from the BCG tool to NIFF, either provide the interface for these settings from the user, or as default values output OBJ_RENDER_NIFF_OPA_SURF for opaque surfaces and OBJ_RENDER_NIFF_XLU_SURF for transparent surfaces.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 obj_render_type0_for_fog<p>
+u32 obj_render_type1_for_fog</font>
+</td>
+<td><font face="arial" size="-1">When OBJ_RENDER_FLAG_N64GBI is set in the "obj_render_pri_for_fog" field, the render mode is specified in this field.   obj_render_type0_for_fog indicates the render mode for the 1st cycle, while obj_render_type1_for_fog indicates the render mode for the 2nd cycle.<p>
+The various flags have been set, as shown below.  Please set the render mode as you like.  Create the NIFF --> N64 converter such that the render mode is assembled and output according to this table and the anti-alias and ZBUFFER information.  (For example, when anti-alias and ZBUFFER are both used, the OPA_SURF mode is G_RM_AA_ZB_OPA_SURF)
+
+<font face="courier" size="2">
+<pre>
+<b>
+/***************************************************
+N64 Style
+
+In the document of NIFF1.0, we describe the flag setting
+render mode.
+But this may be hard to use, especially for designers.
+So we changed N64 type render mode definition.
+Please set the following name and new n64 style bit.
+These names are "#define" macro name
+in /usr/include/PR/gbi.h, they are 
+usually used by N64 programmers.
+
+****************************************************/
+
+/****************************************************
+ obj_render_type0 and obj_render_type0_for_fog
+
+31          22 21                         0
+[     0x4     |       render_macro        ]
+
+*****************************************************/
+
+#define OBJ_RENDER_TYPE0_GBI_MODE     0x01000000
+
+/* render_macro */
+
+
+#define OBJ_RENDER_TYPE0_FOG_SHADE_A  0x112
+#define OBJ_RENDER_TYPE0_FOG_PRIM_A   0x113
+
+
+
+/*****************************************************
+ obj_render_type1 and obj_render_type1_for_fog
+
+31          22 21                         0
+[     0x4     |       render_macro        ]
+
+******************************************************/
+
+#define OBJ_RENDER_TYPE1_GBI_MODE     0x01000000
+
+/* render_macro */
+
+#define OBJ_RENDER_TYPE1_OPA_SURF     0x200
+#define OBJ_RENDER_TYPE1_XLU_SURF     0x201
+#define OBJ_RENDER_TYPE1_OPA_DECAL    0x202
+#define OBJ_RENDER_TYPE1_XLU_DECAL    0x203
+#define OBJ_RENDER_TYPE1_OPA_INTER    0x204
+#define OBJ_RENDER_TYPE1_XLU_INTER    0x205
+#define OBJ_RENDER_TYPE1_TEX_EDGE     0x206
+#define OBJ_RENDER_TYPE1_TEX_INTER    0x207
+#define OBJ_RENDER_TYPE1_SUB_SURF     0x208
+#define OBJ_RENDER_TYPE1_PCL_SURF     0x209
+#define OBJ_RENDER_TYPE1_OPA_TERR     0x20a
+#define OBJ_RENDER_TYPE1_TEX_TERR     0x20b
+#define OBJ_RENDER_TYPE1_SUB_TERR     0x20c
+#define OBJ_RENDER_TYPE1_CLD_SURF     0x20d
+#define OBJ_RENDER_TYPE1_OVL_SURF     0x20e
+#define OBJ_RENDER_TYPE1_ADD          0x20f
+#define OBJ_RENDER_TYPE1_NOOP         0x210
+
+</b>
+</pre>
+</font>
+
+Since this field becomes the field for when FOG is used, select either FOG_SHADE_A or FOG_PRIM_A for obj_render_type0_for_fog.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 obj_chain_root_link_num</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the ChainRoot node number linked from this Obj.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 external_lod_obj_num</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the external file reference LOD Obj number.</font>
+</td>
+</tr>
+
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 external_obj_num</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the external file reference child Obj number.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 obj_chain_root_link</font>
+</td>
+<td>
+<font face="arial" size="-1">Describes the index number for the ChainRoot node linked from this Obj.  This field is not described when obj_chain_root_link_num = 0.</font>
+</td>
+</tr>
+
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 external_lod_obj_dist</font>
+</td>
+<td>
+<font face="arial" size="-1">When LOD Obj references an external file, this describes the swap distance for the LOD level of that Obj.  This field is not described when an external file is not referenced (external_lod_obj_num = 0).</font>
+</td>
+</tr>
+
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 external_lod_obj_file_name_index</font>
+</td>
+<td>
+<font face="arial" size="-1">When LOD Obj references an external file, the name of the referenced file is specified with an ExternalNameList index number.<p>
+Please do not include the directory name etc. when describing the file name.<p>
+This field is not described when an external file is not referenced (external_lod_obj_num = 0).</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 external_lod_obj_name_index</font>
+</td>
+<td>
+<font face="arial" size="-1">When LOD Obj references an external file, the name of that LOD Obj is specified with an ExternalNameList index number.<p>
+This field is not described when an external file is not referenced (external_lod_obj_num = 0).</font>
+</td>
+</tr>
+
+
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 external_obj_file_name_index</font>
+</td>
+<td>
+<font face="arial" size="-1">When child Obj references an external file, the name of the referenced file is specified with an ExternalNameList index number.
+child <p>
+Please do not include the directory name etc. when describing the file name.<p>
+This field is not described when an external file is not referenced (external_lod_obj_num = 0).</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">u32 external_obj_name_index</font>
+</td>
+<td>
+<font face="arial" size="-1">When child Obj references an external file, the name of that Obj is specified with an ExternalNameList index number.
+This field is not described when an external file is not referenced (external_lod_obj_num = 0).</font>
+</td>
+</tr>
+
+
+
+</table>
+
+
+<p>
+<a href="./obj_C.htm">Go to the data chunk</a>
+<p>
+
+</blockquote>
+
+<hr>
+
+</body>
+</html>

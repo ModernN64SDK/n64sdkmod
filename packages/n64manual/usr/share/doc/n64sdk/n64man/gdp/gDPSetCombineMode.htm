@@ -1,0 +1,508 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<!--
+Editors Notes:
+  JLR made reformating and copy edits.
+  PWC- updated formatting
+-->
+
+<TITLE>gDPSetCombineMode</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>gDPSetCombineMode [Macro]</H1>
+<h2>Function</h2>
+<p>gDPSetCombineMode<br><i>
+<br>Sets the color combiner (CC) mode</i>
+</P>
+<p><b>Syntax</p></font></b>
+<p><PRE>
+<CODE>#include &lt;ultra64.h&gt;        /* <A href="../../header/gbi.htm">gbi.h</A> */
+gDPSetCombineMode(Gfx *gdl, s32 mode1, s32 mode2)
+gsDPSetCombineMode(         s32 mode1, s32 mode2)</CODE></PRE></p>
+
+<p><b>Arguments</p></b>
+<p><DL>
+  <DT><B>gdl</B>
+  <DD>Display list pointer.
+  <DT><B>mode1</B>
+  <DD>CC mode for first cycle.
+  <DT><B>mode2</B>
+  <DD>CC mode for second cycle.
+</DL></p>
+
+<p><b>Description</b></p>
+<P>
+Makes detailed settings regarding the input sources to the CC.  Although the CC mainly combines colors, it also performs post-color space conversion processing and sets chroma keying (currently unsupported) and LOD processes.  These combination and setup processes are accomplished inside the CC by linearly interpolating various input sources.  For information about input sources, see Figure 12-10 "RGB Color Combiner Input Sources" and Figure 12-11 "Alpha Combiner Input Sources" in Section 12.6.1 of the N64 Programming Manual.
+</P>
+<P>
+In 1-cycle mode, <B>mode1</B> and <B>mode2</B> must be set to the same mode.  In 2-cycle mode, although the CC can execute linear interpolation calculations twice, texture and shading color modulation processes are usually executed in the second cycle.
+</P>
+<P>
+The following tables show the modes that can be used in 1-cycle mode and 2-cycle mode.  However, other original modes also can be defined and assigned as arguments.  For example, when the color is (a-b)*c+d and the alpha value is (A-B)*C+D, you can set:
+</P>
+<PRE>
+<CODE>    #define G_CC_MYNEWMODE a,b,c,d,A,B,C,D</CODE>
+</PRE>
+<P>
+For details, refer to Section 12.6.5 "Custom Modes" in the N64 Programming Manual.
+</P>
+<P>
+Modes that can be used in one-cycle mode:
+</P>
+<P>
+<STRONG> PR: Primitive color, SH: Shading color, EV: Environment color, T0: Texture color, T0A: Texture alpha, K4 & K5: Color conversion constants</STRONG><BR>
+</P>
+<TABLE border="1" cellspacing="0" cellpadding="3">
+  <TR>
+    <TD align="center"><B>G_CC_****</B></TD>
+    <TD align="center"><B>Top: Color definition<BR>Bottom: Alpha definition</B></TD>
+    <TD align="center"><B>Function</B></TD>
+ </TR>
+  <TR>
+    <TD colspan="3"><B>I, IA, RGB & RGBA format modulated textures</B></TD></TR>
+  <TR>
+    <TD rowspan="2"><B>MODULATEI</B></TD>
+    <TD>T0*SH</TD>
+    <TD>Multiply texture color and shading color</TD></TR>
+  <TR>
+    <TD>SH</TD>
+    <TD>Output shading alpha</TD></TR>
+  <TR>
+    <TD rowspan="2"><B>MODULATEIA</B></TD>
+    <TD>T0*SH</TD>
+    <TD>Multiply texture color and shading color</TD></TR>
+  <TR>
+    <TD>T0*SH</TD>
+    <TD>Multiply texture alpha and shading alpha</TD></TR>
+  <TR>
+    <TD rowspan="2"><B>MODULATEIDECALA</B></TD>
+    <TD>T0*SH</TD>
+    <TD>Multiply texture color and shading color</TD></TR>
+  <TR>
+    <TD>T0</TD>
+    <TD>Output texture alpha</TD></TR>
+  <TR>
+    <TD rowspan="2"><B>MODULATERGB</B></TD>
+    <TD>T0*SH</TD>
+    <TD rowspan="2">Same as MODULATEI</TD></TR>
+  <TR>
+    <TD>SH</TD></TR>
+  <TR>
+    <TD rowspan="2"><B>MODULATERGBA</B></TD>
+    <TD>T0*SH</TD>
+    <TD rowspan="2">Same as MODULATEIA</TD></TR>
+  <TR>
+    <TD>T0*SH</TD></TR>
+  <TR>
+    <TD rowspan="2"><B>MODULATERGBDECALA</B></TD>
+    <TD>T0*SH</TD>
+    <TD rowspan="2">Same as MODULATEIDECALA</TD></TR>
+  <TR>
+    <TD>T0</TD></TR>
+  <TR>
+    <TD rowspan="2"><B>MODULATEI_PRIM</B></TD>
+    <TD>T0*PR</TD>
+    <TD>Multiply texture color and primitive color</TD></TR>
+  <TR>
+    <TD>PR</TD>
+    <TD>Output primitive alpha</TD></TR>
+  <TR>
+    <TD rowspan="2"><B>MODULATEIA_PRIM</B></TD>
+    <TD>T0*PR</TD>
+    <TD>Multiply texture color and primitive color</TD></TR>
+  <TR>
+    <TD>T0*PR</TD>
+    <TD>Multiply texture alpha and primitive alpha</TD></TR>
+  <TR>
+    <TD rowspan="2"><B>MODULATEIDECALA_PRIM</B></TD>
+    <TD>T0*PR</TD>
+    <TD>Multiply texture color and primitive color</TD></TR>
+  <TR>
+    <TD>T0</TD>
+    <TD>Output texture alpha</TD></TR>
+  <TR>
+    <TD rowspan="2"><B>MODURATERGB_PRIM</B></TD>
+    <TD>T0*PR</TD>
+    <TD rowspan="2">Same as MODULATEI_PRIM</TD></TR>
+  <TR>
+    <TD>PR</TD></TR>
+  <TR>
+    <TD rowspan="2"><B>MODULATERGBA_PRIM</B></TD>
+    <TD>T0*PR</TD>
+    <TD rowspan="2">Same as MODULATEIA_PRIM
+</TD></TR>
+  <TR>
+    <TD>T0*PR</TD></TR>
+  <TR>
+    <TD rowspan="2"><B>MODULATERGBDECALA_PRIM</B></TD>
+    <TD>T0*PR</TD>
+    <TD rowspan="2">Same as MODULATEIDECALA_PRIM</TD></TR>
+  <TR>
+    <TD>T0</TD></TR>
+  <TR>
+    <TD colspan="3"><B>RGB & RGBA format decal textures</B></TD></TR>
+  <TR>
+    <TD rowspan="2"><B>DECALRGB</B></TD>
+    <TD>T0</TD>
+    <TD>Output texture color</TD></TR>
+  <TR>
+    <TD>SH</TD>
+    <TD>Output shading alpha</TD></TR>
+  <TR>
+    <TD rowspan="2"><B>DECALRGBA</B></TD>
+    <TD>T0</TD>
+    <TD>Output texture color</TD></TR>
+  <TR>
+    <TD>T0</TD>
+    <TD>Output texture alpha</TD></TR>
+  <TR>
+    <TD colspan="3"><B>I, IA, RGB & RGBA format blended textures</B></TD></TR>
+  <TR>
+    <TD rowspan="2"><B>BLENDI</B></TD>
+    <TD>(EV-SH)*T0+SH</TD>
+    <TD>Use intensity texture to interpolate between environment color and shading color</TD></TR>
+  <TR>
+    <TD>SH</TD>
+    <TD>Output shading alpha</TD></TR>
+  <TR>
+    <TD rowspan="2"><B>BLENDIA</B></TD>
+    <TD>(EV-SH)*T0+SH</TD>
+    <TD>Use intensity texture to interpolate between environment color and shading color</TD></TR>
+  <TR>
+    <TD>T0*SH</TD>
+    <TD>Multiply texture alpha and shading alpha</TD></TR>
+  <TR>
+    <TD rowspan="2"><B>BLENDIDECALA</B></TD>
+    <TD>(EV-SH)*T0+SH</TD>
+    <TD>Use intensity texture to interpolate between environment color and shading color</TD></TR>
+  <TR>
+    <TD>T0</TD>
+    <TD>Output texture alpha</TD></TR>
+  <TR>
+    <TD rowspan="2"><B>BLENDRGBA</B></TD>
+    <TD>(T0-SH)*T0A+SH</TD>
+    <TD>Use texture alpha to interpolate between texture color and shading color</TD></TR>
+  <TR>
+    <TD>SH</TD>
+    <TD>Output shading alpha</TD></TR>
+  <TR>
+    <TD rowspan="2"><B>BLENDRGBDECALA</B></TD>
+    <TD>(T0-SH)*T0A+SH</TD>
+    <TD>Use texture alpha to interpolate between texture color and shading color</TD></TR>
+  <TR>
+    <TD>T0</TD>
+    <TD>Output texture alpha</TD></TR>
+  <TR>
+    <TD colspan="3"><B>RGB & RGBA format reflection highlights and specular highlights</B></TD></TR>
+  <TR>
+    <TD rowspan="2"><B>REFLECTRGB</B></TD>
+    <TD>EV*T0+SH</TD>
+    <TD>Reflect environment color and shading color when performing reflection mapping</TD></TR>
+  <TR>
+    <TD>SH</TD>
+    <TD>Output shading alpha</TD></TR>
+  <TR>
+    <TD rowspan="2"><B>REFLECTRGBDECALA</B></TD>
+    <TD>EV*T0+SH</TD>
+    <TD>Reflect environment color and shading color when performing reflection mapping</TD></TR>
+  <TR>
+    <TD>T0</TD>
+    <TD>Output texture alpha</TD></TR>
+  <TR>
+    <TD rowspan="2"><B>HILITERGB</B></TD>
+    <TD>(PR-SH)*T0+SH</TD>
+    <TD>Use intensity texture to interpolate between shading color and primitive color when highlighting</TD></TR>
+  <TR>
+    <TD>SH</TD>
+    <TD>Output shading alpha</TD></TR>
+  <TR>
+    <TD rowspan="2"><B>HILITERGBA</B></TD>
+    <TD>(PR-SH)*T0+SH</TD>
+    <TD>Use intensity texture to interpolate between shading color and primitive color when highlighting</TD></TR>
+  <TR>
+    <TD>(PR-SH)*T0+SH</TD>
+    <TD>Use intensity texture to interpolate between shading alpha and primitive alpha when highlighting</TD></TR>
+  <TR>
+    <TD rowspan="2"><B>HILITERGBDECALA</B></TD>
+    <TD>(PR-SH)*T0+SH</TD>
+    <TD>Use intensity texture to interpolate between shading color and primitive color when highlighting</TD></TR>
+  <TR>
+    <TD>T0</TD>
+    <TD>Output texture alpha</TD></TR>
+  <TR>
+    <TD colspan="3"><B>1-cycle color conversion process</B></TD></TR>
+  <TR>
+    <TD rowspan="2"><B>1CYUV2RGB</B></TD>
+    <TD>(T0-K4)*K5+T0</TD>
+    <TD>Convert from YUV to RGB in 1-cycle mode</TD></TR>
+  <TR>
+    <TD>SH</TD>
+    <TD>Output shading alpha</TD></TR>
+  <TR>
+    <TD colspan="3"><B>Others</B></TD></TR>
+  <TR>
+    <TD rowspan="2"><B>PRIMITIVE</B></TD>
+    <TD>PR</TD>
+    <TD>Output primitive color</TD></TR>
+  <TR>
+    <TD>PR</TD>
+    <TD>Output primitive alpha</TD></TR>
+  <TR>
+    <TD rowspan="2"><B>SHADE</B></TD>
+    <TD>SH</TD>
+    <TD>Output shading color</TD></TR>
+  <TR>
+    <TD>SH</TD>
+    <TD>Output shading alpha</TD></TR>
+  <TR>
+    <TD rowspan="2"><B>ADDRGB</B></TD>
+    <TD>T0+SH</TD>
+    <TD>Add texture color and shading color</TD></TR>
+  <TR>
+    <TD>SH</TD>
+    <TD>Output shading alpha</TD></TR>
+  <TR>
+    <TD rowspan="2"><B>ADDRGBDECALA</B></TD>
+    <TD>T0+SH</TD>
+    <TD>Add texture color and shading color</TD></TR>
+  <TR>
+    <TD>T0</TD>
+    <TD>Output texture alpha</TD></TR>
+  <TR>
+    <TD rowspan="2"><B>SHADEDECALA</B></TD>
+    <TD>SH</TD>
+    <TD>Output shading color</TD></TR>
+  <TR>
+    <TD>T0</TD>
+    <TD>Output texture alpha</TD></TR>
+  <TR>
+    <TD rowspan="2"><B>BLENDPE</B></TD>
+    <TD>(PR-EV)*T0+EV</TD>
+    <TD>Use intensity texture to interpolate between environment color and primitive color</TD></TR>
+  <TR>
+    <TD>T0*SH</TD>
+    <TD>Multiply texture alpha and shading alpha</TD></TR>
+  <TR>
+    <TD rowspan="2"><B>BLENDPEDECALA</B></TD>
+    <TD>(PR-EV)*T0+EV</TD>
+    <TD>Use intensity texture to interpolate between environment color and primitive color</TD></TR>
+  <TR>
+    <TD>T0</TD>
+    <TD>Output texture alpha</TD></TR>
+</TABLE>
+
+<P>
+Modes that can be used for mode1 in 2-cycle mode
+</P>
+<P>
+<STRONG>PR: Primitive color, SH: Shading color, EV: Environment color, T0/T1: Texture color, LF: LOD coefficient</STRONG><BR>
+</P>
+<TABLE border="1" cellspacing="0" cellpadding="3">
+  <TR>
+    <TD align="center" valign="middle"><B>G_CC_****</B></TD>
+    <TD align="center"><B>Top: Color definition<BR>
+Bottom: Alpha definition</B></TD>
+    <TD colspan="2" align="center"><B>Function</B></TD></TR>
+  <TR>
+    <TD rowspan="2" align="left"><B>TRILERP</B></TD>
+    <TD align="left">(T1-T0)*LF+T0</TD>
+    <TD rowspan="2" colspan="2" align="left" width="290">Trilinear interpolation.  Use LOD level to modulate texels from two bilerp tiles.</TD></TR>
+  <TR>
+    <TD align="left">(T1-T0)*LF+T0</TD></TR>
+  <TR>
+    <TD rowspan="2" align="left"><B>INTERFERENCE</B></TD>
+    <TD align="left">T0*T1</TD>
+    <TD align="left" width="145">Multiply colors of texels from two bilerp tiles</TD>
+    <TD rowspan="2" align="left" width="145">If the tiles have different frequencies, interesting interference patterns can be produced by sliding the s,t coordinates.</TD></TR>
+  <TR>
+    <TD align="left">T0*T1</TD>
+    <TD align="left" width="145">Multiply alphas of texels from two bilerp tiles.</TD></TR>
+</TABLE>
+
+<P>
+Modes that can be used for mode2 in 2-cycle mode
+</P>
+<P>
+The functions are almost identical to those in 1-cycle mode.  mode2 mainly uses the combined RGBA color resulting from mode1.
+</P>
+<P>
+<STRONG>CM: Output of first cycle, PR: Primitive color, SH: Shading color, EV: Environment color, T0/T1: Texture color</STRONG><BR>
+</P>
+<TABLE border="1" cellspacing="0" cellpadding="3">
+  <TR>
+    <TD align="center" valign="middle"><B>G_CC_****</B></TD>
+    <TD nowrap align="center"><B>Top: Color definition<BR>
+Bottom: Alpha definition</B></TD>
+    <TD nowrap colspan="2" align="center"><B>Function</B></TD></TR>
+  <TR>
+    <TD nowrap colspan="3" align="left"><B>I, IA, RGB & RGBA format modulated textures</B></TD>
+  </TR>
+  <TR>
+    <TD nowrap rowspan="2" align="left"><B>MODULATEI2</B></TD>
+    <TD nowrap align="left">CM*SH</TD>
+    <TD rowspan="16" align="left" width="290">The same as 1-cycle mode</TD>
+   </TR>
+  <TR>
+    <TD nowrap align="left">SH</TD>
+   </TR>
+  <TR>
+    <TD nowrap rowspan="2" align="left"><B>MODULATEIA2</B></TD>
+    <TD nowrap align="left">CM*SH</TD>
+   </TR>
+  <TR>
+    <TD nowrap align="left">CM*SH</TD>
+   </TR>
+  <TR>
+    <TD nowrap rowspan="2" align="left"><B>MODULATERGB2</B></TD>
+    <TD nowrap align="left">CM*SH</TD>
+   </TR>
+  <TR>
+    <TD nowrap align="left">SH</TD>
+   </TR>
+  <TR>
+    <TD nowrap rowspan="2" align="left"><B>MODULATERGBA2</B></TD>
+    <TD nowrap align="left">CM*SH</TD>
+   </TR>
+  <TR>
+    <TD nowrap align="left">CM*SH</TD>
+   </TR>
+  <TR>
+    <TD nowrap rowspan="2" align="left"><B>MODULATEI_PRIM2</B></TD>
+    <TD nowrap align="left">CM*PR</TD>
+   </TR>
+  <TR>
+    <TD nowrap align="left">PR</TD>
+   </TR>
+  <TR>
+    <TD nowrap rowspan="2" align="left"><B>MOCULATEIA_PRIM2</B></TD>
+    <TD nowrap align="left">CM*PR</TD>
+   </TR>
+  <TR>
+    <TD nowrap align="left">CM*PR</TD>
+   </TR>
+  <TR>
+    <TD nowrap rowspan="2" align="left"><B>MODULATERGB_PRIM2</B></TD>
+    <TD nowrap align="left">CM*PR</TD>
+   </TR>
+  <TR>
+    <TD nowrap align="left">PR</TD>
+   </TR>
+  <TR>
+    <TD nowrap rowspan="2" align="left"><B>MODULATERGBA_PRIM2</B></TD>
+    <TD nowrap align="left">CM*PR</TD>
+   </TR>
+  <TR>
+    <TD nowrap align="left">CM*PR</TD>
+   </TR>
+  <TR>
+    <TD nowrap colspan="3" align="left"><B>RGB format decal textures</B></TD>
+   </TR>
+  <TR>
+    <TD nowrap rowspan="2" align="left"><B>DECALRGB2</B></TD>
+    <TD nowrap align="left">CM</TD>
+    <TD rowspan="2" align="left" width="290">The same as 1-cycle mode</TD>
+   </TR>
+  <TR>
+    <TD nowrap align="left">SH</TD>
+   </TR>
+  <TR>
+    <TD nowrap colspan="3" align="left"><B>I and IA format blend textures</B></TD>
+   </TR>
+  <TR>
+    <TD nowrap rowspan="2" align="left"><B>BLENDI2</B></TD>
+    <TD nowrap align="left">(EV-SH)*CM+SH</TD>
+    <TD rowspan="4" align="left" width="290">The same as 1-cycle mode</TD>
+   </TR>
+  <TR>
+    <TD nowrap align="left">SH</TD>
+   </TR>
+  <TR>
+    <TD nowrap rowspan="2" align="left"><B>BLENDIA2</B></TD>
+    <TD nowrap align="left">(EV-SH)*CM+SH</TD>
+   </TR>
+  <TR>
+    <TD nowrap align="left">CM*SH</TD>
+   </TR>
+  <TR>
+    <TD nowrap colspan="3" align="left"><B>RGB & RGBA format reflection highlights and specular highlights</B></TD>
+   </TR>
+  <TR>
+    <TD nowrap rowspan="2" align="left"><B>HILITERGB2</B></TD>
+    <TD nowrap align="left">(EV-CM)*T0+CM</TD>
+    <TD rowspan="8" align="left" width="290">The same as 1-cycle mode</TD>
+   </TR>
+  <TR>
+    <TD nowrap align="left">SH</TD>
+   </TR>
+  <TR>
+    <TD nowrap rowspan="2" align="left"><B>HILITERGBA2</B></TD>
+    <TD nowrap align="left">(EV-CM)*T0+CM</TD>
+   </TR>
+  <TR>
+    <TD nowrap align="left">(EV-CM)*T0+CM</TD>
+   </TR>
+  <TR>
+    <TD nowrap rowspan="2" align="left"><B>HILITERGBDECALA2</B></TD>
+    <TD nowrap align="left">(EV-CM)*T0+CM</TD>
+   </TR>
+  <TR>
+    <TD nowrap align="left">T0</TD>
+   </TR>
+  <TR>
+    <TD nowrap rowspan="2" align="left"><B>HILITERGBPASSA2</B></TD>
+    <TD nowrap align="left">(EV-CM)*T0+CM</TD>
+   </TR>
+  <TR>
+    <TD nowrap align="left">CM *CM</TD>
+   </TR>
+  <TR>
+    <TD nowrap colspan="3" align="left"><B>2-cycle color conversion operations</B></TD>
+   </TR>
+  <TR>
+    <TD nowrap rowspan="2" align="left"><B>YUV2RGB</B></TD>
+    <TD nowrap align="left">(T0-K4)*K5+T1</TD>
+    <TD align="left" width="290">Perform YUV-to-RGB conversion post-processing of texels processed by the texture filter (TF) in the first cycle</TD>
+   </TR>
+  <TR>
+    <TD nowrap align="left">0</TD>
+    <TD align="left" width="290">The alpha value is 0</TD>
+   </TR>
+  <TR>
+    <TD nowrap colspan="3" align="left"><B>Others</B></TD>
+   </TR>
+  <TR>
+    <TD nowrap rowspan="2" align="left"><B>PASS2</B></TD>
+    <TD nowrap align="left">CM</TD>
+    <TD align="left" width="290">Output color calculated in the first cycle</TD>
+   </TR>
+  <TR>
+    <TD nowrap align="left">CM</TD>
+    <TD align="left" width="290">Output alpha calculated in the first cycle</TD>
+   </TR>
+</TABLE>
+</p>
+<p><b>Note</b></p>
+<P>
+The following internal macro can directly specify these input sources:
+</P>
+<BLOCKQUOTE><p>
+<B>gDPSetCombineLERP</B>
+</BLOCKQUOTE></p>
+<P>
+For details, see <A href="../../header/gbi.htm">gbi.h</A>.
+</P>
+<p><b>See Also</b></p>
+<P>
+<A href="gDPSetCycleType.htm">gDPSetCycleType</A>, <A href="gDPSetEnvColor.htm">gDPSetEnvColor</A>, 
+<A href="gDPSetPrimColor.htm">gDPSetPrimColor</A>, <A href="gDPSetTextureLOD.htm">gDPSetTextureLOD</A>
+</P>
+<p><b>Revision History</b></p>
+<P>
+02/01/99 Completely rewritten and deleted chroma key setting.<br>
+</P>
+</BODY>
+</HTML>

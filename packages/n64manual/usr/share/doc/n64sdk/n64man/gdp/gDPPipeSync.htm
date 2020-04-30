@@ -1,0 +1,52 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.>
+<TITLE>gDPPipeSync</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<p><H1>gDPPipeSync [Macro]</H1></p>
+
+<p><b>Function</b></p>
+
+<p>gDPPipeSync</p>
+
+<p><i>Synchronizes RDP attribute updates by waiting for pixels to be processed during the rendering of primitives</i>
+</P>
+<p><b>Syntax</b></p>
+<p><PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gbi.htm">gbi.h</A> */
+gDPPipeSync(Gfx *gdl)
+gsDPPipeSync(void)</CODE></PRE></p>
+
+<p><b>Arguments</b></p>
+<p><DL>
+  <DT><B>gdl</B>
+  <DD>Display list pointer
+</DL></p>
+
+<p><b>Description</b></p>
+<P>
+This is a synchronization command that effects the timing of an RDP attribute update, making it wait during primitive rendering.
+</P>
+<P>
+The RDP does not synchronize primitive rendering with attribute updates automatically, so if the attribute changes after the processing of a primitive has begun, this could affect the pixels while the primitive is being rendered. This command inserts a synchoronization instruction into the application, which forces the application to wait for the last pixel of the primitive to be processed.
+</P>
+<P>
+For details, see Section 12.1.1 "RDP Programming" and Section 12.2.2 "Synchronization" in the N64 Programming Manual.
+</P>
+<P>
+There are three attributes for which synchronization is not necessary: the primitive color (g*DPSetPrimColor), the primitive depth (g*DPSetPrimDepth), and scissor (g*DPSetScissor).
+</P>
+<p><b>Note</b></p>
+<P>
+As a general rule, the <B>gDPPipeSync</B> command must be inserted after a series of primitives.  If  you are going to execute a RDP attribute change command, be sure to insert <B>gDPPipeSync</B> before that command.
+</P>
+<p><b>Revision History</b></p>
+<P>
+02/01/99 Completely rewritten.
+</P>
+</BODY>
+</HTML>

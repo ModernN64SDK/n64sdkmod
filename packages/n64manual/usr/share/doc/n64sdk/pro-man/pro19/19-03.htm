@@ -1,0 +1,36 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 19 - Audio File Formats</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. -->
+</head>
+
+<h1>19.3 Sequence Banks</h1>
+
+<p>To provide a convenient way of collecting multiple MIDI sequences and accessing them from the ROM, Silicon Graphics has defined a simple Sequence Bank format. Files of this format are produced by the Sequence Bank Compiler (<a href="../../n64man/tool/sbc.htm">sbc</a>), which takes multiple <a href="../../keywords/index/data/audio.htm#MIDI" target="keywords">MIDI</a> files and  collects them with a simple header. </p>
+
+<p>The format for the Sequence Bank file header is: </p>
+
+<blockquote><pre>
+typedef struct {
+        u16             version;        /* Should be 01 */
+        s16             seqCount;
+        ALSeqData       seqArray[];
+}
+</pre></blockquote>
+
+<p>where seqCount is the number of sequences in the file, and the seqArray gives a list of offsets into the file and lengths for the individual sequences. </p>
+
+<blockquote><pre>
+typedef struct {
+        u8                *offset;
+        s32                seqLen;
+} ALSeqData
+</pre></blockquote>
+
+<p>The offsets represent the position of the start of the sequence from the beginning of the file.  Note that the start of all sequences are 8-byte aligned when the Sequence Bank Compiler is used to compile. </p>
+
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+</body> </html>

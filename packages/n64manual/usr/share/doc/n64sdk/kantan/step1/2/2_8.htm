@@ -1,0 +1,35 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<title>STEP1 [What is N64?] - Chapter 2 Hardware Configuration</title>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Ron Daring 7/21/1999, -->
+</head>
+
+<body bgcolor="#FFFFFF">
+<base target="keywords">
+
+<p><font style="font-size:12pt"><b>2-8 Graphics and Audio Scheduling</b></font></p>
+
+<p>
+An N64 game has both a graphics and an audio process.<br>
+On the N64, <b>a graphics process flows from the CPU to the RSP to the RDP</b>, and <b>an audio process flows from the CPU to the RSP</b>.</p>
+
+<p>Also, while the graphics process sometimes requires more than one frame to draw one scene, the audio process must be provided in each and every frame. Otherwise, the sound pauses inappropriately or causes popping noises.  If a graphics process is intensive, the RSP may be kept occupied by it and therefore fail to yield to the audio process. </p>
+
+<p>The <b>Scheduler </b><a href="../../../keywords/index/data/system.htm#thread" target="keywords">thread</a> prevents this problem from occurring.  When the <b>Scheduler</b> thread receives a VI retrace (vertical synchronization interrupt) <a href="../../../keywords/index/data/system.htm#message" target="keywords">message</a> it analyzes the current RSP status. If the RSP is running a graphics process, the Scheduler saves the current state of the graphics process, and then the Scheduler yields the RSP to the audio process.  When the audio process finishes, the Scheduler restores the graphics process at the point where it was interrupted.</p>
+
+<p>In other words, <b>the Scheduler is a thread that controls RSP traffic</b>.</p>
+<table border="1" cellspacing="0">
+    <tr>
+        <td><img src="img00023.gif" width="460" height="247"> </td>
+    </tr>
+</table>
+
+<p><b>Figure 2-8-1 Graphics and Audio <a
+href="../../../keywords/index/data/system.htm#scheduling"
+target="keywords">Scheduling</a></b></p>
+
+</body>
+</html>

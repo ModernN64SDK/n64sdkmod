@@ -1,0 +1,47 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.
+MAP- added links, updated format>
+<title>__osGetCurrFaultedThread</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>__osGetCurrFaultedThread</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p>__osGetCurrFaultedThread, __osGetNextFaultedThread</p>
+
+<p><i>Internal routines that the N64 operating system uses to gain access to the faulted thread.</i></p>
+
+<h3>Syntax</h3>
+<p>
+<blockquote>
+    <pre>#include &lt;ultra64.h&gt;     /* <A HREF="../../header/ultra64.htm">ultra64.h</A> */
+#include &lt;os_internal.h&gt;
+OSThread * __osGetCurrFaultedThread(void);
+OSThread * __osGetNextFaultedThread(OSThread *last);</pre>
+</blockquote>
+</p>
+<h3>Description</h3>
+
+<p>The __osGetCurrFaultedThread and __osGetNextFaultedThread functions are internal routines that the N64 operating system uses to gain access to the faulted thread.The Nintendo 64 operating system contains internal routines to gain access to threads that have faulted due to various exceptions such as TLB misses. These routines were designed for internal use only, so their names have a double-underscore (__) prefix notation. Internally, they exist in the thread queue containing all the active threads created in the system. This queue is used mainly by the rmon debugging program for debugging purpose.</p>
+<p>Currently, when a thread hits a CPU exception such as a TLB exception on an instruction fetch, the exception  handler saves all the appropriate registers to the thread context, stops the thread from execution, marks it for the debugger, sends a message to any registered thread waiting for the OS_EVENT_FAULT event, and dispatches the next runnable thread from the run queue. If the rmon debugging program is running, it registers to receive the OS_EVENT_FAULT event, records the faulted message, sends the faulted thread context to the <A HREF="../tool/gload.htm">gload</A> tool running on the host, and causes the gload tool to print the thread context (mainly registers) to the screen. If necessary, developers can use the routines below in a thread that registers for the OS_EVENT_FAULT to handle CPU faults. Please see the &quot;fault&quot; sample application to learn how to use these routines.</p>
+
+<p>The <tt>__osGetCurrFaultedThread</tt> routine returns the most recently faulted thread , or NULL if there is no faulted thread.</p>
+
+<p>Based on the last thread, <A HREF="osGetNextFaultedThread.htm">__osGetNextFaultedThread</A> returns the next faulted thread from the active thread queue. If last is NULL, this routine performs a sequential search from the beginning of the queue. If last is not NULL, it starts the search from the last thread. If no faulted thread is found, NULL is returned. </p>
+
+<h3>See Also</h3>
+
+<p><a href="osInitialize.htm">osInitialize</a>, <a
+href="osCreateThread.htm">osCreateThread</a>, <a
+href="osCreateThread.htm">osStartThread</a>, <a
+href="osStopThread.htm">osStopThread</a>, and <a
+href="osDestroyThread.htm">osDestroyThread</a></p>
+<h3>Revision History</h3>
+<p>1999/04/30  Changed Format</p>
+<br><br>
+
+</body>
+</html>

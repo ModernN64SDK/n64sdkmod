@@ -1,0 +1,69 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Graphics-Chapter 3  Simple Texture Mapping</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/22/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br><br>
+<font style="font-size:16pt"><B>CHAPTER 3  SIMPLE TEXTURE MAPPING</B></FONT>
+<br><br>
+<HR SIZE=3 NOSHADE>
+<P>
+ By using the shading methods explained in the previous chapter you can express surface shading, and if you also perform lighting you can depict model coloring in a way that corresponds to the location of lights in the vicinity.
+     Building on this, the general way to add realism to your images is to use texture mapping to reproduce patterns on the surfaces of polygons.<br><br>
+     The explanations in this chapter are designed to provide you with a basic understanding of texture mapping.  Texture mapping on the N64 is a very complex topic, and the explanation provided here is not complete by any account.  Later in Chapter 9 the subject will be brough up again and how to use more advanced textures will be explained.
+</P>
+<font style="font-size:12pt"><B>3.1  Texture Mapping Flow</B></FONT>
+<P>
+The N64 uses the values S, T for the texture coordinates.  Among the various processes relating to texture mapping, it is the job of the RSP to perform such tasks as scaling of the texture.<br><br>
+
+     The RSP passes the ST values to the RDP, which uses these values to select texels for rendering and to perform filtering processes as specified by the programmer.  This architecture is represented by the block diagram in Figure 3-1.
+</P>
+<P>
+<br><br>
+<IMG SRC="image05.gif">
+</P>
+<P>
+<B>Figure 3-1  RDP Block Diagram</B>
+</P>
+<P>
+ The job of the Texture Engine is to manage such processes as loading the texture image from memory into the RDP's texture memory (TMEM), and selecting texels that correspond to specific pixels from that loaded image.<br><br>
+     The Texture Engine also manages tiles, which is the name for the memory blocks in TMEM.  We will talk about tiles in Chapters 9 and 10, so for now just remember that the RDP has 4KB of texture memory called TMEM, and that this can be thought of as one continuous buffer.<br><br>
+     The Texture Filter enlarges or reduces mapped texels so they correspond to the size of the drawn primitives, at the same time filtering to smooth out the texture.  We talk more about this in "3.6, Texture Filter."<br><br>
+     As mentioned above, TMEM has a capacity of 4KB, so given a texture with 16bit texels, the maximum size texture that can be loaded at one time is 64x32.  Thus, if you want to map a texture that is larger than this to a polygon, you need to divide up the texture and perform several smaller mapping processes.<br><br>
+
+     If you look at the flow of processes involved in the display of textures from the programmer's point of view, generally speaking the following procedures need to be performed:
+</P>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=2><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP> </TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>-Enable textures, and specify scaling and tiles (gSPTexture)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP> </TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>-Associate vertices with their ST values in the Vtx union (gSPVertex)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP> </TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>-Set the appropriate combine mode and rendering mode</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP> </TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP> (gDPSetCombineMode, gDPSetRenderMode)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP> </TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>-Set the correct state for the Texture Engine and Texture Filter</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP> </TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP> (gDPSetTexture*commands)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP> </TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>-Load the texture into TMEM (gDPLoadTexture* commands)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP> </TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>-Render the primitive (gSP1Triangle, gSP2Triangles)</TD>
+</TR></TABLE>
+<P>
+   These commands do not need to be executed in the exact order we have shown here, but the settings must all be completed before rendering the primitive (i.e., before defining the primitive)
+</P>
+</BODY>
+</HTML>

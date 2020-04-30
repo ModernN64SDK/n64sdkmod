@@ -1,0 +1,1999 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<title>5</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<FONT FACE="Arial" SIZE="-1">
+
+<h2>5. General Reference Material</h2>
+
+<h3><a name="01">5.1 N64 JPEG Compression Process</a></h3>
+
+<p>The N64 JPEG compression method is based on the standard JPEG process. See the JPEG standard for a complete description of the exact process. Following is a brief explanation of the N64 JPEG compression process. The procedure for decompressing compressed data is basically the opposite of this. 
+</p>
+
+<h4><a name="01-01">5.1.1 Convert to the YUV Format</a></h4>
+
+<p>The N64 compression process first converts data from 16-bit RGBA format to YUV format. During this process, less essential visual data (data that is less important in human vision) is culled. The resulting YUV data format is easier to compress.</p>
+
+<p>First the data is converted from RGB to YCrCb format. The Y value holds the luminance (brightness) information and Cr and Cb values hold the chrominance (color) information: </p>
+
+<blockquote>
+  <pre><font face="Courier New" SIZE="3">r = R/255, g = G/255, b = B/255
+	(0<U>&lt</U>R<U>&lt</U>255, 0<U>&lt</U>G<U>&lt</U>255, 0<U>&lt</U>B<U>&lt</U>255)
+	(0<U>&lt</U>r<U>&lt</U>1, 0<U>&lt</U>g<U>&lt</U>1, 0<U>&lt</U>b<U>&lt</U>1)
+
+Y = 0.299r + 0.587g + 0.114b
+Cr = 0.713(r - Y)
+Cb = 0.564(b - Y)
+	(0<U>&lt</U>Y<U>&lt</U>1, -0.5<U>&lt</U>Cr<U>&lt</U>0.5, -0.5<U>&lt</U>Cb<U>&lt</U>0.5)</font></pre>
+</blockquote>
+
+<p>Then the YCrCb formatted data is converted to the YUV format: </p>
+
+<blockquote>
+  <pre><font face="Courier New" SIZE="3">y = 219Y + 16
+u = 224Cb + 128
+v = 224Cr + 128
+        (0<U>&lt</U>y<U>&lt</U>255, 0<U>&lt</U>u<U>&lt</U>255, 0<U>&lt</U>v<U>&lt</U>255)</font></pre>
+</blockquote>
+
+<h4><a name="01-02">5.1.2 Cull Less Essential Data</a></h4>
+
+<p>Human eyes are relatively insensitive to UV components compared to the Y component. Thus, culling the UV components can decrease the amount of data without a large noticeable change. This process extracts four 8x8 blocks of the Y component and one 8x8 block of each UV (U and V) component from the 16x16 dots (macro block). </p>
+
+<h4><a name="01-03">5.1.3 DCT</a></h4>
+
+<p><font face="Arial">DCT</font> (discrete cosine transformation) regulates the apparently random image to ease the compression process.</p>
+
+<p>When processing an 8x8 matrix, DCT calculates an average value (the DC coefficient) of the data elements in the matrix and places it in the [0][0] position of the transformed matrix. Then it calculates the variance (the AC coefficient) from that DC coefficient for each of the other 63 cells of the 8x8 matrix. The farther the AC element is from the position of the DC element, the higher the displayed frequency element is. 
+</p>
+
+<h4><a name="01-04">5.1.4 Quantization</a></h4>
+
+<p>The range of data after DCT is wide, and the wider the range the less compression, so you need to reduce the range. To reduce the range, divide each value by a specific value. Human vision is less sensitive to high frequency components than it is to low frequency components, so you should divide high frequency components by a large value and divide low frequency components by a small value. 
+</p>
+
+<h4><a name="01-05">5.1.5 Zigzag Scanning</a></h4>
+
+<p>The DCT and quantization processes concentrate on the DC components and low frequency components. The high frequency components don't change much and the data concentrates around 0. That is, large changes in data concentrate around cell [0][0] of the 8x8 pixel matrix after DCT, and many zeros concentrate around cell[7][7]. The continuous appearance of these zeros is profitable for compression, so this step rearranges the data to take advantage of the large concentration of zeros. One way to do this is to apply zigzag scanning to the data from [0][0] to [8][8] like this: [0][0] --> [1][0] --> [0][1] --> [0][2] --> [1][1] --> [2][1]... and so on. 
+</p>
+
+<p>DC components have differential data of DC components in the previous block so that the range of data values becomes smaller.</p>
+
+<p><b>Note</b><font face="Arial">: </font>The N64 JPEG process does the scanning after first inverting the matrix. This is different from normal JPEG zigzag scanning. It is done this way to ease microcode decompression of compressed data. 
+</p>
+
+<h4><a name="01-06">5.1.6 Entropy Encoding</a></h4>
+
+<p>The previous five steps converted the random image into a compressible form. Now this final step completes the Huffman entropy encoding to compress the image data.
+</p>
+
+<h3><a name="02">5.2 Output Data Formats</a></h3>
+
+<h4><a name="02-01">5.2.1 Data from njpgMakeSlide Tool</a></h4>
+
+<p><font face="Courier New">njpgMakeSlide</font>The output data formats are described below.</p>
+
+<p>When the output data from the tool is to be embeded with the game application, first DMA-transfer <font face="Courier New">numImages</font> of images onto the memory, and then DMA-transfer <font face="Courier New">frame[]</font> according to <font face="Courier New">numImages</font> after checking the necessary information. If image data is necessary, it should be DMA-transfered onto the memory as you reference the data pointed to by <font face="Courier New">frame[]</font>.</p>
+
+<blockquote>
+  <pre><font face="Courier New" SIZE="3">typedef struct{
+	s32 size;
+	s32 offset;
+} MVFrame;
+
+struct{
+	u8 headerID[] = 'NJPG'
+	s32 version;
+	s16 width;
+	s16 height;
+	u8 rawMode;
+	u8 compressType;
+	s16 qScale;
+	s32 numImages;
+	MVFrame frame[];
+	u8 data[];
+};</font></pre>
+</blockquote>
+
+<hr>
+
+<dl>
+  <dt><b>headerID</b></dt>
+  <dd>Recognition header of the N64 JPEG format data.<br>
+    <br>
+  </dd>
+  <dt><b>version</b></dt>
+  <dd>N64 JPEG version. The current version is "002".
+    <br>
+    <br>
+  </dd>
+  <dt><b>width</b></dt>
+  <dd>Width of the image expressed in pixel (dot) units.<br>
+    <br>
+  </dd>
+  <dt><b>height</b></dt>
+  <dd>Height of the image expressed in pixel (dot) units.<br>
+    <br>
+  </dd>
+  <dt><b>rawMode</b></dt>
+  <dd>Raw data mode. It is 1 if the raw data mode is ON or 0 if it is OFF.<br>
+    <br>
+  </dd>
+  <dt><b>compressType</b></dt>
+  <dd>Entropy encoding method. A value of 0 indicates Huffman encoding.<br>
+    <br>
+  </dd>
+  <dt><b>numImages</b></dt>
+  <dd>Number of included images.<br>
+    <br>
+  </dd>
+  <dt><b>frame</b></dt>
+  <dd>Frame size and the offset address.<br>
+    <br>
+    <b>size </b>Image size<br>
+    <b>offset</b> The offset address for the image data.<br>
+    <br>
+  </dd>
+  <dt><b>data</b> </dt>
+  <dd>The compressed image data.<br>
+    <br>
+  </dd>
+</dl>
+
+<h4><a name="02-02">5.2.2 Data from njpgCompress Tool</a></h4>
+
+<p>The data output by the njpgCompress tool is suited to only a part of the data output by the njpgMakeSlide tool. Be careful that the special supplemented header is not changed. Note that the minimum header required for data decompressing has been supplemented.  The following is the data format. Refer to it to check the data when decompressing.</p>
+
+<p>&nbsp;</p>
+
+<blockquote>
+  <pre><font face="Courier New" SIZE="3">struct{
+	u8	headerID[] = &quot;HUFF&quot;;
+	s16	numMB;		/* number of macro blocks */
+	u8	compData[];
+};</font></pre>
+</blockquote>
+
+<h3><a name="03">5.3 Quantization Table</a></h3>
+
+<p>The quantization table for both luminance (brightness) and chroma (color) is adapted to the luminosity quantization table of quantization table in the attachment K(reference) "Examples and guide line" of ITU-T advice, T.81 "The digital compression and coding of continuous-tone still images."  The quantization table has been organized to make RSP calculation faster when decompressing the compressed data.</p>
+
+<p>The table follows.</p>
+
+<blockquote>
+  <pre><font face="Courier New" SIZE="3">static short QTable[64] = {
+	16, 11, 10, 16,  24,  40,  51,  61,
+	12, 12, 14, 19,  26,  58,  60,  55,
+	14, 13, 16, 24,  40,  57,  69,  56,
+	14, 17, 22, 29,  51,  87,  80,  62,
+	18, 22, 37, 56,  68, 109, 103,  77,
+	24, 35, 55, 64,  81, 104, 113,  92,
+	49, 64, 78, 87, 103, 121, 120, 101,
+	72, 92, 95, 98, 112, 100, 103,  99
+};</font></pre>
+</blockquote>
+
+<p>As a practical matter, this table is used by multiples of 1/4, 1/2, and 2 (these correspond to the scale values of -2, -1, 1, and 2).  When the value of the quantization table is small, the image quality goes up but the size after compression is larger. On the other hand, when the value of the quantization table is large, the size after the compression is small but the image quality is
+worse. 
+</p>
+
+<h3><a name="04">5.4 Huffman Encoding Table</a></h3>
+
+<p>The Huffman encoding table is the one in the attachment K (reference) "Examples and Guidelines" of the ITU-T advice, T.81 "Digital compression and encoding of continuous-tone still images" 
+</p>
+
+<p>These tables follow.</p>
+
+<p>Normally with JPEG compression process using the Huffman encoding to output the data, when an identical code (0xFF) with the marker appers in the data, the code should be followed by &quot;<font face="Arial">0x00</font>&quot; by inserting it to indicate that the code is not a marker. This is because an ordinary data should be distinguished from a marker that defines information regarding the image. However, this process is not included because in N64 JPEG doesn't use a marker.
+</p>
+
+<p><strong>Table of DC Codes for Luminance (Brightness)</strong></p>
+
+<table border="1" bordercolor="#808080">
+  <tr>
+    <th width="59"><font face="Arial" size="-1">Classification</font></th>
+    <th width="66"><font face="Arial" size="-1">Code Length</font></th>
+    <th width="68"><font face="Arial" size="-1">Code Word</font></th>
+  </tr>
+  <tr>
+    <td width="59"><font size="-1">0</font> </td>
+    <td width="66"><font size="-1">2</font> </td>
+    <td width="68"><font size="-1">0x0000</font> </td>
+  </tr>
+  <tr>
+    <td width="59"><font size="-1">1</font> </td>
+    <td width="66"><font size="-1">3</font> </td>
+    <td width="68"><font size="-1">0x0002</font> </td>
+  </tr>
+  <tr>
+    <td width="59"><font size="-1">2</font> </td>
+    <td width="66"><font size="-1">3</font> </td>
+    <td width="68"><font size="-1">0x0003</font> </td>
+  </tr>
+  <tr>
+    <td width="59"><font size="-1">3</font> </td>
+    <td width="66"><font size="-1">3</font> </td>
+    <td width="68"><font size="-1">0x0004</font> </td>
+  </tr>
+  <tr>
+    <td width="59"><font size="-1">4</font> </td>
+    <td width="66"><font size="-1">3</font> </td>
+    <td width="68"><font size="-1">0x0005</font> </td>
+  </tr>
+  <tr>
+    <td width="59"><font size="-1">5</font> </td>
+    <td width="66"><font size="-1">3</font> </td>
+    <td width="68"><font size="-1">0x0006</font> </td>
+  </tr>
+  <tr>
+    <td width="59"><font size="-1">6</font> </td>
+    <td width="66"><font size="-1">4</font> </td>
+    <td width="68"><font size="-1">0x000e</font> </td>
+  </tr>
+  <tr>
+    <td width="59"><font size="-1">7</font> </td>
+    <td width="66"><font size="-1">5</font> </td>
+    <td width="68"><font size="-1">0x001e</font> </td>
+  </tr>
+  <tr>
+    <td width="59"><font size="-1">8</font> </td>
+    <td width="66"><font size="-1">6</font> </td>
+    <td width="68"><font size="-1">0x003e</font> </td>
+  </tr>
+  <tr>
+    <td width="59"><font size="-1">9</font> </td>
+    <td width="66"><font size="-1">7</font> </td>
+    <td width="68"><font size="-1">0x007e</font> </td>
+  </tr>
+  <tr>
+    <td width="59"><font size="-1">10</font> </td>
+    <td width="66"><font size="-1">8</font> </td>
+    <td width="68"><font size="-1">0x00fe</font> </td>
+  </tr>
+  <tr>
+    <td width="59"><font size="-1">11</font> </td>
+    <td width="66"><font size="-1">9</font> </td>
+    <td width="68"><font size="-1">0x01fe</font> </td>
+  </tr>
+</table>
+
+<p><strong>Table of DC Codes for Chroma (Color)</strong></p>
+
+<table border="1" bordercolor="#808080">
+  <tr>
+    <th width="58"><font face="Arial" size="-1">Classification</font></th>
+    <th width="66"><font face="Arial" size="-1">Code Length</font></th>
+    <th width="68"><font face="Arial" size="-1">Code Word</font></th>
+  </tr>
+  <tr>
+    <td width="58"><font size="-1">0</font> </td>
+    <td width="66"><font size="-1">2</font> </td>
+    <td width="68"><font size="-1">0x0000</font> </td>
+  </tr>
+  <tr>
+    <td width="58"><font size="-1">1</font> </td>
+    <td width="66"><font size="-1">2</font> </td>
+    <td width="68"><font size="-1">0x0001</font> </td>
+  </tr>
+  <tr>
+    <td width="58"><font size="-1">2</font> </td>
+    <td width="66"><font size="-1">2</font> </td>
+    <td width="68"><font size="-1">0x0002</font> </td>
+  </tr>
+  <tr>
+    <td width="58"><font size="-1">3</font> </td>
+    <td width="66"><font size="-1">3</font> </td>
+    <td width="68"><font size="-1">0x0006</font> </td>
+  </tr>
+  <tr>
+    <td width="58"><font size="-1">4</font> </td>
+    <td width="66"><font size="-1">4</font> </td>
+    <td width="68"><font size="-1">0x000e</font> </td>
+  </tr>
+  <tr>
+    <td width="58"><font size="-1">5</font> </td>
+    <td width="66"><font size="-1">5</font> </td>
+    <td width="68"><font size="-1">0x001e</font> </td>
+  </tr>
+  <tr>
+    <td width="58"><font size="-1">6</font> </td>
+    <td width="66"><font size="-1">6</font> </td>
+    <td width="68"><font size="-1">0x003e</font> </td>
+  </tr>
+  <tr>
+    <td width="58"><font size="-1">7</font> </td>
+    <td width="66"><font size="-1">7</font> </td>
+    <td width="68"><font size="-1">0x007e</font> </td>
+  </tr>
+  <tr>
+    <td width="58"><font size="-1">8</font> </td>
+    <td width="66"><font size="-1">8</font> </td>
+    <td width="68"><font size="-1">0x00fe</font> </td>
+  </tr>
+  <tr>
+    <td width="58"><font size="-1">9</font> </td>
+    <td width="66"><font size="-1">9</font> </td>
+    <td width="68"><font size="-1">0x01fe</font> </td>
+  </tr>
+  <tr>
+    <td width="58"><font size="-1">10</font> </td>
+    <td width="66"><font size="-1">10</font> </td>
+    <td width="68"><font size="-1">0x03fe</font> </td>
+  </tr>
+  <tr>
+    <td width="58"><font size="-1">11</font> </td>
+    <td width="66"><font size="-1">11</font> </td>
+    <td width="68"><font size="-1">0x07fe</font> </td>
+  </tr>
+</table>
+
+<p><strong>Table of AC Codes for Luminance (Brightness)</strong></p>
+
+<table border="1" bordercolor="#808080">
+  <tr>
+    <th width="97"><font face="Arial" size="-1">Run/Size</font></th>
+    <th width="66"><font face="Arial" size="-1">Code Length</font></th>
+    <th width="68"><font face="Arial" size="-1">Code Word</font></th>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">0/0(EOB)</font></td>
+    <td width="66"><font size="-1">4</font> </td>
+    <td width="68"><font size="-1">0x000a</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">0/1</font></td>
+    <td width="66"><font size="-1">2</font> </td>
+    <td width="68"><font size="-1">0x0000</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">0/2</font></td>
+    <td width="66"><font size="-1">2</font> </td>
+    <td width="68"><font size="-1">0x0001</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">0/3</font></td>
+    <td width="66"><font size="-1">3</font> </td>
+    <td width="68"><font size="-1">0x0004</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">0/4</font></td>
+    <td width="66"><font size="-1">4</font> </td>
+    <td width="68"><font size="-1">0x000b</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">0/5</font></td>
+    <td width="66"><font size="-1">5</font> </td>
+    <td width="68"><font size="-1">0x001a</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">0/6</font></td>
+    <td width="66"><font size="-1">7</font> </td>
+    <td width="68"><font size="-1">0x0078</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">0/7</font></td>
+    <td width="66"><font size="-1">8</font> </td>
+    <td width="68"><font size="-1">0x00f8</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">0/8</font></td>
+    <td width="66"><font size="-1">10</font> </td>
+    <td width="68"><font size="-1">0x03f6</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">0/9</font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xff82</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">0/A</font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xff83</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">1/1</font></td>
+    <td width="66"><font size="-1">4</font> </td>
+    <td width="68"><font size="-1">0x000c</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">1/2</font></td>
+    <td width="66"><font size="-1">5</font> </td>
+    <td width="68"><font size="-1">0x001b</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">1/3</font></td>
+    <td width="66"><font size="-1">7</font> </td>
+    <td width="68"><font size="-1">0x0079</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">1/4</font></td>
+    <td width="66"><font size="-1">9</font> </td>
+    <td width="68"><font size="-1">0x01f6</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">1/5</font></td>
+    <td width="66"><font size="-1">11</font> </td>
+    <td width="68"><font size="-1">0x07f6</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">1/6</font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xff84</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">1/7</font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xff85</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">1/8</font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xff86</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">1/9</font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xff87</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">1/A</font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xff88</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">2/1</font></td>
+    <td width="66"><font size="-1">5</font> </td>
+    <td width="68"><font size="-1">0x001c</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">2/2</font></td>
+    <td width="66"><font size="-1">8</font> </td>
+    <td width="68"><font size="-1">0x00f9</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">2/3</font></td>
+    <td width="66"><font size="-1">10</font> </td>
+    <td width="68"><font size="-1">0x03f7</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">2/4</font></td>
+    <td width="66"><font size="-1">12</font> </td>
+    <td width="68"><font size="-1">0x0ff4</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">2/5</font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xff89</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">2/6</font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xff8a</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">2/7</font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xff8b</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">2/8</font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xff8c</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">2/9</font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xff8d</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">2/A</font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xff8e</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">3/1</font></td>
+    <td width="66"><font size="-1">6</font> </td>
+    <td width="68"><font size="-1">0x003a</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">3/2</font></td>
+    <td width="66"><font size="-1">9</font> </td>
+    <td width="68"><font size="-1">0x01f7</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">3/3</font></td>
+    <td width="66"><font size="-1">12</font> </td>
+    <td width="68"><font size="-1">0x0ff5</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">3/4</font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xff8f</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">3/5</font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xff90</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">3/6</font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xff91</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">3/7</font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xff92</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">3/8</font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xff93</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">3/9</font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xff94</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">3/A</font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xff95</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">4/1</font></td>
+    <td width="66"><font size="-1">6</font> </td>
+    <td width="68"><font size="-1">0x003b</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">4/2</font></td>
+    <td width="66"><font size="-1">10</font> </td>
+    <td width="68"><font size="-1">0x03f8</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">4/3</font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xff96</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">4/4</font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xff97</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">4/5</font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xff98</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">4/6</font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xff99</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">4/7</font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xff9a</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">4/8</font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xff9b</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">4/9 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xff9c</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">4/A </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xff9d</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">5/1 </font></td>
+    <td width="66"><font size="-1">7</font> </td>
+    <td width="68"><font size="-1">0x007a</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">5/2 </font></td>
+    <td width="66"><font size="-1">11</font> </td>
+    <td width="68"><font size="-1">0x07f7</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">5/3 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xff9e</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">5/4 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xff9f</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">5/5 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffa0</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">5/6 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffa1</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">5/7 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffa2</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">5/8 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffa3</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">5/9 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffa4</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">5/A </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffa5</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">6/1 </font></td>
+    <td width="66"><font size="-1">7</font> </td>
+    <td width="68"><font size="-1">0x007b</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">6/2 </font></td>
+    <td width="66"><font size="-1">12</font> </td>
+    <td width="68"><font size="-1">0x0ff6</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">6/3 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffa6</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">6/4 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffa7</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">6/5 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffa8</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">6/6 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffa9</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">6/7 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffaa</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">6/8 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffab</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">6/9 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffac</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">6/A </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffad</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">7/1 </font></td>
+    <td width="66"><font size="-1">8</font> </td>
+    <td width="68"><font size="-1">0x00fa</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">7/2 </font></td>
+    <td width="66"><font size="-1">12</font> </td>
+    <td width="68"><font size="-1">0x0ff7</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">7/3 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffae</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">7/4 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffaf</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">7/5 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffb0</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">7/6 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffb1</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">7/7 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffb2</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">7/8 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffb3</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">7/9 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffb4</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">7/A </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffb5</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">8/1 </font></td>
+    <td width="66"><font size="-1">9</font> </td>
+    <td width="68"><font size="-1">0x01f8</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">8/2 </font></td>
+    <td width="66"><font size="-1">15</font> </td>
+    <td width="68"><font size="-1">0x7fc0</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">8/3 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffb6</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">8/4 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffb7</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">8/5 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffb8</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">8/6 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffb9</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">8/7 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffba</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">8/8 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffbb</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">8/9 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffbc</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">8/A </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffbd</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">9/1 </font></td>
+    <td width="66"><font size="-1">9</font> </td>
+    <td width="68"><font size="-1">0x01f9</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">9/2 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffbe</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">9/3 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffbf</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">9/4 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffc0</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">9/5 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffc1</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">9/6 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffc2</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">9/7 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffc3</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">9/8 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffc4</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">9/9 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffc5</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">9/A </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffc6</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">A/1 </font></td>
+    <td width="66"><font size="-1">9</font> </td>
+    <td width="68"><font size="-1">0x01fa</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">A/2 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffc7</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">A/3 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffc8</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">A/4 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffc9</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">A/5 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffca</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">A/6 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffcb</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">A/7 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffcc</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">A/8 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffcd</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">A/9 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffce</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">A/A </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffcf</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">B/1 </font></td>
+    <td width="66"><font size="-1">10</font> </td>
+    <td width="68"><font size="-1">0x03f9</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">B/2 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffd0</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">B/3 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffd1</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">B/4 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffd2</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">B/5 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffd3</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">B/6 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffd4</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">B/7 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffd5</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">B/8 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffd6</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">B/9 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffd7</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">B/A </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffd8</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">C/1 </font></td>
+    <td width="66"><font size="-1">10</font> </td>
+    <td width="68"><font size="-1">0x03fa</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">C/2 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffd9</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">C/3 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffda</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">C/4 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffdb</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">C/5 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffdc</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">C/6 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffdd</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">C/7 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffde</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">C/8 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffdf</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">C/9 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffe0</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">C/A </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffe1</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">D/1 </font></td>
+    <td width="66"><font size="-1">11</font> </td>
+    <td width="68"><font size="-1">0x07f8</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">D/2 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffe2</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">D/3 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffe3</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">D/4 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffe4</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">D/5 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffe5</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">D/6 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffe6</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">D/7 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffe7</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">D/8 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffe8</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">D/9 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffe9</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">D/A </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffea</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">E/1 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffeb</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">E/2 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffec</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">E/3 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffed</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">E/4 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffee</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">E/5 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xffef</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">E/6 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xfff0</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">E/7 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xfff1</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">E/8 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xfff2</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">E/9 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xfff3</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">E/A </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xfff4</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">F/0(ZRL) </font></td>
+    <td width="66"><font size="-1">11</font> </td>
+    <td width="68"><font size="-1">0x07f9</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">F/1 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xfff5</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">F/2 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xfff6</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">F/3 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xfff7</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">F/4 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xfff8</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">F/5 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xfff9</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">F/6 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xfffa</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">F/7 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xfffb</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">F/8 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xfffc</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">F/9 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xfffd</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">F/A </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="68"><font size="-1">0xfffe</font> </td>
+  </tr>
+</table>
+
+<p><strong>Table of AC Codes for Chroma (Color)</strong></p>
+
+<table border="1" bordercolor="#808080">
+  <tr>
+    <td width="97"><font face="Arial" size="-1">Run/Size</font></td>
+    <td width="66"><font face="Arial" size="-1">Code Length</font></td>
+    <td width="71"><font face="Arial" size="-1">Code Word</font></td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">0/0(EOB) </font></td>
+    <td width="66"><font size="-1">2</font> </td>
+    <td width="71"><font size="-1">0x0000</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">0/1 </font></td>
+    <td width="66"><font size="-1">2</font> </td>
+    <td width="71"><font size="-1">0x0001</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">0/2 </font></td>
+    <td width="66"><font size="-1">3</font> </td>
+    <td width="71"><font size="-1">0x0004</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">0/3 </font></td>
+    <td width="66"><font size="-1">4</font> </td>
+    <td width="71"><font size="-1">0x000a</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">0/4 </font></td>
+    <td width="66"><font size="-1">5</font> </td>
+    <td width="71"><font size="-1">0x0018</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">0/5 </font></td>
+    <td width="66"><font size="-1">5</font> </td>
+    <td width="71"><font size="-1">0x0019</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">0/6 </font></td>
+    <td width="66"><font size="-1">6</font> </td>
+    <td width="71"><font size="-1">0x0038</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">0/7 </font></td>
+    <td width="66"><font size="-1">7</font> </td>
+    <td width="71"><font size="-1">0x0078</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">0/8 </font></td>
+    <td width="66"><font size="-1">9</font> </td>
+    <td width="71"><font size="-1">0x01f4</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">0/9 </font></td>
+    <td width="66"><font size="-1">10</font> </td>
+    <td width="71"><font size="-1">0x03f6</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">0/A </font></td>
+    <td width="66"><font size="-1">12</font> </td>
+    <td width="71"><font size="-1">0x0ff4</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">1/1 </font></td>
+    <td width="66"><font size="-1">4</font> </td>
+    <td width="71"><font size="-1">0x000b</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">1/2 </font></td>
+    <td width="66"><font size="-1">6</font> </td>
+    <td width="71"><font size="-1">0x0039</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">1/3 </font></td>
+    <td width="66"><font size="-1">8</font> </td>
+    <td width="71"><font size="-1">0x00f6</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">1/4 </font></td>
+    <td width="66"><font size="-1">9</font> </td>
+    <td width="71"><font size="-1">0x01f5</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">1/5 </font></td>
+    <td width="66"><font size="-1">11</font> </td>
+    <td width="71"><font size="-1">0x07f6</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">1/6 </font></td>
+    <td width="66"><font size="-1">12</font> </td>
+    <td width="71"><font size="-1">0x0ff5</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">1/7 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xff88</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">1/8 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xff89</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">1/9 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xff8a</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">1/A </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xff8b</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">2/1 </font></td>
+    <td width="66"><font size="-1">5</font> </td>
+    <td width="71"><font size="-1">0x001a</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">2/2 </font></td>
+    <td width="66"><font size="-1">8</font> </td>
+    <td width="71"><font size="-1">0x00f7</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">2/3 </font></td>
+    <td width="66"><font size="-1">10</font> </td>
+    <td width="71"><font size="-1">0x03f7</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">2/4 </font></td>
+    <td width="66"><font size="-1">12</font> </td>
+    <td width="71"><font size="-1">0x0ff6</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">2/5 </font></td>
+    <td width="66"><font size="-1">15</font> </td>
+    <td width="71"><font size="-1">0x7fc2</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">2/6 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xff8c</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">2/7 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xff8d</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">2/8 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xff8e</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">2/9 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xff8f</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">2/A </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xff90</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">3/1 </font></td>
+    <td width="66"><font size="-1">5</font> </td>
+    <td width="71"><font size="-1">0x001b</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">3/2 </font></td>
+    <td width="66"><font size="-1">8</font> </td>
+    <td width="71"><font size="-1">0x00f8</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">3/3 </font></td>
+    <td width="66"><font size="-1">10</font> </td>
+    <td width="71"><font size="-1">0x03f8</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">3/4 </font></td>
+    <td width="66"><font size="-1">12</font> </td>
+    <td width="71"><font size="-1">0x0ff7</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">3/5 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xff91</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">3/6 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xff92</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">3/7 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xff93</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">3/8 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xff94</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">3/9 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xff95</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">3/A </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xff96</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">4/1 </font></td>
+    <td width="66"><font size="-1">6</font> </td>
+    <td width="71"><font size="-1">0x003a</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">4/2 </font></td>
+    <td width="66"><font size="-1">9</font> </td>
+    <td width="71"><font size="-1">0x01f6</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">4/3 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xff97</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">4/4 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xff98</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">4/5 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xff99</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">4/6 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xff9a</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">4/7 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xff9b</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">4/8 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xff9c</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">4/9 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xff9d</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">4/A </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xff9e</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">5/1 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0x003b</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">5/2 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0x03f9</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">5/3 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xff9f</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">5/4 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffa0</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">5/5 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffa1</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">5/6 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffa2</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">5/7 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffa3</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">5/8 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffa4</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">5/9 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffa5</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">5/A </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffa6</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">6/1 </font></td>
+    <td width="66"><font size="-1">7</font> </td>
+    <td width="71"><font size="-1">0x0079</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">6/2 </font></td>
+    <td width="66"><font size="-1">11</font> </td>
+    <td width="71"><font size="-1">0x07f7</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">6/3 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffa7</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">6/4 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffa8</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">6/5 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffa9</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">6/6 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffaa</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">6/7 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffab</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">6/8 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffac</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">6/9 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffad</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">6/A </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffae</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">7/1 </font></td>
+    <td width="66"><font size="-1">7</font> </td>
+    <td width="71"><font size="-1">0x007a</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">7/2 </font></td>
+    <td width="66"><font size="-1">11</font> </td>
+    <td width="71"><font size="-1">0x07f8</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">7/3 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffaf</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">7/4 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffb0</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">7/5 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffb1</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">7/6 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffb2</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">7/7 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffb3</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">7/8 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffb4</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">7/9 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffb5</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">7/A </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffb6</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">8/1 </font></td>
+    <td width="66"><font size="-1">8</font> </td>
+    <td width="71"><font size="-1">0x00f9</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">8/2 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffb7</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">8/3 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffb8</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">8/4 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffb9</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">8/5 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffba</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">8/6 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffbb</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">8/7 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffbc</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">8/8 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffbd</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">8/9 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffbe</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">8/A </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffbf</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">9/1 </font></td>
+    <td width="66"><font size="-1">9</font> </td>
+    <td width="71"><font size="-1">0x01f7</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">9/2 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffc0</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">9/3 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffc1</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">9/4 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffc2</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">9/5 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffc3</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">9/6 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffc4</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">9/7 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffc5</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">9/8 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffc6</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">9/9 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffc7</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">9/A </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffc8</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">A/1 </font></td>
+    <td width="66"><font size="-1">9</font> </td>
+    <td width="71"><font size="-1">0x01f8</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">A/2 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffc9</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">A/3 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffca</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">A/4 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffcb</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">A/5 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffcc</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">A/6 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffcd</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">A/7 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffce</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">A/8 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffcf</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">A/9 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffd0</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">A/A </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffd1</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">B/1 </font></td>
+    <td width="66"><font size="-1">9</font> </td>
+    <td width="71"><font size="-1">0x01f9</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">B/2 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffd2</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">B/3 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffd3</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">B/4 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffd4</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">B/5 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffd5</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">B/6 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffd6</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">B/7 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffd7</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">B/8 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffd8</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">B/9 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffd9</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">B/A </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffda</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">C/1 </font></td>
+    <td width="66"><font size="-1">9</font> </td>
+    <td width="71"><font size="-1">0x01fa</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">C/2 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffdb</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">C/3 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffdc</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">C/4 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffdd</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">C/5 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffde</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">C/6 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffdf</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">C/7 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffe0</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">C/8 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffe1</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">C/9 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffe2</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">C/A </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffe3</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">D/1 </font></td>
+    <td width="66"><font size="-1">11</font> </td>
+    <td width="71"><font size="-1">0x07f9</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">D/2 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffe4</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">D/3 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffe5</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">D/4 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffe6</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">D/5 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffe7</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">D/6 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffe8</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">D/7 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffe9</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">D/8 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffea</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">D/9 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffeb</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">D/A </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffec</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">E/1 </font></td>
+    <td width="66"><font size="-1">14</font> </td>
+    <td width="71"><font size="-1">0x3fe0</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">E/2 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffed</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">E/3 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffee</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">E/4 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xffef</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">E/5 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xfff0</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">E/6 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xfff1</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">E/7 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xfff2</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">E/8 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xfff3</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">E/9 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xfff4</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">E/A </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xfff5</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">F/0(ZRL)</font></td>
+    <td width="66"><font size="-1">10</font> </td>
+    <td width="71"><font size="-1">0x03fa</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">F/1 </font></td>
+    <td width="66"><font size="-1">15</font> </td>
+    <td width="71"><font size="-1">0x7fc3</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">F/2 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xfff6</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">F/3 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xfff7</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">F/4 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xfff8</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">F/5 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xfff9</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">F/6 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xfffa</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">F/7 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xfffb</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">F/8 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xfffc</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">F/9 </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xfffd</font> </td>
+  </tr>
+  <tr>
+    <td width="97"><font size="-1">F/A </font></td>
+    <td width="66"><font size="-1">16</font> </td>
+    <td width="71"><font size="-1">0xfffe</font> </td>
+  </tr>
+</table>
+
+<h3><a name="05">5.5 Programming Cautions</a></h3>
+
+<h4><a name="05-01">5.5.1 Image Quality</a></h4>
+
+<p>N64 JPEG raises the compression rate by slightly reducing the image quality. Therefore, if you repeatedly compress and decompress the compressed image, image quality can become noticeably worse.</p>
+
+<p>Also, the N64 JPEG process includes errors, so you must be particularly careful when culling the UV data in the YUV space. For example, if you make an N64 drawing tool for use over and over in the N64 JPEG library for the purpose of image storage and retrieval, image encoding and decoding are provided whenever you repeat the storage and retrieval process. This means that if the drawing is done in the RGBA space (in the regular N64 image process space), UV data in the macro block is culled again and again based on the drawing. In short, an application
+that repeatedly compresses and decompresses a compressed image provides data culling over and over which can cause a noticeable deterioration in image quality.
+</p>
+
+<p>If you make such an application, you should store the regular RGBA data without using compression or store the compressed data (for example, by the run length encoding as in the compression used in a BMP file), and use N64 JPEG as the final storage method. 
+</p>
+
+<h4><a name="05-02">5.5.2 Data Form After Decompression</a></h4>
+
+<p>Data decoded by the njpgdspMain microcode is output in YUV format, not RGBA format. Therefore, you need to be aware that the image won't be displayed normally, even if you directly specify the output data buffer to the frame buffer.</p>
+
+<p>Also, data output in YUV format needs to be expressed as a 16x16 dot texture. Both input and output data regions are divided into 768-byte macro blocks, and each macro block processed completes in its region.  As a result, the size of the output data becomes 512 byte for the 768 byte (Y4, U1, and V1 are each 128 bytes) after input to the macro block region. The 256-byte empty region (suitable for the unnecessary UV component region) is produced. (Refer to "3.1.3 Output Data")</p>
+
+<p>When you get the texture from the data buffer, add the pointer to the buffer at each 768-byte boundary.</p>
+
+<p>Please refer to Sample Program for the specific methods.</p>
+
+</body>
+</html>

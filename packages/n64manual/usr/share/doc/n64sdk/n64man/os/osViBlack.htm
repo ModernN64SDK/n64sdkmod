@@ -1,0 +1,66 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.>
+<TITLE>osViBlack</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>osViBlack<FONT size="+0"> [Function]</FONT></H1>
+
+<h3>Function</h3>
+
+<p>osViBlack</p>
+<P>
+<i>Blacks out VI screen</i></P>
+
+<H3>Syntax</H3>
+<p><PRE><CODE>#include &lt;ultra64.h&gt;        /* <A href="../../header/os.htm">os.h</A> */
+void osViBlack(u8 active);</CODE></PRE></p>
+
+<H3>Arguments</H3>
+<p><DL>
+  <DT><B>active</B>
+  <DD>Blackout flag
+  <DL>
+    <DT><B>TRUE</B> (Set blackout) 
+    <DT><B>FALSE</B> (Cancel blackout) 
+  </DL>
+</DL></p>
+<H3>Return Value</H3>
+<P>
+None.
+</P>
+<H3>Description</H3>
+<P>
+Allows the screen to be blacked out.  Blacks out the screen after osViBlack is executed at the time that the first vertical retrace interrupt is generated.  Vertical retrace signals continue to be generated while the screen is blacked out. 
+</P>
+<H3>Precautions</H3>
+<P>
+If the coefficient for Y scale processing (<B>yscale</B>) is set to anything other than 1.0 with <A href="osViSetYScale.htm">osViSetYScale</A> when osViBlack is executed, return it to 1.0.  In some instances, a reset will have no effect.  
+Also, be sure to execute osViBlack after <A href="osCreateViManager.htm">osCreateViManager</A>. </P>
+
+<H3>Example</H3>
+<p><PRE><CODE>//      Starting VI manager & Blackout
+        osCreateViManager(OS_PRIORITY_VIMGR);
+#if (SCREEN_WD==320)&amp;&amp;(SCREEN_HT==240)            // Setting for low resolution
+        osViSetMode(&amp;osViModeNtscLan1);
+#elif (SCREEN_WD==640)&amp;&amp;(SCREEN_HT==480)          // Setting for high resolution
+        osViSetMode(&amp;osViModeNtscHaf1]);
+#else
+#error  &quot;Illegal Screen size&quot;
+#endif
+        <B>osViBlack</B>(TRUE);</CODE></PRE></p>
+
+<H3>See Also</H3>
+<P>
+<A href="osViSetYScale.htm">osViSetYScale</A>
+</P>
+<H3>Revision History</H3>
+<P>
+02/01/99  Completely rewritten.
+</P>
+</BODY>
+</HTML>

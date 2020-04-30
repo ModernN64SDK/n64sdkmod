@@ -1,0 +1,952 @@
+<HTML><HEAD>
+<TITLE></TITLE>
+</HEAD></BODY>
+<PRE><FONT COLOR="red">/*====================================================================
+ * libaudio.h
+ *
+ * Copyright 1993, Silicon Graphics, Inc.
+ * All Rights Reserved.
+ *
+ * This is UNPUBLISHED PROPRIETARY SOURCE CODE of Silicon Graphics,
+ * Inc.; the contents of this file may not be disclosed to third
+ * parties, copied or duplicated in any form, in whole or in part,
+ * without the prior written permission of Silicon Graphics, Inc.
+ *
+ * RESTRICTED RIGHTS LEGEND:
+ * Use, duplication or disclosure by the Government is subject to
+ * restrictions as set forth in subdivision (c)(1)(ii) of the Rights
+ * in Technical Data and Computer Software clause at DFARS
+ * 252.227-7013, and/or in similar or successor clauses in the FAR,
+ * DOD or NASA FAR Supplement. Unpublished - rights reserved under the
+ * Copyright Laws of the United States.
+ *====================================================================*/</FONT>
+
+<FONT COLOR="red">/**************************************************************************
+ *
+ *  $Revision: 1.173 $
+ *  $Date: 1997/12/01 12:42:21 $
+ *  $Source: /hosts/gate3/exdisk2/cvs/N64OS/Master/cvsmdev2/PR/include/libaudio.h,v $
+ *
+ **************************************************************************/</FONT>
+
+#ifndef __LIB_AUDIO__
+#define __LIB_AUDIO__
+
+#ifdef _LANGUAGE_C_PLUS_PLUS
+extern &quot;C&quot; {
+#endif
+
+#include &lt;PR/ultratypes.h&gt;
+#include &lt;PR/mbi.h&gt;
+    
+<FONT COLOR="red">/***********************************************************************
+ * misc defines
+ ***********************************************************************/</FONT>    
+#ifndef _EMULATOR
+#	ifdef AUD_PROFILE
+
+#define PROFILE_AUD(num, cnt, max, min)	\
+{					\
+    u32 currCnt = osGetCount();	\
+    currCnt -= lastCnt[cnt_index];	\
+    cnt_index--;			\
+    cnt += currCnt;			\
+    num++;				\
+             				\
+    if ( currCnt &gt; max ) max = currCnt;	\
+    if ( currCnt &lt; min ) min = currCnt;	\
+}
+
+#	endif <FONT COLOR="red">/* AUD_PROFILE */</FONT>
+#endif <FONT COLOR="red">/* EMULATOR */</FONT>
+
+#ifndef NULL
+#define NULL 0
+#endif
+
+#define AL_FX_BUFFER_SIZE       8192
+#define AL_FRAME_INIT           -1
+#define AL_USEC_PER_FRAME       16000
+#define AL_MAX_PRIORITY         127
+#define AL_GAIN_CHANGE_TIME     1000    
+    
+typedef s32     ALMicroTime;
+typedef u8      ALPan;
+
+#define AL_PAN_CENTER   64
+#define AL_PAN_LEFT     0
+#define AL_PAN_RIGHT    127
+#define AL_VOL_FULL     127
+#define AL_KEY_MIN      0
+#define AL_KEY_MAX      127
+#define AL_DEFAULT_FXMIX	0
+#define AL_SUSTAIN      63
+
+<FONT COLOR="red">/***********************************************************************
+ * Error handling
+ ***********************************************************************/</FONT>
+
+#ifdef _DEBUG
+#define ALFailIf(condition, error)	\
+            if (condition) {		\
+                __osError(error, 0);	\
+                return; }
+
+#else
+#define ALFailIf(condition, error)	\
+            if (condition) {		\
+                return; }
+#endif
+
+#ifdef _DEBUG
+#define ALFlagFailIf(condition, flag, error)	\
+            if (condition) {		\
+                if(flag) __osError(error, 0);	\
+                return; }
+
+#else
+#define ALFlagFailIf(condition, flag, error)	\
+            if (condition) {		\
+                return; }
+#endif
+
+<FONT COLOR="red">/***********************************************************************
+ * Audio Library global routines
+ ***********************************************************************/</FONT>
+typedef struct ALLink_s {
+    struct ALLink_s      *next;
+    struct ALLink_s      *prev;
+} ALLink;
+
+void    alUnlink(ALLink *element);
+void    alLink(ALLink *element, ALLink *after);
+
+typedef s32 (*ALDMAproc)(s32 addr, s32 len, void *state);
+typedef ALDMAproc (*ALDMANew)(void *state);
+
+void    alCopy(void *src, void *dest, s32 len);
+
+typedef struct {
+    u8          *base;
+    u8          *cur;
+    s32         len;
+    s32         count;
+} ALHeap;
+
+#define AL_HEAP_DEBUG   1
+#define AL_HEAP_MAGIC   0x20736a73
+#define AL_HEAP_INIT    0
+
+void    alHeapInit(ALHeap *hp, u8 *base, s32 len);
+void    *alHeapDBAlloc(u8 *file, s32 line, ALHeap *hp, s32 num, s32 size);
+s32     alHeapCheck(ALHeap *hp);
+
+#ifdef _DEBUG
+#define alHeapAlloc(hp, elem ,size) alHeapDBAlloc((u8 *) __FILE__,__LINE__,(hp),(elem),(size))
+#else
+#define alHeapAlloc(hp, elem ,size) alHeapDBAlloc(0, 0,(hp),(elem),(size))
+#endif
+
+<FONT COLOR="red">/***********************************************************************
+ * FX Stuff
+ ***********************************************************************/</FONT>
+#define    AL_FX_NONE          0
+#define    AL_FX_SMALLROOM     1
+#define    AL_FX_BIGROOM       2
+#define    AL_FX_CHORUS        3
+#define    AL_FX_FLANGE        4
+#define    AL_FX_ECHO          5
+#define    AL_FX_CUSTOM        6
+
+typedef u8      ALFxId;
+typedef void    *ALFxRef;
+
+<FONT COLOR="red">/***********************************************************************
+ * data structures for sound banks
+ ***********************************************************************/</FONT>
+
+#define AL_BANK_VERSION    0x4231	<FONT COLOR="red">/* 'B1' */</FONT>
+
+<FONT COLOR="red">/* Possible wavetable types */</FONT>
+enum    {AL_ADPCM_WAVE = 0,
+         AL_RAW16_WAVE};
+
+typedef struct {
+    s32 order;
+    s32 npredictors;
+    s16 book[1];        <FONT COLOR="red">/* Actually variable size. Must be 8-byte aligned */</FONT>
+} ALADPCMBook;
+
+typedef struct {
+    u32         start;
+    u32         end;
+    u32         count;
+    ADPCM_STATE state;
+} ALADPCMloop;
+
+typedef struct {
+    u32         start;
+    u32         end;
+    u32         count;
+} ALRawLoop;
+
+typedef struct {
+    ALMicroTime attackTime;
+    ALMicroTime decayTime;
+    ALMicroTime releaseTime;
+    u8          attackVolume;
+    u8          decayVolume;
+} ALEnvelope;
+
+typedef struct {
+    u8          velocityMin;
+    u8          velocityMax;
+    u8          keyMin;
+    u8          keyMax;
+    u8          keyBase;
+    s8          detune;
+} ALKeyMap;
+
+typedef struct {
+    ALADPCMloop *loop;
+    ALADPCMBook *book;
+} ALADPCMWaveInfo;
+
+typedef struct {
+    ALRawLoop *loop;
+} ALRAWWaveInfo;
+
+typedef struct ALWaveTable_s {
+    u8          *base;          <FONT COLOR="red">/* ptr to start of wave data    */</FONT>
+    s32         len;            <FONT COLOR="red">/* length of data in bytes      */</FONT>
+    u8          type;           <FONT COLOR="red">/* compression type             */</FONT>
+    u8          flags;          <FONT COLOR="red">/* offset/address flags         */</FONT>
+    union {
+        ALADPCMWaveInfo adpcmWave;
+        ALRAWWaveInfo   rawWave;
+    } waveInfo;
+} ALWaveTable;
+
+typedef struct ALSound_s {
+    ALEnvelope  *envelope;
+    ALKeyMap    *keyMap;
+    ALWaveTable *wavetable;     <FONT COLOR="red">/* offset to wavetable struct           */</FONT>
+    ALPan       samplePan;
+    u8          sampleVolume;
+    u8          flags;
+} ALSound;
+
+typedef struct {
+    u8          volume;         <FONT COLOR="red">/* overall volume for this instrument   */</FONT>
+    ALPan       pan;            <FONT COLOR="red">/* 0 = hard left, 127 = hard right      */</FONT>
+    u8          priority;       <FONT COLOR="red">/* voice priority for this instrument   */</FONT>
+    u8          flags;
+    u8          tremType;       <FONT COLOR="red">/* the type of tremelo osc. to use      */</FONT>
+    u8          tremRate;       <FONT COLOR="red">/* the rate of the tremelo osc.         */</FONT>
+    u8          tremDepth;      <FONT COLOR="red">/* the depth of the tremelo osc         */</FONT>
+    u8          tremDelay;      <FONT COLOR="red">/* the delay for the tremelo osc        */</FONT>
+    u8          vibType;        <FONT COLOR="red">/* the type of tremelo osc. to use      */</FONT>
+    u8          vibRate;        <FONT COLOR="red">/* the rate of the tremelo osc.         */</FONT>
+    u8          vibDepth;       <FONT COLOR="red">/* the depth of the tremelo osc         */</FONT>
+    u8          vibDelay;       <FONT COLOR="red">/* the delay for the tremelo osc        */</FONT>
+    s16         bendRange;      <FONT COLOR="red">/* pitch bend range in cents            */</FONT>
+    s16         soundCount;     <FONT COLOR="red">/* number of sounds in this array       */</FONT>
+    ALSound     *soundArray[1];
+} ALInstrument;
+
+typedef struct ALBank_s {
+    s16                 instCount;      <FONT COLOR="red">/* number of programs in this bank */</FONT>
+    u8                  flags;
+    u8                  pad;
+    s32                 sampleRate;     <FONT COLOR="red">/* e.g. 44100, 22050, etc...       */</FONT>
+    ALInstrument        *percussion;    <FONT COLOR="red">/* default percussion for GM       */</FONT>
+    ALInstrument        *instArray[1];  <FONT COLOR="red">/* ARRAY of instruments            */</FONT>
+} ALBank;
+
+typedef struct {                <FONT COLOR="red">/* Note: sizeof won't be correct        */</FONT>
+    s16         revision;       <FONT COLOR="red">/* format revision of this file         */</FONT>
+    s16         bankCount;      <FONT COLOR="red">/* number of banks                      */</FONT>
+    ALBank      *bankArray[1];  <FONT COLOR="red">/* ARRAY of bank offsets                */</FONT>
+} ALBankFile;
+
+void    alBnkfNew(ALBankFile *f, u8 *table);
+
+<FONT COLOR="red">/***********************************************************************
+ * Sequence Files
+ ***********************************************************************/</FONT>
+#define AL_SEQBANK_VERSION    'S1'
+
+typedef struct {
+    u8          *offset;
+    s32         len;
+} ALSeqData;
+
+typedef struct {                <FONT COLOR="red">/* Note: sizeof won't be correct        */</FONT>
+    s16         revision;       <FONT COLOR="red">/* format revision of this file         */</FONT>
+    s16         seqCount;       <FONT COLOR="red">/* number of sequences                  */</FONT>
+    ALSeqData   seqArray[1];    <FONT COLOR="red">/* ARRAY of sequence info               */</FONT>
+} ALSeqFile;
+
+void    alSeqFileNew(ALSeqFile *f, u8 *base);
+
+<FONT COLOR="red">/***********************************************************************
+ * Synthesis driver stuff
+ ***********************************************************************/</FONT>
+typedef ALMicroTime (*ALVoiceHandler)(void *);
+
+typedef struct {
+    s32                 maxVVoices;     <FONT COLOR="red">/* obsolete */</FONT>
+    s32                 maxPVoices;
+    s32                 maxUpdates;
+    s32                 maxFXbusses;
+    void                *dmaproc;
+    ALHeap              *heap;
+    s32                 outputRate;     <FONT COLOR="red">/* output sample rate */</FONT>
+    ALFxId              fxType;
+    s32                 *params;
+} ALSynConfig;
+
+typedef struct ALPlayer_s {
+    struct ALPlayer_s   *next;
+    void                *clientData;    <FONT COLOR="red">/* storage for client callback  */</FONT>
+    ALVoiceHandler      handler;        <FONT COLOR="red">/* voice handler for player     */</FONT>
+    ALMicroTime         callTime;       <FONT COLOR="red">/* usec requested callback      */</FONT>
+    s32                 samplesLeft;    <FONT COLOR="red">/* usec remaining to callback   */</FONT>
+} ALPlayer;
+
+typedef struct ALVoice_s {
+    ALLink              node;
+    struct PVoice_s     *pvoice;
+    ALWaveTable         *table;
+    void                *clientPrivate;
+    s16                 state;
+    s16                 priority;
+    s16                 fxBus;
+    s16                 unityPitch;
+} ALVoice;
+
+typedef struct ALVoiceConfig_s {
+    s16                 priority;       <FONT COLOR="red">/* voice priority               */</FONT>
+    s16                 fxBus;          <FONT COLOR="red">/* bus assignment               */</FONT>
+    u8                  unityPitch;     <FONT COLOR="red">/* unity pitch flag             */</FONT>
+} ALVoiceConfig;
+
+typedef struct {
+    ALPlayer    *head;          <FONT COLOR="red">/* client list head                     */</FONT>
+    ALLink      pFreeList;      <FONT COLOR="red">/* list of free physical voices         */</FONT>
+    ALLink      pAllocList;     <FONT COLOR="red">/* list of allocated physical voices    */</FONT>
+    ALLink      pLameList;      <FONT COLOR="red">/* list of voices ready to be freed     */</FONT>
+    s32         paramSamples;
+    s32         curSamples;     <FONT COLOR="red">/* samples from start of game           */</FONT>
+    ALDMANew    dma;
+    ALHeap      *heap;
+    
+    struct ALParam_s    *paramList;
+    
+    struct ALMainBus_s  *mainBus;
+    struct ALAuxBus_s   *auxBus;        <FONT COLOR="red">/* ptr to array of aux bus structs */</FONT>
+    struct ALFilter_s   *outputFilter;  <FONT COLOR="red">/* last filter in the filter chain */</FONT>
+
+    s32                 numPVoices;
+    s32                 maxAuxBusses;
+    s32                 outputRate;     <FONT COLOR="red">/* output sample rate */</FONT>
+    s32                 maxOutSamples;  <FONT COLOR="red">/* Maximum samples rsp can generate
+                                           at one time at output rate */</FONT>
+} ALSynth;
+
+void    alSynNew(ALSynth *s, ALSynConfig *config);
+void    alSynDelete(ALSynth *s);
+
+void    alSynAddPlayer(ALSynth *s, ALPlayer *client);
+void    alSynRemovePlayer(ALSynth *s, ALPlayer *client);
+
+s32     alSynAllocVoice(ALSynth *s, ALVoice *v, ALVoiceConfig *vc);
+void    alSynFreeVoice(ALSynth *s, ALVoice *voice);
+
+void    alSynStartVoice(ALSynth *s, ALVoice *voice, ALWaveTable *w);
+void    alSynStartVoiceParams(ALSynth *s, ALVoice *voice, ALWaveTable *w,
+                              f32 pitch, s16 vol, ALPan pan, u8 fxmix,
+                              ALMicroTime t);
+void    alSynStopVoice(ALSynth *s, ALVoice *voice);
+
+void    alSynSetVol(ALSynth *s, ALVoice *v, s16 vol, ALMicroTime delta);
+void    alSynSetPitch(ALSynth *s, ALVoice *voice, f32 ratio);
+void    alSynSetPan(ALSynth *s, ALVoice *voice, ALPan pan);
+void    alSynSetFXMix(ALSynth *s, ALVoice *voice, u8 fxmix);
+void    alSynSetPriority(ALSynth *s, ALVoice *voice, s16 priority);
+s16     alSynGetPriority(ALSynth *s, ALVoice *voice);
+
+ALFxRef *alSynAllocFX(ALSynth *s, s16 bus, ALSynConfig *c, ALHeap *hp);
+ALFxRef alSynGetFXRef(ALSynth *s, s16 bus, s16 index);
+void    alSynFreeFX(ALSynth *s, ALFxRef *fx);
+void    alSynSetFXParam(ALSynth *s, ALFxRef fx, s16 paramID, void *param);
+
+<FONT COLOR="red">/***********************************************************************
+ * Audio Library (AL) stuff
+ ***********************************************************************/</FONT>
+typedef struct {
+    ALSynth     drvr;
+} ALGlobals;
+
+extern ALGlobals *alGlobals;
+
+void    alInit(ALGlobals *glob, ALSynConfig *c);
+void    alClose(ALGlobals *glob);
+
+Acmd    *alAudioFrame(Acmd *cmdList, s32 *cmdLen, s16 *outBuf, s32 outLen);
+
+<FONT COLOR="red">/***********************************************************************
+ * Sequence Player stuff
+ ***********************************************************************/</FONT>
+
+<FONT COLOR="red">/*
+ * Play states
+ */</FONT>
+#define AL_STOPPED      0
+#define AL_PLAYING      1
+#define AL_STOPPING     2
+
+#define AL_DEFAULT_PRIORITY     5
+#define AL_DEFAULT_VOICE        0
+#define AL_MAX_CHANNELS         16
+
+<FONT COLOR="red">/*
+ * Audio Library event type definitions
+ */</FONT>
+enum ALMsg {
+    AL_SEQ_REF_EVT,	<FONT COLOR="red">/* Reference to a pending event in the sequence. */</FONT>
+    AL_SEQ_MIDI_EVT,
+    AL_SEQP_MIDI_EVT,
+    AL_TEMPO_EVT,
+    AL_SEQ_END_EVT,
+    AL_NOTE_END_EVT,
+    AL_SEQP_ENV_EVT,
+    AL_SEQP_META_EVT,
+    AL_SEQP_PROG_EVT,
+    AL_SEQP_API_EVT,
+    AL_SEQP_VOL_EVT,
+    AL_SEQP_LOOP_EVT,
+    AL_SEQP_PRIORITY_EVT,
+    AL_SEQP_SEQ_EVT,
+    AL_SEQP_BANK_EVT,
+    AL_SEQP_PLAY_EVT,
+    AL_SEQP_STOP_EVT,
+    AL_SEQP_STOPPING_EVT,
+    AL_TRACK_END,
+    AL_CSP_LOOPSTART,
+    AL_CSP_LOOPEND,
+    AL_CSP_NOTEOFF_EVT,
+    AL_TREM_OSC_EVT,
+    AL_VIB_OSC_EVT
+};
+
+<FONT COLOR="red">/*
+ * Midi event definitions
+ */</FONT>
+#define AL_EVTQ_END     0x7fffffff
+
+enum AL_MIDIstatus {
+    <FONT COLOR="red">/* For distinguishing channel number from status */</FONT>
+    AL_MIDI_ChannelMask         = 0x0F,
+    AL_MIDI_StatusMask          = 0xF0,
+
+    <FONT COLOR="red">/* Channel voice messages */</FONT>
+    AL_MIDI_ChannelVoice        = 0x80,
+    AL_MIDI_NoteOff             = 0x80,
+    AL_MIDI_NoteOn              = 0x90,
+    AL_MIDI_PolyKeyPressure     = 0xA0,
+    AL_MIDI_ControlChange       = 0xB0,
+    AL_MIDI_ChannelModeSelect   = 0xB0,
+    AL_MIDI_ProgramChange       = 0xC0,
+    AL_MIDI_ChannelPressure     = 0xD0,
+    AL_MIDI_PitchBendChange     = 0xE0,
+
+    <FONT COLOR="red">/* System messages */</FONT>
+    AL_MIDI_SysEx               = 0xF0, <FONT COLOR="red">/* System Exclusive */</FONT>
+
+    <FONT COLOR="red">/* System common */</FONT>
+    AL_MIDI_SystemCommon            = 0xF1,
+    AL_MIDI_TimeCodeQuarterFrame    = 0xF1,
+    AL_MIDI_SongPositionPointer     = 0xF2,
+    AL_MIDI_SongSelect              = 0xF3,
+    AL_MIDI_Undefined1              = 0xF4,
+    AL_MIDI_Undefined2              = 0xF5,
+    AL_MIDI_TuneRequest             = 0xF6,
+    AL_MIDI_EOX                     = 0xF7, <FONT COLOR="red">/* End of System Exclusive */</FONT>
+
+    <FONT COLOR="red">/* System real time */</FONT>
+    AL_MIDI_SystemRealTime  = 0xF8,
+    AL_MIDI_TimingClock     = 0xF8,
+    AL_MIDI_Undefined3      = 0xF9,
+    AL_MIDI_Start           = 0xFA,
+    AL_MIDI_Continue        = 0xFB,
+    AL_MIDI_Stop            = 0xFC,
+    AL_MIDI_Undefined4      = 0xFD,
+    AL_MIDI_ActiveSensing   = 0xFE,
+    AL_MIDI_SystemReset     = 0xFF,
+    AL_MIDI_Meta            = 0xFF      <FONT COLOR="red">/* MIDI Files only */</FONT>
+};
+
+enum AL_MIDIctrl {
+    AL_MIDI_VOLUME_CTRL         = 0x07,
+    AL_MIDI_PAN_CTRL            = 0x0A,
+    AL_MIDI_PRIORITY_CTRL       = 0x10, <FONT COLOR="red">/* use general purpose controller for priority */</FONT>
+    AL_MIDI_FX_CTRL_0           = 0x14,
+    AL_MIDI_FX_CTRL_1           = 0x15,
+    AL_MIDI_FX_CTRL_2           = 0x16,
+    AL_MIDI_FX_CTRL_3           = 0x17,
+    AL_MIDI_FX_CTRL_4           = 0x18,
+    AL_MIDI_FX_CTRL_5           = 0x19,
+    AL_MIDI_FX_CTRL_6           = 0x1A,
+    AL_MIDI_FX_CTRL_7           = 0x1B,
+    AL_MIDI_FX_CTRL_8           = 0x1C,
+    AL_MIDI_FX_CTRL_9           = 0x1D,
+    AL_MIDI_SUSTAIN_CTRL        = 0x40,
+    AL_MIDI_FX1_CTRL            = 0x5B,
+    AL_MIDI_FX3_CTRL            = 0x5D
+};
+
+enum AL_MIDImeta {
+    AL_MIDI_META_TEMPO          = 0x51,
+    AL_MIDI_META_EOT            = 0x2f
+};
+
+
+#define AL_CMIDI_BLOCK_CODE           0xFE
+#define AL_CMIDI_LOOPSTART_CODE       0x2E
+#define AL_CMIDI_LOOPEND_CODE         0x2D
+#define AL_CMIDI_CNTRL_LOOPSTART      102
+#define AL_CMIDI_CNTRL_LOOPEND        103
+#define AL_CMIDI_CNTRL_LOOPCOUNT_SM   104
+#define AL_CMIDI_CNTRL_LOOPCOUNT_BIG  105
+
+typedef struct {
+    u8          *curPtr;                <FONT COLOR="red">/* ptr to the next event */</FONT>
+    s32         lastTicks;              <FONT COLOR="red">/* sequence clock ticks (used by alSeqSetLoc) */</FONT>
+    s32	       	curTicks;		<FONT COLOR="red">/* sequence clock ticks of next event (used by loop end test) */</FONT>
+    s16         lastStatus;             <FONT COLOR="red">/* the last status msg */</FONT>
+} ALSeqMarker;
+
+typedef struct {
+    s32         ticks;    <FONT COLOR="red">/* MIDI, Tempo and End events must start with ticks */</FONT>
+    u8          status;
+    u8          byte1; 
+    u8          byte2;
+    u32         duration;
+} ALMIDIEvent;
+
+typedef struct {
+    s32         ticks;
+    u8          status;
+    u8          type;
+    u8          len;
+    u8          byte1;
+    u8          byte2;
+    u8          byte3;
+} ALTempoEvent;
+
+typedef struct {
+    s32         ticks;
+    u8          status;
+    u8          type;
+    u8          len;
+} ALEndEvent;
+
+typedef struct {
+    struct ALVoice_s    *voice;
+} ALNoteEvent;
+
+typedef struct {
+    struct ALVoice_s    *voice;
+    ALMicroTime         delta;
+    u8                  vol;
+} ALVolumeEvent;
+
+typedef struct {
+    s16                 vol;
+} ALSeqpVolEvent;
+
+typedef struct {
+    ALSeqMarker         *start;
+    ALSeqMarker         *end;
+    s32                 count;
+} ALSeqpLoopEvent;
+
+typedef struct {
+    u8			chan;
+    u8			priority;
+} ALSeqpPriorityEvent;
+
+typedef struct {
+    void		*seq;	<FONT COLOR="red">/* pointer to a seq (could be an ALSeq or an ALCSeq). */</FONT>
+} ALSeqpSeqEvent;
+
+typedef struct {
+    ALBank		*bank;
+} ALSeqpBankEvent;
+
+typedef struct {
+    struct ALVoiceState_s      *vs;
+    void                       *oscState;
+    u8                         chan;
+} ALOscEvent;
+
+typedef struct {
+    s16                 	type;
+    union {
+        ALMIDIEvent     	midi;
+        ALTempoEvent    	tempo;
+        ALEndEvent      	end;
+        ALNoteEvent     	note;
+        ALVolumeEvent   	vol;
+        ALSeqpLoopEvent 	loop;
+        ALSeqpVolEvent  	spvol;
+	ALSeqpPriorityEvent	sppriority;
+	ALSeqpSeqEvent		spseq;
+	ALSeqpBankEvent		spbank;
+        ALOscEvent      	osc;
+    } msg;
+} ALEvent;
+
+typedef struct {
+    ALLink      node;
+    ALMicroTime delta;
+    ALEvent     evt;
+} ALEventListItem;
+
+typedef struct {
+    ALLink      freeList;
+    ALLink      allocList;
+    s32         eventCount;
+} ALEventQueue;
+
+void            alEvtqNew(ALEventQueue *evtq, ALEventListItem *items,
+                          s32 itemCount);
+ALMicroTime     alEvtqNextEvent(ALEventQueue *evtq, ALEvent *evt);
+void            alEvtqPostEvent(ALEventQueue *evtq, ALEvent *evt,
+                                ALMicroTime delta);
+void        	alEvtqFlush(ALEventQueue *evtq);
+void        	alEvtqFlushType(ALEventQueue *evtq, s16 type);
+
+
+#define AL_PHASE_ATTACK         0
+#define AL_PHASE_NOTEON         0
+#define AL_PHASE_DECAY          1
+#define AL_PHASE_SUSTAIN        2
+#define AL_PHASE_RELEASE        3
+#define AL_PHASE_SUSTREL        4
+
+typedef struct ALVoiceState_s {
+    struct ALVoiceState_s *next;<FONT COLOR="red">/* MUST be first                */</FONT>
+    ALVoice     voice;
+    ALSound     *sound;
+    ALMicroTime envEndTime;     <FONT COLOR="red">/* time of envelope segment end */</FONT>
+    f32         pitch;          <FONT COLOR="red">/* currect pitch ratio          */</FONT>
+    f32         vibrato;        <FONT COLOR="red">/* current value of the vibrato */</FONT>
+    u8          envGain;        <FONT COLOR="red">/* current envelope gain        */</FONT>
+    u8          channel;        <FONT COLOR="red">/* channel assignment           */</FONT>
+    u8          key;            <FONT COLOR="red">/* note on key number           */</FONT>
+    u8          velocity;       <FONT COLOR="red">/* note on velocity             */</FONT>
+    u8          envPhase;       <FONT COLOR="red">/* what envelope phase          */</FONT>
+    u8          phase;
+    u8          tremelo;        <FONT COLOR="red">/* current value of the tremelo */</FONT>
+    u8          flags;          <FONT COLOR="red">/* bit 0 tremelo flag
+                                   bit 1 vibrato flag           */</FONT>
+} ALVoiceState;
+
+typedef struct {
+    ALInstrument        *instrument;    <FONT COLOR="red">/* instrument assigned to this chan */</FONT>
+    s16                 bendRange;      <FONT COLOR="red">/* pitch bend range in cents        */</FONT>
+    ALFxId              fxId;           <FONT COLOR="red">/* type of fx assigned to this chan */</FONT>
+    ALPan               pan;            <FONT COLOR="red">/* overall pan for this chan        */</FONT>
+    u8                  priority;       <FONT COLOR="red">/* priority for this chan           */</FONT>
+    u8                  vol;            <FONT COLOR="red">/* current volume for this chan     */</FONT>
+    u8                  fxmix;          <FONT COLOR="red">/* current fx mix for this chan     */</FONT>
+    u8                  sustain;        <FONT COLOR="red">/* current sustain pedal state      */</FONT>
+    f32                 pitchBend;      <FONT COLOR="red">/* current pitch bend val in cents  */</FONT>
+} ALChanState;
+
+typedef struct ALSeq_s {
+    u8          *base;                  <FONT COLOR="red">/* ptr to start of sequence file   */</FONT>
+    u8          *trackStart;            <FONT COLOR="red">/* ptr to first MIDI event         */</FONT>
+    u8          *curPtr;                <FONT COLOR="red">/* ptr to next event to read       */</FONT>
+    s32         lastTicks;              <FONT COLOR="red">/* MIDI ticks for last event       */</FONT>
+    s32         len;                    <FONT COLOR="red">/* length of sequence in bytes     */</FONT>
+    f32         qnpt;                   <FONT COLOR="red">/* qrter notes / tick (1/division) */</FONT>
+    s16         division;               <FONT COLOR="red">/* ticks per quarter note          */</FONT>
+    s16         lastStatus;             <FONT COLOR="red">/* for running status              */</FONT>
+} ALSeq;
+
+typedef struct {
+    u32      trackOffset[16];
+    u32      division;
+} ALCMidiHdr;
+
+typedef struct ALCSeq_s {
+    ALCMidiHdr    *base;             <FONT COLOR="red">/* ptr to start of sequence file         */</FONT>
+    u32           validTracks;       <FONT COLOR="red">/* set of flags, showing valid tracks    */</FONT>
+    f32           qnpt;              <FONT COLOR="red">/* qrter notes / tick (1/division)       */</FONT>
+    u32           lastTicks;         <FONT COLOR="red">/* keep track of ticks incase app wants  */</FONT>
+    u32           lastDeltaTicks;    <FONT COLOR="red">/* number of delta ticks of last event   */</FONT>
+    u32		  deltaFlag;	     <FONT COLOR="red">/* flag: set if delta's not subtracted   */</FONT>
+    u8            *curLoc[16];       <FONT COLOR="red">/* ptr to current track location,        */</FONT>
+                                     <FONT COLOR="red">/* may point to next event, or may point */</FONT>
+                                     <FONT COLOR="red">/* to a backup code                      */</FONT>
+    u8            *curBUPtr[16];     <FONT COLOR="red">/* ptr to next event if in backup mode   */</FONT>
+    u8            curBULen[16];      <FONT COLOR="red">/* if &gt; 0, then in backup mode           */</FONT>
+    u8            lastStatus[16];    <FONT COLOR="red">/* for running status                    */</FONT>
+    u32           evtDeltaTicks[16]; <FONT COLOR="red">/* delta time to next event              */</FONT>
+} ALCSeq;
+
+typedef struct {
+    u32         validTracks;
+    s32         lastTicks;
+    u32         lastDeltaTicks;
+    u8          *curLoc[16];
+    u8          *curBUPtr[16];
+    u8          curBULen[16];
+    u8          lastStatus[16];
+    u32         evtDeltaTicks[16];
+} ALCSeqMarker;
+
+#define NO_SOUND_ERR_MASK          0x01
+#define NOTE_OFF_ERR_MASK          0x02
+#define NO_VOICE_ERR_MASK          0x04
+
+typedef struct {
+    s32         maxVoices;         <FONT COLOR="red">/* max number of voices to alloc    */</FONT>
+    s32         maxEvents;         <FONT COLOR="red">/* max internal events to support   */</FONT>
+    u8          maxChannels;       <FONT COLOR="red">/* max MIDI channels to support (16)*/</FONT>
+    u8          debugFlags;        <FONT COLOR="red">/* control which error get reported */</FONT>
+    ALHeap      *heap;             <FONT COLOR="red">/* ptr to initialized heap          */</FONT>
+    void        *initOsc;
+    void        *updateOsc;
+    void        *stopOsc;
+} ALSeqpConfig;
+
+typedef ALMicroTime   (*ALOscInit)(void **oscState,f32 *initVal, u8 oscType,
+                                   u8 oscRate, u8 oscDepth, u8 oscDelay);
+typedef ALMicroTime   (*ALOscUpdate)(void *oscState, f32 *updateVal);
+typedef void          (*ALOscStop)(void *oscState);
+
+typedef struct {
+    ALPlayer            node;           <FONT COLOR="red">/* note: must be first in structure */</FONT>
+    ALSynth             *drvr;          <FONT COLOR="red">/* reference to the client driver   */</FONT>
+    ALSeq               *target;        <FONT COLOR="red">/* current sequence                 */</FONT>
+    ALMicroTime         curTime;
+    ALBank              *bank;          <FONT COLOR="red">/* current ALBank                   */</FONT>
+    s32                 uspt;           <FONT COLOR="red">/* microseconds per tick            */</FONT>
+    s32                 nextDelta;      <FONT COLOR="red">/* microseconds to next callback    */</FONT>
+    s32                 state;
+    u16                 chanMask;       <FONT COLOR="red">/* active channels                  */</FONT>
+    s16                 vol;            <FONT COLOR="red">/* overall sequence volume          */</FONT>
+    u8                  maxChannels;    <FONT COLOR="red">/* number of MIDI channels          */</FONT>
+    u8                  debugFlags;     <FONT COLOR="red">/* control which error get reported */</FONT>
+    ALEvent             nextEvent;
+    ALEventQueue        evtq;
+    ALMicroTime         frameTime;
+    ALChanState         *chanState;     <FONT COLOR="red">/* 16 channels for MIDI             */</FONT>
+    ALVoiceState        *vAllocHead;    <FONT COLOR="red">/* list head for allocated voices   */</FONT>
+    ALVoiceState        *vAllocTail;    <FONT COLOR="red">/* list tail for allocated voices   */</FONT>
+    ALVoiceState        *vFreeList;     <FONT COLOR="red">/* list of free voice state structs */</FONT>
+    ALOscInit           initOsc;
+    ALOscUpdate         updateOsc;
+    ALOscStop           stopOsc;
+    ALSeqMarker         *loopStart;
+    ALSeqMarker         *loopEnd;
+    s32                 loopCount;      <FONT COLOR="red">/* -1 = loop forever, 0 = no loop   */</FONT>
+} ALSeqPlayer;
+
+typedef struct {
+    ALPlayer            node;           <FONT COLOR="red">/* note: must be first in structure */</FONT>
+    ALSynth             *drvr;          <FONT COLOR="red">/* reference to the client driver   */</FONT>
+    ALCSeq              *target;        <FONT COLOR="red">/* current sequence                 */</FONT>
+    ALMicroTime         curTime;
+    ALBank              *bank;          <FONT COLOR="red">/* current ALBank                   */</FONT>
+    s32                 uspt;           <FONT COLOR="red">/* microseconds per tick            */</FONT>
+    s32                 nextDelta;      <FONT COLOR="red">/* microseconds to next callback    */</FONT>
+    s32                 state;
+    u16                 chanMask;       <FONT COLOR="red">/* active channels                  */</FONT>
+    s16                 vol;            <FONT COLOR="red">/* overall sequence volume          */</FONT>
+    u8                  maxChannels;    <FONT COLOR="red">/* number of MIDI channels          */</FONT>
+    u8                  debugFlags;     <FONT COLOR="red">/* control which error get reported */</FONT>
+    ALEvent             nextEvent;
+    ALEventQueue        evtq;
+    ALMicroTime         frameTime;
+    ALChanState         *chanState;     <FONT COLOR="red">/* 16 channels for MIDI             */</FONT>
+    ALVoiceState        *vAllocHead;    <FONT COLOR="red">/* list head for allocated voices   */</FONT>
+    ALVoiceState        *vAllocTail;    <FONT COLOR="red">/* list tail for allocated voices   */</FONT>
+    ALVoiceState        *vFreeList;     <FONT COLOR="red">/* list of free voice state structs */</FONT>
+    ALOscInit           initOsc;
+    ALOscUpdate         updateOsc;
+    ALOscStop           stopOsc;
+} ALCSPlayer;
+
+<FONT COLOR="red">/*
+ * Sequence data representation routines
+ */</FONT>
+void    alSeqNew(ALSeq *seq, u8 *ptr, s32 len);
+void    alSeqNextEvent(ALSeq *seq, ALEvent *event);
+s32     alSeqGetTicks(ALSeq *seq);
+f32     alSeqTicksToSec(ALSeq *seq, s32 ticks, u32 tempo);
+u32     alSeqSecToTicks(ALSeq *seq, f32 sec, u32 tempo);
+void    alSeqNewMarker(ALSeq *seq, ALSeqMarker *m, u32 ticks);
+void    alSeqSetLoc(ALSeq *seq, ALSeqMarker *marker);
+void    alSeqGetLoc(ALSeq *seq, ALSeqMarker *marker);
+<FONT COLOR="red">/*
+ * Compact Sequence data representation routines
+ */</FONT>
+void    alCSeqNew(ALCSeq *seq, u8 *ptr);
+void    alCSeqNextEvent(ALCSeq *seq,ALEvent *evt);
+s32     alCSeqGetTicks(ALCSeq *seq);
+f32     alCSeqTicksToSec(ALCSeq *seq, s32 ticks, u32 tempo);
+u32     alCSeqSecToTicks(ALCSeq *seq, f32 sec, u32 tempo);
+void    alCSeqNewMarker(ALCSeq *seq, ALCSeqMarker *m, u32 ticks);
+void    alCSeqSetLoc(ALCSeq *seq, ALCSeqMarker *marker);
+void    alCSeqGetLoc(ALCSeq *seq, ALCSeqMarker *marker); 
+
+<FONT COLOR="red">/*
+ * Sequence Player routines
+ */</FONT>
+f32     alCents2Ratio(s32 cents);
+
+void    alSeqpNew(ALSeqPlayer *seqp, ALSeqpConfig *config);
+void    alSeqpDelete(ALSeqPlayer *seqp);
+void    alSeqpSetSeq(ALSeqPlayer *seqp, ALSeq *seq);
+ALSeq   *alSeqpGetSeq(ALSeqPlayer *seqp);
+void    alSeqpPlay(ALSeqPlayer *seqp);
+void    alSeqpStop(ALSeqPlayer *seqp);
+s32	alSeqpGetState(ALSeqPlayer *seqp);
+void    alSeqpSetBank(ALSeqPlayer *seqp, ALBank *b);
+void    alSeqpSetTempo(ALSeqPlayer *seqp, s32 tempo);
+s32     alSeqpGetTempo(ALSeqPlayer *seqp);
+s16     alSeqpGetVol(ALSeqPlayer *seqp);		<FONT COLOR="red">/* Master volume control */</FONT>
+void    alSeqpSetVol(ALSeqPlayer *seqp, s16 vol);
+void    alSeqpLoop(ALSeqPlayer *seqp, ALSeqMarker *start, ALSeqMarker *end, s32 count);
+
+void    alSeqpSetChlProgram(ALSeqPlayer *seqp, u8 chan, u8 prog);
+s32     alSeqpGetChlProgram(ALSeqPlayer *seqp, u8 chan);
+void    alSeqpSetChlFXMix(ALSeqPlayer *seqp, u8 chan, u8 fxmix);
+u8      alSeqpGetChlFXMix(ALSeqPlayer *seqp, u8 chan);
+void	alSeqpSetChlVol(ALSeqPlayer *seqp, u8 chan, u8 vol);
+u8	alSeqpGetChlVol(ALSeqPlayer *seqp, u8 chan);
+void    alSeqpSetChlPan(ALSeqPlayer *seqp, u8 chan, ALPan pan);
+ALPan   alSeqpGetChlPan(ALSeqPlayer *seqp, u8 chan);
+void    alSeqpSetChlPriority(ALSeqPlayer *seqp, u8 chan, u8 priority);
+u8      alSeqpGetChlPriority(ALSeqPlayer *seqp, u8 chan);
+void    alSeqpSendMidi(ALSeqPlayer *seqp, s32 ticks, u8 status, u8 byte1, u8 byte2);
+
+
+<FONT COLOR="red">/* Maintain backwards compatibility with old routine names. */</FONT>
+#define alSeqpSetProgram		alSeqpSetChlProgram
+#define alSeqpGetProgram		alSeqpGetChlProgram
+#define alSeqpSetFXMix			alSeqpSetChlFXMix
+#define alSeqpGetFXMix			alSeqpGetChlFXMix
+#define alSeqpSetPan			alSeqpSetChlPan
+#define	alSeqpGetPan			alSeqpGetChlPan
+#define alSeqpSetChannelPriority	alSeqpSetChlPriority
+#define alSeqpGetChannelPriority	alSeqpGetChlPriority
+
+
+
+<FONT COLOR="red">/*
+ * Compressed Sequence Player routines
+ */</FONT>
+void    alCSPNew(ALCSPlayer *seqp, ALSeqpConfig *config);
+void    alCSPDelete(ALCSPlayer *seqp);
+void    alCSPSetSeq(ALCSPlayer *seqp, ALCSeq *seq);
+ALCSeq  *alCSPGetSeq(ALCSPlayer *seqp);
+void    alCSPPlay(ALCSPlayer *seqp);
+void    alCSPStop(ALCSPlayer *seqp);
+s32	alCSPGetState(ALCSPlayer *seqp);
+void    alCSPSetBank(ALCSPlayer *seqp, ALBank *b);
+void    alCSPSetTempo(ALCSPlayer *seqp, s32 tempo);
+s32     alCSPGetTempo(ALCSPlayer *seqp);
+s16     alCSPGetVol(ALCSPlayer *seqp);
+void    alCSPSetVol(ALCSPlayer *seqp, s16 vol);
+
+void    alCSPSetChlProgram(ALCSPlayer *seqp, u8 chan, u8 prog);
+s32     alCSPGetChlProgram(ALCSPlayer *seqp, u8 chan);
+void    alCSPSetChlFXMix(ALCSPlayer *seqp, u8 chan, u8 fxmix);
+u8      alCSPGetChlFXMix(ALCSPlayer *seqp, u8 chan);
+void    alCSPSetChlPan(ALCSPlayer *seqp, u8 chan, ALPan pan);
+ALPan   alCSPGetChlPan(ALCSPlayer *seqp, u8 chan);
+void	alCSPSetChlVol(ALCSPlayer *seqp, u8 chan, u8 vol);
+u8	alCSPGetChlVol(ALCSPlayer *seqp, u8 chan);
+void    alCSPSetChlPriority(ALCSPlayer *seqp, u8 chan, u8 priority);
+u8      alCSPGetChlPriority(ALCSPlayer *seqp, u8 chan);
+void    alCSPSendMidi(ALCSPlayer *seqp, s32 ticks, u8 status,
+                       u8 byte1, u8 byte2);
+
+
+<FONT COLOR="red">/* Maintain backwards compatibility with old routine names. */</FONT>
+#define alCSPSetProgram		alCSPSetChlProgram
+#define alCSPGetProgram		alCSPGetChlProgram
+#define alCSPSetFXMix		alCSPSetChlFXMix
+#define alCSPGetFXMix		alCSPGetChlFXMix
+#define alCSPSetPan		alCSPSetChlPan
+#define	alCSPGetPan		alCSPGetChlPan
+#define alCSPSetChannelPriority	alCSPSetChlPriority
+#define alCSPGetChannelPriority	alCSPGetChlPriority
+
+
+
+<FONT COLOR="red">/***********************************************************************
+ * Sound Player stuff
+ ***********************************************************************/</FONT>
+
+typedef struct {
+    s32         maxSounds;
+    s32         maxEvents;
+    ALHeap      *heap;
+} ALSndpConfig;
+
+typedef struct {
+    ALPlayer            node;           <FONT COLOR="red">/* note: must be first in structure */</FONT>
+    ALEventQueue        evtq;
+    ALEvent             nextEvent;
+    ALSynth             *drvr;          <FONT COLOR="red">/* reference to the client driver   */</FONT>
+    s32                 target;
+    void                *sndState;
+    s32                 maxSounds;
+    ALMicroTime         frameTime;
+    ALMicroTime         nextDelta;      <FONT COLOR="red">/* microseconds to next callback    */</FONT>
+    ALMicroTime         curTime;
+} ALSndPlayer;
+
+typedef s16   ALSndId;
+    
+void            alSndpNew(ALSndPlayer *sndp, ALSndpConfig *c);
+void            alSndpDelete(ALSndPlayer *sndp);
+
+ALSndId         alSndpAllocate(ALSndPlayer *sndp, ALSound *sound);
+void            alSndpDeallocate(ALSndPlayer *sndp, ALSndId id);
+
+void            alSndpSetSound(ALSndPlayer *sndp, ALSndId id);
+ALSndId         alSndpGetSound(ALSndPlayer *sndp);
+
+void            alSndpPlay(ALSndPlayer *sndp);
+void            alSndpPlayAt(ALSndPlayer *sndp, ALMicroTime delta);
+void            alSndpStop(ALSndPlayer *sndp);
+
+void            alSndpSetVol(ALSndPlayer *sndp, s16 vol);
+void            alSndpSetPitch(ALSndPlayer *sndp, f32 pitch);
+void            alSndpSetPan(ALSndPlayer *sndp, ALPan pan);
+void            alSndpSetPriority(ALSndPlayer *sndp, ALSndId id, u8 priority);
+
+void            alSndpSetFXMix(ALSndPlayer *sndp, u8 mix);
+s32             alSndpGetState(ALSndPlayer *sndp);
+
+#ifndef _FINALROM
+void alParseAbiCL(Acmd *cmdList, u32 nbytes);
+#endif
+#ifdef _LANGUAGE_C_PLUS_PLUS
+}
+#endif
+
+#endif <FONT COLOR="red">/* !__LIB_AUDIO__ */</FONT>
+
+
+
+</PRE>
+</BODY>

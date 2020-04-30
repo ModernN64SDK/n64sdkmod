@@ -1,0 +1,56 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../n64man.css">
+<title>MusPtrBankSetSingle()</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check-->
+</head>
+
+<h1>MusPtrBankSetSingle()</h1>
+
+<h2>Syntax</h2>
+
+<pre>
+void MusPtrBankSetSingle(void *ipbank);
+</pre>
+
+<h2>Arguments</h2>
+
+<dl>
+  <dt><b>ipbank</b>
+  <dd>the address of an initialized sample pointer bank file 
+</dl>
+
+<h2>Description</h2>
+
+<p>It sets the address of the override sample bank. If the override is set to NULL, then it is disabled. The sample bank override is used then cleared when the <a href="MusStartSong.html">MusStartSong()</a> or <a href="MusStartSongFromMarker.html">MusStartSongFromMarker()</a> functions are called.</p>
+
+<p>The default sample bank is used when the <a href="MusStartSong.html">MusStartSong()</a> or the <a href="MusStartSongFromMarker.html">MusStartSongFromMarker()</a> functions are used to start songs, if no sample bank override has been defined with the <a href="MusPtrBankSetSingle.html">MusPtrBankSetSingle()</a> function.</p>
+
+<p>The default sample bank is used when the <a href="MusStartEffect.html">MusStartEffect()</a> or the <a href="MusStartEffect2.html">MusStartEffect2()</a> function is used to start sound effects, if no sample bank override is defined.  The MusFxBankSetSingle() function is used to specify the sound effect override for the sound effect that starts next.</p>
+
+<p>The ipbank must be the address of a sample pointer bank file  that has been initialized with the <a href="MusPtrBankInitialize.html">MusPtrBankInitialize()</a> function.</p>
+
+<h2>Return Value</h2>
+
+<p>None</p>
+
+<h2>Example</h2>
+
+<pre>void StartBankEffect(int effect, void *fx_bank, void *samp_bank)
+{
+  <a href="MusFxBankSetSingle.html">MusFxBankSetSingle</a>(fx_bank);
+  MusPtrBankSetSingle(sample_bank);
+  <a href="MusStartEffect.html">MusStartEffect</a>(effect);
+}
+</pre>
+
+<h2>See Also</h2>
+<p>
+<a href="MusPtrBankInitialize.html">MusPtrBankInitialize()</a>,
+<a href="MusPtrBankSetCurrent.html">MusPtrBankSetCurrent()</a>,
+<a href="MusPtrBankGetCurrent.html">MusPtrBankGetCurrent()</a>
+</p>
+
+</body>
+</html>

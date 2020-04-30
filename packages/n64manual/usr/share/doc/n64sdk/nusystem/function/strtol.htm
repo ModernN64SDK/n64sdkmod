@@ -1,0 +1,81 @@
+<HTML>
+<HEAD>
+<TITLE>strtol</TITLE>
+<link rel=stylesheet type="text/css" href="../../n64man/n64man.css">
+<!-- Editor's Notes: 9/9/1999 Ron Daring -->
+</HEAD>
+
+<BODY bgcolor="#FFFFFF">
+
+
+<P>
+<h1>Standard C Functions</h1>
+
+<HR>
+<P>
+<h2>strtol</h2>
+<p>
+<HR>
+<P>
+<b>Syntax</b>
+<font face="courier" size="2">
+<pre>
+#include &lt;stdlib.h&gt;
+long strtol(const char *string, char **endptr, int base)</pre>
+</font>
+
+<p><b>Arguments</b>
+<font face="courier" size="2">
+<pre>
+<B>string</B>      character string to be converted
+<B>endptr</B>      pointer to a pointer to an unrecognizable character string
+<B>base</B>        the radix (for bases from 2 to 36); if 0 is specified as the radix, the actual 
+            radix is obtained by using the first one or two characters of the string </pre>
+</font>
+
+<p><b>Return Value</b>
+<font face="courier" size="2">
+<pre>The converted numeric unsigned long value of the character string</pre>
+</font>
+
+<p><b>Description</b>
+
+<p>It converts a specified character string to a numeric value with an unsigned long type by parsing the string using this format:
+
+<font face="courier" size="2">
+<pre>[whitespace][{sign}][{0}][{x | X}][digits]</pre>
+</font>
+
+<blockquote>
+<dl>
+    <dt><B>&lt;whitespace&gt;</B></dt>
+    <dd>spaces, NULL characters, or tab characters <br>
+        <br>
+        </dd>
+    <dt><B>&lt;sign&gt;</B></dt>
+    <dd>+ or -<br>
+        <br>
+        </dd>
+    <dt><B>&lt;digits&gt;</B></dt>
+    <dd> a string of more than one numeric characters<br>
+        <br>
+        </dd>
+</dl>
+</blockquote>
+
+<p>If 0 is specified as the radix base, the radix is interpreted as follows:</p>
+
+<ul>
+    <li>If the first character of the string is '0' and the second character is not 'x' or 'X', the radix is 8 (it is an octal number) </li>
+    <li>If the first character of the string is '0' and the second character is
+'x' or 'X', the radix is 16 (it is a hexadecimal number) </li>
+    <li>If the first character of the string is '1' to '9', the radix is 10 (it is a decimal number)</li>
+</ul>
+
+<p>Conversion is terminated when an unrecognizable character appears as a part of the number.</p>
+
+<p> If <TT>endptr</TT> is not NULL, it points to <TT>*endptr</TT> which points to the unrecognizable character that terminated the conversion. </p>
+
+<hr>
+</body>
+</html>

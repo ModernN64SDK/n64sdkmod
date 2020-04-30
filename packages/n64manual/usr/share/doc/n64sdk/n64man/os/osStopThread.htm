@@ -1,0 +1,46 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.
+  PWC- updated formatting
+  MAP- added links, updated format
+-->
+<title>osStopThread</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>osStopThread</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p><i>Suspends a given thread</i></p>
+
+<h3>Syntax</h3>
+<p>
+<blockquote>
+    <pre>#include &lt;ultra64.h&gt;     /* <A HREF="../../header/ultra64.htm">ultra64.h</A> */
+void osStopThread(OSThread *t);</pre>
+</blockquote></p>
+
+<h3>Description</h3>
+<p>
+<tt>osStopThread</tt> suspends the given thread (t), preventing it from becoming runnable until a subsequence call to <a href="osStartThread.htm">osStartThread</a> on the same thread. If t is NULL, the running thread is stopped and the dispatcher is invoked to run the new highest priority runnable thread. If t is not the invoking thread, it should either be on the run queue or on a queue of threads blocked to send or receive a message. In these cases, <tt>osStopThread</tt> simply removes the thread from the queue it is on. Call the <tt>osStartThread</tt> function to restore the thread to that queue. This method of implementation, though efficient, has some side effects. Intuitively, you might expect the following sequence to have no effect:</p>
+<p>
+<blockquote>
+    <pre>osStopThread(t);
+osStartThread(t);</pre>
+</blockquote><br><br>
+
+<font style="font-size:10pt">However, because the thread (t) is removed and then reinserted into the queue, it will be moved after all of the other threads of the same priority, and cause a change in behavior.</font> </p>
+
+<h3>See Also</h3>
+
+<p><a href="osCreateThread.htm">osCreateThread</a>, <a
+href="osGetThreadId.htm">osGetThreadId</a>, <a
+href="osGetThreadPri.htm">osGetThreadPri</a>, <a href="osStartThread.htm">osStartThread</a>, and 
+<a href="osYieldThread.htm">osYieldThread</a></p>
+<h3>Revision History</h3>
+<p>1999/04/30  Changed Format</p>
+<br><br>
+
+</body>
+</html>

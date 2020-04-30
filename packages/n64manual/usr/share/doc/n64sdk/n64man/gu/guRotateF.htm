@@ -1,0 +1,65 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.>
+<TITLE>guRotateF</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>guRotateF<FONT size="+0"> [Function]</FONT></H1>
+
+<p><h3>Function</h3></p>
+
+<p>guRotateF</p>
+<P>
+<i>Creates a modeling matrix for rotation around an arbitrary axis (floating point)</i>
+</P>
+<H3>Syntax</H3>
+<p>
+<PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gu.htm">gu.h</A> */
+void guRotateF(float mf[4][4], float a, float x, float y, float z);</CODE></PRE></p>
+
+<H3>Arguments</H3>
+<p><DL>
+  <DT><B>mf</B>
+  <DD>The matrix resulting from the calculation
+  <DT><B>a</B>
+  <DD>Angle of rotation (in degrees) around an arbitrary axis
+  <DT><B>x</B>
+  <DD>x component of axis of rotation
+  <DT><B>y</B>
+  <DD>y component of axis of rotation
+  <DT><B>z</B>
+  <DD>z component of axis of rotation
+</DL></p>
+<H3>Returned value</H3>
+<P>
+None.
+</P>
+<H3>Description</H3>
+<P>
+Returns a modeling matrix to <B>mf</B> for use in rotating around the arbitrary axis represented by the line passing through the origin and a point (<B>x</B>, <B>y</B>, <B>z</B>) by an amount of <B>a</B> degrees in the positive direction.  When this function is called, the result is the creation of the following kind of modeling matrix:
+</P>
+<P>
+<IMG SRC="guRotateF00.gif"><BR>
+(* Note that the values (x,y,z) here are normalized inside the function)
+</P>
+<P>
+Fixed point is handled with the <A HREF="guRotate.htm">guRotate</A> function.
+</P>
+<H3>Note</H3>
+<P>
+The vector <IMG SRC="guRotateF01.gif" ALIGN="absmiddle"> does not have to be normalized ahead of time.  This is done inside the function.  However, when <IMG SRC="guRotateF02.gif" ALIGN="absmiddle"> = 0 the operation of this macro cannot be guaranteed.  Also, note that an angle with a positive value represents counter-clockwise rotation.
+</P>
+<H3>See Also</H3>
+<P>
+<A HREF="guAlign.htm">guAlign</A>, <A HREF="guAlignF.htm">guAlignF</A>, <A HREF="guPosition.htm">guPosition</A>, <A HREF="guPositionF.htm">guPositionF</A>, <A HREF="guRotate.htm">guRotate</A>, <A HREF="guRotateRPY.htm">guRotateRPY</A>, <A HREF="guRotateRPYF.htm">guRotateRPYF</A>, <A HREF="guScale.htm">guScale</A>, <A HREF="guScaleF.htm">guScaleF</A>, <A HREF="guTranslate.htm">guTranslate</A>, and <A HREF="guTranslateF.htm">guTranslateF</A>
+</P>
+<H3>Revision History</H3>
+<P>
+03/01/99  Completely rewritten.
+</P>
+</BODY>
+</HTML>

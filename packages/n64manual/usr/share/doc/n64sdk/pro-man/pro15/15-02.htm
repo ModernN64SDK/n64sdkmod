@@ -1,0 +1,47 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 15 - Antialiasing and Blending</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. -->
+</head>
+
+<h1>15.2 Antialiasing</h1>
+
+<p><a href="../../keywords/index/data/graphics.htm#anti-aliasing" target="keywords">Antialiasing</a> is an algorithm that attempts to minimize sampling errors that occur when an edge of a primitive is displayed on a <a href="../../keywords/index/data/graphics.htm#raster image" target="keywords">raster image</a>. Visually, these errors cause the edge to be stair-cased or look jaggy. For scenes with moderate complexity and/or animation, these jaggies are the source of high-frequency noise, which is annoying and distracting to users. </p>
+
+<dl>
+  <dt><a name="f15-01"><strong>Figure 15-1 Edge With and Without Antialiasing</strong></a>
+  <dd><img alt="[Figure 15-1 part1]" src="gif/f15-01.gif">
+</dl>
+<dl>
+  <dt><a name="f15-01-00"></a>
+  <dd><img alt="[Figure 15-1 part2]" src="gif/f15-01-00.gif">
+</dl>
+
+<p>In <a href="#f15-02">Figure 15-2 &QUOT;Unweighted Area Sampling&QUOT;</a>, antialiasing is achieved by weighting the intensity of the pixel in proportion to the area of the pixel covered by the edge. In signal-processing terms, this is called &QUOT;unweighted area sampling&QUOT;. </p>
+
+<dl>
+  <dt><a name="f15-02"><strong>Figure 15-2 Unweighted Area Sampling</strong></a>
+  <dd><img alt="[Figure 15-2]" src="gif/f15-02.gif">
+</dl>
+
+<p>High-end graphics machines typically use an antialiasing technique known as super-sampling, in which the pixel is divided into a <A target="keywords" HREF="../../keywords/index/data/system.htm#grid">grid</A> of <a href="../../keywords/index/data/graphics.htm#sub pixel" target="keywords">sub-pixels</a>. A color is computed for each subpixel and the subpixels that are covered by a primitive are averaged to produce the final pixel color. In the case where more than one primitive covers a pixel, each primitive's color is weighted by the number of subpixels it covers. Also, depth (Z) can be found for each subpixel which allows antialiased interpenetrations between primitives. While super-sampling is straightforward and effective, it is also expensive in terms of memory and memory <A target="keywords" HREF="../../keywords/index/data/system.htm#bandwidth">bandwidth</A>.For a 4x4 subpixel grid, 16 color and Z values must be stored for each pixel. In addition, to achieve required <a href="../../keywords/index/data/graphics.htm#fill rate" target="keywords">fill rates</a>, each of these values must be accessed every clock. </p>
+
+<p>Because the Nintendo 64 machine has very severe cost and memory requirements, a new and novel technique for antialiasing that avoided (as much as possible) the storage requirements of super-sampling but yet provided satisfactory antialiasing was needed. This method relies heavily on the notion that different objects have different &QUOT;<a href="../../keywords/index/data/graphics.htm#aliasing" target="keywords">aliasing</a>&QUOT; needs, and that the hardware can be simplified by requiring that different RenderModes are configured as appropriate for a particular object. As well, there are display-order restrictions for <a href="../../keywords/index/data/graphics.htm#rendering" target="keywords">rendering</a> certain types of objects. For example, transparent objects must be rendered after all the opaque objects. Finally, it was recognized that antialiasing of silhouettes could be done as a post process during video output. A data flow diagram of the analogizing algorithm is shown in <a href="#f15-03">Figure 15-3</a>, below. Note that this method requires, in addition to the pixel color and Z value, three bits of <a href="../../keywords/index/data/graphics.htm#coverage value" target="keywords">coverage value</a> and four bits of deltaZ per pixel, quite small when compared with super-sampling methods. </p>
+
+<dl>
+  <dt><a name="f15-03"><strong>Figure 15-3 Antialiasing Data Flow</strong></a>
+  <dd><img alt="[Figure 15-3]" src="gif/f15-03.gif">
+</dl>
+
+<p>The antialiasing data flow shows the most general case for <a href="../../keywords/index/data/graphics.htm#Z buffer" target="keywords">Z buffered</a> and antialiased primitives. Other techniques are possible. For example, if the database is sorted and rendered in back to front order, non-z-buffered antialiasing can be used. All of the various types of antialiasing are discussed in detail in <a href="15-07.htm">Section 15.7 &QUOT;Blender Modes and Assumptions&QUOT;</a>. </p>
+
+<p>For each pixel, a subpixel mask is computed. This mask is a 4x4 grid of bits where the bit is one if the subpixel is covered by the primitive and zero if the subpixel is not covered. The mask is converted to a coverage value by adding all the bits of the mask together. Since we only have three bits of coverage, the sixteen subpixels must be <a href="../../keywords/index/data/graphics.htm#dither" target="keywords">dithered</a> to eight. The coverage value is optionally combined with the pixel's <a href="../../keywords/index/data/graphics.htm#alpha" target="keywords">alpha</a>. This is useful for antialiasing edges created by a texture cut-out. In the <a href="../../keywords/index/data/graphics.htm#blender" target="keywords">blender</a>, the pixel color and the last value stored for the pixel in memory are combined. The blender also combines the pixel coverage and memory coverage and does Z buffering.
+The blender typically performs operations such as antialiasing the <a href="../../keywords/index/data/graphics.htm#internal edge" target="keywords">internal edges</a> of objects and transparency. The new pixel's color, coverage, and Z are stored in the frame buffer. The Video Interface (VI) reads the pixel color and coverage and antialiases the silhouettes of objects. </p>
+
+<p>In the next section we discuss each hardware unit in the antialiasing data path in isolation, before considering how these units work together to render a complete image. </p>
+
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+</body> </html>

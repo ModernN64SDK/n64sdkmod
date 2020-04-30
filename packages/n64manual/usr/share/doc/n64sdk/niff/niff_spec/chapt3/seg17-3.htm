@@ -1,0 +1,180 @@
+<HTML>
+<HEAD>
+<TITLE>Chapter 3 Binary Format</TITLE>
+</HEAD>
+<BODY LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff">
+
+<font face="arial" size="-1">
+<b><font size="3">Chapter 3 Binary Format</b></font>
+<HR>
+<P>
+<b>3-17. CollList</b>
+
+<P>
+<u>3. Coll Area</u>
+<p>
+The Coll area stores Collision data that is linked to the object. The Coll area is mapped as follows. 
+
+<p>
+<table border="1" cellpadding="3" cellspacing="3">
+<tr>
+<th rowspan="6"><font face="arial" size="-1">
+CollHeader
+</th>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+coll_tag
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+this_coll_index
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+coll_header_size
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+coll_size
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+coll_name_index
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+coll_type
+</td>
+</tr>
+<tr>
+<th rowspan="1"><font face="arial" size="-1">
+</th>
+<td colspan="2"><font face="arial" size="-1">
+<center>
+CollData
+</center>
+</td></tr>
+</table>
+
+<p>
+
+Figure: Coll Area Memory Map
+
+<p>
+<table border="1" cellpadding="3" cellspacing="3">
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 coll_tag
+</td>
+<td>
+<font face="arial" size="-1">
+Tag indicating Coll
+<pre><font face="courier" size="2"><b>TAG_COLL&#9;0x000d0100</b></pre></font>
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 this_coll_index
+</td>
+<td><font face="arial" size="-1">
+Index number of this Coll
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 coll_header_size
+</td>
+<td> 
+<font face="arial" size="-1">
+Size of this CollHeader
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 coll_size
+</td>
+<td>
+<font face="arial" size="-1">
+Size of this Coll
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 coll_name_index
+</td>
+<td>
+<font face="arial" size="-1">
+Specifies Coll name by index number 
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+<a href="../chapt5/seg1.htm#COLL_TYPE">u32 coll_type</a>
+</td>
+<td>
+<font face="arial" size="-1">
+Specifies the collision type. The following are current defined collision types.
+<pre><font face="courier" size="2"><b>COLL_TYPE_NONE&#9;&#9;0x00000000
+COLL_TYPE_TERRAIN&#9;0x00000010
+COLL_TYPE_POINT&#9;&#9;0x00000020
+COLL_TYPE_CIRCLE&#9;0x00000021
+COLL_TYPE_SPHERE&#9;0x00000022
+COLL_TYPE_CYLINDER&#9;0x00000023
+COLL_TYPE_BOX&#9;&#9;0x00000024</b></pre></font>
+<P>
+COLL_TYPE_NONE: Used when there is no collision data. This setting is sometimes (temporarily) used when there is collision data. Do not link Coll nodes that do not contain collision data to Obj. <br>
+COLL_TYPE_TERRAIN: Specifies the collision data as terrain data. <br>
+COLL_TYPE_POINT: Specifies Point collision <br>
+COLL_TYPE_CIRCLE: Specifies Circle collision<br>
+COLL_TYPE_SPHERE: Specifies Sphere collision<br>
+COLL_TYPE_CYLINDER: Specifies Cylinder collision <br>
+COLL_TYPE_BOX: Specifies Box collision <br>
+The contents of CollData can be modified by setting this flag.
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+<a href="./seg17-4.htm">CollData</a>
+</td>
+<td>
+<font face="arial" size="-1">
+Stores the actual collision data
+</td></tr></table>
+<p>
+
+
+<hr>
+
+<p align="right"><a href="../index.htm">
+<img src="../../../gif/index.gif"
+border="0" width="65" height="17"></a>
+&nbsp; <a href="./seg17-4.htm">
+<img src="../../../gif/next.gif"
+border="0" width="65" height="17"></a></p>
+
+</body>
+</html>
+
+

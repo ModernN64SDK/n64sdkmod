@@ -1,0 +1,69 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.>
+<TITLE>gDPPipelineMode</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>gDPPipelineMode [Macro]</H1>
+
+<p><b>Function</b></p>
+
+<P>gDPPipelineMode</p>
+<P>
+<i>Enables/disables span buffer coherency as the pipeline mode</i>
+</P>
+<p><b>Syntax</b></p>
+<p>
+<PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gbi.htm">gbi.h</A> */
+gDPPipelineMode(Gfx *gdl, u32 mode)
+gsDPPipelineMode(         u32 mode)</CODE></PRE></p>
+
+<p><b>Arguments</b></p>
+<p>
+<DL>
+  <DT><B>gdl</B>
+  <DD>Display list pointer.
+  <DT><B>mode</B>
+  <DD>RDP pipeline mode:
+  <DD><B>G_PM_1PRIMITIVE</B> (Coherency)
+  <DD><B>G_PM_NPRIMITIVE</B> (No coherency -- higher performance)</DL></p>
+
+<p><b>Description</b></p>
+<P>
+Sets the pipeline mode for span buffer coherency.  The RDP has span buffers in order to perform rendering more efficiently.
+<DL></p>
+<p><DT>The different RDP pipeline modes are explained below:</p>
+<p><DL>
+  <DT><B>G_PM_1PRIMITIVE</B>
+  <DD>This mode provides for span buffer coherency.
+  <DD>When two consecutive spans are rendered in the same screen coordinates, the second span will use as its frame buffer pixel source the frame buffer values of the first span which have not been written to the frame buffer yet.  When this mode is executed there will be a slight drop in performance.  However, because the second span process waits for the result of the RMW (read-modify-write) operation of the first span, the second span will correctly reflect the results of the first span.</p>
+<p><DT><B>G_PM_NPRIMITIVE</B>
+<DD>In this mode there is not span buffer coherency, but you can obtain higher performance.  However, in anti-alias rendering mode the drawing will look unnatural and there will be a drop in quality.
+  <DD>When two consecutive span buffers are rendered in the same screen coordinates, they become shared.  Because the second span does not wait for the result of the first span process, it may read a value from the frame buffer that does not reflect the result of the first span buffer (and then afterward write the wrong value to the frame buffer).
+</DL>
+</P>
+<P>
+For details, see Section 12.2.3 "Span Buffer Coherency" in the N64 Programming Manual. </P>
+
+<p><b>Note</b></p>
+<P>
+There is usually no problem with the G_PM_NPRIMITIVE setting, but if the span buffer causes problems with rendering, it is best to set the mode to G_PM_1PRIMITIVE.
+</P>
+<p><b>Comment</p></b>
+<P>
+Idle cycles are needed in order to maintain span buffer coherency with G_PM_1PRIMITIVE mode, and this can lead to a loss in fill rate.  This loss will be no greater than 1.5M pixels per second, but because on rare occasions visual abnormalities can arise in the real game due to overlapping of primitives, higher performance can be achieved by using G_PM_NPRIMITIVE mode.
+</P>
+<p><b>See Also</b></p>
+<P>
+<A HREF="gDPSetRenderMode.htm">gDPSetRenderMode</A>
+</P>
+<p><b>Revision History</b></p>
+<P>
+02/01/99 Completely rewritten.
+</P>
+</BODY>
+</HTML>

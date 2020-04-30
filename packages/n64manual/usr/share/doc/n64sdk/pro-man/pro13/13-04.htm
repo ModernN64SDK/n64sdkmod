@@ -1,0 +1,123 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 13 - Texture Mapping</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. -->
+</head>
+
+<h1>13.4 Tile Attributes</h1>
+
+<p>The RDP has a small on-chip memory for buffering up to eight tile descriptors at a time.  A tile descriptor contains all the information for a texture tile including format; size; line; <a href="../../keywords/index/data/graphics.htm#TMEM" target="keywords">TMEM</a> address; palette; <a href="../../keywords/index/data/graphics.htm#mirror" target="keywords">mirror</a> enable S, T; mask S, T; shift S, T; SL, TL; SH, TH; and <a href="../../keywords/index/data/graphics.htm#clamp" target="keywords">clamp</a> S, T. </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="01"><h2>13.4.1 Format </h2></a>
+
+<p>Format of <a href="../../keywords/index/data/graphics.htm#texel" target="keywords">texels</a> in texture tile.</p>
+
+<table border=1 align="center">
+  <caption><a name="t13-01"><strong>Table 13-1 Tile Format Encoding</strong></a></caption>
+  <tr><th>Format Value</th><th>Format</th></tr>
+  <tr><td align="center">0</td><td align="center">RGBA</td></tr>
+  <tr><td align="center">1</td><td align="center"><a href="../../keywords/index/data/graphics.htm#YUV" target="keywords">YUV</a></td></tr>
+  <tr><td align="center">2</td><td align="center"><a href="../../keywords/index/data/graphics.htm#CI" target="keywords">CI</a></td></tr>
+  <tr><td align="center">3</td><td align="center">IA</td></tr>
+  <tr><td align="center">4</td><td align="center">I</td></tr>
+</table>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="02"><h2>13.4.2 Size </h2></a>
+
+<p>Size of texels in texture tile.</p>
+
+<table border=1 align="center">
+  <caption><a name="t13-02"><strong>Table 13-2 Size of Texels in Texture Tile</strong></a></caption>
+  <tr><th>Size Value</th><th>Size of texel in bits</th></tr>
+  <tr><td align="center">0</td><td align="center">4</td></tr>
+  <tr><td align="center">1</td><td align="center">8</td></tr>
+  <tr><td align="center">2</td><td align="center">16</td></tr>
+  <tr><td align="center">3</td><td align="center">32</td></tr>
+</table>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="03"><h2>13.4.3 Line</h2></a>
+
+<p>Number of 64-bit words in one row of the tile. Dependent on tile row width as well as texel type/size.  When tiles are loaded using the LoadTile command, the rows are <a href="../../keywords/index/data/graphics.htm#padding" target="keywords">padded</a> to 64-bit boundaries.   When LoadBlock is used to load a texture, it is assumed that the rows have already been padded.  Line can also be used to <A target="keywords" HREF="../../keywords/index/data/system.htm#stride control">control the stride</A> through TMEM. By controlling Line, smaller tiles can be pieced together into one larger continuous tile.  </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="04"><h2>13.4.4 TMEM Address</h2></a>
+
+<p>Tile offset (0-511) in TMEM (64-bit) words.</p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="05"><h2>13.4.5 Palette</h2></a>
+
+<p>Palette number (0-15) of 4-bit <a href="../../keywords/index/data/graphics.htm#color index" target="keywords">Color Index</a> (CI) textures.   An 8-bit index into the high half of TMEM is formed by placing the palette number in the 4 MSBs and the 4-bit texel value in the 4 LSBs.  The color in TMEM at this index becomes the color of the pixel.  Therefore, for a 4-bit CI texture, you may select one of 16 palettes with each palette having up to 16 entries.  Palettes can be loaded into TMEM using the LoadTLUT command or, optionally, the LoadBlock command. </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="06"><h2>13.4.6 Mirror Enable S,T</h2></a>
+
+<p>This enables mirroring of texture coordinates. When the bit indicated by the (Mask Value + 1) is 0, the coordinates are unchanged.  When this bit is 1, however, the coordinates are inverted.   Useful for symmetric patterns like trees, faces, etc. For example, a mask of 2 with mirror enabled would yield the following texture coordinates: </p>
+
+<blockquote><pre>
+0,1,2,3,4,5,6,7,...    Input coordinate
+0,1,2,3,3,2,1,0,...    Mirrored Coordinate
+</pre></blockquote>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="07"><h2>13.4.7 Mask S,T</h2></a>
+
+<p>This is the number of bits of tile coordinate to let through.   For example, a mask of 1 indicates one bit of the texture coordinate should come through the mask, giving a pattern of 0,1,0,1...As another example, a mask value of 5 indicates that the texture should <a href="../../keywords/index/data/graphics.htm#wrap" target="keywords">wrap</a> every 32 texels, i.e., the lower 5 bits are passed through the mask.  A mask value of 0 forces clamping the texture coordinates to be between (SL,TL),(SH,TH) inclusive.  The mask value + 1 indicates the bit position that is looked at for mirroring. See discussion in Mirror Enable, above. </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="08"><h2>13.4.8 Shift S,T</h2></a>
+
+<p>This is the shifting of texture coordinates after perspective division.  It is used in <a href="../../keywords/index/data/graphics.htm#MIP map" target="keywords">MIP maps</a> and possibly for precision reasons (see <a href="13-07.htm#05-01"> Section 13.7.5.1 "Detail Texture"</a> later in this document).</p>
+
+<table border=1 align="center">
+  <caption><a name="t13-03"><strong>Table 13-3 Shift Encoding </strong></a></caption>
+  <tr><th width="50%">Shift Value</th><th>Shift</th></tr>
+  <tr><td align="center">0</td><td align="center">no shift</td></tr>
+  <tr><td align="center">1</td><td align="center">&gt;&gt;1</td></tr>
+  <tr><td align="center">2</td><td align="center">&gt;&gt;2</td></tr>
+  <tr><td align="center">3</td><td align="center">&gt;&gt;3</td></tr>
+  <tr><td align="center">4</td><td align="center">&gt;&gt;4</td></tr>
+  <tr><td align="center">5</td><td align="center">&gt;&gt;5</td></tr>
+  <tr><td align="center">6</td><td align="center">&gt;&gt;6</td></tr>
+  <tr><td align="center">7</td><td align="center">&gt;&gt;7</td></tr>
+  <tr><td align="center">8</td><td align="center">&gt;&gt;8</td></tr>
+  <tr><td align="center">9</td><td align="center">&gt;&gt;9</td></tr>
+  <tr><td align="center">10</td><td align="center">&gt;&gt;10</td></tr>
+  <tr><td align="center">11</td><td align="center">&lt;&lt;5</td></tr>
+  <tr><td align="center">12</td><td align="center">&lt;&lt;4</td></tr>
+  <tr><td align="center">13</td><td align="center">&lt;&lt;3</td></tr>
+  <tr><td align="center">14</td><td align="center">&lt;&lt;2</td></tr>
+  <tr><td align="center">15</td><td align="center">&lt;&lt;1</td></tr>
+</table>
+
+<p>Also useful for combining two differently scaled textures. </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="09"><h2>13.4.9 SL,TL</h2></a>
+
+<p>When <a href="../../keywords/index/data/graphics.htm#rendering" target="keywords">rendering</a>, this is the starting texel column/row of tile in texture image space(10.2 fixed point). By changing the value of SL,TL you can slide texture w.r.t. on the primitive. When loading, this is the starting texel column/row within the DRAM texture image. </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="10"><h2>13.4.10 SH,TH</h2></a>
+
+<p>When rendering, this is the ending texel column/row of tile in texture image space(10.2 fixed point). It is used for clamping only. When loading, this is the ending texel column/row within the DRAM texture image.</p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="11"><h2>13.4.11 Clamp S,T </h2></a>
+
+<p>This is the enable clamp during wrap or mirror. When not masking, Clamp S,T is ignored and clamping is implicitly enabled.  This bit allows clamping of the texture coordinates when the mask is non-zero.  It is useful when you want to mirror and then clamp, as with an airplane wing insignia.  The border of the insignia would have an alpha of 0. For example, SH = 11, mask = 2,
+mirror = 1, clamp = 1:  </p>
+
+<blockquote><pre>
+0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,...    Input Coordinate
+0,1,2,3,3,2,1,0,0,1, 2, 3, 3, 3, 3, 3,...    Mirrored/Clamped Coordinates
+</pre></blockquote>
+
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+</body> </html>

@@ -1,0 +1,39 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <title>osFlashSectorErase</title>
+</head>
+<body bgcolor="#FFFFFF">
+<font face="arial" size="-1">
+<h1>
+osFlashSectorErase <font size=+0> [Function]</font></h1>
+<font color="#FF0000">Deletes a sector of Flash</font>
+<h3>
+Syntax</h3>
+
+<font face=courier>#include &lt;ultra64.h&gt;<br>
+s32&nbsp; osFlashSectorErase(u32 page_num);</font>
+
+<h3>
+Description</h3>
+This is a function that deletes the data of certain sectors of 1M Flash.
+<p>It specifies page number as an argument and deletes the sector which
+contains the specified page number.
+<p>The size of 1 sector is 128 pages (16K bytes), and each page of 0~0x7f,
+0x80~0xff, 0x100~0x17f... is considered to be 1 sector.
+<p>For return values, 0 is returned when delete is successful and -1 when
+failed.
+<p>Timer wait is operated in <font face="courier">osFlashSectorErase</font>. Since timer management
+is done by VI manager, it is necessary to boot VI manager with <font face="courier">osCreateViManager</font>
+before using this function. It takes from several msec to several
+hundred msec to delete data of 1 sector.
+<h3>
+Reference</h3>
+[<a href="osFlashSectorEraseThrough.htm">osFlashSectorEraseThrough</a>]
+[<a href="osCreateViManager.htm">osCreateViManager</a>]
+
+<h3>
+Revision History</h3>
+07/07/2000&nbsp; This function was added.
+</body>
+</html>

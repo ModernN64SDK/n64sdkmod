@@ -1,0 +1,58 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.
+  PWC- updated formatting
+  MAP- added links, updated format
+-->
+<title>osSetTimer</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>osSetTimer</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p>osSetTimer, osStopTimer</p>
+
+<p><i>Starts/stops an interval or countdown timer</i></p>
+
+<h3>Syntax</h3>
+<p>
+<blockquote>
+    <pre>#include &lt;ultra64.h&gt;     /* <A HREF="../../header/ultra64.htm">ultra64.h</A> */
+int osSetTimer(OSTimer *timer, OSTime countdown, OSTime interval, 
+                        OSMesgQueue *mq, OSMesg msg);
+void osStopTimer(OSTimer *timer);</pre></blockquote></p>
+
+<h3>Description</h3>
+<!--  -->
+<P>
+The <tt>osSetTimer</tt> function enables timer operations by (among things) setting the timer value specified by an argument into the OSTimer structure variable "timer" reserved by the application, and then passing this to the OS.  This function call supports both countdown timers and interval timers.<BR>
+If "countdown" is non-zero, it indicates the duration to the next end of the timer.  If "interval" is non-zero, it specifies the value to be used when resetting the timer after it ends.<BR>
+(If "countdown" is zero when "interval" is non-zero, the value of "interval" is also used as the value for the first timer.)<BR>
+The message "msg" is sent unblocked to the message queue "mq" when the timer ends.  osSetTimer always returns 0.
+</P>
+<P> 
+<tt>osStopTimer</tt> stops the specified interval timer.  This function does not need to be called if the osSetTimer call only involves countdown timers.
+</P>
+<P>
+Both countdown and interval are expressed in CPU count register cycles.  This timer increments at 46.875 MHz, with 1 cycle represents approximately 21.33 nanoseconds.  See <A href="OS_CYCLES_TO_NSEC.htm">OS_CYCLES_TO_NSEC</A> and related macros for ways of converting between counter cycles and time in nanoseconds and microseconds.
+</P>
+<P>
+To avoid any reduction in overall system performance, do not set time value at less than 50 microseconds.
+</P>
+<H3>Note</H3>
+<P>
+Since the VI Manager performs timer management, you must activate the VI Manager with osCreateViManager before using this function.
+</P><!--  -->
+
+<h3>See Also</h3>
+
+<p><a href="osGetTime.htm">osGetTime</a></p>
+<H3>Revision history</H3>
+<P>
+1999/06/15 Completely revised
+</P>
+
+</body>
+</html>

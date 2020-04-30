@@ -1,0 +1,92 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Author's Comments: MAP- created file>
+<title>n_alSynNew</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>n_alSynNew</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p>alSynNew, n_alSynNew</p>
+
+<p><i>Allocates the specified synthesizer driver</i></p>
+
+<h3>Syntax</h3>
+<p>
+<blockquote>
+  <pre>#include &lt;libaudio.h&gt;     /* <a href="../../header/libaudio.htm">libaudio.h</a> */
+void alSynNew(ALSynth *drvr, ALSynConfig *c);</pre>
+  <pre>#include &lt;n_libaudio.h&gt;     /* <a href="../../header/n_libaudio.htm">n_libaudio.h</a> */
+void n_alSynNew(             ALSynConfig *c);</pre>
+</blockquote>
+</p>
+<h3>Arguments</h3>
+<p>
+<dl>
+  <dt><strong>drvr</strong></dt>
+  <dd>Pointer to the synthesizer driver<br>
+    <br>
+  </dd>
+  <dt><strong>c</strong></dt>
+  <dd>Pointer to the synthesizer configuration<br>
+    <br>
+  </dd>
+</dl>
+</p>
+<h3>Description</h3>
+
+<p><a href="alSynNew.htm">alSynNew</a> initializes the synthesizer driver structure pointed to by the drvr argument by using the arguments specified in the configuration structure. This function allocates memory from the heap for voices and driver objects. Always call this function before calling <a href="alAudioFrame.htm">alAudioFrame</a>. The configuration structure arguments include 
+
+<dl>
+  <dt><strong>maxVVoices</strong></dt>
+  <dd>maximum number of virtual voices<br>
+    <br>
+  </dd>
+  <dt><strong>maxPVoices</strong></dt>
+  <dd>maximum number of physical voices<br>
+    <br>
+  </dd>
+  <dt><strong>maxUpdates</strong></dt>
+  <dd>maximum number of pending parameter updates<br>
+    <br>
+  </dd>
+  <dt><strong>maxFXBusses</strong></dt>
+  <dd>maximum number of auxiliary effect busses (Currently it is ignored as one bus is supported)<br>
+    <br>
+  </dd>
+  <dt><strong>dmaproc</strong></dt>
+  <dd>Pointer to procedure to use when initializing DMA callbacks. <br>
+    <br>
+  </dd>
+  <dt><strong>heap</strong></dt>
+  <dd>Pointer to audio system memory heap<br>
+    <br>
+  </dd>
+  <dt><strong>outputRate</strong></dt>
+  <dd>Number of samples per second for the synthesizer to generate<br>
+    <br>
+  </dd>
+  <dt><strong>fxType</strong></dt>
+  <dd>type of effect to use. It can be AL_FX_NONE, AL_FX_SMALLROOM, AL_FX_BIGROOM, AL_FX_ECHO, AL_FX_CHORUS, AL_FX_FLANGE or AL_FX_CUSTOM.
+    <br>
+    <br>
+  </dd>
+  <dt><strong>params</strong></dt>
+  <dd>Pointer to an array of arguments to be used in the case of AL_FX_CUSTOM.<br>
+    <br>
+  </dd>
+</dl>
+
+<p>For details on n_audio library, see "Chapter 28: n_audio library" in the N64 Programming Manual.</p>
+
+<h3>See Also</h3>
+
+<p><a href="alSynDelete.htm">alSynDelete</a></p>
+<h3>Revision History</h3>
+<p>1999/04/30  Changed Format</p>
+<br><br>
+
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!doctype html "public">
+<html>
+<head>
+   <title>niGetName</title>
+</head>
+<body text="#000000" bgcolor="#FFFFFF" link="#0000EE" vlink="#551A8B" alink="#FF0000">
+
+<font face="arial" size="-1">
+<B><font size="3"><strong>
+niGetName</strong></font></b>
+
+<P>
+Gets the character string of a name
+
+<P>
+<b>Syntax</b>
+<font face="courier" size="2">
+<pre>#include&nbsp; "niffapi.h"
+<p>char *niGetName(NisName *nisname);</pre></font>
+
+<P>
+<b>Arguments</b>
+<dl><dd>nisname &nbsp; Pointer to the NisName structure held in the Name area where the name you want is located.</dl></dd>
+
+<P>
+<b>Return value</b>
+<P>
+Returns the pointer to the character string. 
+
+<P>
+<b>Description</b>
+<P>
+For NIFF data, names are not C character strings. This function secures a region that corresponds to the length of the name and returns a C character string. 
+
+<P>
+<b>Example</b>
+<P>
+Gets the name of obj[1]
+<font face="courier" size="2">
+<pre>char *name;
+name = niGetName(&nis->namel->nisname[nis->objl->obj[1].obj_name_index]);</pre></font>
+
+<P>
+<b>Notes</b>
+<P>
+To avoid problems, the present version replaces blank characters with an underscore <strong> '_'</strong>.
+<p>
+Because NIFF does not allow blank characters in names, this function will be deleted in a future version. When creating NIFF data, please do not use blank spaces in names. 
+
+<P>
+<b>See Also</b>
+<P>
+<a href="ninewnis.htm">niNewNis</a>
+<br><a href="niopennb.htm">niOpenNb</a>
+<br>For the Nis structure, refer to n64kit/niff/niffapi/nis.h.
+
+<p>
+<hr>
+<div align=right><a href="index.htm"><img SRC="../../gif/index.gif" BORDER=0></a></div>
+
+</body>
+</html>

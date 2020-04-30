@@ -1,0 +1,64 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<link rel=stylesheet type="text/css" HREF="../N64man.css">
+<!--
+Editors Notes:
+  JLR made reformating and copy edits.
+  PWC- updated formatting
+-->
+
+<TITLE>gDPSetPrimColor</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>gDPSetPrimColor [Macro]</H1>
+<h2>Function</h2>
+<p>gDPSetPrimColor<br><br><i>
+Sets the primitive color</i></P>
+
+<p><b>Syntax</p></b>
+<p>
+<PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gbi.htm">gbi.h</A> */
+gDPSetPrimColor(Gfx *gdl, u32 m, u32 l, u32 r, u32 g, u32 b, u32 a)
+gsDSetPrimColor(          u32 m, u32 l, u32 r, u32 g, u32 b, u32 a)</CODE></PRE>
+</p>
+<p><b>Arguments</p></b>
+<p><DL>
+  <DT><B>gdl</B>
+  <DD>Display list pointer.
+  <DT><B>m</B>
+  <DD>The minimum value when LOD is less than 1.0 (.8, 0~255 texel/pixel ratio)
+  <DT><B>l</B>
+  <DD>LOD factor for interpolation of third axis (.8, 0~255)
+  <DT><B>r</B>
+  <DD>Red component of RGBA color (8-bit precision, 0~255).
+  <DT><B>g</B>
+  <DD>Green component of RGBA color (8-bit precision, 0~255).
+  <DT><B>b</B>
+  <DD>Blue component of RGBA color (8-bit precision, 0~255).
+  <DT><B>a</B>
+  <DD>Alpha component of RGBA color (8-bit precision, 0~255).
+</DL></p>
+<p><b>Description</b></p>
+<P>
+Sets the RDP's primitive color, which is used as an input source by the color combiner (CC).  The primitive color register set by this macro becomes a general-purpose color register of the CC, expressing the constant flat-shaded surface color applied by the primitive.   It is also used for rendering specular highlights.  The contents of the primitive color register determines the highlight color.  In 2-cycle mode, it indicates the color of the first specular highlight (Hilite1).  Furthermore, <B>m</B> and <B>l</B> are used for trilinear interpolation in the MIP-mapping process.
+</P>
+<P>
+For details, please see Section 12.6.2 "CC Internal Color Registers" in the N64 Programming Manual.  For information about LOD, see 13.7.3 "LOD Enable" and 14.4.4 "Sprite Compression."
+</P>
+<p><b>Comment</p></b>
+<P>
+Normally you need to insert <A HREF="gDPPipeSync.htm">gDPPipeSync</A> immediately after the RDP registers are changed in order to gain synchronization (to wait for the completion of the previous primitive process).  However, this macro does not require such synchronization. 
+</P>
+<p><b>See Also</b></p>
+<P>
+<A HREF="gDPFillRectangle.htm">gDPFillRectangle</A>, <A HREF="gDPSetAlphaCompare.htm">gDPSetAlphaCompare</A>, <A HREF="gDPSetCombineMode.htm">gDPSetCombineMode</A>, <A HREF="gDPSetCycleType.htm">gDPSetCycleType</A>, and <A HREF="gDPSetRenderMode.htm">gDPSetRenderMode</A>
+</P>
+
+<p><b>Revision History</p></b>
+<p>02/01/99&nbsp;&nbsp;&nbsp;Completely rewritten</p>
+
+</BODY>
+</HTML>

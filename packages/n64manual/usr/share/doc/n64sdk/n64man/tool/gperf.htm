@@ -1,0 +1,85 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<!--
+Editors Notes:
+  PWC- updated formatting
+  MAP- updated format
+-->
+<title>gperf</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>gperf</b></font><font style="font-size: 9pt"><b> (tool command)</b></font>
+
+<p><i>Analyzes profile data</i></p>
+
+<h3>Syntax</h3>
+
+<p>gperf [-c] [-r] [-s] [-t threshold] a.out</p>
+
+<h3>Arguments</h3>
+
+<dl>
+    <dt><strong>-c</strong></dt>
+    <dd>Displays the raw counts for each text symbol. The -t option then uses the units of raw counts for the threshold. <br>
+        <br>
+        </dd>
+    <dt><strong>-r</strong></dt>
+    <dd>Displays the time used by each text symbol in seconds. <br>
+        <br>
+        </dd>
+    <dt><strong>-s</strong></dt>
+    <dd>Executes in server mode; that is, it waits for a flush from the application rather than initiating a flush from gperf and not exiting. Note that the application must mutually cooperate by calling <a href="../os/osProfileFlush.htm">osProfileFlush</a>. <br>
+        <br>
+        </dd>
+    <dt><strong>-t threshold</strong></dt>
+    <dd>Defines a threshold value at which to print results. Default value is 1.0. If the -c option is used, the threshold is in units of raw counts, otherwise the units are a percentage of execution time. 
+<br>
+        <br>
+        </dd>
+</dl>
+
+
+<h3>Description</h3>
+
+<p>gperf converts the output data produced by the group of <a href="../os/osProfile.htm">osProfile</a> functions along with symbol table information from a.out (or your executable's name) into a printed report detailing the relative time spent by the program in various functions. This data is obtained using pc-sampling which interrupts the program at regular intervals to record the value of the program counter.
+</p>
+
+<p>The gperf tool can operate in a query mode (default), in which each execution sends a request to the program running on the development board for profile data. The profiled data is transferred back to the host and displayed by gperf. After displaying the data, gperf exits. gperf can also be run in a server mode (specify the -s option) in which it spins waiting for the program to execute the <tt>osProfileFlush</tt> function. gperf then displays the data and waits for the next <tt>osProfileFlush</tt>.
+</p>
+
+<p>The gperf tool always displays the address of the function being displayed, the function name, and the percent of execution time used by the function. Example gperf output follows:
+</p>
+
+<hr>
+
+<blockquote>
+    <pre>Profile Report for osprof
+Number of text symbols: 195
+Sample period: 1000 microseconds
+Number of profiled segments: 2
+Text segment 0, start = 80200050, size = 000000d4
+Text segment 1, start = 80200470, size = 000031cc </pre>
+</blockquote>
+
+<hr>
+
+<blockquote>
+    <pre>80202088 osProfileStop.............................. 0.0616 %
+80201720 osSetThreadPri............................. 0.1232 %
+Overflow ........................................... 99.8152 %</pre>
+</blockquote>
+
+
+<h3>Note</h3>
+
+<p>If you execute gperf without the -s option and the application calls the <tt>osProfileFlush</tt> function, the application will stop responding (hang). 
+</p>
+<h3>Revision History</h3>
+<p>1999/04/30  Changed Format</p>
+<br><br>
+</body>
+</html>

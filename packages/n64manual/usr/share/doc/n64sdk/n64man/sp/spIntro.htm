@@ -1,0 +1,83 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<!--
+Editors Notes:
+  PWC- updated formatting
+  MAP- added links, updated format
+--><title>spIntro</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>spIntro</b></font>
+<p>sp, spIntro</p>
+
+<p><i>
+Introduces the sprite manipulation functions.</i></p>
+
+<h3>Syntax</h3>
+
+    <p>#include &lt;sp.h&gt; #include &lt;sp.h&gt;     /* <A HREF="../../header/sp.htm">sp.h</A> */<br>
+void spInit( Gfx *glistp );
+void spFinish( Gfx *glistp );
+void spMove( Sprite *sp, s32 xpos, s32 ypos );
+void spScale( Sprite *sp, f32 xscale, f32 yscale );
+void spFlip( Sprite *sp, u32 fliph, u32 flipv );
+void spSetZ( Sprite *sp, s32 z );
+void spColor( Sprite *sp, u8 red, u8 green, u8 blue, u8 alpha );
+void spSetAttribute( Sprite *sp, u32 attributes );
+void spClearAttribute( Sprite *sp, u32 attributes );
+void spScissor( u32 xmin, u32 xmax, u32 ymin, u32 ymax );
+Gfx *spDraw( Sprite *sp );</p>
+
+<h3>Description</h3>
+
+<p><A HREF="../../header/sp.htm">sp.h</A> file holds the data structure type definitions, symbolic attribute names, and function prototypes. The data structures used by the sprite library are described in detail in the Sprites chapter of the N64 Programming Manual. Attributes are listed and described in the <a href="spSetAttribute.htm">spSetAttribute</a> and <a href="spClearAttribute.htm">spClearAttribute</a> function pages.</p>
+
+<p><a href="spInit.htm">spInit</a> is called at the beginning of sprite drawing. Some GBI display list commands need to be executed to get the RCP into the correct mode for sprite rendering.This function adds commands necessary for RCP's default texture mode components to the user-specified glistp.</p>
+
+<p><a href="spFinish.htm">spFinish</a>
+is called at the end of sprite drawing.  Some GBI display list commands need to be executed to have RCP complete all pending drawing operations and reset the RCP to its default state. This function adds necessary commands to the glistp that user has specified to reset the RCP's sate. This function also automatcally tacks on <a href="../gsp/gSPEndDisplayList.htm">gSPEndDisplayList</a> at the end of the list.</p>
+
+<p><a href="spMove.htm">spMove</a> sets the position of a sprite in the upper left corner on the screen.</p>
+
+<p><a href="spScale.htm">spScale</a> sets the size of a sprite.
+Set a value less than 1.0 for a smaller image. Set a value greater than or equal to 1.0 for a lager image.
+</p>
+
+<p><a href="spFlip.htm">spFlip</a> controls the direction by which the sprite is drawn. (Currently not supported.)</p>
+
+<p><a href="spSetZ.htm">spSetZ</a> sets the depth of Z buffer for a sprite</p>
+
+<p>Newly drawn sprite might be covered by the older sprite with the shallow Z value when this function is called. (Currently not supported.)</p>
+
+<p><a href="spColor.htm">spColor</a> sets the color of a sprite</p>
+
+<p>Either PRIMITIVE_COLOR or FILL_COLOR can be set for the color of a sprite, depending on how the sprite is to be rendered.</p>
+
+<p>spSetAttribute sets the user-specified attributes to a sprite</p>
+
+<p>Multiple attributes bit-ORed (logical addition) can be specified.</p>
+
+<p>spClearAttribute clears the use-specified attributes of a sprite. Multiple attributes bit-ORed (logical addition) can be specified in attr field.</p>
+
+<p><a href="spScissor.htm">spScissor</a> sets the bounding region in which sprites will be drawn. By default, the region starts out with xmin=0, xmax=319, ymin=0, ymax=239. </p>
+
+<p>Tiles of a sprite entirely outside of this region are not added to the display list to be output. Tiles partially outside the boundary are properly clipped</p>
+
+<p><a href="spDraw.htm">spDraw</a> function constructs a display list starting at sp-&gt;next_dl that draws the sprite upon call into the frame buffer in the indicated way. 
+This display list is always terminated with a gSPEndDispalyList entry. If it reaches the end of the list, the sp-&gt;next_dl entry will be updated to point to the next entry.</p>
+
+<p>It returns a pointer to the starting point of the display list that was created.</p>
+
+<h3>See Also</h3>
+
+<p><a href="../tool/mksprite.htm">mksprite</a></p>
+<h3>Revision History</h3>
+<p>1999/04/30  Changed Format</p>
+<br><br>
+
+</body>
+</html>

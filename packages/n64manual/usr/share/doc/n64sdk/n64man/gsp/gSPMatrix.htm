@@ -1,0 +1,186 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.>
+<TITLE>gSPMatrix</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>gSPMatrix [Macro]</H1>
+
+<p><b>Function</b></font></p>
+
+<p>gSPMatrix</p>
+<P>
+<i>Inserts matrix operations in the display list</i>
+</P>
+<p><b>Syntax</b></font></p>
+<p>
+<PRE>
+<CODE>#include &lt;ultra64.h&gt;        /* <A href="../../header/gbi.htm">gbi.h</A> */
+gSPMatrix(Gfx *gdl, Mtx *matrix, u8 param)
+gsSPMatrix(         Mtx *matrix, u8 param)</CODE></PRE></p>
+
+<p><b>Arguments</b></font></p>
+<p>
+<DL>
+  <DT><B>gdl</B>
+  <DD>the display list pointer.
+  <DT><B>matrix</B>
+  <DD>the 4x4 fixed-point matrix. 
+  <DT><B>param</B>
+  <DD>the operation flags: 
+  <DD>* Multiple flags can be specified as the bit sum of the flags.
+  <DD><B>G_MTX_PROJECTION</B> (Operate on the projection matrix stack)
+  <DD><B>G_MTX_MODELVIEW</B> (Operate on the model view matrix stack) 
+  <DD><B>G_MTX_MUL</B> (Multiply top of matrix stack and matrix m) 
+  <DD><B>G_MTX_LOAD</B> (Load matrix m at top)
+  <DD><B>G_MTX_NOPUSH</B> (Do not push on matrix stack before matrix operation) 
+  <DD><B>G_MTX_PUSH</B> (Push on matrix stack before matrix operation) 
+</DL></p>
+<p><b>Description</b></font></p>
+<P>
+gSPMatrix inserts matrix operations in the display list. With these argument specifications you can set which matrix stack to use (projection or model view), the loading position, and whether to concatenate or push. For details, please see Section 11.3, "Matrix State" in the N64 Online Programming Manual. 
+</P>
+<DL>
+  <DT>* Concerning the <B>matrix</B> argument:
+  <DD>This format is hidden in the graphics utility library and is usually not revealed to the programmer. However, it is necessary to understand this format in certain cases (static matrix declarations or direct operation on elements). <p>
+  <DD>
+  <DD>The matrix elements are grouped such that the first 8 elements (16 in s16 format) hold the 16-bit integer elements, and the next 8 elements (16 in s16 format) hold the 16-bit fractional elements. The Mt_t x type is declared as a long [4][4] array. <p>
+  <DD>
+  <DD>To declare a static unit matrix, the code would look as follows: 
+  <TABLE border="0" cellspacing="0" cellpadding="0">
+    <TR>
+      <TD nowrap colspan="5" align="left" valign="top">static Mtx ident = {</TD></TR>
+    <TR>
+      <TD nowrap align="left" valign="top">/* integer portion: */<BR>
+0x00010000, 0x00000000,<BR>
+0x00000001, 0x00000000,<BR>
+0x00000000, 0x00010000,<BR>
+0x00000000, 0x00000001,<BR>
+/* fractional portion: */<BR>
+0x00000000, 0x00000000,<BR>
+0x00000000, 0x00000000,<BR>
+0x00000000, 0x00000000,<BR>
+0x00000000, 0x00000000,</TD>
+      <TD nowrap align="left" valign="top"><BR>
+<BR>
+<BR>
+-> <BR>
+<BR>
+<BR>
+<BR>
+<BR>
+-> <BR>
+</TD>
+      <TD nowrap align="left" valign="top"><BR>
+|1 0 0 0|<BR>
+|0 1 0 0|<BR>
+|0 0 1 0|<BR>
+|0 0 0 1|<BR>
+<BR>
+|0 0 0 0|<BR>
+|0 0 0 0|<BR>
+|0 0 0 0|<BR>
+|0 0 0 0|</TD>
+      <TD nowrap align="left" valign="top"><BR>
+<BR>
+<BR>
+<BR>
+<BR>
+-> <BR>
+<BR>
+<BR>
+<BR>
+</TD>
+      <TD nowrap align="left" valign="top"><BR>
+<BR>
+<BR>
+<BR>
+|1.0 0.0 0.0 0.0|<BR>
+|0.0 1.0 0.0 0.0|<BR>
+|0.0 0.0 1.0 0.0|<BR>
+|0.0 0.0 0.0 1.0|<BR>
+<BR>
+</TD></TR>
+    <TR>
+      <TD nowrap colspan="5" align="left" valign="top">};</TD></TR>
+  </TABLE>
+
+  <P>
+A matrix with the translation elements (10.5, 20.5, 30.5) would look as follows. 
+  </P>
+  <TABLE border="0" cellspacing="0" cellpadding="0">
+    <TR>
+      <TD nowrap align="left" valign="top">mat.m[1][2] = (10 &lt;&lt; 16) | (20);<BR>
+mat.m[1][3] = (30 &lt;&lt; 16) | (1);<BR>
+mat.m[3][2] = (0x8000 &lt;&lt; 16) | (0x8000);<BR>
+mat.m[3][3] = (0x8000 &lt;&lt; 16) | (0);</TD>
+      <TD nowrap align="left" valign="top"><BR>
+-> <BR>
+<BR>
+</TD>
+      <TD nowrap align="left" valign="top">|<BR>
+|<BR>
+|<BR>
+|</TD>
+      <TD nowrap align="right" valign="top">1.0<BR>
+0.0<BR>
+0.0<BR>
+10.5</TD>
+      <TD nowrap align="right" valign="top">0.0<BR>
+1.0<BR>
+0.0<BR>
+20.5</TD>
+      <TD nowrap align="right" valign="top">0.0<BR>
+0.0<BR>
+1.0<BR>
+30.5</TD>
+      <TD nowrap align="left" valign="top">0.0|<BR>
+0.0|<BR>
+0.0|<BR>
+1.0|</TD></TR>
+  </TABLE>
+
+</DL>
+<p><b>Note</b></font></p>
+<P>
+Matrix concatenation in the RSP geometry engine is performed using 32-bit integer calculations. A 32-bit x 32-bit calculation produces a 64-bit value, and only the middle 32 bits remain in the new matrix (see the figure below). Therefore, when matrices are concatenated, fixed-point numerical values will generate errors. 
+</P>
+<P>
+<IMG src="gSPMatrix00.gif"><BR>
+The middle 32 bits that remain in the new matrix 
+</P>
+<P>
+To maintain the highest precision, the absolute values of each component of the matrices must not differ significantly. Extreme scale and translation arguments will reduce the transformation precision. Since rotation matrix and projection matrix operations require very large fractional portion, some of these may be lost when multiplied by large integer values. Also, the least significant bit (LSB) of each matrix term is rounded off when matrices are concatenated. As a result, a 1/2 LSB error is generated in the matrix for each concatenation. To guarantee full precision, concatenate the matrices using floating-point operations in the CPU and only load that result in the RSP. 
+</P>
+<p><b>Comment</b></p>
+<P>
+Each G_MTX_MODELVIEW matrix operation is accompanied by an implicit matrix multiplication, even when G_MTX_LOAD is explicitly specified. The matrix which results from combining the model view (M) matrix and projection (P) matrix is used when the vertices are to be transformed by only a single matrix during the transformation. 
+</P>
+<P>
+One way to optimize the process is to concatenate modeling matrices in the CPU, and concatenate viewing (V) matrices and projection matrices in the projection matrix stack. When this is done, the MxVP matrix concatenation is carried out each time the modeling matrix is loaded. There are also other simple ways of concatenating modeling matrices. For example, a matrix that concatenates a rotation matrix around one axis with a translation matrix can be obtained by simply entering the appropriate elements for the matrix components. 
+</P>
+<P>
+The Mtx structure is as follows: 
+</P>
+<PRE>
+<CODE>typedef long            Mtx_t[4][4];
+typedef union{
+        Mtx_t           m;
+        long long int   force_structure_alignment;
+} Mtx;</CODE></PRE></p>
+
+<p><b>See Also</b></font></p>
+<P>
+<A href="gSPForceMatrix.htm">gSPForceMatrix</A>, <A href="gSPInsertMatrix.htm">gSPInsertMatrix</A>
+<A href="gSPPerspNormalize.htm">gSPPerspNormalize</A>, and <A href="gSPPopMatrix.htm">gSPPopMatrix</A>
+</P>
+<p><b>Revision History</b></font></p>
+<P>
+02/01/99  Entirely revised.
+</P>
+</BODY>
+</HTML>

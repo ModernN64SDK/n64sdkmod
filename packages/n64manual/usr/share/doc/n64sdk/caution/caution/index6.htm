@@ -1,0 +1,75 @@
+<html>
+
+	<head>
+		<link rel="stylesheet" type="text/css" href="../../mobile/allman.css">
+		<!-- Edited by Ron Daring on 2/17/2000. -->
+		<title>Reset (NMI)</title>
+		<base target="contents">
+	</head>
+
+	<body bgcolor="white">
+		<font size="3" face="arial"><b><a name="p6"></a>6. Reset (NMI)</b></font>
+		<p><a href="#6-1"><font face="arial" size="2">6-1 Determining Hot-start and Cold-start (Required)</font></a></p>
+		<p><a href="#6-2"><font face="arial" size="2">6-2 Y Scale Reset (Required)</font></a></p>
+		<p><a href="#6-3"><font face="arial" size="2">6-3 Suspension of Graphics and Audio Tasks (Required)</font></a></p>
+		<p><a href="#6-4"><font face="arial" size="2">6-4 Calling the osAfterPreNMI function (Required)</font></a></p>
+		<p>
+		<hr>
+		<a name="6-1"></a><font size="3" face="arial"><b>6-1 Determining Hot-start and Cold-start (Required)</b></font></p>
+		<p><font face="arial" size="2"><b>Description</b></font></p>
+		<p><font face="arial" size="2">To determine whether a hot-start or cold-start of the Control Deck has occurred, use the global variable, <tt>osResetType</tt>.</font></p>
+		<p><font face="arial" size="2"><b>Reason</b></font></p>
+		<p><font face="arial" size="2">A hot-start or cold-start cannot be reliably determined solely based upon the contents of memory. Using osResetType will prevent a game from locking up due to assumption of hot-start conditions.</font></p>
+		<p><font face="arial" size="2"><b>Reference</b></font></p>
+		<p><font face="arial" size="2"><br>
+		</font></p>
+		<p><font face="arial" size="2"><b>Remarks</b></font></p>
+		<div align="right">
+			<p><a href="#p6"><font face="arial" size="2"><img src="../../gif/index.gif" border="0" width="65" height="17"></font></a></p>
+		</div>
+		<p>
+		<hr>
+		<a name="6-2"></a><font size="3" face="arial"><b>6-2 Y Scale Reset (Required)</b></font></p>
+		<p><font face="arial" size="2"><b>Description</b></font></p>
+		<p><font face="arial" size="2">Ensure that a preemption by another thread, which changes the Y scale, has not occurred after resetting the Y scale to 1.0 in the PRENMI routine (executes <a href="../../n64man/os/osViSetYScale.htm">osViSetYScale</a>(1.0)). Don't perform an operation that prevents vertical retrace.</font></p>
+		<p><font face="arial" size="2"><b>Reason</b></font></p>
+		<p><font face="arial" size="2">If an NMI occurs when the Y scale value is something other than 1.0, images are not displayed properly.</font></p>
+		<p><font face="arial" size="2"><b>Reference</b></font></p>
+		<p><font face="arial" size="2">For more information, please refer to &quot;Nintendo 64 Developer News 1.5&quot; <a href="../../developerNews/news-05.htm">Reset Processing</a></font></p>
+		<p><font face="arial" size="2"><b>Remarks</b></font></p>
+		<p><font face="arial" size="2">If the video mode registers have been altered in any non-standard way, these registers must also be set back to their original values in the PRENMI routine. Failure to reset these values may cause lockups on NMI.</font></p>
+		<div align="right">
+			<p><a href="#p6"><font face="arial" size="2"><img src="../../gif/index.gif" border="0" width="65" height="17"></font></a></p>
+		</div>
+		<p>
+		<hr>
+		<a name="6-3"></a><font size="3" face="arial"><b>6-3 Suspension of Graphics and Audio Tasks (Required)</b></font></p>
+		<p><font face="arial" size="2"><b>Description</b></font></p>
+		<p><font face="arial" size="2">When a PRENMI event occurs, graphic and audio tasks must be stopped before NMI occurs.</font></p>
+		<p><font face="arial" size="2"><b>Reason</b></font></p>
+		<p><font face="arial" size="2">If an NMI occurs while graphic and audio tasks are executing, the RSP may not function properly.</font></p>
+		<p><font face="arial" size="2"><b>Reference</b></font></p>
+		<p><font face="arial" size="2">For more information, please refer to &quot;Nintendo 64 Developer News 1.5&quot; <a href="../../developerNews/news-05.htm">Reset Processing</a></font></p>
+		<p><font face="arial" size="2"><b>Remarks</b></font></p>
+		<p><font face="arial" size="2">When the reset button is pressed, a PRENMI signal is generated which should be processed by the game. This PRENMI signal is guaranteed to come at least 0.5 seconds before the NMI which resets the N64 hardware. In this 0.5 seconds, a number of operations must be performed in order to prepare the machine for the NMI. If these operations are not performed, the RSP may not function properly after system reset.</font></p>
+		<div align="right">
+			<p><a href="#p6"><font face="arial" size="2"><img src="../../gif/index.gif" border="0" width="65" height="17"></font></a></p>
+		</div>
+		<p>
+		<hr>
+		<a name="6-4"></a><font size="3" face="arial"><b>6-4 Calling the osAfterPreNMI function (Required)</b></font></p>
+		<p><font face="arial" size="2"><b>Description</b></font></p>
+		<p><font face="arial" size="2">Once the application receives pre-NMI, and has all the RSP tasks stopped, make sure to call the osAfterPreNMI function before NMI starts to occur.</font></p>
+		<p><font face="arial" size="2">This function fails to execute its process and returns an error if executed while RSP is running. In this situation case, wait until the running RSP task completes the process, and then call this function again. For more information, please see the function reference on osAfterPreNMI.</font></p>
+		<p><font face="arial" size="2"><b>Reason</b></font></p>
+		<p><font face="arial" size="2">If NMI occurs without getting the program counter (PC) of RSP initialized, the application may stop.</font></p>
+		<p><font face="arial" size="2"><b>Reference</b></font></p>
+		<p><font face="arial" size="2">It has been confirmed occurring only with MPAL, however, make sure to call it with NTSC and PAL.</font></p>
+		<div align="right">
+			<p><a href="#p6"><font face="arial" size="2"><img src="../../gif/index.gif" border="0" width="65" height="17"></font></a></p>
+		</div>
+		<p>
+		<hr>
+	</body>
+
+</html>

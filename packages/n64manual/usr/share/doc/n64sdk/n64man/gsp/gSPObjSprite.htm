@@ -1,0 +1,96 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.>
+<TITLE>gSPObjSprite</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>gSPObjSprite<FONT size="+0"> [Macro]</FONT></H1>
+
+<p><b>Function</b></font></p>
+
+<p>gSPObjSprite</p>
+<P>
+<i>Draws a rotating sprite. </i>
+</P>
+<p><b>Syntax</b></font></p>
+<p>
+<PRE><CODE>#include &lt;ultra64.h&gt;        /* <A HREF="../../header/gs2dex.htm">gs2dex.h</A> */
+gSPObjSprite(Gfx *gdl, uObjSprite *sp)
+gsSPObjSprite(         uObjSprite *sp)</CODE></PRE></p>
+
+<p><b>Arguments</b></font></p>
+<p>
+<DL>
+  <DT><B>gdl</B>
+  <DD>the pointer to the display list. 
+  <DT><B>sp</B>
+  <DD>the pointer to the sprite-drawing data structure
+</DL></p>
+<p><b>Description</b></font></p>
+<P>
+References the 2D matrix elements <B>A</B>, <B>B</B>, <B>C</B>, <B>D</B>, <B>X</B>, and <B>Y</B>, and draws a rotating sprite. This 2D matrix is set using g*SPObjMatrix. 
+</P>
+<p><b>Note</b></font></p>
+<P>
+When a non-rotating sprite is enlarged, the drawing result may differ slightly from the drawing result of g*SPObjRectangle. This is unavoidable because the drawing methods differ (sticking polygons together is different from drawing rectangles). 
+</P>
+<p><b>Comment</b></p>
+<P>
+The uObjMtx structure is shown below. <BR>
+* For information about the uObjSprite structure, see g*SPObjRectangle and also refer to the "4.2.1 uObjSprite structre" in the Readme file of the latest version of the S2DEX microcode.
+</P>
+<P>
+<PRE><CODE>typedef struct {
+  s32 A, B, C, D;  /* s15.16 */
+  s16 X, Y;        /* s10.2 */
+  u16 BaseScaleX;  /* u5.10 */
+  u16 BaseScaleY;  /* u5.10 */
+} uObjMtx_t;
+typedef union {
+  uObjMtx_t      m;
+  long long int  force_structure_alignment;
+} uObjMtx;
+</CODE></PRE>
+</P>
+<P>
+2D matrix multiplication moves the point x, y to the location x', y' on a sprite when it is not rotating, as shown below: 
+</P>
+<IMG SRC="gSPObjSprite00.gif">
+<P>
+Each vertex of the sprite is also moved by this process, and the sprite is drawn in the rectangular area according to the moved vertices. If the rotation matrix is set as follows for the 2D matrix elements <B>A</B>, <B>B</B>, <B>C</B>, and <B>D</B>, the sprite will rotate by T. 
+</P>
+<IMG SRC="gSPObjSprite01.gif">
+<P>
+The sprite will rotate around an origin at the screen coordinates X, Y. To add scaling, multiply each term <B>A</B>, <B>B</B>, <B>C</B>, and <B>D</B> by the scaling factor. 
+</P>
+<P>
+The position that corresponds to the sprite's center of rotation (<B>X</B>, <B>Y</B>) is specified by the values of the <B>objX</B> and <B>objY</B> members of the uObjSprite structure. When <B>objX</B> = <B>objY</B> = 0, the sprite rotates around the position that its upper-left vertex takes when the sprite is not rotating. To rotate the sprite around its central axis, set <B>objX</B>, <B>objY</B> as follows: 
+</P>
+<P>
+<PRE><CODE>objX = - (imageW / scaleW) / 2;
+objY = - (imageH / scaleH) / 2;
+</CODE></PRE>
+</P>
+<P>
+A number of sprites can be rotated together as a single unit by adjusting the <B>objX</B> and <B>objY</B> values in the same manner described for g*SPObjRectangleR. Gaps that appear due to calculation errors can be suppressed by drawing the sprites slightly overlapping, as was described for g*SPObjRectangleR. 
+</P>
+<P>
+For information on setting textures to be placed on sprites, see g*SPObjRectangle. 
+</P>
+<P>
+When a sprite is not rotating (<B>A</B> = <B>D</B> = 1.0, <B>B</B> = <B>C</B> = 0.0), its position is the same as the drawing region of g*SPObjRectangleR when <B>BaseScaleX</B> = <B>BaseScaleY</B> = 1.0. So when a sprite is to be rotated at certain times and not rotated at other times, we recommend switching between the two macros, drawing the sprite with g*SPObjRectangle when it is not rotating, and drawing it with g*SPObjSprite when it is rotating. This is because g*SPObjSprite, which draws a sprite by combining two polygons, makes heavier processing demands on both the RSP and RDP than g*SPObjRectangleR. 
+</P>
+<p><b>See Also</b></font></p>
+<P>
+<A HREF="gSPObjMatrix.htm">gSPObjMatrix</A>, <A HREF="gSPObjRectangle.htm">gSPObjRectangle</A>, and <A HREF="gSPObjRectangleR.htm">gSPObjRectangleR</A>
+</P>
+<H3>Revision History</H3>
+<P>
+1999/02/01 Entirely revised
+</P>
+</BODY>
+</HTML>

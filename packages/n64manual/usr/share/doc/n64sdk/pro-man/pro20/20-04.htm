@@ -1,0 +1,322 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 20 - Using the Audio Tools</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. -->
+</head>
+
+<H1>20.4 Playback Parameters and the .inst File</H1>
+
+<p>This section contains information about how to create the .inst file.</p>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="01"></A>
+<H2>
+20.4.1 Setting Sample Parameters in the .inst File </H2>
+
+<p>In order for the Nintendo 64 audio system to playback samples correctly, it must have information for controlling aspects such as <a href="../../keywords/index/data/audio.htm#pitch" target="keywords">pitch</a> and <a href="../../keywords/index/data/audio.htm#volume" target="keywords">volume</a>.  These parameters are set by creating and editing a .inst file. Although some discussion of parameters follows, it is highly recommended that you review an example .inst file, because many of the parameters will be much clearer then. </p>
+
+<P>The .inst file is a collection of objects, defined by text using C language syntax. The objects are: </p>
+<UL>
+<LI>
+<a href="../../keywords/index/data/audio.htm#envelope" target="keywords">envelops</a></LI>
+
+<LI>
+<a href="../../keywords/index/data/audio.htm#key map" target="keywords">keymaps</a></LI>
+
+<LI>
+sounds</LI>
+
+<LI>
+<a href="../../keywords/index/data/audio.htm#instrument" target="keywords">instruments</a></LI>
+
+<LI>
+<a href="../../keywords/index/data/audio.htm#bank" target="keywords">banks</a></LI>
+</UL>
+
+<p>The objects are related as follows: The basic unit representing a sample is a sound. That sound has an associated keymap, which specifies the <a href="../../keywords/index/data/audio.htm#velocity" target="keywords">velocity</a> range, key range, and tuning of the sample. Also, the sound has an associated envelope that specifies the <a href="../../keywords/index/data/audio.htm#ADSR" target="keywords">ADSR</a> used to control the sample's volume.  Sounds can be grouped into an instrument. Instruments are then grouped into a bank.  Because program control changes are limited to values from 1 to 128, MIDI sequences can only use the first 128 instruments in a bank. Game applications can select higher values by calls to the audio <A target="keywords" HREF="../../keywords/index/data/system.htm#API">API</A>. </p>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="02"></A>
+<H2>
+20.4.2 Differences Between Sound Player and Sequence Player Use of .inst Files </H2>
+
+<p>The <a href="../../keywords/index/data/audio.htm#sound player" target="keywords">sound player</a> and <a href="../../keywords/index/data/audio.htm#sequence player" target="keywords">sequence player</a> use the <a href="../../keywords/index/data/audio.htm#bank file" target="keywords">bank files</a> created from the .inst files in different ways. While the sequence player uses the bank to identify instruments, and then uses the keymaps to identify which sound to play for what MIDI notes, the sound player does none of this.  The sound player does not use the <a href="../../keywords/index/data/audio.htm#bank structure" target="keywords">bank structure</a>, the instrument structure, or the keymap parameters.  However, for the .inst file to compile, every .inst file must have a bank and an instrument. Also, every sound must point to a keymap. This keymap may be shared by all the sounds in the .inst file, so only one keymap is needed.</p>
+
+<P>For these reasons, the example .inst sound effects files are set up with one bank, with only one instrument, that lists the sounds in sequential order.   There is no concern for overlapping of keymaps in this case, because the sound player ignores them. However, there is one default keymap, in order to allow the file to compile. In order for the pitch
+of a sound effect to be altered from its recorded pitch, the application must set the pitch, not the .inst file.</p>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="03"></A>
+<H2>
+20.4.3 Envelopes </H2>
+
+<p>The Nintendo 64 audio system supports the use of ADSR envelopes for controlling volume. Envelope time values are in microseconds.  (Because microseconds are a much finer control than most synthesizers and samplers use, musicians will have to adjust their thinking to accommodate much larger numbers than are usually used by samplers. Remember, an attackTime of 100,000 will produce an attack of one tenth of a second.)  Maximum volume values are 127. In order to avoid any pops or clicks at the ends of sounds, you should always end an envelope with a release volume of zero. This is particularly true in the case of looped samples.</p>
+
+<P>When using the sound player to play <a href="../../keywords/index/data/audio.htm#sound effect" target="keywords">sound effects</a>, if the decay time is set to -1, then the envelope will never enter the release phase. (In other words, it will loop forever.) To stop the sound, the game will have to call <A HREF="../../n64man/al/alSndpStop.htm">alSndpStop()</A>. </p>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="04"></A>
+<H2>
+20.4.4 Keymaps and Velocity Zones </H2>
+
+<p><strong>Note:</strong>  Keymaps are used only by the sequence player. They are ignored by the sound player. </p>
+
+<P>In addition to an envelope, every sample has a keymap. This keymap defines what keys and velocities the sample will respond to. By using different keymap settings, it is possible to create instruments that play different samples for different keys and velocities. </p>
+
+<P>In the keymap object, you set the minimum and maximum velocity values, as well as the minimum and maximum keys to respond. Note that you cannot create overlapping keymap zones. When the sequence player is trying to <A target="keywords" HREF="../../keywords/index/data/system.htm#map">map</a> a note to be played, it will search through the possible keymaps, and when it finds one that it can use, it will stop searching. </p>
+
+<P><strong>Note:</strong>  The Nintendo 64 imposes an upper limit on the keyMax value of one octave more than the keyBase.</p>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="05"></A>
+<H2>
+20.4.5 Tuning for Samples Recorded at the Hardware Playback Rate </H2>
+
+<p>In addition to the velocity and key zone information contained in the keymap structure, all samples have a <a href="../../keywords/index/data/audio.htm#KeyBase" target="keywords">keyBase</a> and a <a href="../../keywords/index/data/audio.htm#de-tune" target="keywords">detune</a> value. The keyBase sets the sample's pitch in <a href="../../keywords/index/data/audio.htm#semi tone" target="keywords">semitones</a>, and the detune value (detune is available in this version) is used to fine-tune the sample in <a href="../../keywords/index/data/audio.htm#cent" target="keywords">cents</a>.  (A cent is 1/100th of a semitone.)   If the sample rate of the sound matches the hardware <a href="../../keywords/index/data/audio.htm#playback rate" target="keywords">playback rate</a>, the keyBase is the MIDI note value of the sample's original pitch. If the sample rate does not match the hardware playback rate, the keyBase must be altered to compensate for the difference in rates.  </p>
+
+<P>As an example, if a note of F4 is recorded at 44100, and the playback rate is also 44100, then the keyBase should be set to 65 (since 65 is equivalent to MIDI note F4) and the detune is set to zero. </p>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="06"></A>
+<H2>
+20.4.6 Tuning for Samples Recorded at Varying Rates</H2>
+
+<p>One of the more complicated aspects of the .inst files is the tuning of samples that are not sampled at the same rate as the hardware output rate.  (remember that the hardware output rate is determined by software, and can be changed).  Although the sample rate will be extracted from the <a href="../../keywords/index/data/audio.htm#AIFF" target="keywords">AIFF</a> file, you must adjust the keyBase parameter and the detune parameter if you want the sample to play back at the correct pitch. </p>
+
+<P>In order to calculate keyBase and detune from a given sample rate, use the following formula: </p>
+
+<BLOCKQUOTE> 
+<pre>
+  N = semitones to add to keyBase
+  N = 12log2(HardwareRate/SampleRate) 
+</pre>
+</BLOCKQUOTE>
+
+<p>A much easier way to deal with the tuning issue is to refer to the values in Table 20-1, "Tuning to Hardware Playback Rates." In this case, pick an acceptable rate from the column that corresponds to your hardware rate.  Record your sample at that rate (or resample your sample at that rate), and then add the number of semitones in the leftmost column to the MIDI <a href="../../keywords/index/data/audio.htm#note number" target="keywords">note value</a> of the samples pitch. Notice that this method insures a value of zero for the detune. </p>
+
+<P>As an example, suppose that you had a hardware playback rate of 44100, but you wished to critically resample a sample of a trumpet playing Bb4 to a sample rate of about 32000 Hz. Instead of using 32000, you would resample to a rate of 33037.  Actual pitch that you hear with a playback rate of 44100 is the keyBase written in the .inst file.  In your .inst file, you would add 5 semitones to the midivalue. Since Bb4 is the same as MIDI note number 70, you would add 5 and your keyBase value would be 75.</p>
+<TABLE BORDER >
+<CAPTION><A NAME="t20-01"></A><strong>Table20-1</strong></CAPTION>
+
+<TR>
+<TH>Add to MIDI Value</TH>
+
+<TH>Hardware Playback Rate of
+<BR>44100</TH>
+
+<TH>Hardware Playback Rate of
+<BR>32000</TH>
+
+<TH>Hardware Playback Rate of
+<BR>22050</TH>
+</TR>
+
+<TR>
+<TD>0 semitones</TD>
+
+<TD>44100</TD>
+
+<TD>32000</TD>
+
+<TD>22050</TD>
+</TR>
+
+<TR>
+<TD>1 semitones</TD>
+
+<TD>41624.857</TD>
+
+<TD>30203.978</TD>
+
+<TD>20812.429</TD>
+</TR>
+
+<TR>
+<TD>2 semitones</TD>
+
+<TD>39288.633</TD>
+
+<TD>28508.759</TD>
+
+<TD>19644.317</TD>
+</TR>
+
+<TR>
+<TD>3 semitones</TD>
+
+<TD>37083.532</TD>
+
+<TD>26908.685</TD>
+
+<TD>18541.766</TD>
+</TR>
+
+<TR>
+<TD>4 semitones</TD>
+
+<TD>35002.193</TD>
+
+<TD>25398.417</TD>
+
+<TD>17501.097</TD>
+</TR>
+
+<TR>
+<TD>5 semitones</TD>
+
+<TD>33037.671</TD>
+
+<TD>23972.913</TD>
+
+<TD>16518.836</TD>
+</TR>
+
+<TR>
+<TD>6 semitones</TD>
+
+<TD>31183.409</TD>
+
+<TD>22627.417</TD>
+
+<TD>15591.705</TD>
+</TR>
+
+<TR>
+<TD>7 semitones</TD>
+
+<TD>29433.219</TD>
+
+<TD>21357.438</TD>
+
+<TD>14716.609</TD>
+</TR>
+
+<TR>
+<TD>8 semitones</TD>
+
+<TD>27781.259</TD>
+
+<TD>20158.737</TD>
+
+<TD>13890.626</TD>
+</TR>
+
+<TR>
+<TD>9 semitones</TD>
+
+<TD>26222.017</TD>
+
+<TD>19027.314</TD>
+
+<TD>13111.008</TD>
+</TR>
+
+<TR>
+<TD>10 semitones</TD>
+
+<TD>24750.288</TD>
+
+<TD>17959.393</TD>
+
+<TD>12375.144</TD>
+</TR>
+
+<TR>
+<TD>11 semitones</TD>
+
+<TD>23361.161</TD>
+
+<TD>16951.410</TD>
+
+<TD>11680.581</TD>
+</TR>
+
+<TR>
+<TD>12 semitones</TD>
+
+<TD>22020</TD>
+
+<TD>16000</TD>
+
+<TD>11025</TD>
+</TR>
+</TABLE>
+<p>To extend <A HREF="#t20-01">Table20-1</A>, or produce a table with a different hardware playback rate, use the following formula:</p>
+
+<BLOCKQUOTE>
+<PRE>
+Sample Rate =  S
+Hardware Rate =  H
+Number of semitones to add to MIDI value =  N
+</PRE>
+
+<DL>
+<DT>
+<A NAME="m20-00-00"></A></DT>
+
+<DD>
+<IMG SRC="gif/m20-00-00.gif" ALT="[formula]" ></DD>
+</DL>
+</BLOCKQUOTE>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="07"></A>
+<H2>
+20.4.7 Sounds </H2>
+
+<p>A sound structure is simply a reference to the sample, the keymap, the envelope, a value for <a href="../../keywords/index/data/audio.htm#pan" target="keywords">pan</a>, and a value for volume. Pan values are in the range of 0 to 127, with 0 equal to full left, 64 equal to center pan, and 127 equal to full right. Volumes are specified by values of 0 to 127. </p>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="08"></A>
+<H2>
+20.4.8 Instruments </H2>
+
+<p>The instrument structure is a list of sounds grouped into an instrument. If the instrument is a musical instrument to be used by the sequence player, it is limited to 128 sounds, since that is the maximum number of MIDI notes.  However, if the instrument is for use by the sound player, it may have as many sounds in it as you like. In addition to the list of sounds, the instrument has an overall volume and pan.  (The sound player ignores these volume and pan values. Instead the sound player uses the pan and volume values specified in the sound object.) </p>
+
+<P>The instrument structure can be used to create Drum Kits. In this case, you create an instrument that uses multiple sounds and associated keymaps. (There is a good example of this in the General MIDI Bank provided with the developer's package.) </p>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="09"></A>
+<H2>
+20.4.9 Banks </H2>
+
+<p>At the top level of the .inst file is the bank structure. A .inst file may contain as many banks as needed. The bank must be selected by the application, since there is currently no way to switch banks via <a href="../../keywords/index/data/audio.htm#MIDI" target="keywords">MIDI</a>. </p>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR><A NAME="10"></A>
+<H2>
+20.4.10 Creating Bank Files</H2>
+
+<p>The process for creating sample bank files is as follows: </p>
+
+<OL>
+<LI>
+Record the samples and save as .AIFF files. <BR><BR></LI>
+
+<LI>
+Encode the samples using <A HREF="../../n64man/tool/tabledesign.htm">tabledesign</A> and <A HREF="../../n64man/tool/vadpcm_enc.htm">vadpcm_enc</A>.<BR><BR></LI>
+
+<LI>
+Create the .inst file.<BR><BR></LI>
+
+<LI>
+Compile the bank using <A HREF="../../n64man/tool/ic.htm">ic</A>.<BR><BR></LI>
+</OL>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR>
+</BODY>
+</HTML>

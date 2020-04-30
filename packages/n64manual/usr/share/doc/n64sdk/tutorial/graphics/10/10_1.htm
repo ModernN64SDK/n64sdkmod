@@ -1,0 +1,186 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Graphics-Chapter 10  Texture Rectangles</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/23/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<font style="font-size:16pt"><B>CHAPTER 10  TEXTURE RECTANGLES</B></FONT>
+<br><br>
+<HR SIZE=3 NOSHADE>
+<P>
+   In Chapter 9, we explained from a variety of different angles the methods for mapping textures to polygons.  In fact, it might seem like we have covered all areas of this topic.  When you are putting together a game application, there often will be times when in addition to mapping textures to polygons, you will also want to display simple 2D graphics on the screen.  So in this chapter, we bring up the subject of texture rectangles as a method for drawing 2D graphics.
+</P>
+<BR>
+<font style="font-size:12pt"><B>10.1  Introduction to  Texture Rectangles</B></FONT>
+<br>
+<P>
+ With the N64, you have a number of choices when rendering textures as 2D graphics.  You can:
+</P>
+<OL>
+<LI>Draw them as texture rectangles
+<LI>Draw them as sprites, using the sprite microcode
+<LI>Draw them by emulating sprite functions with the 3D microcode
+</OL>
+<P>
+ From the point of view of performance, the first two are the most practical choices.  An explanation of how to use the sprite microcode would be very lengthy and is beyond the scope of this tutorial.  Here we will limit ourselves to the topic of texture rectangles.  Since we have already gone into great detail about textures, it should be easy to understand how to render using texture rectangles.
+<br><br>
+     You use the gSPTextureRectangle command or the gSPScisTextureRectangle command to render with texture rectangles.  Both commands define texture rectangle primitives.  
+
+</P>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP COLSPAN=2 NOWRAP>gSPTextureRectangle(</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;|&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP COLSPAN=2 NOWRAP>gSPScisTextureRectangle(</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Gfx *gdl,</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;|&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Gfx *gdl,</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>u32 ulx,</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;|&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>s32 ulx,</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>u32 uly,</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;|&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>s32 uly,</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>u32 lrx,</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;|&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>s32 lrx,</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>u32 lry,</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;|&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>s32 lry,</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>s32 tile,</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;|&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>s32 tile,</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>s32 s,</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;|&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>s32 s,</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>s32 t,</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;|&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>s32 t,</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>s32 dsdx,</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;|&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>s32 dsdx,</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>s32 dtdy)</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;|</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>s32 dtdy)</TD>
+</TR></TABLE>
+<BR>
+<TABLE BORDER=0 CELLSPACING=2 CELLPADDING=1><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>gdl</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Display list pointer</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>ulx</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Rectangle's upper-left x-coordinate (10.2, 0.0 - 1023.75)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>uly</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Rectangle's upper-left y-coordinate (10.2, 0.0 - 1023.75)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>lrx</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Rectangle's lower-right x-coordinate (10.2, 0.0 - 1023.75)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>lry</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Rectangle's lower-right y-coordinate (10.2, 0.0 - 1023.75)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>tile</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Tile descriptor index (3bit precision, 0 - 7)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>s</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Texture s-coordinate of upper-left corner of rectangle (s10.5)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>t</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Texture t-coordinate of upper-left corner of rectangle (s10.5)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>dsdx</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP> Change in s per change in x (s5.10)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>dtdy</TD>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP>Change in t per change in y (s5.10)</TD>
+</TR></TABLE>
+<P>
+The thing you need to be careful about with these two commands is that in both 1-Cycle mode and 2-Cycle mode, the right-most column and the bottom-most row are not rendered for reasons of anti-aliasing.  On the other hand, in Copy mode the entire specified rectangle is rendered.
+</P>
+<P>
+In the <tt>DrawSmallRectangle</tt> function in the gfx10.c sample program, the static variables posx and posy define the upper-left screen coordinates for the drawing of a small texture rectangle.
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=5><TR>
+	<TD NOWRAP COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE><B>List 10-1</B>
+</TR><TR>
+	<TD NOWRAP BGCOLOR="666666" WIDTH="4" ALIGN=LEFT VALIGN=TOP><HR NOSHADE SIZE=0></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>
+<FONT COLOR="#000080"><PRE><CODE>  /* Draw a texture rectangle */
+  gSPTextureRectangle(glistp++,
+                   posx &lt;&lt; 2, posy &lt;&lt; 2,
+                   (posx + RECT_WD) &lt;&lt; 2, (posy + RECT_HT) &lt;&lt; 2,
+                   G_TX_RENDERTILE,
+                   0 &lt;&lt; 5, 0 &lt;&lt; 5,
+                   1 &lt;&lt; 10, 1 &lt;&lt; 10);
+</CODE></PRE></FONT>
+	</TD>
+</TR></TABLE>
+<P>
+You must turn texture perspective off when drawing texture rectangles.</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=5><TR>
+	<TD NOWRAP COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE><B>List 10-2</B>
+</TR><TR>
+	<TD NOWRAP BGCOLOR="666666" WIDTH="4" ALIGN=LEFT VALIGN=TOP><HR NOSHADE SIZE=0></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>
+<FONT COLOR="#000080"><PRE><CODE>  /* Texture rectangle, so turn texture perspective correction off  */
+  gDPSetTexturePersp(glistp++, G_TP_NONE);
+</CODE></PRE></FONT>
+	</TD>
+</TR></TABLE>
+</BODY>
+</HTML>

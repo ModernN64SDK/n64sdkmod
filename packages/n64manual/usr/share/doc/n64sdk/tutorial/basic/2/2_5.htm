@@ -1,0 +1,52 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-N64 Programming Basics-Chapter 2  Mechanism of N64 Programming</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/20/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<FONT Style="font-size:12pt"><B>2.5  Boot Portion of NuSystem</B></FONT>
+<br>
+<P>
+When an actual N64 application is booted up, it always goes through the procedures explained so far, but if you use NuSystem, you can omit all of these boot processes.  This is because NuSystem has a special function called <tt>nuBoot</tt> that takes charge of all of the necessary processes when booting.<br><br>
+     Thanks to <tt>nuBoot</tt>, the programmer does not have to deal with the boot part of the program, and can start writing from the functions that make up the main thread.  In fact, no boot process is described in any of the source files of basic2.<br><br>
+     If you are not using NuSystem, then the <tt>mainproc</tt> function (the main thread) must perform a variety of processes in order to render graphics, but if you leave these processes to NuSystem, then the main thread function becomes very simple, as shown below: 
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=5><TR>
+	<TD NOWRAP COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE><B>List 2-3</B>  <B>See basic2 "main.c"</B>
+</TR><TR>
+	<TD NOWRAP BGCOLOR="666666" WIDTH="4" ALIGN=LEFT VALIGN=TOP><HR NOSHADE SIZE=0></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>
+<FONT COLOR="#000080"><PRE><CODE>/* The "main" function  */
+void  mainproc(void *dummy)
+{
+  /* Initialize graphics  */
+  nuGfxInit();
+
+  /* Register vertical retrace callback  */
+  nuGfxFuncSet((NUGfxFunc)vsyncCallback);
+
+  /* Turn video output ON */
+  nuGfxDisplayOn();
+
+  /* Afterwards, vsyncCallback performs rendering at each */
+    /* vertical retrace, so put  mainproc into an infinite loop. */
+  while(1);
+}
+</CODE></PRE></FONT>
+	</TD>
+</TR></TABLE>
+<P>
+ This source is short and simple, so it should be easy to understand from the comments, but we will explain it below.<br><br>  
+     <tt>nuGfxInit</tt> is one of the functions supplied by NuSystem.  As its name implies, it performs graphics-related initializations.  To be more specific, it registers the framebuffers (which hold the video output images) and the rendering routines (called microcode).  We will talk about the microcode in a later chapter.<br><br>  
+     <tt>nuGfxFuncSet</tt> sets (the pointer to) the user functions for rendering.  The function set here is a so-called callback function that is called repeatedly in time with vertical retrace events.  The user sees the result of each rendering process performed in this function as a frame of video output.<br><br>
+     <tt>nuGfxDisplayOn</tt> is the function that allows the rendering result to be output to video.  If, on the other hand, the <tt>nuGfxDisplayOff</tt> function is called, then the entire screen appears black.<br><br>
+
+     In the basic2 sample program, once the <tt>vsyncCallback</tt> function that performs simple rendering is registered, <tt>vsyncCallback</tt> is called automatically, and there is nothing else for mainproc to do.  So, it enters into an infinite "while" loop. <br><br> 
+     If you need to use the main thread to perform some process other than rendering, you can just delete the while loop and write the next process. 
+</P>
+</BODY>
+</HTML>

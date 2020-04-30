@@ -1,0 +1,53 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 19 - Audio File Formats</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. -->
+</head>
+
+<H1>
+19.4 Compressed Midi File Format</H1>
+
+<p>The <a href="../../keywords/index/data/audio.htm#compressed MIDI" target="keywords">compressed MIDI</a> file format is composed of a header and up to sixteen individual tracks. Each MIDI channel will have its own track. If there are no MIDI events for a particular channel, the track will not be created, and the offset to that track will be set to zero.</p>
+
+<P>The compressed MIDI file header is a collection of 16 offsets and a division value. </p>
+<BLOCKQUOTE>
+<PRE>typedef struct{
+        u32     stackOffset[16];
+        u32     division;
+}ALCMidiHdr;</PRE>
+</BLOCKQUOTE>
+<p>The offset is specified in bytes from the begining of the file to the begining of the track. The division value is taken from the input <a href="../../keywords/index/data/audio.htm#MIDI" target="keywords">MIDI</a> file.</p>
+
+<P>The format for the individual tracks is similar to the format used in a standard MIDI file. Each track consists of a series of <a href="../../keywords/index/data/audio.htm#event" target="keywords">events</a>, seperated by <a href="../../keywords/index/data/audio.htm#delta time" target="keywords">delta times</a> in <a href="../../keywords/index/data/audio.htm#tick" target="keywords">ticks</a>. Ticks are specified using variable length numbers, and ever event must have a delta value, even if that value is zero. Midi events are of the same format as that used in the standard MIDI file except as specified below. </p>
+<OL>
+<LI>
+There are no note offs, instead note ons are followed by a variable length number that specifies the number of ticks duration. As an example, a note on of <a href="../../keywords/index/data/audio.htm#middle C" target="keywords">middle C</a> with a <a href="../../keywords/index/data/audio.htm#velocity" target="keywords">velocity</a> of 80 and a duration of 240 ticks would be expressed by the following sequence of hex bytes: 0x90 0x3C 0x50 0x81 0x70. Note that when calculating the deltas between events, the duration is not taken into account. 
+<BR><BR></LI>
+
+<LI>
+Only two types of <a href="../../keywords/index/data/audio.htm#meta event" target="keywords">meta events</a> are supported, tempo events and end of track events, and they are both slightly altered. Tempo events are composed of a <a href="../../keywords/index/data/audio.htm#meta status byte" target="keywords">meta status byte</a>, (0xFF) a <a href="../../keywords/index/data/audio.htm#subtype byte" target="keywords">subtype byte</a> (0x51) and three bytes that contain the new tempo. (Note that the len byte has been removed.) The end of track event is composed of only two bytes, a meta status byte, (0xFF) and a subtype byte (0x2F). Care should be taken to see that the end of track event occurs after all the notes in the track have played out their full duration. 
+<BR><BR></LI>
+
+<LI>
+Loops are allowed using a combination of loop start and loop end events. A track can have up to 128 loops which can be <a href="../../keywords/index/data/audio.htm#nest" target="keywords">nested</a>. Each loop within a track has a unique loop number. The loop start event is composed of four bytes; a meta status byte (0xFF), a loop start subtype byte (0x2E), a loop number (0-127), and an end byte (0xFF). A loop end event is composed of eight bytes, a meta status byte (0xFF), a loop end subtype byte (0x2D), a loop count byte (0-255), a current loop count (should be the same as the loop count byte), and four bytes that specify the number of bytes difference between the end of the loop end event, and the begining of the loop start event. (note that if this value is calculated before the pattern matching compression takes place, this value will have to be adjusted to compensate for any compression of data that takes place between the loop end and the loop start.) The loop count value should be a zero to loop forever, otherwise it should be set to one less than the number of times the section should repeat. (i.e. to hear a section eight times, you would set the loop count to seven.)<BR><BR></LI>
+
+<LI>
+Running status is supported for all events except across meta events and across loop points. <BR><BR></LI>
+</OL>
+<p>The compressed MIDI file format uses a system of matching patterns in the data, and replacing them with markers, instead of repeating the data. When constructing tracks, any pattern of data may be replaced by any previous track data with a marker. A pattern marker
+consists of four bytes. The first byte is 0xFE. The second two bytes are an unsigned 16 bit value that specifies the difference, in bytes, between the begining of the marker, and the begining of the pattern. The last byte is the length of the pattern. In order to distinguish
+between a data byte of 0xFE and a pattern marker's first byte, any data byte of 0xFE will be followed by another byte of 0xFE. </p>
+
+<P><strong>Note:</strong>  The maximum pattern length is 0xFF and the maximum distance between the marker and the pattern is 0xFDFF. </p>
+
+<P>Nesting of patterns is not supported. If a marker is encountered within a repeated pattern, the marker data will be returned to the <a href="../../keywords/index/data/audio.htm#sequence player" target="keywords">sequence player</a>, as actual MIDI data. </p>
+
+<P><strong>Note:</strong>  Patterns, contaning bytes of value 0xFF or the current loop count byte of a loop end event, may be able to replace with markers.</p>
+
+<DIV ALIGN=right><A HREF="index.htm#index"><IMG SRC="../../gif/index.gif" ALT="UP" BORDER=0 ></A></DIV>
+
+<HR>
+</BODY>
+</HTML>

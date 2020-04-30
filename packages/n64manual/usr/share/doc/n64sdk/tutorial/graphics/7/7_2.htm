@@ -1,0 +1,76 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Graphics-Chapter 7  Z Buffering</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/23/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<BR>
+<font style="font-size:12pt"><B>7.2  Preparations for Using the Z Buffer</B></FONT>
+<BR>
+<P>
+A detailed explanation about Z buffering and Z values will appear in later sections.  Here we will focus on the procedures you need to go through in order to make use of the Z buffer.
+     To make active use of Z buffering in an N64 program, you must follow the three procedures below to prepare for use of the Z buffer.
+</P>
+<OL>
+<LI>Set the geometry mode to G_ZBUFFER
+<LI>Set the rendering mode to a mode that uses the Z buffer
+<LI>Clear the Z buffer at the start of every frame (before rendering the primitive)</OL>
+<P>
+No special explanation is required about the geometry mode.  You simply place the mode constant you want to set in the gSPSetGeometryMode command.
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=5><TR>
+	<TD NOWRAP COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE><B>List 7-1</B></TD>
+</TR><TR>
+	<TD NOWRAP BGCOLOR="666666" WIDTH="4" ALIGN=LEFT VALIGN=TOP><HR NOSHADE SIZE=0></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><FONT COLOR="#000080"><PRE><CODE>gSPSetGeometryMode(glistp++, G_ZBUFFER | G_SHADE | G_SHADING_SMOOTH |
+                             G_CULL_BACK);
+</CODE></PRE></FONT>
+	</TD>
+</TR></TABLE>
+<P>
+For the rendering mode, gfx7.c uses G_RM_AA_ZB_OPA_SURF.  Modes with "ZB" in their name have a macro definition that specifies the Z buffer enable flag Z_CMP.  If you want to read more about the rendering modes, see the Programming Manual, Chapter 15.7, "Blender Modes and Assumptions."
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=5><TR>
+	<TD NOWRAP COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE><B>List 7-2</B></TD>
+</TR><TR>
+	<TD NOWRAP BGCOLOR="666666" WIDTH="4" ALIGN=LEFT VALIGN=TOP><HR NOSHADE SIZE=0></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><FONT COLOR="#000080"><PRE><CODE>  /* Opaque - anti-aliasing - Z buffering */
+  gDPSetRenderMode(glistp++, G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
+</CODE></PRE></FONT>
+	</TD>
+</TR></TABLE>
+<P>
+ To register and clear the Z buffer you need to put together a number of RDP commands, but it is not a specialized operation.  To explain the procedure we will use the example of the ClearBackground function from gfx7.c.  The code is shown below:
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=5><TR>
+	<TD NOWRAP COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE><B>List 7-3</B></TD>
+</TR><TR>
+	<TD NOWRAP BGCOLOR="666666" WIDTH="4" ALIGN=LEFT VALIGN=TOP><HR NOSHADE SIZE=0></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><FONT COLOR="#000080"><PRE><CODE>  gDPPipeSync(glistp++);
+  gDPSetCycleType(glistp++, G_CYC_FILL);
+  /* Set the Z buffer  */
+  gDPSetDepthImage(glistp++, nuGfxZBuffer);
+  /* Specify the subject of coloring (Z buffer) */
+  gDPSetColorImage(glistp++, G_IM_FMT_RGBA, G_IM_SIZ_16b, SCREEN_WD,
+                             nuGfxZBuffer);
+  /* Specify the color (background Z value, maximum Z value) */
+  gDPSetFillColor(glistp++, (GPACK_ZDZ(G_MAXFBZ, 0) &lt;&lt; 16 |
+                             GPACK_ZDZ(G_MAXFBZ, 0)));
+  /* Clear the Z buffer */
+  gDPFillRectangle(glistp++, 0, 0, SCREEN_WD - 1, SCREEN_HT - 1);
+</CODE></PRE></FONT>
+	</TD>
+</TR></TABLE>
+<P>
+ In this code, the gDPSetDepthImage command is used to tell the RDP the address of the Z buffer.  In this case, the NuSystem global variable <tt>nuGfxZBuffer</tt> is given as the Z buffer address.  Registering the Z buffer is completed with the call of this one command.
+     Of course, the pointer passed to this command must be a segment address.  As mentioned before, in this tutorial physical address 0 is mapped to segment address 0, so you can pass the virtual address as is.<br><br>
+
+     The next necessary step is to clear (initialize) the Z buffer.  You do this the same way as when you clear the framebuffer by using a combination of the gDPSetColorImage command and gDPSetFillColor command.
+     However, in the case of the Z buffer, the value you use when clearing is not the value for a color, but the value for the maximum Z value.  In our example from gfx7.c, the Z buffer is cleared using the macro constant G_MAXFBZ, which indicates the maximum Z value, and the DeltaZ value of 0.  When clearing (or filling) the Z buffer, typically the GPACK_ZDZ macro defined in &lt;gbi.h&gt; is used to pack the fill value.  We will bring up the topic of the DeltaZ value in the next section.
+
+</P>
+</BODY>
+</HTML>

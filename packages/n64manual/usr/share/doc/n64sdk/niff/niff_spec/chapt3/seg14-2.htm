@@ -1,0 +1,372 @@
+<HTML>
+<HEAD>
+<TITLE>Chapter 3 Binary Format</TITLE>
+</HEAD>
+<BODY LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff">
+
+<font face="arial" size="-1">
+<b><font size="3">Chapter 3 Binary Format</b></font>
+<HR>
+<P>
+
+<b>3-14. TexList</b>
+<P>
+<u>2. Tex Area</u>
+
+<p>
+<table border="1" cellpadding="3" cellspacing="3">
+<tr>
+<th rowspan="13"><font face="arial" size="-1">
+TexHeader
+</th>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+tex_tag
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+this_tex_index
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+tex_header_size
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+tex_size
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+tex_name_index
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+tex_type
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+tex_wrap_s
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+tex_wrap_t
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+tex_anim
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+tex_data_area_size
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+tex_anim_frame_late
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+nintendo_extension_block_size
+</td>
+</tr>
+<tr>
+<td><font face="arial" size="-1">
+u32
+</td>
+<td><font face="arial" size="-1">
+user_extension_block_size
+</td>
+</tr>
+<tr>
+<th rowspan="3"><font face="arial" size="-1">
+
+<td colspan="2"><font face="arial" size="-1">
+<center>
+TexDataArea
+</center>
+</td>
+</th>
+</tr>
+<tr>
+<td colspan="2"><font face="arial" size="-1">
+<center>
+NintendoExtensionBlock
+</center>
+</td>
+</tr>
+<tr>
+<td colspan="2"><font face="arial" size="-1">
+<center>
+UserExtensionBlock
+</td></tr></table>
+
+<p>
+Figure: Tex Area Memory Map
+
+<p>
+<table border="1" cellpadding="3" cellspacing="3">
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 tex_tag
+</td>
+<td>
+<font face="arial" size="-1">
+Tag indicating Tex area. Set the following flag. 
+<pre><font face="courier" size="2"><b>TAG_TEX&#9;0x000b0100</b></pre></font>
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 this_tex_index
+</td>
+<td>
+<font face="arial" size="-1">
+Index number of this Tex area. 
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 tex_header_size
+</td>
+<td>
+<font face="arial" size="-1">
+Number of bytes of this TexHeader area. 
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 tex_size
+</td>
+<td>
+<font face="arial" size="-1">
+Number of bytes of this Tex area. 
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 tex_name_index
+</td>
+<td>
+<font face="arial" size="-1">
+Index number in NameList that describes Tex name. 
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+<a href="../chapt5/seg1.htm#TEX_TYPE">u32 tex_type</a>
+</td>
+<td>
+<font face="arial" size="-1">
+Specifies the texture type. Currently, the following formats are defined:  
+<pre><font face="courier" size="2">
+<b>TEX_FORM_I&#9;0x00000000
+TEX_FORM_IA&#9;0x00000001
+TEX_FORM_CI&#9;0x00000002
+TEX_FORM_YUV&#9;0x00000003
+TEX_FORM_RGB&#9;0x00000004
+TEX_FORM_RGBA&#9;0x00000005
+TEX_DEPTH_4&#9;0x00000000
+TEX_DEPTH_8&#9;0x00000100
+TEX_DEPTH_16&#9;0x00000200
+TEX_DEPTH_32&#9;0x00000400</b></pre></font>
+<P>
+The above flags use TEX_FORM_* and TEX_DEPTH_* in pairs of one of each.
+<P>
+For example, in the case of an 8bit color index texture, a flag will be set as follows: 
+<pre><font face="courier" size="2">
+<b>TEX_FORM_CI | TEX_FORM_8</b></pre></font>
+<P>
+However, when converting to Nintendo 64 data, only the following combinations can be used. 
+<P>
+In the case of TEX_FORM_I, only TEX_DEPTH_4 or TEX_DEPTH_8 can be used.<p>
+In the case of TEX_FORM_IA, only TEX_DEPTH_4,TEX_DEPTH_8, or  TEX_DEPTH_16 can be used.<p>
+In the case of TEX_FORM_CI, only TEX_DEPTH_4, or TEX_DEPTH_8 can be used.<p>
+In the case of TEX_FORM_YUV, only TEX_DEPTH_16 can be used.<p>
+In the case of TEX_FORM_RGB or TEX_FORM_RGBA, only TEX_DEPTH_16 or TEX_DEPTH_32 can be used.
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+<a href="../chapt5/seg1.htm#TEX_WRAP_S">u32 tex_wrap_s</a>
+</td>
+<td>
+<font face="arial" size="-1">
+Specifies S direction wrapping of texture. Set one of the following flags. 
+<pre><font face="courier" size="2">
+<b>
+TEX_WRAP_S&#9;0x00000000
+TEX_CLAMP_S&#9;0x00000001
+TEX_MIRROR_S&#9;0x00000002</b></pre></font>
+<P>
+Only one of these flags can be set at a time.
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+<a href="../chapt5/seg1.htm#TEX_WRAP_T">u32 tex_wrap_t</a>
+</td>
+<td>
+<font face="arial" size="-1">
+Specifies T direction wrapping of texture. Set one of the following flags.
+<pre><font face="courier" size="2">
+<b>
+TEX_WRAP_T&#9;0x00000000
+TEX_CLAMP_T&#9;0x00000100
+TEX_MIRROR_T&#9;0x00000200</b></pre></font>
+<P>
+Only one of these flags can be set at a time.
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+<a href="../chapt5/seg1.htm#TEX_ANIM">u32 tex_anim</a>
+</td>
+<td>
+<font face="arial" size="-1">
+Sets texture animation. The following flags are currently defined. 
+<pre><font face="courier" size="2">
+<b>
+TEX_ANIM_OFF&#9;&#9;&#9;0x00000000
+TEX_ANIM_FLIPBOOK&#9;&#9;0x00000001
+TEX_ANIM_FLIPBOOK_KEY&#9;&#9;0x00000002
+TEX_ANIM_SCROLL_OFFSET&#9;&#9;0x00000010
+TEX_ANIM_SCROLL_OFFSET_KEY&#9;0x00000020
+TEX_ANIM_SCROLL_SCALE&#9;&#9;0x00000100
+TEX_ANIM_SCROLL_SCALE_KEY&#9;0x00000200</b></pre>
+</font>
+<P>
+TEX_ANIM_OFF turns texture animation off. <p>
+TEX_ANIM_FLIPBOOK performs animation by switching textures like a texture animation. <p>
+TEX_ANIM_FLIPBOOK_KEY performs animation by switching textures using key frame switching timing. <p>
+TEX_ANIM_SCROLL_OFFSET scrolls the offset coordinates when part of a large texture image is extracted and the texture is used.  <p>
+TEX_ANIM_SCROLL_OFFSET_KEY scrolls the offset coordinates using key frame animation when part of a large texture image is extracted and the texture is used.  <p>
+TEX_ANIM_SCROLL_SCALE performs animation for the extracted portion size when part of a large texture image is extracted and the texture is used.  <br>
+TEX_ANIM_SCROLL_SCALE_KEY performs animation for the extracted portion size by specifying the size of the portion that is extracted every key frame when part of a large texture image is extracted and the texture is used.  <p>
+It is possible to specify each type of texture animation at the same time. However, it is not possiblt to specify full frame animation and key frame animation at the same time when using the same type of animation, such as TEX_ANIM_FLIPBOOK and TEX_ANIM_FLIPBOOK_KEY.  <p>
+When using a number of texture animation types, be sure to set only one texture animation flag to be used by bitOR. All others will not be processed.<p>
+Set the TEX_ANIM_OFF flag only when no texture animation is to be performed. 
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 tex_data_area_size
+</td>
+<td>
+<font face="arial" size="-1">
+Size of TexDataArea.
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 tex_anim_frame_late
+</td>
+<td>
+<font face="arial" size="-1">
+Describes the frame rate of texture animation. 
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 nintendo_extension_block_size
+</td>
+<td>
+<font face="arial" size="-1">
+Nintendo extension block size
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+u32 user_extension_block_size
+</td>
+<td>
+<font face="arial" size="-1">
+User extension block size
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+<a href="./seg14-3.htm">TexDataArea</a>
+</td>
+<td>
+<font face="arial" size="-1">
+Specifies how the image is extracted from the TexImgList that stores the actual texture image. Index numbers in TexImgList are also described in this area. Note that the manner of setting this flag differs depending on the specified texture animation type.
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+NintendoExtensionBlock
+</td>
+<td>
+<font face="arial" size="-1">
+Nintendo extension block
+</td>
+</tr>
+<tr>
+<td nowrap><font face="arial" size="-1">
+UserExtensionBlock
+</td>
+<td>
+<font face="arial" size="-1">
+User extension block
+</td></tr></table>
+
+<p>
+
+<hr>
+
+<p align="right"><a href="../index.htm">
+<img src="../../../gif/index.gif"
+border="0" width="65" height="17"></a>
+&nbsp; <a href="./seg14-3.htm">
+<img src="../../../gif/next.gif"
+border="0" width="65" height="17"></a></p>
+
+</body>
+</html>
+
+

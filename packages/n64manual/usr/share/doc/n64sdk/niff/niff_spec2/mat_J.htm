@@ -1,0 +1,242 @@
+<html>
+<title>
+
+</title>
+<body bgcolor="ffffff">
+
+<h1>
+<font color="ff0000">
+<i>
+Nintendo Confidential
+</i>
+</font>
+</h1>
+<hr size="3">
+
+
+<h2>
+9. MatNode
+
+</h2>
+<hr size="3">
+<h3>
+(1) MatNode
+</h3>
+<blockquote>
+
+
+<table border width="600">
+
+<tr>
+<td nowrap>
+float ambient_red<br>
+float ambient_green<br>
+float ambient_blue<br>
+float ambient_alpha
+</td>
+<td>
+ambient color。<p>
+0 ≦ ambient_* ≦ 1<p>
+ユーザーがこの値をセットしていない場合、デフォルト値として
+すべて1.0をセットしてください。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+float emission_red<br>
+float emission_green<br>
+float emission_blue<br>
+float emission_alpha
+</td>
+<td>
+emission color。<p>
+0 ≦ emission_* ≦ 1
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+float diffuse_red<br>
+float diffuse_green<br>
+float diffuse_blue<br>
+float diffuse_alpha
+</td>
+<td>
+diffuse color。<p>
+0 ≦ diffuse_* ≦ 1<p>
+ユーザーがこの値をセットしていない場合、デフォルト値として
+すべて1.0をセットしてください。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 external_local_light_file_name_index
+</td>
+<td>
+local lightを外部ファイル参照する場合、そのファイル名をExternalNameList内のインデックス番号で記述します。<p>
+ファイル名はディレクトリ名などを含まない形で記述してください。<p>
+外部ファイル参照しない場合は0xffffffffを記述してください。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 external_local_light_name_index
+</td>
+<td>
+local lightを外部ファイル参照する場合、そのLight名をExternalNameList内のインデックス番号で記述します。<p>
+外部ファイル参照しない場合は0xffffffffを記述してください。
+</td>
+</tr>
+
+
+<tr>
+<td nowrap>
+u32 external_tex_num
+</td>
+<td>
+外部ファイル参照するTex数を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 prim_color_anim_num
+</td>
+<td>
+プリミティブカラーをアニメーションする場合にPrimColorAnim数を記述します。アニメーションしない場合はprim_color_animtion_num = 0x0を指定してください。なお、アニメーションする場合は通常のprim_red, prim_green, prim_blue, prim_alphaは使用しません。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 external_tex_file_name_index
+</td>
+<td>
+Texを外部ファイル参照する場合、参照するファイル名をExternalNameList内のインデックス番号で指定します。<p>
+ファイル名はディレクトリ名などを含まない形で記述してください。<p>
+外部ファイル参照しない(external_tex_num = 0)場合、このフィールドは記述されません。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 external_tex_name_index
+</td>
+<td>
+Texを外部ファイル参照する場合、そのTex名をExternalNameList内のインデックス番号で記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+PrimColorAnim
+</td>
+<td>
+各キーにおけるprimitive colorを記述するエリアです。prim_color_anim_num = 0x0の場合、このエリアは記述されません。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+*_for_fog
+</td>
+<td>
+Matノード内の*_for_fogデータは、fogを使用しているscene内で扱われるアトリビュートを示します。データの内容は_for_fogのついていないデータと同様です。
+</td>
+</tr>
+
+</table>
+
+
+<p>
+<a href="./mat_C.htm">
+Go to the data chunk
+</a>
+<p>
+<a href="./index.htm">
+Go back to the index
+</a>
+
+
+</center>
+</blockquote>
+
+<h3>
+(2) PrimColorAnim, PrimColorAnimForFog
+</h3>
+
+<blockquote>
+
+
+<table border width="600">
+
+<tr>
+<td nowrap>
+u32 interpolation_type
+</td>
+<td>
+このキーから次のキーまでの補間タイプを記述します。下記のフラグが定義されています。
+
+<pre>
+<b>
+NIFF2_INTERPOLATION_TYPE_CONST&#9;&#9;0x00000000
+NIFF2_INTERPOLATION_TYPE_LINEAR&#9;&#9;0x00000002
+</b>
+</pre>
+NIFF2_INTERPOLATION_TYPE_CONSTはこのキーから次のキーまでデータを保持します。<p>
+NIFF2_INTERPOLATION_TYPE_LINEARはこのキーから次のキーまで線形補間をおこないます。<p>
+各PrimColorAnim及びPrimColorAnimForFog内のinterpolation_typeはすべて同じ値を設定してください。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+u32 key
+</td>
+<td>
+Key値を記述します。
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+float prim_color_anim_red<br>
+float prim_color_anim_green<br>
+float prim_color_anim_blue<br>
+float prim_color_anim_alpha
+</td>
+<td>
+primitive color。<p>
+0 ≦ prim_color_anim_* ≦ 1
+</td>
+</tr>
+
+</table>
+</center>
+
+
+<p>
+<a href="./mat_C.htm">
+Go to the data chunk
+</a>
+<p>
+<a href="./index.htm">
+Go back to the index
+</a>
+
+
+
+</blockquote>
+
+<hr>
+<i>
+Copyright 1998,1999 NINTENDO Co.,Ltd. All rights reserved.<br>
+Copyright 1998,1999 MONEGI CORPORATION All rights reserved.
+</i>
+
+
+</body>
+</html>

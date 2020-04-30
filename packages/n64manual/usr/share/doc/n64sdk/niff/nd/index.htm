@@ -1,0 +1,1035 @@
+<HTML>
+<HEAD>
+<TITLE>nd: An Object Manager for Drawing</TITLE>
+</HEAD>
+<BODY LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff">
+
+<font face="arial" size="-1">
+<b><font size="3">nd: An Object Manager for Drawing</font></b>
+<HR>
+
+<P>
+<b>What is nd</b>
+<p>
+
+<blockquote>
+nd (short for N64 Display Manager) is a "drawing use" object manager that operates on Nintendo 64.
+To preview NIFF data on N64, the niff2gfx converter is used to output to n64prev (n64kit\niff\n64prev\directory).  The make command is then executed to create a ROM image, which can then be loaded to the emulator board or IS-VIEWER64 for previewing.<p>
+niff2gfx outputs an image database which can be drawn on N64. From there, the drawing-use object manager processes the data so it can be drawn correctly.
+The nd source file is stored in the n64prev directory.  Each user can 'fine-tune' the source in order to strengthen the NIFF-based graphics development environment and to make it better suited to their games.  Since nd was developed with games in mind, it can also be used to create games.<p>
+</blockquote>
+
+<hr size=3>
+<p>
+<b>Data Process Flow of nd</b>
+<p>
+<blockquote>
+niff2gfx converts NIFF files into display lists and other GBI data (processed on N64 mainly by the RSP and RDP), and into scene, object, animation, camera, and other NDR (ND Resource) structures (processed  on N64 mainly by the CPU).<p>
+For details on GBI data please refer to programming manuals.
+<p>
+The NDR structures are a database for the creation of instance data.  What is actually processed internally by nd is the NDD_INSTANCE (ND Dynamic Instance) structure.  While this is generated, an instance link to the NDR_OBJ structure (in the case of an object) or to the NDR_ANIM structure (in the case of an animation) is registered.
+<p>
+<img src="./prog_flow.gif">
+<p>
+As a process in each frame, instance data is registered using the scene, object, camera, and animation NDR structures.  This is then processed by ndEvalInstance() for accurate playback of the animation.  In addition, ndBuildSceneGfx() and ndBuildObjectGfx() build display lists for accurate drawing of scenes and objects, and pass these to the RSP.<p>
+</blockquote>
+<hr size=3>
+<p>
+<b>
+Data Structures</b>
+<p>
+<blockquote>
+nd makes use of the following data structures:
+<hr size=1>
+<p>
+<b>Animation Structures</b>
+<blockquote>
+<font face="courier" size="2">
+<pre>
+enum{
+  /* NDR_ANIM_CHANNEL.kind */
+  NDC_ANIMKIND_TRS_X  = 0x00,
+  NDC_ANIMKIND_TRS_Y  = 0x01,
+  NDC_ANIMKIND_TRS_Z  = 0x02,
+  NDC_ANIMKIND_ROT_X  = 0x03,
+  NDC_ANIMKIND_ROT_Y  = 0x04,
+  NDC_ANIMKIND_ROT_Z  = 0x05,
+  NDC_ANIMKIND_SCL_X  = 0x06,
+  NDC_ANIMKIND_SCL_Y  = 0x07,
+  NDC_ANIMKIND_SCL_Z  = 0x08
+};
+
+typedef struct {
+  u16 kind;
+  s16 start;
+  s16 end;
+  s16 nkey;
+  s16 *key;
+  float *value;
+} NDR_ANIM_CHANNEL;
+
+typedef struct {
+  NDR_ANIM_CHANNEL *chlist;
+  u16 nch;
+  u16 total;
+} NDR_ANIM;
+</pre>
+</font>
+
+<P>The NDR_ANIM structure is the animation structure attached to the object.  The NDR_ANIM_CHANNEL structure stores animation data for a single channel.  There are 9 TRX channels.  The essential data processing steps can be performed by putting the needed number of channels of NDR_ANIM_CHANNEL structures in the NDR_ANIM structure.
+<p>
+ The NIFF file holds all the data channels for an animation. However, with nif2gfx only the necessary channels are extracted and registered in NDR_ANIM.
+</blockquote>
+<hr size=1>
+<p>
+<b>Shape Structures</b>
+<blockquote>
+<font face="courier" size="2">
+<pre>
+typedef struct{
+  s16 *key;
+  s16 *tblno;
+  u16 nkey;
+  u16 nelem;
+} NDR_DEFORM;
+
+typedef struct{
+  Gfx *gfx;
+  Vtx *vtx;
+  u16 nvtx;
+  u16 vtxsegno;
+
+  /* using texture segment */
+  u8 *img;
+  u16 *tlut;
+  u16 imgsegno, tlutsegno;
+
+  /* shape deform data link */
+  s16 *shaperef;
+  NDR_DEFORM *vtx_deform;
+  NDR_DEFORM *vtxcol_deform;
+  NDR_DEFORM *vtxnv_deform;
+  NDR_DEFORM *vtxst_deform;
+
+} NDR_SHAPE;
+</pre>
+</font>
+NDR_SHAPE is the structure for shape data management. It is added in order to implement Shape animation (deformation).  When animation is included in the shape data, it is implemented by linking the NDR_DEFORM type resource information as the animation data for each vertex.
+A new function for the texture coordinate animation was added to this version
+</blockquote>
+<hr size=1>
+<p>
+<b>Object Structures</b>
+<blockquote>
+<font face="courier" size="2">
+<pre>
+enum{
+  /* object types */
+  NDC_TYPE_NULL = 0x01,
+  NDC_TYPE_3D = 0x02,
+  NDC_TYPE_BILLBOARD = 0x03,
+
+  /* ColorCombine Mode */
+  NDC_CC_COMBINED = 0x00,
+  NDC_CC_TEX0 = 0x01,
+  NDC_CC_TEX1 = 0x02,
+  NDC_CC_PRIMITIVE = 0x03,
+  NDC_CC_SHADE = 0x04,
+  NDC_CC_ENV = 0x05,
+  NDC_CC_KEY_CENTER = 0x10,
+  NDC_CC_KEY_SCALE = 0x11,
+  NDC_CC_COMBINED_ALPHA = 0x06,
+  NDC_CC_TEX0_ALPHA = 0x07,
+  NDC_CC_TEX1_ALPHA = 0x08,
+  NDC_CC_PRIMITIVE_ALPHA = 0x09,
+  NDC_CC_SHADE_ALPHA = 0x0a,
+  NDC_CC_ENV_ALPHA = 0x0b,
+  NDC_CC_LOD = 0x0c,
+  NDC_CC_PRIM_LOD = 0x0d,
+  NDC_CC_NOISE = 0x12,
+  NDC_CC_K4 = 0x14,
+  NDC_CC_K5 = 0x15,
+  NDC_CC_1 = 0x0e,
+  NDC_CC_0 = 0x0f,
+
+  /* Render Mode(complexed) */
+  NDC_RM_AA_EN                     = 0x80000000,
+  NDC_RM_Z_CMP                     = 0x40000000,
+  NDC_RM_Z_UPD                     = 0x20000000,
+  NDC_RM_IM_RD                     = 0x10000000,
+  NDC_RM_CVG_DST                   = 0x0c000000,
+    NDC_RM_CVG_DST_CLAMP           = 0x00000000,
+    NDC_RM_CVG_DST_WRAP            = 0x04000000,
+    NDC_RM_CVG_DST_FULL            = 0x08000000,
+    NDC_RM_CVG_DST_SAVE            = 0x0c000000,
+  NDC_RM_CLR_ON_CVG                = 0x02000000,
+  NDC_RM_CVG_X_ALPHA               = 0x01000000,
+  NDC_RM_ALPHA_CVG_SEL             = 0x00800000,
+  NDC_RM_FORCE_BL                  = 0x00400000,
+  NDC_RM_ZMODE                     = 0x00300000,
+    NDC_RM_ZMODE_OPA               = 0x00000000,
+    NDC_RM_ZMODE_INTER             = 0x00100000,
+    NDC_RM_ZMODE_XLU               = 0x00200000,
+    NDC_RM_ZMODE_DEC               = 0x00300000,
+  NDC_RM_ALPHA_COMPARE             = 0x000c0000,
+    NDC_RM_ALPHA_COMPARE_NONE      = 0x00000000,
+    NDC_RM_ALPHA_COMPARE_THRESHOLD = 0x00040000,
+    NDC_RM_ALPHA_COMPARE_DITHER    = 0x00080000,
+  NDC_RM_DITHER_ALPHA              = 0x00030000,
+    NDC_RM_DITHER_ALPHA_PATTERN    = 0x00000000,
+    NDC_RM_DITHER_ALPHA_NOPATTERN  = 0x00010000,
+    NDC_RM_DITHER_ALPHA_NOISE      = 0x00020000,
+    NDC_RM_DITHER_ALPHA_DISABLE    = 0x00030000,
+  NDC_RM_BLENDER_MUX0              = 0x0000ff00,
+  NDC_RM_BLENDER_MUX1              = 0x000000ff,
+
+  /* NDR_OBJ.regflag(bit assign) */
+  NDC_REGF_2CYC        = 0x4000
+};
+
+typedef struct{
+  float tx, ty, tz;
+  float rx, ry, rz;
+  float sx, sy, sz;
+} TRX;
+
+typedef struct ndr_objTag{
+
+  /* object propaties */
+  u16 type, gid;
+  u32 prio;
+  TRX trx;
+
+  /* resourse index */
+  s16 shape;
+
+  /* RSP, RDP status register setting */
+  u16 regflag;
+  u32 geommode;
+  u32 rdmode;
+  u32 primcol;
+  u8 cc1[8], cc2[8];
+
+  /* geometric animation setting */
+  s16 geom_anim;
+  u16 loop;
+  u16 framerate;
+  u32 order;
+
+  /* children links */
+  s16 bb_obj[2];
+  u16 nchild;
+  s16 *child;
+
+} NDR_OBJ;
+</pre>
+</font>
+The NDR_OBJ structures are a database used for generating object instances.  The structures contain links to Gfx describing shape data, and to NDR_ANIM describing animation, as well as links to child objects.<p>
+With this version, the constants have been changed so the N64 color combiner mode and render mode settings can be directly performed on NIFF. In addition, data has been added for setting the shape animation.
+
+</blockquote>
+<hr size=1>
+<p>
+<b>Scene Structures </b>
+<blockquote>
+<font face="courier" size="2">
+<pre>
+typedef struct{
+  TRX trx;
+  u16 objno;
+} NDR_SCN_INST_OBJ;
+
+typedef struct{
+  int type;
+  u32 color;
+  float x, y, z;
+  float a1,a2;
+} NDR_SCN_LIGHT;
+
+typedef struct{
+  struct{
+    u16 near, far;
+    u8 r,g,b,a;
+  }fog;
+  struct{
+    u32 mode;
+    float fovy, aspect, scale;
+    u16 top, bottom, left, right, near, far;
+    u16 eye_inst, upper_inst, lookat_inst;
+  }cam;
+  struct{
+    u32 amb_color;
+    int nlight;
+    NDR_SCN_LIGHT *light;
+  }light;
+  u16 fill_col, fill_depth;
+  NDR_SCN_INST_OBJ *entryobj;
+  u16 nentobj;
+} NDR_SCENE;
+
+typedef struct{
+  NDR_SCENE *scene;
+  float convert_scale;
+
+  NDR_OBJ **obj;
+  NDR_SHAPE **shape;
+  NDR_ANIM **anim;
+  s16 **rawvtx;
+  u32 **rawvtxcol;
+  s8 **rawvtxnv;
+  s8 **rawvtxst;
+
+  u16 nobj;
+  u16 nshape;
+  u16 nanim;
+  u16 nrawvtx;
+  u16 nrawvtxcol;
+  u16 nrawvtxnv;
+  u16 nrawvtxst;
+} NDR_RESINFO;
+</pre>
+</font>
+The NDR_SCENE structures store data related to scene settings, such as fog and camera settings.  They also have a pointer to the NDR_SCN_INST_OBJ structure for the root object attached to the scene.<p>
+A new function for texture coordinate animation was added to this version.
+</blockquote>
+<hr size=1>
+<p>
+<b>Dynamic Instance Structures</b>
+<blockquote>
+<font face="courier" size="2">
+<pre>
+enum{
+    NDC_ITYPE_NULL = 0,
+    NDC_ITYPE_ROOT = 1,
+    NDC_ITYPE_OBJECT = 2,
+    NDC_ITYPE_ANIMTK = 3,
+    NDC_ITYPE_ANIM = 4,
+    NDC_ITYPE_DYNVTX = 5,
+    NDC_ITYPE_DEFORM_VTX = 6,
+    NDC_ITYPE_DEFORM_VTXCOL = 7,
+    NDC_ITYPE_DEFORM_VTXNV = 8,
+    NDC_ITYPE_DEFORM_VTXST = 9,
+
+    NDC_IPRIO_SYSTEM_BOTTOM = 0x0000,
+    NDC_IPRIO_OBJEND = 0x2000,
+    NDC_IPRIO_OBJ = 0x3000,
+    NDC_IPRIO_OBJROOT = 0x3fff,
+    NDC_IPRIO_ANIM = 0x4000,
+    NDC_IPRIO_ANIMTK = 0x5000,		/* time keeper */
+    NDC_IPRIO_ANIMROOT = 0x5fff,
+    NDC_IPRIO_DYNVTX = 0x6000,
+    NDC_IPRIO_DEFORM = 0x6100,
+    NDC_IPRIO_ROOT = 0x7fff,
+    NDC_IPRIO_SYSTEM_TOP = 0xffff,
+
+    NDC_IFLAG_MTX_READY = 0x4000,
+    NDC_IFLAG_ZONBIE = 0x8000,
+
+    NDC_ROTORDER_XYZ = 0x00010203,
+    NDC_ROTORDER_ZYX = 0x00030201,
+    NDC_ROTORDER_YXZ = 0x00020103,
+    NDC_ROTORDER_ZXY = 0x00030102,
+    NDC_ROTORDERMASK = 0x00ffffff,
+
+    /* For NDD_INST_OBJ.flag */
+    NDC_OFLAG_ENABLE        = 0x80000000,
+    NDC_OFLAG_VISIBLE       = 0x40000000,
+    NDC_OFLAG_RENDERMODE    = 0x20000000,
+    NDC_OFLAG_ALPHACOMPARE  = 0x10000000,
+    NDC_OFLAG_ALPHADITHER   = 0x08000000,
+    NDC_OFLAG_CYCLETYPE     = 0x04000000,
+    NDC_OFLAG_CCMODE        = 0x02000000,
+    NDC_OFLAG_GEOMMODE      = 0x01000000,
+    NDC_OFLAG_PRIMCOLOR     = 0x00800000,
+    NDC_OFLAG_ENVCOLOR      = 0x00400000,
+    NDC_OFLAG_FOGCOLOR      = 0x00200000,
+    NDC_OFLAG_BLEANDCOLOR   = 0x00100000,
+    NDC_OFLAG_MATRIX        = 0x00080000,
+    NDC_OFLAG_ALLREG        = 0x3ff80000,	/* combined flags */
+
+    NDC_OFLAG_PAUSE_ANIM    = 0x00040000,
+    NDC_OFLAG_PAUSE_DEFORM  = 0x00020000,
+
+    NDC_OFLAG_BILLBOARD     = 0x00008000,
+    NDC_OFLAG_2CYC          = NDC_REGF_2CYC
+};
+
+typedef struct{
+    u8 r,g,b,a;
+} RGBAQUAD;
+
+struct ndd_instanceTag;
+
+typedef struct{
+    TRX trx;
+} NDD_INST_NULL;
+
+typedef struct{
+    /* geometry propaty */
+    float modelview[4][4];		/* Used by display part. */
+    TRX trx;
+    u32 flag;
+    u32 order;
+    struct ndd_instanceTag *bb_obj[2];
+
+    /* display propaty */
+    NDR_SHAPE *shape;
+    Gfx *combine_gfx;
+    Gfx combinemode;
+    u32 geommode;
+    u32 rdmode;
+    u8 cc1[8], cc2[8];
+    u32 primcol, envcol, fogcol, blcol;
+    u8 prim_m, prim_l;
+} NDD_INST_OBJ;
+
+typedef struct{
+    struct ndd_instanceTag *tarinst;
+    float time;
+    float timescale;
+    s16 start;
+    s16 end;
+    struct ndd_instanceTag *animinst[10];
+    u16 naniminst;
+    s16 loop;
+} NDD_INST_ANIMTK;
+
+typedef struct{
+    struct ndd_instanceTag *tarinst;
+    float time;
+    u16 dummy_padding;
+    u16 kind;
+    s16 start;
+    s16 end;
+    s16 nowkeypos;
+    s16 nkey;
+    s16 *key;
+    float *value;
+} NDD_INST_ANIM;
+
+typedef struct{
+    struct ndd_instanceTag *tarinst;	/* link at NDD_INST_OBJ type */
+    Vtx *tarvtx[2];		/* destination data table(double buffer) */
+    NDR_SHAPE *dyn_shape;	/* dynamic shape struct */
+    NDR_SHAPE *src_shape;	/* old shape struct(backup) */
+    struct ndd_instanceTag *dfminst[4];
+} NDD_INST_DYNAMICVTX;
+
+typedef struct{
+    struct ndd_instanceTag *tarinst;	/* link at NDD_INST_DYNAMICVTX type */
+    s32 *modify_vtx;	/* high-16bit:Vertex low-16bit:fragment */
+    s32 *delta;		/* high-16bit:Vertex low-16bit:fragment */
+    s16 downcounter;		/* if zero then next key */
+    s16 nowkey;
+
+    /* copy of source NDR_DEFORM */ 
+    s16 *key;
+    s16 **rawvtx;	/* opened table list in local allocate memory */
+    u16 nkey;
+    u16 nelem;
+} NDD_INST_DEFORM_VTX;
+
+typedef struct{
+    struct ndd_instanceTag *tarinst;	/* link at NDD_INST_DYNAMICVTX type */
+    s16 *modify_vtxcol;	/* high-8bit:color low-8bit:fragment */
+    s16 *delta;		/* high-8bit:color low-8bit:fragment */
+    s16 downcounter;		/* if zero then next key */
+    s16 nowkey;
+
+    /* copy of source NDR_DEFORM */ 
+    s16 *key;
+    u32 **rawvtxcol;	/* opened table list local allocate memory */
+    u16 nkey;
+    u16 nelem;
+} NDD_INST_DEFORM_VTXCOL;
+
+typedef struct{
+    struct ndd_instanceTag *tarinst;	/* link at NDD_INST_DYNAMIC type */
+    s16 *modify_vtxnv;	/* high-8bit:color low-8bit:fragment */
+    s16 *delta;		/* high-8bit:color low-8bit:fragment */
+    s16 downcounter;		/* if zero then next key */
+    s16 nowkey;
+
+    /* copy of source NDR_DEFORM */ 
+    s16 *key;
+    s8 **rawvtxnv;	/* opened table list local allocate memory */
+    u16 nkey;
+    u16 nelem;
+} NDD_INST_DEFORM_VTXNV;
+
+typedef struct{
+    struct ndd_instanceTag *tarinst;	/* link at NDD_INST_DYNAMIC type */
+    s32 *modify_vtxst;	/* high-8bit:color low-8bit:fragment */
+    s32 *delta;		/* high-8bit:color low-8bit:fragment */
+    s16 downcounter;		/* if zero then next key */
+    s16 nowkey;
+
+    /* copy of source NDR_DEFORM */ 
+    s16 *key;
+    s16 **rawvtxst;	/* opened table list local allocate memory */
+    u16 nkey;
+    u16 nelem;
+} NDD_INST_DEFORM_VTXST;
+
+enum{
+    NDC_ICB_EVAL = 0,
+    NDC_ICB_DIE = 1
+};
+
+typedef void (*NDD_INST_CALLBACK)(struct ndd_instanceTag *isp, int type);
+
+typedef struct ndd_instanceTag{
+    struct ndd_instanceTag *next;
+    struct ndd_instanceTag *back;
+    struct ndd_instanceTag *parent;
+    struct ndd_instanceTag *bros;
+    struct ndd_instanceTag *child;
+    NDD_INST_CALLBACK instCB;	/* callback */
+    s16 type;			/* NDC_ITYPE_* */
+    u16 prio;			/* NDC_IPRIO_* */
+    u16 flag;			/* NDC_IFLAG_* */
+    u16 nchild;
+
+    u32 gid;
+    union{
+	NDD_INST_NULL null;
+	NDD_INST_OBJ obj;
+	NDD_INST_ANIM anim;
+	NDD_INST_ANIMTK animtk;
+	NDD_INST_DYNAMICVTX dynvtx;
+	NDD_INST_DEFORM_VTX dfm_vtx;
+	NDD_INST_DEFORM_VTXCOL dfm_vtxcol;
+	NDD_INST_DEFORM_VTXNV dfm_vtxnv;
+	NDD_INST_DEFORM_VTXST dfm_vtxst;
+    }u;
+} NDD_INSTANCE;
+
+enum{
+    /* For NDD_LIGHTSET.flag */
+    NDC_LFLAG_ENABLE = 0x8000,		/* True only when ndInitLight() */
+    NDC_LFLAG_ALREADY_SETS = 0x4000,	/* Register already set (for manager)*/
+    NDC_LFLAG_HAVEPOS = 0x0001,		/* Have position */
+    NDC_LFLAG_ATTENUATION = 0x0002,	/* Attenuation evaluated based on start, end */
+    NDC_LFLAG_CUTOFF = 0x0004		/* cutoff validity */
+};
+
+typedef struct {
+    u16 flag;
+    u16 lnum;			/* Light number transferedt to the register. */
+    u32 stored_color;		/* Color value transfered to the register. */
+    s8 stored_nv[3];		/* Normal value transfered to the register. */
+    RGBAQUAD color;		/* Only RGB is effective. */
+    float fnv[3];		/* Vector from object to light source(already normalized). */
+    float fpos[3];		/* Position on world coodinate system. */
+    float start, end;
+    float cutoff;		/* Light radiation angle (radian). */
+} NDD_LIGHT;
+
+#define NUM_LIGHTSET_LIGHTS 7
+
+typedef struct {
+    NDD_LIGHT light[NUM_LIGHTSET_LIGHTS];
+    RGBAQUAD ambient;
+    u16 numlights;		/* Used by manager. */
+} NDD_LIGHTSET;
+
+typedef struct{
+    NDD_INSTANCE *root;
+    int objno;
+} NDD_OBJ_INFO;
+
+typedef struct {
+    u16 top, bottom, left, right;
+    NDD_OBJ_INFO cam[3];
+    int enacam;
+    u16 fill_col, fill_depth;
+    struct{
+	int enable;
+	u16 near, far;
+	RGBAQUAD color;
+    } fog;
+    struct{
+	u32 mode;
+	float fovy, aspect;
+	u16 top, bottom, left, right, near, far;
+	float scale;
+    } camera;
+    struct{
+	float right[3];
+	float upper[3];
+    }reflect;
+    NDD_LIGHTSET lightset;
+    int nobj;
+    NDD_OBJ_INFO *obj;
+    float start_anim, end_anim;
+    float anim_time;
+    float framerate;
+} NDD_SCENE;
+
+typedef struct {
+    u16 ofs;
+    u16 count;
+} NDD_RESOFFSET;
+
+enum {
+    NDC_RES_USED_OBJ       = 0x0001,
+    NDC_RES_USED_SHAPE     = 0x0002,
+    NDC_RES_USED_ANIM      = 0x0004,
+    NDC_RES_USED_RAWVTX    = 0x0008,
+    NDC_RES_USED_RAWVTXCOL = 0x0010,
+    NDC_RES_USED_RAWVTXNV  = 0x0020,
+    NDC_RES_USED_RAWVTXST  = 0x0040,
+    NDC_RES_USED_ALL       = 0x007f
+};
+
+typedef struct {
+    u16 usemask;
+    NDR_RESINFO *resinfo;
+    NDD_RESOFFSET obj;
+    NDD_RESOFFSET shape;
+    NDD_RESOFFSET anim;
+    NDD_RESOFFSET rawvtx;
+    NDD_RESOFFSET rawvtxcol;
+    NDD_RESOFFSET rawvtxnv;
+    NDD_RESOFFSET rawvtxst;
+} NDD_RESINFO;
+</pre>
+</font>
+The NDD_INSTANCE structures are used for processing instances in nd.  They enable the realization of NULL, object, animation,  and timekeeper instance data, as well as scene hierarchy links.
+<p>
+By registering scene and object structures in NDD_INSTANCE and calling the ndEvalInstance() function, the hierarchical structure from the scene can be evaluated.
+<p>
+A new structure for texture coordinate animation, NDD_INST_DEFORM_VTXST, was added to this version.
+</blockquote>
+<hr size=3>
+<p>
+<b><a name="REFER"></a>nd Function Reference</b>
+<p>
+<blockquote>
+Below are links to the individual entries in the <A HREF="refer.htm">nd Function Reference</A>.  For detailed information, please refer to the individual source code in the n64prev directory.
+</blockquote>
+<p>
+<table border>
+<th colspan=2 bgcolor=#F1F3A3>
+<font face="arial" size="-1">Function Reference
+</th>
+<tr>
+<td nowrap>
+<font face="arial" size="-1"><a href="./refer.htm#NDGENINSTANCE">ndGenInstance</a>
+</td>
+<td>
+<font face="arial" size="-1">Creates and links an instance structure.
+</td>
+</tr>
+<tr>
+<td nowrap>
+<font face="arial" size="-1"><a href="./refer.htm#NDCHANGEPRIORITY">ndChangePriority</a>
+</td>
+<td>
+<font face="arial" size="-1">Changes the priority of one instance.
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1"><a href="./refer.htm#NDCHANGEPARENT">ndChangeParent</a>
+</td>
+<td>
+<font face="arial" size="-1">Changes the parent of the instance.
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1"><a href="./refer.htm#NDDELETEINSTANCEGID">ndDeleteInstanceGID</a>
+</td>
+<td>
+<font face="arial" size="-1">Deletes the instance matching the parameters specified by type, gid, and mask.
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1"><a href="./refer.htm#NDINIT">ndInit</a>
+</td>
+<td>
+<font face="arial" size="-1">Initializes the module.
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1">ndEntryAnimation
+</td>
+<td>
+<font face="arial" size="-1"><font color=ff0000>This function was deleted.</font>
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1"><a href="./refer.htm#NDENTRYANIMATIONRAW">ndEntryAnimationRaw</a>
+</td>
+<td>
+<font face="arial" size="-1">Creates one timekeeper instance and the number of channels' worth of animation instances from the animation reference table.
+</td>
+</tr>
+
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1"><a href="./refer.htm#NDENTRYOBJECT">ndEntryObject</a>
+</td>
+<td>
+<font face="arial" size="-1">Creates an instance from the object reference table.
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1"><a href="./refer.htm#NDENTRYOBJECTRAW">ndEntryObjectRaw</a>
+</td>
+<td>
+<font face="arial" size="-1">Creates one instance from the object reference table. The link is not followed, and the animation instance is not created.
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1"><a href="./refer.htm#NDATTACHANIMATION">ndAttachAnimation</a>
+</td>
+<td>
+<font face="arial" size="-1">References the animation link in the object reference table and attaches the animation to the existing object instance.
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1"><a href="./refer.htm#NDENTRYDEFORMVTX">ndEntryDeformVtx</a>
+</td>
+<td>
+<font face="arial" size="-1">Passes the vertex deform instance.
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1"><a href="./refer.htm#NDENTRYDEFORMVTXCOL">ndEntryDeformVtxcol</a>
+</td>
+<td>
+<font face="arial" size="-1">Passes the vertex color deform instance.
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1"><a href="./refer.htm#NDENTRYDEFORMVTXNV">ndEntryDeformVtxnv</a>
+</td>
+<td>
+<font face="arial" size="-1">Makes an entry of the vertex normal deform instance.
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1"><a href="./refer.htm#NDENTRYDEFORMVTXST">ndEntryDeformVtxst</a>
+</td>
+<td>
+<font face="arial" size="-1">Makes an entry of the vertex texture coordinate deform instance.
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1"><a href="./refer.htm#NDENTRYDEFORMSHAPE">ndEntryDeformShape</a>
+</td>
+<td>
+<font face="arial" size="-1">Takes the shape being referenced by the object instance and substitutes it for the modulated vertex information.
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1"><a href="./refer.htm#NDATTACHDEFORM">ndAttachDeform</a>
+</td>
+<td>
+<font face="arial" size="-1">Passes the deform if it is prepared for the hierarchical object instance.
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1"><a href="./refer.htm#NDSETUPSCENE">ndSetupScene</a>
+</td>
+<td>
+<font face="arial" size="-1">Constructs the scene from the scene reference table.
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1"><a href="./refer.htm#NDSETUPSCREEN">ndSetScreen</a>
+</td>
+<td>
+<font face="arial" size="-1">Sets the width and height of the screen display area.
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1"><a href="./refer.htm#NDRESINIT">ndResInit</a>
+</td>
+<td>
+<font face="arial" size="-1">Initializes the resource module.
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1"><a href="./refer.htm#NDRESENTRY">ndResEntry</a>
+</td>
+<td>
+<font face="arial" size="-1">Adds the specified resource to the global resource list.
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1"><a href="./refer.htm#NDRESRELEASE">ndResRelease</a>
+</td>
+<td>
+<font face="arial" size="-1">Releases the specified resource from the global list.
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1"><a href="./refer.htm#NDDELETEINSTANCE">ndDeleteInstance</a>
+</td>
+<td>
+<font face="arial" size="-1">Deletes an instance.
+</td>
+</tr>
+<tr>
+<td nowrap>
+<font face="arial" size="-1"><a href="./refer.htm#NDGETINSTANCETRXPOINTER">ndGetInstanceTRXPointer</a>
+</td>
+<td>
+<font face="arial" size="-1">Returns the transform buffer pointer from the instance pointer.
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1"><a href="./refer.htm#NDSETUPIDENTTRX">ndSetupIdentTRX</a>
+</td>
+<td>
+<font face="arial" size="-1">Returns the unit matrix.
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1"><a href="./refer.htm#NDPROGRESSANIMTIME">ndProgressAnimTime</a>
+</td>
+<td>
+<font face="arial" size="-1">Sets the time advance process for timekeeper
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1"><a href="./refer.htm#NDSETANIMCHANNEL">ndSetAnimChannel</a>
+</td>
+<td>
+<font face="arial" size="-1">Key frame animation channel process.
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1"><a href="./refer.htm#NDRELOADDYNAMICVERTEX">ndReloadDynamicVertex</a>
+</td>
+<td>
+<font face="arial" size="-1">References the modulation tables of the various deform instances and assembles Vtx.
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1"><a href="./refer.htm#NDDEFORMVERTEX">ndDeformVertex</a>
+</td>
+<td>
+<font face="arial" size="-1">Deforms the vertex.
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1"><a href="./refer.htm#NDDEFORMVERTEXNV">ndDeformVertexNv</a>
+</td>
+<td>
+<font face="arial" size="-1">Deforms the vertex normal.
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1"><a href="./refer.htm#NDDEFORMVERTEXCOLOR">ndDeformVertexColor</a>
+</td>
+<td> 
+<font face="arial" size="-1">Deforms the vertex color.
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1"><a href="./refer.htm#NDDEFORMVERTEXST">ndDeformVertexSt
+</a>
+</td>
+<td> 
+<font face="arial" size="-1">Deforms the vertex texture coordinate.
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1"><a href="./refer.htm#NDMAKECAMERAMATRIX">ndMakeCameraMatrix</a>
+</td>
+<td>
+<font face="arial" size="-1">Creates the camera's LookAt matrix.
+</td>
+</tr>
+<tr>
+<td nowrap>
+<font face="arial" size="-1"><a href="./refer.htm#NDMULTITRX">ndMultiTrx</a>
+</td>
+<td>
+<font face="arial" size="-1">Creates a 4x4 matrix from the TRX structure.
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1"><a href="./refer.htm#NDEVALINSTANCEONE">ndEvalInstanceOne</a>
+</td>
+<td>
+<font face="arial" size="-1">Evaluates the frame based on the instance specified by isp.
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1"><a href="./refer.htm#NDEVALINSTANCE">ndEvalInstance</a>
+</td>
+<td>
+<font face="arial" size="-1">Evaluates the frame based on the instance specified by isp.
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1"><a href="./refer.htm#NDCLEARFB">ndClearFB</a>
+</td>
+<td>
+<font face="arial" size="-1">Clears the frame buffer.
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1"><a href="./refer.htm#NDEVALLIGHT">ndEvalLight</a>
+</td>
+<td>
+<font face="arial" size="-1">Updates the light information from the initialized light structure and the target object's position information, and returns the color value and the light vector.  
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1"><a href="./refer.htm#NDRELOADLIGHTREG">ndReloadLightReg</a>
+</td>
+<td>
+<font face="arial" size="-1">Updates the light information in relation to the light structure.  Called by the ndSetupLightset function. 
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1"><a href="./refer.htm#NDSETUPLIGHTSET">ndSetupLightset</a>
+</td>
+<td>
+<font face="arial" size="-1">Evaluates the initialized light set passed by "lightset" together with the object that becomes the target, and loads only the part that has changed to the display list.
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1"><a href="./refer.htm#NDINITLIGHTS">ndInitLights</a>
+</td>
+<td>
+<font face="arial" size="-1">Resets the RDP's light settings, determines the number of lights, and allocates the light number to each light structure.
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1"><a href="./refer.htm#NDSETUPOBJECTREGISTER">ndSetupObjectRegister</a>
+</td>
+<td>
+<font face="arial" size="-1">References the object instance structure, and resets the registers specified for resetting.
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1"><a href="./refer.htm#NDDRAWSHAPE">ndDrawShape</a>
+</td>
+<td>
+<font face="arial" size="-1">Loads the Gfx structure into the drawing buffer in accordance with the contents of the shape structure.
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1"><a href="./refer.htm#NDDRAWOBJECTINSTANCE">ndDrawObjectInstance</a>
+</td>
+<td>
+<font face="arial" size="-1">Displays one object.
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1"><a href="./refer.htm#NDBUILDINSTANCEGFXATPRIO">ndBuildInstanceGfxAtPrio</a>
+</td>
+<td>
+<font face="arial" size="-1">Draws instances of certain priority after the specified instance pointer.
+</td>
+</tr>
+
+<tr>
+<td nowrap>
+<font face="arial" size="-1"><a href="./refer.htm#NDBUILDSCENEGFX">ndBuildSceneGfx</a>
+</td>
+<td>
+<font face="arial" size="-1">Builds the scene part's display list from the scene structure.
+</td>
+</tr>
+<tr>
+<td nowrap>
+<font face="arial" size="-1"><a href="./refer.htm#NDBUILDINSTANCEGFX">ndBuildInstanceGfx</a>
+</td>
+<td>
+<font face="arial" size="-1">Generates the object display list from the object instance.
+</td>
+</tr>
+</table>
+<hr>
+<p align="right"><a href="../index.htm">
+
+<img src="../../gif/index.gif"
+border="0" width="65" height="17"></a>
+
+</body>
+</html>

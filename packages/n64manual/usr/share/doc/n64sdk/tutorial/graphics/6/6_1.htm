@@ -1,0 +1,68 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Graphics-Chapter 6   Rendering Mode and Anti-aliasing</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/23/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<font style="font-size:16pt"><B>CHAPTER 6  RENDERING MODE AND ANTI-ALIASING</B></FONT>
+<br><br>
+<HR SIZE=3 NOSHADE>
+<P>
+ In Chapter 5, we explained how to realize transparency effects by mapping transparent textures having alpha values.  In concert with this, we also provided a simple explanation of how the Blender blends framebuffer pixels and pipeline pixels.  However, the role of the Blender is not simply to produce transparency effects.<br><br>
+     In this chapter, we build on our understanding of the Blender by introducing the extremely important topic of anti-aliasing.  We also go into more details about the blending process, which was only roughly explained in Chapter 5, and introduce the various rendering modes.
+</P>
+<font style="font-size:12pt"><B>6.1  Overview of Anti-aliasing on the N64</B></FONT>
+<br>
+<P>
+Algorithms for anti-aliasing and theories of implementation are the subjects of widespread research in the graphics field.  In general though, much anti-aliasing is based on the process of dividing a pixel up into finer subpixels, determining the color of each, and then averaging these with what is called supersampling.<br><br> 
+     The problem with this method is that it takes time to calculate the colors of the subpixels, and you also need to reserve memory to store the subpixel colors.  The N64 requires rendering processes that are both fast and memory-efficient, so this method has been simplified and a special architecture implemented for anti-aliasing.<br><br>
+     
+     For anti-aliasing on the N64, the pipeline color and the framebuffer color are blended based on an amount called the coverage value.  The coverage value represents the extent to which a given pixel is covered by a primitive.  When this value is small, the background color is heavily emphasized, whereas when this value is large, the pipeline color is more emphasized in the blending.<br><br>
+
+     If you just consider this role of the coverage value, it may seem that the coverage value is very similar to the alpha value.  However, it is conceptually important to distinguish between the two.  To wit, the coverage value is a number that describes the geometrical concept of the extent to which a pixel is covered by a primitive, whereas the alpha value describes the transparency of the pixel without any other meaning attached.  Of course, this is not to say that the two values are unrelated, since the product of the coverage value multiplied by the alpha value can be used for the coverage value and the alpha value inside the Blender.<br><br>
+     
+     We will talk more of the coverage value in the next section.  Here we will give a simple presentation of how anti-aliasing is performed on the N64.
+     You can think of anti-aliasing as a two-stage process on the N64:
+</P>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP COLSPAN=2>1.Anti-aliasing with the Blender (see Figure 6-1)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>In this stage, aliased interior edges of polygons are eliminated.  An interior edge is an edge that is shared by two polygons.</TD>
+</TR></TABLE>
+<P>
+<br>
+<IMG SRC="image16.gif">
+</P>
+<P>
+<B>Figure 6-1  The data flow in anti-aliasing (Stage 1)</B>
+</P>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD ALIGN=LEFT VALIGN=TOP NOWRAP COLSPAN=2>2.Anti-aliasing with the Video Interface (VI)  (see Figure 6-2)</TD>
+</TR><TR>
+	<TD ALIGN=LEFT VALIGN=TOP>&nbsp;</TD>
+	<TD ALIGN=LEFT VALIGN=TOP>In this second stage, the silhouette edges of the polygon are anti-aliased.  Silhouette edges are all exterior edges of the rasterized polygon.  This anti-aliasing process is executed at the stage when data is sent from the framebuffer to the DAC.</TD>
+</TR></TABLE>
+<P>
+<br>
+<IMG SRC="image17.gif">
+</P>
+<P>
+<B>Figure 6-2  The data flow in anti-aliasing (Stage 2)</B>
+</P>
+<P>
+<br>
+<IMG SRC="image18.gif">
+</P>
+<P>
+<B>Figure 6-3  Interior edge and silhouette edges</B>
+</P>
+<P>
+In the following sections, we will provide detailed explanations of how coverage values are calculated and about blending in the Blender.
+</P>
+</BODY>
+</HTML>

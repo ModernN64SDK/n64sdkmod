@@ -1,0 +1,25 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Device-Chapter 2 How to USE Devices Connected to the PI </TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/21/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<font style="font-size:12pt"><B>2.5  Exclusive Control of the PI</B></FONT>
+<br>
+<P>
+ The instructions relating to the 64DD are designed on the assumption that other PI devices are not accessed. Thus, you must make sure for example that data is not read from ROM while the 64DD is being accessed.<br><br>
+
+     The normal audio driver DMA transfers the sound source data from ROM for use.  However, if you use this method, you cannot access the 64DD while sounds are playing.  For this reason, you need to use a driver that can load the sound source data into RAM and then play it, just like the library used with the N64 Sound Tools.<br><br>
+     If there is a possibility that access to 64DD might overlap with access to another PI device, you need to perform some exclusive processing at the user level.<br><br>
+     With MFS you can register a callback function to be called before an asynchronous Leo function is called and after a Leo function operation is completed.  Exclusive control can be implemented relatively easily by registering a function here for exclusive control using the message system.
+</P>
+<BR>
+<BR>
+<BR>
+<BR>
+</BODY>
+</HTML>

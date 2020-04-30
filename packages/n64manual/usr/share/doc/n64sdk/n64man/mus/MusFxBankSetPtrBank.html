@@ -1,0 +1,58 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../n64man.css">
+<title>MusFxBankSetPtrBank()</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check-->
+</head>
+
+<h1>MusFxBankSetPtrBank()</h1>
+
+<h2>Syntax</h2>
+
+<pre>void MusFxBankSetPtrBank(void *ifxbank, void *ipbank);</pre>
+
+<h2>Arguments</h2>
+
+<dl>
+  <dt><b>ifxbank</b>
+  <dd>the address of an initialized sound effect bank
+  <dt><b>ipbank</b>
+  <dd>the address of an initialized sample bank
+</dl>
+
+<h2>Description</h2>
+
+<p>It sets the sample bank override associated with the specified sound effect bank. If the sample bank override is set to NULL, it won't use override.</p>
+
+<p>The default sound effect bank is used when the <a href="MusStartEffect.html">MusStartEffect()</a> or the <a href="MusStartEffect2.html">MusStartEffect2()</a> function is used to start sound effects, if no sound effect bank override has been defined. If a sample bank override has been specified with the MusFxBankSetPtrBank() function for the effect bank to which the triggering sound effect belongs, then the MusFxBankSetPtrBank() will be used, unless a higher priority override has been defined using the <a href="MusPtrBankSetSingle.html">MusPtrBankSetSingle()</a> function. </p>
+
+<p>The ifxbank  must contain the address of a sound effect bank initialized with the <a href="MusFxBankInitialize.html">MusFxBankInitialize()</a> function.</p>
+
+<p>The ipbank  must be the address of a sample pointer bank file that has been initialized with the <a href="MusFxBankInitialize.html">MusPtrBankInitialize()</a> function.</p>
+
+<h2>Return Value</h2>
+
+<p>None</p>
+
+<h2>Example</h2>
+
+<pre>void GameSongSetFxBank(musHandle song_handle, void *fx_bank)
+{
+  void *ptr_bank;
+
+  ptr_bank = <a href="MusHandleGetPtrBank.html">MusHandleGetPtrBank</a>(song_handle);
+  MusFxBankSetPtrBank(fx_bank, ptr_bank);
+}
+</pre>
+
+<h2>See Also</h2>
+<p>
+<a href="MusFxBankInitialize.html">MusFxBankInitialize()</a>,
+<a href="MusPtrBankInitialize.html">MusPtrBankInitialize()</a>,
+<a href="MusStartEffect.html">MusStartEffect()</a>,
+<a href="MusStartEffect2.html">MusStartEffect2()</a>
+</p>
+
+</body>
+</html>

@@ -1,0 +1,1381 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 26 - SI Devices</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. 
+             MAP- 10/22/99 edited content, updated format---->
+</head>
+
+<H1>26.3 Controller Pak</H1>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H2><A name="01"></A>26.3.1 What is the Controller Pak? </H2>
+<P>
+The Nintendo 64 Controller Pak 256K (Controller Pak) is a removable memory device used with the Nintendo 64 Controller (Controller). The Controller Pak is inserted into the Controller Joy Port and can be used for purposes such as storing game progress and high scores. 
+</P>
+<P>
+It is assumed that the Controller Pak will be shared by multiple applications. Consequently, it uses slightly different interfaces from that of the backup memory used in previous Nintendo products. This interface is now included in the Controller Pak Library. For example, if Controller Pak memory is used by the application, data areas must first be obtained through the library. 
+</P>
+<P>
+As a general rule, always access the Controller Pak via the Controller Pak Library. To allow multiple applications to share the Controller Pak, avoid reserving unnecessary data space. 
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H2><A name="02"></A>26.3.2 Controller Pak Configuration</H2>
+<P>
+In this section we explain the configuration of the Controller Pak. Please make sure you understand this section, because the specifications are very different from the specifications for Nintendo's backup memory products. Also, note that there are many names such as &QUOT;page&QUOT; and &QUOT;note&QUOT; which are used only for the Controller Pak. 
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H3><A name="02-01"></A>26.3.2.1 Page</H3>
+<P>
+For easy management of the Controller Pak , memory is delimited by 256-byte boundaries and managed in 256-byte units. Each 256 bytes is termed a Page and, beginning with memory area 0x0000 ~ 0x00ff, the pages are named Page 0, Page 1, Page 2, . . . Page 127. 
+</P>
+<P>
+For a 256 Kbit Controller Pak (256 Kbit capacity = 32 Kbytes = 128 pages), 5 pages (Pages 0-4) are reserved by the system for game note management. This reserved area totals 1,280 bytes. Consequently, the number of pages that can actually be used by the game is reduced
+by 5 pages. The role of each page used by the system is as follows: 
+</P>
+<TABLE>
+  <TR>
+    <TD>Page</TD>
+    <TD>0</TD>
+    <TD>: serial number, label area</TD></TR>
+  <TR>
+    <TD></TD>
+    <TD>1, 2</TD>
+    <TD>: I-NODE area</TD></TR>
+  <TR>
+    <TD></TD>
+    <TD>3, 4</TD>
+    <TD>: Game Note (described below) information area</TD></TR>
+  <TR>
+    <TD></TD>
+    <TD>5 ~</TD>
+    <TD>: First page of actual game data area</TD></TR>
+</TABLE>
+
+<P>
+Therefore, the effective number of pages available is <B>123 pages</B>.
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H3><A name="02-02"></A>26.3.2.2 Game Note</H3>
+<P>
+To allow the Controller Pak to be shared among different applications, the Controller Pak Library creates a file system which it uses for managing the memory areas. Intuitively, this system can be regarded as a greatly simplified version of the file system used in PC operating systems. In the Controller Pak, files are named Game Notes or simply Notes. Up to 16 game notes can be created in one Controller Pak. 
+</P>
+<P>
+The application reserves a game note for data storage. As a general rule, the application program must verify that a game note has been reserved by the application or that there is adequate space remaining before the player begins a game. If no usable note is available, a
+message must be displayed before the game is started, such as the game can not be saved. Do you still wish to start the game? Please make every effort to avoid problems such as displaying a Cannot Save message, after a player registers a top score in a game. 
+</P>
+<P>
+The size of the game note can be set individually for each game, provided a new note does not exceed the number of pages remaining. When the note size is set with the library, the size is rounded up to the nearest 256 bytes regardless of the actual number input. Therefore
+it is recommended that the size be specified in multiples of 256 bytes. An area can be re-sized after it is reserved, but this operation should be performed in such a way that it does not cause problems for a player.
+</P>
+<P>
+In general, one application should only use one game note. The Controller Pak Library does support multiple notes per application, because it is conceivable that the memory space in the Controller Pak can be used more efficiently, or that the game developer can take advantage of multiple notes. Do not misuse this function by reserving multiple notes without good reason. 
+</P>
+<P>
+Game notes contain the following information: 
+</P>
+<TABLE border="1">
+  <TR>
+    <TD>Company code</TD>
+    <TD>2 bytes</TD>
+    <TD>From 0x0001 to 0xffff</TD></TR>
+  <TR>
+    <TD>Game code</TD>
+    <TD>4 bytes</TD>
+    <TD>From 0x00000001 to 0xffffffff<BR>
+The Game code is replaced with the initial code.</TD></TR>
+  <TR>
+    <TD>Note name</TD>
+    <TD>16 bytes</TD>
+    <TD>Use Nintendo's proprietary character code (N64 font code) <SUP><A href="#kome9">*9</A></SUP>. The note name is the same as the game name or at least similar to it. If the name is less than 16 bytes long, fill the remaining area with 0x00.</TD></TR>
+  <TR>
+    <TD>Note extension [0]</TD>
+    <TD>1 byte</TD>
+    <TD>This extension is used for multiple notes. Normally the extension is 0x00. If additional notes are used, substitute this with 0x10 - 0x33 (N64 font codes '0' - '9' and 'A' - 'Z').</TD></TR>
+  <TR>
+    <TD>Note extension[1,2,3]</TD>
+    <TD>3 bytes</TD>
+    <TD>Reserved (always 0x00)</TD></TR>
+</TABLE>
+
+<P>
+The company code and game code issued by Nintendo are expressed as <u>ASCII code</u>. Note names and note extensions are expressed as <u>N64 font codes</u>.
+</P>
+<P>
+Accessing game notes produced by other companies is generally prohibited, except when deleting game notes in the Controller Pak menu. Access only game notes with your company code issued by Nintendo. Those wishing to access game notes produced by other companies are asked to inquire with Nintendo. 
+</P>
+<P>
+<A name="kome9"></A>*9 Please refer to the manual on nosLoadFont() (<A href="#05-02">Section 26.3.5.2 "Loading the Font Data"</A>) for the Nintendo font code table.
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H3><A name="02-03"></A>26.3.2.3 Serial Number</H3>
+<P>
+To allow insertion and removal of the Controller Pak to be detected during a game, the serial number is stored in the Controller Pak. In general, each Controller Pak has been assigned a unique number. When the Controller Pak is initialized, this number is read and stored in
+memory by the Controller Pak Library. Subsequently, each time a Controller Pak is accessed, its number is compared with that in the Controller Pak Library to determine when a different Controller Pak has been substituted. 
+</P>
+<P>
+Because the current specifications do not provide for switching between different Controller Pak(s) during a game, when a different serial number is detected it should be processed as an error. Contact Nintendo if you wish to enable switching between Pak(s) during a game.
+</P>
+<P>
+Because this serial number is read automatically within each function, the application programmer does not need to be particularly concerned with the serial number. 
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H3><A name="02-04"></A>26.3.2.4 Label</H3>
+<P>
+The Controller Pak contains a 32-byte label area. This area is currently undefined. Although there are functions in the Controller Pak Library that read and write to this area, please do not use these functions.
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H3><A name="02-05"></A>26.3.2.5 Multinote</H3>
+<P>
+When reserving multiple notes for an application, create all of these notes using the same company code, game code, and note name. Use the note extension to distinguish between notes. 
+</P>
+<P>
+Note extension[0] uses 0x00 or a character of the alphabet, and is defined as shown below.
+</P>
+<TABLE>
+  <TR>
+    <TD></TD>
+    <TD>Note Extension [0]</TD></TR>
+  <TR>
+    <TD>First note (main note)</TD>
+    <TD>0x00</TD></TR>
+  <TR>
+    <TD>Second note (additional note 1)</TD>
+    <TD>0x1a (N64 font code 'A')</TD></TR>
+  <TR>
+    <TD>Third note (additional note 2)</TD>
+    <TD>0x1b (N64 font code 'B')</TD></TR>
+  <TR>
+    <TD>  : </TD>
+    <TD></TD></TR>
+</TABLE>
+
+<P>
+When Multinote is used, the main note is not always necessary.  It may be possible to design so that only new notes can have multiple notes.
+</P>
+<P>
+Please ensure that notes are not interdependent. This is to prevent situations where the user deletes a note and the game cannot proceed using the remaining notes. 
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H3><A name="02-06"></A>26.3.2.6 Controller Pak Menu</H3>
+<P>
+Because the Controller Pak is shared by a number of applications, available space becomes scarce as the Controller Pak is utilized. This necessitates a simple, consistent means by which the user can free up space in the Controller Pak by deleting unnecessary game notes.
+To prevent confusion at the user level, a uniform start-up method is required. 
+</P>
+<P>
+The specifications listed below are suggested to maintain this uniformity. In creating a Controller Pak menu, please ensure that it meets these specifications. 
+</P>
+<P>
+<B>* Calling Up the Menu </B>
+</P>
+<P>
+(1) Insert the Controller Pak into Controller 1. 
+</P>
+<P>
+(2) Turn the power ON while pressing the START button, or reset while pressing the START button. 
+</P>
+<P>
+(3) The Controller Pak menu boots up. 
+</P>
+<P>
+<B>* Menu Functions</B>
+</P>
+<P>
+(1) The menu should display the note name, note extension[0], list of page used, and the number of unused pages
+</P>
+<P>
+(2) The user can select and delete unwanted game notes. 
+</P>
+<P>
+(3) Before actual deletion, the software must ask the user, &QUOT;Do you want to delete this game note?&QUOT;.  
+</P>
+<P>
+The <tt>nosPakMenu()</tt> function is provided as one example of the Controller Pak menu. This function has been made very simple to keep the program size to a minimum. The function can also be included in the application to limit program size and, because the source code is
+included, it can be used for creating custom menus. 
+</P>
+<P>
+Several functional limitations have been placed on <tt>nosPakMenu()</tt> to limit program size. The menu cannot be executed with a Control Stick and only game notes for the Controller Pak inserted into Controller #1 can be deleted. Needless to say, eliminating such restrictions is
+desirable if program size permits. 
+</P>
+<P>
+In addition, access to game notes produced by other companies should be limited to the  game note deletion function of this menu. For example, please avoid implementations that provide such access by means other than the Controller Pak menu or provide a menu option
+of copying the game notes of other companies. 
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H2><A name="03"></A>26.3.3 Controller Pak Function Specifications</H2>
+<P>
+The following library functions used to handle the Controller Pak in an N64 program. Each of these functions is described in detail below. 
+</P>
+<UL>
+  <LI>Initializes the Controller Pak file handle. (<tt>osPfsInitPak()</tt>)
+  <LI>Creates a new game note. (<tt>osPfsAllocateFile()</tt>)
+  <LI>Checks and repairs the Controller Pak file system. (<tt>osPfsChecker()</tt>)
+  <LI>Deletes a game note. (<tt>osPfsDeleteFile()</tt>)
+  <LI>Gets game note information. (<tt>osPfsFileState()</tt>)
+  <LI>Searches for a specified game note. (<tt>osPfsFindFile()</tt>)
+  <LI>Gets the free byte size of the Controller Pak. (<tt>osPfsFreeBlocks()</tt>)
+  <LI>Checks whether a pak-type SI device is inserted. (<tt>osPfslsPlug()</tt>)
+  <LI>Gets the maximum number of notes and the number of notes in use. (<tt>osPfsNumFiles()</tt>)
+  <LI>Reads/writes data to a game note. (<tt>osPfsReadWriteFile()</tt>)
+  <LI>Repairs the file system. (<tt>osPfsRepairId()</tt>)
+  <LI>Reads a label. (<tt>osPfsGetLabel()</tt>)
+  <LI>Writes a label. (<tt>osPfsSetLabel()</tt>)
+</UL>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H3><A name="03-01"></A>26.3.3.1 Initializes the Controller Pak</H3>
+<P>
+<B>Function</B>
+</P>
+<P>
+osPfsInitPak
+</P>
+<p><i>Initializes the Controller Pak file handle</i></p>
+<P>
+<B>Syntax</B>
+</P>
+<pre>
+#include &lt;ultra64.h&gt;
+s32 osPfsInitPak (OSMesgQueue *mq, OSPfs *pfs, int controller_no);
+</pre>
+<P>
+<B>Description</B>
+</P>
+<P>
+It initializes the OSPfs structure pfs, which is the file handle used to operate the Controller Pak. This function should be called first when a Controller Pak is used for the first time, a new Controller Pak is inserted, or to access different Controller Paks inserted in multiple controllers. However, because configuration must be performed to use SI, osContInit should be called once at the start, before osPfsInitPak is called.
+</P>
+<P>
+When controlling a file system, a Controller Pak function uses the OSPfs structure pointed to by the <b>pfs</b> argument as a file handle to gain access. This function, <tt>osPfsInitPak</tt>, initializes that OSPfs structure. 
+</P>
+<P>
+The <b>controller_no</b> argument specifies the Controller number (0~3) into which the Controller Pak is inserted. A Controller Pak inserted in the controller port which is specified by the <b>controller_no</b> would be the target Controller Pak. 
+</P>
+<P>
+The <b>mq</b> argument is the initialized message queue linked to OS_EVENT_SI. Please refer to <A href="../../n64man/os/osSetEventMesg.htm">osSetEventMesg()</A> for creation of this link. Because <b>mq</b> is used by the function as an internal message queue, it is not necessary for the application to use <b>mq</b> for purposes such as queuing function-termination messages. 
+</P>
+<P>
+The <tt>osPfsInitPak</tt> performs the following kinds of processing internally. First it checks the disk ID area. If it recognizes the ID, it calls the function <tt>osPfsChecker</tt>. This enables recovery to be performed automatically if the file management area (FAT area) is destroyed. 
+</P>
+<P>
+Although the previous Pfs initialization function, <tt>osPfsInit</tt>, performed automatic recovery if the ID area <SUP><A href="#kome10">*10</A></SUP> was completely destroyed, <tt>osPfsInitPak</tt> does not perform automatic restoration. ID recover requires a separate call to function <tt>osPfsRepairId</tt>. Normally when initializing the Controller Pak, the function <tt>osPfsInitPak</tt> should be used  rather than <tt>osPfsInit</tt>. In addition, be sure to integrate <tt>osPfsRepairId</tt> into the program so that it can be called. 
+</P>
+<P>
+This is necessary because certain addresses could become indeterminate due to a poor connection at the connector or for other reasons. If you use osPfsInit to check the ID area, the function could reach the wrong address somehow because of the inappropriate address, although it was supposed to check the ID. Also, the function could determine that it is not a valid ID, looking at the data at the wrong address. In this case, the old <tt>osPfsInit</tt> function assigns a new ID automatically and it could write the new ID to the wrong address. As a result, the content of the Controller Pak may be destroyed. 
+</P>
+<P>
+Therefore, always use the following procedure when initializing a Controller Pak.
+</P>
+<P>
+To initialize a Controller Pak, always call <tt>osPfsInitPak</tt>. If 0 is returned, the call is successful.
+</P>
+<P>
+If PFS_ERR_ID_FATAL is returned as the error code, one of the following problems may exist: The Controller Pak's ID area is destroyed, the Controller Pak is not connected properly, the Controller Pak ID cannot be read due to a dirty connector, or the Controller's joy bus or Controller Pak is damaged. In this case, you must display the message, "The Controller or Controller Pak may not be inserted properly, the content may have been destroyed, or it may be damaged." Then prompt the user to choose between "connect again" or "repair it - the content of the Controller Pak may be destroyed.". If the user chooses "connect again," call the <tt>osPfsInitPak</tt> function again. If the user chooses "repair," call the <tt>osPfsRepairId</tt> function, and then call <tt>osPfsInitPak</tt> again. 
+</P>
+<P>
+<A name="kome10"></A>*10 osPfsInitPak confirms ID integrity internally by checksum comparison. If the checksums do not agree, the ID is evaluated as corrupted.
+</P>
+<P>
+If an error occurs, one of the following error codes is returned:
+</P>
+<P>
+<B>PFS_ERR_NOPACK</B>
+</P>
+<P>
+Either the Controller Pak is not inserted into the specified Controller or the Controller is not properly connected. To determine which is the case, use <tt>osContStartQuery</tt> or <tt>osContGetQuery</tt>. 
+</P>
+<P>
+<B>PFS_ERR_NEW_PACK</B>
+</P>
+<P>
+A different Controller Pak has been inserted <SUP><A href="#kome11">*11</A></SUP>. To use the inserted Controller Pak, initialize it by calling osPfsInitPak. 
+</P>
+<P>
+<B>PFS_ERR_CONTRFAIL</B>
+</P>
+<P>
+Data transfer to or from the Controller has failed. If a transfer error occurs, up to three tries will be done internally. Therefore, it is rather rare to see this error. If this error has returned, it is possible that either the Controller is not connected properly, or the Controller Pak or Controller Socket is damaged. 
+</P>
+<P>
+<B>PFS_ERR_ID_FATAL</B>
+</P>
+<P>
+An attempt was made to initialize the file system, but the ID area was corrupted. Either the Controller Pak data were corrupted or the controller itself is malfunctioning or not properly connected. When this error is returned, the user should first be asked whether the Controller Pak should be initialized (assign a new ID) or to check the Controller Pak connection. If the user responds that the Controller Pak should be initialized, the function <tt>osPfsRepairId</tt> should be called. 
+</P>
+<P>
+<B>PFS_ERR_DEVICE</B>
+</P>
+<P>
+A peripheral device other than a Controller Pak (eg, Rumble Pak, 64GB Pak) has been inserted in the controller. Whether a Controller Pak has been inserted is determined by whether the device has RAM. This error is issued if there is no RAM present. 
+</P>
+<P>
+<A name="kome11"></A>*11 Internally specified Controller Pak is recognized by comparing ID each Controller Pak has.
+</P>
+<P>
+The following is a sample program for this function.
+</P>
+<P>
+<B>Example</B>
+</P>
+<PRE>
+void
+mainproc(void) {
+  int i;
+  OSMesgQueue     intMesgQueue;
+  OSMesg          intMesgBuf[1];
+  OSContStatus    contstat[MAXCONTROLLERS];
+  OSPfs           pfs[MAXCONTROLLERS];
+  u8              contpat;
+  s32             ret;
+  
+  osCreateMesgQueue(&amp;intMesgQueue, intMesgBuf, 1);
+  osSetEventMesg(OS_EVENT_SI, &amp;intMesgQueue, NULL);
+  osContInit(&amp;intMessageQ, &amp;contpat, contstat);
+
+  for (i = 0 ; i &lt; MAXCONTROLLERS ; i ++) {
+    if ((contpat &gt;&gt; i) &amp; 1) {
+      if ((contstat[i].type &amp; CONT_TYPE_MASK) == CONT_TYPE_NORMAL) {
+        do {
+          ret = osPfsInitPak(&amp;intMessageQ, &amp;pfs[i], i);
+          switch(ret) {
+          case 0:
+            osSyncPrintf(&QUOT;Controller Pak is inserted into PORT %d\n&QUOT;, i);
+            break;
+          case PFS_ERR_NOPACK:
+            osSyncPrintf(&QUOT;Controller Pak is not inserted into PORT %d\n&QUOT;, i);
+            osSyncPrintf(&QUOT;Insert Controller Pak\n&QUOT;);
+            break;
+          case PFS_ERR_NEW_PACK:
+            osSyncPrintf(&QUOT;Controller Pak for PORT %d was replaced\n&QUOT;, i);
+            osSyncPrintf(&QUOT;This Controller Pak will be used\n&QUOT;);
+            break;
+          case PFS_ERR_CONTRFAIL:
+            osSyncPrintf(&QUOT;Abnormality is found in connection of Controller Pak for PORT %d\n&QUOT;, i);
+            osSyncPrintf(&QUOT;Check if Controller is inserted properly\n&QUOT;);
+            break;
+          case PFS_ERR_DEVICE:
+            osSyncPrintf(&QUOT;It cannot be saved in Controller Pak for PORT %d\n&QUOT;, i);
+            osSyncPrintf(&QUOT;Check if Controller Pak is inserted properly\n&QUOT;);
+            break;
+          case PFS_ERR_ID_FATAL:
+            osSyncPrintf(&QUOT;Abnormality is found in Controller Pak for PORT %d\n&QUOT;, i);
+            osSyncPrintf(&QUOT;A button..try to recover\n&QUOT;);
+            osSyncPrintf(&QUOT;Other buttons, re-insert\n&QUOT;);
+            if (AskQuestion(i) == A_BUTTON) {
+              osPfsRepairId(&amp;pfs[i]);
+            }
+            break;
+          }
+          WaitForPushingAnyButton(i);
+        } while (ret != 0) ;
+      } else {
+        osSyncPrintf(&QUOT;PORT %d is not a normal Controller\n&QUOT;, i);
+      }
+    } else {
+       osSyncPrintf(&QUOT;Controller is not inserted into PORT %d\n&QUOT;, i);
+    }
+}
+</PRE>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H3><A name="03-02"></A>26.3.3.2 Creates a new game note</H3>
+<P>
+<B>Function</B>
+</P>
+<P>
+<tt>osPfsAllocateFile</tt>
+</P>
+<p><i>Creates a new game note</i></p>
+<P>
+<B>Syntax</B>
+</P>
+<pre>
+#include &lt;ultra64.h&gt;
+s32 osPfsAllocateFile(OSPfs *pfs, u16 company_code, u32 game_code, u8 *game_name,
+u8 *ext_name, int length, s32 *file_no);
+</pre>
+<P>
+<B>Description</B>
+</P>
+<P>
+<tt>osPfsAllocateFile</tt> creates a new game note (file) in a Controller Pak. The company_code (company code), game_code (game code), game_name (note name), ext_name (note extension), and length (size) arguments must be specified as the information for the game note.
+</P>
+<P>
+The company_code and game_code are specified as ASCII character strings. The game_name and ext_name are specified by N64 font code. 
+</P>
+<P>
+The size of game_name is PFS_FILE_NAME_LEN(16) bytes. If the size is less than 16 bytes, fill the rest with 0x00. Be sure to make the length 16 bytes.
+</P>
+<P>
+The size of ext_name is PFS_FILE_EXT_LEN(4) bytes. However, only the first byte is actually used. For this code, use '0' - '9', 'A' ~ 'Z' (0x10~0x33) of N64 font code. The second through fourth bytes are reserved, so use 0x00.
+</P>
+<P>
+The size is specified by length, in bytes. Because the smallest internal unit is a page (256 bytes), if length is not specified in multiples of 256, the length will be rounded up to the nearest multiple of 256. 
+</P>
+<P>
+The newly created game note's note number (file descriptor) will be returned to file_no. Up to 16 game notes can be created. Therefore, file_no ranges from 0 to 15. 
+</P>
+<P>
+The OSPfs structure pointed to by pfs is the file handle to be initialized by the function <A href="../../n64man/os/osPfsInitPak.htm">osPfsInitPak()</A>. Please refer to <tt>osPfsInitPak</tt> to determine how to create this handle. 
+</P>
+<P>
+If this function is called successfully, 0 is retruned. If an error occurs, one of the following error codes is returned:
+</P>
+<P>
+<B>PFS_ERR_NOPACK</B>
+</P>
+<P>
+Either the Controller Pak is not inserted into the specified Controller or the Controller is not properly connected. To determine which is the case, use <tt>osContStartQuery</tt> or <tt>osContGetQuery</tt>.
+</P>
+<P>
+<B>PFS_ERR_NEW_PACK</B>
+</P>
+<P>
+A different Controller Pak has been inserted. To use the inserted Controller Pak, initialize it by calling <tt>osPfsInitPak</tt>. 
+</P>
+<P>
+<B>PFS_ERR_INCONSISTENT</B>
+</P>
+<P>
+There is a problem in the file system's management area. Usually this error does not occur because <tt>osPfsChecker</tt> is called internally when you initialize the file system by calling <tt>osPfsInitPak</tt>. If this error is returned, either the Controller Pak is not connected properly, or the Controller Pak itself is damaged. 
+</P>
+<P>
+<B>PFS_ERR_CONTRFAIL</B>
+</P>
+<P>
+Data transfer to or from the Controller has failed. If a transfer error occurs, up to three tries will be done internally. Therefore, it is rather rare to see this error. If this error has returned, it is possible that either the Controller is not connected properly, or the Controller Pak or Controller Socket is damaged.
+</P>
+<P>
+<B>PFS_ERR_INVALID</B>
+</P>
+<P>
+If this error is returned, an incorrect argument was specified when this function was called, the specified game note does not exist, or the Pfs function has been called without being initialized using <tt>osPfsInitPak</tt>. Also, if the functions for the Controller were executed after the file handle structure pfs was initialized by other than <tt>osPfsInitPak</tt>, this error occurs.For instance, if <tt>osPfsAllocateFile</tt> is executed after the initialization function for Rumble Pak <tt>osMotorInit</tt> is used to initialize OSPfs structure, then this error occurs. 
+</P>
+<P>
+<B>PFS_DATA_FULL</B>
+</P>
+<P>
+Although the creation of a new game note was attempted, one could not be created because there was not enough space in the Controller Pak.
+</P>
+<P>
+<B>PFS_DIR_FULL</B>
+</P>
+<P>
+Although the creation of a new game note was attempted, it could not be done because the maximum (16) number of game notes have been stored in the Controller Pak.
+</P>
+<P>
+<B>PFS_ERR_EXIST</B>
+</P>
+<P>
+Although the creation of a new game note was attempted, it could not be done because the same game note already exists in the Controller Pak.
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H3><A name="03-03"></A>26.3.3.3 Checks and repairs the Controller Pak file system</H3>
+<P>
+<B>Function</B>
+</P>
+<P>
+<tt>osPfsChecker</tt>
+</P>
+<p><i>Checks and repairs the Controller Pak file system</i></p>
+<P>
+<B>Syntax</B>
+</P>
+<pre>
+#include &lt;ultra64.h&gt;
+s32 osPfsChecker(OSPfs *pfs);
+</pre>
+<P>
+<B>Description</B>
+</P>
+<P>
+osPfsChecker inspects the file management area <SUP><A href="#kome12">*12</A></SUP> of the Controller Pak. If it finds a damaged area, it attempts a repair operation. If a repair operation is performed, the status bit of the OSPfs structure pointed to by pfs is set to PFS_CORRUPTED. When this is done, data will be lost in most cases. 
+</P>
+<P>
+The OSPfs structure pointed to by pfs is the file handle to be initialized by the function <A href="../../n64man/os/osPfsInitPak.htm">osPfsInitPak()</A>. Please refer to <tt>osPfsInitPak</tt> to determine how to create this handle.
+</P>
+<P>
+Because <tt>osPfsInitPak</tt> calls <tt>osPfsChecker</tt> internally, the application programmer will not usually need to use the <tt>osPfsChecker</tt> function. 
+</P>
+<P>
+<A name="kome12"></A>*12 where it manages the file notes address.
+</P>
+<P>
+If this function is called successfully, 0 is retruned. If an error occurs, one of the following error codes is returned:
+</P>
+<P>
+<B>PFS_ERR_NOPACK</B>
+</P>
+<P>
+Either the Controller Pak is not inserted into the specified Controller or the Controller is not properly connected. To determine which is the case, use <tt>osContStartQuery</tt> or <tt>osContGetQuery</tt>.
+</P>
+<P>
+<B>PFS_ERR_CONTRFAIL</B>
+</P>
+<P>
+Data transfer to or from the Controller has failed. If a transfer error occurs, up to three tries will be done internally. Therefore, it is rather rare to see this error. If this error has returned, it is possible that either the Controller is not connected properly, or the Controller Pak or Controller Socket is damaged.
+</P>
+<P>
+<B>PFS_ERR_INCONSISTENT</B>
+</P>
+<P>
+There is a problem in the file system's management area. If this error is returned, either the Controller Pak is not connected properly, or the Controller Pak itself is damaged.
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H3><A name="03-04"></A>26.3.3.4 Deletes a game note</H3>
+<P>
+<B>Function</B>
+</P>
+<P>
+<tt>osPfsDeleteFile</tt>
+</P>
+<p><i>Deletes a game note</i></p>
+<P>
+<B>Syntax</B>
+</P>
+<pre>
+#include &lt;ultra64.h&gt;
+s32 osPfsDeleteFile(OSPfs *pfs, u16 company_code, u32 game_code, u8 *game_name,
+u8 *ext_name);
+</pre>
+<P>
+<B>Description</B>
+</P>
+<P>
+<tt>osPfsDeleteFile</tt> deletes a game note from the Controller Pak. The game note is specified by the company_code (company code), game_code (game code), game_name (note name), and ext_name (note extension) arguments. 
+</P>
+<P>
+The OSPfs structure pointed to by pfs is the file handle to be initialized by the function <A href="../../n64man/os/osPfsInitPak.htm"><tt>osPfsInitPak</tt>()</A>. Please refer to <tt>osPfsInitPak</tt> to determine how to create this handle.
+</P>
+<P>
+If this function is called successfully, 0 is retruned. If an error occurs, one of the following error codes is returned:
+</P>
+<P>
+PFS_ERR_NOPACK
+</P>
+<P>
+Either the Controller Pak is not inserted into the specified Controller or the Controller is not properly connected. To determine which is the case, use <tt>osContStartQuery</tt> or <tt>osContGetQuery</tt>.
+</P>
+<P>
+<B>PFS_ERR_NEW_PACK</B>
+</P>
+<P>
+A different Controller Pak has been inserted. To use the inserted Controller Pak, initialize it by calling <tt>osPfsInitPak</tt>.
+</P>
+<P>
+<B>PFS_ERR_INCONSISTENT</B>
+</P>
+<P>
+There is a problem in the file system's management area. Usually this error does not occur because <tt>osPfsChecker</tt> is called internally when you initialize the file system by calling <tt>osPfsInitPak</tt>. If this error is returned, either the Controller Pak is not connected properly, or the Controller Pak itself is damaged.
+</P>
+<P>
+<B>PFS_ERR_CONTRFAIL</B>
+</P>
+<P>
+Data transfer to or from the Controller has failed. If a transfer error occurs, up to three tries will be done internally. Therefore, it is rather rare to see this error. If this error has returned, it is possible that either the Controller is not connected properly, or the Controller Pak or Controller Socket is damaged.
+</P>
+<P>
+<B>PFS_ERR_INVALID</B>
+</P>
+<P>
+If this error is returned, an incorrect argument was specified when this function was called, the specified game note does not exist, or the <b>Pfs</b> function has been called without being initialized using <tt>osPfsInitPak</tt>. Also, if the functions for the Controller were executed after the file handle structure pfs was initialized by other than <tt>osPfsInitPak</tt>, this error occurs.For instance, if <tt>osPfsDeleteFile</tt> is executed after the initialization function for Rumble Pak <tt>osMotorInit</tt> is used to initialize OSPfs structure, then this error occurs.
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H3><B><A name="03-05"></A>26.3.3.5 Gets game note information</B></H3>
+<P>
+<B>Function</B>
+</P>
+<P>
+<tt>osPfsFileState</tt>
+</P>
+<p><i>Gets game note information</i></p>
+<P>
+<B>Syntax</B>
+</P>
+<pre>
+#include &lt;ultra64.h&gt;
+s32 osPfsFileState(OSPfs *pfs, s32 file_no, OSPfsState *state);
+</pre>
+<P>
+<B>Description</B>
+</P>
+<P>
+The <tt>osPfsFileState</tt> obtains the specified game note information. To specify a game note, use the note number <b>file_no</b> (file descriptor) argument. To retrieve specific game note information, it is necessary to obtain the note number by calling <tt>osPfsFindFile</tt>, before calling this function. Also, to retrieve all game note information in a Controller Pak, assign 0 to 15 to the file number (file_no) and call <tt>osPfsFileState</tt> 16 times. 
+</P>
+<P>
+The OSPfs structure pointed to by pfs is the file handle to be initialized by the function <A href="../../n64man/os/osPfsInitPak.htm"><tt>osPfsInitPak</tt>()</A>. Please refer to <tt>osPfsInitPak</tt> to determine how to create this handle.
+</P>
+<P>
+The game note information is stored in the OSPfsState structure specified by the pointer state argument. The following is the definition of that structure: 
+</P>
+<PRE>
+typedef struct {
+        u32 file_size;          /* Note Size (number of bytes) */
+        u32 game_code;          /* Game Code */
+        u16 company_code;       /* Company Code */
+        char ext_name[4];       /* Note Extension */
+        char game_name[16];     /* Note Name */
+}
+</PRE>
+<P>
+If this function is called successfully, 0 is retruned. If an error occurs, one of the following error codes is returned:
+</P>
+<P>
+<B>PFS_ERR_NOPACK</B>
+</P>
+<P>
+Either the Controller Pak is not inserted into the specified Controller or the Controller is not properly connected. To determine which is the case, use <tt>osContStartQuery</tt> or <tt>osContGetQuery</tt>.
+</P>
+<P>
+<B>PFS_ERR_NEW_PACK</B>
+</P>
+<P>
+A different Controller Pak has been inserted. To use the inserted Controller Pak, initialize it by calling <tt>osPfsInitPak</tt>.
+</P>
+<P>
+<B>PFS_ERR_INCONSISTENT</B>
+</P>
+<P>
+There is a problem in the file system's management area. Usually this error does not occur because <tt>osPfsChecker</tt> is called internally when you initialize the file system by calling <tt>osPfsInitPak</tt>. If this error is returned, either the Controller Pak is not connected properly, or the Controller Pak itself is damaged.
+</P>
+<P>
+<B>PFS_ERR_CONTRFAIL</B>
+</P>
+<P>
+Data transfer to or from the Controller has failed. If a transfer error occurs, up to three tries will be done internally. Therefore, it is rather rare to see this error. If this error has returned, it is possible that either the Controller is not connected properly, or the Controller Pak or Controller Socket is damaged.
+</P>
+<P>
+<B>PFS_ERR_INVALID</B>
+</P>
+<P>
+If this error is returned, an incorrect argument was specified when this function was called, the specified game note does not exist, or the <b>Pfs</b> function has been called without being initialized using <tt>osPfsInitPak</tt>. Also, if the functions for the Controller were executed after the file handle structure pfs was initialized by other than <tt>osPfsInitPak</tt>, this error occurs.For instance, if <tt>osPfsFileState</tt> is executed after the initialization function for Rumble Pak <tt>osMotorInit</tt> is used to initialize OSPfs structure, then this error occurs.
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H3><A name="03-06"></A>26.3.3.6 Searches for a specified game note</H3>
+<P>
+<B>Function</B>
+</P>
+<P>
+osPfsFindFile
+</P>
+<p><i>Searches for a specified game note</i></p>
+<P>
+<B>Syntax</B>
+</P>
+<pre>
+#include &lt;ultra64.h&gt;
+s32 osPfsFindFile(OSPfs *pfs, u16 company_code, u32 game_code, u8 *game_name,
+u8 *ext_name, s32 *file_no);
+</pre>
+<P>
+<B>Description</B>
+</P>
+<P>
+The osPfsFindFile searches for a specific game note in the Controller Pak. The company code (company_code), game code (game_code), note name (game_name), and note extension (ext_name) arguments are required to specify the game note. 
+</P>
+<P>
+If the specified game note is found in the Controller Pak, the note number (file descriptor) is returned to the <b>file_no</b> argument. If the game note cannot be found, PFS_ERR_INVALID is returned as the error code.
+</P>
+<P>
+If this function is called successfully, 0 is retruned. If an error occurs, one of the following error codes is returned:
+</P>
+<P>
+<B>PFS_ERR_NOPACK</B>
+</P>
+<P>
+Either the Controller Pak is not inserted into the specified Controller or the Controller is not properly connected. To determine which is the case, use <tt>osContStartQuery</tt> or <tt>osContGetQuery</tt>.
+</P>
+<P>
+<B>PFS_ERR_NEW_PACK</B>
+</P>
+<P>
+A different Controller Pak has been inserted. To use the inserted Controller Pak, initialize it by calling <tt>osPfsInitPak</tt>.
+</P>
+<P>
+<B>PFS_ERR_INCONSISTENT</B>
+</P>
+<P>
+There is a problem in the file system's management area. Usually this error does not occur because <tt>osPfsChecker</tt> is called internally when you initialize the file system by calling <tt>osPfsInitPak</tt>. If this error is returned, either the Controller Pak is not connected properly, or the Controller Pak itself is damaged.
+</P>
+<P>
+<B>PFS_ERR_CONTRFAIL</B>
+</P>
+<P>
+Data transfer to or from the Controller has failed. If a transfer error occurs, up to three tries will be done internally. Therefore, it is rather rare to see this error. If this error has returned, it is possible that either the Controller is not connected properly, or the Controller Pak or Controller Socket is damaged.
+</P>
+<P>
+<B>PFS_ERR_INVALID</B>
+</P>
+<P>
+If this error is returned, an incorrect argument was specified when this function was called, the specified game note does not exist, or the <b>Pfs</b> function has been called without being initialized using <tt>osPfsInitPak</tt>. Also, if the functions for the Controller were executed after the file handle structure pfs was initialized by other than <tt>osPfsInitPak</tt>, this error occurs.For instance, if <tt>osPfsFindFile</tt> is executed after the initialization function for Rumble Pak <tt>osMotorInit</tt> is used to initialize OSPfs structure, then this error occurs.
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H3><A name="03-07"></A>26.3.3.7 Gets the free byte size of the Controller Pak</H3>
+<P>
+<B>Function</B>
+</P>
+<P>
+osPfsFreeBlocks
+</P>
+<p><i>Gets the free byte size of the Controller Pak</i></p>
+<P>
+<B>Syntax</B>
+</P>
+<pre>
+#include &lt;ultra64.h&gt;
+s32 osPfsFreeBlocks(OSPfs *pfs, s32 *bytes_not_used);
+</pre>
+<P>
+<B>Description</B>
+</P>
+<P>
+osPfsFreeBlocks finds the available number of bytes in a Controller Pak. The available number of bytes is returned to the location pointed to by bytes_not_used.
+</P>
+<P>
+The OSPfs structure pointed to by pfs is the file handle to be initialized by the function <A href="../../n64man/os/osPfsInitPak.htm"><tt>osPfsInitPak</tt>()</A>. Please refer to <tt>osPfsInitPak</tt> to determine how to create this handle.
+</P>
+<P>
+If this function is called successfully, 0 is retruned. If an error occurs, one of the following error codes is returned:
+</P>
+<P>
+<B>PFS_ERR_NOPACK</B>
+</P>
+<P>
+Either the Controller Pak is not inserted into the specified Controller or the Controller is not properly connected. To determine which is the case, use <tt>osContStartQuery</tt> or osContGetQuery.
+</P>
+<P>
+<B>PFS_ERR_NEW_PACK</B>
+</P>
+<P>
+A different Controller Pak has been inserted. To use the inserted Controller Pak, initialize it by calling <tt>osPfsInitPak</tt>.
+</P>
+<P>
+<B>PFS_ERR_INCONSISTENT</B>
+</P>
+<P>
+There is a problem in the file system's management area. Usually this error does not occur because <tt>osPfsChecker</tt> is called internally when you initialize the file system by calling <tt>osPfsInitPak</tt>. If this error is returned, either the Controller Pak is not connected properly, or the Controller Pak itself is damaged.
+</P>
+<P>
+<B>PFS_ERR_CONTRFAIL</B>
+</P>
+<P>
+Data transfer to or from the Controller has failed. If a transfer error occurs, up to three tries will be done internally. Therefore, it is rather rare to see this error. If this error has returned, it is possible that either the Controller is not connected properly, or the Controller Pak or Controller Socket is damaged.
+</P>
+<P>
+<B>PFS_ERR_INVALID</B>
+</P>
+<P>
+If this error is returned, an incorrect argument was specified when this function was called, the specified game note does not exist, or the Pfs function has been called without being initialized using <tt>osPfsInitPak</tt>. Also, if the functions for the Controller were executed after the file handle structure pfs was initialized by other than <tt>osPfsInitPak</tt>, this error occurs.For instance, if <tt>osPfsFreeBlocks</tt> is executed after the initialization function for Rumble Pak <tt>osMotorInit</tt> is used to initialize OSPfs structure, then this error occurs.
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H3><A name="03-08"></A>26.3.3.8 Reads a label</H3>
+<P>
+<B>Function</B>
+</P>
+<P>
+<tt>osPfsGetLabel</tt>
+</P>
+<p><i>Reads a label</i></p>
+<P>
+<B>Syntax</B>
+</P>
+<pre>
+#include &lt;ultra64.h&gt;
+s32 osPfsGetLabel(OSPfs *pfs, u8 *label, int *length);
+</pre>
+<P>
+<B>Description</B>
+</P>
+<P>
+A BLOCKSIZE (32 bytes) label area exists in the Controller Pak. <tt>osPfsGetLabel</tt> reads the label of a Controller Pak. The specification for this label area has not yet been defined.  Therefore, DO NOT USE THIS FUNCTION. 
+</P>
+<P>
+The OSPfs structure pointed to by pfs is the file handle to be initialized by the function <A href="../../n64man/os/osPfsInitPak.htm"><tt>osPfsInitPak</tt>()</A>. Please refer to <tt>osPfsInitPak</tt> to determine how to create this handle.
+</P>
+<P>
+The area specified by the label needs to have the size BLOCKSIZE to store label data.
+</P>
+<P>
+If this function is called successfully, 0 is retruned, and the length of the label is returned to the location pointed to by the <b>length</b> argument. If an error occurs, one of the following error codes is returned:
+</P>
+<P>
+<B>PFS_ERR_NOPACK</B>
+</P>
+<P>
+Either the Controller Pak is not inserted into the specified Controller or the Controller is not properly connected. To determine which is the case, use <tt>osContStartQuery</tt> or <tt>osContGetQuery</tt>.
+</P>
+<P>
+<B>PFS_ERR_NEW_PACK</B>
+</P>
+<P>
+A different Controller Pak has been inserted. To use the inserted Controller Pak, initialize it by calling <tt>osPfsInitPak</tt>.
+</P>
+<P>
+<B>PFS_ERR_CONTRFAIL</B>
+</P>
+<P>
+Data transfer to or from the Controller has failed. If a transfer error occurs, up to three tries will be done internally. Therefore, it is rather rare to see this error. If this error has returned, it is possible that either the Controller is not connected properly, or the Controller Pak or Controller Socket is damaged.
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H3><A name="03-09"></A>26.3.3.9 Checks whether a pak-type SI device is inserted</H3>
+<P>
+<B>Function</B>
+</P>
+<P>
+<tt>osPfsIsPlug</tt>
+</P>
+<p><i>Checks whether a pak-type SI device is inserted</i></p>
+<P>
+<B>Syntax</B>
+</P>
+<pre>
+#include &lt;ultra64.h&gt;
+s32 osPfsIsPlug(OSMesgQueue *mq, u8 *bitpattern);
+</pre>
+<P>
+<B>Description</B>
+</P>
+<P>
+The <tt>osPfsIsPlug</tt> detects which Controller contains a SI-Controller Pak, and it returns the results as a bit pattern to the location pointed to by the <b>bitpattern</b> argument. Bits 0, 1, 2, and 3 of the bit pattern correspond to Controllers 1, 2, 3, and 4, respectively. An SI device has been inserted if a bit for each controller is on. If a bit is off that means 0, no device has been inserted for that controller. 
+</P>
+<P>
+The <b>mq</b> argument is the initialized message queue linked to OS_EVENT_SI. Please refer to <A href="../../n64man/os/osSetEventMesg.htm">osSetEventMesg()</A> for creation of this link. Because <b>mq</b> is used by the function as an internal message queue, it is not necessary for the application to use <b>mq</b> for purposes such as queuing function-termination messages.
+</P>
+<P>
+If this function is called successfully, 0 is retruned. If an error occurs, -1 is returned:
+</P>
+<P>
+<B>Example</B>
+</P>
+<PRE>
+main()
+{
+        OSMesgQueue     intMesgQueue;
+        OSMesg          intMesgBuf[1];
+        OSContStatus    sdata[MAXCONTROLLERS];
+        u8              cont_pattern;
+        u8              pak_pattern;
+
+        osCreateMesgQueue(&amp;intMesgQueue, intMesgBuf, 1);
+        osSetEventMesg(OS_EVENT_SI, &amp;intMesgQueue, NULL);
+        osContInit(&amp;intMesgQueue, &amp;cont_pattern, &amp;sdata[0]);
+        osPfsIsPlug(&amp;intMesgQueue, &amp;pak_pattern);
+}
+</PRE>
+<P>
+<B>Reference</B>
+</P>
+<P>
+In addition to <tt>osPfsIsPlug</tt>, some functions can be used to check if the Controller Pak SI devices are inserted, which inculde <tt>osPfsInitPak</tt>, <tt>osContStartQuery</tt>, and <tt>osContGetQuery</tt>. There are, however, differences described below. 
+</P>
+<P>
+The <tt>osPfsIsPlug</tt> function issues a request command that checks the status of the Controller and Controller Pak. It checks all Controller sockets, converts the results to a bit pattern, and returns them.
+</P>
+<P>
+In contrast, <tt>osPfsInitPak</tt> performs processing for only a single Controller. In addition to performing the Controller and Controller Pak status check that <tt>osPfsIsPlug</tt> performs, it also performs processing such as initializing the OSPfs structure, acquiring the Controller Pak ID and label areas, and calling the <tt>osPfsChecker</tt> function. As a result, it is very time consuming to call <tt>osPfsInitPak</tt>, compared to <tt>osPfsIsPlug</tt>, to determine whether the Controller Pak is inserted. 
+</P>
+<P>
+For simple status checking, the fastest approach is to use <tt>osContStartQuery</tt> and <tt>osContGetQuery</tt>. These functions perform the same processing as the <tt>osPfsIsPlug</tt> function does and they simplify the error checking process. Also they are a general-purpose function for all SI devices and can therefore also take parameters other than those used to detect whether a Pak-type SI device has been inserted. <tt>osPfsIsPlug</tt> should not be overused; <tt>osContStartQuery</tt> and <tt>osContGetQuery</tt> should be used instead whenever possible. 
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H3><A name="03-10"></A>26.3.3.10 Gets the maximum number of notes and the number of notes in use</H3>
+<P>
+<B>Function</B>
+</P>
+<P>
+osPfsNumFiles
+</P>
+<p><i>Gets the maximum number of notes and the number of notes in use</i></p>
+<P>
+<B>Syntax</B>
+</P>
+<pre>
+#include &lt;ultra64.h&gt;
+s32 osPfsNumFiles(OSPfs *pfs, s32 *max_files, s32 *files_used);
+</pre>
+<P>
+<B>Description</B>
+</P>
+<P>
+osPfsNumFiles acquires the maximum note number and the number of notes used in the Controller Pak. When called, this function returns the number of notes used to the location pointed to by the <b>files_used</b> argument, and it returns the total number of notes to the location pointed to by the <b>max_files</b> argument, which is 16.
+</P>
+<P>
+The OSPfs structure pointed to by pfs is the file handle to be initialized by the function <A href="../../n64man/os/osPfsInitPak.htm"><tt>osPfsInitPak</tt>()</A>. Please refer to <tt>osPfsInitPak</tt> to determine how to create this handle.
+</P>
+<P>
+If this function is called successfully, 0 is retruned. If an error occurs, one of the following error codes is returned:
+</P>
+<P>
+<B>PFS_ERR_NOPACK</B>
+</P>
+<P>
+Either the Controller Pak is not inserted into the specified Controller or the Controller is not properly connected. To determine which is the case, use <tt>osContStartQuery</tt> or <tt>osContGetQuery</tt>.
+</P>
+<P>
+<B>PFS_ERR_NEW_PACK</B>
+</P>
+<P>
+A different Controller Pak has been inserted. To use the inserted Controller Pak, initialize it by calling <tt>osPfsInitPak</tt>.
+</P>
+<P>
+<B>PFS_ERR_INCONSISTENT</B>
+</P>
+<P>
+There is a problem in the file system's management area. Usually this error does not occur because <tt>osPfsChecker</tt> is called internally when you initialize the file system by calling <tt>osPfsInitPak</tt>. If this error is returned, either the Controller Pak is not connected properly, or the Controller Pak itself is damaged.
+</P>
+<P>
+<B>PFS_ERR_CONTRFAIL</B>
+</P>
+<P>
+Data transfer to or from the Controller has failed. If a transfer error occurs, up to three tries will be done internally. Therefore, it is rather rare to see this error. If this error has returned, it is possible that either the Controller is not connected properly, or the Controller Pak or Controller Socket is damaged.
+</P>
+<P>
+<B>PFS_ERR_INVALID</B>
+</P>
+<P>
+If this error is returned, an incorrect argument was specified when this function was called, the specified game note does not exist, or the Pfs function has been called without being initialized using <tt>osPfsInitPak</tt>. Also, if the functions for the Controller were executed after the file handle structure pfs was initialized by other than <tt>osPfsInitPak</tt>, this error occurs.For instance, if <tt>osPfsNumFiles</tt> is executed after the initialization function for Rumble Pak <tt>osMotorInit</tt> is used to initialize OSPfs structure, then this error occurs.
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H3><A name="03-11"></A>26.3.3.11 Reads/writes data to a game note</H3>
+<P>
+<B>Function</B>
+</P>
+<P>
+osPfsReadWriteFile
+</P>
+<p><i>Reads/writes data to a game note</i></p>
+<P>
+<B>Syntax</B>
+</P>
+<pre>
+#include &lt;ultra64.h&gt;
+s32 osPfsReadWriteFile(OSPfs *pfs, s32 file_no, u8 flag, int offset, int
+nbytes, u8 * data_buffer);
+</pre>
+<P>
+<B>Description</B>
+</P>
+<P>
+The <tt>osPfsReadWriteFile</tt> reads from and writes to game notes. If PFS_READ is specified for the <b>flag</b> argument, data is read from the game note; if PFS_WRITE is specified data is written to the game note.
+</P>
+<P>
+When data is read, the amount of data specified by the <b>nbytes</b> argument is read, beginning from the offset byte of the game data area specified by the <b>offset</b> argument, and stored in the area pointed to by the <b>data_buffer</b> argument. When data is written, nbytes of data in the area specified by data_buffer is written to the game data area beginning from the offset byte. Both the offset and <b>nbytes</b> arguments must be set to a multiple of BLOCKSIZE (32 bytes) and must be smaller than the file size. The arguments cannot, of course, be set so that data is read from or written to areas outside of those that have been assigned. 
+</P>
+<P>
+The <b>file_no</b> argument specifies the note number (file descriptor). To obtain its value, call the <tt>osPfsAllocateFile</tt> or <tt>osPfsFindFile</tt> function. 
+</P>
+<P>
+The OSPfs structure pointed to by the <b>pfs</b> argument is a file handle initialized by the <tt>osPfsInitPak</tt> function. For information on creating this handle, please see <A href="../../n64man/os/osPfsInitPak.htm"><tt>osPfsInitPak</tt>()</A>.
+</P>
+<P>
+If this function is called successfully, 0 is retruned. If an error occurs, one of the following error codes is returned:
+</P>
+<P>
+<B>PFS_ERR_NOPACK</B>
+</P>
+<P>
+Either the Controller Pak is not inserted into the specified Controller or the Controller is not properly connected. To determine which is the case, use <tt>osContStartQuery</tt> or <tt>osContGetQuery</tt>.
+</P>
+<P>
+<B>PFS_ERR_NEW_PACK</B>
+</P>
+<P>
+A different Controller Pak has been inserted. To use the inserted Controller Pak, initialize it by calling <tt>osPfsInitPak</tt>.
+</P>
+<P>
+<B>PFS_ERR_INCONSISTENT</B>
+</P>
+<P>
+There is a problem in the file system's management area. Usually this error does not occur because <tt>osPfsChecker</tt> is called internally when you initialize the file system by calling <tt>osPfsInitPak</tt>. If this error is returned, either the Controller Pak is not connected properly, or the Controller Pak itself is damaged.
+</P>
+<P>
+<B>PFS_ERR_CONTRFAIL</B>
+</P>
+<P>
+Data transfer to or from the Controller has failed. If a transfer error occurs, up to three tries will be done internally. Therefore, it is rather rare to see this error. If this error has returned, it is possible that either the Controller is not connected properly, or the Controller Pak or Controller Socket is damaged.
+</P>
+<P>
+<B>PFS_ERR_INVALID</B>
+</P>
+<P>
+If this error is returned, an incorrect argument was specified when this function was called, the specified game note does not exist, or the Pfs function has been called without being initialized using <tt>osPfsInitPak</tt>. Also, if the functions for the Controller were executed after the file handle structure pfs was initialized by other than <tt>osPfsInitPak</tt>, this error occurs.For instance, if <tt>osPfsReadWriteFile</tt> is executed after the initialization function for Rumble Pak, <tt>osMotorInit</tt>, is used to initialize OSPfs structure, then this error occurs.
+</P>
+<P>
+<B>PFS_ERR_BAD_DATA</B>
+</P>
+<P>
+This is returned when the function (<tt>osPfsReadWriteFile</tt>) attempts to read data even though the data has not yet been written. If data is written, the PFS_WRITE bit is set to indicate the status of the file information area. When data is read, this bit is checked; if it is not set, this error is returned. 
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H3><A name="03-12"></A>26.3.3.12 Repairs the file system</H3>
+<P>
+<B>Function</B>
+</P>
+<P>
+osPfsRepairId
+</P>
+<p><i>Repairs the file system</i></p>
+<P>
+<B>Syntax</B>
+</P>
+<pre>
+#include &lt;ultra64.h&gt;
+s32 osPfsRepairId (OSPfs *pfs);
+</pre>
+<P>
+<B>Description</B>
+</P>
+<P>
+It checks the Controller Pak ID area, assigns a new ID if this area is damaged, and repairs the Controller Pak file system. 
+</P>
+<P>
+Usually this function can be used if a PFS_ERROR_ID_FATAL error code is returned by the <tt>ofPfsInitPak</tt> fuction.  For details, please see <A href="../../n64man/os/osPfsInitPak.htm"><tt>osPfsInitPak</tt>()</a>.
+</P>
+<P>
+The OSPfs structure pointed to by pfs is the file handle to be initialized by the function <A href="../../n64man/os/osPfsInitPak.htm"><tt>osPfsInitPak</tt>()</A>. Please refer to <tt>osPfsInitPak</tt> to determine how to create this handle.
+</P>
+<P>
+If this function is called successfully, 0 is retruned. If an error occurs, one of the following error codes is returned:
+</P>
+<P>
+<B>PFS_ERR_NOPACK</B>
+</P>
+<P>
+Either the Controller Pak is not inserted into the specified Controller or the Controller is not properly connected. To determine which is the case, use <tt>osContStartQuery</tt> or <tt>osContGetQuery</tt>.
+</P>
+<P>
+<B>PFS_ERR_NEW_PACK</B>
+</P>
+<P>
+A different Controller Pak has been inserted. To use the inserted Controller Pak, initialize it by calling <tt>osPfsInitPak</tt>.
+</P>
+<P>
+<B>PFS_ERR_CONTRFAIL</B>
+</P>
+<P>
+Data transfer to or from the Controller has failed. If a transfer error occurs, up to three tries will be done internally. Therefore, it is rather rare to see this error. If this error has returned, it is possible that either the Controller is not connected properly, or the Controller Pak or Controller Socket is damaged.
+</P>
+<P>
+<B>PFS_ERR_ID_FATAL</B>
+</P>
+<P>
+Recovery failed. Possible causes are an abnormality in the controller Joyport or Controller Pak.
+</P>
+<P>
+<B>PFS_ERR_DEVICE</B>
+</P>
+<P>
+A peripheral device other than a Controller Pak (eg, Rumble Pak, 64GB Pak) has been inserted in the controller. Whether a Controller Pak has been inserted is determined by whether the device has RAM. This error is issued if there is no RAM present. 
+</P>
+<P>
+<B>PFS_ERR_INVALID</B>
+</P>
+<P>
+If this error is returned, an incorrect argument was specified when this function was called, the specified game note does not exist, or the Pfs function has been called without being initialized using <tt>osPfsInitPak</tt>. Also, if the functions for the Controller were executed after the file handle structure pfs was initialized by other than <tt>osPfsInitPak</tt>, this error occurs.For instance, if osPfsRepairId is executed after the initialization function for Rumble Pak osMotorInit is used to initialize OSPfs structure, then this error occurs.
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H3><A name="03-13"></A>26.3.3.13 Writes a label</H3>
+<P>
+<B>Function</B>
+</P>
+<P>
+osPfsSetLabel
+</P>
+<p><i>Writes a label</i></p>
+<P>
+<B>Syntax</B>
+</P>
+<pre>
+#include &lt;ultra64.h&gt;
+s32 osPfsSetLabel(OSPfs *pfs, u8 *label);
+</pre>
+<P>
+<B>Description</B>
+</P>
+<P>
+A 32-byte label area is provided in the Controller Pak. The function osPfsSetLabel writes this label. Currently, the specifications for the label have not been defined. Thus, <u>this function should not yet be used</u>. 
+</P>
+<P>
+The osPfsSetLabel writes data specified by label to the label area.
+</P>
+<P>
+The OSPfs structure pointed to by pfs is the file handle to be initialized by the function <A href="../../n64man/os/osPfsInitPak.htm">osPfsInitPak()</A>. Please refer to <tt>osPfsInitPak</tt> to determine how to create this handle.
+</P>
+<P>
+If this function is called successfully, 0 is retruned. If an error occurs, one of the following error codes is returned:
+</P>
+<P>
+<B>PFS_ERR_NOPACK</B>
+</P>
+<P>
+Either the Controller Pak is not inserted into the specified Controller or the Controller is not properly connected. To determine which is the case, use <tt>osContStartQuery</tt> or <tt>osContGetQuery</tt>.
+</P>
+<P>
+<B>PFS_ERR_NEW_PACK</B>
+</P>
+<P>
+A different Controller Pak has been inserted. To use the inserted Controller Pak, initialize it by calling <tt>osPfsInitPak</tt>. 
+</P>
+<P>
+<B>PFS_ERR_CONTRFAIL</B>
+</P>
+<P>
+Data transfer to or from the Controller has failed. If a transfer error occurs, up to three tries will be done internally. Therefore, it is rather rare to see this error. If this error has returned, it is possible that either the Controller is not connected properly, or the Controller Pak or Controller Socket is damaged.
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H2><A name="04"></A>26.3.4 Using the Controller Pak Functions</H2>
+<P>
+The following charts show an example of the user interface when the Controller Pak is being used. Please use them as a reference for developing custom applications. 
+</P>
+<P>
+The charts do not, however, cover processing for cases such as removal of the Controller Pak by the user during game play. These possibilities should also be considered. In such cases, responses such as the display of the following message should be implemented, &QUOT;No Controller Pak. Unable to Save&QUOT;.
+</P>
+<P>
+<B>Figure 26-1 Controller Pak Initialization Flow Chart</B>
+</P>
+<P>
+<IMG src="gif/f26-03-00.gif">
+</P>
+<P>
+<B>Figure 26-2 Example 1 - Using the Controller Pak Functions</B><BR>
+(Setting Controller Pak to use at the Game Start)
+</P>
+<P>
+<IMG src="gif/f26-03-01.gif">
+</P>
+<P>
+<IMG src="gif/f26-03-02.gif">
+</P>
+<P>
+<B>Figure 26-3 Example 2 - Using the Controller Pak Functions</B><BR>
+(Controller Pak is Changed During a Game)
+</P>
+<P>
+<IMG src="gif/f26-03-03.gif">
+</P>
+<P>
+<IMG src="gif/f26-03-04.gif">
+</P>
+<P>
+<IMG src="gif/f26-03-05.gif">
+</P>
+<P>
+<IMG src="gif/f26-03-06.gif">
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H2><A name="05"></A>26.3.5 Controller Pak Menu Functions</H2>
+<P>
+
+</P>
+<P>
+A utility function library and sample program for the Controller Pak menu are available in /usr/src/PR/demos/nosPak. The English-language version of the library is named libnos.a. and libnos_jpn.a for the Japanese-language version. 
+</P>
+<P>
+When linking, use the -lnos or -lnos_jpn option before -lultra (-lultra_d). For details, refer to the Nintendo 64 Function Reference Manual under libnos.a or libnos_jpn.a. The two functions that can be used with this library are as follows. 
+</P>
+<TABLE border="1">
+  <TR>
+    <TD><tt>nosPakMenu() </tt></TD>
+    <TD>a simple Controller Pak menu</TD></TR>
+  <TR>
+    <TD><tt>nosLoadFont() </tt></TD>
+    <TD>expands the font data for English-language characters and Katakana in memory</TD></TR>
+</TABLE>
+
+<P>
+A sample that incorporates nosPakMenu in the sample program, onetri, is also available.
+</P>
+<P>
+In addition, if you wish to use a font which is used in this module, <tt>nosLoadFont</tt> can be used by an application. This function can be used without linking to <tt>nosPakMenu</tt>.
+</P>
+<P>
+The N64 font codes are defined in the file ncode.h, included in the Nintendo 64 Software Library. 
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H3><A name="05-01"></A>26.3.5.1 Simple Controller Pak Menu</H3>
+<P>
+<B>Function</B>
+</P>
+<P>
+<tt>nosPakMenu</tt>
+</P>
+<p><i>Simple Controller Pak Menu</i></p>
+<P>
+<B>Syntax</B>
+</P>
+<pre>
+#include &lt;libnos.h&gt;
+int nosPakMenu (OSMesgQueue *siMessageQ, OSMesgQueue *retraceMessageQ);
+</pre>
+<P>
+<B>Description</B>
+</P>
+<P>
+The <tt>nosPakMenu()</tt> function is a simple Controller Pak menu application. The game player can use this menu to view a list of game notes stored in the Controller Pak, to check the number of pages used and the number of pages remaining, and to delete unnecessary game notes.
+</P>
+<P>
+siMessageQ is the initialized message queue associated with OS_EVENT_SI events, while retraceMessageQ is the initialized message queue associated with vertical retraces. To learn how to create these associations, see the <A href="../../n64man/os/osSetEventMesg.htm">osSetEventMesg()</A>,and <tt>osSetEvent()</tt> functions, in the N64 Online Function Reference Manual. 
+</P>
+<P>
+To open the menu, the user must press the START button on the Controller while the program is booting up or being Reset. The menu does not open up if the START button is not pressed and the Controller Pak is not inserted in the Controller. 
+</P>
+<P>
+The following values are returned as error codes:
+</P>
+<TABLE border="1">
+  <TR>
+    <TD><b>Condition</b></TD>
+    <TD><b>Return Value</b></TD></TR>
+  <TR>
+    <TD>When the Controller Pak is not ready</TD>
+    <TD align="center">0</TD></TR>
+  <TR>
+    <TD>When an error occurs in the Controller Pak menu</TD>
+    <TD align="center">1</TD></TR>
+  <TR>
+    <TD>When the Controller Pak is OK but the START button is not pressed</TD>
+    <TD align="center">2</TD></TR>
+  <TR>
+    <TD>When EXIT is selected in the Controller Pak menu</TD>
+    <TD align="center">3</TD></TR>
+</TABLE>
+
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H3><A name="05-02"></A>26.3.5.2 Loading the Font Data</H3>
+<P>
+<B>Function</B>
+</P>
+<P>
+<tt>nosLoadFont</tt>
+</P>
+<p><i>Loading the Font Data onto memory</i></p>
+<P>
+<B>Syntax</B>
+</P>
+<pre>
+#include &lt;libnos.h&gt;
+void nosLoadFont (u16 *font_buf);
+</pre>
+<P>
+<B>Description</B>
+</P>
+<P>
+The <tt>nosLoadFont()</tt> function expands the compressed character font data in RAM in the order of the N64 font codes so the fonts can be used by the application. The start address of the buffer where the data will be expanded is specified as an argument. The necessary size of the buffer is shown below: 
+</P>
+<TABLE>
+  <TR>
+    <TD><B>English</B></TD>
+    <TD>2112 bytes (0x840)</TD>
+    <TD>Defined in libnos.h as FONTSIZE_E.</TD></TR>
+  <TR>
+    <TD><B>English + Japanese</B></TD>
+    <TD>4768 bytes (0x12a0)</TD>
+    <TD>Defined in libnos.h as FONTSIZE_J.</TD></TR>
+</TABLE>
+
+<P>
+The character font size is 16 dots (horizontal) x 16 dots (vertical). One horizontal line of 16 dots corresponds to 16 bits of data. The Hi side is the left side of the font, while the Lo side is the right side. 
+</P>
+<P>
+The N64 font codes for the character fonts is shown in order below: 
+</P>
+<P>
+<IMG src="gif/f26-03-07.gif">
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<H3><A name="05-03"></A>26.3.5.3 Internal Functions (Reference)</H3>
+<P>
+The following flowcharts show how errors occur within Controller Pak functions. Please use these flow charts as a reference.
+</P>
+<P>
+<B>Figure 26-4 Processing Flow and Error Generation Inside a General Pfs Function</B>
+</P>
+<P>
+<IMG src="gif/f26-03-08.gif">
+</P>
+<P>
+<IMG src="gif/f26-03-09.gif">
+</P>
+<P align="right">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" alt="UP" height="17" width="65" border="0"></A>
+</P>
+</BODY>
+</HTML>

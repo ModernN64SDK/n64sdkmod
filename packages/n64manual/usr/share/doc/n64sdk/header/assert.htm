@@ -1,0 +1,17 @@
+<HTML><HEAD>
+<TITLE></TITLE>
+</HEAD></BODY>
+<PRE>#ifndef __ASSERT_H__
+#define __ASSERT_H__
+
+#ifdef NDEBUG
+#undef assert
+#define assert(EX) ((void)0)
+#else
+extern void __assert(const char *, const char *, int);
+#define assert(EX)  ((EX)?((void)0):__assert( # EX , __FILE__, __LINE__))
+#endif <FONT COLOR="red">/* NDEBUG */</FONT>
+
+#endif <FONT COLOR="red">/* !__ASSERT_H__ */</FONT>
+</PRE>
+</BODY>

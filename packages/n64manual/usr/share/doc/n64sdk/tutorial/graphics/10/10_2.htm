@@ -1,0 +1,41 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Graphics-Chapter 10  Texture Rectangles</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/23/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<font style="font-size:12pt"><B>10.2  Using Primitive Depth</B></FONT>
+<br>
+<P>
+In the gfx10.c sample program, a value of 0, which is the smallest Z value, is specified for the primitive Z in order to display the small texture rectangle as forward as possible.
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=5><TR>
+	<TD NOWRAP COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE><B>List 10-3</B>
+</TR><TR>
+	<TD NOWRAP BGCOLOR="666666" WIDTH="4" ALIGN=LEFT VALIGN=TOP><HR NOSHADE SIZE=0></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>
+<FONT COLOR="#000080"><PRE><CODE>  /* Make the cycle type 1-Cycle mode */
+  gDPSetCycleType(glistp++, G_CYC_1CYCLE);
+  /* Use texture color & alpha in combine mode  */
+  gDPSetCombineMode(glistp++, G_CC_DECALRGBA, G_CC_DECALRGBA);
+  /* Rendering mode  */
+  gDPSetRenderMode(glistp++,G_RM_AA_ZB_TEX_EDGE, G_RM_AA_ZB_TEX_EDGE2);
+  /* Set the Z value source  */
+  gDPSetDepthSource(glistp++, G_ZS_PRIM);
+  /* Set the Z value of the texture rectangle  */
+  gDPSetPrimDepth(glistp++, 0, 0);
+</CODE></PRE></FONT>
+	</TD>
+</TR></TABLE>
+<P>
+G_RM_AA_ZB_TEX_EDGE is used for the rendering mode.  The TEX_EDGE mode is designed for billboard-type texture mapping.  To learn details about the settings of this mode, see the definition for G_RM_AA_ZB_TEX_EDGE.
+</P>
+<BR>
+<BR>
+<BR>
+</BODY>
+</HTML>

@@ -1,0 +1,145 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<title>Sprit Microcode S2DEX document</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<FONT FACE="Arial" SIZE="-1">
+
+<h2>2. S2DEX Functions</h2>
+
+<p align="right"><a href="index.htm"><img
+src="../../gif/index.gif" alt="[UP]" border="0" width="65"
+height="17"></a></p>
+
+<hr>
+
+<h3><a name="01">2.1 Render Primitive</a></h3>
+
+<p>Since S2DEX has been tuned especially for the processing of 2D expressions, it is not capable of supporting the rendering of 3D primatives as in Fast3D and F3DEX.  In place of that, the following types of primitives can be drawn with S2DEX microcode.</p>
+
+<dl>
+    <dt>1) Rectangle A -------- gSPObjRectangle,gSPObjRectangleR
+        (Copy Mode) </dt>
+    <dd>Fixed size, scaling and rotation are not possible</dd>
+    <dd>Horizontal/vertical texture flipping possible</dd>
+    <dd>Rendering in Copy mode</dd>
+    <dd>Texture interpolated display, sub-pixel motion not possible</dd>
+    <dd>Anti-Alias processing not possible</dd>
+    <dd>Texture must already be loaded to TMEM<br>
+        <br>
+        </dd>
+    <dt>2) Rectangle B -------- gSPObjRectangle,gSPObjRectangleR
+        (1,2 Cycle Mode) </dt>
+    <dd>Scaling possible, rotation not possible</dd>
+    <dd>Horizontal/vertical texture flipping possible</dd>
+    <dd>Rendering in 1,2 Cycle Mode</dd>
+    <dd>Texture interpolated display, sub-pixel motion possible</dd>
+    <dd>Anti-Alias processing possible</dd>
+    <dd>Texture must already be loaded in TMEM<br>
+        <br>
+        </dd>
+    <dt>3) Sprite ------------- gSPObjSprite </dt>
+    <dd>Scaling and rotation possible</dd>
+    <dd>Horizontal/vertical texture flipping possible</dd>
+    <dd>Rendering in Copy Mode</dd>
+    <dd>Texture interpolated display, sub-pixel motion possible</dd>
+    <dd>Anti-Alias processing possible</dd>
+    <dd>Texture must already be loaded in TMEM<br>
+        <br>
+        </dd>
+    <dt>4) BackGround(BG) A --- gSPBgRectCopy </dt>
+    <dd>Scaling possible</dd>
+    <dd>Scrolling within respective vertically, horizontally looped closed areas</dd>
+    <dd>Only horizontal flipping of texture is possible, vertical flipping not possible</dd>
+    <dd>Dedicated for rendering in Copy Mode</dd>
+    <dd>Texture interpolated display, sub-pixel motion not possible</dd>
+    <dd>Anti-Alias processing not possible</dd>
+    <dd>Rendering by sequentially loading texture data in DRAM to TMEM<br>
+        <br>
+        </dd>
+    <dt>5) BackGround(BG) B --- gSPBgRect1Cyc</dt>
+    <dd>Emulation routine performed by CPU</dd>
+    <dd>Scaling possible</dd>
+    <dd>Scrolling within respective vertically, horizontally looped closed areas </dd>
+    <dd>Only horizontal flipping of texture is possible, vertical flipping not possible</dd>
+    <dd>Dedicated for rendering in 1 Cycle Mode</dd>
+    <dd>Texture interpolated display possible, sub-pixel motion possible only horizontally</dd>
+    <dd>Anti-Alias processing not possible</dd>
+    <dd>Rendering by sequentially loading texture data in DRAM to TMEM
+<br>
+        <br>
+        </dd>
+    <dt>6) Some past GBIs</dt>
+    <dd>Those which can be used<dl>
+            <dd><pre><FONT SIZE="3">FillRectangle
+TextureRectangle
+TextureRectangleFlip
+</FONT></pre>
+            </dd>
+        </dl>
+    </dd>
+    <dd>Those which cannot be used<dl>
+            <dd><pre><FONT SIZE="3">1Triangle
+2Triangle
+1Quadrangle </FONT></pre>
+            </dd>
+        </dl>
+    </dd>
+</dl>
+
+<p>As shown above, S2DEX bears virtually no resemblance to the old sprite2D microcode in terms of its functions.  S2DEX is not an upgraded version of sprite2D, and is being positioned as an entirely new microcode.  In addition, since sprite libraries such as spInit(), and the like use 3D microcodes, they cannot be used in combination with S2DEX.  S2DEX is different from the sprite libraries.</p>
+
+<p align="right"><a href="index.htm"><img
+src="../../gif/index.gif" alt="[UP]" border="0" width="65"
+height="17"></a></p>
+
+<hr>
+
+<h3><a name="02">2.2 Self-load Function</a></h3>
+
+<p>As discussed above, there are no functions in S2DEX for rendering 3D primitives.  However, the self-load function of the microcode that has been supported in F3DEX Release 1.20 and later has been installed in 2SDEX.  Because of this, it is possible to render 3D primitives by loading the F3DEX microcode.  </p>
+
+<p>However, please be aware that switching between S2DEX is not supported unless the F3DEX microcode is Release 1.22 or later or Development Environment 2.0I or later.
+</p>
+
+<p align="right"><a href="index.htm"><img
+src="../../gif/index.gif" alt="[UP]" border="0" width="65"
+height="17"></a></p>
+
+<hr>
+
+<h3><a name="03">2.3 DEBUG Data Output Function</a></h3>
+
+<p>The S2DEX microcode is equipped with two types of code.  One is code which is brought into play during normal game shipment, while the other is used during debugging.  The DEBUG microcode has the following functions that the shipping microcode does not. </p>
+
+<ul>
+    <li> Display list processing log output</li>
+    <li> The RSP is terminated when there is an improper input value or an improper command and the CPU is notified.</li>
+</ul>
+
+<p>Detailed instructions for use are given below. </p>
+
+<p align="right"><a href="index.htm"><img
+src="../../gif/index.gif" alt="[UP]" border="0" width="65"
+height="17"></a></p>
+
+<hr>
+
+<h3><a name="04">2.4 Command Transfer from RSP to RDP</a></h3>
+
+<p>Like the F3DEX series, S2DEX only supports fifo versions.</p>
+
+<p>However, the FIFO buffer size required by S2DEX is larger than that for the F3DEX Series.  While at least 0x300 bytes were required for the F3DEX Series, 0x800 bytes or more are needed for S2DEX.  Please note that 0x800 bytes or more will be required to comply with the S2DEX needs if you wish to share the FIFO buffer between the F3DEX Series and S2DEX.</p>
+
+<p><em>(*)</em> The minimum FIFO size in the fifo microcode is given as 0x100 on some of the manual pages, but that is in error.  The required FIFO size differs for each microcode, with F3DEX Series and S2DEX requiring the size noted above, and Fast3D which needs 0x180 bytes.</p>
+
+<p align="right"><a href="index.htm"><img
+src="../../gif/index.gif" alt="[UP]" border="0" width="65"
+height="17"></a></p>
+
+<hr>
+</body>
+</html>

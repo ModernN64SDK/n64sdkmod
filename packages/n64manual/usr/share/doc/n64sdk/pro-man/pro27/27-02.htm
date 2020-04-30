@@ -1,0 +1,92 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 27 - EPI Manager and Extension Device</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. 
+             MAP- 10/26/99 edited content, updated format-->
+</head>
+
+<h1>27.2 SRAM</h1>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+
+<p>Nintendo 64 software can reserve SRAM for saving data. </p>
+
+<p>Unlike the EEPROM and <a href="../../keywords/index/data/system.htm#controller pak" target="keywords">Controller Pak</a>, SRAM can be handled by EPI in the same way as ordinary MASKROM, although the addressing is different. </p>
+
+<p>As of May, 1997, the available SRAM has a capacity of 256Kbits. The start address is a physical address from 0x8000000. Each parameter is defined below.</p>
+
+<blockquote><pre>
+/* definition for SRAM */
+
+#define SRAM_START_ADDR  0x08000000 
+#define SRAM_SIZE        0x8000 
+#define SRAM_latency     0x5 
+#define SRAM_pulse       0x0c 
+#define SRAM_pageSize    0xd 
+#define SRAM_relDuration 0x2
+</pre></blockquote>
+
+<p>The following are examples of the handler obtaining a function for SRAM. <tt>osSramInit</tt> uses these definitions for the examples. </p>
+<blockquote><pre>
+#include &quot;osint.h&quot;
+#include &quot;piint.h&quot;
+#include &quot;rcp.h&quot;
+
+OSPiHandle SramHandle;
+
+/*
+ * Name: osSramInit
+ *
+ * Description:
+ * Initialize SRAM.
+ *
+ */
+
+OSPiHandle *
+
+osSramInit(void)
+{
+        u32 saveMask;
+
+        if (SramHandle.baseAddress == PHYS_TO_K1(SRAM_START_ADDR))
+                return(&amp;SramHandle);
+
+        /* Fill basic information */
+
+        SramHandle.type = 3;
+        SramHandle.baseAddress = PHYS_TO_K1(SRAM_START_ADDR);
+
+        /* Get Domain parameters */
+
+        SramHandle.latency = (u8)SRAM_latency;
+        SramHandle.pulse = (u8)SRAM_pulse;
+        SramHandle.pageSize = (u8)SRAM_pageSize;
+        SramHandle.relDuration = (u8)SRAM_relDuration;
+        SramHandle.domain = PI_DOMAIN2;
+
+        /* TODO SramHandle.speed = */
+
+        bzero(&amp;(SramHandle.transferInfo),
+        sizeof(SramHandle.transferInfo));
+
+        /*
+         * Put the SramHandle onto PiTable
+         */
+
+        saveMask = __osDisableInt();
+        SramHandle.next = __osPiTable;
+        __osPiTable = &amp;SramHandle;
+        __osRestoreInt(saveMask);
+        return(&amp;SramHandle);
+
+} /* osSramInit */
+</pre></blockquote>
+
+<p>If SRAM is connected to the AD16bus, it can be used when developing software. For example, if Partner-N64 is used, SRAM can be used by inserting the SRAM board into the slot located in the upper part of Emulator ROM. If used on an N64 Control Deck, either flash ROM software, which has built-in SRAM, or a two-way socket DCC-Board with N64JOINT connected must be used. 
+</p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+</body>
+</html>

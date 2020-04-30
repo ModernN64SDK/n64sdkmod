@@ -1,0 +1,189 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<TITLE>Developers News 1.2</TITLE>
+</HEAD>
+
+<BODY bgcolor="#FFFFFF">
+<font face="arial" size="-1">
+
+<HR>
+<H1 align="center"><IMG src="gif/devnews.gif" height="44" width="453">1.2</H1>
+<P>
+Bug information and programming guides for the N64 will be periodically released.  All information that will become unnecessary with software (library, etc.) and hardware upgrades used in development will be noted together.  Please utilize this information after confirming that the information concerns your specific upgrade. 
+</P>
+<p>
+<b><A name="top"></A>Contents:</b>
+
+<ol>
+<li>Bug: <A href="#p1">Back-to-Back Floating Point Multiplies May Give Incorrect Results</A> (R4300 Bug)
+<li>Tip: <A href="#p4">Setting Fog Values</A>
+<li>Tip: <A href="#p5">Disassembling Code With &quot;gdis&quot;</A>
+</ol>
+
+<p align="right">March 12, 1996
+</P>
+<HR>
+<A name="p1"></A>1. Bug: Back-to-Back Floating Point Multiplies May Give Incorrect Results
+<p>
+<u>Description</u>
+<P>
+The following back-to-back multiply code sequence in the processor pipeline has the potential of producing an incorrect result in the second multiply: 
+</P>
+
+<BLOCKQUOTE>
+<PRE>
+<font face="courier" size="2">
+mul.[s,d]fd,fs,ft 
+mul.[s,d]fd,sf,st or [D]MULT[U] rs,rt
+</font>
+</PRE>
+</BLOCKQUOTE>
+<P>
+The error happens only when the first multiply is single- or double-precision floating-point operation and when one or both of its source operands are: 
+</P>
+
+<BLOCKQUOTE>
+<PRE>
+<font face="courier" size="2">
+Signalling Not-a-Number (sNaN9, 0 (Zero), or infinity (Inf).
+</font>
+</PRE>
+</BLOCKQUOTE>
+<P>
+The second multiply instruction may produce an incorrect result depending on the operands of the 1st multiply and the operands of the and multiply. The second multiply can be a multiply of any data type: floating-point or integer, single- or double-precision, signed or unsigned integer. 
+</P>
+
+<P>
+This code sequence can occur in the pipeline in two ways:
+</P>
+<OL>
+  <LI>The multiplies are back-to-back in the source code. 
+  <LI>The first multiply is in a branch delay slot and the second multiply is the target instruction of the branch. 
+</OL>
+<p>
+Software Workaround: 
+<P>
+When an instruction of any kind (e.g. NOP) is executed between the two multiply instructions, the problem will not occur. 
+</P>
+<P>
+Release 2.0C includes a patch (patchSG0001118) to the C compiler and Assembler which reorders multiply code to avoid this bug. You must use the compiler option described in the patch release notes, which are located in 
+</P>
+
+<BLOCKQUOTE>
+<PRE>
+<font face="courier" size="2">
+patch1118/rlnotes/patchSG0001118/chl.z
+</font>
+</PRE>
+</BLOCKQUOTE>
+<P>
+If you use a different compiler or code in assembly language, you need to work around the problem as noted above. 
+</P>
+<P>
+Release 2.0C also includes a "checker" program called by makerom to ensure that programs are compiled with the proper compiler options to avoid this bug. 
+</P>
+<p>
+Affected Versions
+<P>
+This problem happens on versions 1.x, 2.0 and 2.1 of the CPU. 
+</P>
+<P align="right">
+<A href="#top"><IMG src="../gif/index.gif" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<A name="p4"></A>2. Tip: Setting Fog Values
+<P>
+The documentation concerning fog (specifically the <A href="../n64man/gsp/gSPFogPosition.htm">gsSPFogPosition</A> macros) is inaccurate. The <A href="../n64man/gsp/gSPFogPosition.htm">gsSPFogPosition</A> macro takes 2 parameters: min and max. The min parameter specifies where the fog will begin and max specifies where the fog will become fully saturated. Both the min and max parameters range from 0 (indicating "AT THE NEAR PLANE") to 1000 (indicating "AT THE FAR PLANE").
+</P>
+<P>
+Generally the mac parameter will always be set to 1000 so that objects AT the far plane (which are about to dissappear from view, or which have just popped into view) are completely fogged out (using such a setting will keep objects from visually "popping" on and off near the far clipping plane). The min parameter can be set anywhere from 0 to almost 1000. The problem with the documentation is that it indicates that the number is linear with the Z position where the fog will begin in Z. Actually this number is linear with the SCREENSPACE Z but not with the object space Z. The screenspace Z is an inverse function of the object space Z (Zscreen = k/Zobject) and is "bunched up" at the far plane. Therefore a min value of 500 will actually begin the fog very close to the near plane. A min value of 700 or more will push fog farther from the near plane so it does not obscure so much geometry. The solution is to just use bigger numbers for min. I find that values of 950 or higher sometimes give me the effect I want. 
+</P>
+<P>
+ -- Acorn
+</P>
+<P align="right">
+<A href="#top"><IMG src="../gif/index.gif" height="17" width="65" border="0"></A>
+</P>
+<HR>
+<A name="p5"></A>3. Tip: Disassembling Code With &quot;<A href="../n64man/tool/gdis.htm">gdis</A>&quot;
+<P>
+The new &quot;<A href="../n64man/tool/gdis.htm">gdis</A>&quot; disassembler is powerful debugging aide that can help you turn a cryptic crash dump (i.e the text that is printed in your <A href="../n64man/tool/gload.htm">gload</A> window when your program takes an exception) into useful debugging information
+</P>
+<P>
+For example, you can disassemble the section named &quot;code&quot; (as specifed in the spec file) in the &quot;chrome&quot; example application executable as follows:
+</P>
+
+<BLOCKQUOTE>
+<PRE>
+<font face="courier" size="2">
+% <A href="../n64man/tool/gdis.htm">gdis</A> -S -t .code.text letters
+</font>
+</PRE>
+</BLOCKQUOTE>
+
+<P>
+Here is a portion of the output...
+</P>
+
+<BLOCKQUOTE>
+<PRE>
+<font face="courier" size="2">
+[ 144] 0x80200050: 27 bd ff 90 addiu sp,sp,-112 
+[ 145] 0x80200054: af bf 00 1c sw ra,28(sp) 
+145: int  I, *pr; 
+146: char *ap; 
+147: u32  *argp; 
+148: u32f argbuf[16]; 
+149: 
+150: /* notice that you can't call <A href="../n64man/tool/rmonPrintf.htm">rmonPrintf()</A> until you set 
+151:  * up the rmon thread. 
+152:  */ 
+153: 
+154: <A href="../n64man/os/osInitialize.htm">osInitialize()</A> 
+[ 154] 0x80200058: 0c 08 04 c4 jal <A href="../n64man/os/osInitialize.htm">osInitialize</A> 
+[ 154] 0x8020005c: 00 00 00 00 nop 
+155: 
+156: argp = (u32 *)RAMROM_APP_WRITE_ADDR; 
+[ 156] 0x80200060: 3c 0e 00 ff lui t6,0xff 
+[ 156] 0x80200064: 35 ce b0 00 ori t6,t6,0xb000 
+[ 156] 0x80200068: af ae 00 60 sw t6,96(sp) 
+157: for (I=0; i&lt;sizeof(argbuf)/4; I++, argp++){ 
+[ 157] 0x8020006c: af a0 00 6c sw zero,108(sp) 
+158: <A href="../n64man/os/osPiRawReadIo.htm">osPiRawReadIo</A>((u32)argp, &amp;argbuf[i]); /* Assume no DMA */ 
+[ 158] 0x80200070: 8f af 00 6c lw t7,108(sp) 
+[ 158] 0x80200074: 8f a4 00 60 lw a0,96(sp) 
+[ 158] 0x80200078: 27 b9 00 20 addiu t9,sp,32 
+[ 158] 0x8020007c: 00 0f 00 80 sll t8,t7,2 
+[ 158] 0x80200080: 0c 08 05 4c jal <A href="../n64man/os/osPiRawReadIo.htm">osPiRawReadIo</A> 
+[ 158] 0x80200084: 03 19 28 21 addu al,t8,t9 
+[ 157] 0x80200088: 8f a8 00 6c lw t0,108(sp) 
+[ 157] 0x8020008c: 8f aa 00 60 lw t2,96(sp) 
+[ 157] 0x80200090: 25 09 00 01 addiu t1,t0,1 
+[ 157] 0x80200094: 2d 21 00 10 sltiu at,t1,16 
+[ 157] 0x80200098: 25 4b 00 04 addiu t3,t2,4 
+[ 157] 0x8020009c: af ab 00 60 sw t3,96(sp) 
+[ 157] 0x802000a0: 14 20 ff f3 bne at,zero,0x80200070 
+[ 157] 0x802000a4: af a9 00 6c sw t1,108(sp) 
+159: }
+
+...
+</font>
+</PRE>
+</BLOCKQUOTE>
+<P>
+Notice that the C source is interleaved with the disassembled code, and that the PC is given in the second column. 
+</P>
+<P>
+When your program crashes, you can look up the error PC listed in the crash dump (it is identified as "epc") to determine where the program crashed and find the corresponding line in the source/disassembly listing. 
+
+</P>
+<P>
+<b>Note:</b> The usage of &quot;<A href="../n64man/tool/gdis.htm">gdis</A>&quot; is different from the older &quot;newdis&quot;.
+</P>
+<P align="right">
+<A href="#top"><IMG src="../gif/index.gif" height="17" width="65" border="0"></A>
+</P>
+<HR>
+</BODY>
+</HTML>

@@ -1,0 +1,155 @@
+<html>
+
+<head>
+<title>RESOURCES</title>
+
+<body bgcolor="#FFFFFF">
+<FONT FACE="arial" SIZE="-1">
+
+
+<p align="center"><strong><big>RESOURCES</big></strong></p>
+
+<p align="left"><strong>1. Overview</strong></p>
+
+<p align="left">The resources for objects used in the sample program numirror are explained in this chapter, divided into those for characters and for the map (maze). All of the character data and map data in this numirror have been converted once from the general purpose 3DGC tools to the N64 intermediate file format NIFF. The NIFF files generated are then converted into the data format for the application.</p>
+
+<p align="left"><strong>2. About NIFF</strong></p>
+
+<p align="left">NIFF will be simply explained here. Please refer to the <font color="#FF0000">NIFF Manual</font> for details about NIFF.</p>
+
+<p align="left">As also stated in the "Overview," NIFF is an intermediate file format for N64. The general purpose 3DGC tools have different formats whose data formats differ from tool to tool, so that when a different 3DCG tool is used for each application, it is necessary to develop a data converter compatible with each tool. Therefore, NIFF files provide for a unified intermediate file format for the N64 in order to absorb the differences in the data formats for each CG tool. <p>
+
+The CG tools which currently can generate NIFF files are listed below. Since these are available as plug-ins for each CG tool, separate plug-ins must be purchased for each tool. <br>
+<br>
+&nbsp;&nbsp; (1) SOFTIMAGE (not released) <br>
+&nbsp;&nbsp; (2) 3D Studio Max (not released) <br>
+&nbsp;&nbsp; (3) N-WORLD (already released) <br>
+&nbsp;&nbsp; (4) LightWave (already released) <br>
+&nbsp;&nbsp; (5) MultiGenCreator (to be released) <br>
+&nbsp;&nbsp; (6) PowerAnimator (to be released) </p>
+
+<p align="left"><strong>3. Character Resource</strong></p>
+
+<p align="left">The character resource is discussed here. <p>
+
+The character resource generates a NIFF file for each character from the general purpose CG tool (N-WORLD was used this time), creates a tool to convert the NIFF file into the data format of the simple display driver used by numirror, and converts the data.<p>
+
+The structure of the character resource files are as follows. <p>
+
+<p align="left">&nbsp;&nbsp; (1) Resource File Structure</p>
+
+<p align="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Used by Game Main</p>
+
+<p align="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; frake_walk.c ...... Main character walking animation<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; frake_down.c ..... Main character falling down animation<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CornGroup.c ...... Corn flakes<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; goal.c ............... Goal plate<br>
+</p>
+
+<p align="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+Used by Select Character</p>
+
+<p align="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; frake_select.c ..... Main character deformation animation<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; frake_kime.c ....... Main character decision animation<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; pump.c ............... Select character cursor</p>
+
+<p align="left"> </p>
+
+<p align="left"><strong>4. Map Resource</strong></p>
+
+<p align="left">The map resource is discussed here. <p>
+
+The map resource generates a NIFF file of the map from the general purpose CG tool (N-WORLD was used), creates a tool for converting the NIFF file to a data format which can be searched by numirror, and converts the data. <p>
+
+However, a simple display driver is not used for the map resource. The file structure of map resource files is shown below. <p>
+
+<p align="left">&nbsp;&nbsp;&nbsp; <font color="#FF0000">(1) Resource File Structure</font></p>
+
+<p align="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; aa_group.c ...... Data for area A in map<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; bb_group.c ...... Data for area B in map<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cc_group.c ...... Data for area C in map<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dd_group.c ...... Data for area D in map<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ee_group.c ...... Data for area E in map</p>
+
+<p align="left">We will stop here with introducing the resource file structure for the map. The actual structure of the map in the program is explained in <font color="#FF0000">"Map (Maze) Structure"</font>.</p>
+
+<p align="left"><strong>5. NIFF Data Files</strong></p>
+
+<p align="left">The NIFF data files utilized in this version of numirror are explained in this section. </p>
+
+<p align="left">&nbsp;(1) NIFF Data File Directory Structure</p>
+
+<p align="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The NIFF data file directory structure is shown below.</p>
+
+<p align="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Mirror_Niff<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+---------bin<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+---------map<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+---------obejct</p>
+
+<DL>
+<DD>bin<p>
+
+<DD>The conversion tools for converting from the current NIFF file to the data format which actually can be searched by the game are stored in the bin directory. There are two types of converters each for PC and SGI versions, as shown below.<p>
+
+<DD><strong> PC Version</strong><p>
+
+<DD> niff2wincv.exe &nbsp;&nbsp;&nbsp;(For character resource conversion)<br>
+ niff2winomb.exe (For map resource conversion)<p>
+
+<DD><strong> SGI Version</strong><p>
+
+<DD> niff2sgicv &nbsp;&nbsp;&nbsp;(For character resource conversion)&nbsp;<br>
+ niff2sgiomg (For map resource conversion)<p>
+
+<DD>map</p>
+
+<DD>The NIFF data files which are the source of the map resources explained in 4., above, are stored in the map directory. <p>
+
+<DD>object<p>
+
+<DD>The NIFF data files which are the source of the character resources explained in 3., above, are stored in the object directory. </DL><p>
+
+<p align="left">(2) NIFF Data File Conversion Method</p>
+
+<p align="left">Make files which perform batch conversion for the PC version or for the SGI version are available under each of the map and object directories. The make methods for the PC version and the SGI version are explained below. <p>
+
+The make method is the same for both map and object.<p>
+
+<DL>
+<DD>Make Method<p>
+
+<DD> PC Version 
+<DD> Move from the MS-DOS prompt to either the map or the object directory, then run make -f makefile.win<p>
+
+<DD> SGI Version 
+<DD> Move from the UNIX shell to either the map or the object directory, then run make -f makefile.sgi<p>
+
+<DD>Results After Make<p>
+
+<DD>There is a cvout directory under each of the map and the object directories. When conversion is properly completed, a converted C source file will have been generated under this cvout directory. </DL><p>
+
+<p align="left">(3) NIFF Editor</p>
+
+<p align="left">NIFF Editor is a tool for editing NIFF files. </p>
+
+<p align="left">NIFF Editor Description (PC Version)</p>
+
+<p align="left">When an edited NIFF file is opened, a window like that shown below is displayed. A node tree of objects is displayed on your left, while the child nodes, etc. of the node selected on the left are displayed on the right.</p>
+
+Right-clicking while a node is selected will display a pop-up menu, and if Properties is selected, the properties information for that node can be changed. <p>
+
+The numirror NIFF files can be edited with this NIFF Editor, enabling you to control the object display data to some extent when the data are recoverted and reflected in the application. <p>
+
+<p align="left"><img src="gif/resour1.gif" alt="wpe3.gif (55612 bytes)"> </p>
+
+<p align="left">For details concerning the NIFF Editor, please refer to the NIFF Editor on-line manual. </p>
+
+<p align="left">  
+<!--msnavigation--></td></tr><!--msnavigation--></table></body>
+</html>

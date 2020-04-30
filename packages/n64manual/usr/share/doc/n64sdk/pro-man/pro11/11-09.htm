@@ -1,0 +1,91 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="../../mobile/allman.css">
+<title>Chapter 11 - RSP Graphics Programming</title>
+<!-- Editor: Paula W
+      Notes: Added link to style-sheet, performed spell check. -->
+</head>
+
+<h1>11.9 Primitives </h1>
+
+<p>Availability of different geometry primitives depends on the version of the RSP <A target="keywords" HREF="../../keywords/index/data/system.htm#microcode">microcode</a> which has been loaded for execution.</p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="01"><h2>11.9.1 Triangles</h2></a>
+
+<table border=1 align="center">
+  <caption><a name="t11-11"><strong>Table 11-11 <a href="../../n64man/gsp/gSP1Triangle.htm">gsSP1Triangle</a>(int v0,int v1,int v2,int flag)</strong></a></caption>
+  <tr><th>Parameter</th><th>Values</th></tr>
+  <tr><td align="center">v0</td><td>vertex buffer index of the first coordinate. (0-15)</td></tr>
+  <tr><td align="center">v1</td><td>vertex buffer index of the second coordinate. (0-15)</td></tr>
+  <tr><td align="center">v2</td><td>vertex buffer index of the third coordinate. (0-15)</td></tr>
+  <tr><td align="center">flag</td><td>used for <a href="../../keywords/index/data/graphics.htm#flat shading" target="keywords">flat shading</a>; ordinal id of the vertex parameter to use for shading: 0, 1, or 2 <br></td></tr>
+</table>
+
+<p>Other bits of the flag field are currently reserved. </p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="02"><h2>11.9.2 Lines </h2></a>
+
+<table border=1 align="center">
+  <caption><a name="t11-12"><strong>Table 11-12 <a href="../../n64man/gsp/gSPLine3D.htm">gsSPLine3D</a>(int v0,int v1,int flag)</strong></a></caption>
+  <tr><th>Parameter</th><th>Values</th></tr>
+  <tr><td align="center">v0</td><td>vertex buffer index of the first coordinate. (0-15)</td></tr>
+  <tr><td align="center">v1</td><td>vertex buffer index of the second coordinate. (0-15)</td></tr>
+  <tr><td align="center">flag</td><td>unused (should be 0)</td></tr>
+</table>
+
+<p>Lines are only available when running the line microcode.  All the normal <a href="../../keywords/index/data/graphics.htm#vertex" target="keywords">vertex</a> <a href="../../keywords/index/data/graphics.htm#attribute" target="keywords">attributes</a> (color, texture, z) are also available for lines.   Lines however require separate RDP render modes to be set than for <a href="../../keywords/index/data/graphics.htm#polygon" target="keywords">polygons</a>.  Consult the man pages for more details. <a href="../../keywords/index/data/graphics.htm#Z buffer" target="keywords">Z-buffered</a> lines will only do reads of the Z-buffer, and not writes.  Thus Z-buffered lines should be drawn after Z-buffered polygons.</p>
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+<a name="03"><h2>11.9.3 Rectangles </h2></a>
+
+<p>All rectangles are 2D <A target="keywords" HREF="../../keywords/index/data/graphics.htm#primitive" target="keywords">primitives</a>, specified in screen-coordinates.  They are not <a href="../../keywords/index/data/graphics.htm#clipping" target="keywords">clipped</a>, but they are scissored in a limited fashion.  In 1CYCLE and 2CYCLE mode, rectangles
+are scissored in the same way as triangles.  In COPY and FILL modes, rectangles are scissored to four pixel boundaries; meaning that additional scissoring may be necessary in the application program. </p>
+
+<p>Filled rectangles are implemented entirely in the RDP, as "pass-through" commands with respect to the RSP. They are mentioned here for completeness: </p>
+
+<table border=1 align="center">
+  <caption><a name="t11-13"><strong>Table 11-13 <a href="../../n64man/gdp/gDPFillRectangle.htm">gsDPFillRectangle</a>(unsigned int ulx,unsigned int uly,unsigned int lrx,unsigned int lry)</strong></a></caption>
+  <tr><th>Parameter</th><th>Values</th></tr>
+  <tr><td align="center">ulx</td><td>screen coordinate of upper-left x (10.2 format)</td></tr>
+  <tr><td align="center">uly</td><td>screen coordinate of upper-left y (10.2 format)</td></tr>
+  <tr><td align="center">lrx</td><td>screen coordinate of lower-right x (10.2 format)</td></tr>
+  <tr><td align="center">lry</td><td>screen coordinate of lower-right y (10.2 format) </td></tr>
+</table>
+
+<p>Textured rectangles require minimal RSP intervention, and are thus an SP operation: </p>
+
+<table border=1 align="center">
+  <caption><a name="t11-14"><strong>Table 11-14 <a href="../../n64man/gsp/gSPTextureRectangle.htm">gsSPTextureRectangle</a>(unsigned int ulx,unsigned int uly,unsigned int lrx,unsigned int lry,int tile,short int s,short int t,short int dsdx,short int dtdy)</strong></a></caption>
+  <tr><th>Parameter</th><th>Values</th></tr>
+  <tr><td align="center">ulx</td><td>screen coordinate of upper-left x (10.2 format)</td></tr>
+  <tr><td align="center">uly</td><td>screen coordinate of upper-left y (10.2 format)</td></tr>
+  <tr><td align="center">lrx</td><td>screen coordinate of lower-right x (10.2 format)</td></tr>
+  <tr><td align="center">lry</td><td>screen coordinate of lower-right y (10.2 format)</td></tr>
+  <tr><td align="center">tile</td><td>which tile in <a href="../../keywords/index/data/graphics.htm#TMEM" target="keywords">TMEM</a> to use</td></tr>
+  <tr><td align="center">s</td><td>s coordinate of upper-left corner (S10.5 format)</td></tr>
+  <tr><td align="center">t</td><td>t coordinate of upper-left corner (S10.5 format)</td></tr>
+  <tr><td align="center">dsdx</td><td>change in s per change in x coordinate (S5.10 format)</td></tr>
+  <tr><td align="center">dtdy</td><td>change in t per change in y coordinate (S5.10 format)</td></tr>
+</table>
+
+<p>There is a related macro, <a href="../../n64man/gsp/gSPTextureRectangleFlip.htm">gsSPTextureRectangleFlip()</a>, that is identical to <a href="../../n64man/gsp/gSPTextureRectangle.htm">gsSPTextureRectangle()</a>, except that the texture is <a href="../../keywords/index/data/graphics.htm#flip" target="keywords">flipped</a> so that the s coordinate changes in the y direction, and the t coordinate changes in the x direction:</p>
+
+<table border=1 align="center">
+  <caption><a name="t11-15"><strong>Table 11-15 <a href="../../n64man/gsp/gSPTextureRectangleFlip.htm">gsSPTextureRectangleFlip</a>(unsigned int ulx,unsigned int uly,unsigned int lrx,unsigned int lry,int tile,short int s,short int t,short int dtdx,short int dsdy)</strong></a></caption>
+  <tr><th>Parameter</th><th>Values</th></tr>
+  <tr><td align="center">ulx</td><td>screen coordinate of upper-left x (10.2 format)</td></tr>
+  <tr><td align="center">uly</td><td>screen coordinate of upper-left y (10.2 format)</td></tr>
+  <tr><td align="center">lrx</td><td>screen coordinate of lower-right x (10.2 format)</td></tr>
+  <tr><td align="center">lry</td><td>screen coordinate of lower-right y (10.2 format)</td></tr>
+  <tr><td align="center">tile</td><td>which tile in TMEM to use</td></tr>
+  <tr><td align="center">s</td><td>s coordinate of upper-left corner (S10.5 format)</td></tr>
+  <tr><td align="center">t</td><td>t coordinate of upper-left corner (S10.5 format)</td></tr>
+  <tr><td align="center">dtdx</td><td>change in t per change in x coordinate (S5.10 format)</td></tr>
+  <tr><td align="center">dsdy</td><td>change in s per change in y coordinate (S5.10 format)</td></tr>
+</table>
+
+
+<p align="right"><a href="index.htm#index"><img alt="UP" src="../../gif/index.gif" border=0></a></p><hr>
+</body> </html>

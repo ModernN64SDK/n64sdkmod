@@ -1,0 +1,59 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.
+MAP- updated format, added links>
+<title>__osGetSR</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>__osGetSR</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+<p>
+__osGetCause, __osSetCause, __osGetCompare,
+__osSetCompare, __osGetConfig, __osSetConfig, __osGetSR,
+__osSetSR, __osGetFpcCsr, __osSetFpcCsr</p>
+
+<p><i>Internal routine to access to multiple MIPS R4300 registers</i></p>
+
+<p>This function along with the functions listed below are internal functions used by the N64 operating system. They are presented here to prevent developers from duplicating them unnecessarily.</p>
+
+<h3>Syntax</h3>
+<p>
+<blockquote>
+    <pre>#include &lt;ultra64.h&gt;     /* <A HREF="../../header/ultra64.htm">ultra64.h</A> */     
+#include &lt;os_internal.h&gt;
+u32 __osGetCause(void);
+void __osSetCause(u32 value);
+u32 __osGetCompare(void);
+void __osSetCompare(u32 value);
+u32 __osGetConfig(void);
+void __osSetConfig(u32 value);
+u32 __osGetSR(void);
+void __osSetSR(u32 value);
+u32 __osGetFpcCsr(void);
+u32 __osSetFpcCsr(u32 value);</pre></blockquote></p>
+
+<h3>Description</h3>
+
+<p>The Nintendo 64 operating system contains numerous internal routines that provide access to various important MIPS R4300 registers. To reduce potential duplicate effort from developers, these routines are described in this article. Developers should use the "Set" routines with extreme caution because they can interfere with the operations of the N64 operating system. These routines were designed for internal use only, so their names all have a double underscore (__) prefix notation. For more information on the use of the R4300 registers, please refer to the MIPS R4300 User's Manual and the header file <A HREF="../../header/R4300.htm">R4300.h</A>, which contains various bit definitions that can be used with the R4300 registers.</p>
+
+<p>The <a href="osGetCause.htm">__osGetCause</a> routine returns the current value of the MIPS R4300 Cause register that describes the cause of the most recent exception. Its counterpart <a href="osSetCause.htm">__osSetCause</a>simply sets this register to the new value.</p>
+
+<p>The <a href="osGetCompare.htm">__osGetCompare</a> routine returns the value of the R4300 Compare register. <a href="osSetCompare.htm">__osSetCompare</a> simply sets this register to the new value. Developers are discouraged from using __osSetCompare because the Compare register is used by the timer functions <a href="osSetTimer.htm">__osSetTimer</a> and <a href="osStopTimer.htm">__osStopTimer</a>.</p>
+
+<p>The <a href="osGetConfig.htm">__osGetConfig</a> routine returns the current value of the R4300 Configuration register. Its counterpart <a href="osSetConfig.htm">__osSetConfig</a> simply sets this register to the new value.</p>
+
+<p>The __osGetSR routine returns the current value of the R4300 Status register. Its counterpart __osSetSR simply sets this register to the new value. When creating a thread, <a href="osCreateThread.htm">osCreateThread</a> enables the kernel mode, all interrupts, and exception level in the thread's Status register, which becomes the R4300 Status register during a thread context switch.</p>
+
+<p>The <a href="osGetFpcCsr.htm">__osGetFpcCsr</a> routine returns the current value of the R4300 floating-point control/status register. Its counterpart <a href="osSetFpcCsr.htm">__osSetFpcCsr</a> simply returns the current value of this register before setting it to the new value. Upon system initialization and the creation of a thread, this floating-point control/status is enabled to flush all denormalized numbers to zero and to cause an invalid operation exception when Not a Numbers (NaNs) are generated. These 2 bits are respectively defined as FPCSR_FS and FPCSR_EV in R4300.h.</p>
+
+<h3>See Also</h3>
+
+<p>__<a href="osGetTLBASID.htm">osGetTLBASID</a> </p>
+<h3>Revision History</h3>
+<p>1999/04/30  Changed Format</p>
+<br><br>
+
+</body>
+</html>

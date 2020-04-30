@@ -1,0 +1,67 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<TITLE>64DD Chapter 6</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+<font face="arial" size="-1">
+<A name="01"></A><b>6.1 ID Usage</b>
+
+<P>
+The ID is acquired by using LeoReadDiskID (Please see <a href="../dd07/07-02.htm">"Section 7.2.4."</a>) and can be used for tasks like the following.
+
+<OL>
+  <LI>When disks are substituted during a game, it can be used to check whether the original disk was inserted.
+  <LI>When disks must be substituted, such as with 2-disk games, it can be used to check whether the user has inserted the correct disk.
+  <LI>It can be used to store information for constructing a file system, such as identifiers.
+</OL>
+<P>
+When the error LEO_ERROR_MEDIUM_MAY_HAVE_CHANGED is returned with a single-disk game, the ID of the inserted disk is first read.  It can then be checked for agreement with the ID of the disk that should have been inserted to determine whether that disk was replaced by another (The disk ID is stored in the global variable leoBootID and is of the same type as LEODiskID, which will be discussed later.).  The reason that disks are distinguished in this way is to prevent destruction of data from another disk These ID processing sequences are discussed in <a href="../dd10/index.htm">Section 10.2, Error-Handling Sequences."</a>
+</P>
+<P>
+ID numbers are accessed from the C language through the following LEODiskID structures.
+
+<font face="courier">
+<PRE>
+typedef struct
+{
+        u8 pad;         /* reserved area */
+        u8 yearhi;      /* the hundreds and thousands digits of the year(A.D.) are stored as BCD */
+        u8 yearlo;      /* the tens and ones digits of the year(A.D.) are stored as BCD */
+        u8 month;       /* the month is stored as BCD */
+        u8 day;         /* the day is stored as BCD */
+        u8 hour;        /* the time (24-hour display) is stored as BCD */
+        u8 minute;      /* the minute is stored as BCD */
+        u8 second;      /* the minute is stored as BCD */
+} LEODiskTime;          /* the production time is stored as BCD */
+</PRE>
+<PRE>
+typedef struct
+{
+        u64             lineNumber;     /* contains the factory line number */
+        LEODiskTime     time;           /* contains the time of production */
+} LEOSerialNum;
+</PRE>
+<PRE>
+typedef struct
+{
+        u8              gameName[4];    /* contains the initial code for the game */
+        u8              gameVersion;    /* contains the game version */
+        u8              diskNumber;     /* contains the disk number */
+        u8              ramUsage;       /* contains the use of RAM area */
+        u8              diskUsage;      /* contains the disk usage */
+        LEOSerialNum    serialNumber;
+        u8              company[2];     /* contains the company code */
+        u8              freeArea[6];    /* can be used freely by the application */
+} LEODiskID;
+</PRE></font>
+<font face="arial" size="-1">
+<P>
+The structure serialNumber is composed of the factory line number (line number) and the time of production.  Because the disk contains this area, as a rule no other disk with an identical ID exists.  Although disks can be distinguished with this portion alone, comparison of all 32 bytes is recommended for actual comparisons.  Please also insert a 0 for diskUsage.
+</P>
+<P align="left">
+<A href="index.htm#index"><IMG src="../../gif/index.gif" height="17" width="65" border="0"></A>
+</P>
+</BODY>
+</HTML>

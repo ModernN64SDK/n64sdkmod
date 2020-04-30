@@ -1,0 +1,85 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits.
+   PWC- updated formatting
+-->
+<TITLE>gSPTexture</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>gSPTexture Macro</H1>
+
+<p><b>Function</b></font></p>
+
+<p>gSPTexture Macro</p>
+
+<P><i>Enables/disables textures and sets scale and primitive tile settings</i></P>
+
+<p><b>Syntax</b></font></p>
+<p>
+<PRE>
+#include &lt;ultra64.h&gt;        /* <A href="../../header/gbi.htm">gbi.h</A> */
+gSPTexture(Gfx *gdl, s32 sc, s32 tc, s32 level, s32 tile, s32 on)
+gsSPTexture(         s32 sc, s32 tc, s32 level, s32 tile, s32 on)</PRE></p>
+
+<p><b>Arguments</b></font></p>
+<p>
+<DL>
+  <DT><B>gdl</B>
+  <DD>the display list pointer. 
+  <DT><B>sc</B>
+  <DD>the scaling value for the texture's s coordinate (16-bit precision, .16). 
+  <DT><B>tc</B>
+  <DD>the scaling value for the texture's t coordinate (16-bit precision, .16). 
+  <DT><B>level</B>
+  <DD>one less than the maximum number of MIP-map levels (max - 1). 
+  <DT><B>tile</B>
+  <DD>the tile descriptor index (3-bit precision, 0~7). 
+  <DT><B>on</B>
+  <DD>Texture flag:
+  <DD><B>G_ON</B> (Texture ON). 
+  <DD><B>G_OFF</B> (Texture OFF). 
+</DL></p>
+<p><b>Description</b></font></p>
+<P>
+gSPTexture enables/disables textures and sets the scaling value for texturing in the RSP. The texture coordinates are computed by the RSP using the following formula: 
+
+</P>
+<P>Displayed texture coordinates) = (Scale value) x (Shifted texture coordinate values (*))
+</P>
+<P>
+(*) These are the values of the texture coordinates obtained from the Vtx structure after they have been shifted by the "shift" parameter set in the texture tile attributes. 
+</P>
+<P>
+For details, please see Section 11.5, "Texture State" and Section 11.7.4.3, "Texture Coordinate Transformations" in the N64 Online Programming Manual. 
+</P>
+<P>
+The texture coordinates are created based on the scaling arguments (<B>sc</B>, <B>tc</B>) and the s,t coordinates of the object. Since these are combined by the application, the final s,t values are values in s10.5 format. If you want to scale proportionally, specify 0.5 (0x8000) for <B>sc</B> and <B>tc</B>, and double the object's s,t coordinates. 
+</P>
+<P>
+When MIP-mapping, specify for <B>tile</B> the lowest value in the tile sequence being used. This becomes the tile number of the most-detailed map. For example, in the tile sequence n, n+1, n+2, ... the "n" tile will be the most-detailed tile, so "n" is the value set in this macro. The tiles n+1, n+2, ... have diminishing resolution. 
+</P>
+<P>
+For details about tile descriptors, see <A href="../gdp/gDPSetTile.htm">gDPSetTile</A> and Section 13.5, "Tile Descriptor Loading" in the N64 Programming Manual. 
+</P>
+<p><b>Note</b></font></p>
+<P>
+For the <B>on</B> argument, set either G_ON or G_OFF. When this argument is set to G_OFF, the other arguments are not updated. This might be the cause of bugs in the display list when the state of the texture engine is obtained later. 
+</P>
+<p><b>Example</b></font></p>
+<P>
+Please refer to Section 11.7.4.3, "Texture Coordinate Transformations" in the N64 Online Programming Manual. 
+
+</P><p><b>See Also</b></font></p>
+<P>
+<A href="../gdp/gDPSetTextureImage.htm">gDPSetTextureImage</A>
+
+<p><b>Revision History</b></font></p>
+
+<p>02/01/99  Entirely revised.</p>
+</P>
+</BODY>
+</HTML>

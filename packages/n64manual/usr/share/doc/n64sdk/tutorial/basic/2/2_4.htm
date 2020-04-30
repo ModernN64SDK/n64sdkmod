@@ -1,0 +1,82 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-N64 Programming Basics-Chapter 2  Mechanism of N64 Programming</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/20/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<br>
+<FONT Style="font-size:12pt"><B>2.4  Boot Portion of a Typical N64 Program</B></FONT>
+<br>
+<P>
+Thus far, we have tried to paint a picture of how a multi-thread program operates.  Starting with this section, we will get into more detailed explanations using a program actually written for the N64. <br><br>
+
+     In an N64 program, first you prepare a thread called the "idle thread."  As the name implies, the idle thread is executed when the CPU is free, and it is given the lowest priority. Although the term "idle thread" may not sound familiar, this thread is absolutely essential for an N64 program.  The reason is that the N64 program always needs at least one active thread at all times.  The idle thread must exist at all times so it can be executed when all higher priority threads become inactive. <br><br>
+
+
+     You create the idle thread as well as all other threads by calling the <tt>osCreateThread</tt> function.
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=5><TR>
+	<TD NOWRAP COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE><B>List 2-1</B>
+</TR><TR>
+	<TD NOWRAP BGCOLOR="666666" WIDTH="4" ALIGN=LEFT VALIGN=TOP><HR NOSHADE SIZE=0></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>
+<FONT COLOR="#000080"><PRE><CODE>void boot(void)
+{
+  /* Initialize hardware and software */
+  osInitialize();
+
+  /* Create and activate the idle thread  */
+  osCreateThread(&amp;idleThread, IDLE_THREAD_ID, idle, (void *)0,
+    (idleThreadStack + STACKSIZE / sizeof(u64)), OS_PRIORITY_IDLE);
+  osStartThread(&amp;idleThread);
+}
+</CODE></PRE></FONT>
+	</TD>
+</TR></TABLE>
+<P>
+ Usually the idle thread is constructed such that it lowers its own priority and continues to exist after calling several initialization functions and activating the "main thread," which as the name implies is the main thread of the program.<br><br>
+     In a simple program, the idle thread basically goes into a loop after it has done its job and no longer needs to execute, as in the <tt>idle</tt> function (which is the idle thread itself) shown below.
+
+</P>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=5><TR>
+	<TD NOWRAP COLSPAN=2 ALIGN=LEFT VALIGN=MIDDLE><B>List 2-2</B>
+</TR><TR>
+	<TD NOWRAP BGCOLOR="666666" WIDTH="4" ALIGN=LEFT VALIGN=TOP><HR NOSHADE SIZE=0></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>
+<FONT COLOR="#000080"><PRE><CODE>static void idle(void *argument)
+{
+  /* Initialize VI */
+  osCreateViManager(OS_PRIORITY_VIMGR);
+  osViSetMode(&amp;osViModeTable[OS_VI_NTSC_LAN1]);
+
+  /* Create and activate the PI Manager thread  */
+  osCreatePiManager((OSPri)OS_PRIORITY_PIMGR,
+    &amp;PiMessageQ, PiMessages, NUM_PI_MSGS);
+
+  (Parts have been omitted)
+
+  /* Activate the main thread */
+  osCreateThread(&amp;mainThread, MAIN_THREAD_ID, mainproc, arg,
+    (mainThreadStack + STACKSIZE / sizeof(u64)),
+    MAIN_THREAD_PRI);
+  osStartThread(&amp;mainThread);
+
+  /* Make itself the lowest priority thread */
+  osSetThreadPri(0, 0);
+
+  /* Repeat loop without doing anything */
+  for(;;);
+}
+</CODE></PRE></FONT>
+	</TD>
+</TR></TABLE>
+<P>
+  Typically, the idle thread lowers its own priority and then kills time in an infinite loop after the main thread has been activated.<br><br>
+     In contrast to this, the main thread performs a wide variety of operations that vary, depending on the program.  In this tutorial, we will take a stepwise approach in our explanation of the main thread, using by way of example of an advanced main thread that we will introduce one part at a time.
+</P>
+
+</BODY>
+</HTML>

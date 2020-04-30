@@ -1,0 +1,42 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<Editor's Notes: JLR made reformating and copy edits
+MAP- added links, updated format>
+<title>osSetThreadPri</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>osSetThreadPri</b></font><font style="font-size: 9pt"><b> (function)</b></font>
+
+<p>osGetThreadPri, osSetThreadPri</p>
+
+<p><i>Gets/Sets the priority of specified thread</i></p>
+
+<h3>Syntax</h3>
+<p>
+<blockquote>
+    <pre>include &lt;ultra64.h&gt;     /* <A HREF="../../header/ultra64.htm">ultra64.h</A> */
+void osGetThreadPri(OSThread *t);
+void osSetThreadPri(OSThread *t, OSPri pri);</pre></blockquote></p>
+
+<h3>Description</h3>
+
+<p>The <a href="osGetThreadPri.htm">osGetThreadPri</a> call returns the priority of the given thread specified by the <b>t</b> argument. If t is NULL, osGetThreadPri returns the priority of the invoking (currently running) thread. The osSetThreadPri call sets the priority of thread specified by the <b>t</b> argument to the value specified by the <b>pri</b> argument. If <b>t</b> is NULL, then the priority of the current thread is set. As with <a href="osCreateThread.htm">osCreateThread</a>, the priority value should range from OS_PRIORITY_IDLE (0) to OS_PRIORITY_APPMAX (127).</p>
+
+<p>If <b>t</b> is runnable or blocked waiting to send or receive a message, it is a member of a priority-ordered queue. The osSetThreadPri call may cause the queue to be reordered to reflect the change in priority. In addition, if the thread becomes the highest priority runnable thread, the caller of osSetThreadPri immediately yields the CPU and the thread t will be allowed to run. </p>
+
+<h3>See Also</h3>
+
+<p><a href="osCreateThread.htm">osCreateThread</a>, <a
+href="osGetThreadId.htm">osGetThreadId</a>, <a
+href="osStartThread.htm">osStartThread</a>, and <a
+href="osYieldThread.htm">osYieldThread</a></p>
+<H3>Revision History</H3>
+<P>
+1999/04/30 Changed format
+</P>
+
+</body>
+</html>

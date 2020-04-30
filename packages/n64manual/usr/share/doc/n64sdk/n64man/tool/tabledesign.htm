@@ -1,0 +1,52 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../N64man.css">
+<!--
+Editors Notes:
+  PWC- updated formatting
+JLR-- Did reformating
+MAP- updated format
+-->
+<title>tabledesign</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<font style="font-size: 12pt"><b>tabledesign</b></font><font style="font-size: 9pt"><b> (tool command)</b></font>
+
+<p><i>Designs codebooks for the ADPCM compressor</i></p>
+
+<h3>Syntax</h3>
+
+<p>tabledesign [-s book_size] [-f frame_size] [-i refine_iter] aifcfile</p>
+<h3>Description</h3>
+
+<p>tabledesign reads an AIFC or AIFF sound file and produces a codebook (written to standard output) that is used by the <a href="vadpcm_enc.htm">vadpcm_enc</a> tool. The codebook is a table of prediction coefficients that the coder selects from to optimize sound quality. The procedure used to design the codebooks is based on an adaptive clustering algorithm.</p>
+
+<p>Command Line Options</p>
+
+<dl>
+    <dt><strong>-s &lt;value&gt;</strong></dt>
+    <dd>Is the base 2 log of the number of entries in the table. Currently up to eight entries are supported, so the value can range from 0 to 3. The default value for this parameter is 2, which gives 4 entries. This seems to be adequate for most sounds. <br>
+        <br>
+        </dd>
+    <dt><strong>-f &lt;value&gt;</strong></dt>
+    <dd>Is the size of the frames (in samples) used to estimate predictors. Because the ADPCM encoder operates on frames of 16 samples this number should be a multiple of 16. The default value is 16. The main benefit of increasing the frame size is that design time is reduced. <br>
+        <br>
+        </dd>
+    <dt><strong>-i &lt;value&gt;</strong></dt>
+    <dd>Is the number of iterations used in the refinement step of the clustering algorithm. The default value is 2. Increasing this parameter will increase design time with some possible improvement in quality. The default is adequate for most sounds. <br>
+        <br>
+        </dd>
+</dl>
+
+<h3>See Also</h3>
+
+<p><a href="vadpcm_enc.htm">vadpcm_enc</a></p>
+<h3>Revision History</h3>
+<p>1999/04/30  Changed Format</p>
+<br><br>
+
+</body>
+</html>

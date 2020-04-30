@@ -1,0 +1,27 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-N64 Programming Basics-Chapter 2  Mechanism of N64 Programming</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: Matt Park created file 9/20/1999
+-->
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<BASE TARGET="keywords">
+<BR>
+<FONT Style="font-size:12pt"><B>2.2  N64 Program Features</B></FONT>
+<BR>
+<P>
+ One of the main features of programs that run on the N64 is that numerous threads operate cooperatively.   In the sense that the N64 supports the execution of multiple threads, you can say that the N64 OS is a multi-thread OS.<BR><BR>  
+     The concept of threads plays a very large role in all subsequent explanations of N64 programming, so it is important to realize their importance.  If you use NuSystem, there is almost no need to be aware of thread processes.  Thus, you do not need to cover them thoroughly.   
+</P>
+<P>
+First of all, we will begin by considering the execution of a typical program written in C.  When you activate the program, execution proceeds from the <tt>main</tt> function, which calls subroutines and library functions as the program progresses.<BR><BR>
+     To describe the flow of the program, a concrete example follows.  When you activate the program, <tt>main</tt> starts the processing.  <tt>main</tt> rarely completes the processing on its own.  It usually calls other functions to share the load.  When these other functions complete their tasks, <tt>main</tt> uses the results to restart its own processing based on the results.  When this work is done, the program is completed.<BR><BR>
+     <tt>main</tt> and these other functions cooperate together, each doing a share of the work.  However, note that whenever <tt>main</tt> calls other functions to do processing, it goes into a state of waiting until the processing is done.  In other words, only one function is doing anything at any one time.<BR><BR>
+     In this type of program, only one function is executed at a time, so if you follow the execution flow as described in the source program, you will intuitively understand the order in which computations are being performed. <BR><BR>
+
+     In contrast, when writing an N64 program, with its multi-thread OS, you need to consider the fact that several functions will be processing at the same time.  Since there is still only one CPU, strictly speaking the computations are not performed at the same time.  Rather, an executing function will halt temporarily so the computation for another function can be performed, and it seems as if multiple functions are operating in parallel. <BR><BR> 
+     The term "thread" is used to express this series of computational procedures operating in parallel this way.  Using a concrete example again, even after a process has been passed to a separate function, the main function keeps processing.
+</P>
+</BODY>
+</HTML>

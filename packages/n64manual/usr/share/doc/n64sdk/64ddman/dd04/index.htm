@@ -1,0 +1,49 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<TITLE>64DD Chapter 4</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+<font face="arial" size="-1">
+<font size="3"><b>Chapter 4 64DD Internal ROM</b></font>
+<HR>
+<P>
+Internal mask ROM is built into the commercial version of 64DD.  Included in this mask ROM, called DDROM, are font and wave data and the IPL. (DDROM is not built into drives made for development purposes. For more information, see <a href="../dd05/index.htm">Chapter 5</a>). 
+
+<P>
+The addresses of DDROM differ from those of the mask ROM used for Game Pak ROM.  Game Pak ROM begins with the physical address 0x1000_0000, while DDROM begins with 0x0600_0000.  Developers can access DDROM without considering the address differences between the two types by using the EPI functions(See <a href="../../pro-man/pro27/index.htm">"Chapter 27, EPI Functions and Extended Devices,"</a> in the N64 Online Programing Manual).
+
+<P>
+The most important point to remember when accessing DDROM is that it must not be accessed while the disk is being accessed.  This also is true when Game Pak ROM is accessed. 
+
+<P>
+A simple means of preventing ROM access during disk access is by controlling disk and ROM access with a single thread.  With this, each completion of a disk or ROM access is confirmed with a receive message, and the next access is begun.
+
+<P>
+A map of the entire DDROM area looks like that shown below.  The contents of DDROM will be discussed individually in subsequent sections.
+</P>
+<P>
+<B>DDROM Map</B>
+</P>
+<P>
+<IMG src="f04-00.gif">
+</P>
+<P>
+The starting address for font data, 0x00A_0000, is defined in leo.h as DDROM_FONT_START, and the starting address for sound data, 0x0014_0000, is defined in the same header file as DDROM_WAVETABLE_START.
+</P>
+<P><a name="index"></a>
+<A href="04-01.htm">4.1 IPL </A>
+</P>
+<P>
+<A href="04-02.htm">4.2 Font Data </A>
+</P>
+<P>
+<A href="04-03.htm">4.3 Wave Data </A>
+</P>
+<P>
+<A href="04-04.htm">4.4 Note </A>
+</P>
+<HR>
+</BODY>
+</HTML>

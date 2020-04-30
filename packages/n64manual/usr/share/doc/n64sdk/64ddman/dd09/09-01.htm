@@ -1,0 +1,282 @@
+<!DOCTYPE HTML PUBLIC "-//IBM//DTD HPB HTML//EN">
+<HTML>
+<HEAD>
+<TITLE>Chapter 9 64DD</TITLE>
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+<font face="arial" size="-1">
+
+<b>9.1 Font Data</b>
+<P>
+Three functions are provided for determining the starting address of each font in the drive's internal ROM.
+
+<HR>
+<A name="01"></A><u>9.1.1 Obtaining Storage Offset Addresses for Kanji</u>
+<P>
+The storage offset addresses for kanji can be obtained by calling LeoGetKAdr().
+ 
+<P>
+Arguments are encoded using Shift-JIS codes.
+</P>
+<HR align="left" noshade size="1" width="50%">
+<P>
+<B>LeoGetKAdr( ) function</B>
+</P>
+<HR align="left" noshade size="1" width="50%">
+<P>
+<B>#include&lt;PR/leo.h&gt;</B>
+</P>
+<P>
+<B>int LeoGetKAdr(int <U>sjiscode</U>);</B>
+</P>
+<P>
+<U>sjiscode</U> kanji Shift-JIS code
+</P>
+<HR align="left" noshade size="1" width="50%">
+<P>
+The value returned by this function is the offset from the starting address of the font data in DDROM (see Chapter 4).  As is mentioned in Chapter 4, the starting address of font data in DDROM (0x000a_0000) is defined by DDROM_FONT_START in leo.h.  Thus, when using EPI functions to tranfer data from DDROM by DMA, specify the following for the address.
+<P>
+<BLOCKQUOTE>
+<B>DDROM_FONT_START+offset</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+(offset indicates the return value of this function)
+</BLOCKQUOTE>
+<P>
+See the next page for a specific example. 
+</P>
+<P>
+These data are represented in 4-bit (16 dot x 16 dot) Intensitexture format.  To find which specific codes represent each kanji character, please see "Appendix B, Drive Internal Font Data."
+</P>
+<BLOCKQUOTE>
+<B>16 x 16 x 4 = 1024(bit)= 128(Byte)</B>
+</BLOCKQUOTE>
+<P>
+As mentioned previously, the EPI functions is used to load kanji data into RDRAM.  An example, from DMA transfer to storage in TMEM, is shown below.
+ 
+<P>
+<B>Example</b>
+<PRE><font face="courier" size="2">i=LeoGetKAdr(sjiscode);
+
+dmaIOMessageBuf.hdr.pri         = OS_MESG_PRI_NORMAL;
+dmaIOMessageBuf.hdr.retQueue    = &amp;dmaMessageQ;
+dmaIOMessageBuf.dramAddr        = &amp;kbuffer[kanadr];
+dmaIOMessageBuf.devAddr         = DDROM_FONT_START + i;
+dmaIOMessageBuf.size            = 128;
+
+handler-&gt;transferInfo.cmdType  = OS_OTHERS;
+osEPiStartDma(handler, &amp;dmaIOMessageBuf, OS_READ);
+ 
+gDPLoadTextureBlock_4b( glistp++,&amp;kbuffer[kanadr],G_IM_FMT_I,16,
+                        16,0,G_TX_CLAMP,G_TX_CLAMP,G_TX_NOMASK,
+                        G_TX_NOMASK,G_TX_NOLOD,G_TX_NOLOD);
+gSPTextureRectangle(glistp++,x&lt;&lt;2,y&lt;&lt;2,(x+16)&lt;&lt;2,(y+16)&lt;&lt;2,
+                        0,0,0,0x400,0x400);
+</PRE></font>
+
+ 
+ 
+<P align="left">
+<A href="index.htm"><IMG src="../../gif/index.gif" height="17" width="65" border="0"></A>
+</P>
+<HR>
+
+<A name="02"></A><u>9.1.2 Obtaining Storage Offset Addresses and Other Information for Alphabetic Characters - 1</u>
+<P>
+Storage offset addresses and other information for alphabetic characters can be obtained using LeoGetAAdr(). For more specific information on values for the argument <U>code</U>, please see "Appendix B, Drive Internal Font Data."
+ 
+<P>
+If a value like that described above is inserted for code, the character width is stored for <U>dx</U>, character height for <U>dy</U>, and the vertical location of the character body for <U>cy</U> (see figure below).  The return value is the offset from the beginning of the fonts in DDROM.  Based on this offset value, font data can be transferred from DDROM by DMA using the Epi functions.  When transferring data by DMA, the starting address must be set to a 2-byte boundary.  However, because the offset must always be a multiple of 2, this is not a particular concern.  That is, assuming offset to be the return value of the function LeoGetAAdr( ), the address should be specified as follows. 
+</P>
+<BLOCKQUOTE>
+<B>DDROM_FONT_START + offset</B>
+</BLOCKQUOTE>
+<P>See the following Example. 
+</P>
+<P>
+These data are represented in 4-bit Intensity Texture format. The amount of memory needed to represent of 1 character can be calculated from the width <U>dx</U> and height <U>dy</U> of the character as follows.
+
+<BLOCKQUOTE>
+<B><U>dx</U> x<U> dy</U> x 4(bits) = <U> dx</U> x  <U>dy</U>  /  2(bytes)</B>
+</BLOCKQUOTE>
+<P>
+However, it is risky to use DMA to send data whose size is not a multiple of 16. (For more information, see the description of the OS_DCACHE_ROUNDUP_ADDR function.) Consequently, the value given to the EPI functions as the transfer size is the smallest multiple of 16 that exceeds <U>dx</U> x <U>dy</U> / 2 and is calculated as follows. 
+</P>
+<BLOCKQUOTE>
+<B>( ( (<U>dx</U> x <U>dy</U> / 2) + 15 ) &gt;&gt; 4 ) &lt;&lt; 4</B>
+</BLOCKQUOTE>
+<P>
+In the following example, a fixed data size of 128 bytes is specified because it was determined that transferring slightly more data than indicated by the above calculation would allow faster data transfer (no characters exceed 128 bytes in size.).  Which approach is best can be determined depending on the case.
+<P>
+Values different from the type shown above cannot be used for <U>code</U>.  A return value of -1 means that the character is unreadable.
+ 
+<P>
+Relationship between dx, dy, and cy  
+ 
+<P>
+<IMG src="f09-01.gif" height="65" width="280">
+ 
+<HR align="left" noshade size="1" width="50%">
+<P>
+<B>LeoGetAAdr( ) function</B>
+ 
+<HR align="left" noshade size="1" width="50%">
+<P>
+<B>#include&lt;PR/leo.h&gt;</B>
+</P>
+<P>
+<B>int LeoGetAAdr(int <U>code</U>, int *<U>dx</U>, int *<U>dy</U>, int
+*<U>cy</U>);</B>
+</P>
+<P>
+<U>code</U> code
+</P>
+<P>
+<U>dx</U> character width
+</P>
+<P>
+<U>dy</U> character height
+</P>
+<P>
+<U>cy</U> vertical lacationof character body
+</P>
+
+<P>
+<B>Example</B>
+<PRE><font face="courier" size="2">ofs=LeoGetAAdr(code,&amp;dx,&amp;dy,&amp;cy);
+ 
+dmaIOMessageBuf.hdr.pri         = OS_MESG_PRI_NORMAL;
+dmaIOMessageBuf.hdr.retQueue    = &amp;dmaMessageQ;
+dmaIOMessageBuf.dramAddr        = &amp;kbuffer[kanadr];
+dmaIOMessageBuf.devAddr         = DDROM_FONT_START + ofs;
+dmaIOMessageBuf.size            = 128;
+ 
+handler-&gt;transferInfo.cmdType  = OS_OTHERS;
+osEPiStartDma(handler, &amp;dmaIOMessageBuf, OS_READ);
+ 
+gDPLoadTextureTile_4b(glistp++,&amp;kbuffer[kanadr],G_IM_FMT_I,
+                        (dx+1)&amp;~1,dy,0,0,(dx-1)&lt;&lt;G_TEXTURE_IMAGE_FRAC,
+                        (dy-1)&lt;&lt;G_TEXTURE_IMAGE_FRAC,0,G_TX_CLAMP,
+                        G_TX_CLAMP,G_TX_NOMASK,G_TX_NOMASK,G_TX_NOLOD,
+                        G_TX_NOLOD);
+gSPTextureRectangle(glistp++,x&lt;&lt;2,(y-cy)&lt;&lt;2,(x+dx)&lt;&lt;2,
+                        (y-cy+dy)&lt;&lt;2,0,0,0,0x400,0x400);
+</PRE></font>
+ 
+<P align="left">
+<A href="index.htm"><IMG src="../../gif/index.gif" height="17" width="65" border="0"></A>
+ 
+<HR>
+<A name="03"></A><u>9.1.3 Obtaining Storage Offset Addresses and Other Information for Alphabetic Characters - 2</u>
+<P>
+Storage offset addresses and other information for alphabetic characters can be obtained by calling LeoGetAAdr(), described in the previous section.  However, because this function converts codes to addresses and other information each time it is called, using it is not the most efficient means of obtaining this information.  When the alphabetic characters used in a game are prepared beforehand, it is more convenient to use following function.
+ 
+<HR align="left" noshade size="1" width="50%">
+<P>
+<B>LeoGetAAdr2( )function</B>
+</P>
+<HR align="left" noshade size="1" width="50%">
+<P>
+<B>#include&lt;PR/leo.h&gt;</B>
+</P>
+<P>
+<B>int LeoGetAAdr2(u32 <U>ccode</U>, int *<U>dx</U>, int *<U>dy</U>, int
+*<U>cy</U>);</B>
+</P>
+<P>
+<U>ccode</U> character code
+</P>
+<P>
+<U>dx</U> character width
+</P>
+<P>
+<U>dy</U> character height
+</P>
+<P>
+<U>cy</U> vertical location of character body
+</P>
+<HR align="left" noshade size="1" width="50%">
+<P>
+(Please note that the character codes for this function are different from those used by LeoGetAAdr().)
+ 
+<P>
+If a value like that described above is inserted for the argument ccode, the character width is stored for <U>dx</U>, character height for <U>dy</U>, and the vertical location of the character body for <U>cy</U> (see figure in previous section).  The return value is the offset from the beginning of the fonts in DDROM.  When using Epi functions to transfer data from DDROM by DMA, the address is specified as follows.
+</P>
+<BLOCKQUOTE>
+<B>DDROM_FONT_START+offset</B>
+</BLOCKQUOTE>
+<BLOCKQUOTE>
+(offset is the return value of this function)
+</BLOCKQUOTE>
+<P>
+
+ 
+<P>
+For information on the data format and the amount of data needed to represent 1 character, see Section 9.1.2.
+ 
+<P>
+The character code <U>ccode</U> represents data for a 32-bit character and can be created using the special tool called asccode.  asccode usage is as follows.
+ 
+<P>
+First prepare a text file with the following types of character string data.
+</P>
+<TABLE border="1" cellpadding="3" cellspacing="3">
+  <TR>
+    <TD><font face="arial" size="-1">0, Super Mario 64
+    <P>
+5, Wave Race 64
+   
+11, Mario Kart 64</TD></TR>
+</TABLE>
+
+<P>
+The numerals 0, 5, and 11 indicate the font #. (For information on font #, see APPENDIX B, Drive Internal Fonts.)  Assume, for example, that the name of this file is string and that the following is entered at the command line.
+ 
+<BLOCKQUOTE>
+<B>% asccode string</B>
+</BLOCKQUOTE>
+<P>
+As a result, a file is created that contains the converted character code strings, as shown below (The filename in this example is string.c.).
+ 
+<TABLE border="1" cellpadding="3">
+  <TR>
+    <TD><font face="arial" size="-1">unsigned string0[]={<BR>
+67336724,114259726,107715344,93558800,111626256,40212,56150<BR>
+548,86874128,111626256,99756564,106207248,40212,24742420,21<BR>
+858836,0};<BR>
+unsigned string1[]={<BR>
+1585843223,1602787342,1634048014,1609795598,1487761176,1575<BR>
+459606,1602787342,1606576142,1609795598,1487761176,15200819<BR>
+42,1515952918,0};<BR>
+unsigned string2[]={<BR>
+3183115030,3210180624,3231606800,3221314326,3228067856,3127<BR>
+996184,3179973398,3210180624,3231606800,3233438228,31279961<BR>
+84,3151592214,3148446486,0};</TD></TR>
+</TABLE>
+
+<P>
+string0 is a character string data that corresponds to &quot;Super Mario 64&quot;, string1 corresponds to &quot;Wave Race 64&quot;, and string2 corresponds to &quot;Mario
+Kart 64&quot;. Each of these array elements is a character code that corresponds to a character in the original string.
+ 
+<P>
+Only values obtained as asccode output can be used for <U>ccode</U>.  If the value returned is a -1, then the character is unreadable. 
+ 
+<P align="left">
+<A href="index.htm"><IMG src="../../gif/index.gif" height="17" width="65" border="0"></A>
+ 
+<HR>
+ <A name="04"></A><u>9.1.4 Items to Note</u>
+<P>
+When using strings containing the following 2-byte Shift-JIS codes with a MIPS compiler, a '\' (backslash) character should be placed immediately after that character.
+</P>
+<P>
+<img border="0" src="f09-02.gif">
+
+
+<P align="LEFT">
+<A href="index.htm"><IMG src="../../gif/index.gif" height="17" width="65" border="0"></A>
+</P>
+<HR>
+</BODY>
+</HTML>

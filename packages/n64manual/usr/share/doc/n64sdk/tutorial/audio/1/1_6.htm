@@ -1,0 +1,167 @@
+<HTML>
+<HEAD>
+<TITLE>N64 Tutorial-Audio-Chapter 1 AUDIO PLAYBACK</TITLE>
+<link rel=stylesheet type="text/css" href="../../../mobile/allman.css">
+<!-- Editor Notes: MAP created file 9/16/1999
+-->
+</HEAD>
+<BODY BGCOLOR=#ffffff>
+<BASE TARGET="keywords">
+<br>
+<font style="font-size:12pt"><B>1.6  Playing and Stopping Audio</B></FONT>
+<br>
+<P>
+Songs and sound effects can be played once the preparations of the previous section have been made.  When audio is played back, the maximum number of channels for use are automatically secured.<br><br>
+     To playback a song, all you need to do is specify the address of that song.  When a song is played, sample bank data is used in addition to the song's data.
+<BR>
+<HR><p><b>
+Start a song</B>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Function name: </TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP COLSPAN=2><tt>MusStartSong</tt></TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Syntax:</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP COLSPAN=2>musHandle MusStartSong(void *addr)</TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Arguments:</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><b>addr</b>&nbsp;</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>The address of the song in RAM</TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Return value:</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP COLSPAN=2>The sound handle value</TD>
+</TR></TABLE>
+<HR><p>
+ The returned sound handle value is used later to specify the song that is being played back.
+<P>
+ To playback a sound effect, all you need to do is to specify which number sound effect in the sound effect bank to play.  When a sound effect is played, sample bank data is used in addition to the sound effect bank's data.
+<BR>
+<HR>
+<p><b>Start a sound effect</b>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Function name: </TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP COLSPAN=2><tt>MusStartEffect</tt></TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Syntax:</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP COLSPAN=2>musHandle MusStartEffect(s32 number)</TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Arguments:</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><b>number</b>&nbsp;</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>The number of the sound effect to play</TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Return value:</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP COLSPAN=2>The sound handle value</TD>
+</TR></TABLE>
+<HR>
+</P>
+<P>
+Next we explain how to stop the playback of audio.  For songs without loops and for sound effects, the channels will be released when the audio ends even if the audio has not been explicitly stopped.<br><br>
+     There are two kinds of functions for stopping the audio.  <tt>MusStop</tt> stops the songs or sound effects or both if such has been specified.  In contrast, <tt>MusHandleStop</tt> stops the audio using the sound handle.  With either function you can specify how many frames to go before stopping the audio.  When a non-zero frame number is specified, the audio will fade out for the specified number of frames.
+<HR>
+<p><b>Stop channels</B>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Function name:</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><tt>MusStop</tt></TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Syntax:</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>void MusStop(u64 flags, s32 speed)</TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Arguments:</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><b>flag</b>&nbsp;audio type (can be combined using "or")
+<br>
+<b>MUSFLAG_SONGS</b>    All songs
+<br>
+<b>MUSFLAG_EFFECTS</b>    All sound effects<BR>
+<b>speed</b>   The number of frames before stopping</TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Return value:</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>None</TD>
+</TR></TABLE>
+<HR>
+<p><b>Use sound handle to stop sound</B>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Function name: </TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP COLSPAN=2><tt>MusHandleStop</tt></TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Syntax:</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP COLSPAN=2>s32 MusHandleStop(musHandle handle, s32 speed)</TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Arguments:</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><b>handle</b> </TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Sound handle</TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>&nbsp;&nbsp;</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><b>speed</b></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>The number of frames before stopping</TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Return value: </TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP COLSPAN=2>The number of channels that are set to stop</TD>
+</TR></TABLE>
+<HR>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0><TR>
+	<TD NOWRAP ALIGN=CENTER VALIGN=TOP>(*)</td>
+	<TD ALIGN=LEFT VALIGN=TOP>These two functions are the only functions in the MUS library that depend on number of frames.  You must adjust them to either PAL or NTSC (MPAL).</TD>
+</TR></TABLE>
+</P>
+<P>
+There are also two functions that can be used to find out the number of channels currently being used.
+<BR>
+<HR>
+<p><b>Return the number of active channels</B>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Function name: </TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><tt>MusAsk</tt></TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Syntax:</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>s32 MusAsk(u64 flags)</TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Arguments:</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><b>flag</b>&nbsp;The type of audio (can be combined using "or")<BR>
+<b>MUSFLAG_SONGS</b>    All songs<BR>
+<b>xMUSFLAG_EFFECTS</b>  All sound effects</TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Return value: </TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>The number of channels currently being used</TD>
+</TR></TABLE>
+<HR>
+<p><b>Return active channel with the sound handle</B>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Function name: </TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP COLSPAN=2><tt>MusHandleAsk</tt></TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Syntax:</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP COLSPAN=2>s32 MusHandleAsk(musHandle handle)</TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Arguments:</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><b>handle</b></TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Sound handle</TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Return value:</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP COLSPAN=2>The number of channels currently being used</TD>
+</TR></TABLE>
+<HR>
+</P>
+<P>
+There is also a function useful for debugging that returns how many sound effects are in the sound effect bank.  The numbers for these usable sound effects are from 0 to (the value returned by this function - 1).<BR>
+<HR>
+<p><b>Return the number of sound effects in the sound effect bank</B>
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=1><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Function name: </TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP COLSPAN=2><tt>MusFxBankNumberOfEffects</tt></TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Syntax:</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP COLSPAN=2>s32 MusFxBankNumberOfEffects(void *ifxbank)</TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Arguments:</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP><b>ifxbank</b>&nbsp;</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Address of the initialized sound effect bank</TD>
+</TR><TR>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP>Return value:</TD>
+	<TD NOWRAP ALIGN=LEFT VALIGN=TOP COLSPAN=2>The number of sound effects</TD>
+</TR></TABLE>
+<HR>
+</P>
+<BR>
+<BR>
+<BR>
+</BODY>
+</HTML>
