@@ -23,8 +23,9 @@ mkdir -p debs
 sudo chown -R root:root ./packages
 
 case $choice in
-   "all") dew_it spicy iquesdk n64sdk u64assets root-compatibility-enviroment rsp-tools vadpcm-tools n64graphics libkmc libhvqm libnusys;;
+   "all") dew_it spicy makemask iquesdk n64sdk u64assets root-compatibility-enviroment rsp-tools vadpcm-tools n64graphics libkmc libhvqm libnusys;;
    "spicy") dew_it spicy;;
+   "makemask") dew_it makemask;;
    "ique") dew_it iquesdk;;
    "n64") dew_it n64sdk;;
    "assets") dew_it u64assets;;
