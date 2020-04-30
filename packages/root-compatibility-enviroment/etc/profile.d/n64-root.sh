@@ -1,1 +1,1 @@
-export ROOT=/etc/n64
+ROOT=/etc/n64

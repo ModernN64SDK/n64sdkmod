@@ -39,10 +39,14 @@ N64_LDFLAGS ?= --no-check-sections
 N64_SIZE ?= mips64-elf-size
 N64_SIZEFLAGS ?=
 
+N64_OBJCOPY ?= mips64-elf-objcopy
+N64_OBJCOPYFLAGS ?=
+
 CC=$(N64_CC) $(N64_CFLAGS)
 AS=$(N64_AS) $(N64_ASFLAGS)
 LD=$(N64_LD) $(N64_LDFLAGS)
 SIZE=$(N64_SIZE) $(N64_SIZEFLAGS)
+OBJCOPY=$(N64_OBJCOPY) $(N64_OBJCOPYFLAGS)
 
 NAWK=awk
 WOFF=
@@ -68,7 +72,7 @@ SHELL	= /bin/sh
 
 FLT2C       = flt2c
 IC          = ic
-MAKEROM     = spicy --as_command=mips-linux-gnu-as --cpp_command=mips-linux-gnu-cpp --ld_command=mips-linux-gnu-ld --objcopy_command=mips-linux-gnu-objcopy
+MAKEROM     = spicy --as_command=$(N64_AS) --cpp_command=cpp --ld_command=$(N64_LD) --objcopy_command=$(N64_OBJCOPY)
 MIDIPARSE   = midiparse		
 MIDICVT     = midicvt
 MIDICOMP    = midicomp
