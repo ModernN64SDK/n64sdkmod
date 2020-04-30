@@ -23,7 +23,7 @@ mkdir -p debs
 sudo chown -R root:root ./packages
 
 case $choice in
-   "all") dew_it spicy makemask iquesdk n64sdk u64assets root-compatibility-enviroment rsp-tools vadpcm-tools n64graphics libkmc libhvqm libnusys n64manual n64chain-gcc;;
+   "all") dew_it spicy makemask iquesdk n64sdk u64assets root-compatibility-enviroment rsp-tools vadpcm-tools n64graphics libkmc libhvqm libnusys n64manual;;
    "spicy") dew_it spicy;;
    "makemask") dew_it makemask;;
    "ique") dew_it iquesdk;;
@@ -37,7 +37,6 @@ case $choice in
    "hvqm") dew_it libhvqm;;
    "nusys") dew_it libnusys;;
    "man") dew_it n64manual;;
-   "gcc") dew_it n64chain-gcc;;
    *) echo "Sorry nothing";;
 esac
 
@@ -46,9 +45,11 @@ sudo chown -R $USER:$USER ./packages
 mv packages/*.deb debs
 cp loose-debs/*.deb debs
 
-echo "Creating Packages.gz for APT archive"
+if [ $choice == "all" ] then
+    echo "Creating Packages.gz for APT archive"
 
-cd debs
-dpkg-scanpackages . /dev/null | gzip -9c > Packages.gz
-cd ..
+    cd debs
+    dpkg-scanpackages . /dev/null | gzip -9c > Packages.gz
+    cd ..
+fi
 
