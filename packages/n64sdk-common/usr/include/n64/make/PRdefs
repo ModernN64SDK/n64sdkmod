@@ -24,16 +24,25 @@ defaultrule: default
 #GCDEFS = $(HW_FLAGS) -B -Wab, -r4300_mul
 __GCC__=1
 ifdef __GCC__
-# If somebody needs to define a custom compiler toolchain...
-N64_CC ?= n64-elf-gcc -c -D_MIPS_SZLONG=32 -D_MIPS_SZINT=32 -D_LANGUAGE_C -D_ULTRA64 -D__EXTENSIONS__ -mabi=32 -march=vr4300 -mtune=vr4300 -mfix4300
-N64_AS ?= n64-elf-as -march=r4300 -mabi=32
-N64_LD ?= n64-elf-ld --no-check-sections
-N64_SIZE ?= n64-elf-size
 
-CC=$(N64_CC)
-AS=$(N64_AS)
-LD=$(N64_LD)
-SIZE=$(N64_SIZE)
+# If somebody needs to define a custom compiler toolchain...
+
+N64_CC ?= n64-elf-gcc
+N64_CFLAGS ?= -c -D_MIPS_SZLONG=32 -D_MIPS_SZINT=32 -D_LANGUAGE_C -D_ULTRA64 -D__EXTENSIONS__ -mabi=32 -march=vr4300 -mtune=vr4300 -mfix4300
+
+N64_AS ?= n64-elf-as
+N64_ASFLAGS ?= -march=r4300 -mabi=32
+
+N64_LD ?= n64-elf-ld
+N64_LDFLAGS ?= --no-check-sections
+
+N64_SIZE ?= n64-elf-size
+N64_SIZEFLAGS ?=
+
+CC=$(N64_CC) $(N64_CFLAGS)
+AS=$(N64_AS) $(N64_ASFLAGS)
+LD=$(N64_LD) $(N64_LDFLAGS)
+SIZE=$(N64_SIZE) $(N64_SIZEFLAGS)
 
 NAWK=awk
 WOFF=

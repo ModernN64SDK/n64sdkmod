@@ -23,7 +23,7 @@ mkdir -p debs
 sudo chown -R root:root ./packages
 
 case $choice in
-   "all") dew_it spicy makemask iquesdk n64sdk u64assets root-compatibility-enviroment rsp-tools vadpcm-tools n64graphics libkmc libhvqm libnusys n64manual n64-demos;;
+   "all") dew_it spicy makemask iquesdk n64sdk u64assets root-compatibility-enviroment rsp-tools vadpcm-tools n64graphics libkmc libhvqm libnusys n64manual n64-demos n64sdk-common;;
    "spicy") dew_it spicy;;
    "makemask") dew_it makemask;;
    "ique") dew_it iquesdk;;
@@ -39,6 +39,7 @@ case $choice in
    "nusys") dew_it libnusys;;
    "man") dew_it n64manual;;
    "demos") dew_it n64-demos;;
+   "common") dew_it n64sdk-common;;
    *) echo "Sorry nothing";;
 esac
 
