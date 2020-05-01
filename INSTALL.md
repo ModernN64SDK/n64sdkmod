@@ -7,7 +7,7 @@ The following instructions have been tested on an Ubuntu 18.04 machine, but they
 
 Before you install the SDK you must build a compiler. In our case, we're using n64chain.
 
-Clone my fork of n64chain: ``https://github.com/CrashOveride95/n64chain.git`` and run ``build-posix64-toolchain.sh``.
+Clone my fork of n64chain: ``git clone https://github.com/CrashOveride95/n64chain.git`` and run ``build-posix64-toolchain.sh``.
 
 If you get a permission error on running the .sh, run chmod +x on the .sh.
 
