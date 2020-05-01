@@ -7,6 +7,10 @@ The following instructions have been tested on an Ubuntu 18.04 machine, but they
 
 Before you install the SDK you must build a compiler. In our case, we're using n64chain.
 
+building the compiler requires dependencies, install them:
+
+``sudo apt install build-essential libmpfr-dev libmpc-dev libgmp-dev flex bison``
+
 Clone my fork of n64chain: ``git clone https://github.com/CrashOveride95/n64chain.git`` and run ``build-posix64-toolchain.sh``.
 
 If you get a permission error on running the .sh, run chmod +x on the .sh.
