@@ -58,3 +58,34 @@ If you're compiling the demos, this is required.
 Then, you need makemask, which applies the CIC data on your ROM.
 
 ``sudo apt install makemask``
+
+Next, you need to setup the root compatibilty enviroment. This is needed because in the old nintendo SDKs, there was a "ROOT" folder which simulated a unix filesystem. 
+This fixes that system for compatibility reasons.
+
+``sudo apt install root-compatibility-enviroment``
+
+If you want to install the demos, run
+
+``sudo apt install n64-demos``
+
+You are ready to compile the demos!
+
+## Compiling demos
+
+First, copy the ``PR`` directory from /usr/src to your home directory.
+
+``cp -r /usr/src/PR ~/n64demos``
+
+Then cd to that folder:
+
+``cd ~/n64demos``
+
+and then cd to the demo of your choice, and run ``make``
+
+(Note that hvqmsample requires libhvqm, a FMV library which the sample demonstrates.)
+
+After you make the demo, you can run it in the emulator of your choice, and it should work perfectly!
+
+![Image of fogworld](https://github.com/CrashOveride95/n64sdkmod/raw/master/fogworldshot.PNG)
+
+![Image of hvqmsample](https://github.com/CrashOveride95/n64sdkmod/raw/master/hvqm.PNG)
