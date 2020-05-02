@@ -31,7 +31,7 @@ The SDK is packaged as an *APT repo*. APT is the software management tool used i
 
 You must add our APT repo to the list of repos APT can download from.
 
-To add it, run ``sudo echo "deb [trusted=yes] https://coneyislanddiscopalace.xyz/apt ./" > /etc/apt/sources.list.d/coneyisland.list`` in a Terminal.
+To add it, run ``echo "deb [trusted=yes] https://coneyislanddiscopalace.xyz/apt ./" | sudo tee /etc/apt/sources.list.d/coneyisland.list`` in a Terminal.
 
 Then, run ``sudo apt update`` to update the package lists.
 
