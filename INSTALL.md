@@ -66,6 +66,10 @@ This creates that setup for compatibility reasons.
 
 ``sudo apt install root-compatibility-enviroment``
 
+After you install the enviroment, add a definition of ROOT to your .bashrc:
+
+``export ROOT=/etc/n64``
+
 If you want to install the demos, use APT install once again:
 
 ``sudo apt install n64-demos``
