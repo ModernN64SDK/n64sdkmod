@@ -11,4 +11,3 @@ extern int errno;
 #define ERANGE		34
 
 #endif
-

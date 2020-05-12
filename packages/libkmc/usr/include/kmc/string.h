@@ -40,4 +40,3 @@ char *strupr(char *);
 #define strncmpi(s1,s2,n)	strnicmp(s1,s2,n)
 
 #endif
-

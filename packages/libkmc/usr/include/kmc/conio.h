@@ -19,4 +19,3 @@ int cprintf(char *f,...);
 int cscanf(char *,...);
 
 #endif
-

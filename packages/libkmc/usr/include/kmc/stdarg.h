@@ -39,9 +39,9 @@ typedef char * __gnuc_va_list;
 #endif
 
 /* Get definitions for _MIPS_SIM_ABI64 etc.  */
-#ifdef _MIPS_SIM
-#include <sgidefs.h>
-#endif
+// #ifdef _MIPS_SIM
+// #include <sgidefs.h>
+// #endif
 
 #ifdef _STDARG_H
 #if defined(_MIPS_SIM) && (_MIPS_SIM == _MIPS_SIM_ABI64)
@@ -118,4 +118,3 @@ void va_end (__gnuc_va_list);		/* Defined in libgcc.a */
 #endif /* defined (_STDARG_H) || defined (_VARARGS_H) */
 
 typedef __gnuc_va_list va_list;
-

@@ -50,4 +50,3 @@ double __matherr(int type,char *name,double arg1,double arg2,double retval);
 #define _UNDERFLOW 4
 
 #endif /* _MATH_H */
-

@@ -30,4 +30,3 @@ typedef union {
 double __matherr(int,char *,double,double,double);
 
 #endif
-

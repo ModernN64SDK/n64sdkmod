@@ -21,4 +21,3 @@ void movmem(void *,void *,unsigned);
 void setmem(void *,unsigned,int);
 
 #endif
-

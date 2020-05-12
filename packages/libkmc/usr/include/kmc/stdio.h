@@ -26,4 +26,3 @@ int	sprintf(char *, const char *, ...);
 int	sscanf(const char *,const char *, ...);
 
 #endif
-
