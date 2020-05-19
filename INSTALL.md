@@ -25,6 +25,20 @@ In my case I cloned n64chain to my home directory, and I use **Bash**, so I adde
 
 ``export PATH="$HOME/n64chain/bin:$PATH"`` to the end of my ``~/.bashrc`` script.
 
+Next we will build ``libgcc``.
+
+In the n64chain directory, do these commands: (This assumes n64chain has been cloned to your home directory)
+
+``echo "" >> ./gcc-source/libgcc/config/mips/t-mips64``
+
+``cd gcc-build``
+
+``export N64_TOOLCHAIN=~/n64chain/bin``
+
+``make all-target-libgcc CC_FOR_TARGET=$N64_TOOLCHAIN/mips64-elf-gcc CFLAGS_FOR_TARGET="-D_MIPS_SZLONG=32 -D_MIPS_SZINT=32 -mabi=32  -march=vr4300  -mtune=vr4300 -mfix4300"``
+
+``make install-target-libgcc``
+
 ## Allowing us to download the SDK
 
 The SDK is packaged as an *APT repo*. APT is the software management tool used in Debian and Ubuntu.
