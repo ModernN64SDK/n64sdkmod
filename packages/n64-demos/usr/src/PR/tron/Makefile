@@ -14,11 +14,11 @@ include /usr/include/n64/make/PRdefs
 
 FINAL = YES
 ifeq ($(FINAL), YES)
-OPTIMIZER       = -O2 -std=gnu90 -mno-shared -mhard-float -fno-stack-protector -fno-common -fno-PIC -mno-abicalls -fno-strict-aliasing -fno-inline-functions -ffreestanding -fwrapv
+OPTIMIZER       = -O2 -std=gnu90
 LCDEFS          = -DNDEBUG -D_FINALROM -DF3DEX_GBI_2
 N64LIB          = -lultra_rom
 else
-OPTIMIZER       = -g -std=gnu90 -mno-shared -mhard-float -fno-stack-protector -fno-common -fno-PIC -mno-abicalls -fno-strict-aliasing -fno-inline-functions -ffreestanding -fwrapv
+OPTIMIZER       = -g -std=gnu90
 LCDEFS          = -DDEBUG -DF3DEX_GBI_2
 N64LIB          = -lultra_d
 endif
@@ -44,7 +44,7 @@ LCOPTS =	-G 0
 LDIRT  =	$(APP)
 
 LDFLAGS =	$(MKDEPOPT)  -L/usr/lib/n64 -L/usr/lib/n64/PR \
-			$(N64LIB) -lkmc
+			$(N64LIB) -L$(N64_LIBGCCDIR) -lgcc
 
 SOURCES =	Makefile spec $(HFILES) $(CODEFILES) \
 		dynamic.c zbuffer.c init.c cfb.c makegrid.c

@@ -14,4 +14,6 @@ To run the container and compile your ROM's source code within the container:
 
 This will copy your source directory into the container, invoke the cross-compiler, and output any build artifacts to your hosts's working directory.
 
-![Image of fogworld under Docker](https://github.com/CrashOveride95/n64sdkmod/raw/master/docker-fogworld-macos.png)
+<img src="https://github.com/CrashOveride95/n64sdkmod/raw/master/docker-fogworld-macos.png" alt="Image of fogworld under Docker on MacOS" width="1100"/>
+
+[Back to homepage](index.html)

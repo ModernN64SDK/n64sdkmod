@@ -15,11 +15,11 @@ include /usr/include/n64/make/PRdefs
 
 FINAL = YES
 ifeq ($(FINAL), YES)
-OPTIMIZER       = -O2 -std=gnu90 -mno-shared -mhard-float -fno-stack-protector -fno-common -fno-PIC -mno-abicalls -fno-strict-aliasing -fno-inline-functions -ffreestanding -fwrapv
+OPTIMIZER       = -O2 -std=gnu90
 LCDEFS          = -D_FINALROM -DNDEBUG -DF3DEX_GBI_2
 N64LIB          = -lultra_rom
 else
-OPTIMIZER       = -g -std=gnu90 -mno-shared -mhard-float -fno-stack-protector -fno-common -fno-PIC -mno-abicalls -fno-strict-aliasing -fno-inline-functions -ffreestanding -fwrapv
+OPTIMIZER       = -g -std=gnu90
 LCDEFS          = -DDEBUG  -DF3DEX_GBI_2
 N64LIB          = -lultra_d
 endif
@@ -57,7 +57,7 @@ LCINCS =	-I. -I/usr/include/n64/PR -I/usr/include/n64
 LCOPTS =	-G 0
 LDIRT  =	$(APP)
 
-LDFLAGS =	$(MKDEPOPT)  -L/usr/lib/n64 -L/usr/lib/n64/PR $(N64LIB) -lkmc
+LDFLAGS =	$(MKDEPOPT)  -L/usr/lib/n64 -L/usr/lib/n64/PR $(N64LIB) -L$(N64_LIBGCCDIR) -lgcc
 
 default:	$(TARGETS)
 

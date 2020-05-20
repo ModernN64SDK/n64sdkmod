@@ -1,0 +1,66 @@
+#=======================================================================#
+#		NIFFprev						#
+#		Makefile.win						#
+#									#
+#		Copyright (C) 1997, NINTENDO Co,Ltd.			#
+#									#
+#-----------------------------------------------------------------------# 
+#
+
+# The directory which has include files and library of NuSYSTEM
+#
+include $(ROOT)/usr/include/make/PRdefs
+	
+N64KITDIR    = c:\nintendo\n64kit
+NUSYSINCDIR  = /usr/include/n64/nusys
+NUSYSLIBDIR  = /usr/lib/n64/nusys
+NUSTDINC     = /usr/include/n64/nustd	
+
+N64GCC_INC =	$(ROOT)/usr/include
+USR_INC    =	./Include
+COMMON_INC =	../Include
+
+APP =		nuprev.out
+
+GBI =		-DF3DEX_GBI_2
+.c.o:
+		$(CC) -g -G 0 -c $(CC_INC) $(CC_DEF) $<
+
+CC_INC =	-I. -I$(N64GCC_INC)/PR -I$(N64GCC_INC) -I$(NUSYSINCDIR) -I$(USR_INC) -I$(COMMON_INC) -I$(NUSTDINC)
+CC_DEF =	$(GBI) -D_WIN32 -D_LANGUAGE_C -D_MIPS_SZLONG=32 -D_MIPS_SZINT=32 -std=gnu90
+
+OPTIMIZER =	-g
+
+TARGETS =	libnd.a
+
+CODEFILES   =	ndres.c ndman.c ndeval.c nddisp.c \
+		ndstuff.c
+
+DATAOBJECTS =	$(CODEFILES:.c=.o)
+# CODEOBJECTS =	$(DATAOBJECTS) $(NUSYSLIBDIR)\nusys.o
+
+OBJECTS =	$(DATAOBJECTS)
+
+# LDFLAGS =	$(MKDEPOPT) -L$(ROOT)/usr/lib -L$(NUSYSLIBDIR) -lnusys_d -lgultra_# d -L$(GCCDIR)/mipse/lib -lkmc
+DEPENDFILE =    dependfile
+
+default:	$(TARGETS)
+
+$(TARGETS) :	$(DATAOBJECTS)
+	$(AR) -cr $(TARGETS) $(OBJECTS)
+
+main.o : model.h
+
+premodel.o : model.c model.h
+
+depend:
+	makedepnd -f$(DEPENDFILE) *.c
+
+clean:
+	rm -rf *.o
+	rm -rf *.a
+
+install:
+	cp $(TARGETS) ../Lib
+
+# DO NOT DELETE
