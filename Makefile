@@ -10,6 +10,7 @@ web-folders:
 
 docs: web-folders
 	markdown INSTALL.md > web/docs/index.html
+	markdown DOCKER.md > web/docs/docker.html
 
 upload: docs debs
 	cp debs/* web/apt && \

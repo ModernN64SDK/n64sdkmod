@@ -2,6 +2,8 @@
 
 The following instructions have been tested on an Ubuntu 18.04 machine, but they should work fine on Debian or other distros.
 
+If installing with Docker, please go to [The Docker Installation Page](docker.html)
+
 
 ## Compiler setup
 
@@ -38,6 +40,12 @@ In the n64chain directory, do these commands: (This assumes n64chain has been cl
 ``make all-target-libgcc CC_FOR_TARGET=$N64_TOOLCHAIN/mips64-elf-gcc CFLAGS_FOR_TARGET="-D_MIPS_SZLONG=32 -D_MIPS_SZINT=32 -mabi=32  -march=vr4300  -mtune=vr4300 -mfix4300"``
 
 ``make install-target-libgcc``
+
+Finally, add a definiton of ``N64_LIBGCCDIR`` to your .bashrc. This is to allow people with differing setups less trouble in makefile editing.
+
+As I've cloned n64chain to my home directory, I add
+
+``export N64_LIBGCCDIR="$HOME/n64chain/lib/gcc/mips64-elf/10.1.0"`` to the end of my ``~/.bashrc`` script.
 
 ## Allowing us to download the SDK
 
@@ -106,6 +114,6 @@ Again, change directory to the demo of your choice, and run ``make`` to compile 
 
 After you make the demo, you can run it in the emulator of your choice, and it should work perfectly!
 
-![Image of fogworld](https://github.com/CrashOveride95/n64sdkmod/raw/master/fogworldshot.PNG)
+![Image of fogworld](https://github.com/CrashOveride95/n64sdkmod/raw/master/fogworldshot.png)
 
-![Image of hvqmsample](https://github.com/CrashOveride95/n64sdkmod/raw/master/hvqm.PNG)
+![Image of hvqmsample](https://github.com/CrashOveride95/n64sdkmod/raw/master/hvqm.png)
