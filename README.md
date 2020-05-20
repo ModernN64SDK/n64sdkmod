@@ -7,7 +7,7 @@ Now supports Docker™
 
 It also works fine on WSL1, but does not support rsp-tools due to lack of 32bit support.
 
-Instructions for installation will be in [INSTALL.md](https://github.com/CrashOveride95/n64sdkmod/blob/master/INSTALL.md).
+Instructions for regular installation will be in [INSTALL.md](https://github.com/CrashOveride95/n64sdkmod/blob/master/INSTALL.md).
 
 ## Docker Usage
 
