@@ -1,5 +1,5 @@
 #
-# Commondefs for BB player source tree
+# Commondefs for N64 SDK
 #
 # Makefiles which include this should first define PRDEPTH or BBDEPTH
 # to be the relative path from their parent directory.
@@ -30,6 +30,9 @@ ifdef __GCC__
 N64_CC ?= mips64-elf-gcc
 N64_CFLAGS ?= -c -D_MIPS_SZLONG=32 -D_MIPS_SZINT=32 -D_LANGUAGE_C -D_ULTRA64 -D__EXTENSIONS__ -mabi=32 -march=vr4300 -mtune=vr4300 -mfix4300
 
+N64_CXX ?= mips64-elf-g++
+N64_CXXFLAGS ?= -c -D_MIPS_SZLONG=32 -D_MIPS_SZINT=32 -D_LANGUAGE_C -D_ULTRA64 -D__EXTENSIONS__ -mabi=32 -march=vr4300 -mtune=vr4300 -mfix4300 -fno-nonansi-builtins
+
 N64_AS ?= mips64-elf-as
 N64_ASFLAGS ?= -march=r4300 -mabi=32
 
@@ -43,6 +46,7 @@ N64_OBJCOPY ?= mips64-elf-objcopy
 N64_OBJCOPYFLAGS ?=
 
 CC=$(N64_CC) $(N64_CFLAGS)
+CXX=$(N64_CXX) $(N64_CXXFLAGS)
 AS=$(N64_AS) $(N64_ASFLAGS)
 LD=$(N64_LD) $(N64_LDFLAGS)
 SIZE=$(N64_SIZE) $(N64_SIZEFLAGS)
