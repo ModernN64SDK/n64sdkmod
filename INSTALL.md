@@ -63,11 +63,11 @@ Then, run ``sudo apt update`` to update the package lists.
 
 You have two options for the main N64 libraries: *iquesdk*, and *n64sdk*.
 
-**n64sdk** contains version 2.0L of the library, which is the latest version.
+**n64sdk** contains version 2.0L of the N64 SDK library, which is the latest version.
 
-**iquesdk** contains the version used in the *iQue SDK*, which is a modified version of 2.0L that adds logic for detecting an iQue and getting correct results with its slightly faster hardware.
+**iquesdk** contains the version used in the *iQue SDK*, which is a modified version of 2.0L that removes code for N64 acessories irrelevant to the iQue and edits code for some functions to get correct results with its slightly faster CPU and RAM.
 
-*It will still detect a regular N64 and work completely fine.*
+*I highly suggest getting the n64sdk package, only get iquesdk if you are specifically targeting the iQue, otherwise things such as rumble and controller pak support will NOT WORK!*
 
 To begin setup, install the sdk by installing the package with APT.
 
