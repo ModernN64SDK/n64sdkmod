@@ -1,0 +1,16 @@
+LCDEFS += -D_DEBUG
+OPTIMIZER = -g
+ULTRALIB = ultra_d
+LDIRT += $(APP)
+
+loc_simple_d: $(TARGETS)
+
+loc_clobber: loc_clean loc_rmtargets $(_FORCE)
+	rm -rf $(MKDEPFILE)
+
+loc_clean: $(_FORCE)
+	rm -rf $(DIRT)
+
+loc_rmtargets: $(_FORCE)
+	rm -rf $(TARGETS)
+

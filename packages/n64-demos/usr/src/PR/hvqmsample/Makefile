@@ -42,8 +42,9 @@ HVQMUCODEDIR = /usr/lib/n64/hvqm/
 ######################################################################
 
 LCINCS = -I. -I$(HVQMINCDIR) -I/usr/include/n64/PR -I/usr/include/n64
-LCOPTS = -O2 -G0 -g -std=gnu90 
+LCOPTS = -O2 -G 0 -g -mno-shared -std=gnu90 
 LCDEFS = -D_LANGUAGE_C -DMAXWIDTH=$(MAXWIDTH) -DMAXHEIGHT=$(MAXHEIGHT) -DCFB_FORMAT=$(CFB_FORMAT) -DUSE_RSP=$(USE_RSP) -DSYNC_VIDEO=$(SYNC_VIDEO)
+LDIRT  = $(APP) $(TARGETS)
 
 LIBS = -L$(HVQMLIBDIR) -lhvqm2 -L/usr/lib/n64 -lultra_rom -L$(N64_LIBGCCDIR) -lgcc
 

@@ -40,11 +40,11 @@ CODESEGMENT =	codesegment.o
 OBJECTS =	$(CODESEGMENT) $(CODEOBJECTS) $(DATAOBJECTS)
 
 LCINCS =	-I. -I/usr/include/n64 -I/usr/include/n64/PR
-LCOPTS =	-G 0
+LCOPTS =	-mno-shared -G 0
 LDIRT  =	$(APP)
 
 LDFLAGS =	$(MKDEPOPT)  -L/usr/lib/n64 -L/usr/lib/n64/PR \
-			$(N64LIB) -L$(N64_LIBGCCDIR) -lgcc
+			$(N64LIB) -L$(N64_LIBGCCDIR) -lgcc -lnustd
 
 SOURCES =	Makefile spec $(HFILES) $(CODEFILES) \
 		dynamic.c zbuffer.c init.c cfb.c makegrid.c
@@ -66,11 +66,3 @@ $(TARGETS) $(APP):      spec $(OBJECTS)
 endif
 
 
-# for exeGCC CELF
-ifeq ($(GCC_CELF), ON)
-ifneq ($(FINAL), YES)
-CELFDIR = .
-include $(CELFRULES)
-$(CODEOBJECTS) $(DATAOBJECTS) :	$(CELFINFOFILES)
-endif
-endif

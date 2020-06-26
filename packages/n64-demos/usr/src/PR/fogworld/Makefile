@@ -48,7 +48,7 @@ OBJECTS =	$(CODESEGMENT) $(DATAOBJECTS)
 
 LCDEFS +=	$(HW_FLAGS)
 LCINCS =	-I. -I/usr/include/n64/PR -I/usr/include/n64
-LCOPTS =	-G 0
+LCOPTS =	-mno-shared -G 0
 LDFLAGS =	$(MKDEPOPT)  -L/usr/lib/n64 $(N64LIB) -L$(N64_LIBGCCDIR) -lgcc
 
 LDIRT  =	$(APP)
@@ -73,11 +73,4 @@ endif
 
 font.o:		./letters_img.h
 
-# for exeGCC CELF
-ifeq ($(GCC_CELF), ON)
-ifneq ($(FINAL), YES)
-CELFDIR = .
-include $(CELFRULES)
-$(CODEOBJECTS) $(DATAOBJECTS) :	$(CELFINFOFILES)
-endif
-endif
+

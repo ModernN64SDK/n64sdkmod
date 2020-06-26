@@ -1,0 +1,17 @@
+LCDEFS += -DNDEBUG -D_FINALROM
+LCOPTS += -O2
+ULTRALIB = ultra_rom
+LDIRT += $(APP)
+MAKEROMDEFS = -s 64
+
+loc_simple_rom: $(TARGETS)
+
+loc_clobber: loc_clean loc_rmtargets $(_FORCE)
+	rm -rf $(MKDEPFILE)
+
+loc_clean: $(_FORCE)
+	rm -rf $(DIRT)
+
+loc_rmtargets: $(_FORCE)
+	rm -rf $(TARGETS)
+

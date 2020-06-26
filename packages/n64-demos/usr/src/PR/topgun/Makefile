@@ -54,7 +54,7 @@ CODESEGMENT =	codesegment.o
 OBJECTS =	$(CODESEGMENT) $(DATAOBJECTS)
 
 LCINCS =	-I. -I/usr/include/n64/PR -I/usr/include/n64
-LCOPTS =	-G 0
+LCOPTS =	-mno-shared -G 0
 LDIRT  =	$(APP)
 
 LDFLAGS =	$(MKDEPOPT)  -L/usr/lib/n64 -L/usr/lib/n64/PR $(N64LIB) -L$(N64_LIBGCCDIR) -lgcc
@@ -76,11 +76,3 @@ $(TARGETS) $(APP):      spec $(OBJECTS)
 endif
 
 
-# for exeGCC CELF
-ifeq ($(GCC_CELF), ON)
-ifneq ($(FINAL), YES)
-CELFDIR = .
-include $(CELFRULES)
-$(CODEOBJECTS) $(DATAOBJECTS) :	$(CELFINFOFILES)
-endif
-endif
