@@ -13,7 +13,9 @@ Building the compiler requires dependencies, so you must install them:
 
 ``sudo apt install build-essential libmpfr-dev libmpc-dev libgmp-dev flex bison``
 
-Clone my fork of n64chain: ``git clone https://github.com/CrashOveride95/n64chain.git`` and run the script ``build-posix64-toolchain.sh`` inside ``n64chain``.
+Clone my fork of n64chain: ``git clone https://github.com/CrashOveride95/n64chain.git`` and make sure that the ``N64_TOOLCHAIN`` declaration in ``build-posix64-toolchain.sh`` is correct.
+
+Then run it.
 
 If you get a permission error on running the script, run ``chmod`` on the .sh.
 
@@ -26,20 +28,6 @@ When it finishes, add n64chain/bin to your **PATH**, preferably in your .bashrc 
 In my case I cloned n64chain to my home directory, and I use **Bash**, so I added
 
 ``export PATH="$HOME/n64chain/bin:$PATH"`` to the end of my ``~/.bashrc`` script.
-
-Next we will build ``libgcc``.
-
-In the n64chain directory, do these commands: (This assumes n64chain has been cloned to your home directory)
-
-``echo "" >> ./gcc-source/libgcc/config/mips/t-mips64``
-
-``cd gcc-build``
-
-``export N64_TOOLCHAIN=~/n64chain/bin``
-
-``make all-target-libgcc CC_FOR_TARGET=$N64_TOOLCHAIN/mips64-elf-gcc CFLAGS_FOR_TARGET="-D_MIPS_SZLONG=32 -D_MIPS_SZINT=32 -mabi=32  -march=vr4300  -mtune=vr4300 -mfix4300"``
-
-``make install-target-libgcc``
 
 Finally, add a definiton of ``N64_LIBGCCDIR`` to your .bashrc. This is to allow people with differing setups less trouble in makefile editing.
 
