@@ -13,9 +13,13 @@ Building the compiler requires dependencies, so you must install them:
 
 ``sudo apt install build-essential libmpfr-dev libmpc-dev libgmp-dev flex bison``
 
-Clone my fork of n64chain: ``git clone https://github.com/CrashOveride95/n64chain.git`` and make sure that the ``N64_TOOLCHAIN`` declaration in ``build-posix64-toolchain.sh`` is correct.
+Clone my fork of n64chain: ``git clone https://github.com/CrashOveride95/n64chain.git`` and define ``N64_TOOLCHAIN``.
 
-Then run it.
+This assumes n64chain has been cloned to your home directory)
+
+``export N64_TOOLCHAIN=~/n64chain/bin``
+
+Then run the script.
 
 If you get a permission error on running the script, run ``chmod`` on the .sh.
 
