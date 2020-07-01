@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM ubuntu:20.04
 
 ENV PATH=/usr/local/n64chain/bin:${PATH}
 ENV N64_TOOLCHAIN=/usr/local/n64chain/bin
