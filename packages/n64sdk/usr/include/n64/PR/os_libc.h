@@ -81,9 +81,9 @@ extern "C" {
 /* byte string operations */
 
 
-extern void     bcopy(const void *, void *, int);
-extern int      bcmp(const void *, const void *, int);
-extern void     bzero(void *, int);
+// extern void     bcopy(const void *, void *, int);
+// extern int      bcmp(const void *, const void *, int);
+// extern void     bzero(void *, int);
 
 /* Printf */
 
