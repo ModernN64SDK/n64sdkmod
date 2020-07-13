@@ -55,7 +55,7 @@ LCOPTS =	-mno-shared -G 0
 LDIRT		= $(APP) cont *.so
 
 LDFLAGS	= $(MKDEPOPT)   \
-		-L$(ROOT)/usr/lib -L$(ROOT)/usr/lib/PR $(N64LIB) -L$(N64_LIBGCCDIR) -lgcc -lnustd
+		-L$(ROOT)/usr/lib -L$(ROOT)/usr/lib/PR $(N64LIB) -L$(N64_LIBGCCDIR) -L$(N64_NEWLIBDIR) -lgcc -lc
 
 default:	$(TARGETS)
 

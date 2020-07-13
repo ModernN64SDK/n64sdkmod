@@ -13,8 +13,6 @@ include $(ROOT)/usr/include/make/PRdefs
 N64KITDIR    = c:\nintendo\n64kit
 NUSYSINCDIR  = /usr/include/n64/nusys
 NUSYSLIBDIR  = /usr/lib/n64/nusys
-NUSTDINC     = /usr/include/n64/nustd	
-NUSTDLIB     = /usr/lib/n64
 
 
 N64GCC_INC =	$(ROOT)/usr/include
@@ -29,7 +27,7 @@ AUDIO_CDEFS = -DNUALSTL -DN_AUDIO
 NUAUDIOLIB = -lnualstl_n -ln_numus -ln_gaudio_sc
 GBI = -DF3DEX_GBI_2
 
-CC_INC = -I. -I$(NUSTDINC) -I$(N64GCC_INC)\pr -I$(N64GCC_INC) -I$(NUSYSINCDIR) -I$(USR_INC)
+CC_INC = -I. -I$(N64GCC_INC)\pr -I$(N64GCC_INC) -I$(NUSYSINCDIR) -I$(USR_INC)
 
 #default: sp_select_bg.c sp_lit.c test_data2.c
 default: opening_imgs.c logo_imgs.c
@@ -39,7 +37,7 @@ default: opening_imgs.c logo_imgs.c
 	$(CC) -g -G 0 -c $(CC_INC) $(CC_DEF) opening.c
 	$(CC) -g -G 0 -c $(CC_INC) $(CC_DEF) om_mem_heap.c
 
-CC_INC =	-I. -I$(NUSTDINC) -I$(N64GCC_INC)\pr -I$(N64GCC_INC) -I$(NUSYSINCDIR) -I$(USR_INC)
+CC_INC =	-I. -I$(N64GCC_INC)\pr -I$(N64GCC_INC) -I$(NUSYSINCDIR) -I$(USR_INC)
 
 clean:
 	rm -rf *.o

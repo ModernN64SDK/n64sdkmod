@@ -44,7 +44,7 @@ LCOPTS =	-mno-shared -G 0
 LDIRT  =	$(APP)
 
 LDFLAGS =	$(MKDEPOPT)  -L/usr/lib/n64 -L/usr/lib/n64/PR \
-			$(N64LIB) -L$(N64_LIBGCCDIR) -lgcc -lnustd
+			$(N64LIB) -L$(N64_LIBGCCDIR) -lgcc -L$(N64_NEWLIBDIR) -lc
 
 SOURCES =	Makefile spec $(HFILES) $(CODEFILES) \
 		dynamic.c zbuffer.c init.c cfb.c makegrid.c

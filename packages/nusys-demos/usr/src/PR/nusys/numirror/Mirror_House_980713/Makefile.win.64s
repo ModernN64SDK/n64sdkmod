@@ -13,8 +13,7 @@ include $(ROOT)/usr/include/make/PRdefs
 N64KITDIR    = c:\nintendo\n64kit
 NUSYSINCDIR  = /usr/include/n64/nusys
 NUSYSLIBDIR  = /usr/lib/n64/nusys
-NUSTDINC     = /usr/include/n64/nustd	
-NUSTDLIB     = /usr/lib/n64
+
 
 
 N64GCC_INC =	$(ROOT)/usr/include
@@ -31,7 +30,7 @@ GBI = -DF3DEX_GBI_2
 .c.o:
 		$(CC) -g -G 0 -c $(CC_INC) $(CC_DEF) $(AUDIO_CDEFS) $<
 
-CC_INC =	-I. -I$(NUSTDINC) -I$(N64GCC_INC)/PR -I$(N64GCC_INC) -I$(NUSYSINCDIR) -I$(USR_INC)
+CC_INC =	-I. -I$(N64GCC_INC)/PR -I$(N64GCC_INC) -I$(NUSYSINCDIR) -I$(USR_INC)
 CC_DEF =	$(GBI) -D_WIN32 -D_LANGUAGE_C -D_MIPS_SZLONG=32 -D_MIPS_SZINT=32 -std=gnu90
 
 OPTIMIZER =	-g
@@ -67,7 +66,7 @@ OBJECTS =	$(CODESEGMENT) $(DATAOBJECTS)
 
 USR_LIB =	-lreschar -lresbg -lnd
 
-LDFLAGS =	$(MKDEPOPT) -L$(ROOT)/usr/lib -L$(NUSYSLIBDIR) -L$(LIBDIR) $(USR_LIB) $(NUAUDIOLIB) -lnusys -lultra_rom -L$(NUSTDLIB) -lnustd -L$(N64_LIBGCCDIR) -lgcc
+LDFLAGS =	$(MKDEPOPT) -L$(ROOT)/usr/lib -L$(NUSYSLIBDIR) -L$(LIBDIR) $(USR_LIB) $(NUAUDIOLIB) -lnusys -lultra_rom -L$(N64_NEWLIBDIR) -lc -L$(N64_LIBGCCDIR) -lgcc
 DEPENDFILE =    dependfile
 
 default:	$(TARGETS)
