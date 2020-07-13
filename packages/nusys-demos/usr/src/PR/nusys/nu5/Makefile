@@ -12,7 +12,7 @@ LIB = $(ROOT)/usr/lib
 LPR = $(LIB)/PR
 INC = $(ROOT)/usr/include
 
-NUAUDIOLIB = -lnualsgi_n_d -lgn_audio_d
+NUAUDIOLIB = -lnualsgi_n_d -ln_audio_d
 
 LCDEFS =	-DNU_DEBUG -DF3DEX_GBI_2
 LDIRT  =	$(APP) $(TARGETS)

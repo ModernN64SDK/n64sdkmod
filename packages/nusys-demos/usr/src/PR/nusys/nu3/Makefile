@@ -17,7 +17,7 @@ INC = $(ROOT)/usr/include
 N_AUDIO = yes
 
 ifdef N_AUDIO
-NUAUDIOLIB = -lnualsgi_n_d -lgn_audio_d
+NUAUDIOLIB = -lnualsgi_n_d -ln_audio_d
 else
 NUAUDIOLIB = -lnualsgi_d
 endif
