@@ -28,13 +28,13 @@ ifdef __GCC__
 # If somebody needs to define a custom compiler toolchain...
 
 N64_CC ?= mips64-elf-gcc
-N64_CFLAGS ?= -c -D_MIPS_SZLONG=32 -D_MIPS_SZINT=32 -D_LANGUAGE_C -D_ULTRA64 -D__EXTENSIONS__ -mabi=32 -march=vr4300 -mtune=vr4300 -mfix4300
+N64_CFLAGS ?= -c -D_MIPS_SZLONG=32 -D_MIPS_SZINT=32 -D_LANGUAGE_C -D_ULTRA64 -D__EXTENSIONS__ -fno-PIC -mabi=32 -mno-shared -mno-abicalls -march=vr4300 -mtune=vr4300 -mfix4300
 
 N64_CXX ?= mips64-elf-g++
-N64_CXXFLAGS ?= -c -D_MIPS_SZLONG=32 -D_MIPS_SZINT=32 -D_LANGUAGE_C -D_ULTRA64 -D__EXTENSIONS__ -mabi=32 -march=vr4300 -mtune=vr4300 -mfix4300 -fno-nonansi-builtins
+N64_CXXFLAGS ?= -c -D_MIPS_SZLONG=32 -D_MIPS_SZINT=32 -D_LANGUAGE_C -D_ULTRA64 -D__EXTENSIONS__ -fno-PIC -mabi=32 -mno-shared -mno-abicalls -march=vr4300 -mtune=vr4300 -mfix4300 -fno-nonansi-builtins
 
-N64_AS ?= mips64-elf-as
-N64_ASFLAGS ?= -march=r4300 -mabi=32
+N64_AS ?= mips64-elf-gcc
+N64_ASFLAGS ?= -c -x assembler-with-cpp -fno-PIC -march=r4300 -mtune=vr4300 -mfix4300 -mabi=32 -mno-shared -mno-abicalls
 
 N64_LD ?= mips64-elf-ld
 N64_LDFLAGS ?= --no-check-sections
@@ -75,7 +75,7 @@ SHELL	= /bin/sh
 
 FLT2C       = flt2c
 IC          = ic
-MAKEROM     = spicy --as_command=$(N64_AS) --cpp_command=cpp --ld_command=$(N64_LD) --objcopy_command=$(N64_OBJCOPY)
+MAKEROM     = spicy --as_command=mips64-elf-as --cpp_command=cpp --ld_command=$(N64_LD) --objcopy_command=$(N64_OBJCOPY)
 MIDIPARSE   = midiparse		
 MIDICVT     = midicvt
 MIDICOMP    = midicomp
