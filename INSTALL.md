@@ -114,6 +114,12 @@ Again, change directory to the demo of your choice, and run ``make`` to compile 
 
 After you make the demo, you can run it in the emulator of your choice, and it should work perfectly!
 
+
+## Still need help?
+
+Feel free to contact me on Discord ``CrashOveride#2465`` or Twitter ``@crashoveride953``
+
 ![Image of fogworld](https://github.com/CrashOveride95/n64sdkmod/raw/master/fogworldshot.png)
 
 ![Image of hvqmsample](https://github.com/CrashOveride95/n64sdkmod/raw/master/hvqm.png)
+

@@ -300,4 +300,4 @@ Gfx RGBA16brickMM_dl[] = {
 	gsDPSetTileSize( 5,  0, 0, 0 << G_TEXTURE_IMAGE_FRAC, 0 << G_TEXTURE_IMAGE_FRAC),
 	gsSPEndDisplayList(),
 };
-
+

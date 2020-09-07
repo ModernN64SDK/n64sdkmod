@@ -15,11 +15,11 @@ include $(ROOT)/usr/include/make/PRdefs
 
 #FINAL = YES
 ifeq ($(FINAL), YES)
-OPTIMIZER       = -O2 -std=gnu90
+OPTIMIZER       = -O2
 LCDEFS          = -DNDEBUG -D_FINALROM
 N64LIB          = -lultra_rom
 else
-OPTIMIZER       = -g -std=gnu90
+OPTIMIZER       = -g
 LCDEFS          = -DDEBUG
 N64LIB          = -lultra_d
 endif
@@ -47,7 +47,7 @@ OBJECTS =	$(CODESEGMENT) $(DATAOBJECTS)
 LCINCS =	-I. -I$(ROOT)/usr/include/PR
 LCDEFS +=       $(HW_FLAGS) -DF3DEX_GBI_2 -DUSE_CFB32
 LCOPTS =	-G 0
-LDFLAGS =	$(MKDEPOPT)  -L$(ROOT)/usr/lib $(N64LIB) -L$(N64_LIBGCCDIR) -lgcc -L$(N64_NEWLIBDIR) -lc
+LDFLAGS =	$(MKDEPOPT)  -L$(ROOT)/usr/lib $(N64LIB) -L$(N64_LIBGCCDIR) -lgcc
 
 LDIRT  =	$(APP)
 
