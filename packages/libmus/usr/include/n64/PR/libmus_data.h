@@ -13,7 +13,7 @@
 #ifndef _LIBMUS_DATA_H_
 #define _LIBMUS_DATA_H_
 
-#include <libaudio.h>
+#include "libaudio.h"
 
 /* sample pointer bank header structure (will be moved into player.h!) */
 typedef struct

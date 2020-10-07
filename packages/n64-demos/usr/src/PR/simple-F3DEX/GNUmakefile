@@ -35,6 +35,7 @@ CODEFILES =		\
 	audiomgr.c	\
 	controller.c	\
 	gfx.c		\
+	gfxrdpfifo.c	\
 	gfxstack.c	\
 	gfxyield.c	\
 	misc.c		\
