@@ -37,7 +37,7 @@ Next, add definitions of ``N64_LIBGCCDIR``,  ``N64_NEWLIBDIR``, and ``N64_NEWLIB
 
 As I've cloned n64chain to my home directory, I add
 
-``export N64_LIBGCCDIR="$HOME/n64chain/lib/gcc/mips64-elf/10.1.0"`` 
+``export N64_LIBGCCDIR="$HOME/n64chain/lib/gcc/mips64-elf/10.2.0"`` 
 
 ``export N64_NEWLIBDIR="$HOME/n64chain/mips64-elf/lib"`` 
 
