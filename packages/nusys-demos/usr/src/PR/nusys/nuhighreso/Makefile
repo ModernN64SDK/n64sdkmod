@@ -44,7 +44,7 @@ OBJECTS		=	$(CODESEGMENT) $(DATAOBJECTS)
 LCDEFS = 
 LCINCS =	-I. -I$(NUSYSINCDIR)
 LCOPTS =	-G 0
-LDFLAGS =	$(MKDEPOPT) -L$(ROOT)/usr/lib  -lnusys_d -L$(NUSYSLIBDIR) -lultra_d  -L$(N64_LIBGCCDIR) -L$(N64_NEWLIBDIR) -lgcc -lc
+LDFLAGS =	$(MKDEPOPT) -L$(ROOT)/usr/lib  -lnusys_d -L$(NUSYSLIBDIR) -lultra_d  -L$(N64_LIBGCCDIR)  -lgcc -lnustd
 
 LDIRT  =	$(APP)
 

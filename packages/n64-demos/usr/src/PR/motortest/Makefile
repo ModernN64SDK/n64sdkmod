@@ -46,7 +46,7 @@ LCOPTS =	-G 0
 LDIRT		= $(APP) cont *.so
 
 LDFLAGS		= $(MKDEPOPT)  -L$(ROOT)/usr/lib \
-		-L$(ROOT)/usr/lib/PR $(N64LIB) -L$(N64_LIBGCCDIR) -lgcc -L$(N64_NEWLIBDIR) -lc
+		-L$(ROOT)/usr/lib/PR $(N64LIB) -L$(N64_LIBGCCDIR) -lgcc  -lnustd
 
 SOURCES =	Makefile spec $(HFILES) $(CODEFILES) \
 		$(DATAFILES)

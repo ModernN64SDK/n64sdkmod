@@ -42,7 +42,7 @@ OBJECTS =	$(CODESEGMENT) $(DATAOBJECTS)
 
 LCINCS =	-I. -I$(ROOT)/usr/include/PR -I $(ROOT)/usr/include
 LCOPTS =	-mno-shared -G 0
-LDFLAGS =	$(MKDEPOPT) -L$(ROOT)/usr/lib $(N64LIB) -L$(N64_LIBGCCDIR) -L$(N64_NEWLIBDIR) -lgcc -lc
+LDFLAGS =	$(MKDEPOPT) -L$(ROOT)/usr/lib $(N64LIB) -L$(N64_LIBGCCDIR)  -lgcc -lnustd
 
 LDIRT  =	$(APP)
 

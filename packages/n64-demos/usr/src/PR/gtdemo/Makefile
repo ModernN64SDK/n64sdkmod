@@ -52,7 +52,7 @@ LDIRT  =	$(APP) *.so walktable walktable.h punchtable punchtable.h
 #
 # Use non debug library just so we have some demos using it to test it
 #
-LDFLAGS =	$(MKDEPOPT)  -L$(ROOT)/usr/lib -L$(ROOT)/usr/lib/PR $(N64LIB) -L$(N64_LIBGCCDIR) -lgcc -L$(N64_NEWLIBDIR) -lc
+LDFLAGS =	$(MKDEPOPT)  -L$(ROOT)/usr/lib -L$(ROOT)/usr/lib/PR $(N64LIB) -L$(N64_LIBGCCDIR) -lgcc  -lnustd
 
 default:	$(TARGETS)
 

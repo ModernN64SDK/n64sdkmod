@@ -1,9 +1,8 @@
 FROM ubuntu:20.04
 
 ENV PATH=/usr/local/n64chain/bin:${PATH}
-ENV N64_TOOLCHAIN=/usr/local/n64chain/bin
 ENV ROOT=/etc/n64
-ENV N64_LIBGCCDIR=/usr/local/n64chain/lib/gcc/mips64-elf/10.1.0
+ENV N64_LIBGCCDIR=/usr/local/n64chain/lib/gcc/mips64-elf/10.2.0
 ENV N64_NEWLIBDIR=/usr/local/n64chain/mips64-elf/lib
 ENV N64_NEWLIBINCDIR=/usr/local/n64chain/mips64-elf/include
 
@@ -21,4 +20,5 @@ RUN dpkg --add-architecture i386 && \
     apt-get -y install n64sdk && \
     apt-get -y install spicy && \
     apt-get -y install makemask && \
+    apt-get -y install libnustd && \
     apt-get -y install root-compatibility-enviroment
