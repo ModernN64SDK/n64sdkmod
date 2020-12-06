@@ -14,8 +14,11 @@ set spx     = $3
 set spy     = $4
 set overlap = $5
 
-	set RGB2C = /usr/bin/rgb2c
-
+if ( $?ROOT ) then
+	set RGB2C = $ROOT/usr/sbin/rgb2c
+else
+	set RGB2C = /usr/sbin/rgb2c
+endif
 
 @ overlap = $overlap + 0
 if( $overlap ) then
