@@ -13,8 +13,7 @@ docs: web-folders
 	markdown DOCKER.md > web/docs/docker.html
 
 upload: docs debs
-	cp debs/* web/apt && \
-	rsync -ar web uploadn64@$(SSH-SERVER):/opt/www/upload-n64
+	cp debs/* web/apt
 
 # Always explicitly specify what you're deleting with rm -rf
 clean:
