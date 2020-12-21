@@ -3,6 +3,8 @@ FROM ubuntu:20.04
 ENV PATH=/usr/local/n64chain/bin:${PATH}
 ENV ROOT=/etc/n64
 ENV N64_LIBGCCDIR=/usr/local/n64chain/lib/gcc/mips64-elf/10.2.0
+ENV N64_NEWLIBDIR=/usr/local/n64chain/mips64-elf/lib
+ENV N64_NEWLIBINCDIR=/usr/local/n64chain/mips64-elf/include
 
 WORKDIR /usr/local
 
