@@ -29,17 +29,11 @@ In my case I cloned n64chain to my home directory, and I use **Bash**, so I adde
 
 ``export PATH="$HOME/n64chain/bin:$PATH"`` to the end of my ``~/.bashrc`` script.
 
-Next, add definitions of ``N64_LIBGCCDIR``,  ``N64_NEWLIBDIR``, and ``N64_NEWLIBINCDIR`` to your .bashrc. This is to allow people with differing setups less trouble in makefile editing.
+Next, add a definition of ``N64_LIBGCCDIR``to your .bashrc. This is to allow people with differing setups less trouble in makefile editing.
 
 As I've cloned n64chain to my home directory, I add
 
-``export N64_LIBGCCDIR="$HOME/n64chain/lib/gcc/mips64-elf/10.2.0"`` 
-
-``export N64_NEWLIBDIR="$HOME/n64chain/mips64-elf/lib"`` 
-
-and
-
-``export N64_NEWLIBINCDIR="$HOME/n64chain/mips64-elf/include"``
+``export N64_LIBGCCDIR="$HOME/n64chain/lib/gcc/mips64-elf/10.2.0"``
 
 to the end of my ``~/.bashrc`` script.
 
