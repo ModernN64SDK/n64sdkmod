@@ -2,7 +2,7 @@
 
 The following instructions have been tested on an Ubuntu 18.04 machine, a Ubuntu 20.04 machine, and WSL1 and WSL2,  but they should work fine on Debian or other distros.
 
-If installing with Docker, please go to [The Docker Installation Page](docker.html)
+If installing with Docker, please go to [The Docker Installation Page](DOCKER.md)
 
 
 ## Compiler setup
