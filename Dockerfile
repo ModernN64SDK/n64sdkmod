@@ -15,7 +15,7 @@ RUN dpkg --add-architecture i386 && \
     git clone https://github.com/CrashOveride95/n64chain.git ./n64chain && \
     cd n64chain && \
     ./build-posix64-toolchain.sh && \
-    echo "deb [trusted=yes] https://coneyislanddiscopalace.xyz/apt ./" > /etc/apt/sources.list.d/coneyisland.list && \
+    echo "deb [trusted=yes] https://crashoveride95.github.io/apt ./" > /etc/apt/sources.list.d/crashoveride95.list && \
     apt update && \
     apt-get -y install n64sdk && \
     apt-get -y install spicy && \
