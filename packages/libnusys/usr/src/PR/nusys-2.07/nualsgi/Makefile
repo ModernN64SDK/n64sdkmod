@@ -18,7 +18,7 @@ OPTIMIZER	=	$(OPTMZ)
 
 RM		=	rm
 CP		=	cp
-AR		=	mips64-elf-ar
+AR		=	mips-n64-ar
 ARFLAGS	=	cr
 
 ################################################################

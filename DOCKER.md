@@ -1,5 +1,7 @@
 # The Docker Installation Page
 
+WARNING: Docker is NOT the recommended method of usage, and updating the SDK when such updates become available may be more difficult.
+
 To build a Docker image from the `Dockerfile` and make it available on your machine:
 
 1. Install Docker, e.g. `brew cask install docker` on macOS using [Homebrew](https://brew.sh)

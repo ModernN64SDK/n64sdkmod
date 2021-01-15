@@ -21,19 +21,17 @@ If you get a permission error on running the script, run ``chmod`` on the .sh.
 
 ``chmod +x build-posix64-toolchain.sh``
 
+It is normal to be prompted for your password, as the compiler installs to ``/usr/local``.
+
 This will download and build *GCC* and the *Binutils* line of programs. This may take a while.
 
-When it finishes, add n64chain/bin to your **PATH**, preferably in your .bashrc (or in your shell's respective profile script) so you don't have to add it every time.
-
-In my case I cloned n64chain to my home directory, and I use **Bash**, so I added
-
-``export PATH="$HOME/n64chain/bin:$PATH"`` to the end of my ``~/.bashrc`` script.
+When it finishes, make sure /usr/local/bin is in your **PATH**. It should already be there by default.
 
 Next, add a definition of ``N64_LIBGCCDIR``to your .bashrc. This is to allow people with differing setups less trouble in makefile editing.
 
-As I've cloned n64chain to my home directory, I add
+As the compiler installs to ``/usr/local`` I've added
 
-``export N64_LIBGCCDIR="$HOME/n64chain/lib/gcc/mips64-elf/10.2.0"``
+``export N64_LIBGCCDIR="/usr/local/lib/gcc/mips64-elf/10.2.0"``
 
 to the end of my ``~/.bashrc`` script.
 
