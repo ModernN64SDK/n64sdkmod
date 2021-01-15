@@ -19,7 +19,7 @@ LDIRT = libnustd.a libnustd_d.a
 LIB	= $(ROOT)/usr/lib
 LPR	= $(LIB)/PR
 INC	= $(ROOT)/usr/include
-AR	= mips64-elf-ar
+AR	= mips-n64-ar
 
 CDEFINES = -D_LANGUAGE_C -D_MIPS_SZLONG=32 -D_MIPS_SZINT=32
 

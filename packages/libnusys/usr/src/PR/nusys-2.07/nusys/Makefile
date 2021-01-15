@@ -15,9 +15,9 @@ INC = $(ROOT)/usr/include
 MAKE		=	make
 RM		=	rm
 CP		=	cp
-AR		=	mips64-elf-ar
+AR		=	mips-n64-ar
 ARFLAGS	=	cr
-RANLIB		=	mips64-elf-ranlib
+RANLIB		=	mips-n64-ranlib
 
 .c.o:
 	$(CC) $(OPTIMIZER) $(MOPTDEF) -DUSE_EPI -G 0 -c -mabi=32 -march=vr4300 -mtune=vr4300 -mfix4300 -mno-shared -I.. -I$(INC)/PR -I$(INC) -D_LANGUAGE_C -D_MIPS_SZLONG=32 -D_MIPS_SZINT=32 $<
