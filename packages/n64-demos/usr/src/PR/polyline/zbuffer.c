@@ -14,4 +14,4 @@
 #include <ultra64.h>
 #include "lines.h"
 
-unsigned short	zbuffer[SCREEN_WD*SCREEN_HT];
+u16 zbuffer[SCREEN_WD*SCREEN_HT];

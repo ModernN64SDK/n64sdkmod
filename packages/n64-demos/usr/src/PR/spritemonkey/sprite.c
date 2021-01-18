@@ -76,7 +76,7 @@ int     ControllerInput       =  0;
 int     PrintInstructions     =  1;
 int     NewTextureNumber      =  1;
 
-extern char _codeSegmentEnd[], _cfbSegmentStart[];
+extern char _codeSegmentBssEnd[], _cfbSegmentBssStart[];
 extern char _staticSegmentRomStart[], _staticSegmentRomEnd[];
 
 /*
@@ -294,6 +294,8 @@ idle(void *arg)
     /* Initialize video */
     osCreateViManager(OS_PRIORITY_VIMGR);
     osViSetMode(&osViModeTable[OS_VI_NTSC_HAF1]);
+
+    osViBlack(TRUE);
     
     /*
      * Start PI Mgr for access to cartridge
@@ -338,29 +340,15 @@ void CreateMessageQueues(void)
 
 void DMAStaticSegment(void)
 {
-  if ((u32) _codeSegmentEnd        + 
+  if ((u32) _codeSegmentBssEnd        + 
       (u32) _staticSegmentRomEnd   -   
       (u32) _staticSegmentRomStart >=
-      (u32) _cfbSegmentStart)
+      (u32) _cfbSegmentBssStart)
     {
-
-#ifdef DEBUG
-      PRINTF("Error, trying to clobber frame buffer segment \n");
-      PRINTF("_codeSegmentEnd %.8x + %.8x = %.8x > _cfbSegmentStart %.8x \n",
-	     (u32) _codeSegmentEnd,
-	     (u32) _staticSegmentRomEnd   -   
-	     (u32) _staticSegmentRomStart,
-	     (u32) _codeSegmentEnd +
-	     (u32) _staticSegmentRomEnd   -   
-	     (u32) _staticSegmentRomStart,
-
-	     (u32) _cfbSegmentStart);
-#endif
-
       while(1);
     }
       
-  staticSegment = _codeSegmentEnd;
+  staticSegment = _codeSegmentBssEnd;
 
   dmaIOMessageBuf.hdr.pri      = OS_MESG_PRI_NORMAL;
   dmaIOMessageBuf.hdr.retQueue = &dmaMessageQ;
@@ -853,5 +841,6 @@ static void mainproc(void *arg)
       WriteOutInstructions();
     }
 
+  osViBlack(FALSE);
   DoMainAppLoops();
 }

@@ -17,7 +17,7 @@ gfxinit.c	A static DL to initialize RSP/RDP
 
 segment.h       Segment definition
 
-spec		Spec file for makerom
+nu3.ld		Linkerscript which will be preproccesed and linked with "ld"
 
 wave.ctl	Wave form data for recreating sequence
 wave.tbl

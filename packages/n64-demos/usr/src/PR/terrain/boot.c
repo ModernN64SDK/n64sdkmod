@@ -34,7 +34,7 @@
 /*
  * Symbol genererated by "makerom" (RAM)
  */
-extern char     _codeSegmentEnd[];
+extern char     _codeSegmentBssEnd[];
 extern char     _codeSegmentTextEnd[];
 extern char     _codeSegmentTextStart[];
 
@@ -43,8 +43,8 @@ extern char     _codeSegmentTextStart[];
  */
 extern char     _staticSegmentRomStart[],
                 _staticSegmentRomEnd[];
-extern char     _zbufferSegmentStart[],
-		_zbufferSegmentEnd[];
+extern char     _zbufferSegmentBssStart[],
+		_zbufferSegmentBssEnd[];
 
 /*
  * Stacks for the threads as well as message queues for synchronization
@@ -205,7 +205,7 @@ mainproc(void *arg)
 	/*
 	 * Stick the static segment right after the code/data segment
 	 */
-	staticSegment = _zbufferSegmentEnd;
+	staticSegment = _zbufferSegmentBssEnd;
 
 	dmaIOMessageBuf.hdr.pri      = OS_MESG_PRI_NORMAL;
 	dmaIOMessageBuf.hdr.retQueue = &dmaMessageQ;

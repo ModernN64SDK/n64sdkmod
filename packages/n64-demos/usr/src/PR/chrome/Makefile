@@ -10,65 +10,63 @@
 # Makefile for chrome effect demo application
 #
 #
-#
 
-include $(ROOT)/usr/include/make/PRdefs
+include /usr/include/n64/make/PRdefs
 
-#FINAL = YES
-ifeq ($(FINAL), YES)
-OPTIMIZER       = -O2 -std=gnu90
+OPTIMIZER       = -O2
 LCDEFS          = -DNDEBUG -D_FINALROM -DF3DEX_GBI_2
 N64LIB          = -lultra_rom
-else
-OPTIMIZER       = -g -std=gnu90
-LCDEFS          = -DDEBUG -DF3DEX_GBI_2
-N64LIB          = -lultra_d
-endif
 
-APP =		letters.out
+ELF		= letters.elf
+TARGETS	= letters.z64
+MAP		= letters.map
 
-TARGETS =	letters.n64
+LD_SCRIPT	= letters.ld
+CP_LD_SCRIPT	= letters_cp.ld
 
-TEXTURES =	./Texture/metallic.rgb ./Texture/mahogany.rgb ./Texture/smroad.rgb ./Texture/gameday.rgb
+ASMFILES    =	asm/entry.s asm/rom_header.s
 
-TEXHFILES =	./mahogany.h ./metallic.h ./smroad.h ./sp_gameday.h
-
-HFILES =	letters.h u64_tri.h u64_vtx.h
+ASMOBJECTS  =	$(ASMFILES:.s=.o)
 
 CODEFILES   =	letters.c dram_stack.c
 
 CODEOBJECTS =	$(CODEFILES:.c=.o)
 
-DATAFILES   =	static.c	\
-		zbuffer.c	\
-		cfb.c
+DATAFILES   =	static.c zbuffer.c cfb.c
 
 DATAOBJECTS =	$(DATAFILES:.c=.o)
 
+BOOT		= /usr/lib/n64/PR/bootcode/boot.6102
+
+BOOT_OBJ	= boot.6102.o
+
 CODESEGMENT =	codesegment.o
 
-OBJECTS =	$(TEXHFILES) $(CODESEGMENT) $(DATAOBJECTS)
+OBJECTS =	$(CODESEGMENT) $(DATAOBJECTS) $(ASMOBJECTS) $(BOOT_OBJ)
 
 LCINCS =	-I.
 LCOPTS =	-G 0
-LDIRT  =	$(APP) *.so
+LDIRT  =	$(ELF) $(CP_LD_SCRIPT) $(MAP) $(ASMOBJECTS) $(TARGETS)
 
-LDFLAGS =	$(MKDEPOPT)  -L$(ROOT)/usr/lib -L$(ROOT)/usr/lib/PR $(N64LIB) -L$(N64_LIBGCCDIR) -lgcc 
+LDFLAGS =	-L/usr/lib/n64 $(N64LIB) -L$(N64_LIBGCCDIR) -lgcc 
 
 default:	$(TARGETS)
 
 include $(COMMONRULES)
 
-$(CODESEGMENT):	$(TEXHFILES) $(CODEOBJECTS)
+.s.o:
+	$(AS) -Wa,-Iasm -o $@ $<
+
+$(CODESEGMENT): $(CODEOBJECTS)
 		$(LD) -o $(CODESEGMENT) -r $(CODEOBJECTS) $(LDFLAGS)
 
-ifeq ($(FINAL), YES)
-$(TARGETS) $(APP):      spec $(OBJECTS)
-	$(MAKEROM) -s 9 -r $(TARGETS) -e $(APP) spec
+$(BOOT_OBJ): $(BOOT)
+	$(OBJCOPY) -I binary -B mips -O elf32-bigmips $< $@
+
+$(CP_LD_SCRIPT): $(LD_SCRIPT)
+	cpp -P -Wno-trigraphs -o $@ $<
+
+$(TARGETS): $(OBJECTS) $(CP_LD_SCRIPT)
+	$(LD) -L. -T $(CP_LD_SCRIPT) -Map $(MAP) -o $(ELF) 
+	$(OBJCOPY) --pad-to=0x100000 --gap-fill=0xFF $(ELF) $(TARGETS) -O binary
 	makemask $(TARGETS)
-else
-$(TARGETS) $(APP):      spec $(OBJECTS)
-	$(MAKEROM) -r $(TARGETS) -e $(APP) spec
-endif
-
-

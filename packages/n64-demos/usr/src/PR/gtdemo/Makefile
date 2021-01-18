@@ -10,27 +10,23 @@
 # Makefile for turbo demo application
 #
 
-include $(ROOT)/usr/include/make/PRdefs
+include /usr/include/n64/make/PRdefs
 
-#FINAL = YES
-ifeq ($(FINAL), YES)
-OPTIMIZER       = -O2 -std=gnu90
-LCDEFS          =
+
+OPTIMIZER       = -O2
+LCDEFS          = -DNDEBUG -D_FINALROM
 N64LIB          = -lultra_rom
-else
-OPTIMIZER       = -g -std=gnu90
-LCDEFS          = -DDEBUG
-N64LIB          = -lultra_d
-endif
 
-APP =		gtdemo.out
+ELF		= gtdemo.elf
+TARGETS	= gtdemo.z64
+MAP		= gtdemo.map
 
-TARGETS =	gtdemo.n64
+LD_SCRIPT	= gtdemo.ld
+CP_LD_SCRIPT	= gtdemo_cp.ld
 
-TEXHFILES =	../RGBA16checkerMM.h
+ASMFILES    =	asm/entry.s asm/rom_header.s
 
-HFILES =	gtdemo.h controller.h turbo.h character.h char_data.h 	\
-		timer.h walk.h punch.h
+ASMOBJECTS  =	$(ASMFILES:.s=.o)
 
 CODEFILES   =	gtdemo.c floor.c turbo.c character.c controller.c 	\
 		timer.c walk.c punch.c rdp_output.c rdp_output_len.c
@@ -41,35 +37,39 @@ DATAFILES   =	static.c zbuffer.c cfb.c
 
 DATAOBJECTS =	$(DATAFILES:.c=.o)
 
+BOOT		= /usr/lib/n64/PR/bootcode/boot.6102
+
+BOOT_OBJ	= boot.6102.o
+
 CODESEGMENT =	codesegment.o
 
-OBJECTS =	$(CODESEGMENT) $(DATAOBJECTS)
+OBJECTS =	$(CODESEGMENT) $(DATAOBJECTS) $(ASMOBJECTS) $(BOOT_OBJ)
 
-LCINCS =	-I. -I$(ROOT)/usr/include/PR -I $(ROOT)/usr/include -I../Texture
-LCOPTS =	-G 0
-LDIRT  =	$(APP) *.so walktable walktable.h punchtable punchtable.h
+LCINCS =	-I. -I/usr/include/n64/PR -I /usr/include/n64 -I../Texture
+LDIRT  =	$(ELF) $(CP_LD_SCRIPT) $(MAP) $(ASMOBJECTS) walktable walktable.h punchtable punchtable.h $(TARGETS)
 
-#
-# Use non debug library just so we have some demos using it to test it
-#
-LDFLAGS =	$(MKDEPOPT)  -L$(ROOT)/usr/lib -L$(ROOT)/usr/lib/PR $(N64LIB) -L$(N64_LIBGCCDIR) -lgcc  -lnustd
+LDFLAGS =	-L/usr/lib/n64 -L/usr/lib/n64/PR $(N64LIB) -L$(N64_LIBGCCDIR) -lgcc
 
 default:	$(TARGETS)
 
 include $(COMMONRULES)
 
+.s.o:
+	$(AS) -Wa,-Iasm -o $@ $<
+
 $(CODESEGMENT):	$(CODEOBJECTS)
-		$(LD) -o $(CODESEGMENT) -r $(CODEOBJECTS) $(LDFLAGS)
+	$(LD) -o $(CODESEGMENT) -r $(CODEOBJECTS) $(LDFLAGS)
 
-ifeq ($(FINAL), YES)
-$(TARGETS) $(APP):      spec $(OBJECTS)
-	$(MAKEROM) -s 9 -r $(TARGETS) -e $(APP) spec
+$(BOOT_OBJ): $(BOOT)
+	$(OBJCOPY) -I binary -B mips -O elf32-bigmips $< $@
+
+$(CP_LD_SCRIPT): $(LD_SCRIPT)
+	cpp -P -Wno-trigraphs -o $@ $<
+
+$(TARGETS): $(OBJECTS) $(CP_LD_SCRIPT)
+	$(LD) -L. -T $(CP_LD_SCRIPT) -Map $(MAP) -o $(ELF) 
+	$(OBJCOPY) --pad-to=0x100000 --gap-fill=0xFF $(ELF) $(TARGETS) -O binary
 	makemask $(TARGETS)
-else
-$(TARGETS) $(APP):      spec $(OBJECTS)
-	$(MAKEROM) -r $(TARGETS) -e $(APP) spec
-endif
-
 
 #
 # Header file build rules

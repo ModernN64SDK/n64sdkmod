@@ -27,9 +27,9 @@ used.)
 
 	:
 	include "codesegment.o"
-	include "$(ROOT)/usr/lib/PR/rspboot.o"
-	include "$(ROOT)/usr/lib/PR/gspF3DEX2.fifo.o"
-	include "$(ROOT)/usr/lib/PR/gspS2DEX2.fifo.o"
+	include "/usr/lib/n64/PR/rspboot.o"
+	include "/usr/lib/n64/PR/gspF3DEX2.fifo.o"
+	include "/usr/lib/n64/PR/gspS2DEX2.fifo.o"
 endseg
 	:
 

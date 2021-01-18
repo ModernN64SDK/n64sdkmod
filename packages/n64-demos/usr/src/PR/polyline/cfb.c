@@ -20,8 +20,8 @@
 #include <ultra64.h>
 #include "lines.h"
 
-unsigned short    cfb_16_a[SCREEN_WD*SCREEN_HT];
-unsigned short    cfb_16_b[SCREEN_WD*SCREEN_HT];
+u16 cfb_16_a[SCREEN_WD*SCREEN_HT];
+u16 cfb_16_b[SCREEN_WD*SCREEN_HT];
 
 
 

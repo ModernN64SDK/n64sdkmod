@@ -23,4 +23,4 @@ graphic.c	General routine for graphics
 
 gfxinit.c	A static DL to initialize RSP/RDP
 
-spec		Spec file for makerom
+nu2.ld		Linkerscript which will be preproccesed and linked with "ld"

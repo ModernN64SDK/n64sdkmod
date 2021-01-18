@@ -11,7 +11,7 @@
 #define SEGMENT_H
 
 extern char _codeSegmentStart[];         /* code segment start */
-extern char _codeSegmentEnd[];           /* code segment end */
+extern char _codeSegmentBssEnd[];           /* code segment end */
 
 extern u8 _seqSegmentRomStart[];
 extern u8 _seqSegmentRomEnd[];

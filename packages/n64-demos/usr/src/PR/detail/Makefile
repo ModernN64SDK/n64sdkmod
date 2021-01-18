@@ -11,37 +11,24 @@
 #
 #
 
-include $(ROOT)/usr/include/make/PRdefs
+include /usr/include/n64/make/PRdefs
 
-#FINAL = YES
-ifeq ($(FINAL), YES)
-OPTIMIZER       = -O2 -std=gnu90
-LCDEFS          = -D_FINALROM -DNDEBUG -DF3DEX_GBI_2
+AS			= mips-n64-as -mtune=vr4300 -march=vr4300 -mabi=32 -mips3 -G 0
+
+OPTIMIZER       = -O2
+LCDEFS          = -DNDEBUG -D_FINALROM -DF3DEX_GBI_2
 N64LIB          = -lultra_rom
-else
-OPTIMIZER       = -g -std=gnu90
-LCDEFS          = -DDEBUG -DF3DEX_GBI_2
-N64LIB          = -lultra_d
-endif
 
-APP =		detail.out
+ELF		= detail.elf
+TARGETS	= detail.z64
+MAP		= detail.map
 
-TARGETS =	detail.n64
+LD_SCRIPT	= detail.ld
+CP_LD_SCRIPT	= detail_cp.ld
 
-TEXHFILES =	brick.h
+ASMFILES    =	asm/entry.s asm/rom_header.s
 
-HFILES =	app.h walk_around.h \
-		RGBA16field32.h		\
-		RGBA16forest32.h 	\
-		RGBA16drainage32.h	\
-		I8water32.h		\
-		RGBA16leaf32.h		\
-		RGBA16sand64x32.h	\
-		gorge_vtx.h		\
-		gorge_dl.h		\
-		river_dl.h		\
-		vector.h		\
-		matrix.h
+ASMOBJECTS  =	$(ASMFILES:.s=.o)
 
 CODEFILES   =	main.c walk_around.c matrix.c vector.c dram_stack.c
 
@@ -51,30 +38,37 @@ DATAFILES   =	static.c cfb.c rsp_cfb.c rsp_czb.c czb.c
 
 DATAOBJECTS =	$(DATAFILES:.c=.o)
 
+BOOT		= /usr/lib/n64/PR/bootcode/boot.6102
+
+BOOT_OBJ	= boot.6102.o
+
 CODESEGMENT =	codesegment.o
 
-OBJECTS =	$(CODESEGMENT) $(DATAOBJECTS)
+OBJECTS =	$(CODESEGMENT) $(DATAOBJECTS) $(ASMOBJECTS) $(BOOT_OBJ)
 
 LCINCS =	-I.
 LCOPTS =	-G 0
-LDFLAGS =	$(MKDEPOPT)  -L$(ROOT)/usr/lib $(N64LIB)  -L$(N64_LIBGCCDIR) -lgcc  -lnustd
+LDFLAGS =	-L/usr/lib/n64 $(N64LIB) -L$(N64_LIBGCCDIR) -lgcc
 
-LDIRT  =	$(APP)
+LDIRT  =	$(ELF) $(CP_LD_SCRIPT) $(MAP) $(ASMOBJECTS) $(TARGETS)
 
 default:	$(TARGETS)
 
 include $(COMMONRULES)
 
-$(CODESEGMENT):	$(CODEOBJECTS)
+.s.o:
+	$(AS) -I. -I asm -o $@ $<
+
+$(CODESEGMENT): $(CODEOBJECTS)
 		$(LD) -o $(CODESEGMENT) -r $(CODEOBJECTS) $(LDFLAGS)
 
-ifeq ($(FINAL), YES)
-$(TARGETS) $(APP):      spec $(OBJECTS)
-	$(MAKEROM) -s 9 -r $(TARGETS) -e $(APP) spec
+$(BOOT_OBJ): $(BOOT)
+	$(OBJCOPY) -I binary -B mips -O elf32-bigmips $< $@
+
+$(CP_LD_SCRIPT): $(LD_SCRIPT)
+	cpp -P -Wno-trigraphs -o $@ $<
+
+$(TARGETS): $(OBJECTS) $(CP_LD_SCRIPT)
+	$(LD) -L. -T $(CP_LD_SCRIPT) -Map $(MAP) -o $(ELF) 
+	$(OBJCOPY) --pad-to=0x100000 --gap-fill=0xFF $(ELF) $(TARGETS) -O binary
 	makemask $(TARGETS)
-else
-$(TARGETS) $(APP):      spec $(OBJECTS)
-	$(MAKEROM) -r $(TARGETS) -e $(APP) spec
-endif
-
-

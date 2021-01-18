@@ -1,0 +1,46 @@
+/*---------------------------------------------------------------------
+  $Id: spec,v 1.1.1.1 2002/05/02 03:27:18 blythe Exp $
+  
+  File : spec
+
+  Coded     by Yoshitaka Yasumoto.   Apr 11, 1997.
+  Copyright by Nintendo, Co., Ltd.           1997.
+  ---------------------------------------------------------------------*/
+#include "system.h"
+
+beginseg
+	name "code"
+	flags BOOT OBJECT
+	entry boot
+	stack bootStack + STACKSIZE
+	include "codesegment.o"
+        include "/usr/lib/n64/PR/rspboot.o"
+        include "/usr/lib/n64/PR/gspF3DEX.fifo.o"
+endseg
+
+beginseg
+        name "system_cfb"
+        flags OBJECT
+        address CFB_ADDRESS
+        include "system_cfb.o"
+endseg
+
+beginseg
+        name "system_rspbuf"
+        flags OBJECT
+#ifdef  RSPBUF_ADDRESS
+        address RSPBUF_ADDRESS
+#else
+        after system_cfb
+#endif
+        include "system_rspbuf.o"
+endseg
+
+beginwave
+	name    "sample"
+	include	"code"
+        include "system_cfb"
+        include "system_rspbuf"
+endwave
+
+/*======== End of spec ========*/

@@ -13,29 +13,20 @@
 #
 include /usr/include/n64/make/PRdefs
 
-FINAL = YES
-ifeq ($(FINAL), YES)
-OPTIMIZER       = -O2 -std=gnu90
+OPTIMIZER       = -O2
 LCDEFS          = -D_FINALROM -DNDEBUG -DF3DEX_GBI_2
 N64LIB          = -lultra_rom
-else
-OPTIMIZER       = -g -std=gnu90
-LCDEFS          = -DDEBUG  -DF3DEX_GBI_2
-N64LIB          = -lultra_d
-endif
 
-APP =		topgun.out
+ELF		= topgun.elf
+TARGETS	= topgun.z64
+MAP		= topgun.map
 
-TARGETS =	topgun.n64
+LD_SCRIPT	= topgun.ld
+CP_LD_SCRIPT	= topgun_cp.ld
 
-TEXHFILES =	ground.h sky.h tree.h
-TEXTURES =	Textures/clouds.rgb Textures/harrier_num.rgba \
-		Textures/stree1.rgba  Textures/terrain.rgb \
-		Textures/camo2.int Textures/decal.inta
+ASMFILES    =	asm/entry.s asm/rom_header.s
 
-MODELS =	Models/av8b.flt
-
-HFILES =	topgun.h
+ASMOBJECTS  =	$(ASMFILES:.s=.o)
 
 CODEFILES   =	topgun.c dram_stack.c rdp_output.c
 
@@ -49,30 +40,36 @@ DATAFILES   =	av8b.c		\
 
 DATAOBJECTS =	$(DATAFILES:.c=.o)
 
+BOOT		= /usr/lib/n64/PR/bootcode/boot.6102
+
+BOOT_OBJ	= boot.6102.o
+
 CODESEGMENT =	codesegment.o
 
-OBJECTS =	$(CODESEGMENT) $(DATAOBJECTS)
+OBJECTS =	$(CODESEGMENT) $(DATAOBJECTS) $(ASMOBJECTS) $(BOOT_OBJ)
 
 LCINCS =	-I. -I/usr/include/n64/PR -I/usr/include/n64
-LCOPTS =	-mno-shared -G 0
-LDIRT  =	$(APP)
+LDIRT  =	$(ELF) $(CP_LD_SCRIPT) $(MAP) $(ASMOBJECTS) $(TARGETS)
 
-LDFLAGS =	$(MKDEPOPT)  -L/usr/lib/n64 -L/usr/lib/n64/PR $(N64LIB) -L$(N64_LIBGCCDIR) -lgcc
+LDFLAGS =	-L/usr/lib/n64 -L/usr/lib/n64/PR $(N64LIB) -L$(N64_LIBGCCDIR) -lgcc
 
 default:	$(TARGETS)
 
 include $(COMMONRULES)
 
+.s.o:
+	$(AS) -Wa,-Iasm -o $@ $<
+
 $(CODESEGMENT):	$(CODEOBJECTS)
-		$(LD) -o $(CODESEGMENT) -r $(CODEOBJECTS) $(LDFLAGS)
+	$(LD) -o $(CODESEGMENT) -r $(CODEOBJECTS) $(LDFLAGS)
 
-ifeq ($(FINAL), YES)
-$(TARGETS) $(APP):      spec $(OBJECTS)
-	$(MAKEROM) -s 9 -r $(TARGETS) -e $(APP) spec
+$(BOOT_OBJ): $(BOOT)
+	$(OBJCOPY) -I binary -B mips -O elf32-bigmips $< $@
+
+$(CP_LD_SCRIPT): $(LD_SCRIPT)
+	cpp -P -Wno-trigraphs -o $@ $<
+
+$(TARGETS): $(OBJECTS) $(CP_LD_SCRIPT)
+	$(LD) -L. -T $(CP_LD_SCRIPT) -Map $(MAP) -o $(ELF) 
+	$(OBJCOPY) --pad-to=0x100000 --gap-fill=0xFF $(ELF) $(TARGETS) -O binary
 	makemask $(TARGETS)
-else
-$(TARGETS) $(APP):      spec $(OBJECTS)
-	$(MAKEROM) -r $(TARGETS) -e $(APP) spec
-endif
-
-

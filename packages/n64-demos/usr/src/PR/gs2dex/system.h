@@ -51,6 +51,7 @@ extern	u64		system_rspyield[];
 #define	EXTERN_SEGMENT(name)	\
 extern	char	_##name##SegmentStart[], _##name##SegmentEnd[], \
                 _##name##SegmentRomStart[], _##name##SegmentRomEnd[]
+extern char _codeSegmentBssEnd[];
 
 /*
  *  Segment's extern declarations

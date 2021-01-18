@@ -10,7 +10,7 @@
 # Makefile for textures shared among applications
 #
 
-include $(ROOT)/usr/include/make/PRdefs
+include /usr/include/n64/make/PRdefs
 
 DATAFILES =				\
 		brick.rgb		\
@@ -86,4 +86,3 @@ letters_img.h:	letters.rgb
 
 #
 ##########################################################################
-

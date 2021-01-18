@@ -10,22 +10,23 @@
 #	$Id: Makefile,v 1.17 1999/04/02 10:10:55 yoshida Exp $
 #---------------------------------------------------------------------
 
-include $(ROOT)/usr/include/make/PRdefs
+include /usr/include/n64/make/PRdefs
 
-#FINAL = YES
-ifeq ($(FINAL), YES)
-OPTIMIZER       = -O2 -std=gnu90
+OPTIMIZER       = -O2
 LCDEFS          = -DNDEBUG -D_FINALROM
 N64LIB          = -lultra_rom
-else
-OPTIMIZER       = -g -std=gnu90
-LCDEFS          = -DDEBUG
-N64LIB          = -lultra_d
-endif
 
-APP =		sample.out
+ELF		= gs2dex.elf
+TARGETS	= gs2dex.z64
+MAP		= gs2dex.map
 
-TARGETS =	sample.n64
+LD_SCRIPT	= gs2dex.ld
+CP_LD_SCRIPT	= gs2dex_cp.ld
+
+ASMFILES    =	asm/entry.s asm/rom_header.s img_data.s
+
+ASMOBJECTS  =	$(ASMFILES:.s=.o)
+
 CODEFILES =	system.c main.c uc_assert.c action.c sprite.c
 CODEOBJECTS =	$(CODEFILES:.c=.o)
 CODESEGMENT =	codesegment.o
@@ -40,24 +41,26 @@ DATAOBJECTS =	$(DATAFILES:.c=.o)
 BGFILES =	L2_TV.c
 BGOBJECTS =	$(BGFILES:.c=.o)
 
-CFILES =	$(CODEFILES) $(STATICFILES) $(DATAFILES) $(BGFILES)
-HFILES =	action.h sprite.h system.h texture.h texture_pattern.h \
-		uc_assert.h
+BOOT		= /usr/lib/n64/PR/bootcode/boot.6102
+BOOT_OBJ	= boot.6102.o
 
-OBJECTS =	$(CODESEGMENT) $(STATICSEGMENT) $(DATAOBJECTS) $(BGOBJECTS)
+OBJECTS =	$(CODESEGMENT) $(STATICSEGMENT) $(DATAOBJECTS) $(BGOBJECTS) $(BOOT_OBJ) $(ASMOBJECTS)
 
-LCINCS  =	-I. -I$(ROOT)/usr/include/PR
+LCINCS  =	-I. -I/usr/include/n64/PR
 LCOPTS =	-G 0
 
 LCDEFS  +=	-DF3DEX_GBI
 
-LDIRT   = $(APP) *.dat *.dbg *.lst *.sym 
+LDIRT  =	$(ELF) $(CP_LD_SCRIPT) $(MAP) $(ASMOBJECTS) $(TARGETS)
 		    
-LDFLAGS =	$(MKDEPOPT)  -L$(ROOT)/usr/lib $(N64LIB) -L$(N64_LIBGCCDIR) -lgcc
+LDFLAGS =	-L/usr/lib/n64 $(N64LIB) -L$(N64_LIBGCCDIR) -lgcc
 
 default:	$(TARGETS)
 
 include $(COMMONRULES)
+
+.s.o:
+	$(AS) -Wa,-Iasm -o $@ $<
 
 $(CODESEGMENT):	$(CODEOBJECTS)
 		$(LD) -o $(CODESEGMENT) -r $(CODEOBJECTS) $(LDFLAGS)
@@ -65,12 +68,14 @@ $(CODESEGMENT):	$(CODEOBJECTS)
 $(STATICSEGMENT): $(STATICOBJECTS)
 		$(LD) -o $(STATICSEGMENT) -r $(STATICOBJECTS) $(LDFLAGS)
 
-ifeq ($(FINAL), YES)
-$(TARGETS):	spec $(OBJECTS) 
-	$(MAKEROM) $(LCDEFS) -m -s 9 -r $(TARGETS) -e $(APP) spec 
+$(BOOT_OBJ): $(BOOT)
+	$(OBJCOPY) -I binary -B mips -O elf32-bigmips $< $@
+
+$(CP_LD_SCRIPT): $(LD_SCRIPT)
+	cpp -P -Wno-trigraphs -o $@ $<
+
+$(TARGETS): $(OBJECTS) $(CP_LD_SCRIPT)
+	$(LD) -L. -T $(CP_LD_SCRIPT) -Map $(MAP) -o $(ELF) 
+	$(OBJCOPY) --pad-to=0x100000 --gap-fill=0xFF $(ELF) $(TARGETS) -O binary
 	makemask $(TARGETS)
-else
-$(TARGETS):	spec $(OBJECTS) 
-	$(MAKEROM) $(LCDEFS) -m -r $(TARGETS) -e $(APP) spec 
-endif
 

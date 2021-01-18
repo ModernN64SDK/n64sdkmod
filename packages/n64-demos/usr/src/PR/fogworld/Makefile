@@ -11,28 +11,22 @@
 #
 #
 
-include $(ROOT)/usr/include/make/PRdefs
+include /usr/include/n64/make/PRdefs
 
-FINAL = YES
-ifeq ($(FINAL), YES)
-OPTIMIZER       = -O2 -std=gnu90 
+OPTIMIZER       = -O2
 LCDEFS          = -D_FINALROM -DNDEBUG -DF3DEX_GBI_2
 N64LIB          = -lultra_rom
-else
-OPTIMIZER       = -g -std=gnu90 
-LCDEFS          = -DDEBUG -DF3DEX_GBI_2
-N64LIB          = -lultra_d
-endif
 
-APP =		game.out
+ELF		= fogworld.elf
+TARGETS	= fogworld.z64
+MAP		= fogworld.map
 
-TARGETS =	game.n64
+LD_SCRIPT	= fogworld.ld
+CP_LD_SCRIPT	= fogworld_cp.ld
 
-TEXHFILES =	RGBA16foliageMM.h RGBA16graniteMM.h RGBA16grass2MM.h 	\
-		RGBA16sandMM.h RGBA16sidewalkMM.h
+ASMFILES    =	asm/entry.s asm/rom_header.s
 
-HFILES =	$(TEXHFILES) boot.h game.h controller.h font.h font_ext.h \
-		letters_img.h static.h ter0_data.h ter0_header.h
+ASMOBJECTS  =	$(ASMFILES:.s=.o)
 
 CODEFILES   =	boot.c game.c controller.c font.c dram_stack.c
 
@@ -42,34 +36,40 @@ DATAFILES   =	gfxinit.c gfxstatic.c texture.c cfb.c rsp_cfb.c zbuffer.c
 
 DATAOBJECTS =	$(DATAFILES:.c=.o)
 
-CODESEGMENT =	codesegment.o
+BOOT		= /usr/lib/n64/PR/bootcode/boot.6102
 
-OBJECTS =	$(CODESEGMENT) $(DATAOBJECTS)
+BOOT_OBJ	= boot.6102.o
+
+CODESEGMENT = codesegment.o
+
+OBJECTS =	$(CODESEGMENT) $(DATAOBJECTS) $(ASMOBJECTS) $(BOOT_OBJ)
 
 LCDEFS +=	$(HW_FLAGS)
 LCINCS =	-I. -I/usr/include/n64/PR -I/usr/include/n64
-LCOPTS =	-mno-shared -G 0
-LDFLAGS =	$(MKDEPOPT)  -L/usr/lib/n64 $(N64LIB) -L$(N64_LIBGCCDIR) -lgcc  -lnustd
+LDFLAGS =	-L/usr/lib/n64 $(N64LIB) -L$(N64_LIBGCCDIR) -lgcc
 
-LDIRT  =	$(APP)
+LDIRT  =	$(ELF) $(CP_LD_SCRIPT) $(MAP) $(ASMOBJECTS) $(TARGETS)
 
 default:	$(TARGETS)
 
 include $(COMMONRULES)
 
-gfxstatic.o:	$(TEXHFILES)
+.s.o:
+	$(AS) -Wa,-Iasm -o $@ $<
 
 $(CODESEGMENT):	$(CODEOBJECTS)
-		$(LD) -o $(CODESEGMENT) -r $(CODEOBJECTS) $(LDFLAGS)
+	$(LD) -o $(CODESEGMENT) -r $(CODEOBJECTS) $(LDFLAGS)
 
-ifeq ($(FINAL), YES)
-$(TARGETS) $(APP):      spec $(OBJECTS)
-	$(MAKEROM) -s 9 -r $(TARGETS) -e $(APP) spec
+$(BOOT_OBJ): $(BOOT)
+	$(OBJCOPY) -I binary -B mips -O elf32-bigmips $< $@
+
+$(CP_LD_SCRIPT): $(LD_SCRIPT)
+	cpp -P -Wno-trigraphs -o $@ $<
+
+$(TARGETS): $(OBJECTS) $(CP_LD_SCRIPT)
+	$(LD) -L. -T $(CP_LD_SCRIPT) -Map $(MAP) -o $(ELF) 
+	$(OBJCOPY) --pad-to=0x100000 --gap-fill=0xFF $(ELF) $(TARGETS) -O binary
 	makemask $(TARGETS)
-else
-$(TARGETS) $(APP):      spec $(OBJECTS)
-	$(MAKEROM) -r $(TARGETS) -e $(APP) spec
-endif
 
 font.o:		./letters_img.h
 

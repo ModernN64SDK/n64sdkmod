@@ -38,9 +38,9 @@ Lights1 light = { 250, 250, 250, 0xff,		/* diffuse */
  * Symbol genererated by "makerom" to indicate the end of the code segment
  * in virtual (and physical) memory
  */
-extern char _codeSegmentEnd[];
+extern char _codeSegmentBssEnd[];
 extern char _zbufferSegmentEnd[];
-extern char _cfbSegmentEnd[];
+extern char _cfbSegmentBssEnd[];
 
 /* these are fixed sizes: */
 #define SP_UCODE_SIZE		4096
@@ -218,7 +218,7 @@ mainproc(void *ptr)
     /*
      * Stick the static segment right after the frame buffer
      */
-    staticSegment = _cfbSegmentEnd+8;
+    staticSegment = _cfbSegmentBssEnd+8;
 
     dmaIOMessageBuf.hdr.pri      = OS_MESG_PRI_NORMAL;
     dmaIOMessageBuf.hdr.retQueue = &dmaMessageQ;

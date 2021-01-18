@@ -36,14 +36,14 @@ version).
    determine the upper-limit size of an image to decode.  Adjust  
    these settings to meet your needs.
 
-3) Execute make. This creates sample.n64 (as well as sample.out).
+3) Execute make. This creates sample.z64 (as well as sample.out).
 
 
 How to Use
 ==========
 
 By loading and executing the created program on the NINTENDO64,  
-the HVQM2 data (video clip) that is linked to sample.n64 will be 
+the HVQM2 data (video clip) that is linked to sample.z64 will be 
 played repeatedly.
 
 

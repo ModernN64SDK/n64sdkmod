@@ -32,33 +32,38 @@ MAXHEIGHT = 240
 
 ######################################################################
 #  The directory holding the HVQM2 library (libhvqm2.a)
-HVQMLIBDIR = /usr/lib/n64/hvqm/
+HVQMLIBDIR = /usr/lib/n64/hvqm
 
 #  The directory holding the HVQM2 include file
-HVQMINCDIR = /usr/include/n64/hvqm/
-
-#  The directory holding the HVQM2 microcode
-HVQMUCODEDIR = /usr/lib/n64/hvqm/
+HVQMINCDIR = /usr/include/n64/hvqm
 ######################################################################
 
 LCINCS = -I. -I$(HVQMINCDIR) -I/usr/include/n64/PR -I/usr/include/n64
-LCOPTS = -O2 -G 0 -g -mno-shared -std=gnu90 
-LCDEFS = -D_LANGUAGE_C -DMAXWIDTH=$(MAXWIDTH) -DMAXHEIGHT=$(MAXHEIGHT) -DCFB_FORMAT=$(CFB_FORMAT) -DUSE_RSP=$(USE_RSP) -DSYNC_VIDEO=$(SYNC_VIDEO)
-LDIRT  = $(APP) $(TARGETS)
+LCOPTS = -O2 -G 0
+LCDEFS = -DMAXWIDTH=$(MAXWIDTH) -DMAXHEIGHT=$(MAXHEIGHT) -DCFB_FORMAT=$(CFB_FORMAT) -DUSE_RSP=$(USE_RSP) -DSYNC_VIDEO=$(SYNC_VIDEO) -D_FINALROM -DNDEBUG
+LDIRT  = $(ELF) $(ROM) $(MAP) $(CP_LD_SCRIPT) $(ASMOBJECTS)
 
 LIBS = -L$(HVQMLIBDIR) -lhvqm2 -L/usr/lib/n64 -lultra_rom -L$(N64_LIBGCCDIR) -lgcc
-
-#UCODE = $(HVQMUCODEDIR)/hvqm2sp$(CFB_FORMAT).o
 
 NAME = sample
 
 TARGETDIR = .
-ROM = $(TARGETDIR)/$(NAME).n64
-SYM = $(TARGETDIR)/$(NAME).out
+ELF		= $(NAME).elf
+ROM		= $(NAME).z64
+MAP		= $(NAME).map
 
-HVQMFILE  = sample.hvqm
+LD_SCRIPT	= $(NAME).ld
+CP_LD_SCRIPT	= $(NAME)_cp.ld
+
+BOOT		= /usr/lib/n64/PR/bootcode/boot.6102
+BOOT_OBJ	= boot.6102.o
+HVQMFILE	= mirror.hvqm
+HVQM_OBJ	= samplehvqm.o
 
 SPECFILE = spec
+
+ASMFILES    = asm/entry.s asm/rom_header.s
+ASMOBJECTS  = $(ASMFILES:.s=.o)
 
 CFILES      = system.c main.c cfbkeep.c getrecord.c timekeeper.c
 CODEOBJECTS = $(CFILES:.c=.o)
@@ -71,8 +76,21 @@ default: $(ROM)
 
 include $(COMMONRULES)
 
-$(ROM): $(CODESEGMENT) $(DATAOBJECTS) $(HVQMFILE) $(SPECFILE) Makefile
-	$(MAKEROM) -r $(ROM) -e $(SYM) $(SPECFILE)
+.s.o:
+	$(AS) -Wa,-Iasm -o $@ $<
+
+$(BOOT_OBJ): $(BOOT)
+	$(OBJCOPY) -I binary -B mips -O elf32-bigmips $< $@
+
+$(HVQM_OBJ): $(HVQMFILE)
+	$(OBJCOPY) -I binary -B mips -O elf32-bigmips $< $@
+
+$(CP_LD_SCRIPT): $(LD_SCRIPT)
+	cpp -P -Wno-trigraphs -o $@ $<
+
+$(ROM): $(CODESEGMENT) $(ASMOBJECTS) $(DATAOBJECTS) $(BOOT_OBJ) $(HVQM_OBJ) $(CP_LD_SCRIPT)
+	$(LD) -L. -T $(CP_LD_SCRIPT) -Map $(MAP) -o $(ELF) 
+	$(OBJCOPY) --pad-to=0x100000 --gap-fill=0xFF $(ELF) $(ROM) -O binary
 	makemask $(ROM)
 
 $(CODESEGMENT): $(CODEOBJECTS)

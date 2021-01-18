@@ -5,6 +5,7 @@ makesphere > sphere.dat
 */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
 
 #define PI		3.14159
@@ -89,8 +90,8 @@ void sphere(float s, float t, float *x, float *y, float *z, float *nx, float *ny
 	*x = r * sin(s*2*PI) * (maxx-minx)/2.0 + (maxx+minx)/2 + 0.5;
 	*z = r * cos(s*2*PI) * (maxz-minz)/2.0 + (maxz+minz)/2 + 0.5;
 
-	*nx = fsin(3.0 * 2.0 * PI * s) * 127.0 + 127.0;
-	*ny = fsin(3.0 * 2.0 * PI * t) * 127.0 + 127.0;
+	*nx = sin(3.0 * 2.0 * PI * s) * 127.0 + 127.0;
+	*ny = sin(3.0 * 2.0 * PI * t) * 127.0 + 127.0;
 
 	RGV = (*nx/255.0) * (*nx/255.0) + (*ny/255.0) * (*ny/255.0);
 	if (RGV < 0.25)

@@ -12,65 +12,62 @@
 #
 #
 
-include $(ROOT)/usr/include/make/PRdefs
+include /usr/include/n64/make/PRdefs
 
-#FINAL = YES
-ifeq ($(FINAL), YES)
 OPTIMIZER       = -O2
 LCDEFS          = -DNDEBUG -D_FINALROM -DF3DEX_GBI_2
 N64LIB          = -lultra_rom
-else
-OPTIMIZER       = -g
-LCDEFS          = -DDEBUG -DF3DEX_GBI_2
-N64LIB          = -lultra_d
-endif
 
-APP =		teapot.out
+ELF		= lights.elf
+TARGETS	= lights.z64
+MAP		= lights.map
 
-TARGETS =	teapot.n64
+LD_SCRIPT	= lights.ld
+CP_LD_SCRIPT	= lights_cp.ld
 
-TEXHFILES =	teapot_shad64.h
+ASMFILES    =	asm/entry.s asm/rom_header.s
 
-HFILES =	I4spec.h controller.h teapot_tri.h \
-		IA8phong.h teapot.h teapot_vtx.h
+ASMOBJECTS  =	$(ASMFILES:.s=.o)
 
 CODEFILES   =	teapot.c controller.c dram_stack.c
 
 CODEOBJECTS =	$(CODEFILES:.c=.o)
 
-DATAFILES   =	static.c	\
-		zbuffer.c	\
-		cfb.c
+DATAFILES   =	static.c zbuffer.c cfb.c
 
 DATAOBJECTS =	$(DATAFILES:.c=.o)
 
+BOOT		= /usr/lib/n64/PR/bootcode/boot.6102
+
+BOOT_OBJ	= boot.6102.o
+
 CODESEGMENT =	codesegment.o
 
-OBJECTS =	$(CODESEGMENT) $(DATAOBJECTS)
+OBJECTS =	$(CODESEGMENT) $(DATAOBJECTS) $(ASMOBJECTS) $(BOOT_OBJ)
 
 LCDEFS +=	-DUSE_HIGHLIGHT -DUSE_MIPMAP
-LCINCS =	-I. -I$(ROOT)/usr/include/PR -I $(ROOT)/usr/include
-LCOPTS =	-G 0
-LDIRT  =	$(APP) teapot *.so
+LCINCS =	-I. -I/usr/include/n64/PR -I /usr/include/n64
+LDIRT  =	$(ELF) $(CP_LD_SCRIPT) $(MAP) $(ASMOBJECTS) $(TARGETS)
 	
-LDFLAGS =	$(MKDEPOPT)  -L$(ROOT)/usr/lib -L$(ROOT)/usr/lib/PR $(N64LIB)  -L$(N64_LIBGCCDIR) -lgcc 
+LDFLAGS =	-L/usr/lib/n64 -L/usr/lib/n64/PR $(N64LIB)  -L$(N64_LIBGCCDIR) -lgcc 
 
 default:	$(TARGETS)
 
 include $(COMMONRULES)
 
+.s.o:
+	$(AS) -Wa,-Iasm -o $@ $<
+
 $(CODESEGMENT):	$(CODEOBJECTS)
-		$(LD) -o $(CODESEGMENT) -r $(CODEOBJECTS) $(LDFLAGS)
+	$(LD) -o $(CODESEGMENT) -r $(CODEOBJECTS) $(LDFLAGS)
 
-$(OBJECTS): $(HFILES) $(TEXHFILES)
+$(BOOT_OBJ): $(BOOT)
+	$(OBJCOPY) -I binary -B mips -O elf32-bigmips $< $@
 
-ifeq ($(FINAL), YES)
-$(TARGETS) $(APP):      spec $(OBJECTS)
-	$(MAKEROM) -s 9 -r $(TARGETS) -e $(APP) spec
+$(CP_LD_SCRIPT): $(LD_SCRIPT)
+	cpp -P -Wno-trigraphs -o $@ $<
+
+$(TARGETS): $(OBJECTS) $(CP_LD_SCRIPT)
+	$(LD) -L. -T $(CP_LD_SCRIPT) -Map $(MAP) -o $(ELF) 
+	$(OBJCOPY) --pad-to=0x100000 --gap-fill=0xFF $(ELF) $(TARGETS) -O binary
 	makemask $(TARGETS)
-else
-$(TARGETS) $(APP):      spec $(OBJECTS)
-	$(MAKEROM) -r $(TARGETS) -e $(APP) spec
-endif
-
-

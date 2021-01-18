@@ -9,16 +9,9 @@ beginseg
 	entry boot
 	stack bootStack + STACKSIZE
 	include "codesegment.o"
-	include "$(ROOT)/usr/lib/PR/rspboot.o"
-	include "$(ROOT)/usr/lib/PR/gspL3DEX2.xbus.o"
-	include "$(ROOT)/usr/lib/PR/gspF3DEX2.xbus.o"
-endseg
-
-beginseg
-	name "zbuffer"
-	flags OBJECT
-	address 0x803da800
-	include "zbuffer.o"
+	include "/usr/lib/n64/PR/rspboot.o"
+	include "/usr/lib/n64/PR/gspL3DEX2.xbus.o"
+	include "/usr/lib/n64/PR/gspF3DEX2.xbus.o"
 endseg
 
 beginseg
@@ -26,6 +19,13 @@ beginseg
 	flags OBJECT
 	address 0x8018f800
 	include "cfb.o"
+endseg
+
+beginseg
+	name "zbuffer"
+	flags OBJECT
+	address 0x803da800
+	include "zbuffer.o"
 endseg
 
 beginwave

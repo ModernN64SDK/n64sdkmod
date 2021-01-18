@@ -19,4 +19,4 @@ RUN dpkg --add-architecture i386 && \
     apt-get -y install spicy && \
     apt-get -y install makemask && \
     apt-get -y install libnustd && \
-    apt-get -y install root-compatibility-enviroment
+    apt-get -y install root-compatibility-environment

@@ -1,9 +1,9 @@
-
 /*
  * This program generates the grid.c file used by the tron program.
  */
 
 #include <stdio.h>
+#include <stdlib.h>
 
 #define WALL		5
 #define MAXVERT		32

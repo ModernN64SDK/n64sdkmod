@@ -11,31 +11,22 @@
 #
 #
 
-include $(ROOT)/usr/include/make/PRdefs
+include /usr/include/n64/make/PRdefs
 
-#FINAL = YES
-ifeq ($(FINAL), YES)
 OPTIMIZER       = -O2
 LCDEFS          = -DNDEBUG -D_FINALROM -DF3DEX_GBI_2
 N64LIB          = -lultra_rom
-else
-OPTIMIZER       = -g
-LCDEFS          = -DDEBUG -DF3DEX_GBI_2
-N64LIB          = -lultra_d
-endif
 
-APP =		tile_rect.out
+ELF		= tile_rect.elf
+TARGETS	= tile_rect.z64
+MAP		= tile_rect.map
 
-TARGETS =	tile_rect.n64
+LD_SCRIPT	= tile_rect.ld
+CP_LD_SCRIPT	= tile_rect_cp.ld
 
-ROADHFILES = ./rd01.h ./rd02.h ./rd03.h ./rd04.h ./rd05.h ./rd06.h
-CAFEHFILES = ./cv01.h ./cv03.h ./cv04.h ./cv05.h ./cv06.h
-WORLDHFILES = ./world01.h ./world02.h ./world03.h ./world04.h	\
-		./world05.h ./world06.h
+ASMFILES    =	asm/entry.s asm/rom_header.s
 
-TEXHFILES =	$(ROADHFILES) $(CAFEHFILES) $(WORLDHFILES)
-
-HFILES =	$(TEXHFILES) tile_rect.h controller.h cafe.h road.h world.h
+ASMOBJECTS  =	$(ASMFILES:.s=.o)
 
 CODEFILES   =	main.c tile_rectangle.c controller.c dram_stack.c
 
@@ -45,39 +36,37 @@ DATAFILES   =	static.c cfb.c rsp_cfb.c cafe.c road.c world.c
 
 DATAOBJECTS =	$(DATAFILES:.c=.o)
 
+BOOT		= /usr/lib/n64/PR/bootcode/boot.6102
+
+BOOT_OBJ	= boot.6102.o
+
 CODESEGMENT =	codesegment.o
 
-OBJECTS =	$(CODESEGMENT) $(DATAOBJECTS)
+OBJECTS =	$(CODESEGMENT) $(DATAOBJECTS) $(ASMOBJECTS) $(BOOT_OBJ)
 
 LCDEFS +=	$(HW_FLAGS)
 LCINCS =	-I.
-LCOPTS =	-G 0
-LDFLAGS =	$(MKDEPOPT)  -L$(ROOT)/usr/lib $(N64LIB) -L$(N64_LIBGCCDIR) -lgcc
+LDFLAGS =	-L/usr/lib/n64 $(N64LIB) -L$(N64_LIBGCCDIR) -lgcc
 
-LDIRT  =	$(APP)
+LDIRT  =	$(ELF) $(MAP) $(CP_LD_SCRIPT) $(ASMOBJECTS) $(BOOT_OBJ) $(TARGETS)
 
 default:	$(TARGETS)
 
 include $(COMMONRULES)
 
+.s.o:
+	$(AS) -Wa,-Iasm -o $@ $<
+
 $(CODESEGMENT):	$(CODEOBJECTS)
-		$(LD) -o $(CODESEGMENT) -r $(CODEOBJECTS) $(LDFLAGS)
+	$(LD) -o $(CODESEGMENT) -r $(CODEOBJECTS) $(LDFLAGS)
 
-ifeq ($(FINAL), YES)
-$(TARGETS) $(APP):      spec $(OBJECTS)
-	$(MAKEROM) -s 9 -r $(TARGETS) -e $(APP) spec
+$(BOOT_OBJ): $(BOOT)
+	$(OBJCOPY) -I binary -B mips -O elf32-bigmips $< $@
+
+$(CP_LD_SCRIPT): $(LD_SCRIPT)
+	cpp -P -Wno-trigraphs -o $@ $<
+
+$(TARGETS): $(OBJECTS) $(CP_LD_SCRIPT)
+	$(LD) -L. -T $(CP_LD_SCRIPT) -Map $(MAP) -o $(ELF) 
+	$(OBJCOPY) --pad-to=0x100000 --gap-fill=0xFF $(ELF) $(TARGETS) -O binary
 	makemask $(TARGETS)
-else
-$(TARGETS) $(APP):      spec $(OBJECTS)
-	$(MAKEROM) -r $(TARGETS) -e $(APP) spec
-endif
-
-
-# for exeGCC CELF
-ifeq ($(GCC_CELF), ON)
-ifneq ($(FINAL), YES)
-CELFDIR = .
-include $(CELFRULES)
-$(CODEOBJECTS) $(DATAOBJECTS) :	$(CELFINFOFILES)
-endif
-endif

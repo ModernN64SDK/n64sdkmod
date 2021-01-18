@@ -11,36 +11,22 @@
 #
 #
 
-include $(ROOT)/usr/include/make/PRdefs
+include /usr/include/n64/make/PRdefs
 
-PRDEPTH = ../..
-
-FINAL = YES
-ifeq ($(FINAL), YES)
-OPTIMIZER       = -O2 -std=gnu90
+OPTIMIZER       = -O2
 LCDEFS          = -DNDEBUG -D_FINALROM -DF3DEX_GBI_2
 N64LIB          = -lultra_rom
-else
-OPTIMIZER       = -g -std=gnu90
-LCDEFS          = -DDEBUG -DF3DEX_GBI_2
-N64LIB          = -lultra_d
-endif
 
-APP =		spgame.out
+ELF		= spgame.elf
+TARGETS	= spgame.z64
+MAP		= spgame.map
 
-TARGETS =	spgame.n64
+LD_SCRIPT	= spgame.ld
+CP_LD_SCRIPT	= spgame_cp.ld
 
-TEXDIR  =	Texture
+ASMFILES    =	asm/entry.s asm/rom_header.s
 
-TEXTURES = 	${TEXDIR}/L2_TV.rgb  \
-		${TEXDIR}/ball.rgba
-
-TEXHFILES = 	./${TEXDIR}/lit_imgs.h          ./${TEXDIR}/lit_bms.h \
-		./${TEXDIR}/ball_imgs.h         ./${TEXDIR}/ball_bms.h
-
-SPRITES =       ./sp_lit.h ./sp_ball.h
-
-HFILES =	main.h font.h font_ext.h
+ASMOBJECTS  =	$(ASMFILES:.s=.o)
 
 CODEFILES   =	main.c spgame.c font.c pics.c dram_stack.c
 
@@ -50,29 +36,36 @@ DATAFILES   =	static.c cfb.c rsp_cfb.c
 
 DATAOBJECTS =	$(DATAFILES:.c=.o)
 
+BOOT		= /usr/lib/n64/PR/bootcode/boot.6102
+
+BOOT_OBJ	= boot.6102.o
+
 CODESEGMENT =	codesegment.o
 
-OBJECTS =	$(CODESEGMENT) $(DATAOBJECTS)
+OBJECTS =	$(CODESEGMENT) $(DATAOBJECTS) $(ASMOBJECTS) $(BOOT_OBJ)
 
 LCINCS =	-I.
-LCOPTS =	-mno-shared -G 0
-LDFLAGS =	$(MKDEPOPT)  -L$(ROOT)/usr/lib $(N64LIB) -L$(N64_LIBGCCDIR) -lgcc
+LDFLAGS =	-L/usr/lib/n64 $(N64LIB) -L$(N64_LIBGCCDIR) -lgcc
 
-LDIRT  =	$(APP) *.so
+LDIRT  =	$(ELF) $(MAP) $(CP_LD_SCRIPT) $(ASMOBJECTS) $(BOOT_OBJ) $(TARGETS)
 
 default:	$(TARGETS)
 
 include $(COMMONRULES)
 
+.s.o:
+	$(AS) -Wa,-Iasm -o $@ $<
+
 $(CODESEGMENT):	$(CODEOBJECTS)
-		$(LD) -o $(CODESEGMENT) -r $(CODEOBJECTS) $(LDFLAGS)
+	$(LD) -o $(CODESEGMENT) -r $(CODEOBJECTS) $(LDFLAGS)
 
-ifeq ($(FINAL), YES)
-$(TARGETS) $(APP):      spec $(OBJECTS)
-	$(MAKEROM) -s 9 -r $(TARGETS) -e $(APP) spec
+$(BOOT_OBJ): $(BOOT)
+	$(OBJCOPY) -I binary -B mips -O elf32-bigmips $< $@
+
+$(CP_LD_SCRIPT): $(LD_SCRIPT)
+	cpp -P -Wno-trigraphs -o $@ $<
+
+$(TARGETS): $(OBJECTS) $(CP_LD_SCRIPT)
+	$(LD) -L. -T $(CP_LD_SCRIPT) -Map $(MAP) -o $(ELF) 
+	$(OBJCOPY) --pad-to=0x100000 --gap-fill=0xFF $(ELF) $(TARGETS) -O binary
 	makemask $(TARGETS)
-else
-$(TARGETS) $(APP):      spec $(OBJECTS)
-	$(MAKEROM) -r $(TARGETS) -e $(APP) spec
-endif
-

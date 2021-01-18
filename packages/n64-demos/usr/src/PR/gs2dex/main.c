@@ -87,7 +87,7 @@ void	Main(void *arg)
   OSTime rspstart;
   u32	 rsptime, rdptime;
   
-  bg16seg = (u32)_codeSegmentEnd 
+  bg16seg = (u32)_codeSegmentBssEnd 
           + (u32)_staticSegmentEnd - (u32)_staticSegmentStart;
   bg8seg  = bg16seg + 
           + (u32)_bg_rgbaSegmentRomEnd - (u32)_bg_rgbaSegmentRomStart;
@@ -121,7 +121,7 @@ void	Main(void *arg)
 
     /*------ RSP initial settings ------*/
     gSPSegment(gp ++, 0, 0x0);
-    gSPSegment(gp ++, STATIC_SEGMENT, _codeSegmentEnd);
+    gSPSegment(gp ++, STATIC_SEGMENT, _codeSegmentBssEnd);
     if (aMenu[MENU_BG_TX_FORMAT]){
       gSPSegment(gp ++, BG_SEGMENT, bg8seg);
     }
@@ -423,7 +423,7 @@ void	loadSegment(u32 bg16seg, u32 bg8seg)
   /* Load Static segment */
   dmaIOMessageBuf.hdr.pri      = OS_MESG_PRI_NORMAL;
   dmaIOMessageBuf.hdr.retQueue = &dmaMessageQ;
-  dmaIOMessageBuf.dramAddr     = _codeSegmentEnd;
+  dmaIOMessageBuf.dramAddr     = _codeSegmentBssEnd;
   dmaIOMessageBuf.devAddr      = (u32)_staticSegmentRomStart;
   dmaIOMessageBuf.size         = (u32)_staticSegmentRomEnd-(u32)_staticSegmentRomStart;
   osEPiStartDma(handler, &dmaIOMessageBuf, OS_READ);
