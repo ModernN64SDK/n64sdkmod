@@ -1,0 +1,156 @@
+#!/bin/csh -f
+
+echo "/*		AUTOMATIC SPRITE"
+echo -n "	Generated: "
+date
+echo "	By command: " $0 $1 $2 $3 $4 $5
+echo -n "	In directory: "
+pwd
+echo
+
+set spname  = $1
+set imgname = $2
+set spx     = $3
+set spy     = $4
+set overlap = $5
+
+if ( $?ROOT ) then
+	set RGB2C = $ROOT/usr/sbin/rgb2c
+else
+	set RGB2C = /usr/sbin/rgb2c
+endif
+
+@ overlap = $overlap + 0
+if( $overlap ) then
+    set spflags = "SP_TEXSHUF | SP_Z | SP_OVERLAP"
+    set rgbflags = "-F -S 2 "
+else
+#    set spflags = "SP_TEXSHUF | SP_Z | SP_FASTCOPY"
+#    set rgbflags = "-F -S"
+    set spflags = "SP_TEXSHUF | SP_Z | SP_FASTCOPY"
+    set rgbflags = "-F -S 2 "
+endif
+
+set sizes=`imgsize $imgname`
+
+@ sx = $sizes[1]
+@ sy = $sizes[2]
+
+echo Sprite Name = $spname
+echo Image  Name = $imgname
+echo Sprite xsiz = $spx
+echo Sprite ysiz = $spy
+echo Image  xsiz = $sx
+echo Image  ysiz = $sy
+echo Overlap     = $overlap
+
+unset noclobber
+
+/bin/rm -f ${spname}_imgs.h ${spname}_bms.h
+
+@ iy = 0
+@ yp = $sy - 1
+@  y = $sy - $spy
+@  y = $y - $overlap
+while( $y >= 0 )
+
+@   h = $yp + 1 - $y
+@   hd = $h - $overlap
+
+@   x = 0
+@   ix = 0
+    while( $x < ($sx - 1) )
+@	xp = $x + $spx + $overlap - 1
+	if( $xp >= $sx ) then
+@	    xp = $sx - 1
+	endif
+
+@	w = $xp + 1 - $x
+@	wd = $w - $overlap
+
+@	w = $w + 3
+@	w = $w / 4
+@	w = $w * 4
+
+		echo subimg $imgname tmpimg$$.rgb $x $xp $y $yp
+		subimg $imgname tmpimg$$.rgb $x $xp $y $yp
+		file tmpimg$$.rgb
+
+	$RGB2C $rgbflags -m ${spname}_bm${iy}_${ix} -f RGBA -s 16 tmpimg$$.rgb >> ${spname}_imgs.h
+	echo "{" $wd, $w, 0,0, ${spname}_bm${iy}_${ix}, "  $hd, 0 }," >> ${spname}_bms.h
+@	x = $x + $spx
+@	ix++
+    end
+
+    if( $y == 0 ) goto done
+
+    if( $y > $spy ) then
+@       y  = $y  - $spy
+@       yp = $yp - $spy
+    else
+@	yp = $y + $overlap - 1
+@       y = 0
+    endif
+
+@   iy++
+end
+
+done:
+
+/bin/rm -f tmpimg$$.rgb
+
+@ sx = $sx - $overlap
+@ sy = $sy - $overlap
+@ spyh = $spy + $overlap
+
+echo "*/ "
+echo ""
+echo "#include <PR/sp.h>"
+echo ""
+echo '#include "Texture/'${spname}'_imgs.h"'
+echo ""
+echo "static Bitmap " ${spname}"_bitmaps[] = {"
+echo ""
+echo '#include "Texture/'${spname}'_bms.h"'
+echo ""
+echo "};"
+echo ""
+echo "#define NUM_${spname}_BMS  (sizeof(${spname}_bitmaps)/sizeof(Bitmap))"
+echo ""
+echo "static Gfx      ${spname}_dl[NUM_DL(NUM_${spname}_BMS)];"
+echo ""
+echo "extern Sprite ${spname}_sprite;"
+echo ""
+echo "Sprite ${spname}_sprite = {"
+echo ""
+echo "	0,0,			/* Position: x,y */"
+echo ""
+echo "	$sx,$sy,			/* Sprite size in texels (x,y) */"
+echo ""
+echo "	1.0,1.0,		/* Sprite Scale: x,y */"
+echo ""
+echo "	0,0,		/* Sprite Explosion Spacing: x,y */"
+echo ""
+echo "	$spflags,			/* Sprite Attributes */"
+echo "	0x1234,			/* Sprite Depth: Z */"
+echo ""
+echo "	255,255,255,255,	/* Sprite Coloration: RGBA */"
+echo ""
+echo "	0,0,NULL,		/* Color LookUp Table: start_index, length, address */"
+echo ""
+echo "	0,1,			/* Sprite Bitmap index: start index, step increment */"
+echo ""
+echo "	NUM_${spname}_BMS,		/* Number of bitmaps */"
+echo "	NUM_DL(NUM_${spname}_BMS),	/* Number of display list locations allocated */"
+echo ""
+echo "	$spy, $spyh,			/* Sprite Bitmap Height: Used_height, physical height */"
+echo "	G_IM_FMT_RGBA,		/* Sprite Bitmap Format */"
+echo "	G_IM_SIZ_16b,		/* Sprite Bitmap Texel Size */"
+echo ""
+echo "	${spname}_bitmaps,		/* Pointer to bitmaps */"
+echo ""
+echo "	${spname}_dl,			/* Display list memory */"
+echo ""
+echo "	NULL			/* next_dl pointer */"
+echo ""
+echo "};"

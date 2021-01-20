@@ -51,6 +51,7 @@ esac
 sudo chown -R $USER:$USER ./packages
 
 mv packages/*.deb debs
+cp loose-debs/*.deb debs
 
 if [[ $choice == "all" ]]
     then
