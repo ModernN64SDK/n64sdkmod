@@ -74,6 +74,12 @@ Then, you need makemask, which applies the CIC data on your ROM.
 Next, you need to setup the root compatibilty environment. This is needed because in the old nintendo SDKs, there was a "ROOT" folder which simulated a unix filesystem. 
 This creates that setup for compatibility reasons.
 
+Some distros prevent you from installing i386 packages by default, to fix this do
+
+``sudo dpkg --add-architecture i386``
+
+Then do
+
 ``sudo apt install root-compatibility-environment``
 
 After you install the environment, add a definition of ROOT to your .bashrc:
