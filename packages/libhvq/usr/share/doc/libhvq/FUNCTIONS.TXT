@@ -1,0 +1,239 @@
+------------------------------------------------------------------
+N64-HVQ2 library  version 1.2
+Function reference manual
+------------------------------------------------------------------
+
+Name
+
+  hvq2Init1, hvq2Init2, hvq2InitSP - Initializes the HVQ2 decoder
+
+Example
+
+  #include <hvq2dec.h>
+  void hvq2Init1(u8 alpha);
+  void hvq2Init2(u8 alpha);
+  void hvq2InitSP(u8 alpha);
+
+Explanation
+
+Initializes the HVQ2 decoder.
+
+The 8bit argument "alpha" is used for the A (alpha) value set in 
+the buffer along with the RBG value of the pixels expanded by 
+the HVQ2 decoder.  The 32bit RGBA format has an 8bit A field, 
+and the value of alpha is set there.  The 16bit RGBA format has 
+a 1bit A field, and the MSB of alpha (bit 7) is set there.
+
+You only need to call hvq2Init1() once at the start when using 
+hvq2Decode1().  The same is true for hvq2Init2() when using 
+hvq2Decode2(), and for hvq2InitSP() when using hvq2DecodeSP().  
+
+
+------------------------------------------------------------------
+
+Name
+
+  hvq2Decode1, hvq2Decode2 - HVQ2 decoder (CPU version)
+
+Example
+
+  #include <hvq2dec.h>
+  void hvq2Decode1(u32 *code, u16 *outbuf, u32 outbufWidth, 
+	u16 *workbuf);
+  void hvq2Decode2(u32 *code, u32 *outbuf, u32 outbufWidth, u16 
+	*workbuf);
+
+Explanation
+
+Decodes "HVQ2 1.0" format HVQ2 compressed image data and expands 
+that decoded image data in the buffer.  hvq2Decode1() expands 
+the data in 16bit RGBA format, while hvq2Decode2() expands the 
+data in 32bit RGBA format.  "code" specifies the starting address 
+of the HVQ2 compressed image data.  This must be at a 32bit 
+boundary.
+
+"outbuf" specifies the starting address of the expansion buffer 
+where the decoded image data is written.  This must be at a 
+16bit boundary for hvq2Decode1() and at a 32bit boundary for 
+hvq2Decode2(). 
+
+"outbufWidth" specifies the horizontal width (number of pixels) 
+of the expansion buffer.  This must be as wide or wider than the 
+image.  When the image is narrower than the width of the 
+expansion buffer, the image is written from the left side of the 
+buffer, and nothing is written in the remaining space to the 
+right.
+
+"workbuf" specifies the starting address of the work area.  This 
+must be at a 16bit boundary.  The necessary size of this work 
+area is determined, using the formula shown below, from the 
+number of pixels in the horizontal (W) and vertical (H) 
+directions of the image and the compression format of the data 
+being decoded.  
+
+
+If the data to be decoded is in 4:1:1 mode:
+   (W/8) * (H/8) * 12 [byte]
+
+If the data to be decoded is in 4:2:2 mode:
+   (W/8) * (H/4) * 8  [byte]
+
+
+The image's width, height and compression method can be obtained 
+from the HVQ2 file header in the following manner:
+
+
+  #include <HVQ2File.h>
+
+  void *code;	// Start address of HVQ2 image data
+  u32 width;
+  u32 height;
+  u8  type;
+
+  width  = ((HVQ2Header *)code)->width;		// Image's width
+  height = ((HVQ2Header *)code)->height;	// Image's height
+  type   = ((HVQ2Header *)code)->v_sampling_rate;
+	// If 1, then 4:2:2
+	// If 2, then 4:1:1
+
+
+Note: The CPU version of the decoder does not perform data cache 
+write-backs to the buffer for the expanded image.  Thus, where 
+data cache write-backs are necessary, please perform them from 
+the application.  You only need to call hvq2Init1() once at the 
+start when using hvq2Decode1(), and hvq2Init2() only once at the 
+start when using hvq2Decode2().
+
+
+----------------------------------------------------------------------------
+
+
+Name
+
+hvq2DecodeSP - HVQ2 decoder (RSP version)
+
+Example
+
+#include <hvq2dec.h>
+void hvq2DecodeSP(u32 *code, void *outbuf, u32 outbufWidth, 
+u16 *workbuf, HVQ2Arg *arg, HVQ2Info *infobuf);
+
+Explanation
+
+Executes the first half of the decoding process for HVQ2 
+compressed image data and creates intermediate data for the RSP 
+microcode.  By activating the RSP microcode after calling this 
+function, the expansion of the image can be completed.
+
+The code, outbuf, outbufWidth and workbuf arguments work the 
+same as in the CPU version of the function.
+
+"arg" specifies the address of the HVQ2 parameters structure.  
+This structure stores the parameters that hvq2DecodeSP() 
+communicates to the RSP microcode.  Nothing needs to be set in 
+the application.
+
+"infobuf" specifies the starting address of the buffer (array of 
+HVQ2Info structures) holding the intermediate data for the RSP 
+microcode.  The necessary size of this buffer is different for 
+every set of compressed data.  The size must be large enough for 
+the array of HVQ2Info structures equal to the number indicated 
+by sp_packets in the HVQ2 header file.  That is to say, the 
+buffer must be (sizeof(HVQ2Info) x sp_packets) bytes in size.
+
+After "arg" and "infobuf" have been created by the hvq2DecodeSP() 
+function (at this time, the contents of "code" as well as 
+"workbuf" are no longer needed), the expansion of the image is 
+completed by activating the HVQ2 microcode.  The HVQ2 microcode 
+comes in two versions: hvq2sp1 for the 16bit RGBA format and 
+hvq2sp2 for the 32bit RGBA format.
+
+
+Note: You only need to call hvq2InitSP() once at the start when 
+using hvq2DecodeSP().
+
+
+
+----------------------------------------------------------------------------
+
+Name 
+
+hvq2sp1, hvq2sp2 - HVQ2 microcode
+
+Explanation
+
+Decodes the image from the intermediate data created by the 
+hvq2DecodeSP() function, and expands the decoded image data in a 
+buffer (in the expansion buffer specified in the hvq2DecodeSP() 
+function).  hvq2sp1 expands the data in 16bit RGBA format while 
+hvq2sp2 expands it in 32bit RGBA format.
+
+
+When the HVQ2 microcode is activated, the OSTask structure is 
+set as shown below:
+
+type   = M_HVQ2TASK;
+flags  = 0;
+ucode_boot  = (u64 *)rspbootTextStart;
+ucode_boot_size  = (int)rspbootTextEnd - (int)rspbootTextStart;
+ucode_data_size  = HVQ2_UCODE_DATA_SIZE;
+data_ptr    = Pointer to the HVQ2 parameters structure
+yield_data_ptr   = yield buffer pointer
+yield_data_size  = HVQ2_YIELD_DATA_SIZE;
+
+(When using hvq2sp1)
+ucode  = (u64 *)hvq2sp1TextStart;
+ucode_size       = (int)hvq2sp1TextEnd - (int)hvq2sp1TextStart;
+ucode_data       = (u64 *)hvq2sp1DataStart;
+
+(When using hvq2sp2)
+ucode            = (u64 *)hvq2sp2TextStart;
+ucode_size       = (int)hvq2sp2TextEnd - (int)hvq2sp2TextStart;
+ucode_data       = (u64 *)hvq2sp2DataStart;
+
+
+The above symbols are all defined in hvq2dec.h.
+
+The standard N64OS rspboot microcode is used for the boot 
+microcode.  Please include rspboot.o together with either 
+hvq2sp1.o or hvq2sp2.o in the spec file for mild.
+
+The value set in data_ptr is the pointer to the HVQ2Arg 
+structure, where parameters are set by hvq2DecodeSP().
+
+hvq2sp1 and hvq2sp2 both accept yields.  Please prepare a buffer 
+of HVQ2_YIELD_DATA_SIZE bytes for the yield buffer, and set its 
+address (must have a 64bit boundary) in yield_data_ptr.  
+
+After the OSTask structure is set as shown above, start the 
+microcode in the same way you would for graphics and audio.
+
+
+  (Example)
+
+          #include <ultra64.h>
+
+          /* write-back data cache */
+          osWritebackDCacheAll();
+
+          /* Invalidate expansion buffer cache */
+          osInvalDCache(outbuf, OUTBUFSIZE);
+
+          /* Activate the microcode */
+          osSpTaskStart(&hvqtask);
+
+          /* Wait for microcode to end processing  */
+          osRecvMesg(&rspMessageQ, NULL, OS_MESG_BLOCK);
+
+
+The above steps complete expansion of the image.
+
+
+Note: When the microcode is activated, cache write-backs must be 
+performed not only for the OSTask structure, but also for the 
+HVQ2 parameters structure (the HVQ2Arg structure) inherited from 
+hvq2DecodeSP() as well as for the intermediate data (the array of 
+HVQ2Info structures).  In addition, since the RSP writes to the 
+expansion buffer, the expansion buffer cache must be invalidated 
+on the CPU side.
+------------------------------------------------------------------

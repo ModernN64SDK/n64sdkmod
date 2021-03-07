@@ -22,6 +22,9 @@
 #ifndef _ULTRA64_H_
 #define _ULTRA64_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 #include <PR/ultratypes.h>
 #include <PR/rcp.h>
 #include <PR/os.h>
@@ -36,5 +39,8 @@
 #include <PR/ucode.h>
 #include <PR/ultraerror.h>
 #include <PR/ultralog.h>
+#ifdef __cplusplus
+}
+#endif
 
 #endif

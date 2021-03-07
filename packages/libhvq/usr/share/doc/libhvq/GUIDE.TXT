@@ -1,0 +1,278 @@
+------------------------------------------------------------------
+N64-HVQ2 library  version 1.2
+Programming Guide
+------------------------------------------------------------------
+
+
+This document explains the procedure for expanding HVQ2 
+compressed image data using the N64-HVQ2 library.
+
+
+Input Data Format
+=================
+
+Presently supports "HVQ2 1.0" format compressed image files.  
+These files can be created with the still image compression tool 
+hvq2enc (version 2.6 and later).
+
+The composition of the "HVQ2 1.0" file header is defined by the 
+HVQ2Header structure in lib/HVQ2File.h.  Here we explain the 
+primary members of the HVQ2Header structure:
+
+------------------------------------------------------------------
+Member			Explanation
+------------------------------------------------------------------
+file_version		"HVQ2 1.0" stored as an ASCIIZ character 
+			string
+file_size		File size (byte size). Must be an integer 
+			multiple of 4
+h_sampling_rate		Presently, always 2.
+v_sampling_rate		2 for 4:1:1 mode, 1 for 4:2:2 mode
+width			Image width (number of pixels)
+height			Image height (number of pixels)
+sp_packets		Size of intermediate data buffer needed 
+			for RSP version
+------------------------------------------------------------------
+
+
+Output Data Format
+==================
+
+Presently supports two formats: 16bit RGBA and 32bit RGBA.  Both 
+can be used as-is for textures and sprites, and displayed as-is 
+from a frame buffer.
+
+The 32bit RGBA format gives higher picture quality than the 16bit 
+RGBA format.
+
+
+Using the CPU Version Decoder
+=============================
+
+The CPU version of the decoder is easy to use.  For example, you 
+could call it in the following way:
+
+
+#include <ultra64.h>
+#include <hvq2dec.h>
+
+u32 *inbuf;	// HVQ2 compressed image data (32bit alignment)
+u16 *outbuf;	// Image output buffer (16bit alignment)
+u16 *workbuf;	// Decoder's work buffer (16bit alignment)
+
+hvq2Init1(0xff);
+hvq2Decode1(inbuf, outbuf, OUTBUF_WIDTH, workbuf);
+
+
+With this, the HVQ2 compressed image data stored in "inbuf" is 
+decoded, output to "outbuf" and expanded in 16bit RGBA format.
+
+OUTBUF_WIDTH, which is the third argument in the hvq2Decode1() 
+function, specifies the width (in pixels) of "outbuf" as viewed 
+as a 2D plane.  This must be at least as wide as the image.  For 
+example, to expand a small image within a   section of the frame 
+buffer, you would specify the address of the upper-left corner 
+of the section for "outbuf" and specify the width of the frame 
+buffer for OUTBUF_WIDTH.
+
+"workbuf" is a data region needed temporarily by the 
+hvq2Decode1() function.  The required size of this area is 
+determined from the size of the image to be decoded and the HVQ2 
+data compression format.  If the image width is W and the height 
+is H, then the required size would be (W/8) x (H/8) x 12bytes 
+for the 4:1:1 format, and (W/8) x (H/4) x 8bytes for the 4:2:2 
+format.  The image width, height and compression format can be 
+obtained from the HVQ file header in the following way:
+
+
+#include <HVQ2File.h>
+
+u32 width, height;
+u8 type;
+
+width  = ((HVQ2Header *)inbuf)->width;	// Image width
+height = ((HVQ2Header *)inbuf)->height;	// Image height
+type   = ((HVQ2Header *)inbuf)->v_sampling_rate;
+		// If 1, then 4:2:2
+		// If 2, then 4:1:1
+
+When using the hvq2Decode1() function, hvqInit1() only needs to 
+be called once at the start.  After that, hvq2Decode1() can be 
+used repeatedly.
+
+If you use hvq2Init2() & hvq2Decode2() instead of hvq2Init1() & 
+hvq2Decode1() you can obtain higher quality 32bit RGBA image 
+data.  The output buffer specified in hvq2Decode2() must have 
+32bit alignment.  Other than that, the arguments are the same as 
+for hvq2Decode1().
+
+
+Using the RSP Version Decoder
+=============================
+
+The RSP version of the decoder uses library functions to perform 
+the first half of the decoding process and create intermediate 
+data, which is then delivered to the RSP microcode for 
+completion of the remainder of the decoding.
+
+Like the CPU version of the decoder, you use the RSP version by 
+first calling the initialization function once at the start:
+
+
+#include <hvq2dec.h>
+
+hvq2InitSP(0xff);
+
+
+After that, to actually expand the image you call the library 
+function  hvq2DecodeSP():
+
+HVQ2Arg arg;
+HVQ2Info *infobuf;
+
+hvq2DecodeSP(inbuf, outbuf, OUTBUF_WIDTH, workbuf, &arg, infobuf);
+
+
+The arguments inpbuf, outbuf, OUTBUF_WIDTH, and workbuf are the 
+same here as for the CPU version.
+
+"arg" holds the parameters that hvq2DecodeSP() communicates to 
+the RSP microcode.  Nothing needs to be set in the application.  
+Simply define (reserve) one set of HVQ2Arg data and pass that 
+address to hvq2DecodeSP().
+
+"infobuf" is the starting address of the buffer holding the 
+intermediate data for the RSP microcode.  The necessary size of 
+this buffer is different for every set of compressed data.  The 
+size must be large enough for the array of HVQ2Info structures 
+equal to the number indicated by sp_packets in the HVQ2 header 
+file.  That is to say, the buffer must be 
+(sizeof(HVQ2Info) x sp_packets) bytes in size.
+
+After the CPU completes the decoding process (execution of the 
+hvq2DecodeSP() function), the RSP microcode is activated.  
+Please set the OSTask structure in the following way:
+
+#include <ultra64.h>
+#include <hvq2dec.h>
+
+u64 hvq_yieldbuf[HVQ_YIELD_DATA_SIZE/8];  // yield data buffer
+
+OSTask hvqtask;
+
+hvqtask.t.type             = M_HVQ2TASK;
+hvqtask.t.flags            = 0;
+hvqtask.t.ucode_boot       = (u64 *)rspbootTextStart;
+hvqtask.t.ucode_boot_size  = (int)rspbootTextEnd - (int)rspbootTextStart;
+hvqtask.t.ucode            = (u64 *)hvq2sp1TextStart;
+hvqtask.t.ucode_size       = (int)hvq2sp1TextEnd - (int)hvq2sp1TextStart;
+hvqtask.t.ucode_data       = (u64 *)hvq2sp1DataStart;
+hvqtask.t.ucode_data_size  = HVQ2_UCODE_DATA_SIZE;
+hvqtask.t.data_ptr         = (u64 *)&arg;
+hvqtask.t.yield_data_ptr   = hvq_yieldbuf;
+hvqtask.t.yield_data_size  = HVQ2_YIELD_DATA_SIZE;
+
+The standard N64OS rspboot microcode is used for the boot 
+microcode.  
+
+There are two kinds of HVQ microcode: the hvq2sp1 microcode, 
+which outputs image data in 16bit RBGA format, and the hvq2sp2 
+microcode, which outputs image data in 32bit RBGA format.  In 
+the above example, the hvq2sp1 microcode is activated.
+
+After the OSTask structure is set as shown above, start the 
+microcode the same way you would for graphics and audio.
+
+
+(Example)
+
+#include <ultra64.h>
+
+osWritebackDCacheAll();             // Data cache write-back
+osInvalDCache(outbuf, OUTBUFSIZE);  // Invalidate expansion 
+				    // buffer cache
+osSpTaskStart(&hvqtask);            // Activate the microcode
+
+/* Wait for the end of microcode processing  */
+osRecvMesg(&rspMessageQ, NULL, OS_MESG_BLOCK);
+
+
+This completes expansion of the image.
+
+Additionally: hvq2DecodeSP() converts the contents of inbuf and 
+stores it in arg and infobuf, so there is no longer any need for 
+the contents of inbuf or for workbuf once hvq2DecodeSP() is 
+finished.  Meanwhile, the HVQ2 microcode decodes the image from 
+the contents of arg and infobuf and outputs the image data to 
+outbuf, so there is no longer any need for the contents of arg 
+and infobuf once the microcode is finished.  If the necessary 
+input/output data is properly stored, hvq2DecodeSP() and the 
+microcode do not need to intercommunicate when running, and they 
+can each run independently.  It is also possible to run them in 
+parallel.
+
+
+
+A Summary of the Library Functions
+==================================
+
+-- hvq2Decode1()
+
+Decodes HVQ2 compressed image data and outputs 16bit RGBA format 
+image data to the buffer.  This function completes the entire 
+decoding process (no need for microcode).
+
+
+-- hvq2Decode2()
+
+Decodes HVQ2 compressed image data and outputs 32bit RGBA format 
+image data to the buffer.  This function completes the entire 
+decoding process (no need for microcode).
+
+
+-- hvq2DecodeSP()
+
+Decodes HVQ2 compressed image data and creates intermediate data 
+for the HVQ2 microcode.  Image decoding is completed by running 
+the HVQ2 microcode after this function is called.
+
+
+-- hvq2Init1()
+
+Only needs to be called once at the start when using 
+hvq2Decode1().
+
+
+-- hvq2Init2()
+
+Only needs to be called once at the start when using 
+hvq2Decode2().
+
+-- hvq2InitSP()
+
+Only needs to be called once at the start when using 
+hvq2DecodeSP().
+
+
+These functions are all included in libhvq2.a in the lib 
+directory.  For details about each function, see the 
+FUNCTIONS.TXT file.
+
+
+A Summary of the Microcode
+==========================
+
+-- hvq2sp1 (hvq2sp1.o)
+
+Decodes the image from the intermediate data created by the 
+hvq2DecodeSP() function, and outputs 16bit RGBA format image 
+data to the buffer.
+
+-- hvq2sp2 (hvq2sp2.o)
+
+Decodes the image from the intermediate data created by the 
+hvq2DecodeSP() function, and outputs 32bit RGBA format image 
+data to the buffer.
+
+
+These two sets of microcode are stored in the rspcode directory.
