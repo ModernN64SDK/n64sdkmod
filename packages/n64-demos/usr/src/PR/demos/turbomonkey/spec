@@ -1,0 +1,38 @@
+#include "block.h"
+
+/*
+ * ROM spec file
+ */
+beginseg
+	name "code"
+	flags BOOT OBJECT
+	entry boot
+	address 0x80000500
+	stack bootStack + STACKSIZE
+	include "codesegment.o"
+	include "/usr/lib/n64/PR/rspboot.o"
+	include "/usr/lib/n64/PR/gspFast3D.o"
+	include "/usr/lib/n64/PR/gspFast3D.dram.o"
+	include "/usr/lib/n64/PR/gspTurbo3D.o"
+endseg
+
+beginseg
+	name "zbuffer"
+	flags OBJECT
+        address 0x803da800
+	include "zbuffer.o"
+endseg
+
+beginseg
+	name "cfb"
+	flags OBJECT
+	address 0x801c0000
+	include "cfb.o"
+endseg
+
+beginwave
+	name "blocks"
+	include "code"
+	include "cfb"
+	include "zbuffer"
+endwave

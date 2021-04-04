@@ -1,0 +1,23 @@
+#include "nu64sys.h"
+
+beginseg
+	name "code"
+	flags BOOT OBJECT
+	entry boot
+	stack bootStack + STACKSIZE
+	include "codesegment.o"
+endseg
+
+beginseg
+	name "cfb"
+	flags OBJECT
+	after code
+	align 64
+	include "cfb.o"
+endseg
+
+beginwave
+	name "main"
+	include "code"
+	include "cfb"
+endwave

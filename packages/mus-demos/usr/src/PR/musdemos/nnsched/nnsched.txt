@@ -1,0 +1,188 @@
+==============================================================================
+
+		NINTENDO64 TECHNICAL SUPPORT CENTER 
+		
+		    NINTENDO64 SAMPLE PROGRAM 1
+
+		Copyright (C) 1997, NINTENDO Co., Ltd.
+
+==============================================================================
+
+
+The NTSC scheduler was specially developed for 'fast3D and 'fast3D_fifo' microcode.  The NTSC scheduler comprises a main thread, an audio thread and a graphics thread.  The functions of each of these three threads is described below.
+
+* Main thread
+	The scheduler task gets a retrace signal and NMI signal from the system and sends it to the client.
+
+* Audio thread
+	The audio task manages execution of a task to sound one frame's worth of audio data created by the audio manager upon receipt of a retrace signal.  The priority of the audio task is set higher than the priority of the graphic task, so it is executed in every frame.  If a graphic task is being executed on the RSP at the time that an audio task is started, the audio thread halts the graphic task with the osTaskYield function and restarts it after the audio task is done.
+
+* Graphics thread
+	Manages execution of the graphics task.  The graphics task gets the RSP display list and takes charge of the draw to the frame buffer.
+
+
+In order to realize these above functions, the order of priority of the threads in set as follows:
+
+			scheduler --> audio --> graphics
+
+The thread priority is defined in nnSched.h as follows:
+
+	#define NN_SC_PRI          120  /* scheduler */
+	#define NN_SC_AUDIO_PRI    110  /* audio */
+	#define NN_SC_GRAPHICS_PRI 100  /* graphics */
+
+
+--------------------------------------------------------------------------------
+nnScEventHandler()  -  Main thread (managing system events)
+
+
+The main thread receives system event in block mode (line 82) and broadcasts system event to every registered client.  Two types of events are handled here: a retrace event (line 85) and an NMI event (line 88).
+
+
+75 void
+  76 nnScEventHandler(NNSched *sc)
+  77 {
+  78   OSMesg msg = (OSMesg)0;
+  79 
+  80   while(1) {
+  81     /* receive event  */
+  82     osRecvMesg(&sc->retraceMQ, &msg, OS_MESG_BLOCK);
+  83 
+  84     switch ( (int)msg ) {
+  85     case VIDEO_MSG:		/* retrace signal process  */
+  86       nnScEventBroadcast( sc, &sc->retraceMsg );
+  87       break;
+  88     case PRE_NMI_MSG:		/*  NMI signal process */
+  89       nnScEventBroadcast( sc, &sc->prenmiMsg );
+  90       break;
+  91     }
+  92   }
+  93 }
+
+--------------------------------------------------------------------------------
+nnScExecuteAudio()  -   Executing an audio task
+
+
+In line 164, the audio thread is waiting for a  request for execution of an audio task from the application.  When an execution request comes, the first action (line 166) is to flush all cache lines and update the contents of memory.  The next step is to verify that a graphics task is not occupying the RSP.  If a graphics task is being executed, then line 174 tells the RSP task to yield, and the system waits for an RSP task done message.  The received message can have one of two meanings.  Line 178 checks whether the graphics task has actually yielded: TRUE means the graphics has temporarily halted, FALSE means the graphic task process was completed before the task yield process conducted by line 174.  Either way, at this point the RSP can now be used, and line 183 executes the audio task and line 184 waits for end.   As the final process, if a graphics task is yielding, it is restarted in line 188.  If  the graphics task was already done when the yield process was conducted (yieldFlag = 2), then the RSP task done message received in line 175 is  returned to line 192.  Once all processes are completed, line 194 informs the application that the audio task is done and then the thread waits for the next request.
+
+
+
+
+ 153 void
+ 154 nnScExecuteAudio(NNSched *sc)
+ 155 {
+ 156   OSMesg msg = (OSMesg)0;
+ 157   NNScTask *task = (NNScTask *)0;
+ 158   NNScTask *gfxTask = (NNScTask *)0;
+ 159   u32 yieldFlag = 0;
+ 160 
+ 161   while(1) {
+ 162 
+ 163     /* wait for request to execute audio task */
+ 164     osRecvMesg(&sc->audioRequestMQ, (OSMesg *)&task, OS_MESG_BLOCK);
+ 165 
+ 166     osWritebackDCacheAll();	/* flush cache */
+ 167   
+ 168     /* check current RSP status */
+ 169     yieldFlag = 0;
+ 170     gfxTask = sc->curGraphicsTask;
+ 171     if( gfxTask ) {
+ 172 
+ 173       /* wait for end (yield) of graphics task */
+ 174       osSpTaskYield();		/* yield task */
+ 175       osRecvMesg(&sc->rspMQ, &msg, OS_MESG_BLOCK);
+ 176 
+ 177       /* check is task actually yielding */
+ 178       if (osSpTaskYielded(&gfxTask->list))
+ 179 	        yieldFlag =1;
+ 180 	   else yieldFlag =2;
+ 181     }
+ 182     /* wait for end of RSP task */
+ 183     osSpTaskStart(&task->list);        /* execute task */
+ 184     osRecvMesg(&sc->rspMQ, &msg, OS_MESG_BLOCK);
+ 185 
+ 186     /* restart yielding graphics task */
+ 187     if( yieldFlag == 1) {
+ 188       osSpTaskStart(&gfxTask->list);    
+ 189     }
+ 190     else if( yieldFlag == 2 )
+ 191       osSendMesg(&sc->rspMQ, &msg, OS_MESG_BLOCK);
+ 192 
+ 193     /* inform thread which started audio task that task is done */
+ 194     osSendMesg(task->msgQ, task->msg, OS_MESG_BLOCK);
+ 195   }
+ 196 }
+
+--------------------------------------------------------------------------------
+nnScExecuteGraphics() --  Executing a graphics task
+
+
+In line 210, the graphics thread is waiting for a  request for execution of a graphics task from the application.  When an execution request comes, line 213 performs wait until frame buffer can be used.  Once frame buffer becomes available, the graphics task is executed.  Line 219 receives RSP task done message, and line 223 receives RDP process done message.
+
+
+ 201 void
+ 202 nnScExecuteGraphics(NNSched *sc)
+ 203 {
+ 204   OSMesg msg = (OSMesg)0;
+ 205   NNScTask *task;
+ 206 
+ 207   while(1) {
+ 208 
+ 209     /* wait for request to execute graphics task */
+ 210     osRecvMesg(&sc->graphicsRequestMQ, (OSMesg *)&task, OS_MESG_BLOCK);
+ 211 
+ 212     /* wait for frame buffer to become available for use */
+ 213     nnScWaitTaskReady(sc, task);
+ 214 
+ 215     osSpTaskStart(&task->list);        /*  execute task */
+ 216     sc->curGraphicsTask = task;
+ 217 
+ 218     /*  wait for end of RSP task */
+ 219     osRecvMesg(&sc->rspMQ, &msg, OS_MESG_BLOCK);
+ 220     sc->curGraphicsTask = (NNScTask *)0;
+ 221 
+ 222     /* wait for end of RDP task */
+ 223     osRecvMesg(&sc->rdpMQ, &msg, OS_MESG_BLOCK);
+ 224 
+ 225     /* invalidate video blackout first time only */
+ 226     if (sc->firstTime) {
+ 227       osViBlack(FALSE);
+ 228       sc->firstTime = 0;
+ 229     }
+ 230 
+ 231     /* specify next frame buffer to display */
+ 232     if ( task->flags & NN_SC_SWAPBUFFER )
+ 233       osViSwapBuffer(task->framebuffer);
+ 234 
+ 235     /* inform thread which started graphics task that task is done */
+ 236     osSendMesg(task->msgQ, task->msg, OS_MESG_BLOCK);
+ 237   }
+ 238 }
+
+
+--------------------------------------------------------------------------------
+nnScWaitTaskReady() -  Wait for frame buffer to become available for use
+
+
+This function in line 251 checks whether frame buffer is being used (either displaying current frame or set to display next frame) and, if so, waits in block mode for next update. In order to perform this process, line 252 prepares to receive a retrace signal as its own client by registering a wait message queue in the scheduler.  In line 253 the next retrace signal can be received, so in line 254 it deletes itself from the clients.  Here an idle loop is used so other threads cannot execute.
+
+
+
+ 243 void
+ 244 nnScWaitTaskReady(NNSched *sc, NNScTask *task)
+ 245 {
+ 246   OSMesg msg = (OSMesg)0;
+ 247   NNScClient client;
+ 248   void *fb = task->framebuffer;
+ 249 
+ 250   /* If frame buffer is not empty wait until next retrace */
+ 251   while( osViGetCurrentFramebuffer() == fb || osViGetNextFramebuffer() == fb ) {
+ 252     nnScAddClient( sc, &client, &sc->waitMQ );  
+ 253     osRecvMesg( &sc->waitMQ, &msg, OS_MESG_BLOCK );
+ 254     nnScRemoveClient( sc, &client );
+ 255   }
+ 256 } 
+
+
+
+

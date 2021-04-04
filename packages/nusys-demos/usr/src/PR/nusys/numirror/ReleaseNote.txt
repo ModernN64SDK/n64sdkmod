@@ -1,0 +1,61 @@
+							  7/7/1999
+------------------------------------------------------------------
+
+* om_game_main.c
+   When a game gets cleared, data->time_cnt, the amount of
+   time to return to the title, would not be initialized.
+   This variable gets initialized in the om_game_stage_clear
+   function now.
+
+* om_audio.c
+   Fixed some code in the 
+   om_stage_cleartime_check_and_music_tempo_change function; it 
+   had problems when NUALSTL's had not been defined.
+
+* expad.c
+   Removed dummycontrollerdata since it's been defined but
+   not been used.
+
+1999/7/16
+
+* Makefile.sgi*
+   Fixed so that warning messages would not come up. Also fixed
+   a problem where some files would not be deleted when using
+   make clean.
+
+* om_mychar.c
+   Removed some variables that are not currently used.
+
+* om_cornfrake.c
+   Added error routines so that the warning message for the return
+   value of om_cornfrake_display_check would not be displayed.
+
+
+1999/6/4
+
+* mainproc in main.c
+
+   Fixed it so a callback is not registered in every frame.
+   Created a new state called OM_STANDBY.  The process goes here  
+   when the state does not change.
+
+* mainproc in main.c
+
+   Deleted a wasteful local variable.
+   The local variable seq_no is no longer used.  Instead,  
+   om_program_seq_st.seq_no is used.
+
+* gfxWaitSync in gfx.c
+
+   Ended wasteful waiting for frames.
+   This function is called at every retrace, so we deleted the  
+   call to nuGfxRetraceWait(1)
+
+* Include/om.h
+
+   Macro definition for newly created state OM_STANDBY 
+
+* om_system_init in main.c
+
+   Debug console is now clearly ON.
+

@@ -8,7 +8,7 @@
 # Makefile for nustd library
 #
 
-include $(ROOT)/usr/include/make/PRdefs
+include /usr/include/n64/make/PRdefs
 
 TOPDIR	= .
 
@@ -16,9 +16,9 @@ TARGETS = libnustd.a
 LDIRT = libnustd.a libnustd_d.a
 
 
-LIB	= $(ROOT)/usr/lib
+LIB	= /usr/lib/n64
 LPR	= $(LIB)/PR
-INC	= $(ROOT)/usr/include
+INC	= /usr/include/n64
 AR	= mips-n64-ar
 
 CDEFINES = -D_LANGUAGE_C -D_MIPS_SZLONG=32 -D_MIPS_SZINT=32
@@ -134,7 +134,7 @@ INCLUDE	=
 
 default: $(TARGETS)
 
-include $(ROOT)/usr/include/make/commonrules
+include $(COMMONRULES)
 
 #.c.o:
 #	$(CC) -c -O -G 0 $(WFLAGS) $(COPTS) $(CDEFINES) $(INCLUDES) $<
@@ -148,15 +148,15 @@ include $(ROOT)/usr/include/make/commonrules
 help:
 	@echo make help ...... this HELP
 	@echo make deb ....... make _DEBUGis settled and compiled
-	@echo make clean ..... delete '.o' and $(LDIRT)
+	@echo mmake clean ..... delete '.o' and $(LDIRT)
 	@echo make clobber ... delete '.o', $(LDIRT) and '.n64'
 
 deb: clobber
 	$(MAKE) TARGETS=libnustd_d.a COPTS='-g -D_DEBUG_LIB -O'
 
 $(TARGETS):	$(OBJECTS) makefile
-		$(AR) r $(TARGETS) $(OBJECTS)
-		ranlib $(TARGETS)
+	$(AR) r $(TARGETS) $(OBJECTS)
+	ranlib $(TARGETS)
 
 install: $(TARGETS)
 	copy $(TARGETS) ..\lib

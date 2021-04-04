@@ -54,7 +54,7 @@ include $(COMMONRULES)
 	$(AS) -I. -I asm -Wa,-Iasm -o $@ $<
 
 $(CODESEGMENT):	$(CODEOBJECTS) Makefile
-		$(LD) -o $(CODESEGMENT) -r $(CODEOBJECTS) $(LDFLAGS)
+	$(LD) -o $(CODESEGMENT) -r $(CODEOBJECTS) $(LDFLAGS)
 
 $(BOOT_OBJ): $(BOOT)
 	$(OBJCOPY) -I binary -B mips -O elf32-bigmips $< $@

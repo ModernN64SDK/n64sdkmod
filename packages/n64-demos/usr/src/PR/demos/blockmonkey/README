@@ -1,0 +1,88 @@
+README file for blocks demo
+Author: Kevin Luster, kluster@sgi.com
+
+The point behind this application is to demonstrate the performance
+penalty for various features. Through controller manipulation, the
+user is able to toggle parameters such as antialiasing, Zbuffering and
+polygon count. A status bar at the bottom of the screen indicates what
+percent of a frame time the RCP processing overhead is for the
+generated display list.
+
+The actual variables which are controllable are printed in the xterm
+that gload was run in. Use the "G" button (underneath the controller)
+to toggle between different controller modes. The "START" button in
+any controller mode will reset all parameters to their intial default
+values.
+
+Some notes to keep in mind:
+
+The status bar at the bottom of the screen is broken up into units of
+1/60th of a second for NTSC (1/50th of a second for PAL). The status
+bar self-scales itself to cover a larger range of processing time. use
+"gload -a -s" to turn this feature off.
+
+The status bar measures *ONLY* the time that it takes for the rcp to
+process the display list (rsp->rdp), it does not include any of the
+setup time in the R4300 to construct the display list. Thus the frame
+update rate on the screen probably will not correspond to the frame
+compute time displayed by the status bar.
+
+The blocks are sorted with respect to Z, but only for their initial
+configuration. This enables the user to rotate the scene and
+investigate the impact of single Z read modify writes vs. multiple Z
+reads single Z write vs. multiple Z reads multiple Z writes.
+
+The number of triangles displayed for the cubes includes all triangles
+being generated. Keep in mind that since backface culling is enabled,
+only half of the block polygons make it through the entire rsp->rdp
+pipe, the other half are discarded early in rsp processing.
+
+Turning on global transformations causes more matrix transformations
+to be applied per primitive and thus impacts on performance. Turn off
+global transformations in order to decrease the transformation
+overhead.
+
+TIMER BAR DESCRIPTION:
+The timer bar looks different depending on which microcode is selected
+and how many tasks are being used to render the scene.  In all cases the
+black vertical tick marks indicate 60ths of a second.  As the time varies
+the timer bar's scale automatically changes and you will see more or fewer
+60th of a second intervals on the screen at a time.
+ 
+  xbus, 1 task:
+  BLUE: rsp time
+  GREEN: rdp time (simultaneous with rsp)
+
+  dram, 1 task:
+  BLUE: rsp time
+  LIGHT GREEN: rdp time if rendered in the following frame (2 frame latency)
+  DARK GREEN: rdp time if rendered following the rsp completion
+
+  fifo, 1 task
+  BLUE: rsp time
+  GREEN: rdp time (simultaneous with rsp)
+ 
+  xbus, more than 1 task:
+  BLUE: rsp time for all the tasks
+  RED LINES: mark the boundary of each individual task
+  GREEN: rdp time (simultaneous with rsp)
+
+  dram, more than 1 task:
+  BLUE (on top): rsp time if the rsp is run consecutively
+  BLUE (on bottom): rsp time if the rdp is run in between the rsp tasks
+  RED LINES (on blue): mark the boundary of each individual task
+  LIGHT GREEN: rdp time if rendered in the following frame (2 frame latency)
+  DARK GREEN: rdp time if rendered following each rsp task's completion
+  
+  fifo, 1 task
+  BLUE: rsp time
+  RED LINES: mark the boundary of each individual task
+  GREEN: rdp time (simultaneous with rsp)
+
+Number of tasks used to render the scene:  The default is to draw all 
+geometry in 1 task.  If 2 tasks are selected then the "planes" are drawn 
+in the first task and the "cubes" are drawn in the second.  If more than 
+2 tasks are selected then the "planes" are drawn in the first task and 
+the "cubes" are evenly distributed among the remaining tasks (the 
+rendering order stays the same). 
+

@@ -1,0 +1,31 @@
+#include "nu64sys.h"
+
+beginseg
+	name "code"
+	flags BOOT OBJECT
+	entry boot
+	stack bootStack + STACKSIZE
+	include "codesegment.o"
+	include "$(ROOT)/usr/lib/PR/rspboot.o"
+	include "$(ROOT)/usr/lib/PR/gspFast3D.o"
+endseg
+
+beginseg
+	name "readbuf"
+	flags OBJECT
+	address	0x80200000
+	include "readbuf.o"
+endseg
+beginseg
+	name "writebuf"
+	flags OBJECT
+	address	0x80300000
+	include "writebuf.o"
+endseg
+
+beginwave
+	name "main"
+	include "code"
+	include "readbuf"
+	include "writebuf"
+endwave

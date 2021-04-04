@@ -1,0 +1,36 @@
+#include "lines.h"
+
+/*
+ * ROM spec file
+ */
+beginseg
+	name "code"
+	flags BOOT OBJECT
+	entry boot
+	stack bootStack + STACKSIZE
+	include "codesegment.o"
+	include "/usr/lib/n64/PR/rspboot.o"
+	include "/usr/lib/n64/PR/gspL3DEX2.xbus.o"
+	include "/usr/lib/n64/PR/gspF3DEX2.xbus.o"
+endseg
+
+beginseg
+	name "cfb"
+	flags OBJECT
+	address 0x8018f800
+	include "cfb.o"
+endseg
+
+beginseg
+	name "zbuffer"
+	flags OBJECT
+	address 0x803da800
+	include "zbuffer.o"
+endseg
+
+beginwave
+	name "lines"
+	include "code"
+	include "cfb"
+	include "zbuffer"
+endwave

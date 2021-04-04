@@ -1,0 +1,43 @@
+#include "playseq.h"
+
+/*
+ * ROM spec file
+ */
+beginseg
+	name "code"
+	flags BOOT OBJECT
+	entry boot
+	stack bootStack + STACKSIZE
+	include "codesegment.o"
+	include "$(ROOT)/usr/lib/PR/rspboot.o"
+	include "$(ROOT)/usr/lib/PR/aspMain.o"
+endseg
+
+beginseg
+	name "midibank"
+	flags RAW
+	include "$(ROOT)/usr/lib/PR/soundbanks/GenMidiBank.ctl" 
+endseg
+
+beginseg
+	name "miditable"
+	flags RAW
+	include "$(ROOT)/usr/lib/PR/soundbanks/GenMidiBank.tbl" 
+endseg
+
+beginseg
+	name "seq"
+	flags RAW
+	include "$(ROOT)/usr/lib/PR/sequences/cmpship.sbk" 
+	/* include "$(ROOT)/usr/lib/PR/sequences/collection.sbk" */
+endseg
+
+beginwave
+	name "playseq"
+	include "code"
+	include "miditable"
+	include "midibank"
+	include "seq"
+endwave
+
+

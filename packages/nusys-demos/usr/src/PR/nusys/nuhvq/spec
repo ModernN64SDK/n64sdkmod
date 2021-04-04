@@ -1,0 +1,99 @@
+
+#include <nusys.h>
+
+/* Use all graphic microcode and audio microcode */
+beginseg
+	name	"code"
+	flags	BOOT OBJECT
+	entry 	nuBoot
+	address NU_SPEC_BOOT_ADDR
+    stack   NU_SPEC_BOOT_STACK
+	include "codesegment.o"
+        include "$(ROOT)/usr/lib/PR/rspboot.o"
+        include "$(ROOT)/usr/lib/PR/aspMain.o"
+        include "$(ROOT)/usr/lib/PR/n_aspMain.o"
+        include "$(ROOT)/usr/lib/PR/gspF3DEX2.fifo.o"
+        include "$(ROOT)/usr/lib/PR/gspL3DEX2.fifo.o"
+        include "$(ROOT)/usr/lib/PR/gspF3DEX2.Rej.fifo.o"
+        include "$(ROOT)/usr/lib/PR/gspF3DEX2.NoN.fifo.o"
+        include "$(ROOT)/usr/lib/PR/gspF3DLX2.Rej.fifo.o"
+        include "$(ROOT)/usr/lib/PR/gspS2DEX2.fifo.o"
+        include "../libhvq2/rspcode/hvq2sp1.o"
+endseg
+beginseg
+	name "hvqwork"
+	flags OBJECT
+	after "code"
+	include "hvqwork.o"
+endseg
+
+beginseg
+	name "hvqbuf"
+	flags OBJECT
+	after "hvqwork"
+	align 16
+	include "hvqbuf.o"
+endseg
+beginseg
+	name "hvqimg"
+	flags OBJECT
+	after "hvqbuf"
+	include "hvqimg.o"
+endseg
+
+
+beginseg
+	name	"hvqdata1"
+	flags	RAW
+	include "sample1.hvq"
+endseg
+beginseg
+	name	"hvqdata2"
+	flags	RAW
+	include "sample2.hvq"
+endseg
+/******************/
+/* MUSIC Segments */
+/******************/
+
+/* sample data - pointer bank */
+beginseg
+	name "pbank"
+	flags RAW
+	include "drumtest.ptr"
+endseg
+
+/* sample data - wave bank */
+beginseg
+	name "wbank"
+	flags RAW
+	include "drumtest.wbk"
+endseg
+
+/* tune data */
+beginseg
+	name "tune"
+	flags RAW
+	include "dt_song2.bin"
+endseg
+
+/* sfx data */
+beginseg
+	name "sfx"
+	flags RAW
+	include "dt_sfx1.bfx"
+endseg
+
+beginwave
+	name	"nuhvq"
+	include	"code"
+	include "hvqwork"
+	include "hvqbuf"
+	include "hvqimg"
+	include "hvqdata1"
+	include "hvqdata2"
+	include "pbank"
+	include "wbank"
+	include "tune"
+	include "sfx"
+endwave

@@ -1,0 +1,23 @@
+#include <nusys.h>
+
+/* code area */
+beginseg
+        name    "code"
+        flags   BOOT OBJECT
+        entry   nuBoot
+        address NU_SPEC_BOOT_ADDR
+        stack   NU_SPEC_BOOT_STACK
+        include "codesegment.o"
+        include "/usr/lib/n64/PR/rspboot.o"
+        include "/usr/lib/n64/PR/gspF3DEX2.fifo.o"
+        include "/usr/lib/n64/PR/gspL3DEX2.fifo.o"
+        include "/usr/lib/n64/PR/gspF3DEX2.Rej.fifo.o"
+        include "/usr/lib/n64/PR/gspF3DEX2.NoN.fifo.o"
+        include "/usr/lib/n64/PR/gspF3DLX2.Rej.fifo.o"
+        include "/usr/lib/n64/PR/gspS2DEX2.fifo.o"
+endseg
+
+beginwave
+        name    "64basic3"
+        include "code"
+endwave

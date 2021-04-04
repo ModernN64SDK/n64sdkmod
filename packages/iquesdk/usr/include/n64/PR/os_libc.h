@@ -80,15 +80,16 @@ extern "C" {
 
 /* byte string operations */
 
-/*#ifdef __i386__
+#ifdef __i386__
 extern void     bcopy(const void *, void *, unsigned);
 extern int      bcmp(const void *, const void *, unsigned);
 extern void     bzero(void *, unsigned);
-#else
+#endif
+#ifndef NEWLIB
 extern void     bcopy(const void *, void *, int);
 extern int      bcmp(const void *, const void *, int);
 extern void     bzero(void *, int);
-#endif*/
+#endif
 
 
 /* Printf */

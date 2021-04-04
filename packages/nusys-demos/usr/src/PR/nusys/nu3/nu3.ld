@@ -62,8 +62,6 @@ SECTIONS
 
       /* data */
       codesegment.o(.data*);
-      codesegment.o(COMMON);
-      codesegment.o(.scommon*);
       /usr/lib/n64/PR/rspboot.o(.data*);
       /usr/lib/n64/PR/aspMain.o(.data*);
       /usr/lib/n64/PR/n_aspMain.o(.data*);
@@ -80,6 +78,8 @@ SECTIONS
    END_SEG(code)
    BEGIN_NOLOAD(code)
    {
+      codesegment.o(COMMON);
+      codesegment.o(.scommon*);
       codesegment.o(.bss*);
       . = ALIGN(0x8);
    }

@@ -1,0 +1,76 @@
+#!smake -k
+#=======================================================================#
+#		NIFFprev						#
+#		Makefile						#
+#									#
+#		Copyright (C) 1997,1998, NINTENDO Co,Ltd.		#
+#									#
+#-----------------------------------------------------------------------#
+
+include /usr/include/n64/make/PRdefs
+
+# The directory which has include files and library of NuSYSTEM
+#
+N64KITDIR    = /usr/local/n64kit
+NUSYSINCDIR  = $(N64KITDIR)/nusys/include
+NUSYSLIBDIR  = $(N64KITDIR)/nusys/lib
+LIBDIR       = ./Lib
+USR_INC      = ./Include
+COMMON_INC   = ../Include
+
+APP =		prev
+
+OPTIMIZER =	-g
+
+TARGETS =	libreschar.a
+
+CODEFILES   =	_frake_walk.c \
+		_corngroup.c \
+		_goal.c \
+		_frake_shadow.c \
+		_frake_down.c \
+		_frake_kime.c \
+		_frake_select.c \
+		_pump.c
+
+#CODEOBJECTS =	$(CODEFILES:.c=.o) $(NUSYSLIBDIR)/nusys.o
+CODEOBJECTS =	$(CODEFILES:.c=.o)
+
+CODESEGMENT =	codesegment.o
+
+OBJECTS =	$(CODESEGMENT)
+
+LCDEFS =	-DF3DEX_GBI_2
+
+LCINCS =	-I$(NUSYSINCDIR) -I$(USRINCDIR) -I$(COMMON_INC) -I$(USR_INC)
+#LCOPTS =	-fullwarn -wlint,-f -woff 813,819,826,827,852 -non_shared -G 0
+LCOPTS =	-g -G 0 -non_shared
+#LDFLAGS =	$(MKDEPOPT) -nostdlib -L$(ROOT)/usr/lib -L$(NUSYSLIBDIR) -lnusys_d -lultra_d
+
+USR_LIB = -lreschar -lresbg -lnd
+
+LDIRT  =	$(APP)
+
+DEPENDFILE =    dependfile
+
+default:	$(TARGETS)
+
+#include $(COMMONRULES)
+
+$(TARGETS) : $(CODEOBJECTS)
+	ar -cr $(TARGETS) $(CODEOBJECTS)
+
+install :
+	cp libreschar.a ../Lib
+
+clean:
+	rm -rf *.o
+	rm -rf *.a
+
+# main.o : model.h
+# premodel.o : model.c model.h
+
+depend:
+	makedepnd -f$(DEPENDFILE) *.c
+
+# DO NOT DELETE

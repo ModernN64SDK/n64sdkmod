@@ -15,7 +15,7 @@ INC = /usr/include/n64
 NUAUDIOLIB = -lnualsgi_n -ln_audio
 
 LCDEFS =	-DNDEBUG -DF3DEX_GBI_2
-LDIRT  =  $(ELF) $(ASMOBJECTS) $(CP_LD_SCRIPT) $(MAP)
+LDIRT  =  $(ELF) $(ASMOBJECTS) $(CP_LD_SCRIPT) $(MAP) $(TARGETS)
 LCINCS =	-I. -I$(NUSYSINCDIR) -I/usr/include/n64/PR
 LCOPTS =	-G 0
 LDFLAGS =	$(MKDEPOPT) -L$(LIB) -L$(NUSYSLIBDIR) $(NUAUDIOLIB) -lnusys -lultra_rom -L$(N64_LIBGCCDIR) -lgcc
@@ -58,7 +58,7 @@ include $(COMMONRULES)
 	$(AS) -I. -I asm -Wa,-Iasm -o $@ $<
 
 $(CODESEGMENT):	$(CODEOBJECTS) Makefile
-		$(LD) -o $(CODESEGMENT) -r $(CODEOBJECTS) $(LDFLAGS)
+	$(LD) -o $(CODESEGMENT) -r $(CODEOBJECTS) $(LDFLAGS)
 
 $(BOOT_OBJ): $(BOOT)
 	$(OBJCOPY) -I binary -B mips -O elf32-bigmips $< $@

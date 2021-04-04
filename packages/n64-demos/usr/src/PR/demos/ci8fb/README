@@ -1,0 +1,41 @@
+README file for cifb demo
+Author: Rob Moore, rmoore@sgi.com
+
+This program is an example of how a 8-bit CI framebuffer would work.  It
+renders the image into an 8-bit buffer, then copies/converts the buffer
+to a 16-bit RGBA framebuffer.  The 8-bit buffer is actually located in the
+same memory as the final 16-bit framebuffer, so no extra memory is used.
+Also, any source (shading, texture, primitive colors) can be used for the
+index values, as long as the programmer is careful and designs the CI TLUT
+to support the type of rendering choosen.
+
+NOTE:  Presently, this application only works in nonAA, nonZB mode. It should
+be possible to render using Z-buffering, with a corresponding performance
+hit.
+
+This program prints data concerning the fill rate performance for triangles
+of different areas and aspect ratios.  This data can easily be plotted
+as a 3-D graph using gnuplot (see plot.gnu).
+
+The program works by increasing the number of triangles until a
+frame time is exceeded and then backing off slightly.  At this point
+the fill rate is recorded and the next type of triangle is drawn.
+The triangles are drawn at random locations, but within the 320x240
+screen so that clipped triangles are not a factor.
+
+To define the extents of the graph, define the constants (in fill.h):
+
+ASPECT_HI
+ASPECT_LO
+ASPECT_STEP
+
+AREA_HI
+AREA_LO
+AREA_STEP
+
+Note that only the RDP performance is measured.  There is a certain amount
+of DRAM bandwidth that is dedicated to loading the display list into the
+input FIFO of the RDP.  To get the most accurate answers, you should run
+with video blanked (-b option), and don't do frame buffer clears (-c option).
+
+

@@ -1,0 +1,79 @@
+/* 
+ *  N64-HVQM2 library   Sample program
+ * 
+ *  FILE : spec
+ * 
+ *  Copyright (C) 1998,1999 NINTENDO Co.,Ltd.
+ * 
+ */
+
+/* 1999-02-19 */
+
+#include "system.h"
+
+/*
+ * ROM spec file
+ */
+beginseg
+	name "code"
+	flags BOOT OBJECT
+	entry boot
+	stack bootStack + STACKSIZE
+	include "codesegment.o"
+	include "/usr/lib/n64/PR/rspboot.o"
+	include "/usr/lib/n64/hvqm/hvqm2sp1.o" /* HVQM2 microcode */
+endseg
+
+beginseg
+	name "hvqmdata"
+	flags RAW
+	include "sample.hvqm"	/* HVQM2 file */
+endseg
+
+beginseg
+	name "hvqmwork"
+	flags OBJECT
+	address 0x80040000
+	include "hvqmwork.o"
+endseg
+
+beginseg
+	name "adpcmbuf"
+	flags OBJECT
+	address 0x80080000	/* Must have 16byte alignment */
+	include "adpcmbuf.o"
+endseg
+
+beginseg
+	name "hvqbuf"
+	flags OBJECT
+	address 0x80100000	/*  Must have 16byte alignment */
+	include "hvqbuf.o"
+endseg
+
+beginseg
+	name "pcmbuf"
+	flags OBJECT
+	address 0x801c0000
+	include "pcmbuf.o"
+endseg
+
+beginseg
+	name "cfb"
+	flags OBJECT
+	address 0x80200000
+	include "cfb.o"
+endseg
+
+beginwave
+	name "sample"
+	include "code"
+	include "hvqmdata"
+	include "hvqmwork"
+	include "adpcmbuf"
+	include "hvqbuf"
+	include "pcmbuf"
+	include "cfb"
+endwave
+
+/* end */

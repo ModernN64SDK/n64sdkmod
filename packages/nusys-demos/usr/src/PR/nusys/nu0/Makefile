@@ -15,7 +15,7 @@ INC = /usr/include/n64
 LCDEFS =	-DNDEBUG -DF3DEX_GBI_2
 LCINCS =	-I. -I$(NUSYSINCDIR) -I/usr/include/n64/PR
 LCOPTS =	-G 0
-LDIRT =  $(ELF) $(ASMOBJECTS) $(CP_LD_SCRIPT) $(MAP)
+LDIRT =  $(ELF) $(ASMOBJECTS) $(CP_LD_SCRIPT) $(MAP) $(TARGETS)
 LDFLAGS = $(MKDEPOPT) -L$(LIB) -L$(NUSYSLIBDIR) -lnusys -lultra_rom -L$(N64_LIBGCCDIR) -lgcc
 
 OPTIMIZER =	-g
@@ -46,7 +46,7 @@ BOOT		= /usr/lib/n64/PR/bootcode/boot.6102
 
 BOOT_OBJ	= boot.6102.o
 
-OBJECTS =	$(CODESEGMENT) $(DATAOBJECTS) $(ASMOBJECTS) $(BOOT_OBJ)
+OBJECTS =	$(ASMOBJECTS) $(BOOT_OBJ) $(CODESEGMENT) $(DATAOBJECTS)
 
 default:        $(TARGETS)
 
@@ -56,7 +56,7 @@ include $(COMMONRULES)
 	$(AS) -I. -I asm -Wa,-Iasm -o $@ $<
 
 $(CODESEGMENT):	$(CODEOBJECTS) Makefile
-		$(LD) -o $(CODESEGMENT) -r $(CODEOBJECTS) $(LDFLAGS)
+	$(LD) -o $(CODESEGMENT) -r $(CODEOBJECTS) $(LDFLAGS)
 
 $(BOOT_OBJ): $(BOOT)
 	$(OBJCOPY) -I binary -B mips -O elf32-bigmips $< $@

@@ -1,0 +1,130 @@
+/*======================================================================*/
+/*		NIFFprev						*/
+/*		spec.n64s						*/
+/*									*/
+/*		Copyright (C) 1997, NINTENDO Co,Ltd.			*/
+/*									*/
+/*----------------------------------------------------------------------*/ 
+#include "nusys.h"
+
+#define NUALSTL
+
+beginseg
+        name    "code"
+        flags   BOOT OBJECT
+        entry   nuBoot
+        address NU_SPEC_BOOT_ADDR
+        stack   NU_SPEC_BOOT_STACK
+        maxsize 0x00264000
+        include "codesegment.o"
+        include "$(ROOT)/usr/lib/PR/rspboot.o"
+        include "$(ROOT)/usr/lib/PR/aspMain.o"
+        include "$(ROOT)/usr/lib/PR/n_aspMain.o"
+	include "$(ROOT)/usr/lib/PR/gspF3DEX2.fifo.o"
+	include "$(ROOT)/usr/lib/PR/gspL3DEX2.fifo.o"
+	include "$(ROOT)/usr/lib/PR/gspF3DEX2.Rej.fifo.o"
+        include "$(ROOT)/usr/lib/PR/gspF3DEX2.NoN.fifo.o"
+        include "$(ROOT)/usr/lib/PR/gspF3DLX2.Rej.fifo.o"
+	include "$(ROOT)/usr/lib/PR/gspS2DEX2.fifo.o"
+endseg
+
+
+
+
+
+
+beginseg
+	name	"select_bg"
+	flags	OBJECT
+	after	"code"
+	include "Data/sp_select_bg.o"
+endseg
+
+beginseg
+	name	"opimgs"
+	flags	OBJECT
+	after	"select_bg"
+	include "Data/opening_imgs.o"
+endseg
+
+beginseg
+	name	"logoimgs"
+	flags	OBJECT
+	after	"opimgs"
+	include "Data/logo_imgs.o"
+endseg
+
+beginseg
+	name	"opening"
+	flags	OBJECT
+	after	"logoimgs"
+	include "Data/opening.o"
+endseg
+
+beginseg
+	name	"mem_heap"
+	flags	OBJECT
+	after	"opening"
+	include "Data/om_mem_heap.o"
+endseg
+
+
+/* ---------- STL version ------------------ */
+/* sample data - pointer bank */
+beginseg
+	name "pbank"
+	flags RAW
+	include "Win_Audio_Data2/sample1.ptr"
+endseg
+
+/* sample data - wave bank */
+beginseg
+	name "wbank"
+	flags RAW
+	include "Win_Audio_Data2/sample1.wbk"
+endseg
+
+/* game_main_music data */
+beginseg
+	name "game_main_music"
+	flags RAW
+	include "Win_Audio_Data2/sample1.bin"
+endseg
+
+/* select_music data */
+beginseg
+	name "select_music"
+	flags RAW
+	include "Win_Audio_Data2/select.bin"
+endseg
+
+/* title_music data */
+beginseg
+	name "title_music"
+	flags RAW
+	include "Win_Audio_Data2/title.bin"
+endseg
+
+/* title_music data */
+beginseg
+	name "sfxbank"
+	flags RAW
+	include "Win_Audio_Data2/sample1.bfx"
+endseg
+
+beginwave
+	name	"overlay"
+	include "code"
+	include "select_bg"
+	include "opimgs"
+	include "logoimgs"
+	include "opening"
+	include "mem_heap"
+	include "pbank"
+	include "wbank"
+	include "game_main_music"
+	include "select_music"
+	include "title_music"
+	include "sfxbank"
+endwave
+

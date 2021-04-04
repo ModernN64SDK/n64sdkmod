@@ -1,0 +1,63 @@
+#include "boot.h"
+
+/*
+ * ROM spec file
+ */
+beginseg
+	name "code"
+	flags BOOT OBJECT
+	entry boot
+	stack bootStack + STACKSIZE
+	include "codesegment.o"
+	include "/usr/lib/n64/PR/rspboot.o"
+	include "/usr/lib/n64/PR/gspL3DEX2.xbus.o"
+	include "/usr/lib/n64/PR/gspL3DEX2.fifo.o"
+	include "/usr/lib/n64/PR/gspF3DEX2.xbus.o"
+	include "/usr/lib/n64/PR/gspF3DEX2.fifo.o"
+	include "/usr/lib/n64/PR/gspF3DEX2.NoN.xbus.o"
+	include "/usr/lib/n64/PR/gspF3DEX2.NoN.fifo.o"
+endseg
+
+beginseg
+	name "zbuffer"
+	flags OBJECT
+	after "code"
+	align 64
+	include "zbuffer.o"
+endseg
+
+/*
+ * Color Frame Buffer 
+ */
+beginseg
+	name "cfb"
+	flags OBJECT
+	address 0x803b5000
+	include "cfb.o"
+endseg
+beginseg
+	name "rsp_cfb"
+	flags OBJECT
+	number CFB_SEGMENT
+	include "rsp_cfb.o"
+endseg
+
+/*
+ * Static Segment
+ */
+beginseg
+	name "static"
+	flags OBJECT
+	number STATIC_SEGMENT
+	include "gfxinit.o"
+	include "gfxstatic.o"
+endseg
+
+beginwave
+	name "game"
+	include "code"
+	include "static"
+	include "cfb"
+	include "rsp_cfb"
+	include "zbuffer"
+endwave

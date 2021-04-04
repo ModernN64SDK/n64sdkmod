@@ -23,10 +23,11 @@ NUAUDIOLIB = -lnualsgi
 endif
 
 LCDEFS =	-DNDEBUG -DF3DEX_GBI_2
-LDIRT  =  $(ELF) $(ASMOBJECTS) $(CP_LD_SCRIPT) $(MAP)
 LCINCS =	-I. -I$(NUSYSINCDIR) -I/usr/include/n64/PR
 LCOPTS =	-G 0
 LDFLAGS =	$(MKDEPOPT) -L$(LIB) -L$(NUSYSLIBDIR) $(NUAUDIOLIB) -lnusys -lultra_rom -L$(N64_LIBGCCDIR) -lgcc
+
+LDIRT  =  $(ELF) $(ASMOBJECTS) $(CP_LD_SCRIPT) $(MAP) $(TARGETS)
 
 OPTIMIZER =	-g
 
@@ -42,6 +43,10 @@ ASMFILES	= asm/entry.s asm/rom_header.s sound_data.s
 
 ASMOBJECTS	= $(ASMFILES:.s=.o)
 
+BOOT		= /usr/lib/n64/PR/bootcode/boot.6102
+
+BOOT_OBJ	= boot.6102.o
+
 CODEFILES   = 	main.c stage00.c graphic.c gfxinit.c
 
 CODEOBJECTS =	$(CODEFILES:.c=.o)  $(NUSYSLIBDIR)/nusys.o
@@ -52,11 +57,7 @@ DATAOBJECTS =	$(DATAFILES:.c=.o)
 
 CODESEGMENT =	codesegment.o
 
-BOOT		= /usr/lib/n64/PR/bootcode/boot.6102
-
-BOOT_OBJ	= boot.6102.o
-
-OBJECTS =	$(CODESEGMENT) $(DATAOBJECTS) $(ASMOBJECTS) $(BOOT_OBJ) 
+OBJECTS =	$(ASMOBJECTS) $(BOOT_OBJ) $(CODESEGMENT) $(DATAOBJECTS)
 
 default:        $(TARGETS)
 
@@ -66,7 +67,7 @@ include $(COMMONRULES)
 	$(AS) -I. -I asm -Wa,-Iasm -o $@ $<
 
 $(CODESEGMENT):	$(CODEOBJECTS) Makefile
-		$(LD) -o $(CODESEGMENT) -r $(CODEOBJECTS) $(LDFLAGS)
+	$(LD) -o $(CODESEGMENT) -r $(CODEOBJECTS) $(LDFLAGS)
 
 $(BOOT_OBJ): $(BOOT)
 	$(OBJCOPY) -I binary -B mips -O elf32-bigmips $< $@
