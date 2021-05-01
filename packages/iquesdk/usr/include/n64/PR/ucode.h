@@ -165,6 +165,9 @@ extern long long int gspF3DLX2_Rej_fifoDataStart[],gspF3DLX2_Rej_fifoDataEnd[];
 extern long long int gspL3DEX2_fifoTextStart[],    gspL3DEX2_fifoTextEnd[];
 extern long long int gspL3DEX2_fifoDataStart[],    gspL3DEX2_fifoDataEnd[];
 
+extern long long int gspF3DEX2_PosLight_fifoTextStart[],    gspF3DEX2_PosLight_fifoTextEnd[];
+extern long long int gspF3DEX2_PosLight_fifoDataStart[],    gspF3DEX2_PosLight_fifoDataEnd[];
+
 /* XBUS version */
 extern long long int gspF3DEX2_xbusTextStart[],    gspF3DEX2_xbusTextEnd[];
 extern long long int gspF3DEX2_xbusDataStart[],    gspF3DEX2_xbusDataEnd[];
@@ -176,6 +179,23 @@ extern long long int gspF3DLX2_Rej_xbusTextStart[],gspF3DLX2_Rej_xbusTextEnd[];
 extern long long int gspF3DLX2_Rej_xbusDataStart[],gspF3DLX2_Rej_xbusDataEnd[];
 extern long long int gspL3DEX2_xbusTextStart[],    gspL3DEX2_xbusTextEnd[];
 extern long long int gspL3DEX2_xbusDataStart[],    gspL3DEX2_xbusDataEnd[];
+
+
+/*========== F3DZEX2/F3DZEX2.NoN/L3DZEX2 ==========*/
+extern long long int gspF3DZEX2_PosLight_fifoTextStart[], gspF3DZEX2_PosLight_fifoTextEnd[];
+extern long long int gspF3DZEX2_PosLight_fifoDataStart[], gspF3DZEX2_PosLight_fifoDataEnd[];
+extern long long int gspF3DZEX2_PosLight_xbusTextStart[], gspF3DZEX2_PosLight_xbusTextEnd[];
+extern long long int gspF3DZEX2_PosLight_xbusDataStart[], gspF3DZEX2_PosLight_xbusDataEnd[];
+
+extern long long int gspF3DZEX2_NoN_PosLight_fifoTextStart[], gspF3DZEX2_NoN_PosLight_fifoTextEnd[];
+extern long long int gspF3DZEX2_NoN_PosLight_fifoDataStart[], gspF3DZEX2_NoN_PosLight_fifoDataEnd[];
+extern long long int gspF3DZEX2_NoN_PosLight_xbusTextStart[], gspF3DZEX2_NoN_PosLight_xbusTextEnd[];
+extern long long int gspF3DZEX2_NoN_PosLight_xbusDataStart[], gspF3DZEX2_NoN_PosLight_xbusDataEnd[];
+
+extern long long int gspL3DZEX2_PosLight_fifoTextStart[], gspL3DZEX2_PosLight_fifoTextEnd[];
+extern long long int gspL3DZEX2_PosLight_fifoDataStart[], gspL3DZEX2_PosLight_fifoDataEnd[];
+extern long long int gspL3DZEX2_PosLight_xbusTextStart[], gspL3DZEX2_PosLight_xbusTextEnd[];
+extern long long int gspL3DZEX2_PosLight_xbusDataStart[], gspL3DZEX2_PosLight_xbusDataEnd[];
 
 /**************************************************************************
  *
