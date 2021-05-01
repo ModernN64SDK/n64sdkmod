@@ -23,7 +23,7 @@ mkdir -p debs
 sudo chown -R root:root ./packages
 
 case $choice in
-   "all") dew_it spicy makemask iquesdk n64sdk u64assets root-compatibility-environment rsp-tools vadpcm-tools n64-conv-tools n64graphics libkmc libhvq libhvqm libnusys libnustd libnaudio libmus n64manual n64-demos nusys-demos kantan-demos mus-demos tutorial-demos n64sdk-common;;
+   "all") dew_it spicy makemask iquesdk n64sdk u64assets root-compatibility-environment rsp-tools vadpcm-tools n64-conv-tools n64graphics libhvq libhvqm libnusys libnustd libnaudio libmus n64manual n64-demos nusys-demos kantan-demos mus-demos tutorial-demos n64sdk-common;;
    "spicy") dew_it spicy;;
    "makemask") dew_it makemask;;
    "ique") dew_it iquesdk;;
@@ -35,7 +35,6 @@ case $choice in
    "pcm") dew_it vadpcm-tools;;
    "conv") dew_it n64-conv-tools;;
    "n64gfx") dew_it n64graphics;;
-   "kmc") dew_it libkmc;;
    "hvq") dew_it libhvq;;
    "hvqm") dew_it libhvqm;;
    "naudio") dew_it libnaudio;;
