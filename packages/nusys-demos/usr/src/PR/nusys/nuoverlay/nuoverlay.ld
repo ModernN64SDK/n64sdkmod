@@ -93,7 +93,7 @@ SECTIONS
       _stage00SegmentDataStart = .;
       stage00.o(.data);
       _stage00SegmentDataEnd = .;
-      stage00.o(.rodata);
+      stage00.o(.rodata*);
    }
    END_SEG(stage00)
    BEGIN_NOLOAD(stage00)
@@ -113,7 +113,7 @@ SECTIONS
       _stage01SegmentDataStart = .;
       stage01.o(.data);
       _stage01SegmentDataEnd = .;
-      stage01.o(.rodata);
+      stage01.o(.rodata*);
    }
    END_SEG(stage01)
    BEGIN_NOLOAD(stage01)
