@@ -1,0 +1,52 @@
+#include "def.h"
+
+beginseg
+	name "code"
+	flags BOOT OBJECT
+	entry boot
+	stack bootStack + STACKSIZE
+	include "codesegment.o"
+	include "$(ROOT)/usr/lib/PR/rspboot.o"
+	include "$(ROOT)/usr/lib/PR/aspMain.o"
+	include "$(ROOT)/usr/lib/PR/gspF3DEX.fifo.o"
+	include "$(ROOT)/usr/lib/PR/gspF3DLX.fifo.o"
+	include "$(ROOT)/usr/lib/PR/gspF3DLX.Rej.fifo.o"
+	include "$(ROOT)/usr/lib/PR/gspF3DLP.Rej.fifo.o"
+	include "$(ROOT)/usr/lib/PR/gspL3DEX.fifo.o"
+	include "$(ROOT)/usr/lib/PR/gspLine3D.fifo.o"
+endseg
+
+beginseg
+	name "cfb"
+	flags OBJECT
+	address 0x8036a000
+	include "cfb.o"
+endseg
+
+beginseg
+	name "zbuf"
+	flags OBJECT
+	address	0x802da800
+	include	"zbuf.o"
+endseg
+
+beginseg
+	name "sfxbank"
+	flags RAW
+	include "$(ROOT)/usr/lib/PR/soundbanks/sfx.ctl"
+endseg
+
+beginseg
+	name "sfxtable"
+	flags RAW
+	include "$(ROOT)/usr/lib/PR/soundbanks/sfx.tbl"
+endseg
+
+beginwave
+	name "effect"
+	include "code"
+	include "sfxbank"
+	include "sfxtable"
+	include	"zbuf"
+	include "cfb"
+endwave
