@@ -1,20 +1,24 @@
 OUTPUT_ARCH (mips)
 
-#define BEGIN_SEG(name, addr) \ // Starts a segment
+/* Starts a segment */
+#define BEGIN_SEG(name, addr) \
     _##name##SegmentStart = ADDR(.name); \
     _##name##SegmentRomStart = __romPos; \
     .name addr : AT(__romPos)
 
-#define END_SEG(name) \ // Ends a segment
+/* Ends a segment */
+#define END_SEG(name) \
     _##name##SegmentEnd = ADDR(.name) + SIZEOF(.name); \
     _##name##SegmentRomEnd = __romPos + SIZEOF(.name); \
     __romPos += SIZEOF(.name);
 
-#define BEGIN_NOLOAD(name) \ // Starts a noload segment which is intended to contain variables which do not have data yet.
+/* Starts a noload segment which is intended to contain variables which do not have data yet. */
+#define BEGIN_NOLOAD(name) \
     _##name##SegmentBssStart = ADDR(.name.noload); \
     .name.noload (NOLOAD) :
 
-#define END_NOLOAD(name) \ // Ends a noload segment
+/* Ends a noload segment */
+#define END_NOLOAD(name) \
     _##name##SegmentBssEnd = ADDR(.name.noload) + SIZEOF(.name.noload); \
     _##name##SegmentBssSize = SIZEOF(.name.noload);
 
@@ -24,8 +28,8 @@ SECTIONS
 
    BEGIN_SEG(boot, 0x04000000)
    {
-      BUILD_DIR/asm/rom_header.o(.text); // ROM Header
-      BUILD_DIR/boot.6102.o(.data); // CIC 6102 bootcode
+      BUILD_DIR/asm/rom_header.o(.text); /* ROM Header */
+      BUILD_DIR/boot.6102.o(.data); /* CIC 6102 bootcode */
    }
    END_SEG(boot)
 
