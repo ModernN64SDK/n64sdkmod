@@ -1,0 +1,11 @@
+This is a modified version of lkscript/allinone that uses Clang/LLVM as the main compiler, instead of GCC.
+Note that I am not 100% sure of clang's compatibility with the N64 in general, though
+I have not encountered any big issues so far.
+
+One glaring quirk is that clang does not support using the o32 ABI with -mips3, so as a result clang's output uses -mips2.
+
+Q: "Why are you requiring clang-12?"
+
+A: Current version of clang on Ubuntu 20.04 (clang-10) has a weird quirk where buffers go in places other than .bss
+clang-12 seems to behave a lot better, so that's what I'm using in this demo. If you prefer to use a different version, 
+or your setup differs from mine, feel free to change the CC line in the makefile

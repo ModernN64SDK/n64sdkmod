@@ -1,15 +1,12 @@
 # The bane of Crash's existance.
 
-debs:
+debs: web-folders
 	bash gen_deb.sh all
 
 web-folders:
 	mkdir -p web web/docs web/apt
 
-docs: web-folders
-	markdown DOCKER.md > web/docs/docker.html
-
-upload: docs debs
+upload: debs
 	cp debs/* web/apt
 
 # Always explicitly specify what you're deleting with rm -rf
