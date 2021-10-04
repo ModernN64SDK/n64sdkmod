@@ -1,73 +1,145 @@
-#!smake -k
-# --------------------------------------------------------------------
-#        Copyright (C) 1997,1998 Nintendo. (Originated by SGI)
-#
-#        $RCSfile: Makefile,v $
-#        $Revision: 1.9 $
-#        $Date: 1999/04/02 10:10:48 $
-# --------------------------------------------------------------------
-#
-# Makefile for game template
-#
-#
+# Makefile to build ground
 
-include /usr/include/n64/make/PRdefs
+TARGET_STRING := ground
+TARGET := $(TARGET_STRING)
 
-OPTIMIZER       = -O2
-LCDEFS          = -D_FINALROM -DNDEBUG -DF3DEX_GBI_2
-N64LIB          = -lultra_rom
+# Preprocessor definitions
+DEFINES := _FINALROM=1 NDEBUG=1 F3DEX_GBI_2=1
 
-ELF		= ground.elf
-TARGETS	= ground.z64
-MAP		= ground.map
+SRC_DIRS :=
 
-LD_SCRIPT	= ground.ld
-CP_LD_SCRIPT	= ground_cp.ld
+# Whether to hide commands or not
+VERBOSE ?= 0
+ifeq ($(VERBOSE),0)
+  V := @
+endif
 
-ASMFILES    =	asm/entry.s asm/rom_header.s
+# Whether to colorize build messages
+COLOR ?= 1
 
-ASMOBJECTS  =	$(ASMFILES:.s=.o)
+#==============================================================================#
+# Target Executable and Sources                                                #
+#==============================================================================#
+# BUILD_DIR is the location where all build artifacts are placed
+BUILD_DIR := build
+ROM            := $(BUILD_DIR)/$(TARGET_STRING).z64
+ELF            := $(BUILD_DIR)/$(TARGET_STRING).elf
+LD_SCRIPT      := $(TARGET_STRING).ld
+BOOT		:= /usr/lib/n64/PR/bootcode/boot.6102
+BOOT_OBJ	:= $(BUILD_DIR)/boot.6102.o
 
-CODEFILES   =	boot.c game.c controller.c font.c dram_stack.c
+# Directories containing source files
+SRC_DIRS += src src/buffers src/main assets asm
 
-CODEOBJECTS =	$(CODEFILES:.c=.o)
+C_FILES           := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.c))
+S_FILES           := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.s))
 
-DATAFILES   =	gfxinit.c gfxstatic.c texture.c cfb.c rsp_cfb.c zbuffer.c
+# Object files
+O_FILES := $(foreach file,$(C_FILES),$(BUILD_DIR)/$(file:.c=.o)) \
+           $(foreach file,$(S_FILES),$(BUILD_DIR)/$(file:.s=.o)) \
+		   $(BOOT_OBJ)
 
-DATAOBJECTS =	$(DATAFILES:.c=.o)
+# Automatic dependency files
+DEP_FILES := $(O_FILES:.o=.d) $(ASM_O_FILES:.o=.d)  $(BUILD_DIR)/$(LD_SCRIPT).d
 
-BOOT		= /usr/lib/n64/PR/bootcode/boot.6102
+#==============================================================================#
+# Compiler Options                                                             #
+#==============================================================================#
 
-BOOT_OBJ	= boot.6102.o
+AS        := mips-n64-as
+CC        := mips-n64-gcc
+CPP       := cpp
+LD        := mips-n64-ld
+AR        := mips-n64-ar
+OBJDUMP   := mips-n64-objdump
+OBJCOPY   := mips-n64-objcopy
 
-CODESEGMENT = codesegment.o
+INCLUDE_DIRS += /usr/include/n64 include $(BUILD_DIR) $(BUILD_DIR)/include src .
 
-OBJECTS =	$(CODESEGMENT) $(DATAOBJECTS) $(ASMOBJECTS) $(BOOT_OBJ)
+C_DEFINES := $(foreach d,$(DEFINES),-D$(d))
+DEF_INC_CFLAGS := $(foreach i,$(INCLUDE_DIRS),-I$(i)) $(C_DEFINES)
 
-LCDEFS +=	$(HW_FLAGS)
-LCINCS =	-I.
-LCOPTS =	-G 0
-LDFLAGS =	-L/usr/lib/n64 $(N64LIB) -L$(N64_LIBGCCDIR) -lgcc
+CFLAGS = -G 0 -O2 -g -mabi=32 -ffreestanding -mfix4300 $(DEF_INC_CFLAGS)
+ASFLAGS     := -march=vr4300 -mabi=32 $(foreach i,$(INCLUDE_DIRS),-I$(i)) $(foreach d,$(DEFINES),--defsym $(d))
 
-LDIRT  =	$(ELF) $(CP_LD_SCRIPT) $(MAP) $(ASMOBJECTS) $(TARGETS)
+# C preprocessor flags
+CPPFLAGS := -P -Wno-trigraphs $(DEF_INC_CFLAGS)
 
-default:	$(TARGETS)
+# tools
+PRINT = printf
 
-include $(COMMONRULES)
+ifeq ($(COLOR),1)
+NO_COL  := \033[0m
+RED     := \033[0;31m
+GREEN   := \033[0;32m
+BLUE    := \033[0;34m
+YELLOW  := \033[0;33m
+BLINK   := \033[33;5m
+endif
 
-.s.o:
-	$(AS) -Wa,-Iasm -o $@ $<
+# Common build print status function
+define print
+  @$(PRINT) "$(GREEN)$(1) $(YELLOW)$(2)$(GREEN) -> $(BLUE)$(3)$(NO_COL)\n"
+endef
 
-$(CODESEGMENT):	$(CODEOBJECTS)
-	$(LD) -o $(CODESEGMENT) -r $(CODEOBJECTS) $(LDFLAGS)
+#==============================================================================#
+# Main Targets                                                                 #
+#==============================================================================#
+
+# Default target
+default: $(ROM)
+
+clean:
+	$(RM) -r $(BUILD_DIR)
+
+ALL_DIRS := $(BUILD_DIR) $(addprefix $(BUILD_DIR)/,$(SRC_DIRS))
+
+# Make sure build directory exists before compiling anything
+DUMMY != mkdir -p $(ALL_DIRS)
+
+#==============================================================================#
+# Compilation Recipes                                                          #
+#==============================================================================#
+
+# Compile C code
+$(BUILD_DIR)/%.o: %.c
+	$(call print,Compiling:,$<,$@)
+	$(V)$(CC) -c $(CFLAGS) -MMD -MF $(BUILD_DIR)/$*.d  -o $@ $<
+$(BUILD_DIR)/%.o: $(BUILD_DIR)/%.c
+	$(call print,Compiling:,$<,$@)
+	$(V)$(CC) -c $(CFLAGS) -MMD -MF $(BUILD_DIR)/$*.d  -o $@ $<
+
+# Assemble assembly code
+$(BUILD_DIR)/%.o: %.s
+	$(call print,Assembling:,$<,$@)
+	$(V)$(CC) -c $(CFLAGS) $(foreach i,$(INCLUDE_DIRS),-Wa,-I$(i)) -x assembler-with-cpp -MMD -MF $(BUILD_DIR)/$*.d  -o $@ $<
+
+# Run linker script through the C preprocessor
+$(BUILD_DIR)/$(LD_SCRIPT): $(LD_SCRIPT)
+	$(call print,Preprocessing linker script:,$<,$@)
+	$(V)$(CPP) $(CPPFLAGS) -DBUILD_DIR=$(BUILD_DIR) -MMD -MP -MT $@ -MF $@.d -o $@ $<
 
 $(BOOT_OBJ): $(BOOT)
-	$(OBJCOPY) -I binary -B mips -O elf32-bigmips $< $@
+	$(V)$(OBJCOPY) -I binary -B mips -O elf32-bigmips $< $@
 
-$(CP_LD_SCRIPT): $(LD_SCRIPT)
-	cpp -P -Wno-trigraphs -o $@ $<
+# Link final ELF file
+$(ELF): $(O_FILES) $(BUILD_DIR)/$(LD_SCRIPT)
+	@$(PRINT) "$(GREEN)Linking ELF file:  $(BLUE)$@ $(NO_COL)\n"
+	$(V)$(LD) -L $(BUILD_DIR) -T $(BUILD_DIR)/$(LD_SCRIPT) -Map $(BUILD_DIR)/$(TARGET).map --no-check-sections -o $@ $(O_FILES) -L/usr/lib/n64 -lultra_rom -L$(N64_LIBGCCDIR) -lgcc
 
-$(TARGETS): $(OBJECTS) $(CP_LD_SCRIPT)
-	$(LD) -L. -T $(CP_LD_SCRIPT) -Map $(MAP) -o $(ELF) 
-	$(OBJCOPY) --pad-to=0x100000 --gap-fill=0xFF $(ELF) $(TARGETS) -O binary
-	makemask $(TARGETS)
+# Build ROM
+$(ROM): $(ELF)
+	$(call print,Building ROM:,$<,$@)
+	$(V)$(OBJCOPY) --pad-to=0x100000 --gap-fill=0xFF $< $@ -O binary
+	$(V)makemask $@
+
+.PHONY: clean default
+# with no prerequisites, .SECONDARY causes no intermediate target to be removed
+.SECONDARY:
+
+# Remove built-in rules, to improve performance
+MAKEFLAGS += --no-builtin-rules
+
+-include $(DEP_FILES)
+
+print-% : ; $(info $* is a $(flavor $*) variable set to [$($*)]) @true

@@ -1,5 +1,6 @@
 FROM ubuntu:20.04
 
+ENV PATH=/etc/n64/usr/sbin:${PATH}
 ENV PATH=/opt/crashsdk/bin:${PATH}
 ENV ROOT=/etc/n64
 ENV N64_LIBGCCDIR=/opt/crashsdk/lib/gcc/mips64-elf/11.2.0

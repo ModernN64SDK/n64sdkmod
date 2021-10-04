@@ -1,98 +1,177 @@
-#!smake -k
-# --------------------------------------------------------------------
-#        Copyright (C) 1997,1998 Nintendo. (Originated by SGI)
-#        
-#        $RCSfile: GNUmakefile,v $
-#        $Revision: 1.1 $
-#        $Date: 2003/04/04 17:00:12 $
-# --------------------------------------------------------------------
-#
-# This demo has the following features
-#
-#	CPU vertex morphing
-#       Multi-pass rendering using transparency
-#
-#	Bill Mark
-#
+# Makefile to build morphfaces
 
-include /usr/include/n64/make/PRdefs
+TARGET_STRING := morphfaces
+TARGET := $(TARGET_STRING)
 
-OPTIMIZER       = -O2
-LCDEFS          = -DNDEBUG -D_FINALROM -DF3DEX_GBI_2
-N64LIB          = -lultra_rom
+# Preprocessor definitions
+DEFINES := _FINALROM=1 NDEBUG=1 F3DEX_GBI_2=1
 
-ELF		= morphfaces.elf
-TARGETS	= morphfaces.z64
-MAP		= morphfaces.map
+SRC_DIRS :=
 
-LD_SCRIPT	= morphfaces.ld
-CP_LD_SCRIPT	= morphfaces_cp.ld
+TOOLS_DIR := tools
 
-ASMFILES    =	asm/entry.s asm/rom_header.s
-ASMOBJECTS  =	$(ASMFILES:.s=.o)
+# Whether to hide commands or not
+VERBOSE ?= 0
+ifeq ($(VERBOSE),0)
+  V := @
+endif
 
-CODEFILES =     morphfaces.c morph.c data.c dram_stack.c
-CODEOBJECTS =	$(CODEFILES:.c=.o)
+# Whether to colorize build messages
+COLOR ?= 1
 
-CODESEGMENT =	codesegment.o
+ifeq ($(filter clean distclean print-%,$(MAKECMDGOALS)),)
+  # Make tools if out of date
+  $(info Building tools...)
+  DUMMY != $(MAKE) -s -C $(TOOLS_DIR) >&2 || echo FAIL
+    ifeq ($(DUMMY),FAIL)
+      $(error Failed to build tools)
+    endif
+  $(info Building ROM...)
+endif
 
-DATAFILES =	static.c dynamic.c zbuf.c cfb.c
-DATAOBJECTS =	$(DATAFILES:.c=.o)
+#==============================================================================#
+# Target Executable and Sources                                                #
+#==============================================================================#
+# BUILD_DIR is the location where all build artifacts are placed
+BUILD_DIR := build
+ROM            := $(BUILD_DIR)/$(TARGET_STRING).z64
+ELF            := $(BUILD_DIR)/$(TARGET_STRING).elf
+LD_SCRIPT      := $(TARGET_STRING).ld
+BOOT		:= /usr/lib/n64/PR/bootcode/boot.6102
+BOOT_OBJ	:= $(BUILD_DIR)/boot.6102.o
 
-BOOT		= /usr/lib/n64/PR/bootcode/boot.6102
-BOOT_OBJ	= boot.6102.o
+# Directories containing source files
+SRC_DIRS += src src/buffers src/main assets asm
 
-OBJECTS =	$(CODESEGMENT) $(DATAOBJECTS) $(ASMOBJECTS) $(BOOT_OBJ)
+C_FILES           := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.c))
+S_FILES           := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.s))
 
-LCINCS =	-I. -I/usr/include/n64/PR
+# Object files
+O_FILES := $(foreach file,$(C_FILES),$(BUILD_DIR)/$(file:.c=.o)) \
+           $(foreach file,$(S_FILES),$(BUILD_DIR)/$(file:.s=.o)) \
+		   $(BOOT_OBJ)
 
-LDFLAGS =	-L/usr/lib/n64 $(N64LIB) -L$(N64_LIBGCCDIR) -lgcc 
+# Automatic dependency files
+DEP_FILES := $(O_FILES:.o=.d) $(ASM_O_FILES:.o=.d)  $(BUILD_DIR)/$(LD_SCRIPT).d
 
-LDIRT  =	$(ELF) $(CP_LD_SCRIPT) $(MAP) $(ASMOBJECTS) $(TARGETS) medit medit2c load.map mstatic.h mcode.h
+#==============================================================================#
+# Compiler Options                                                             #
+#==============================================================================#
 
-default:	$(TARGETS)
+AS        := mips-n64-as
+CC        := mips-n64-gcc
+CPP       := cpp
+LD        := mips-n64-ld
+AR        := mips-n64-ar
+OBJDUMP   := mips-n64-objdump
+OBJCOPY   := mips-n64-objcopy
 
-include $(COMMONRULES)
+INCLUDE_DIRS += /usr/include/n64 include $(BUILD_DIR) $(BUILD_DIR)/include src .
 
-.s.o:
-	$(CC) -c -x assembler-with-cpp -I. -I asm -Wa,-Iasm -o $@ $<
+C_DEFINES := $(foreach d,$(DEFINES),-D$(d))
+DEF_INC_CFLAGS := $(foreach i,$(INCLUDE_DIRS),-I$(i)) $(C_DEFINES)
 
-$(CODESEGMENT): $(CODEOBJECTS)
-	$(LD) -o $(CODESEGMENT) -r $(CODEOBJECTS) $(LDFLAGS)
+CFLAGS = -G 0 -O2 -g -mabi=32 -ffreestanding -mfix4300 $(DEF_INC_CFLAGS)
+ASFLAGS     := -march=vr4300 -mabi=32 $(foreach i,$(INCLUDE_DIRS),-I$(i)) $(foreach d,$(DEFINES),--defsym $(d))
+
+# C preprocessor flags
+CPPFLAGS := -P -Wno-trigraphs $(DEF_INC_CFLAGS)
+
+# tools
+MEDIT2C = $(TOOLS_DIR)/medit2c
+PRINT = printf
+
+ifeq ($(COLOR),1)
+NO_COL  := \033[0m
+RED     := \033[0;31m
+GREEN   := \033[0;32m
+BLUE    := \033[0;34m
+YELLOW  := \033[0;33m
+BLINK   := \033[33;5m
+endif
+
+# Common build print status function
+define print
+  @$(PRINT) "$(GREEN)$(1) $(YELLOW)$(2)$(GREEN) -> $(BLUE)$(3)$(NO_COL)\n"
+endef
+
+#==============================================================================#
+# Main Targets                                                                 #
+#==============================================================================#
+
+# Default target
+default: $(ROM)
+
+clean:
+	$(RM) -r $(BUILD_DIR)
+
+distclean: clean
+	$(MAKE) -C $(TOOLS_DIR) clean
+
+ALL_DIRS := $(BUILD_DIR) $(addprefix $(BUILD_DIR)/,$(SRC_DIRS))
+
+# Make sure build directory exists before compiling anything
+DUMMY != mkdir -p $(ALL_DIRS)
+
+#==============================================================================#
+# Compilation Recipes                                                          #
+#==============================================================================#
+
+
+$(BUILD_DIR)/assets/static.o: $(BUILD_DIR)/assets/mstatic.h
+
+$(BUILD_DIR)/src/main/data.o: $(BUILD_DIR)/assets/mcode.h
+
+$(BUILD_DIR)/assets/mstatic.h: $(BUILD_DIR)/assets/mcode.h
+
+$(BUILD_DIR)/assets/mcode.h: $(MEDIT2C) assets/ed_tj.v assets/ed_tj.t
+	@$(PRINT) "$(GREEN)Generating:  $(BLUE)mcode.h $(NO_COL)\n"
+			$(V)$(MEDIT2C) \
+			-v assets/ed_tj.v -t assets/ed_tj.t \
+			-i assets/ed.ppm -j assets/tj.ppm \
+	        -s $(BUILD_DIR)/assets/mstatic.h \
+			-c $(BUILD_DIR)/assets/mcode.h \
+			-m 16
+
+# Compile C code
+$(BUILD_DIR)/%.o: %.c
+	$(call print,Compiling:,$<,$@)
+	$(V)$(CC) -c $(CFLAGS) -MMD -MF $(BUILD_DIR)/$*.d  -o $@ $<
+$(BUILD_DIR)/%.o: $(BUILD_DIR)/%.c
+	$(call print,Compiling:,$<,$@)
+	$(V)$(CC) -c $(CFLAGS) -MMD -MF $(BUILD_DIR)/$*.d  -o $@ $<
+
+# Assemble assembly code
+$(BUILD_DIR)/%.o: %.s
+	$(call print,Assembling:,$<,$@)
+	$(V)$(CC) -c $(CFLAGS) $(foreach i,$(INCLUDE_DIRS),-Wa,-I$(i)) -x assembler-with-cpp -MMD -MF $(BUILD_DIR)/$*.d  -o $@ $<
+
+# Run linker script through the C preprocessor
+$(BUILD_DIR)/$(LD_SCRIPT): $(LD_SCRIPT)
+	$(call print,Preprocessing linker script:,$<,$@)
+	$(V)$(CPP) $(CPPFLAGS) -DBUILD_DIR=$(BUILD_DIR) -MMD -MP -MT $@ -MF $@.d -o $@ $<
 
 $(BOOT_OBJ): $(BOOT)
-	$(OBJCOPY) -I binary -B mips -O elf32-bigmips $< $@
+	$(V)$(OBJCOPY) -I binary -B mips -O elf32-bigmips $< $@
 
-$(CP_LD_SCRIPT): $(LD_SCRIPT)
-	cpp -P -Wno-trigraphs -o $@ $<
+# Link final ELF file
+$(ELF): $(O_FILES) $(BUILD_DIR)/$(LD_SCRIPT)
+	@$(PRINT) "$(GREEN)Linking ELF file:  $(BLUE)$@ $(NO_COL)\n"
+	$(V)$(LD) -L $(BUILD_DIR) -T $(BUILD_DIR)/$(LD_SCRIPT) -Map $(BUILD_DIR)/$(TARGET).map --no-check-sections -o $@ $(O_FILES) -L/usr/lib/n64 -lultra_rom -L$(N64_LIBGCCDIR) -lgcc
 
-$(TARGETS): $(OBJECTS) $(CP_LD_SCRIPT)
-	$(LD) -L. -T $(CP_LD_SCRIPT) -Map $(MAP) -o $(ELF) 
-	$(OBJCOPY) --pad-to=0x100000 --gap-fill=0xFF $(ELF) $(TARGETS) -O binary
-	makemask $(TARGETS)
+# Build ROM
+$(ROM): $(ELF)
+	$(call print,Building ROM:,$<,$@)
+	$(V)$(OBJCOPY) --pad-to=0x100000 --gap-fill=0xFF $< $@ -O binary
+	$(V)makemask $@
 
-static.o: static.c ./mstatic.h
+.PHONY: clean default
+# with no prerequisites, .SECONDARY causes no intermediate target to be removed
+.SECONDARY:
 
-morphfaces.o: morphfaces.c morphfaces.h
+# Remove built-in rules, to improve performance
+MAKEFLAGS += --no-builtin-rules
 
-data.o: ./mcode.h data.c
+-include $(DEP_FILES)
 
-./mstatic.h: ./mcode.h
-
-# program is not actually dependent on medit, but put it here to force it to
-# be kept up to date
-# (I've now commented out this dependency because it requires X11 header files
-#  which some people don't have)
-#
-# Note: run medit as follows:
-# medit -p ed.ppm -p tj.ppm -v ed_tj.v -t ed_tj.t [-m 6]
-
-#./mcode.h: medit medit2c ed_tj.v ed_tj.t
-./mcode.h: medit2c ed_tj.v ed_tj.t
-	./medit2c -v ed_tj.v -t ed_tj.t -i ed.ppm -j tj.ppm \
-	        -s mstatic.h -c mcode.h -m 16
-medit: medit.c
-	$(HOST_CC) -o medit medit.c -lX11 -lGL -lGLU -lm
-
-medit2c: medit2c.c
-	$(HOST_CC) -o medit2c medit2c.c
+print-% : ; $(info $* is a $(flavor $*) variable set to [$($*)]) @true

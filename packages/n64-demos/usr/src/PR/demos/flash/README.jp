@@ -1,52 +1,52 @@
 flash
 
-          ���ͥե�å������Υƥ��Ȥ�Ԥ��ץ������Ǥ����������ϰ�
-        �����̤�Ǥ���
-            ���������岼    ��  ���ޥ�ɤ�����
-            ���ܥ���        ��  ���ޥ�ɤμ¹�
-            �åܥ����˥åȡ�  �ƥѥ�᡼�����ѹ�
+          １Ｍフラッシュロムのテストを行うプログラムです。基本操作は以
+        下の通りです。
+            十字キー上下    ：  コマンドの選択
+            Ａボタン        ：  コマンドの実行
+            Ｃボタンユニット：  各パラメータの変更
 
-          �ʲ��ϳƥ��ޥ�ɤΰ�̣�Ǥ�
-            FLASH CHANGE    :   ���Ѥ���ե�å�����ڤ��ؤ��Ǥ���0����3
-                                �ޤǻ����ǽ�Ǥ���
-            READ ID         :   �ե�å����ID�Υ꡼�ɤǤ���
-            READ STATUS     :   �ե�å���Υ��ơ������Υ꡼�ɤǤ���
-            CLEAR STATUS    :   �ե�å���Υ��ơ������Υ��ꥢ�Ǥ���
-            ALL ERASE       :   �ե�å�������ǡ�����õ�ޤ���
-	    SECTOR ERASE    :   �ե�å��������Σ���������õ�ޤ���
-                                �õ�륻������ PAGE NUMBER �ǻ��ꤷ��
-                                �ڡ�����ޤࣱ�������Ǥ���
-            READ ARRAY(DMA) :   �ե�å��������Υڡ�����DMA�ǥ꡼�ɤ�
-                                �ޤ���
-                                �꡼�ɤ���ڡ�����PAGE NUMBER�ǻ��ꤷ��
-                                �ڡ�������PAGE LENGTHʬ�Ǥ���
-            WRITE BUFFER    :   �ե�å���ΥХåե��ؤΥ饤�ȤǤ���
-            WRITE ARRAY     :   �ե�å���ΥХåե�����ե�å���ƥڡ�
-                                ���ؤΥ饤�ȤǤ���
-                                �꡼�ɤ���ڡ����� PAGE NUMBER �ǻ��ꤷ
-                                ���ڡ����Ǥ���
-            FILL WRITE DATA :   ����ˤ��PAGE NUMBER �ǻ��ꤷ���ڡ�����
-            (1 PAGE)            ����Σ��ڡ���ʬ�ν񤭹��ߥǡ����ѥ�����
-                                ��������ޤ����ǡ����κǸ��4�Х��Ȥˤ�
-                                �ڡ����ֹ椬����ޤ���
-            CLEAR ALL       :   �ƥ��ȥץ�����ब���äƤ����ɤ߹��ߥХ�
-             READ DATA          �ե���Υǡ�����õ�ޤ���
-            CLEAR ALL       :   �ƥ��ȥץ�����ब���äƤ���񤭹��ߥХ�
-             WRITE DATA         �ե���Υǡ�����õ�ޤ���
-            ALL ERASE &     :   �ե�å�������ΰ���Ф��ƾõ�񤭹���
-             FILL & WRITE       �ǡ����������񤭹��ߤ�Ԥ��ޤ���
-            ALL READ        :   �ե�å�������ΰ褫��ǡ������ɤ߹��ߤ�
-                                �����ǡ������ɤ߹��ߤϣ��ڡ����꡼�ɤǹ�
-                                ���ޤ���
-            ALL COMPARE     :   �ƥ��ȥץ�����ब���äƤ����ɤ߹��ߥХ�
-                                �ե��Ƚ񤭹��ߥХåե��������Ƥ���Ӥ���
-                                ����
-            REGION COMPARE  :   �ƥ��ȥץ�����ब���äƤ����ɤ߹��ߥХ�
-                                �ե��Ƚ񤭹��ߥХåե��������ΰ�����Ƥ�
-                                ��Ӥ��ޤ�����Ӥ����ΰ��PAGE NUMBER��
-                                ���ꤷ���ڡ�������PAGE LENGTHʬ�Ǥ���
-            ALL TEST        :   ���ꤷ�����ʬ���� ALL ERASE -> ALL FILL 
-                                -> ALL WRITE -> ALL COMPARE ��¹Ԥ��ޤ���
-            PAGE LENGTH     :   �ڡ���Ĺ����ꤷ�ޤ���ư��¸��ʳ��Ǥϸ�§
-                                1����ꤷ�Ƥ���������
-            PAGE NUMBER     :   �ڡ����ֹ����ꤷ�ޤ���
+          以下は各コマンドの意味です
+            FLASH CHANGE    :   使用するフラッシュの切り替えです。0から3
+                                まで指定可能です。
+            READ ID         :   フラッシュのIDのリードです。
+            READ STATUS     :   フラッシュのステータスのリードです。
+            CLEAR STATUS    :   フラッシュのステータスのクリアです。
+            ALL ERASE       :   フラッシュの全データを消去します。
+	    SECTOR ERASE    :   フラッシュの特定の１セクタを消去します。
+                                消去するセクタは PAGE NUMBER で指定した
+                                ページを含む１セクタです。
+            READ ARRAY(DMA) :   フラッシュの特定のページをDMAでリードし
+                                ます。
+                                リードするページはPAGE NUMBERで指定した
+                                ページからPAGE LENGTH分です。
+            WRITE BUFFER    :   フラッシュのバッファへのライトです。
+            WRITE ARRAY     :   フラッシュのバッファからフラッシュ各ペー
+                                ジへのライトです。
+                                リードするページは PAGE NUMBER で指定し
+                                たページです。
+            FILL WRITE DATA :   乱数によりPAGE NUMBER で指定したページの
+            (1 PAGE)            ための１ページ分の書き込みデータパターン
+                                を作成します。データの最後の4バイトには
+                                ページ番号が入ります。
+            CLEAR ALL       :   テストプログラムが持っている読み込みバッ
+             READ DATA          ファ内のデータを消去します。
+            CLEAR ALL       :   テストプログラムが持っている書き込みバッ
+             WRITE DATA         ファ内のデータを消去します。
+            ALL ERASE &     :   フラッシュの全領域に対して消去・書き込み
+             FILL & WRITE       データ作成・書き込みを行います。
+            ALL READ        :   フラッシュの全領域からデータを読み込みま
+                                す。データの読み込みは１ページリードで行
+                                われます。
+            ALL COMPARE     :   テストプログラムが持っている読み込みバッ
+                                ファと書き込みバッファの全内容を比較しま
+                                す。
+            REGION COMPARE  :   テストプログラムが持っている読み込みバッ
+                                ファと書き込みバッファの特定領域の内容を
+                                比較します。比較する領域はPAGE NUMBERで
+                                指定したページからPAGE LENGTH分です。
+            ALL TEST        :   指定した回数分だけ ALL ERASE -> ALL FILL 
+                                -> ALL WRITE -> ALL COMPARE を実行します。
+            PAGE LENGTH     :   ページ長を指定します。動作実験以外では原則
+                                1を指定してください。
+            PAGE NUMBER     :   ページ番号を指定します。

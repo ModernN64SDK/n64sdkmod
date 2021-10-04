@@ -5,7 +5,7 @@
 
 .byte  0x80, 0x37, 0x12, 0x40   /* PI BSD Domain 1 register */
 .word  0x0000000F               /* Clockrate setting*/
-.word  entry_point              /* Entrypoint */
+.word  __start                  /* Entrypoint */
 
 /* SDK Revision */
 .word  0x0000144C
@@ -19,5 +19,5 @@
 /* Game ID (EXAMPLE: NSME) Begins here */
 .word  0x0000004E                /* Cartridge Type (N)*/
 .ascii "  "                     /* Cartridge ID (SM)*/
-.ascii " "			/* Region (E)*/
+.ascii "P"			/* Region (PAL IN THIS EXAMPLE)*/
 .byte  0x00			/* Version */

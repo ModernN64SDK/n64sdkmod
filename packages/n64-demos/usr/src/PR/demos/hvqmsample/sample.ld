@@ -24,43 +24,54 @@ SECTIONS
 
    BEGIN_SEG(boot, 0x04000000)
    {
-      asm/rom_header.o(.text);
-      boot.6102.o(.data);
+      BUILD_DIR/asm/rom_header.o(.text); /* ROM Header */
+      BUILD_DIR/boot.6102.o(.data); /* CIC 6102 bootcode */
    }
    END_SEG(boot)
 
    BEGIN_SEG(code, 0x80000400) SUBALIGN(16)
    {
-      asm/entry.o(.text);
-      codesegment.o(.text);
+		BUILD_DIR/asm/entry.o(.start);
+      BUILD_DIR/src/main*.o(.text);
+
+      */libultra_rom.a:*.o(.text);
+      */libhvqm2.a:*.o(.text);
+      */libgcc.a:*.o(.text);
       /usr/lib/n64/PR/rspboot.o(.text);
       /usr/lib/n64/hvqm/hvqm2sp1.o(.text);
 
       /* data */
-      codesegment.o(.data*);
+      BUILD_DIR/src/main*.o(.data*);
+
+      */libultra_rom.a:*.o(.data*);
+      */libhvqm2.a:*.o(.data*);
       /usr/lib/n64/PR/rspboot.o(.data*);
       /usr/lib/n64/hvqm/hvqm2sp1.o(.data*);
 
       /* rodata */
-      codesegment.o(.rodata*);
+      BUILD_DIR/src/main*.o(.*rodata*);
+
+      */libultra_rom.a:*.o(.*rodata*);
+      */libhvqm2.a:*.o(.*rodata*);
+      */libgcc.a:*.o(.*rodata*);
    }
    END_SEG(code)
    BEGIN_NOLOAD(code)
    {
-      codesegment.o(COMMON);
-      codesegment.o(.scommon*);
-      codesegment.o(.bss*);
-      . = ALIGN(0x8);
+      BUILD_DIR/src/main*.o(.*bss*);
+
+      */libultra_rom.a:*.o(COMMON);
+      */libultra_rom.a:*.o(.scommon);
+      */libultra_rom.a:*.o(.*bss*);
+      */libhvqm2.a:*.o(.*bss*);
    }
    END_NOLOAD(code)
-   
-   _codeSegmentBssEnd = .;
 
    . = 0x80040000;
    
    BEGIN_NOLOAD(hvqmwork)
    {
-      hvqmwork.o(.bss*);
+      BUILD_DIR/src/buffers/hvqmwork.o(.bss*);
    }
    END_NOLOAD(hvqmwork)
 
@@ -68,7 +79,7 @@ SECTIONS
    
    BEGIN_NOLOAD(adpcmbuf)
    {
-      adpcmbuf.o(.bss*);
+      BUILD_DIR/src/buffers/adpcmbuf.o(.bss*);
    }
    END_NOLOAD(adpcmbuf)
 
@@ -76,7 +87,7 @@ SECTIONS
    
    BEGIN_NOLOAD(hvqbuf)
    {
-      hvqbuf.o(.bss*);
+      BUILD_DIR/src/buffers/hvqbuf.o(.bss*);
    }
    END_NOLOAD(hvqbuf)
 
@@ -84,7 +95,7 @@ SECTIONS
    
    BEGIN_NOLOAD(pcmbuf)
    {
-      pcmbuf.o(.bss*);
+      BUILD_DIR/src/buffers/pcmbuf.o(.bss*);
    }
    END_NOLOAD(pcmbuf)
 
@@ -92,13 +103,13 @@ SECTIONS
    
    BEGIN_NOLOAD(cfb)
    {
-      cfb.o(.bss*);
+      BUILD_DIR/src/buffers/cfb.o(.bss*);
    }
    END_NOLOAD(cfb)
 
    BEGIN_SEG(hvqmdata, __romPos)
    {
-      samplehvqm.o(.data);
+      BUILD_DIR/assets/sample.hvqm.o(.data);
    }
    END_SEG(hvqmdata)
    /* Discard everything not specifically mentioned above. */

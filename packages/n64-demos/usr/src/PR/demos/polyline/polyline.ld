@@ -1,19 +1,23 @@
 OUTPUT_ARCH (mips)
 
+/* Starts a segment */
 #define BEGIN_SEG(name, addr) \
     _##name##SegmentStart = ADDR(.name); \
     _##name##SegmentRomStart = __romPos; \
     .name addr : AT(__romPos)
 
+/* Ends a segment */
 #define END_SEG(name) \
     _##name##SegmentEnd = ADDR(.name) + SIZEOF(.name); \
     _##name##SegmentRomEnd = __romPos + SIZEOF(.name); \
     __romPos += SIZEOF(.name);
 
+/* Starts a noload segment which is intended to contain variables which do not have data yet. */
 #define BEGIN_NOLOAD(name) \
     _##name##SegmentBssStart = ADDR(.name.noload); \
     .name.noload (NOLOAD) :
 
+/* Ends a noload segment */
 #define END_NOLOAD(name) \
     _##name##SegmentBssEnd = ADDR(.name.noload) + SIZEOF(.name.noload); \
     _##name##SegmentBssSize = SIZEOF(.name.noload);
@@ -24,34 +28,46 @@ SECTIONS
 
    BEGIN_SEG(boot, 0x04000000)
    {
-      asm/rom_header.o(.text);
-      boot.6102.o(.data);
+      BUILD_DIR/asm/rom_header.o(.text); /* ROM Header */
+      BUILD_DIR/boot.6102.o(.data); /* CIC 6102 bootcode */
    }
    END_SEG(boot)
 
    BEGIN_SEG(code, 0x80000400) SUBALIGN(16)
    {
-      asm/entry.o(.text);
-      codesegment.o(.text);
+      BUILD_DIR/asm/entry.o(.start);
+      BUILD_DIR/src/main*.o(.text);
+
+      */libultra_rom.a:*.o(.text);
+      */libgcc.a:*.o(.text);
+
       /usr/lib/n64/PR/rspboot.o(.text);
       /usr/lib/n64/PR/gspL3DEX2.xbus.o(.text);
       /usr/lib/n64/PR/gspF3DEX2.xbus.o(.text);
 
       /* data */
-      codesegment.o(.data*);
+      BUILD_DIR/src/main*.o(.data*);
+
+      */libultra_rom.a:*.o(.data*);
+      
       /usr/lib/n64/PR/rspboot.o(.data*);
       /usr/lib/n64/PR/gspL3DEX2.xbus.o(.data*);
       /usr/lib/n64/PR/gspF3DEX2.xbus.o(.data*);
 
       /* rodata */
-      codesegment.o(.rodata*);
+      BUILD_DIR/src/main*.o(.*rodata*);
+
+      */libultra_rom.a:*.o(.*rodata*);
+      */libgcc.a:*.o(.*rodata*);
    }
    END_SEG(code)
    BEGIN_NOLOAD(code)
    {
-      codesegment.o(COMMON);
-      codesegment.o(.scommon*);
-      codesegment.o(.bss*);
+      BUILD_DIR/src/main*.o(.*bss*);
+
+      */libultra_rom.a:*.o(COMMON);
+      */libultra_rom.a:*.o(.scommon);
+      */libultra_rom.a:*.o(.*bss*);
    }
    END_NOLOAD(code)
 
@@ -59,7 +75,7 @@ SECTIONS
    
    BEGIN_NOLOAD(cfb)
    {
-      cfb.o(.bss*);
+      BUILD_DIR/src/buffers/cfb.o(.bss*);
    }
    END_NOLOAD(cfb)
 
@@ -67,7 +83,7 @@ SECTIONS
    
    BEGIN_NOLOAD(zbuffer)
    {
-      zbuffer.o(.bss*);
+      BUILD_DIR/src/buffers/zbuffer.o(.bss*);
    }
    END_NOLOAD(zbuffer)
 

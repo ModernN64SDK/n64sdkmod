@@ -24,38 +24,48 @@ SECTIONS
 
    BEGIN_SEG(boot, 0x04000000)
    {
-      asm/rom_header.o(.text);
-      boot.6102.o(.data);
+      BUILD_DIR/asm/rom_header.o(.text); /* ROM Header */
+      BUILD_DIR/boot.6102.o(.data); /* CIC 6102 bootcode */
    }
    END_SEG(boot)
 
    BEGIN_SEG(code, 0x80000400) SUBALIGN(16)
    {
-      asm/entry.o(.text);
-      codesegment.o(.text);
+		BUILD_DIR/asm/entry.o(.start);
+      BUILD_DIR/src/main*.o(.text);
+
+      */libultra_rom.a:*.o(.text);
+      */libgcc.a:*.o(.text);
       /usr/lib/n64/PR/rspboot.o(.text);
       /usr/lib/n64/PR/gspSprite2D.o(.text);
 
       /* data */
-      codesegment.o(.data*);
+      BUILD_DIR/src/main*.o(.data*);
+
+      */libultra_rom.a:*.o(.data*);
       /usr/lib/n64/PR/rspboot.o(.data*);
       /usr/lib/n64/PR/gspSprite2D.o(.data*);
 
       /* rodata */
-      codesegment.o(.rodata*);
+      BUILD_DIR/src/main*.o(.*rodata*);
+
+      */libultra_rom.a:*.o(.*rodata*);
+      */libgcc.a:*.o(.*rodata*);
    }
    END_SEG(code)
    BEGIN_NOLOAD(code)
    {
-      codesegment.o(COMMON);
-      codesegment.o(.scommon*);
-      codesegment.o(.bss*);
+      BUILD_DIR/src/main*.o(.*bss*);
+
+      */libultra_rom.a:*.o(COMMON);
+      */libultra_rom.a:*.o(.scommon);
+      */libultra_rom.a:*.o(.*bss*);
    }
    END_NOLOAD(code)
    
    BEGIN_SEG(static, 0x01000000)
    {
-      static.o(.data);
+      BUILD_DIR/assets/static.o(.data);
    }
    END_SEG(static)
 
@@ -63,7 +73,7 @@ SECTIONS
    
    BEGIN_NOLOAD(cfb)
    {
-      cfb.o(.bss*);
+      BUILD_DIR/src/buffers/cfb.o(.bss*);
    }
    END_NOLOAD(cfb)
 

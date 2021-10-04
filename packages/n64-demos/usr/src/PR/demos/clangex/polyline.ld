@@ -35,7 +35,7 @@ SECTIONS
 
    BEGIN_SEG(code, 0x80000400) SUBALIGN(16)
    {
-      BUILD_DIR/asm/entry.o(.text);
+      BUILD_DIR/asm/entry.o(.start);
       BUILD_DIR/src/main*.o(.text);
 
       */libultra_rom.a:*.o(.text);
@@ -46,9 +46,9 @@ SECTIONS
       /usr/lib/n64/PR/gspF3DEX2.xbus.o(.text);
 
       /* data */
-      BUILD_DIR/src/main*.o(.*data*);
+      BUILD_DIR/src/main*.o(.data*);
 
-      */libultra_rom.a:*.o(.*data*);
+      */libultra_rom.a:*.o(.data*);
       
       /usr/lib/n64/PR/rspboot.o(.data*);
       /usr/lib/n64/PR/gspL3DEX2.xbus.o(.data*);

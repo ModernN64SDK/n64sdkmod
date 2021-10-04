@@ -26,51 +26,66 @@ SECTIONS
 
    BEGIN_SEG(boot, 0x04000000)
    {
-      asm/rom_header.o(.text);
-      boot.6102.o(.data);
+      BUILD_DIR/asm/rom_header.o(.text); /* ROM Header */
+      BUILD_DIR/boot.6102.o(.data); /* CIC 6102 bootcode */
    }
    END_SEG(boot)
 
    BEGIN_SEG(code, 0x80000400) SUBALIGN(16)
    {
-      asm/entry.o(.text);
-      codesegment.o(.text);
+		BUILD_DIR/asm/entry.o(.start);
+      BUILD_DIR/src/main*.o(.text);
+
+      */libultra_rom.a:*.o(.text);
+      */libhvq2.a:*.o(.text);
+      */libgcc.a:*.o(.text);
       /usr/lib/n64/PR/rspboot.o(.text);
+#if USE_RSP == 1
 #if CFB_FORMAT == 2
       /usr/lib/n64/hvq/hvq2sp2.o(.text);
 #else
       /usr/lib/n64/hvq/hvq2sp1.o(.text);
 #endif
+#endif
 
       /* data */
-      codesegment.o(.data*);
+      BUILD_DIR/src/main*.o(.data*);
+
+      */libultra_rom.a:*.o(.data*);
+      */libhvq2.a:*.o(.data*);
       /usr/lib/n64/PR/rspboot.o(.data*);
+#if USE_RSP == 1
 #if CFB_FORMAT == 2
       /usr/lib/n64/hvq/hvq2sp2.o(.data*);
 #else
       /usr/lib/n64/hvq/hvq2sp1.o(.data*);
 #endif
+#endif
 
       /* rodata */
-      codesegment.o(.rodata*);
+      BUILD_DIR/src/main*.o(.*rodata*);
+
+      */libultra_rom.a:*.o(.*rodata*);
+      */libhvq2.a:*.o(.*rodata*);
+      */libgcc.a:*.o(.*rodata*);
    }
    END_SEG(code)
    BEGIN_NOLOAD(code)
    {
-      codesegment.o(COMMON);
-      codesegment.o(.scommon*);
-      codesegment.o(.bss*);
-      . = ALIGN(0x8);
+      BUILD_DIR/src/main*.o(.*bss*);
+
+      */libultra_rom.a:*.o(COMMON);
+      */libultra_rom.a:*.o(.scommon);
+      */libultra_rom.a:*.o(.*bss*);
+      */libhvq2.a:*.o(.*bss*);
    }
    END_NOLOAD(code)
-   
-   _codeSegmentBssEnd = .;
 
    . = 0x80040000;
    
    BEGIN_NOLOAD(hvqwork)
    {
-      hvqwork.o(.bss*);
+      BUILD_DIR/src/buffers/hvqwork.o(.bss*);
    }
    END_NOLOAD(hvqwork)
 
@@ -78,7 +93,7 @@ SECTIONS
    
    BEGIN_NOLOAD(hvqbuf)
    {
-      hvqbuf.o(.bss*);
+      BUILD_DIR/src/buffers/hvqbuf.o(.bss*);
    }
    END_NOLOAD(hvqbuf)
 
@@ -86,13 +101,13 @@ SECTIONS
    
    BEGIN_NOLOAD(cfb)
    {
-      cfb.o(.bss*);
+      BUILD_DIR/src/buffers/cfb.o(.bss*);
    }
    END_NOLOAD(cfb)
 
    BEGIN_SEG(hvqdata, __romPos)
    {
-      samplehvq.o(.data);
+      BUILD_DIR/assets/sample.hvq.o(.data);
       . = ALIGN(0x10);
    }
    END_SEG(hvqdata)

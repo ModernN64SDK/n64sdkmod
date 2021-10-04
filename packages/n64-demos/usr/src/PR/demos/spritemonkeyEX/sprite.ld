@@ -21,41 +21,59 @@ OUTPUT_ARCH (mips)
 SECTIONS
 {
    __romPos = 0;
+   
+   . = 0x02000000;
+
+   BEGIN_NOLOAD(rsp_cfb)
+   {
+      BUILD_DIR/src/buffers/rsp_cfb.o(.bss*);
+   }
+   END_NOLOAD(rsp_cfb)
 
    BEGIN_SEG(boot, 0x04000000)
    {
-      asm/rom_header.o(.text);
-      boot.6102.o(.data);
+      BUILD_DIR/asm/rom_header.o(.text); /* ROM Header */
+      BUILD_DIR/boot.6102.o(.data); /* CIC 6102 bootcode */
    }
    END_SEG(boot)
 
    BEGIN_SEG(code, 0x80000400) SUBALIGN(16)
    {
-      asm/entry.o(.text);
-      codesegment.o(.text);
+		BUILD_DIR/asm/entry.o(.start);
+      BUILD_DIR/src/main*.o(.text);
+
+      */libultra_rom.a:*.o(.text);
+      */libgcc.a:*.o(.text);
       /usr/lib/n64/PR/rspboot.o(.text);
       /usr/lib/n64/PR/gspS2DEX2.fifo.o(.text);
 
-      /* data */
-      codesegment.o(.data*);
+      /* data */      /* data */
+      BUILD_DIR/src/main*.o(.data*);
+
+      */libultra_rom.a:*.o(.data*);
       /usr/lib/n64/PR/rspboot.o(.data*);
       /usr/lib/n64/PR/gspS2DEX2.fifo.o(.data*);
 
       /* rodata */
-      codesegment.o(.rodata*);
+      BUILD_DIR/src/main*.o(.*rodata*);
+
+      */libultra_rom.a:*.o(.*rodata*);
+      */libgcc.a:*.o(.*rodata*);
    }
    END_SEG(code)
    BEGIN_NOLOAD(code)
    {
-      codesegment.o(COMMON);
-      codesegment.o(.scommon*);
-      codesegment.o(.bss*);
+      BUILD_DIR/src/main*.o(.*bss*);
+
+      */libultra_rom.a:*.o(COMMON);
+      */libultra_rom.a:*.o(.scommon);
+      */libultra_rom.a:*.o(.*bss*);
    }
    END_NOLOAD(code)
    
    BEGIN_SEG(static, .)
    {
-      static.o(.data);
+      BUILD_DIR/assets/static.o(.data);
    }
    END_SEG(static)
 
@@ -63,39 +81,31 @@ SECTIONS
    
    BEGIN_NOLOAD(cfb)
    {
-      cfb.o(.bss*);
+      BUILD_DIR/src/buffers/cfb.o(.bss*);
    }
    END_NOLOAD(cfb)
    
-   . = 0x02000000;
-
-   BEGIN_NOLOAD(rsp_cfb)
-   {
-      rsp_cfb.o(.bss*);
-   }
-   END_NOLOAD(rsp_cfb)
-   
    BEGIN_SEG(dk, _staticSegmentEnd)
    {
-      dk.o(.data);
+      BUILD_DIR/assets/dk.o(.data);
    }
    END_SEG(dk)
 
    BEGIN_SEG(dk7, .)
    {
-      dk7.o(.data);
+      BUILD_DIR/assets/dk7.o(.data);
    }
    END_SEG(dk7)
    
    BEGIN_SEG(road, .)
    {
-      road.o(.data);
+      BUILD_DIR/assets/road.o(.data);
    }
    END_SEG(road)
    
    BEGIN_SEG(l2_tv, .)
    {
-      l2_tv.o(.data);
+      BUILD_DIR/assets/l2_tv.o(.data);
    }
    END_SEG(l2_tv)
 
