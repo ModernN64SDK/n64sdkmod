@@ -7,31 +7,33 @@
   	0x80000400  zbuffer (size 320*240*2)
   	0x80025c00  codesegment
 	      :  
-  	0x8030F800  Audio Heap
   	0x8038F800  cfb 16b 3buffer (size 320*240*2*3)
 
-        Copyright (C) 1997-1999, NINTENDO Co,Ltd.	
+	Copyright (C) 1997-1999, NINTENDO Co,Ltd.
 */
-
 
 OUTPUT_ARCH (mips)
 
 #include <nusys.h>
 
+/* Starts a segment */
 #define BEGIN_SEG(name, addr) \
     _##name##SegmentStart = ADDR(.name); \
     _##name##SegmentRomStart = __romPos; \
     .name addr : AT(__romPos)
 
+/* Ends a segment */
 #define END_SEG(name) \
     _##name##SegmentEnd = ADDR(.name) + SIZEOF(.name); \
     _##name##SegmentRomEnd = __romPos + SIZEOF(.name); \
     __romPos += SIZEOF(.name);
 
+/* Starts a noload segment which is intended to contain variables which do not have data yet. */
 #define BEGIN_NOLOAD(name) \
     _##name##SegmentBssStart = ADDR(.name.noload); \
     .name.noload (NOLOAD) :
 
+/* Ends a noload segment */
 #define END_NOLOAD(name) \
     _##name##SegmentBssEnd = ADDR(.name.noload) + SIZEOF(.name.noload); \
     _##name##SegmentBssSize = SIZEOF(.name.noload);
@@ -42,16 +44,29 @@ SECTIONS
 
    BEGIN_SEG(boot, 0x04000000)
    {
-      asm/rom_header.o(.text);
-      boot.6102.o(.data);
+      BUILD_DIR/asm/rom_header.o(.text); /* ROM Header */
+      BUILD_DIR/boot.6102.o(.data); /* CIC 6102 bootcode */
    }
    END_SEG(boot)
 
    BEGIN_SEG(code, NU_SPEC_BOOT_ADDR) SUBALIGN(16)
    {
       /* text */
-      asm/entry.o(.text);
-      codesegment.o(.text);
+		BUILD_DIR/asm/entry.o(.start);
+      /usr/lib/n64/nusys/nusys_rom.o(.text);
+      BUILD_DIR/src/main*.o(.text);
+
+      */libultra_rom.a:*.o(.text);
+      */libnusys.a:*.o(.text);
+#if N_AUDIO == 1
+      */libnualstl_n.a:*.o(.text);
+      */libn_mus.a:*.o(.text);
+      */libn_audio_sc.a:*.o(.text);
+#else
+      */libnualstl.a:*.o(.text);
+      */libmus.a:*.o(.text);
+#endif
+      */libgcc.a:*.o(.text);
       /usr/lib/n64/PR/rspboot.o(.text);
       /usr/lib/n64/PR/aspMain.o(.text);
       /usr/lib/n64/PR/n_aspMain.o(.text);
@@ -63,7 +78,19 @@ SECTIONS
       /usr/lib/n64/PR/gspS2DEX2.fifo.o(.text);
 
       /* data */
-      codesegment.o(.data*);
+      /usr/lib/n64/nusys/nusys_rom.o(.data*);
+      BUILD_DIR/src/main*.o(.data*);
+
+      */libultra_rom.a:*.o(.data*);
+      */libnusys.a:*.o(.data*);
+#if N_AUDIO == 1
+      */libnualstl_n.a:*.o(.data*);
+      */libn_mus.a:*.o(.data*);
+      */libn_audio_sc.a:*.o(.data*);
+#else
+      */libnualstl.a:*.o(.data*);
+      */libmus.a:*.o(.data*);
+#endif
       /usr/lib/n64/PR/rspboot.o(.data*);
       /usr/lib/n64/PR/aspMain.o(.data*);
       /usr/lib/n64/PR/n_aspMain.o(.data*);
@@ -75,23 +102,61 @@ SECTIONS
       /usr/lib/n64/PR/gspS2DEX2.fifo.o(.data*);
 
       /* rodata */
-      codesegment.o(.rodata*);
+      /usr/lib/n64/nusys/nusys_rom.o(.*rodata*);
+      BUILD_DIR/src/main*.o(.*rodata*);
+
+      */libultra_rom.a:*.o(.*rodata*);
+      */libnusys.a:*.o(.*rodata*);
+#if N_AUDIO == 1
+      */libnualstl_n.a:*.o(.*rodata*);
+      */libn_mus.a:*.o(.*rodata*);
+      */libn_audio_sc.a:*.o(.*rodata*);
+#else
+      */libnualstl.a:*.o(.*rodata*);
+      */libmus.a:*.o(.*rodata*);
+#endif
+      */libgcc.a:*.o(.*rodata*);
    }
    END_SEG(code)
    BEGIN_NOLOAD(code)
    {
-      codesegment.o(COMMON);
-      codesegment.o(.scommon*);
-      codesegment.o(.bss*);
-      . = ALIGN(0x8);
+      /usr/lib/n64/nusys/nusys_rom.o(COMMON);
+      /usr/lib/n64/nusys/nusys_rom.o(.scommon);
+      /usr/lib/n64/nusys/nusys_rom.o(.*bss*);
+      BUILD_DIR/src/main*.o(.*bss*);
+
+      */libultra_rom.a:*.o(COMMON);
+      */libultra_rom.a:*.o(.scommon);
+      */libultra_rom.a:*.o(.*bss*);
+      */libnusys.a:*.o(COMMON);
+      */libnusys.a:*.o(.scommon);
+      */libnusys.a:*.o(.*bss*);
+#if N_AUDIO == 1
+      */libnualstl_n.a:*.o(COMMON);
+      */libnualstl_n.a:*.o(.scommon);
+      */libnualstl_n.a:*.o(.*bss*);
+      */libn_mus.a:*.o(COMMON);
+      */libn_mus.a:*.o(.scommon);
+      */libn_mus.a:*.o(.*bss*);
+      */libn_audio_sc.a:*.o(COMMON);
+      */libn_audio_sc.a:*.o(.scommon);
+      */libn_audio_sc.a:*.o(.*bss*);
+#else
+      */libnualstl.a:*.o(COMMON);
+      */libnualstl.a:*.o(.scommon);
+      */libnualstl.a:*.o(.*bss*);
+      */libmus.a:*.o(COMMON);
+      */libmus.a:*.o(.scommon);
+      */libmus.a:*.o(.*bss*);
+#endif
    }
    END_NOLOAD(code)
 
    BEGIN_SEG(sound_data, __romPos)
    {
-      sound_data.o(.data);
+      BUILD_DIR/sound/sound_data.o(.data*);
    }
-   END_SEG(sound_data)
+   END_SEG(code)
 
    /* Discard everything not specifically mentioned above. */
    /DISCARD/ :

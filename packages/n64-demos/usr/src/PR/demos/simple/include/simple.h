@@ -57,7 +57,7 @@ extern OSLog *log;
 extern int logging;
 #endif
 
-extern char _gfxdlistsSegmentStart[], _gfxdlistsSegmentEnd[];
+extern char _gfxdlistsSegmentBssStart[], _gfxdlistsSegmentBssEnd[];
 extern char _staticSegmentRomStart[], _staticSegmentRomEnd[];
 extern char _tableSegmentRomStart[], _tableSegmentRomEnd[];
 extern char _seqSegmentRomStart[], _seqSegmentRomEnd[];

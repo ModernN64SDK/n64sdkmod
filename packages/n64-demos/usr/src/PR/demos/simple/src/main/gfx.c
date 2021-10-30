@@ -62,7 +62,7 @@ void initGFX(void)
 extern char _gfxdlistsSegmentEnd[];
     u32 len = (u32)(_staticSegmentRomEnd - _staticSegmentRomStart);
 
-    staticSegment = _gfxdlistsSegmentStart;
+    staticSegment = _gfxdlistsSegmentBssStart;
     romCopy(_staticSegmentRomStart, staticSegment, len);
     
     gInfo[0].msg.gen.type = OS_SC_DONE_MSG;

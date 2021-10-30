@@ -1,86 +1,166 @@
-#!smake -k
-# 	NuSYSTEM samples nuhvq Makefile
+# Makefile to build nuhvq
 
-include /usr/include/n64/make/PRdefs
+TARGET_STRING := nuhvq
+TARGET := $(TARGET_STRING)
 
-# Directory holding NuSYSTEM include file and library
-#
-NUSYSINCDIR  = /usr/include/n64/nusys
-NUSYSLIBDIR  = /usr/lib/n64/nusys
-LIB = /usr/lib/n64
+#  Maximum size of image [pixel]  (Reflects on the memory reserved for hvqwork.c)
+MAXWIDTH  = 320
+MAXHEIGHT = 240
 
-#  Directory holding the HVQ2 library  (libhvq.a)
-HVQLIBDIR = /usr/lib/n64/hvq
-#  Directory holding the HVQ2 include file
-HVQINCDIR = /usr/include/n64/hvq
+# Preprocessor definitions
+DEFINES := MAXWIDTH=$(MAXWIDTH) MAXHEIGHT=$(MAXHEIGHT) 
+
+SRC_DIRS :=
+
+# Whether to hide commands or not
+VERBOSE ?= 0
+ifeq ($(VERBOSE),0)
+  V := @
+endif
+
+# Whether to colorize build messages
+COLOR ?= 1
 
 # If you are using the old audio microcode please
 # comment this out
-N_AUDIO = yes
+N_AUDIO = 1
 
-ifeq  ($(N_AUDIO),yes) 
+ifeq  ($(N_AUDIO),1) 
 NAUDIODEF = -DNAUDIO
 NUAUDIOLIB = -lnualstl_n -ln_mus -ln_audio_sc
 else
 NUAUDIOLIB = -lnualstl -lmus
 endif
 
-#  Maximum size of image [pixel]  (Reflects on the memory reserved for hvqwork.c)
-MAXWIDTH  = 320
-MAXHEIGHT = 240
+#==============================================================================#
+# Target Executable and Sources                                                #
+#==============================================================================#
+# BUILD_DIR is the location where all build artifacts are placed
+BUILD_DIR := build
+ROM            := $(BUILD_DIR)/$(TARGET_STRING).z64
+ELF            := $(BUILD_DIR)/$(TARGET_STRING).elf
+LD_SCRIPT      := $(TARGET_STRING).ld
+BOOT		:= /usr/lib/n64/PR/bootcode/boot.6102
+BOOT_OBJ	:= $(BUILD_DIR)/boot.6102.o
 
-ELF		= nuhvq.elf
-TARGETS	= nuhvq.z64
-MAP		= nuhvq.map
-LD_SCRIPT	= nuhvq.ld
-CP_LD_SCRIPT	= nuhvq_cp.ld
+# Directories containing source files
+SRC_DIRS += src src/buffers src/main assets asm
 
-HFILES =	main.h
+C_FILES           := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.c))
+S_FILES           := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.s))
 
-ASMFILES	= asm/entry.s asm/rom_header.s rawdata.s
+# Object files
+O_FILES := /usr/lib/n64/nusys/nusys_rom.o \
+           $(foreach file,$(C_FILES),$(BUILD_DIR)/$(file:.c=.o)) \
+           $(foreach file,$(S_FILES),$(BUILD_DIR)/$(file:.s=.o)) \
+		   $(BOOT_OBJ)
 
-ASMOBJECTS	= $(ASMFILES:.s=.o)
+# Automatic dependency files
+DEP_FILES := $(O_FILES:.o=.d) $(ASM_O_FILES:.o=.d)  $(BUILD_DIR)/$(LD_SCRIPT).d
 
-CODEFILES   = 	main.c stage00.c appgfxinit.c
+#  Directory holding the HVQ2 library  (libhvq.a)
+HVQLIBDIR = /usr/lib/n64/hvq
+#  Directory holding the HVQ2 include file
+HVQINCDIR = /usr/include/n64/hvq
 
-CODEOBJECTS =	$(CODEFILES:.c=.o)  $(NUSYSLIBDIR)/nusys.o
+#==============================================================================#
+# Compiler Options                                                             #
+#==============================================================================#
 
-DATAFILES   =	hvqwork.c hvqbuf.c hvqimg.c
+AS        := mips-n64-as
+CC        := mips-n64-gcc
+CPP       := cpp
+LD        := mips-n64-ld
+AR        := mips-n64-ar
+OBJDUMP   := mips-n64-objdump
+OBJCOPY   := mips-n64-objcopy
 
-DATAOBJECTS =	$(DATAFILES:.c=.o)
+INCLUDE_DIRS += /usr/include/n64 /usr/include/n64/PR /usr/include/n64/nusys $(HVQINCDIR) include $(BUILD_DIR) $(BUILD_DIR)/include src .
 
-CODESEGMENT =	codesegment.o
+C_DEFINES := $(foreach d,$(DEFINES),-D$(d))
+DEF_INC_CFLAGS := $(foreach i,$(INCLUDE_DIRS),-I$(i)) $(C_DEFINES)
 
-BOOT		= /usr/lib/n64/PR/bootcode/boot.6102
+CFLAGS = -G 0 -g -mabi=32 -ffreestanding -mfix4300 $(DEF_INC_CFLAGS)
+ASFLAGS     := -march=vr4300 -mabi=32 $(foreach i,$(INCLUDE_DIRS),-I$(i)) $(foreach d,$(DEFINES),--defsym $(d))
 
-BOOT_OBJ	= boot.6102.o
+# C preprocessor flags
+CPPFLAGS := -P -Wno-trigraphs $(DEF_INC_CFLAGS)
 
-OBJECTS =	$(ASMOBJECTS) $(BOOT_OBJ) $(CODESEGMENT) $(DATAOBJECTS)
+# tools
+PRINT = printf
 
-LCDEFS =  -DMAXWIDTH=$(MAXWIDTH) -DMAXHEIGHT=$(MAXHEIGHT) 
+ifeq ($(COLOR),1)
+NO_COL  := \033[0m
+RED     := \033[0;31m
+GREEN   := \033[0;32m
+BLUE    := \033[0;34m
+YELLOW  := \033[0;33m
+BLINK   := \033[33;5m
+endif
 
-LCINCS =	-I. -I$(HVQINCDIR) -I$(NUSYSINCDIR) -I/usr/include/n64/PR
-LCOPTS =	-G 0
-LDFLAGS =	$(MKDEPOPT) -L$(LIB) -L$(NUSYSLIBDIR) $(NUAUDIOLIB) -lnusys -lultra_rom -L$(N64_LIBGCCDIR) -lgcc -L$(HVQLIBDIR) -lhvq2
-LDIRT =  $(ELF) $(ASMOBJECTS) $(CP_LD_SCRIPT) $(MAP) $(TARGETS)
+# Common build print status function
+define print
+  @$(PRINT) "$(GREEN)$(1) $(YELLOW)$(2)$(GREEN) -> $(BLUE)$(3)$(NO_COL)\n"
+endef
 
-default:	$(TARGETS)
+#==============================================================================#
+# Main Targets                                                                 #
+#==============================================================================#
 
-include $(COMMONRULES)
+# Default target
+default: $(ROM)
 
-.s.o:
-	$(AS) -I. -I asm -Wa,-Iasm -o $@ $<
+clean:
+	$(RM) -r $(BUILD_DIR)
 
-$(CODESEGMENT):	$(CODEOBJECTS) Makefile
-	$(LD) -o $(CODESEGMENT) -r $(CODEOBJECTS) $(LDFLAGS)
+ALL_DIRS := $(BUILD_DIR) $(addprefix $(BUILD_DIR)/,$(SRC_DIRS))
+
+# Make sure build directory exists before compiling anything
+DUMMY != mkdir -p $(ALL_DIRS)
+
+#==============================================================================#
+# Compilation Recipes                                                          #
+#==============================================================================#
+
+# Compile C code
+$(BUILD_DIR)/%.o: %.c
+	$(call print,Compiling:,$<,$@)
+	$(V)$(CC) -c $(CFLAGS) -MMD -MF $(BUILD_DIR)/$*.d  -o $@ $<
+$(BUILD_DIR)/%.o: $(BUILD_DIR)/%.c
+	$(call print,Compiling:,$<,$@)
+	$(V)$(CC) -c $(CFLAGS) -MMD -MF $(BUILD_DIR)/$*.d  -o $@ $<
+
+# Assemble assembly code
+$(BUILD_DIR)/%.o: %.s
+	$(call print,Assembling:,$<,$@)
+	$(V)$(CC) -c $(CFLAGS) $(foreach i,$(INCLUDE_DIRS),-Wa,-I$(i)) -x assembler-with-cpp -MMD -MF $(BUILD_DIR)/$*.d  -o $@ $<
+
+# Run linker script through the C preprocessor
+$(BUILD_DIR)/$(LD_SCRIPT): $(LD_SCRIPT)
+	$(call print,Preprocessing linker script:,$<,$@)
+	$(V)$(CPP) $(CPPFLAGS) -DBUILD_DIR=$(BUILD_DIR) $(NAUDIODEF) -MMD -MP -MT $@ -MF $@.d -o $@ $<
 
 $(BOOT_OBJ): $(BOOT)
-	$(OBJCOPY) -I binary -B mips -O elf32-bigmips $< $@
+	$(V)$(OBJCOPY) -I binary -B mips -O elf32-bigmips $< $@
 
-$(CP_LD_SCRIPT): $(LD_SCRIPT)
-	cpp -P -Wno-trigraphs -I$(NUSYSINCDIR) -o $@ $<
+# Link final ELF file
+$(ELF): $(O_FILES) $(BUILD_DIR)/$(LD_SCRIPT)
+	@$(PRINT) "$(GREEN)Linking ELF file:  $(BLUE)$@ $(NO_COL)\n"
+	$(V)$(LD) --gc-sections -L $(BUILD_DIR) -T $(BUILD_DIR)/$(LD_SCRIPT) -Map $(BUILD_DIR)/$(TARGET).map --no-check-sections -o $@ $(O_FILES) -L/usr/lib/n64/nusys $(NUAUDIOLIB) -lnusys -L/usr/lib/n64 -lultra_rom -L$(HVQLIBDIR) -lhvq2 -L$(N64_LIBGCCDIR) -lgcc
 
-$(TARGETS): $(OBJECTS) $(CP_LD_SCRIPT)
-	$(LD) -L. -T $(CP_LD_SCRIPT) -Map $(MAP) -o $(ELF) 
-	$(OBJCOPY) --pad-to=0x100000 --gap-fill=0xFF $(ELF) $(TARGETS) -O binary
-	makemask $(TARGETS)
+# Build ROM
+$(ROM): $(ELF)
+	$(call print,Building ROM:,$<,$@)
+	$(V)$(OBJCOPY) --pad-to=0x100000 --gap-fill=0xFF $< $@ -O binary
+	$(V)makemask $@
+
+.PHONY: clean default
+# with no prerequisites, .SECONDARY causes no intermediate target to be removed
+.SECONDARY:
+
+# Remove built-in rules, to improve performance
+MAKEFLAGS += --no-builtin-rules
+
+-include $(DEP_FILES)
+
+print-% : ; $(info $* is a $(flavor $*) variable set to [$($*)]) @true

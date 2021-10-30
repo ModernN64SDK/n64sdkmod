@@ -16,20 +16,24 @@ OUTPUT_ARCH (mips)
 
 #include <nusys.h>
 
+/* Starts a segment */
 #define BEGIN_SEG(name, addr) \
     _##name##SegmentStart = ADDR(.name); \
     _##name##SegmentRomStart = __romPos; \
     .name addr : AT(__romPos)
 
+/* Ends a segment */
 #define END_SEG(name) \
     _##name##SegmentEnd = ADDR(.name) + SIZEOF(.name); \
     _##name##SegmentRomEnd = __romPos + SIZEOF(.name); \
     __romPos += SIZEOF(.name);
 
+/* Starts a noload segment which is intended to contain variables which do not have data yet. */
 #define BEGIN_NOLOAD(name) \
     _##name##SegmentBssStart = ADDR(.name.noload); \
     .name.noload (NOLOAD) :
 
+/* Ends a noload segment */
 #define END_NOLOAD(name) \
     _##name##SegmentBssEnd = ADDR(.name.noload) + SIZEOF(.name.noload); \
     _##name##SegmentBssSize = SIZEOF(.name.noload);
@@ -40,16 +44,23 @@ SECTIONS
 
    BEGIN_SEG(boot, 0x04000000)
    {
-      asm/rom_header.o(.text);
-      boot.6102.o(.data);
+      BUILD_DIR/asm/rom_header.o(.text); /* ROM Header */
+      BUILD_DIR/boot.6102.o(.data); /* CIC 6102 bootcode */
    }
    END_SEG(boot)
 
    BEGIN_SEG(code, NU_SPEC_BOOT_ADDR) SUBALIGN(16)
    {
       /* text */
-      asm/entry.o(.text);
-      codesegment.o(.text);
+		BUILD_DIR/asm/entry.o(.start);
+      /usr/lib/n64/nusys/nusys_rom.o(.text);
+      BUILD_DIR/src/main*.o(.text);
+
+      */libultra_rom.a:*.o(.text);
+      */libnusys_d.a:*.o(.text);
+      */libnualsgi_n.a:*.o(.text);
+      */libn_audio.a:*.o(.text);
+      */libgcc.a:*.o(.text);
       /usr/lib/n64/PR/rspboot.o(.text);
       /usr/lib/n64/PR/aspMain.o(.text);
       /usr/lib/n64/PR/n_aspMain.o(.text);
@@ -61,7 +72,13 @@ SECTIONS
       /usr/lib/n64/PR/gspS2DEX2.fifo.o(.text);
 
       /* data */
-      codesegment.o(.data*);
+      /usr/lib/n64/nusys/nusys_rom.o(.data*);
+      BUILD_DIR/src/main*.o(.data*);
+
+      */libultra_rom.a:*.o(.data*);
+      */libnusys_d.a:*.o(.data*);
+      */libnualsgi_n.a:*.o(.data*);
+      */libn_audio.a:*.o(.data*);
       /usr/lib/n64/PR/rspboot.o(.data*);
       /usr/lib/n64/PR/aspMain.o(.data*);
       /usr/lib/n64/PR/n_aspMain.o(.data*);
@@ -73,34 +90,52 @@ SECTIONS
       /usr/lib/n64/PR/gspS2DEX2.fifo.o(.data*);
 
       /* rodata */
-      codesegment.o(.rodata*);
+      /usr/lib/n64/nusys/nusys_rom.o(.*rodata*);
+      BUILD_DIR/src/main*.o(.*rodata*);
+
+      */libultra_rom.a:*.o(.*rodata*);
+      */libnusys_d.a:*.o(.*rodata*);
+      */libnualsgi_n.a:*.o(.*rodata*);
+      */libn_audio.a:*.o(.*rodata*);
+      */libgcc.a:*.o(.*rodata*);
    }
    END_SEG(code)
    BEGIN_NOLOAD(code)
    {
-      codesegment.o(COMMON);
-      codesegment.o(.scommon*);
-      codesegment.o(.bss*);
-      . = ALIGN(0x8);
+      /usr/lib/n64/nusys/nusys_rom.o(COMMON);
+      /usr/lib/n64/nusys/nusys_rom.o(.scommon);
+      /usr/lib/n64/nusys/nusys_rom.o(.*bss*);
+      BUILD_DIR/src/main*.o(.*bss*);
+
+      */libultra_rom.a:*.o(COMMON);
+      */libultra_rom.a:*.o(.scommon);
+      */libultra_rom.a:*.o(.*bss*);
+      */libnusys_d.a:*.o(COMMON);
+      */libnusys_d.a:*.o(.scommon);
+      */libnusys_d.a:*.o(.*bss*);
+      */libnualsgi_n.a:*.o(COMMON);
+      */libnualsgi_n.a:*.o(.scommon);
+      */libnualsgi_n.a:*.o(.*bss*);
+      */libn_audio.a:*.o(COMMON);
+      */libn_audio.a:*.o(.scommon);
+      */libn_audio.a:*.o(.*bss*);
    }
    END_NOLOAD(code)
 
    BEGIN_SEG(stage00, _codeSegmentBssEnd) SUBALIGN(32)
    {
       _stage00SegmentTextStart = .;
-      stage00.o(.text);
+      BUILD_DIR/src/stages/stage00.o(.text);
       _stage00SegmentTextEnd = .;
       _stage00SegmentDataStart = .;
-      stage00.o(.data);
+      BUILD_DIR/src/stages/stage00.o(.data);
+      BUILD_DIR/src/stages/stage00.o(.rodata*);
       _stage00SegmentDataEnd = .;
-      stage00.o(.rodata*);
    }
    END_SEG(stage00)
    BEGIN_NOLOAD(stage00)
    {
-      stage00.o(COMMON);
-      stage00.o(.scommon*);
-      stage00.o(.bss*);
+      BUILD_DIR/src/stages/stage00.o(.bss*);
       . = ALIGN(0x8);
    }
    END_NOLOAD(stage00)
@@ -108,26 +143,24 @@ SECTIONS
    BEGIN_SEG(stage01, _codeSegmentBssEnd) SUBALIGN(32)
    {
       _stage01SegmentTextStart = .;
-      stage01.o(.text);
+      BUILD_DIR/src/stages/stage01.o(.text);
       _stage01SegmentTextEnd = .;
       _stage01SegmentDataStart = .;
-      stage01.o(.data);
+      BUILD_DIR/src/stages/stage01.o(.data);
+      BUILD_DIR/src/stages/stage01.o(.rodata*);
       _stage01SegmentDataEnd = .;
-      stage01.o(.rodata*);
    }
    END_SEG(stage01)
    BEGIN_NOLOAD(stage01)
    {
-      stage01.o(COMMON);
-      stage01.o(.scommon*);
-      stage01.o(.bss*);
+      BUILD_DIR/src/stages/stage01.o(.bss*);
       . = ALIGN(0x8);
    }
    END_NOLOAD(stage01)
 
    BEGIN_SEG(sound_data, __romPos)
    {
-      sound_data.o(.data);
+      BUILD_DIR/sound/sound_data.o(.data);
    }
    END_SEG(sound_data)
 

@@ -2,20 +2,24 @@ OUTPUT_ARCH (mips)
 
 #include "system.h"
 
+/* Starts a segment */
 #define BEGIN_SEG(name, addr) \
     _##name##SegmentStart = ADDR(.name); \
     _##name##SegmentRomStart = __romPos; \
     .name addr : AT(__romPos)
 
+/* Ends a segment */
 #define END_SEG(name) \
     _##name##SegmentEnd = ADDR(.name) + SIZEOF(.name); \
     _##name##SegmentRomEnd = __romPos + SIZEOF(.name); \
     __romPos += SIZEOF(.name);
 
+/* Starts a noload segment which is intended to contain variables which do not have data yet. */
 #define BEGIN_NOLOAD(name) \
     _##name##SegmentBssStart = ADDR(.name.noload); \
     .name.noload (NOLOAD) :
 
+/* Ends a noload segment */
 #define END_NOLOAD(name) \
     _##name##SegmentBssEnd = ADDR(.name.noload) + SIZEOF(.name.noload); \
     _##name##SegmentBssSize = SIZEOF(.name.noload);

@@ -1,71 +1,146 @@
-# 	NuSYSTEM samples nu1 Makefile
-#       Copyright (C) 1997-1999, NINTENDO Co,Ltd.
+# Makefile to build nu1
 
-include /usr/include/n64/make/PRdefs
+TARGET_STRING := nu1
+TARGET := $(TARGET_STRING)
 
-# The directory which has the include file and library of NuSYSTEM
-#
-NUSYSINCDIR  = /usr/include/n64/nusys
-NUSYSLIBDIR  = /usr/lib/n64/nusys
+# Preprocessor definitions
+DEFINES := _FINALROM=1 NDEBUG=1 F3DEX_GBI_2=1
 
-LIB = /usr/lib/n64
-LPR = $(LIB)/PR
-INC = /usr/include/n64
+SRC_DIRS :=
 
-LCDEFS =	-DNDEBUG -DF3DEX_GBI_2
-LCINCS =	-I. -I$(NUSYSINCDIR) -I/usr/include/n64/PR
-LCOPTS =	-G 0
-LDFLAGS = $(MKDEPOPT) -L$(LIB) -L$(NUSYSLIBDIR) -lnusys -lultra_rom -L$(N64_LIBGCCDIR) -lgcc
+# Whether to hide commands or not
+VERBOSE ?= 0
+ifeq ($(VERBOSE),0)
+  V := @
+endif
 
-LDIRT  =  $(ELF) $(ASMOBJECTS) $(CP_LD_SCRIPT) $(MAP) $(TARGETS)
+# Whether to colorize build messages
+COLOR ?= 1
 
-OPTIMIZER =	-O2
+#==============================================================================#
+# Target Executable and Sources                                                #
+#==============================================================================#
+# BUILD_DIR is the location where all build artifacts are placed
+BUILD_DIR := build
+ROM            := $(BUILD_DIR)/$(TARGET_STRING).z64
+ELF            := $(BUILD_DIR)/$(TARGET_STRING).elf
+LD_SCRIPT      := $(TARGET_STRING).ld
+BOOT		:= /usr/lib/n64/PR/bootcode/boot.6102
+BOOT_OBJ	:= $(BUILD_DIR)/boot.6102.o
 
-ELF		= nu1.elf
-TARGETS	= nu1.z64
-MAP		= nu1.map
-LD_SCRIPT	= nu1.ld
-CP_LD_SCRIPT	= nu1_cp.ld
+# Directories containing source files
+SRC_DIRS += src src/main asm
 
-HFILES =	main.h graphic.h
+C_FILES           := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.c))
+S_FILES           := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.s))
 
-ASMFILES	= asm/entry.s asm/rom_header.s
+# Object files
+O_FILES := /usr/lib/n64/nusys/nusys_rom.o \
+           $(foreach file,$(C_FILES),$(BUILD_DIR)/$(file:.c=.o)) \
+           $(foreach file,$(S_FILES),$(BUILD_DIR)/$(file:.s=.o)) \
+		   $(BOOT_OBJ)
 
-ASMOBJECTS	= $(ASMFILES:.s=.o)
+# Automatic dependency files
+DEP_FILES := $(O_FILES:.o=.d) $(ASM_O_FILES:.o=.d)  $(BUILD_DIR)/$(LD_SCRIPT).d
 
-BOOT		= /usr/lib/n64/PR/bootcode/boot.6102
+#==============================================================================#
+# Compiler Options                                                             #
+#==============================================================================#
 
-BOOT_OBJ	= boot.6102.o
+AS        := mips-n64-as
+CC        := mips-n64-gcc
+CPP       := cpp
+LD        := mips-n64-ld
+AR        := mips-n64-ar
+OBJDUMP   := mips-n64-objdump
+OBJCOPY   := mips-n64-objcopy
 
-CODEFILES   = 	main.c stage00.c graphic.c gfxinit.c
+INCLUDE_DIRS += /usr/include/n64 /usr/include/n64/PR /usr/include/n64/nusys include $(BUILD_DIR) $(BUILD_DIR)/include src .
 
-CODEOBJECTS =	$(CODEFILES:.c=.o)  $(NUSYSLIBDIR)/nusys_rom.o
+C_DEFINES := $(foreach d,$(DEFINES),-D$(d))
+DEF_INC_CFLAGS := $(foreach i,$(INCLUDE_DIRS),-I$(i)) $(C_DEFINES)
 
-DATAFILES   =	
+CFLAGS = -G 0 -O2 -g -mabi=32 -ffreestanding -mfix4300 $(DEF_INC_CFLAGS)
+ASFLAGS     := -march=vr4300 -mabi=32 $(foreach i,$(INCLUDE_DIRS),-I$(i)) $(foreach d,$(DEFINES),--defsym $(d))
 
-DATAOBJECTS =	$(DATAFILES:.c=.o)
+# C preprocessor flags
+CPPFLAGS := -P -Wno-trigraphs $(DEF_INC_CFLAGS)
 
-CODESEGMENT =	codesegment.o
+# tools
+PRINT = printf
 
-OBJECTS =	$(ASMOBJECTS) $(BOOT_OBJ) $(CODESEGMENT) $(DATAOBJECTS)
+ifeq ($(COLOR),1)
+NO_COL  := \033[0m
+RED     := \033[0;31m
+GREEN   := \033[0;32m
+BLUE    := \033[0;34m
+YELLOW  := \033[0;33m
+BLINK   := \033[33;5m
+endif
 
-default:        $(TARGETS)
+# Common build print status function
+define print
+  @$(PRINT) "$(GREEN)$(1) $(YELLOW)$(2)$(GREEN) -> $(BLUE)$(3)$(NO_COL)\n"
+endef
 
-include $(COMMONRULES)
+#==============================================================================#
+# Main Targets                                                                 #
+#==============================================================================#
 
-.s.o:
-	$(AS) -I. -I asm -Wa,-Iasm -o $@ $<
+# Default target
+default: $(ROM)
 
-$(CODESEGMENT):	$(CODEOBJECTS) Makefile
-	$(LD) -o $(CODESEGMENT) -r $(CODEOBJECTS) $(LDFLAGS)
+clean:
+	$(RM) -r $(BUILD_DIR)
+
+ALL_DIRS := $(BUILD_DIR) $(addprefix $(BUILD_DIR)/,$(SRC_DIRS))
+
+# Make sure build directory exists before compiling anything
+DUMMY != mkdir -p $(ALL_DIRS)
+
+#==============================================================================#
+# Compilation Recipes                                                          #
+#==============================================================================#
+
+# Compile C code
+$(BUILD_DIR)/%.o: %.c
+	$(call print,Compiling:,$<,$@)
+	$(V)$(CC) -c $(CFLAGS) -MMD -MF $(BUILD_DIR)/$*.d  -o $@ $<
+$(BUILD_DIR)/%.o: $(BUILD_DIR)/%.c
+	$(call print,Compiling:,$<,$@)
+	$(V)$(CC) -c $(CFLAGS) -MMD -MF $(BUILD_DIR)/$*.d  -o $@ $<
+
+# Assemble assembly code
+$(BUILD_DIR)/%.o: %.s
+	$(call print,Assembling:,$<,$@)
+	$(V)$(CC) -c $(CFLAGS) $(foreach i,$(INCLUDE_DIRS),-Wa,-I$(i)) -x assembler-with-cpp -MMD -MF $(BUILD_DIR)/$*.d  -o $@ $<
+
+# Run linker script through the C preprocessor
+$(BUILD_DIR)/$(LD_SCRIPT): $(LD_SCRIPT)
+	$(call print,Preprocessing linker script:,$<,$@)
+	$(V)$(CPP) $(CPPFLAGS) -DBUILD_DIR=$(BUILD_DIR) -MMD -MP -MT $@ -MF $@.d -o $@ $<
 
 $(BOOT_OBJ): $(BOOT)
-	$(OBJCOPY) -I binary -B mips -O elf32-bigmips $< $@
+	$(V)$(OBJCOPY) -I binary -B mips -O elf32-bigmips $< $@
 
-$(CP_LD_SCRIPT): $(LD_SCRIPT)
-	cpp -P -Wno-trigraphs -I$(NUSYSINCDIR) -o $@ $<
+# Link final ELF file
+$(ELF): $(O_FILES) $(BUILD_DIR)/$(LD_SCRIPT)
+	@$(PRINT) "$(GREEN)Linking ELF file:  $(BLUE)$@ $(NO_COL)\n"
+	$(V)$(LD) -L $(BUILD_DIR) -T $(BUILD_DIR)/$(LD_SCRIPT) -Map $(BUILD_DIR)/$(TARGET).map --no-check-sections -o $@ $(O_FILES) -L/usr/lib/n64/nusys -lnusys -L/usr/lib/n64 -lultra_rom -L$(N64_LIBGCCDIR) -lgcc
 
-$(TARGETS): $(OBJECTS) $(CP_LD_SCRIPT)
-	$(LD) -L. -T $(CP_LD_SCRIPT) -Map $(MAP) -o $(ELF) 
-	$(OBJCOPY) --pad-to=0x100000 --gap-fill=0xFF $(ELF) $(TARGETS) -O binary
-	makemask $(TARGETS)
+# Build ROM
+$(ROM): $(ELF)
+	$(call print,Building ROM:,$<,$@)
+	$(V)$(OBJCOPY) --pad-to=0x100000 --gap-fill=0xFF $< $@ -O binary
+	$(V)makemask $@
+
+.PHONY: clean default
+# with no prerequisites, .SECONDARY causes no intermediate target to be removed
+.SECONDARY:
+
+# Remove built-in rules, to improve performance
+MAKEFLAGS += --no-builtin-rules
+
+-include $(DEP_FILES)
+
+print-% : ; $(info $* is a $(flavor $*) variable set to [$($*)]) @true
