@@ -115,7 +115,7 @@ $(BUILD_DIR)/%.o: %.s
 # Link final ELF file
 $(LIB): $(O_FILES)
 	@$(PRINT) "$(GREEN)Linking $(TARGET):  $(BLUE)$@ $(NO_COL)\n"
-	$(V)$(AR) rcs -o $@ $<
+	$(V)$(AR) rcs -o $@ $(O_FILES)
 
 .PHONY: clean default
 # with no prerequisites, .SECONDARY causes no intermediate target to be removed
