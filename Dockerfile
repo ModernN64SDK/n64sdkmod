@@ -15,7 +15,7 @@ RUN dpkg --add-architecture i386 && \
     apt update && \
     apt-get -y install lib32z1 && \
     apt-get -y install libc6:i386 && \
-    apt-get -y install binutils-mips-n64 gcc-mips-n64 libgcc-mips-n64 && \
+    apt-get -y install binutils-mips-n64 gcc-mips-n64 newlib-mips-n64 && \
     apt-get -y install n64sdk && \
     apt-get -y install makemask && \
     apt-get -y install libnustd && \
