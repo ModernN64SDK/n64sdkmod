@@ -1,268 +1,231 @@
-#
-# 	NuSystem Makefile for NINTENDO64
-#
-#	Copyright (C) 1997-1999 NINTENDO Co.,Ltd.
-#
+# Makefile to build nusys
 
-NUSYSINCDIR  = /usr/include/n64/nusys
-NUSYSLIBDIR  = /usr/lib/n64/nusys
+include util.mk
 
-include /usr/include/n64/make/PRdefs
+# Preprocessor definitions
+DEFINES := USE_EPI=1
 
-LIB = /usr/lib/n64
-LPR = $(LIB)/PR
-INC = /usr/include/n64
-MAKE		=	make
-RM		=	rm -f
-CP		=	cp
-AR		=	mips-n64-ar
-ARFLAGS	=	cr
-RANLIB		=	mips-n64-ranlib
+SRC_DIRS :=
 
-.c.o:
-	$(CC) $(OPTIMIZER) $(MOPTDEF) -DUSE_EPI -G 0 -c -mabi=32 -march=vr4300 -mtune=vr4300 -mfix4300 -mno-shared -I.. -I$(INC)/PR -I$(INC) $<
+# Whether to hide commands or not
+VERBOSE ?= 0
+ifeq ($(VERBOSE),0)
+  V := @
+endif
 
-#
-# NUSYS LIBRARY
-#
-#
+# Whether to colorize build messages
+COLOR ?= 1
 
-NUBOOTSRC	=	nuboot.c
-NUBOOTROMSRC	=	nuboot_rom.c
-NUBOOTPTNSRC	=	nuboot_ptn.c
-NUBOOTISVSRC	=	nuboot_isv.c
-NUBOOTEMUSRC	=	nuboot_emu.c
-NUBOOTMSPSRC	=	nuboot_msp.c
+# VERSION 	   - selects the version of the library to build
+#   libnusys	   - standard library
+#   libnusys_d   - debug library
+VERSION ?= libnusys
+$(eval $(call validate-option,VERSION,libnusys libnusys_d))
 
-NUBOOTOBJ	=	$(NUBOOTSRC:.c=.o)
-NUBOOTROMOBJ	=	$(NUBOOTROMSRC:.c=.o)
-NUBOOTPTNOBJ	=	$(NUBOOTPTNSRC:.c=.o)
-NUBOOTISVOBJ	=	$(NUBOOTISVSRC:.c=.o)
-NUBOOTEMUOBJ	=	$(NUBOOTEMUSRC:.c=.o)
-NUBOOTMSPOBJ	=	$(NUBOOTMSPSRC:.c=.o)
+ifeq      ($(VERSION),libnusys)
+	OPT_FLAGS := -O3
+else ifeq ($(VERSION),libnusys_d)
+	OPT_FLAGS := -O0 -g
+	DEFINES += NU_DEBUG=1
+endif
 
-NUBOOTLIB	= 	nusys.o
-NUBOOTROMLIB	= 	nusys_rom.o
-NUBOOTPTNLIB	= 	nusys_ptn.o
-NUBOOTISVLIB	= 	nusys_isv.o
-NUBOOTEMULIB	= 	nusys_emu.o
-NUBOOTMSPLIB	= 	nusys_msp.o
+TARGET := $(VERSION)
 
-NUBOOTDEBLIB	= 	nusys_d.o
-NUBOOTPTNDEBLIB	= 	nusys_ptn_d.o
-NUBOOTISVDEBLIB	= 	nusys_isv_d.o
-NUBOOTEMUDEBLIB	= 	nusys_emu_d.o
-NUBOOTMSPDEBLIB	= 	nusys_msp_d.o
+ifeq ($(filter clean,$(MAKECMDGOALS)),)
+  $(info ==== Build Options ====)
+  $(info Version:        $(VERSION))
+  $(info =======================)
+endif
 
+#==============================================================================#
+# Target Executable and Sources                                                #
+#==============================================================================#
+
+NUBOOTSRC		=	src/nuboot/nuboot.c
+NUBOOTROMSRC	=	src/nuboot/nuboot_rom.c
+NUBOOTPTNSRC	=	src/nuboot/nuboot_ptn.c
+NUBOOTISVSRC	=	src/nuboot/nuboot_isv.c
+NUBOOTEMUSRC	=	src/nuboot/nuboot_emu.c
+NUBOOTMSPSRC	=	src/nuboot/nuboot_msp.c
+
+NUBOOTOBJ		=	$(BUILD_DIR)/$(NUBOOTSRC:.c=.o)
+NUBOOTROMOBJ	=	$(BUILD_DIR)/$(NUBOOTROMSRC:.c=.o)
+NUBOOTPTNOBJ	=	$(BUILD_DIR)/$(NUBOOTPTNSRC:.c=.o)
+NUBOOTISVOBJ	=	$(BUILD_DIR)/$(NUBOOTISVSRC:.c=.o)
+NUBOOTEMUOBJ	=	$(BUILD_DIR)/$(NUBOOTEMUSRC:.c=.o)
+NUBOOTMSPOBJ	=	$(BUILD_DIR)/$(NUBOOTMSPSRC:.c=.o)
+
+NUBOOTLIB		= 	$(BUILD_DIR)/nusys.o
+NUBOOTROMLIB	= 	$(BUILD_DIR)/nusys_rom.o
+NUBOOTPTNLIB	= 	$(BUILD_DIR)/nusys_ptn.o
+NUBOOTISVLIB	= 	$(BUILD_DIR)/nusys_isv.o
+NUBOOTEMULIB	= 	$(BUILD_DIR)/nusys_emu.o
+NUBOOTMSPLIB	= 	$(BUILD_DIR)/nusys_msp.o
+
+NUBOOTDEBLIB	= 	$(BUILD_DIR)/nusys_d.o
+NUBOOTPTNDEBLIB	= 	$(BUILD_DIR)/nusys_ptn_d.o
+NUBOOTISVDEBLIB	= 	$(BUILD_DIR)/nusys_isv_d.o
+NUBOOTEMUDEBLIB	= 	$(BUILD_DIR)/nusys_emu_d.o
+NUBOOTMSPDEBLIB	= 	$(BUILD_DIR)/nusys_msp_d.o
+
+ifeq      ($(VERSION),libnusys)
 NUBOOTOBJS	=	$(NUBOOTLIB) \
 			$(NUBOOTROMLIB) \
 			$(NUBOOTPTNLIB) \
 			$(NUBOOTISVLIB) \
 			$(NUBOOTEMULIB) \
 			$(NUBOOTMSPLIB)
-
-NUBOOTDEBOBJS	=	$(NUBOOTDEBLIB) \
+else ifeq ($(VERSION),libnusys_d)
+NUBOOTOBJS	=	$(NUBOOTDEBLIB) \
 			$(NUBOOTPTNDEBLIB) \
 			$(NUBOOTISVDEBLIB) \
 			$(NUBOOTEMUDEBLIB) \
 			$(NUBOOTMSPDEBLIB)
+endif
 
-ROMLIB		=	libnusys.a
-DEBUGLIB	=	libnusys_d.a
-ROMOBJDIR       =       libnusys
-DEBUGOBJDIR     =       libnusys_d
+BUILD_DIR_BASE := build
+# BUILD_DIR is the location where all build artifacts are placed
+BUILD_DIR      := $(BUILD_DIR_BASE)/$(VERSION)
+LIB            := $(BUILD_DIR)/$(TARGET).a
 
-HEADER          =       nusys.h
+# Directories containing source files
+SRC_DIRS += src src/mainlib
 
-LIBSYSSRC	= 	nusched.c 			\
-			nuprenmifuncset.c		\
-			nurdpoutput.c 			\
-			nuyieldbuf.c 			\
-			nudramstack.c 			\
-			nuidlefuncset.c 		\
-			nugfxthread.c 			\
-			nugfxtaskmgr.c 			\
-			nugfxinit.c  			\
-			nugfxfuncset.c 			\
-			nugfxprenmifuncset.c 		\
-			nugfxtaskendfuncset.c 		\
-			nugfxswapcfbfuncset.c		\
-			nugfxswapcfb.c			\
-			nugfxtaskallendwait.c		\
-			nugfxretracewait.c		\
-			nugfxsetcfb.c			\
-			nugfxdisplayoff.c 		\
-			nugfxdisplayon.c 		\
-			nugfxsetucodefifo.c		\
-			nudebtaskperfbar0.c		\
-			nudebtaskperfbar1.c		\
-			nudebload.c			\
-			nudebconsole.c			\
-			nudebconputc.c			\
-			nudebconcputs.c			\
-			nudebconwindowset.c		\
-			nudebconwindowpos.c		\
-			nudebconwindowsize.c		\
-			nudebconwindowshow.c		\
-			nudebcontextcolor.c		\
-			nudebcontextattr.c		\
-			nudebcontextpos.c		\
-			nudebconscroll.c		\
-			nudebconclear.c			\
-			nudebconprintf.c		\
-			nusimgr.c			\
-			nusicallbackadd.c		\
-			nusicallbackremove.c		\
-			nusisendmesgnw.c		\
-			nupiinit.c			\
-			nupireadrom.c			\
-			nupiinitsram.c			\
-			nupiinitddrom.c			\
-			nupireadwritesram.c		\
-			nudebconbuf.c			\
-			nudebcondisp.c			\
-			nudebcondisp_ex2.c		\
-			nugfxinit_ex2.c			\
-			nudebtaskperfbar0_ex2.c		\
-			nudebtaskperfbar1_ex2.c		\
-			nucontmgr.c 			\
-			nucontinit.c 			\
-			nucontdatalock.c		\
-			nucontdataread.c		\
-			nucontdatareadwait.c 		\
-			nucontdatareadstart.c 		\
-			nucontdataget.c			\
-			nucontdatagetall.c		\
-			nucontdatagetex.c		\
-			nucontdatagetexall.c		\
-			nucontqueryread.c		\
-			nucontreadfuncset.c		\
-			nucontpakmgr.c			\
-			nucontpakjiston64.c		\
-			nucontpakopen.c			\
-			nucontpakgetfree.c		\
-			nucontpakrepairid.c		\
-			nucontpakfileopen.c		\
-			nucontpakfileopenjis.c		\
-			nucontpakcodeset.c		\
-			nucontpakfilereadwrite.c	\
-			nucontpakfiledelete.c		\
-			nucontpakfiledeletejis.c	\
-			nucontpakfilestate.c		\
-			nucontpakfilenum.c		\
-			nucontrmbmgr.c			\
-			nucontrmbstart.c		\
-			nucontrmbstop.c			\
-			nucontrmbcheck.c		\
-			nucontrmbmodeset.c		\
-			nucontrmbforcestop.c		\
-			nucontrmbforcestopend.c		\
-			nucontrmbsearchtimeset.c	\
-			nueeprommgr.c			\
-			nucontgbpakmgr.c		\
-			nucontgbpakopen.c		\
-			nucontgbpakgetstatus.c		\
-			nucontgbpakpower.c		\
-			nucontgbpakreadid.c		\
-			nucontgbpakreadwrite.c		\
-			nucontgbpakcheck.c		\
-			nucontgbpakfread.c		\
-			nucontgbpakfwrite.c		\
-			nucontgbpakregwrite.c		\
-			nucontpakfilefread.c		\
-			nucontpakfilefwrite.c		\
-			nuvrsmgr.c			\
-			nuvrsopen.c			\
-			nuvrscleardictionary.c		\
-			nuvrssetword.c			\
-			nuvrsmaskdictionary.c		\
-			nuvrsstartreaddata.c		\
-			nuvrsgetreaddata.c		\
-			nuvrsstopreaddata.c		\
-			nuvrscontrolgain.c		\
-			numark.c			\
-			nudebperfmarkset.c		\
-			nudebtaskperfintervalset.c	\
-			nufont.c			\
-			nupireadromoverlay.c
+NUBOOT_SRC_DIRS := src/nuboot
 
+C_FILES           := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.c))
+NUBOOT_C_FILES    := $(foreach dir,$(NUBOOT_SRC_DIRS),$(wildcard $(dir)/*.c))
+S_FILES           := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.s))
 
-LIBSYSOBJ	=	$(LIBSYSSRC:.c=.o)
+# Object files
+O_FILES := $(foreach file,$(C_FILES),$(BUILD_DIR)/$(file:.c=.o)) \
+           $(foreach file,$(S_FILES),$(BUILD_DIR)/$(file:.s=.o))
 
-VPATH           = ..
+NUBOOT_O_FILES := $(foreach file,$(NUBOOT_C_FILES),$(BUILD_DIR)/$(file:.c=.o))
 
-#
-# compile
-#
-default:
-	-mkdir $(ROMOBJDIR)
-	$(MAKE) -C $(ROMOBJDIR) -f ../Makefile OPTIMIZER=-O3 $(ROMLIB)
-	-mkdir $(DEBUGOBJDIR)
-	$(MAKE) -C $(DEBUGOBJDIR) -f ../Makefile OPTIMIZER=-g MOPTDEF=-DNU_DEBUG $(DEBUGLIB)
+# Automatic dependency files
+DEP_FILES := $(O_FILES:.o=.d) $(NUBOOT_O_FILES:.o=.d) $(ASM_O_FILES:.o=.d)
 
+#==============================================================================#
+# Compiler Options                                                             #
+#==============================================================================#
 
-$(ROMLIB): $(LIBSYSOBJ) $(NUBOOTOBJS) ../nusys.h
-	$(AR) $(ARFLAGS) $(ROMLIB) $(LIBSYSOBJ)
-	$(RANLIB) $(ROMLIB)
+AS        := mips-n64-as
+CC        := mips-n64-gcc
+CPP       := cpp
+LD        := mips-n64-ld
+AR        := mips-n64-ar
 
-$(DEBUGLIB):    $(LIBSYSOBJ) $(NUBOOTDEBOBJS) ../nusys.h
-	$(AR) $(ARFLAGS) $(DEBUGLIB) $(LIBSYSOBJ)
-	$(RANLIB) $(DEBUGLIB)
+INCLUDE_DIRS += /usr/include/n64 /usr/include/n64/PR /usr/include/n64/nusys include $(BUILD_DIR) $(BUILD_DIR)/include src .
 
-#
-# boot code
-#
-#nusys_boot:	$(NUBOOTOBJS)
-#nusys_boot_d:	$(NUBOOTDEBOBJS)
+C_DEFINES := $(foreach d,$(DEFINES),-D$(d))
+DEF_INC_CFLAGS := $(foreach i,$(INCLUDE_DIRS),-I$(i)) $(C_DEFINES)
 
-$(NUBOOTLIB):	$(NUBOOTOBJ) nusys.h
-	$(LD) -o $(NUBOOTLIB) -r $(NUBOOTOBJ)
-$(NUBOOTROMLIB):	$(NUBOOTOBJ) nusys.h
-	$(LD) -o $(NUBOOTROMLIB) -r $(NUBOOTOBJ)
-$(NUBOOTPTNLIB):	$(NUBOOTROMOBJ) nusys.h
-	$(LD) -o $(NUBOOTPTNLIB) -r $(NUBOOTROMOBJ)
-$(NUBOOTISVLIB):	$(NUBOOTISVOBJ) nusys.h
-	$(LD) -o $(NUBOOTISVLIB) -r $(NUBOOTISVOBJ)
-$(NUBOOTEMULIB):	$(NUBOOTEMUOBJ) nusys.h
-	$(LD) -o $(NUBOOTEMULIB) -r $(NUBOOTEMUOBJ)
-$(NUBOOTMSPLIB):	$(NUBOOTMSPOBJ) nusys.h
-	$(LD) -o $(NUBOOTMSPLIB) -r $(NUBOOTMSPOBJ)
-$(NUBOOTDEBLIB):	$(NUBOOTOBJ) nusys.h
-	$(LD) -o $(NUBOOTDEBLIB) -r $(NUBOOTOBJ)
-$(NUBOOTPTNDEBLIB):	$(NUBOOTPTNOBJ) nusys.h
-	$(LD) -o $(NUBOOTPTNDEBLIB) -r $(NUBOOTPTNOBJ)
-$(NUBOOTISVDEBLIB):	$(NUBOOTISVOBJ) nusys.h
-	$(LD) -o $(NUBOOTISVDEBLIB) -r $(NUBOOTISVOBJ)
-$(NUBOOTEMUDEBLIB):	$(NUBOOTEMUOBJ) nusys.h
-	$(LD) -o $(NUBOOTEMUDEBLIB) -r $(NUBOOTEMUOBJ)
-$(NUBOOTMSPDEBLIB):	$(NUBOOTMSPOBJ) nusys.h
-	$(LD) -o $(NUBOOTMSPDEBLIB) -r $(NUBOOTMSPOBJ)
+CFLAGS = -G 0 $(OPT_FLAGS) -mabi=32 -ffreestanding -mfix4300 $(DEF_INC_CFLAGS) -Wall
+ASFLAGS     := -march=vr4300 -mabi=32 $(foreach i,$(INCLUDE_DIRS),-I$(i)) $(foreach d,$(DEFINES),--defsym $(d))
 
-$(NUBOOTOBJ):	../$(NUBOOTSRC) ../nusys.h
-$(NUBOOTROMOBJ):	../$(NUBOOTROMSRC) ../nusys.h
-$(NUBOOTPTNOBJ):	../$(NUBOOTPTNSRC) ../nusys.h
-$(NUBOOTISVOBJ):	../$(NUBOOTISVSRC) ../nusys.h
-$(NUBOOTEMUOBJ):	../$(NUBOOTEMUSRC) ../nusys.h
-$(NUBOOTMSPOBJ):	../$(NUBOOTMSPSRC) ../nusys.h
+# C preprocessor flags
+CPPFLAGS := -P -Wno-trigraphs $(DEF_INC_CFLAGS)
 
-install:
-	$(CP) $(HEADER) $(NUSYSINCDIR)
-	$(CP) $(ROMOBJDIR)\$(ROMLIB) $(NUSYSLIBDIR)
-	$(CP) $(ROMOBJDIR)\$(NUBOOTLIB) $(NUSYSLIBDIR)
-	$(CP) $(ROMOBJDIR)\$(NUBOOTROMLIB) $(NUSYSLIBDIR)
-	$(CP) $(ROMOBJDIR)\$(NUBOOTPTNLIB) $(NUSYSLIBDIR)
-	$(CP) $(ROMOBJDIR)\$(NUBOOTISVLIB) $(NUSYSLIBDIR)
-	$(CP) $(ROMOBJDIR)\$(NUBOOTEMULIB) $(NUSYSLIBDIR)
-	$(CP) $(ROMOBJDIR)\$(NUBOOTMSPLIB) $(NUSYSLIBDIR)
-	$(CP) $(DEBUGOBJDIR)\$(DEBUGLIB) $(NUSYSLIBDIR)
-	$(CP) $(DEBUGOBJDIR)\$(NUBOOTDEBLIB) $(NUSYSLIBDIR)
-	$(CP) $(DEBUGOBJDIR)\$(NUBOOTPTNDEBLIB) $(NUSYSLIBDIR)
-	$(CP) $(DEBUGOBJDIR)\$(NUBOOTISVDEBLIB) $(NUSYSLIBDIR)
-	$(CP) $(DEBUGOBJDIR)\$(NUBOOTEMUDEBLIB) $(NUSYSLIBDIR)
-	$(CP) $(DEBUGOBJDIR)\$(NUBOOTMSPDEBLIB) $(NUSYSLIBDIR)
+# tools
+PRINT = printf
+
+ifeq ($(COLOR),1)
+NO_COL  := \033[0m
+RED     := \033[0;31m
+GREEN   := \033[0;32m
+BLUE    := \033[0;34m
+YELLOW  := \033[0;33m
+BLINK   := \033[33;5m
+endif
+
+# Common build print status function
+define print
+  @$(PRINT) "$(GREEN)$(1) $(YELLOW)$(2)$(GREEN) -> $(BLUE)$(3)$(NO_COL)\n"
+endef
+
+#==============================================================================#
+# Main Targets                                                                 #
+#==============================================================================#
+
+# Default target
+default: $(LIB)
 
 clean:
-	$(RM) $(ROMOBJDIR)/*.o
-	$(RM) $(ROMOBJDIR)/*.a
-	$(RM) $(DEBUGOBJDIR)/*.o
-	$(RM) $(DEBUGOBJDIR)/*.a
+	$(RM) -r $(BUILD_DIR_BASE)
+
+ALL_DIRS := $(BUILD_DIR) $(addprefix $(BUILD_DIR)/,$(SRC_DIRS)) $(addprefix $(BUILD_DIR)/,$(NUBOOT_SRC_DIRS))
+
+# Make sure build directory exists before compiling anything
+DUMMY != mkdir -p $(ALL_DIRS)
+
+#==============================================================================#
+# Compilation Recipes                                                          #
+#==============================================================================#
+
+$(NUBOOTLIB): $(NUBOOTOBJ)
+	$(call print,Linking:,$<,$@)
+	$(V)$(LD) -o $(NUBOOTLIB) -r $(NUBOOTOBJ)
+$(NUBOOTROMLIB): $(NUBOOTOBJ) 
+	$(call print,Linking:,$<,$@)
+	$(V)$(LD) -o $(NUBOOTROMLIB) -r $(NUBOOTOBJ)
+$(NUBOOTPTNLIB): $(NUBOOTROMOBJ) 
+	$(call print,Linking:,$<,$@)
+	$(V)$(LD) -o $(NUBOOTPTNLIB) -r $(NUBOOTROMOBJ)
+$(NUBOOTISVLIB): $(NUBOOTISVOBJ) 
+	$(call print,Linking:,$<,$@)
+	$(V)$(LD) -o $(NUBOOTISVLIB) -r $(NUBOOTISVOBJ)
+$(NUBOOTEMULIB): $(NUBOOTEMUOBJ) 
+	$(call print,Linking:,$<,$@)
+	$(V)$(LD) -o $(NUBOOTEMULIB) -r $(NUBOOTEMUOBJ)
+$(NUBOOTMSPLIB): $(NUBOOTMSPOBJ) 
+	$(call print,Linking:,$<,$@)
+	$(V)$(LD) -o $(NUBOOTMSPLIB) -r $(NUBOOTMSPOBJ)
+$(NUBOOTDEBLIB): $(NUBOOTOBJ) 
+	$(call print,Linking:,$<,$@)
+	$(V)$(LD) -o $(NUBOOTDEBLIB) -r $(NUBOOTOBJ)
+$(NUBOOTPTNDEBLIB): $(NUBOOTPTNOBJ) 
+	$(call print,Linking:,$<,$@)
+	$(V)$(LD) -o $(NUBOOTPTNDEBLIB) -r $(NUBOOTPTNOBJ)
+$(NUBOOTISVDEBLIB): $(NUBOOTISVOBJ) 
+	$(call print,Linking:,$<,$@)
+	$(V)$(LD) -o $(NUBOOTISVDEBLIB) -r $(NUBOOTISVOBJ)
+$(NUBOOTEMUDEBLIB): $(NUBOOTEMUOBJ) 
+	$(call print,Linking:,$<,$@)
+	$(V)$(LD) -o $(NUBOOTEMUDEBLIB) -r $(NUBOOTEMUOBJ)
+$(NUBOOTMSPDEBLIB): $(NUBOOTMSPOBJ) 
+	$(call print,Linking:,$<,$@)
+	$(V)$(LD) -o $(NUBOOTMSPDEBLIB) -r $(NUBOOTMSPOBJ)
+
+# Compile C code
+$(BUILD_DIR)/%.o: %.c
+	$(call print,Compiling:,$<,$@)
+	$(V)$(CC) -c $(CFLAGS) -MMD -MF $(BUILD_DIR)/$*.d  -o $@ $<
+$(BUILD_DIR)/%.o: $(BUILD_DIR)/%.c
+	$(call print,Compiling:,$<,$@)
+	$(V)$(CC) -c $(CFLAGS) -MMD -MF $(BUILD_DIR)/$*.d  -o $@ $<
+
+# Assemble assembly code
+$(BUILD_DIR)/%.o: %.s
+	$(call print,Assembling:,$<,$@)
+	$(V)$(CC) -c $(CFLAGS) $(foreach i,$(INCLUDE_DIRS),-Wa,-I$(i)) -x assembler-with-cpp -MMD -MF $(BUILD_DIR)/$*.d  -o $@ $<
+
+# Link final ELF file
+$(LIB): $(NUBOOTOBJS) $(O_FILES)
+	@$(PRINT) "$(GREEN)Linking $(VERSION):  $(BLUE)$@ $(NO_COL)\n"
+	$(V)$(AR) rcs -o $@ $(O_FILES)
+
+all:
+	$(MAKE) VERSION=libnusys
+	$(MAKE) VERSION=libnusys_d
+
+.PHONY: clean default
+# with no prerequisites, .SECONDARY causes no intermediate target to be removed
+.SECONDARY:
+
+# Remove built-in rules, to improve performance
+MAKEFLAGS += --no-builtin-rules
+
+-include $(DEP_FILES)
+
+print-% : ; $(info $* is a $(flavor $*) variable set to [$($*)]) @true

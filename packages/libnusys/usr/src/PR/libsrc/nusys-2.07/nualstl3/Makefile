@@ -1,124 +1,160 @@
-#!smake -k
-#
-# 	NuSystem Makefile for NINTENDO64
-#
-#	Copyright (C) 1998, NINTENDO Co,Ltd.
-#
-include /usr/include/n64/make/PRdefs
+# Makefile to build nualstl
 
-#
-# NuSystem Install Directory
-#
-NUSYSINCDIR	= 	/usr/include/n64/nusys
-NUSYSLIBDIR	= 	/usr/lib/n64/nusys
-ROMOBJDIR	=	libnualstl
-DEBUGOBJDIR	=	libnualstl_d
-NROMOBJDIR	=	libnualstl_n
-NDEBUGOBJDIR	=	libnualstl_n_d
+include util.mk
 
-#
-# Environment
-#
-TARGETS	=	all
-MAKE		=	make
-OPTIMIZER	=	$(OPTMZ)
-RM		=	rm
-CP		=	cp
-AR		=	mips-n64-ar
-ARFLAGS	=	cr
+# Preprocessor definitions
+DEFINES := NU_SYSTEM=1 USE_EPI=1
 
-#
-# NUSYS LIBRARY
-#
-#
-LIBALSTLSRC	=	nuaustlmgr.c			\
-			nuaustlinit.c			\
-			nuaustlptrbankinit.c		\
-			nuaustlptrbankset.c		\
-			nuaustlseqplayerinit.c		\
-			nuaustlseqplayerdataset.c	\
-			nuaustlseqplayerplay.c		\
-			nuaustlsndplayerinit.c		\
-			nuaustlsndplayerdataset.c	\
-			nuaustlsndplayerplay.c		\
-			nuauprenmifuncset.c		\
-			nuauprenmiproc.c		\
-			nuaustlheap.c
+SRC_DIRS :=
 
-ROMLIB		=	libnualstl.a
-DEBUGLIB	=	libnualstl_d.a
-NROMLIB	=	libnualstl_n.a
-NDEBUGLIB	=	libnualstl_n_d.a
+# Whether to hide commands or not
+VERBOSE ?= 0
+ifeq ($(VERBOSE),0)
+  V := @
+endif
 
+# Whether to colorize build messages
+COLOR ?= 1
 
-LIBALSTLOBJ	=	$(LIBALSTLSRC:.c=.o)
+# VERSION 	   - selects the version of the library to build
+#   libnualstl	   - standard library
+#   libnualstl_d   - n_audio library
+#   libnualstl_n   - debug library
+#   libnualstl_n_d - debug n_audio library
+VERSION ?= libnualstl
+$(eval $(call validate-option,VERSION,libnualstl libnualstl_d libnualstl_n libnualstl_n_d))
 
+ifeq      ($(VERSION),libnualstl)
+	OPT_FLAGS := -O2
+else ifeq ($(VERSION),libnualstl_n)
+	OPT_FLAGS := -O2
+	DEFINES += N_AUDIO=1
+else ifeq ($(VERSION),libnualstl_d)
+	OPT_FLAGS := -O0 -g
+	DEFINES += NU_DEBUG=1
+else ifeq ($(VERSION),libnualstl_n_d)
+	OPT_FLAGS := -O0 -g
+	DEFINES += NU_DEBUG=1
+	DEFINES += N_AUDIO=1
+endif
 
-LCDEFS		=	-mabi=32 -march=vr4300 -mtune=vr4300 -mfix4300 -mno-shared $(MOPTDEF) -DNU_SYSTEM  -DUSE_EPI $(MUCODE)
-LCINCS 	= 	-I.. -I$(NUSYSINCDIR) -I/usr/include/n64 -I/usr/include/n64/PR
+TARGET := $(VERSION)
 
-LCOPTS		=	-D_MIPS_SZLONG=32 -D_MIPS_SZINT=32
+ifeq ($(filter clean,$(MAKECMDGOALS)),)
+  $(info ==== Build Options ====)
+  $(info Version:        $(VERSION))
+  $(info =======================)
+endif
 
-LDIRT	=	$(APP)
+#==============================================================================#
+# Target Executable and Sources                                                #
+#==============================================================================#
+BUILD_DIR_BASE := build
+# BUILD_DIR is the location where all build artifacts are placed
+BUILD_DIR      := $(BUILD_DIR_BASE)/$(VERSION)
+LIB            := $(BUILD_DIR)/$(TARGET).a
 
-.SUFFICS: .c .o
+# Directories containing source files
+SRC_DIRS += src
 
-.c.o:
-	$(CC) $(OPTIMIZER) $(DEFINES) $(LCDEFS) -G 0 -c $(LCINCS) $(LCOPTS) $(LDFLAGS) $<
+C_FILES           := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.c))
+S_FILES           := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.s))
 
+# Object files
+O_FILES := $(foreach file,$(C_FILES),$(BUILD_DIR)/$(file:.c=.o)) \
+           $(foreach file,$(S_FILES),$(BUILD_DIR)/$(file:.s=.o))
 
-.PATH:	..
+# Automatic dependency files
+DEP_FILES := $(O_FILES:.o=.d) $(ASM_O_FILES:.o=.d)
 
+#==============================================================================#
+# Compiler Options                                                             #
+#==============================================================================#
 
-#
-#	compile 
-#
+AS        := mips-n64-as
+CC        := mips-n64-gcc
+CPP       := cpp
+LD        := mips-n64-ld
+AR        := mips-n64-ar
 
-default:	$(TARGETS)
+INCLUDE_DIRS += /usr/include/n64 /usr/include/n64/PR /usr/include/n64/nusys include $(BUILD_DIR) $(BUILD_DIR)/include src .
 
-all:		makedir nualstl nualstl_n
+C_DEFINES := $(foreach d,$(DEFINES),-D$(d))
+DEF_INC_CFLAGS := $(foreach i,$(INCLUDE_DIRS),-I$(i)) $(C_DEFINES)
 
-makedir:
-	-mkdir $(ROMOBJDIR)
-	-mkdir $(DEBUGOBJDIR)
-	-mkdir $(NROMOBJDIR)
-	-mkdir $(NDEBUGOBJDIR)
+CFLAGS = -G 0 $(OPT_FLAGS) -mabi=32 -ffreestanding -mfix4300 $(DEF_INC_CFLAGS) -Wall
+ASFLAGS     := -march=vr4300 -mabi=32 $(foreach i,$(INCLUDE_DIRS),-I$(i)) $(foreach d,$(DEFINES),--defsym $(d))
 
-nualstl:
-	$(MAKE) -C $(ROMOBJDIR) -f ../Makefile OPTMZ=-O2 $(ROMLIB)  VPATH='..'
-	$(MAKE) -C $(DEBUGOBJDIR) -f ../Makefile OPTMZ=-g MOPTDEF=-DNU_DEBUG $(DEBUGLIB) VPATH='..'
+# C preprocessor flags
+CPPFLAGS := -P -Wno-trigraphs $(DEF_INC_CFLAGS)
 
-nualstl_n:
-	$(MAKE) -C $(NROMOBJDIR) -f ../Makefile OPTMZ=-O2 MUCODE=-DN_AUDIO $(NROMLIB)  VPATH='..'
-	$(MAKE) -C $(NDEBUGOBJDIR) -f ../Makefile OPTMZ=-g MOPTDEF=-DNU_DEBUG MUCODE=-DN_AUDIO $(NDEBUGLIB) VPATH='..'
+# tools
+PRINT = printf
 
-$(ROMLIB):	$(LIBALSTLOBJ) nualstl.h
-	$(AR) $(ARFLAGS) ../$(ROMLIB) $(LIBALSTLOBJ)
+ifeq ($(COLOR),1)
+NO_COL  := \033[0m
+RED     := \033[0;31m
+GREEN   := \033[0;32m
+BLUE    := \033[0;34m
+YELLOW  := \033[0;33m
+BLINK   := \033[33;5m
+endif
 
-$(DEBUGLIB):	$(LIBALSTLOBJ) nualstl.h
-	$(AR) $(ARFLAGS) ../$(DEBUGLIB) $(LIBALSTLOBJ)
+# Common build print status function
+define print
+  @$(PRINT) "$(GREEN)$(1) $(YELLOW)$(2)$(GREEN) -> $(BLUE)$(3)$(NO_COL)\n"
+endef
 
-$(NROMLIB):	$(LIBALSTLOBJ) nualstl.h
-	$(AR) $(ARFLAGS) ../$(NROMLIB) $(LIBALSTLOBJ)
+#==============================================================================#
+# Main Targets                                                                 #
+#==============================================================================#
 
-$(NDEBUGLIB):	$(LIBALSTLOBJ) nualstl.h
-	$(AR) $(ARFLAGS) ../$(NDEBUGLIB) $(LIBALSTLOBJ)
-
-install:
-	$(CP) nualstl.h $(NUSYSINCDIR)
-	$(CP) nualstl_n.h $(NUSYSINCDIR)
-	$(CP) $(ROMLIB) $(NUSYSLIBDIR)
-	$(CP) $(DEBUGLIB) $(NUSYSLIBDIR)
-	$(CP) $(NROMLIB) $(NUSYSLIBDIR)
-	$(CP) $(NDEBUGLIB) $(NUSYSLIBDIR)
-
+# Default target
+default: $(LIB)
 
 clean:
-	$(RM) $(ROMOBJDIR)/*.o
-	$(RM) $(DEBUGOBJDIR)/*.o
-	$(RM) $(NROMOBJDIR)/*.o
-	$(RM) $(NDEBUGOBJDIR)/*.o
-	$(RM) $(NROMLIB)
-	$(RM) $(NDEBUGLIB)
-	$(RM) $(ROMLIB)
-	$(RM) $(DEBUGLIB)
+	$(RM) -r $(BUILD_DIR_BASE)
+
+ALL_DIRS := $(BUILD_DIR) $(addprefix $(BUILD_DIR)/,$(SRC_DIRS))
+
+# Make sure build directory exists before compiling anything
+DUMMY != mkdir -p $(ALL_DIRS)
+
+#==============================================================================#
+# Compilation Recipes                                                          #
+#==============================================================================#
+
+# Compile C code
+$(BUILD_DIR)/%.o: %.c
+	$(call print,Compiling:,$<,$@)
+	$(V)$(CC) -c $(CFLAGS) -MMD -MF $(BUILD_DIR)/$*.d  -o $@ $<
+$(BUILD_DIR)/%.o: $(BUILD_DIR)/%.c
+	$(call print,Compiling:,$<,$@)
+	$(V)$(CC) -c $(CFLAGS) -MMD -MF $(BUILD_DIR)/$*.d  -o $@ $<
+
+# Assemble assembly code
+$(BUILD_DIR)/%.o: %.s
+	$(call print,Assembling:,$<,$@)
+	$(V)$(CC) -c $(CFLAGS) $(foreach i,$(INCLUDE_DIRS),-Wa,-I$(i)) -x assembler-with-cpp -MMD -MF $(BUILD_DIR)/$*.d  -o $@ $<
+
+# Link final ELF file
+$(LIB): $(O_FILES)
+	@$(PRINT) "$(GREEN)Linking $(VERSION):  $(BLUE)$@ $(NO_COL)\n"
+	$(V)$(AR) rcs -o $@ $(O_FILES)
+
+all:
+	$(MAKE) VERSION=libnualstl
+	$(MAKE) VERSION=libnualstl_d
+	$(MAKE) VERSION=libnualstl_n
+	$(MAKE) VERSION=libnualstl_n_d
+
+.PHONY: clean default
+# with no prerequisites, .SECONDARY causes no intermediate target to be removed
+.SECONDARY:
+
+# Remove built-in rules, to improve performance
+MAKEFLAGS += --no-builtin-rules
+
+-include $(DEP_FILES)
+
+print-% : ; $(info $* is a $(flavor $*) variable set to [$($*)]) @true

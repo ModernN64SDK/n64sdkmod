@@ -133,6 +133,10 @@ $(LIB): $(O_FILES)
 	@$(PRINT) "$(GREEN)Linking $(VERSION):  $(BLUE)$@ $(NO_COL)\n"
 	$(V)$(AR) rcs -o $@ $(O_FILES)
 
+all:
+	$(MAKE) VERSION=libnustd
+	$(MAKE) VERSION=libnustd_d
+
 .PHONY: clean default
 # with no prerequisites, .SECONDARY causes no intermediate target to be removed
 .SECONDARY:

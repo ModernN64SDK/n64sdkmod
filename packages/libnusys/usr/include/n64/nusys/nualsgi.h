@@ -26,7 +26,7 @@ extern "C" {
 /*  (1)The Heap size of alInit						*/
 /* AUDIO HEAP calls the alHeapAlloc function and reserves heap memory  	*/
 /* when each driver of the synthesizer, sequence and sound is initializd.*/
-/* The following is expressing how much of the alHeap area is needed then:/*
+/* The following is expressing how much of the alHeap area is needed then:*/
 /*  144 + maxPVoices * 432 + 32 * maxUPdates + FxType			*/
 /*									*/
 /* FxType varies depending on effect types and takes the following values:*/

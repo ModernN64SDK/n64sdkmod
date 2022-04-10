@@ -142,6 +142,12 @@ $(LIB): $(O_FILES)
 	@$(PRINT) "$(GREEN)Linking $(VERSION):  $(BLUE)$@ $(NO_COL)\n"
 	$(V)$(AR) rcs -o $@ $(O_FILES)
 
+all:
+	$(MAKE) VERSION=libmus
+	$(MAKE) VERSION=libmus_d
+	$(MAKE) VERSION=libn_mus
+	$(MAKE) VERSION=libn_mus_d
+
 .PHONY: clean default
 # with no prerequisites, .SECONDARY causes no intermediate target to be removed
 .SECONDARY:

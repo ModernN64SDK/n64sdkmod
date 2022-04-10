@@ -1,133 +1,148 @@
-#!smake
-#
-# Makefile for n_audio library subdirectory
-#
+# Makefile to build libn_audio
 
-include /usr/include/n64/make/PRdefs
+include util.mk
 
-FINALLIB = libn_audio.a
-DEBUGLIB = libn_audio_d.a
+# Preprocessor definitions
+DEFINES := N_MICRO=1
 
-ARCHIVES=$(FINALLIB)
+SRC_DIRS :=
+
+# Whether to hide commands or not
+VERBOSE ?= 0
+ifeq ($(VERBOSE),0)
+  V := @
+endif
+
+# Whether to colorize build messages
+COLOR ?= 1
+
+# VERSION 	   - selects the version of the library to build
+#   libn_audio	   - standard library
+#   libn_audio_d   - debug library
+VERSION ?= libn_audio
+$(eval $(call validate-option,VERSION,libn_audio libn_audio_d))
+
+ifeq      ($(VERSION),libn_audio)
+	OPT_FLAGS	:= -O3
+	DEFINES		+= NDEBUG=1 _FINALROM=1
+else ifeq ($(VERSION),libn_audio_d)
+	OPT_FLAGS	:= -O0 -g
+	DEFINES		+= _DEBUG=1
+endif
+
+TARGET := $(VERSION)
+
+ifeq ($(filter clean,$(MAKECMDGOALS)),)
+  $(info ==== Build Options ====)
+  $(info Version:        $(VERSION))
+  $(info =======================)
+endif
+
+#==============================================================================#
+# Target Executable and Sources                                                #
+#==============================================================================#
+BUILD_DIR_BASE := build
+# BUILD_DIR is the location where all build artifacts are placed
+BUILD_DIR      := $(BUILD_DIR_BASE)/$(VERSION)
+LIB            := $(BUILD_DIR)/$(TARGET).a
+
+# Directories containing source files
+SRC_DIRS += src
+
+C_FILES           := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.c))
+S_FILES           := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.s))
+
+# Object files
+O_FILES := $(foreach file,$(C_FILES),$(BUILD_DIR)/$(file:.c=.o)) \
+           $(foreach file,$(S_FILES),$(BUILD_DIR)/$(file:.s=.o))
+
+# Automatic dependency files
+DEP_FILES := $(O_FILES:.o=.d) $(ASM_O_FILES:.o=.d)
+
+#==============================================================================#
+# Compiler Options                                                             #
+#==============================================================================#
+
+AS        := mips-n64-as
+CC        := mips-n64-gcc
+CPP       := cpp
+LD        := mips-n64-ld
+AR        := mips-n64-ar
 
 AUDIOSRC = ../libultra/audio
 
-LCINCS = -I. -I$(AUDIOSRC) -I$(ROOT)/usr/include -I$(ROOT)/usr/include/PR
-LCDEFS = -G 0 -D_ULTRA64 -DN_MICRO
-LCOPTS = -DNDEBUG -D_FINALROM
-OPTIMIZER = -O3
+INCLUDE_DIRS += /usr/include/n64 /usr/include/n64/PR $(AUDIOSRC) include $(BUILD_DIR) $(BUILD_DIR)/include src .
 
-CFILES  = \
-	n_auxbus.c \
-	n_drvrNew.c \
-	n_env.c \
-	n_load.c \
-	n_mainbus.c \
-	n_resample.c \
-	n_reverb.c \
-	n_save.c \
-	n_sl.c \
-	\
-	n_synaddplayer.c \
-	n_synallocfx.c \
-	n_synallocvoice.c \
-	n_syndelete.c \
-	n_synfreefx.c \
-	n_synfreevoice.c \
-	n_syngetfxref.c \
-	n_syngetpriority.c \
-	n_synremoveplayer.c \
-	n_synsetfxmix.c \
-	n_synsetfxparam.c \
-	n_synsetpan.c \
-	n_synsetpitch.c \
-	n_synsetpriority.c \
-	n_synsetvol.c \
-	n_synstartvoice.c \
-	n_synstartvoiceparam.c \
-	n_synstopvoice.c \
-	n_synthesizer.c\
-	\
-	n_seqplayer.c\
-	n_seqpdelete.c\
-	n_seqpgetchlvol.c\
-	n_seqpgetfxmix.c\
-	n_seqpgetpan.c\
-	n_seqpgetpriority.c\
-	n_seqpgetprogram.c\
-	n_seqpgetseq.c\
-	n_seqpgetstate.c\
-	n_seqpgettempo.c\
-	n_seqpgetvol.c\
-	n_seqpplay.c\
-	n_seqpsendmidi.c\
-	n_seqpsetbank.c\
-	n_seqpsetchlvol.c\
-	n_seqpsetfxmix.c\
-	n_seqpsetpan.c\
-	n_seqpsetpriority.c\
-	n_seqpsetprogram.c\
-	n_seqpsetseq.c\
-	n_seqpsettempo.c\
-	n_seqpsetvol.c\
-	n_seqpstop.c\
-	n_seqploop.c\
-	\
-	n_csplayer.c\
-	n_cspdelete.c\
-	n_cspgetchlvol.c\
-	n_cspgetfxmix.c\
-	n_cspgetpan.c\
-	n_cspgetpriority.c\
-	n_cspgetprogram.c\
-	n_cspgetseq.c\
-	n_cspgetstate.c\
-	n_cspgettempo.c\
-	n_cspgetvol.c\
-	n_cspplay.c\
-	n_cspsendmidi.c\
-	n_cspsetbank.c\
-	n_cspsetchlvol.c\
-	n_cspsetfxmix.c\
-	n_cspsetpan.c\
-	n_cspsetpriority.c\
-	n_cspsetprogram.c\
-	n_cspsetseq.c\
-	n_cspsettempo.c\
-	n_cspsetvol.c\
-	n_cspstop.c\
-	\
-	n_sndpallocate.c\
-	n_sndpdeallocate.c\
-	n_sndpdelete.c\
-	n_sndpgetstate.c\
-	n_sndplayer.c\
-	n_sndpplay.c\
-	n_sndpplayat.c\
-	n_sndpsetfxmix.c\
-	n_sndpsetpan.c\
-	n_sndpsetpitch.c\
-	n_sndpsetpriority.c\
-	n_sndpsetvol.c\
-	n_sndpstop.c\
-	n_sndpgetsound.c\
-	n_sndpsetsound.c\
-	\
-	n_event.c\
-	n_seq.c\
-	n_csq.c
+C_DEFINES := $(foreach d,$(DEFINES),-D$(d))
+DEF_INC_CFLAGS := $(foreach i,$(INCLUDE_DIRS),-I$(i)) $(C_DEFINES)
 
-COBJECTS = $(CFILES:.c=.o)
+CFLAGS = -G 0 $(OPT_FLAGS) -mabi=32 -ffreestanding -mfix4300 $(DEF_INC_CFLAGS) -Wall
+ASFLAGS     := -march=vr4300 -mabi=32 $(foreach i,$(INCLUDE_DIRS),-I$(i)) $(foreach d,$(DEFINES),--defsym $(d))
 
-LDIRT = $(ARCHIVES)
+# C preprocessor flags
+CPPFLAGS := -P -Wno-trigraphs $(DEF_INC_CFLAGS)
 
-$(ARCHIVES): $(COBJECTS)
-	ar r $(ARCHIVES) $(COBJECTS)
+# tools
+PRINT = printf
 
-deb:
-	rm -f *.o
-	make ARCHIVES=$(DEBUGLIB) OPTIMIZER='-g -O' LCOPTS='-D_DEBUG'
+ifeq ($(COLOR),1)
+NO_COL  := \033[0m
+RED     := \033[0;31m
+GREEN   := \033[0;32m
+BLUE    := \033[0;34m
+YELLOW  := \033[0;33m
+BLINK   := \033[33;5m
+endif
 
-include $(COMMONRULES)
+# Common build print status function
+define print
+  @$(PRINT) "$(GREEN)$(1) $(YELLOW)$(2)$(GREEN) -> $(BLUE)$(3)$(NO_COL)\n"
+endef
 
-default: $(ARCHIVES)
+#==============================================================================#
+# Main Targets                                                                 #
+#==============================================================================#
+
+# Default target
+default: $(LIB)
+
+clean:
+	$(RM) -r $(BUILD_DIR_BASE)
+
+ALL_DIRS := $(BUILD_DIR) $(addprefix $(BUILD_DIR)/,$(SRC_DIRS))
+
+# Make sure build directory exists before compiling anything
+DUMMY != mkdir -p $(ALL_DIRS)
+
+#==============================================================================#
+# Compilation Recipes                                                          #
+#==============================================================================#
+
+# Compile C code
+$(BUILD_DIR)/%.o: %.c
+	$(call print,Compiling:,$<,$@)
+	$(V)$(CC) -c $(CFLAGS) -MMD -MF $(BUILD_DIR)/$*.d  -o $@ $<
+$(BUILD_DIR)/%.o: $(BUILD_DIR)/%.c
+	$(call print,Compiling:,$<,$@)
+	$(V)$(CC) -c $(CFLAGS) -MMD -MF $(BUILD_DIR)/$*.d  -o $@ $<
+
+# Assemble assembly code
+$(BUILD_DIR)/%.o: %.s
+	$(call print,Assembling:,$<,$@)
+	$(V)$(CC) -c $(CFLAGS) $(foreach i,$(INCLUDE_DIRS),-Wa,-I$(i)) -x assembler-with-cpp -MMD -MF $(BUILD_DIR)/$*.d  -o $@ $<
+
+# Link final ELF file
+$(LIB): $(O_FILES)
+	@$(PRINT) "$(GREEN)Linking $(VERSION):  $(BLUE)$@ $(NO_COL)\n"
+	$(V)$(AR) rcs -o $@ $(O_FILES)
+
+.PHONY: clean default
+# with no prerequisites, .SECONDARY causes no intermediate target to be removed
+.SECONDARY:
+
+# Remove built-in rules, to improve performance
+MAKEFLAGS += --no-builtin-rules
+
+-include $(DEP_FILES)
+
+print-% : ; $(info $* is a $(flavor $*) variable set to [$($*)]) @true
