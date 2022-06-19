@@ -12,21 +12,21 @@ default:
 	$(MAKE) -C nualstl3 all
 
 install: default
-#	$(MAKE) -C nusys      -f Makefile install
+#	Install nusys binaries and headers
 	mkdir -p build/inc
 	$(CP) nusys/include/nusys.h build/inc
 	$(CP) nusys/build/libnusys/*.o build
 	$(CP) nusys/build/libnusys/*.a build
 	$(CP) nusys/build/libnusys_d/*.o build
 	$(CP) nusys/build/libnusys_d/*.a build
-#	$(MAKE) -C nualsgi    -f Makefile install
+#	Install nualsgi binaries and headers
 	$(CP) nualsgi/include/nualsgi.h build/inc
 	$(CP) nualsgi/include/nualsgi_n.h build/inc
 	$(CP) nualsgi/build/libnualsgi/*.a build
 	$(CP) nualsgi/build/libnualsgi_d/*.a build
 	$(CP) nualsgi/build/libnualsgi_n/*.a build
 	$(CP) nualsgi/build/libnualsgi_n_d/*.a build
-#	$(MAKE) -C nualstl3    -f Makefile install 
+#	Install nualstl3 binaries and headers
 	$(CP) nualstl3/include/nualstl.h build/inc
 	$(CP) nualstl3/include/nualstl_n.h build/inc
 	$(CP) nualstl3/build/libnualstl/*.a build

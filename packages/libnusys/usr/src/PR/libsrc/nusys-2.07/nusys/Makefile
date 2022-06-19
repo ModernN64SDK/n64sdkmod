@@ -23,7 +23,7 @@ VERSION ?= libnusys
 $(eval $(call validate-option,VERSION,libnusys libnusys_d))
 
 ifeq      ($(VERSION),libnusys)
-	OPT_FLAGS := -O3
+	OPT_FLAGS := -Os
 else ifeq ($(VERSION),libnusys_d)
 	OPT_FLAGS := -O0 -g
 	DEFINES += NU_DEBUG=1
@@ -121,7 +121,7 @@ INCLUDE_DIRS += /usr/include/n64 /usr/include/n64/PR /usr/include/n64/nusys incl
 C_DEFINES := $(foreach d,$(DEFINES),-D$(d))
 DEF_INC_CFLAGS := $(foreach i,$(INCLUDE_DIRS),-I$(i)) $(C_DEFINES)
 
-CFLAGS = -G 0 $(OPT_FLAGS) -mabi=32 -ffreestanding -mfix4300 $(DEF_INC_CFLAGS) -Wall
+CFLAGS = -G 0 $(OPT_FLAGS) -mabi=32 -ffreestanding -mfix4300 $(DEF_INC_CFLAGS) -Wall -fwrapv
 ASFLAGS     := -march=vr4300 -mabi=32 $(foreach i,$(INCLUDE_DIRS),-I$(i)) $(foreach d,$(DEFINES),--defsym $(d))
 
 # C preprocessor flags

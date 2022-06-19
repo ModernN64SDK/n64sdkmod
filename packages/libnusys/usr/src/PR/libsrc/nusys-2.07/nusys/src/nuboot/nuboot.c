@@ -34,6 +34,22 @@ static void idle(void *arg);		/* idle function */
 extern void mainproc(void *arg);		/* game main function */
 
 
+#ifdef ISV64
+extern u32 gISVDbgPrnAdrs;
+extern u32 gISVFlag;
+
+void osInitialize_fakeisv() {
+    /* global flag to skip `__checkHardware_isv` from being called. */
+    gISVFlag = 0x49533634;  // 'IS64'
+ 
+    /* printf writes go to this address. */
+    gISVDbgPrnAdrs = 0x13FF0000;
+ 
+    /* `__printfunc`, used by `osSyncPrintf` will be set. */
+    __osInitialize_isv();
+}
+#endif
+
 /*----------------------------------------------------------------------*/
 /*	Initialize and activate NuSYS      				*/
 /*	IN:	The pointer for the main function 			*/
@@ -44,6 +60,10 @@ void nuBoot(void)
 
     __osInitialize_common();	/* Initialize N64OS   */
     
+#ifdef ISV64
+    osInitialize_fakeisv();
+#endif
+
     /* Create and execute the Idle thread  */
     osCreateThread(&IdleThread,NU_IDLE_THREAD_ID, idle, 0,
 		   (IdleStack + NU_IDLE_STACK_SIZE/8), 10);
