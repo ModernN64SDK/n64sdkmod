@@ -11,7 +11,7 @@
 /*======================================================================*/
 #include <nusys.h>
 
-NUContRmbCtl	nuContRmbCtl[NU_CONT_MAXCONTROLLERS];
+NUContRmbCtl	nuContRmbCtl[NU_CONT_MAXCONTROLLERS] __attribute__((aligned(8)));
 u32		nuContRmbSearchTime = NU_CONT_RMB_AUTO_SEARCHTIME;
 
 

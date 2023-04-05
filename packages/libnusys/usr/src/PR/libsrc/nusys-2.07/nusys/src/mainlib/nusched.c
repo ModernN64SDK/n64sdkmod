@@ -65,11 +65,11 @@ static void nuScWaitTaskReady(NUScTask *task);
 /*----------------------------------------------------------------------*/
 /*	variable							*/
 /*----------------------------------------------------------------------*/
-static u64	nuScStack[NU_SC_STACK_SIZE/sizeof(u64)];	/* event thread stack	*/
-static u64	nuScAudioStack[NU_SC_STACK_SIZE/sizeof(u64)];/* audio thread stack */
-static u64	nuScGraphicsStack[NU_SC_STACK_SIZE/sizeof(u64)];/*gfx thread stack */
+static u64	nuScStack[NU_SC_STACK_SIZE/sizeof(u64)] __attribute__((aligned(16)));	/* event thread stack	*/
+static u64	nuScAudioStack[NU_SC_STACK_SIZE/sizeof(u64)] __attribute__((aligned(16)));/* audio thread stack */
+static u64	nuScGraphicsStack[NU_SC_STACK_SIZE/sizeof(u64)] __attribute__((aligned(16)));/*gfx thread stack */
 
-NUSched		nusched;		/* Scheduler structure  	*/
+NUSched		nusched __attribute__((aligned(16)));		/* Scheduler structure  	*/
 NUScPreNMIFunc	nuScPreNMIFunc = NULL;	/* PRE NMI callback function ptr */
 
 u8		nuVersion[] = "NuSystem"NU_VERSION; /* Please do not delete this */
@@ -82,7 +82,7 @@ u8		nuScPreNMIFlag;
 /*------------------------------*/
 /*	Performance		*/
 /*------------------------------*/
-NUDebTaskPerf		nuDebTaskPerf[NU_DEB_PERF_BUF_NUM];
+NUDebTaskPerf		nuDebTaskPerf[NU_DEB_PERF_BUF_NUM]  __attribute__((aligned(16)));
 NUDebTaskPerf*		nuDebTaskPerfPtr;
 u32			nuDebTaskPerfInterval = 1;
 volatile u32		nuDebTaskPerfCnt = 0;

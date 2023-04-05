@@ -346,7 +346,7 @@ static Mtx	view_mtx;
 static Mtx	line_mtx;
 static Mtx	scale_mtx;
 static Mtx	move_mtx;
-static Gfx	glistBuf[2][512];
+static Gfx	glistBuf[2][512]  __attribute__((aligned(16)));
 static u32	glistCnt = 0;
 
 /*----------------------------------------------------------------------*/

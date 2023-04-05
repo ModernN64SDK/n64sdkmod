@@ -11,11 +11,11 @@
 /*======================================================================*/
 #include <nusys.h>
 
-OSMesgQueue	nuSiMesgQ;		/* SI event  message queue */
-static OSMesg	nuSiMesgBuf[8];		/* SI event  message buffer */
+OSMesgQueue	nuSiMesgQ __attribute__((aligned(8)));		/* SI event  message queue */
+static OSMesg	nuSiMesgBuf[8] __attribute__((aligned(8)));		/* SI event  message buffer */
 static OSThread siMgrThread;
-static u64	siMgrStack[NU_SI_STACK_SIZE/sizeof(u64)];
-OSMesgQueue	nuSiMgrMesgQ;		/* SI Manager queue */
+static u64	siMgrStack[NU_SI_STACK_SIZE/sizeof(u64)] __attribute__((aligned(16)));
+OSMesgQueue	nuSiMgrMesgQ __attribute__((aligned(8)));		/* SI Manager queue */
 NUCallBackList*	nuSiCallBackList = NULL;/* Callback function list */
 
 static void nuSiMgrThread(void* arg);

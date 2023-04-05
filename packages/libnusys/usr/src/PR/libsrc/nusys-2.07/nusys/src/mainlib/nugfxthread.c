@@ -11,11 +11,11 @@
 
 NUGfxFunc	nuGfxFunc = NULL;
 NUGfxPreNMIFunc	nuGfxPreNMIFunc = NULL;
-OSMesgQueue	nuGfxMesgQ;
+OSMesgQueue	nuGfxMesgQ __attribute__((aligned(8)));
 OSThread	nuGfxThread;			/* graphic thread */
-static OSMesg	nuGfxMesgBuf[NU_GFX_MESGS];
+static OSMesg	nuGfxMesgBuf[NU_GFX_MESGS]__attribute__((aligned(8)));
 
-static u64	GfxStack[NU_GFX_STACK_SIZE/8];	/* gfx thread stack  */
+static u64	GfxStack[NU_GFX_STACK_SIZE/8] __attribute__((aligned(16)));	/* gfx thread stack  */
 
 
 /*---------------------------------------------------------------------------*/

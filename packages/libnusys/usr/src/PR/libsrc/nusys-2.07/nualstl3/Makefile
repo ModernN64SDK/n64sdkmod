@@ -25,9 +25,9 @@ VERSION ?= libnualstl
 $(eval $(call validate-option,VERSION,libnualstl libnualstl_d libnualstl_n libnualstl_n_d))
 
 ifeq      ($(VERSION),libnualstl)
-	OPT_FLAGS := -Os
+	OPT_FLAGS := -O2
 else ifeq ($(VERSION),libnualstl_n)
-	OPT_FLAGS := -Os
+	OPT_FLAGS := -O2
 	DEFINES += N_AUDIO=1
 else ifeq ($(VERSION),libnualstl_d)
 	OPT_FLAGS := -O0 -g

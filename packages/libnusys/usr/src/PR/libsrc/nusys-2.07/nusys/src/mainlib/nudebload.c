@@ -13,9 +13,9 @@
 #define LOAD_WIDTH	300
 #define	LOAD_HEIGHT	100
 
-static u32	auLoad[300];
-static u32	gfxRspLoad[300];
-static u32	gfxRdpLoad[300];
+static u32	auLoad[300]  __attribute__((aligned(16)));
+static u32	gfxRspLoad[300]  __attribute__((aligned(16)));
+static u32	gfxRdpLoad[300]  __attribute__((aligned(16)));
 static u32	idx = 0;
 
 /*----------------------------------------------------------------------*/

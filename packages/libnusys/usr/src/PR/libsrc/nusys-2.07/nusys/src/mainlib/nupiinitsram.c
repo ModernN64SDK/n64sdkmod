@@ -19,7 +19,7 @@
 #define SRAM_REL_DURATION       0x2
 
 OSPiHandle*		nuPiSramHandle;
-static OSPiHandle	SramHandle;
+static OSPiHandle	SramHandle __attribute__((aligned(8)));
 
 /*----------------------------------------------------------------------*/
 /*	nuPiSramInit  - Initialization of handle for SRAM		*/

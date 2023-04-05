@@ -18,16 +18,16 @@ NUScTask	nuAuTask;		/* Audio task buffer */
 NUScClient	nuAuClient;
 OSThread	nuAuMgrThread;
 u32		nuAuFrameCounter = 0;	/* Frame counter */
-ALGlobals	nuAuGlobal;
-NUAuSeqPlayer	nuAuSeqPlayer[2];
+ALGlobals	nuAuGlobal __attribute__((aligned(8)));
+NUAuSeqPlayer	nuAuSeqPlayer[2] __attribute__((aligned(8)));
 ALBankFile*	nuAuSeqBank_ptr;
 ALSeqFile*	nuAuSeqFile_ptr;
-ALSndPlayer	nuAuSndPlayer;
+ALSndPlayer	nuAuSndPlayer __attribute__((aligned(8)));
 ALBankFile*	nuAuSndBank_ptr = NULL;
 ALSndId*       	nuAuSndId = NULL;
 NUAuPreNMIFunc	nuAuPreNMIFunc = NULL;
 NUAuMgrFunc	nuAuMgrFunc = NULL;
-OSMesgQueue	nuAuMesgQ;
+OSMesgQueue	nuAuMesgQ __attribute__((aligned(8)));
 Acmd*		nuAuCmdListBuf; 		/* Command list pointer */
 u32		nuAuAcmdLen = NU_AU_CLIST_LEN;
 s16		nuAuFrameSampleSize;	/* Number of samples that can be created at one time */

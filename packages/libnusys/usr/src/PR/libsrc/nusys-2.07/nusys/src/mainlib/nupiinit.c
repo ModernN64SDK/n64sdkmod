@@ -12,8 +12,8 @@
 /*======================================================================*/
 #include <nusys.h>
 
-static OSMesgQueue	PiMesgQ;		/* PI message queue  */
-static OSMesg		PiMesgBuf[NU_PI_MESG_NUM];	/* PI message buffer */
+static OSMesgQueue	PiMesgQ __attribute__((aligned(8)));		/* PI message queue  */
+static OSMesg		PiMesgBuf[NU_PI_MESG_NUM] __attribute__((aligned(8)));	/* PI message buffer */
 OSPiHandle*		nuPiCartHandle;
 //OSMesgQueue		nuPiSemaphoreQ;
 //OSMesg		nuPiSemaphoreBuf;

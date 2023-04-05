@@ -10,7 +10,7 @@
 #include <nusys.h>
 #include <nualstl.h>
 
-NUAuSeqPlayer		nuAuSeqPlayer[NU_AU_SEQPLAYER_NUM];
+NUAuSeqPlayer		nuAuSeqPlayer[NU_AU_SEQPLAYER_NUM] __attribute__((aligned(8)));
 
 /*----------------------------------------------------------------------*/
 /*	nuAuStlSeqPlayerInit - Initialize the Sequence Player.		*/

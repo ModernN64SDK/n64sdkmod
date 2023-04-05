@@ -25,12 +25,12 @@ VERSION ?= libnualsgi
 $(eval $(call validate-option,VERSION,libnualsgi libnualsgi_n libnualsgi_d libnualsgi_n_d))
 
 ifeq      ($(VERSION),libnualsgi)
-	OPT_FLAGS := -Os
+	OPT_FLAGS := -O2
 else ifeq ($(VERSION),libnualsgi_d)
 	OPT_FLAGS := -O0 -g
 	DEFINES += NU_DEBUG=1
 else ifeq ($(VERSION),libnualsgi_n)
-	OPT_FLAGS := -Os
+	OPT_FLAGS := -O2
 	DEFINES += N_AUDIO=1
 else ifeq ($(VERSION),libnualsgi_n_d)
 	OPT_FLAGS := -O0 -g

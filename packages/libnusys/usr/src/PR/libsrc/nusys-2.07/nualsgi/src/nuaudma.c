@@ -11,7 +11,7 @@
 #include <nusys.h>
 #include <nualsgi.h>
 
-OSMesgQueue	nuAuDmaMesgQ;
+OSMesgQueue	nuAuDmaMesgQ __attribute__((aligned(8)));
 OSMesg*		nuAuDmaMesgBuf;
 OSIoMesg*	nuAuDmaIOMesgBuf;
 

@@ -15,10 +15,10 @@ u8			nuAuPreNMI = 0;
 NUAuPreNMIFunc		nuAuPreNMIFunc = NULL;
 
 NUScTask		nuAuTask;
-OSMesgQueue		nuAuMesgQ;
-OSMesgQueue 		nuAuRtnMesgQ;
+OSMesgQueue		nuAuMesgQ __attribute__((aligned(8)));
+OSMesgQueue 		nuAuRtnMesgQ __attribute__((aligned(8)));
 NUScClient		nuAuClient;
-static OSMesg		nuAuMesgBuf[NU_AU_MESG_MAX];
+static OSMesg		nuAuMesgBuf[NU_AU_MESG_MAX] __attribute__((aligned(8)));
 static OSMesg		nuAuRtnMesgBuf;
 
 static void nuAuStlSchedInstall(void);

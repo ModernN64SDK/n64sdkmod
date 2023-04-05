@@ -17,14 +17,14 @@ static NUScTask* nuGfxTask_ptr;
 static short	taskDoneMsg;
 static short	swapBufMsg;
 static OSThread	GfxTaskMgrThread;		/* gfx taskmgr thread */
-static u64	GfxTaskMgrStack[NU_GFX_TASKMGR_STACK_SIZE/sizeof(u64)];
-static OSMesg	nuGfxTaskMgrMesgBuf[NU_GFX_TASKMGR_MESGS];
+static u64	GfxTaskMgrStack[NU_GFX_TASKMGR_STACK_SIZE/sizeof(u64)] __attribute__((aligned(16)));
+static OSMesg	nuGfxTaskMgrMesgBuf[NU_GFX_TASKMGR_MESGS] __attribute__((aligned(8)));
 
 
 NUUcode*	nuGfxUcode;
 NUScTask	nuGfxTask[NU_GFX_TASK_NUM];	/* Graphics task structure */
 volatile u32	nuGfxTaskSpool;			/* Number of task spools */
-OSMesgQueue	nuGfxTaskMgrMesgQ;
+OSMesgQueue	nuGfxTaskMgrMesgQ __attribute__((aligned(8)));
 
 
 

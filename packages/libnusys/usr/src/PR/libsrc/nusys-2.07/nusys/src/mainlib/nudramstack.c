@@ -17,4 +17,4 @@
 /* The DRAM Stack buffer 						      */
 /* It is set as the separate object for making the 16-byte boundary sort.     */
 /*----------------------------------------------------------------------------*/
-u8 nuDramStack[SP_DRAM_STACK_SIZE8] __attribute__((aligned (16)));
+u8 nuDramStack[SP_DRAM_STACK_SIZE8] __attribute__((aligned(16)));

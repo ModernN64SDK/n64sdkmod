@@ -11,18 +11,18 @@
 /*======================================================================*/
 #include <nusys.h>
 
-OSMesgQueue	nuContWaitMesgQ;	/* Queue for Controller read wait */
+OSMesgQueue	nuContWaitMesgQ __attribute__((aligned(8)));	/* Queue for Controller read wait */
 static OSMesg	nuContWaitMesgBuf;
-OSMesgQueue	nuContDataMutexQ;
+OSMesgQueue	nuContDataMutexQ __attribute__((aligned(8)));
 static OSMesg	nuContDataMutexBuf;	/* Semaphore used in accessing data */
-OSContStatus	nuContStatus[NU_CONT_MAXCONTROLLERS];
-OSContPad	nuContData[NU_CONT_MAXCONTROLLERS];
+OSContStatus	nuContStatus[NU_CONT_MAXCONTROLLERS] __attribute__((aligned(8)));
+OSContPad	nuContData[NU_CONT_MAXCONTROLLERS] __attribute__((aligned(8)));
 u32		nuContNum;
 u32		nuContDataLockKey;
 
 NUContReadFunc	nuContReadFunc = NULL;	/* Callback function for */
 							/* end of Controller read */
-OSPfs		nuContPfs[NU_CONT_MAXCONTROLLERS]; /* pfs structure for Controller Manager */
+OSPfs		nuContPfs[NU_CONT_MAXCONTROLLERS] __attribute__((aligned(8))); /* pfs structure for Controller Manager */
 
 static s32 contRetrace(NUSiCommonMesg* mesg);
 static s32 contRead(NUSiCommonMesg* mesg);

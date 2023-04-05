@@ -22,7 +22,7 @@ extern unsigned char nuFont2[];
 /* * the number of windows * 3.  This is because gSPTextureRectangle */
 /* requires 3 buffers for each window. */
 
-static Gfx	conGlistBuf[2][NU_DEB_CON_TEXT_SIZE*NU_DEB_CON_WINDOW_NUM*3];
+static Gfx	conGlistBuf[2][NU_DEB_CON_TEXT_SIZE*NU_DEB_CON_WINDOW_NUM*3] __attribute__((aligned(16)));
 static u32	conGlistCnt = 0;
 
 #define	G_CC_TEXT	0, 0, 0, PRIMITIVE, 0, 0, 0, TEXEL0

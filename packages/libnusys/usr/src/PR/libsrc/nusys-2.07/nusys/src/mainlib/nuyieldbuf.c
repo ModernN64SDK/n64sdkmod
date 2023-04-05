@@ -17,4 +17,4 @@
 /* The yield buffer 							 */
 /* It is set as the separate object for making the 16-byte boundary sort */
 /*-----------------------------------------------------------------------*/
-u8 nuYieldBuf[NU_GFX_YIELD_BUF_SIZE];
+u8 nuYieldBuf[NU_GFX_YIELD_BUF_SIZE] __attribute__((aligned(16)));

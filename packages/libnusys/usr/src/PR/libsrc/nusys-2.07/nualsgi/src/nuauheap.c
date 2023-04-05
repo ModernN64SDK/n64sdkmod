@@ -10,7 +10,7 @@
 #include <nusys.h>
 #include <nualsgi.h>
 
-ALHeap		nuAuHeap;			/* Heap structure */
+ALHeap		nuAuHeap __attribute__((aligned(8)));			/* Heap structure */
 
 /*----------------------------------------------------------------------*/
 /*      nuAuHeapInit - Memory initialization                                 	*/
