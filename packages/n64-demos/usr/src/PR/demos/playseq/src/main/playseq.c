@@ -10,25 +10,22 @@
 
 #define COMP_SEQ_PLAY
 
-#include <ultra64.h>
-#include <assert.h>
-#include <PR/os.h>
-#include <PR/ramrom.h>
-#include "playseq.h"
-#include <PR/gu.h>
-
-static  ALMicroTime     initOsc(void **oscState, f32 *initVal, u8 oscType,
-                                u8 oscRate, u8 oscDepth, u8 oscDelay);
-static  ALMicroTime     updateOsc(void *oscState, f32 *updateVal);
-static  void            stopOsc(void *oscState);
-
-OSPiHandle	*handler;
-
 #define PROFILE
 
 #ifdef DEBUG
 #define PRINTF  osSyncPrintf
 #endif
+
+#include <ultra64.h>
+#include <assert.h>
+#include <PR/os.h>
+#include <PR/ramrom.h>
+#include "playseq.h"
+
+static  ALMicroTime     initOsc(void **oscState, f32 *initVal, u8 oscType,
+                                u8 oscRate, u8 oscDepth, u8 oscDelay);
+static  ALMicroTime     updateOsc(void *oscState, f32 *updateVal);
+static  void            stopOsc(void *oscState);
 
 #ifdef PROFILE
 #define CLOCKS_SEC      50000000.0
@@ -40,6 +37,8 @@ f32     CPUavgCount = 0;
 s32     RSPdeltaCount, RSPmaxCount = 0;
 f32     RSPavgCount = 0;
 #endif
+
+OSPiHandle	*handler;
 
 /*
  * Stacks for the threads as well as message queues for synchronization
@@ -65,11 +64,11 @@ static OSMesgQueue dmaMessageQ, taskMessageQ, retraceMessageQ;
 static OSMesg dmaMessageBuf[DMA_QUEUE_SIZE], taskMessageBuf, retraceMessageBuf;
 static OSIoMesg dmaIOMessageBuf;
 
-static OSTask *tlist[2];               /* globaltask list      */
-
 /*
  * Globals for audio
  */
+static ALHeap          hp;
+
 static ALGlobals       g;
 static ALSynConfig     c;
 static ALSeqpConfig    seqc;
@@ -85,11 +84,14 @@ static s32             curAudioBuf = 1;
 /*
  * Double-buffered dynamic segments
  */
+static OSTask   *tlist[2];               /* globaltask list      */
 static Acmd	*cmdList[2];
+
+/*
+ * Triple-buffered
+ */
 static s16      audioSamples[3] = {0, 0, 0};
 static s16      *audioBuffer[3];
-static ALHeap   hp;
-
 
 /*
  * This can usually be reduced - it depends on the sequence
@@ -624,95 +626,6 @@ void stopOsc(void *oscState)
     freeOscStateList = (oscData*)oscState;
 }
 
-/*
- * private routine used to parse args.
- */
-static s32
-myatoi(u8 *str)
-{
-    s32		log10[5], logn = 0, val = 0, i, pow10 = 1;
-
-    if (str == NULL || *str == '\0')
-	return(-1);
-
-    while (*str != '\0') {
-	if (!(*str == '0' ||
-	      *str == '1' ||
-	      *str == '2' ||
-	      *str == '3' ||
-	      *str == '4' ||
-	      *str == '5' ||
-	      *str == '6' ||
-	      *str == '7' ||
-	      *str == '8' ||
-	      *str == '9')) {
-	    logn = 0;
-	    break;
-	}
-
-	log10[logn++] = *str - '0';
-	str++;
-    }
-
-    if (logn == 0)
-	return(-1);
-
-    for (i=logn-1; i>= 0; i--) {
-	val += log10[i] * pow10;
-	pow10 *= 10;
-    }
-    return (val);
-}
-
-
-#ifdef DEBUG
-/*
- * private routine used to parse args - stolen from rdpatt.
- */
-static void
-parse_args(u8 *argstring)
-{
-    s32 argc = 1;
-    u8	*arglist[32], **argv = arglist;	/* max 32 args */
-    u8	*ptr;
-
-    if (argstring == NULL || argstring[0] == '\0')
-	return;
-
-    /* re-organize argstring to be like main(argv,argc) */
-    ptr = argstring;
-    while (*ptr != '\0') {
-	while (*ptr != '\0' && (*ptr == ' ')) {
-	    *ptr = '\0';
-	    ptr++;
-	}
-	if (*ptr != '\0')
-	    arglist[argc++] = ptr;
-	while (*ptr != '\0' && (*ptr != ' ')) {
-	    ptr++;
-	}
-    }
-
-    /* process the arguments: */
-    while ((argc > 1) && (argv[1][0] == '-')) {
-	switch(argv[1][1]) {
-
-	  case 's':
-	    seqNo = myatoi(argv[2]);	/* Sequence to run */
-	    if (seqNo < 0)
-		seqNo = 0;
-	    argc--;
-	    argv++;
-	    break;	    
-	  default:
-	    break;
-	}
-	argc--;
-	argv++;
-    }
-}
-#endif
-
 
 void boot(void *arg)
 {
@@ -790,13 +703,13 @@ void gameproc(u8 *argv)
         fsize;
 
     s32
+        i,
         samplesLeft = 0,
         clcount,
         len,
         bankLen,
         buf,
         frame = 0,
-        i,
         frameSize,
         minFrameSize;
 
@@ -820,12 +733,12 @@ void gameproc(u8 *argv)
     oscData
         *oscStatePtr;
     
-
     /*
      * Message queue for PI manager return messages
      */
     osCreateMesgQueue(&dmaMessageQ, dmaMessageBuf, DMA_QUEUE_SIZE);
     osCreateMesgQueue(&seqMessageQ, &seqMessageBuf, 1);
+
     /*
      * Set up message queue for TASK and video interrupts
      */
@@ -982,9 +895,9 @@ void gameproc(u8 *argv)
     seqc.initOsc        = &initOsc;
     seqc.updateOsc      = &updateOsc;
     seqc.stopOsc        = &stopOsc;
-
+#ifdef DEBUG
     seqc.debugFlags     = NO_VOICE_ERR_MASK |NOTE_OFF_ERR_MASK | NO_SOUND_ERR_MASK;
-
+#endif
 
 #ifdef COMP_SEQ_PLAY
     alCSPNew(seqp, &seqc);
@@ -1004,6 +917,9 @@ void gameproc(u8 *argv)
      */
     seqPtr = alHeapAlloc(&hp, 1, MAX_SEQ_LENGTH);
 
+/*
+ * INITIALIZE GLOABAL TIME
+ */
     while (1){
         if (seqNo >= sfile->seqCount)
             seqNo = 0;
@@ -1066,15 +982,14 @@ void gameproc(u8 *argv)
             /*
              * Call the frame handler
              */
-
-#ifdef PROFILE
+#ifdef PROFILE            
             osInvalICache((void*)0x80000000, 0x100000);
             osInvalDCache((void*)0x80000000, 0x100000); 
             CPUdeltaCount = osGetCount();            
 #endif
 
             cmdlp = alAudioFrame(cmdlp, &clcount, audioOp, audioSamples[buf]);
-            
+
 #ifdef PROFILE            
             CPUdeltaCount = osGetCount() - CPUdeltaCount;
             if (CPUdeltaCount > CPUmaxCount)
@@ -1108,16 +1023,16 @@ void gameproc(u8 *argv)
              */
             samplesLeft = IO_READ(AI_LEN_REG)>>2;
 
-            /*
-             * The last task should have finished before the frame message
-             * so this just clears the message queue
-             */
-            (void)osRecvMesg(&taskMessageQ, NULL, OS_MESG_BLOCK);
+	    /*
+	     * The last task should have finished before the frame message
+	     * so this just clears the message queue
+	     */
+	    (void)osRecvMesg(&taskMessageQ, NULL, OS_MESG_BLOCK);
 
-            /*
-             * Point the DAC at the next buffer
-             */
-            buf = (curAudioBuf-1) % 3;
+	    /*
+	     * Point the DAC at the next buffer
+	     */
+	    buf = (curAudioBuf-1) % 3;
 
             osAiSetNextBuffer(audioBuffer[buf], audioSamples[buf]<<2);
 
@@ -1126,30 +1041,30 @@ void gameproc(u8 *argv)
              * If the app blocks here it is a bug since resources must
              * be managed so that all DMAs complete.
              */
-
             for (i=0; i<nextDMA; i++)
-                if (osRecvMesg(&dmaMessageQ, NULL, OS_MESG_NOBLOCK) == -1)
+	      if (osRecvMesg(&dmaMessageQ, NULL, OS_MESG_NOBLOCK) == -1)
 #ifdef DEBUG
-		  PRINTF("Dma not done\n");
+		PRINTF("Dma not done\n");
 #else
-	          ;
+	        ;	    
 #endif
-	    
+
             /*
              * Flush the cache and start task on RSP
              */
             osWritebackDCacheAll();
             osSpTaskStart(tlistp);
-
             CleanDMABuffs();
+
             /*
              * Swap buffers for wavetable storage and output
              */
             gFrameCt++;
             curBuf ^= 1; 
-            curAudioBuf++; 
+            curAudioBuf++;
             nextDMA = 0;
-        } while (seqp->state != AL_STOPPED);
+
+	} while (seqp->state != AL_STOPPED);
 
 #ifdef PROFILE
 
@@ -1161,11 +1076,10 @@ void gameproc(u8 *argv)
 
         CPUmaxCount = 0;
         CPUavgCount = 0;
-#endif
+#endif     
 
-        seqNo++;
+	seqNo++;
         frame = 0;
-
     }
 
 #ifdef COMP_SEQ_PLAY    

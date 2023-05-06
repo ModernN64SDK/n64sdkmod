@@ -52,11 +52,6 @@ extern OSMesgQueue      gfxFrameMsgQ;
 extern OSMesg           gfxFrameMsgBuf[MAX_MESGS];
 extern OSPiHandle	*handler;
 
-#ifndef _FINALROM
-extern OSLog *log;
-extern int logging;
-#endif
-
 extern char _gfxdlistsSegmentBssStart[], _gfxdlistsSegmentBssEnd[];
 extern char _staticSegmentRomStart[], _staticSegmentRomEnd[];
 extern char _tableSegmentRomStart[], _tableSegmentRomEnd[];

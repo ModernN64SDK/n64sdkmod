@@ -10,9 +10,10 @@ OUTPUT_ARCH (mips)
 
 /* Ends a segment */
 #define END_SEG(name) \
-    _##name##SegmentEnd = ADDR(.name) + SIZEOF(.name); \
-    _##name##SegmentRomEnd = __romPos + SIZEOF(.name); \
-    __romPos += SIZEOF(.name);
+    _##name##SegmentEnd = ALIGN(ADDR(.name) + SIZEOF(.name),0x10); \
+    _##name##SegmentRomEnd = _##name##SegmentEnd - _##name##SegmentStart + _##name##SegmentRomStart; \
+    __romPos = _##name##SegmentRomEnd; \
+    . = _##name##SegmentEnd;
 
 /* Starts a noload segment which is intended to contain variables which do not have data yet. */
 #define BEGIN_NOLOAD(name) \
@@ -21,8 +22,9 @@ OUTPUT_ARCH (mips)
 
 /* Ends a noload segment */
 #define END_NOLOAD(name) \
-    _##name##SegmentBssEnd = ADDR(.name.noload) + SIZEOF(.name.noload); \
-    _##name##SegmentBssSize = SIZEOF(.name.noload);
+    _##name##SegmentBssEnd = ALIGN(ADDR(.name.noload) + SIZEOF(.name.noload),0x10); \
+    _##name##SegmentBssSize = _##name##SegmentBssEnd - _##name##SegmentBssStart; \
+    . = _##name##SegmentBssEnd;
 
 SECTIONS
 {

@@ -105,7 +105,7 @@ static s16      *audioBuffer[3];
 /*
  * This can usually be reduced - it depends on the sequence
  */
-#define         NBUFFERS       128
+#define         NBUFFERS       64
 
 typedef struct 
 {
@@ -635,116 +635,12 @@ void stopOsc(void *oscState)
     freeOscStateList = (oscData*)oscState;
 }
 
-/*
- * private routine used to parse args.
- */
-static s32
-myatoi(u8 *str)
-{
-    s32		log10[5], logn = 0, val = 0, i, pow10 = 1;
-
-    if (str == NULL || *str == '\0')
-	return(-1);
-
-    while (*str != '\0') {
-	if (!(*str == '0' ||
-	      *str == '1' ||
-	      *str == '2' ||
-	      *str == '3' ||
-	      *str == '4' ||
-	      *str == '5' ||
-	      *str == '6' ||
-	      *str == '7' ||
-	      *str == '8' ||
-	      *str == '9')) {
-	    logn = 0;
-	    break;
-	}
-
-	log10[logn++] = *str - '0';
-	str++;
-    }
-
-    if (logn == 0)
-	return(-1);
-
-    for (i=logn-1; i>= 0; i--) {
-	val += log10[i] * pow10;
-	pow10 *= 10;
-    }
-    return (val);
-}
-
-
-#ifdef DEBUG
-/*
- * private routine used to parse args - stolen from rdpatt.
- */
-static void
-parse_args(u8 *argstring)
-{
-    s32 argc = 1;
-    u8	*arglist[32], **argv = arglist;	/* max 32 args */
-    u8	*ptr;
-
-    if (argstring == NULL || argstring[0] == '\0')
-	return;
-
-    /* re-organize argstring to be like main(argv,argc) */
-    ptr = argstring;
-    while (*ptr != '\0') {
-	while (*ptr != '\0' && (*ptr == ' ')) {
-	    *ptr = '\0';
-	    ptr++;
-	}
-	if (*ptr != '\0')
-	    arglist[argc++] = ptr;
-	while (*ptr != '\0' && (*ptr != ' ')) {
-	    ptr++;
-	}
-    }
-
-    /* process the arguments: */
-    while ((argc > 1) && (argv[1][0] == '-')) {
-	switch(argv[1][1]) {
-
-	  case 's':
-	    seqNo = myatoi(argv[2]);	/* Sequence to run */
-	    if (seqNo < 0)
-		seqNo = 0;
-	    argc--;
-	    argv++;
-	    break;	    
-	  default:
-	    break;
-	}
-	argc--;
-	argv++;
-    }
-}
-#endif
-
 
 void boot(void *arg)
 {
-
-#ifdef DEBUG
-    s32 i;
-    u32 *argp;
-    u32 argbuf[16];
-#endif
-
     osInitialize();
 
     handler = osCartRomInit();
-
-#ifdef DEBUG
-    argp = (u32 *)RAMROM_APP_WRITE_ADDR;
-    for (i=0; i<sizeof(argbuf)/4; i++, argp++) {
-	osEPiReadIo(handler, (u32)argp, &argbuf[i]);
-    }
-    parse_args((u8 *)argbuf);
-#endif
 
     osCreateThread(&mainThread, 1, (void(*)(void *))mainproc, arg,
 		  ((u8 *) mainThreadStack) + STACKSIZE, 10);
@@ -1229,3 +1125,4 @@ void gameproc(u8 *argv)
     
     for(;;);
 }
+

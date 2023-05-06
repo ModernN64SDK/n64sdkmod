@@ -23,9 +23,9 @@ VERSION ?= libnusys
 $(eval $(call validate-option,VERSION,libnusys libnusys_d))
 
 ifeq      ($(VERSION),libnusys)
-	OPT_FLAGS := -O2	
+	OPT_FLAGS := -Os -g -ggdb	
 else ifeq ($(VERSION),libnusys_d)
-	OPT_FLAGS := -O0 -g
+	OPT_FLAGS := -O0 -g -ggdb
 	DEFINES += NU_DEBUG=1
 endif
 

@@ -25,15 +25,15 @@ VERSION ?= libmus
 $(eval $(call validate-option,VERSION,libmus libn_mus libmus_d libn_mus_d))
 
 ifeq      ($(VERSION),libmus)
-	OPT_FLAGS := -O3
+	OPT_FLAGS := -Os -g -ggdb
 else ifeq ($(VERSION),libn_mus)
-	OPT_FLAGS := -O3
+	OPT_FLAGS := -Os -g -ggdb
 	DEFINES += SUPPORT_NAUDIO=1
 else ifeq ($(VERSION),libmus_d)
-	OPT_FLAGS := -O0 -g
+	OPT_FLAGS := -O0 -g -ggdb
 	DEFINES += _AUDIODEBUG=1
 else ifeq ($(VERSION),libn_mus_d)
-	OPT_FLAGS := -O0 -g
+	OPT_FLAGS := -O0 -g -ggdb
 	DEFINES += _AUDIODEBUG=1
 	DEFINES += SUPPORT_NAUDIO=1
 endif
@@ -82,7 +82,7 @@ INCLUDE_DIRS += /usr/include/n64 /usr/include/n64/PR include $(BUILD_DIR) $(BUIL
 C_DEFINES := $(foreach d,$(DEFINES),-D$(d))
 DEF_INC_CFLAGS := $(foreach i,$(INCLUDE_DIRS),-I$(i)) $(C_DEFINES)
 
-CFLAGS = -G 0 $(OPT_FLAGS) -mabi=32 -ffreestanding -mfix4300 $(DEF_INC_CFLAGS) -Wall
+CFLAGS = -G 0 $(OPT_FLAGS) -mabi=32 -ffreestanding -mfix4300 $(DEF_INC_CFLAGS) -Wall -fwrapv
 ASFLAGS     := -march=vr4300 -mabi=32 $(foreach i,$(INCLUDE_DIRS),-I$(i)) $(foreach d,$(DEFINES),--defsym $(d))
 
 # C preprocessor flags
@@ -144,11 +144,45 @@ $(LIB): $(O_FILES)
 
 all:
 	$(MAKE) VERSION=libmus
+	$(V)cp $(BUILD_DIR_BASE)/libmus/libmus.a $(BUILD_DIR_BASE)
 	$(MAKE) VERSION=libmus_d
+	$(V)cp $(BUILD_DIR_BASE)/libmus_d/libmus_d.a $(BUILD_DIR_BASE)
 	$(MAKE) VERSION=libn_mus
+	$(V)cp $(BUILD_DIR_BASE)/libn_mus/libn_mus.a $(BUILD_DIR_BASE)
 	$(MAKE) VERSION=libn_mus_d
+	$(V)cp $(BUILD_DIR_BASE)/libn_mus_d/libn_mus_d.a $(BUILD_DIR_BASE)
 
-.PHONY: clean default
+install: all
+	$(V)mkdir -p /usr/lib/n64/ /usr/include/n64/ /usr/include/n64/PR
+	@$(PRINT) "$(GREEN)Copying libmus.a$(NO_COL)\n"
+	$(V)cp $(BUILD_DIR_BASE)/libmus.a /usr/lib/n64/libmus.a
+	@$(PRINT) "$(GREEN)Copying libmus_d.a$(NO_COL)\n"
+	$(V)cp $(BUILD_DIR_BASE)/libmus_d.a /usr/lib/n64/libmus_d.a
+	@$(PRINT) "$(GREEN)Copying libn_mus.a$(NO_COL)\n"
+	$(V)cp $(BUILD_DIR_BASE)/libn_mus.a /usr/lib/n64/libn_mus.a
+	@$(PRINT) "$(GREEN)Copying libn_mus_d.a$(NO_COL)\n"
+	$(V)cp $(BUILD_DIR_BASE)/libn_mus_d.a /usr/lib/n64/libn_mus_d.a
+	@$(PRINT) "$(GREEN)Copying libmus.h$(NO_COL)\n"
+	$(V)cp include/libmus.h /usr/include/n64/PR/libmus.h
+	@$(PRINT) "$(GREEN)Copying libmus_data.h$(NO_COL)\n"
+	$(V)cp include/libmus_data.h /usr/include/n64/PR/libmus_data.h
+
+pkginstall: all
+	$(V)mkdir -p /home/crash/n64dev/n64sdkmod/packages/libmus/usr/lib/n64/ /home/crash/n64dev/n64sdkmod/packages/libmus/usr/include/n64/ /home/crash/n64dev/n64sdkmod/packages/libmus/usr/include/n64/PR
+	@$(PRINT) "$(GREEN)Copying libmus.a$(NO_COL)\n"
+	$(V)cp $(BUILD_DIR_BASE)/libmus.a /home/crash/n64dev/n64sdkmod/packages/libmus/usr/lib/n64/libmus.a
+	@$(PRINT) "$(GREEN)Copying libmus_d.a$(NO_COL)\n"
+	$(V)cp $(BUILD_DIR_BASE)/libmus_d.a /home/crash/n64dev/n64sdkmod/packages/libmus/usr/lib/n64/libmus_d.a
+	@$(PRINT) "$(GREEN)Copying libn_mus.a$(NO_COL)\n"
+	$(V)cp $(BUILD_DIR_BASE)/libn_mus.a /home/crash/n64dev/n64sdkmod/packages/libmus/usr/lib/n64/libn_mus.a
+	@$(PRINT) "$(GREEN)Copying libn_mus_d.a$(NO_COL)\n"
+	$(V)cp $(BUILD_DIR_BASE)/libn_mus_d.a /home/crash/n64dev/n64sdkmod/packages/libmus/usr/lib/n64/libn_mus_d.a
+	@$(PRINT) "$(GREEN)Copying libmus.h$(NO_COL)\n"
+	$(V)cp include/libmus.h /home/crash/n64dev/n64sdkmod/packages/libmus/usr/include/n64/PR/libmus.h
+	@$(PRINT) "$(GREEN)Copying libmus_data.h$(NO_COL)\n"
+	$(V)cp include/libmus_data.h /home/crash/n64dev/n64sdkmod/packages/libmus/usr/include/n64/PR/libmus_data.h
+
+.PHONY: clean default all install pkginstall
 # with no prerequisites, .SECONDARY causes no intermediate target to be removed
 .SECONDARY:
 

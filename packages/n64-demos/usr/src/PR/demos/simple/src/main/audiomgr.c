@@ -489,11 +489,6 @@ static void __clearAudioDMA(void)
 #else
 	 ;
 #endif
-
-#ifndef _FINALROM
-        if (logging)
-            osLogEvent(log, 17, 2, iomsg->devAddr, iomsg->size);
-#endif
     }
 
     

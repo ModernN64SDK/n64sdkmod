@@ -28,7 +28,6 @@
 
 #include "gfx.h"
 #include "simple.h"
-#include "misc.h"
 
 /*
  * graphics globals

@@ -16,7 +16,7 @@ endif
 # Whether to colorize build messages
 COLOR ?= 1
 
-OPT_FLAGS := -O3
+OPT_FLAGS := -Os -g -ggdb
 DEFINES += N_MICRO=1
 
 TARGET := libn_audio_sc
@@ -57,7 +57,7 @@ INCLUDE_DIRS += /usr/include/n64 /usr/include/n64/PR include $(BUILD_DIR) $(BUIL
 C_DEFINES := $(foreach d,$(DEFINES),-D$(d))
 DEF_INC_CFLAGS := $(foreach i,$(INCLUDE_DIRS),-I$(i)) $(C_DEFINES)
 
-CFLAGS = -G 0 $(OPT_FLAGS) -mabi=32 -ffreestanding -mfix4300 $(DEF_INC_CFLAGS)
+CFLAGS = -G 0 $(OPT_FLAGS) -mabi=32 -ffreestanding -mfix4300 $(DEF_INC_CFLAGS) -fwrapv
 ASFLAGS     := -march=vr4300 -mabi=32 $(foreach i,$(INCLUDE_DIRS),-I$(i)) $(foreach d,$(DEFINES),--defsym $(d))
 
 # C preprocessor flags
@@ -117,7 +117,25 @@ $(LIB): $(O_FILES)
 	@$(PRINT) "$(GREEN)Linking $(TARGET):  $(BLUE)$@ $(NO_COL)\n"
 	$(V)$(AR) rcs -o $@ $(O_FILES)
 
-.PHONY: clean default
+install: default
+	$(V)mkdir -p /usr/lib/n64/ /usr/include/n64/ /usr/include/n64/PR
+	@$(PRINT) "$(GREEN)Copying libn_audio_sc.a$(NO_COL)\n"
+	$(V)cp $(BUILD_DIR_BASE)/libn_audio_sc.a /usr/lib/n64/libn_audio_sc.a
+	@$(PRINT) "$(GREEN)Copying n_libaudio_sc.h$(NO_COL)\n"
+	$(V)cp include/n_libaudio_sc.h /usr/include/n64/PR/n_libaudio_sc.h
+	@$(PRINT) "$(GREEN)Copying n_libaudio_sn_sc.h$(NO_COL)\n"
+	$(V)cp include/n_libaudio_sn_sc.h /usr/include/n64/PR/n_libaudio_sn_sc.h
+
+pkginstall: default
+	$(V)mkdir -p /home/crash/n64dev/n64sdkmod/packages/libnaudio/usr/lib/n64/ /home/crash/n64dev/n64sdkmod/packages/libnaudio/usr/include/n64/ /home/crash/n64dev/n64sdkmod/packages/libnaudio/usr/include/n64/PR
+	@$(PRINT) "$(GREEN)Copying libn_audio_sc.a$(NO_COL)\n"
+	$(V)cp $(BUILD_DIR_BASE)/libn_audio_sc.a /home/crash/n64dev/n64sdkmod/packages/libnaudio/usr/lib/n64/libn_audio_sc.a
+	@$(PRINT) "$(GREEN)Copying n_libaudio_sc.h$(NO_COL)\n"
+	$(V)cp include/n_libaudio_sc.h /home/crash/n64dev/n64sdkmod/packages/libnaudio/usr/include/n64/PR/n_libaudio_sc.h
+	@$(PRINT) "$(GREEN)Copying n_libaudio_sn_sc.h$(NO_COL)\n"
+	$(V)cp include/n_libaudio_sn_sc.h /home/crash/n64dev/n64sdkmod/packages/libnaudio/usr/include/n64/PR/n_libaudio_sn_sc.h
+
+.PHONY: clean default install pkginstall
 # with no prerequisites, .SECONDARY causes no intermediate target to be removed
 .SECONDARY:
 

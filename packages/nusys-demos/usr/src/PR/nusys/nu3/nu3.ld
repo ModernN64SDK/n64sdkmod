@@ -24,9 +24,10 @@ OUTPUT_ARCH (mips)
 
 /* Ends a segment */
 #define END_SEG(name) \
-    _##name##SegmentEnd = ADDR(.name) + SIZEOF(.name); \
-    _##name##SegmentRomEnd = __romPos + SIZEOF(.name); \
-    __romPos += SIZEOF(.name);
+    _##name##SegmentEnd = ALIGN(ADDR(.name) + SIZEOF(.name),0x10); \
+    _##name##SegmentRomEnd = _##name##SegmentEnd - _##name##SegmentStart + _##name##SegmentRomStart; \
+    __romPos = _##name##SegmentRomEnd; \
+    . = _##name##SegmentEnd;
 
 /* Starts a noload segment which is intended to contain variables which do not have data yet. */
 #define BEGIN_NOLOAD(name) \
@@ -35,8 +36,9 @@ OUTPUT_ARCH (mips)
 
 /* Ends a noload segment */
 #define END_NOLOAD(name) \
-    _##name##SegmentBssEnd = ADDR(.name.noload) + SIZEOF(.name.noload); \
-    _##name##SegmentBssSize = SIZEOF(.name.noload);
+    _##name##SegmentBssEnd = ALIGN(ADDR(.name.noload) + SIZEOF(.name.noload),0x10); \
+    _##name##SegmentBssSize = _##name##SegmentBssEnd - _##name##SegmentBssStart; \
+    . = _##name##SegmentBssEnd;
 
 SECTIONS
 {
@@ -56,13 +58,13 @@ SECTIONS
       /usr/lib/n64/nusys/nusys_rom.o(.text);
       BUILD_DIR/src/main*.o(.text);
 
-      */libultra_rom.a:*.o(.text);
-      */libnusys.a:*.o(.text);
+      */libultra_d.a:*.o(.text);
+      */libnusys_d.a:*.o(.text);
 #if N_AUDIO == 1
-      */libnualsgi_n.a:*.o(.text);
-      */libn_audio.a:*.o(.text);
+      */libnualsgi_n_d.a:*.o(.text);
+      */libn_audio_d.a:*.o(.text);
 #else
-      */libnualsgi.a:*.o(.text);
+      */libnualsgi_d.a:*.o(.text);
 #endif
       */libgcc.a:*.o(.text);
       /usr/lib/n64/PR/rspboot.o(.text);
@@ -79,14 +81,14 @@ SECTIONS
       /usr/lib/n64/nusys/nusys_rom.o(.data*);
       BUILD_DIR/src/main*.o(.data*);
 
-      */libultra_rom.a:*.o(.data*);
-      */libnusys.a:*.o(.data*);
+      */libultra_d.a:*.o(.data*);
+      */libnusys_d.a:*.o(.data*);
 
 #if N_AUDIO == 1
-      */libnualsgi_n.a:*.o(.data*);
-      */libn_audio.a:*.o(.data*);
+      */libnualsgi_n_d.a:*.o(.data*);
+      */libn_audio_d.a:*.o(.data*);
 #else
-      */libnualsgi.a:*.o(.data*);
+      */libnualsgi_d.a:*.o(.data*);
 #endif
       /usr/lib/n64/PR/rspboot.o(.data*);
       /usr/lib/n64/PR/aspMain.o(.data*);
@@ -102,13 +104,13 @@ SECTIONS
       /usr/lib/n64/nusys/nusys_rom.o(.*rodata*);
       BUILD_DIR/src/main*.o(.*rodata*);
 
-      */libultra_rom.a:*.o(.*rodata*);
-      */libnusys.a:*.o(.*rodata*);
+      */libultra_d.a:*.o(.*rodata*);
+      */libnusys_d.a:*.o(.*rodata*);
 #if N_AUDIO == 1
-      */libnualsgi_n.a:*.o(.*rodata*);
-      */libn_audio.a:*.o(.*rodata*);
+      */libnualsgi_n_d.a:*.o(.*rodata*);
+      */libn_audio_d.a:*.o(.*rodata*);
 #else
-      */libnualsgi.a:*.o(.*rodata*);
+      */libnualsgi_d.a:*.o(.*rodata*);
 #endif
       */libgcc.a:*.o(.*rodata*);
    }
@@ -120,23 +122,23 @@ SECTIONS
       /usr/lib/n64/nusys/nusys_rom.o(.*bss*);
       BUILD_DIR/src/main*.o(.*bss*);
 
-      */libultra_rom.a:*.o(COMMON);
-      */libultra_rom.a:*.o(.scommon);
-      */libultra_rom.a:*.o(.*bss*);
-      */libnusys.a:*.o(COMMON);
-      */libnusys.a:*.o(.scommon);
-      */libnusys.a:*.o(.*bss*);
+      */libultra_d.a:*.o(COMMON);
+      */libultra_d.a:*.o(.scommon);
+      */libultra_d.a:*.o(.*bss*);
+      */libnusys_d.a:*.o(COMMON);
+      */libnusys_d.a:*.o(.scommon);
+      */libnusys_d.a:*.o(.*bss*);
 #if N_AUDIO == 1
-      */libnualsgi_n.a:*.o(COMMON);
-      */libnualsgi_n.a:*.o(.scommon);
-      */libnualsgi_n.a:*.o(.*bss*);
-      */libn_audio.a:*.o(COMMON);
-      */libn_audio.a:*.o(.scommon);
-      */libn_audio.a:*.o(.*bss*);
+      */libnualsgi_n_d.a:*.o(COMMON);
+      */libnualsgi_n_d.a:*.o(.scommon);
+      */libnualsgi_n_d.a:*.o(.*bss*);
+      */libn_audio_d.a:*.o(COMMON);
+      */libn_audio_d.a:*.o(.scommon);
+      */libn_audio_d.a:*.o(.*bss*);
 #else
-      */libnualsgi.a:*.o(COMMON);
-      */libnualsgi.a:*.o(.scommon);
-      */libnualsgi.a:*.o(.*bss*);
+      */libnualsgi_d.a:*.o(COMMON);
+      */libnualsgi_d.a:*.o(.scommon);
+      */libnualsgi_d.a:*.o(.*bss*);
 #endif
    }
    END_NOLOAD(code)

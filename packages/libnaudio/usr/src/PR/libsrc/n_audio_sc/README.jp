@@ -1,0 +1,161 @@
+==================================================================
+  NINTENDO Sound Tools Audio Library (musライブラリ）用
+  n_audioライブラリ  (for SGI Workstations - version 1.1)
+
+                 --- ソースファイル ---
+
+                                                  任天堂株式会社
+==================================================================
+
+ここには、SGIワークステーション版 NINTENDO64 Sound Tools Audio Library
+(musライブラリ）用 n_audioライブラリのソースコードが納められています。
+
+ライブラリについての詳しい情報は、リリースノートをご覧下さい。
+
+なお、ソースの改造は自由ですが、改造を行った場合には任天堂のサポートの
+対象外とさせて頂きますので、予めご了承下さい。
+
+
+前回のバージョンからのソースレベルでの変更点は以下の通りです。
+
+-------------------
+
+1) "変数のオーバーフローによるノイズの発生" 関連
+
+  *** 変更ファイル ***
+    n_env.c
+
+; 上記ファイル内の記述を以下のように変更しました(114 行目 - 129 行目)。
+
+    (変更前) 
+             lastOffset = thisOffset;
+             thisOffset = SAMPLE184(e->em_ctrlList->delta);
+             samples    = thisOffset - lastOffset;
+
+    (変更後)
+             lastOffset = thisOffset;
+             thisOffset = e->em_ctrlList->delta;
+             samples    = SAMPLE184(thisOffset - lastOffset);
+             if(!samples)
+               thisOffset = lastOffset;
+
+  この変更により、変数(作成済みのサンプルデータ数を示すカウンタ)のオー
+  バーフローが原因のノイズを抑えることができます。
+
+------------------
+
+2) "エンベロープの乱れによるノイズの発生" 関連
+
+  *** 変更ファイル ***
+    n_env.c
+
+; 上記ファイル内の記述を以下のように変更しました(190 行目 - 195 行目)。
+
+    (変更前) if (e->em_delta >= e->em_segEnd || samples == 0){
+    (変更後) if (e->em_delta >= e->em_segEnd){
+
+  また以下の記述を追加しました(368行目)。
+
+    (追加行) e->em_segEnd = 0;
+
+  また以下の変更も行いました(569行目)。
+
+    (変更前) return 0;
+    (変更後) return 0x8000;
+
+  これらの変更により、エンベロープ形状の予期せぬ急激な乱れを(ある程度)
+  防ぎ、ノイズの発生を抑えます。
+
+  *** 変更ファイル ***
+    n_synallocvoice.c
+
+; 上記ファイル内の記述を以下のように変更しました(56 行目)。
+
+    (変更前) pvoice->offset = 512;
+    (変更後) pvoice->offset = 552;
+
+  また以下の変更も行いました(75 行目)。
+
+    (変更前) update->moredata.i = pvoice->offset - 64;
+    (変更後) update->moredata.i = 368; /* pvoice->offset - 184 */
+
+  これらの変更により、物理ボイスのスティール時の処理を 184 サンプル単位に
+  しています。
+
+-------------------
+
+3) assert 関連
+
+  *** 変更ファイル ***
+    n_env.c
+    n_synthesizer.c
+    
+; 全ての assert() を #ifdef _DEBUG - #endif でくくりました。
+
+  *** 変更ファイル ***
+    n_reverb.c
+    n_save.c
+    n_synstartvoiceparam.c
+
+; #include <assert.h> の一行を削除しました。
+
+------------------
+
+4) init_lpfilter() 関連
+
+  *** 変更ファイル ***
+    n_drvrNew.c
+    n_reverb.c
+
+; (ノーマル) audio ライブラリ内で以下の変更を行いました。
+
+    (変更前) void  init_lpfilter(ALLowPass *lp)
+    (変更後) void _init_lpfilter(ALLowPass *lp)
+
+  この変更を受け、上記 2ファイル内のこの関数のコール部分を更新しました。
+
+  *** 変更ファイル ***
+    n_synthInternals.h
+
+; init_lpfilter() のプロトタイプ宣言を削除しました。
+
+  *** 変更ファイル ***
+    synthInternals.h
+
+; _init_lpfiter() のプロトタイプ宣言を追加しました。
+
+
+【注意！】
+
+ノーマルオーディオライブラリ内のinit_lpfilter()の変更はOS2.0i patch5
+にて反映されます。
+今回リリース分のmusライブラリ用n_audioライブラリでは、init_lpfilter()の
+変更点を #ifdef _NEW_RELEASED 〜 #else 〜 #endif 等で括ってあります。
+
+OS2.0i patch5よりも古いOSを使用してmusライブラリ用n_audioライブラリを
+ご使用になる際には、ソースディレクトリのMakefile中に存在する
+「#OLD_AUDIO_DEF = -D_OLD_AUDIO_LIBRARY」という行の先頭の「#」を外して
+からライブラリの再コンパイルを行って下さい。
+
+------------------
+
+5) if (fxmix < 0)でのwarning関連
+
+  *** 変更ファイル ***
+    n_synstartvoiceparam.c
+
+    (変更前) if (fxmix < 0)
+		fxmix = -fxmix;
+    (変更後) if (fxmix > 127)
+		fxmix = 127;
+
+  *** 変更ファイル ***
+    n_synsetfxmix.c
+
+    (変更前) if (fxmix < 0)
+		update->data.i = -fxmix;
+	     else
+		update->data.i = fxmix;
+    (変更後) if (fxmix > 127)
+		fxmix = 127;
+	     update->data.i = fxmix

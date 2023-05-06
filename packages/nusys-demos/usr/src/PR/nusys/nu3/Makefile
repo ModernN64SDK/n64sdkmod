@@ -4,7 +4,7 @@ TARGET_STRING := nu3
 TARGET := $(TARGET_STRING)
 
 # Preprocessor definitions
-DEFINES := _FINALROM=1 NDEBUG=1 F3DEX_GBI_2=1
+DEFINES := DEBUG=1 F3DEX_GBI_2=1 NU_DEBUG=1
 
 SRC_DIRS :=
 
@@ -22,9 +22,9 @@ COLOR ?= 1
 N_AUDIO = 1
 
 ifeq ($(N_AUDIO),1)
-NUAUDIOLIB = -lnualsgi_n -ln_audio
+NUAUDIOLIB = -lnualsgi_n_d -ln_audio_d
 else
-NUAUDIOLIB = -lnualsgi
+NUAUDIOLIB = -lnualsgi_d
 endif
 
 #==============================================================================#
@@ -70,7 +70,7 @@ INCLUDE_DIRS += /usr/include/n64 /usr/include/n64/PR /usr/include/n64/nusys incl
 C_DEFINES := $(foreach d,$(DEFINES),-D$(d))
 DEF_INC_CFLAGS := $(foreach i,$(INCLUDE_DIRS),-I$(i)) $(C_DEFINES)
 
-CFLAGS = -G 0 -O2 -g -mabi=32 -ffreestanding -mfix4300 $(DEF_INC_CFLAGS)
+CFLAGS = -G 0 -O0 -g -mabi=32 -ffreestanding -mfix4300 $(DEF_INC_CFLAGS)
 ASFLAGS     := -march=vr4300 -mabi=32 $(foreach i,$(INCLUDE_DIRS),-I$(i)) $(foreach d,$(DEFINES),--defsym $(d))
 
 # C preprocessor flags
@@ -136,7 +136,7 @@ $(BOOT_OBJ): $(BOOT)
 # Link final ELF file
 $(ELF): $(O_FILES) $(BUILD_DIR)/$(LD_SCRIPT)
 	@$(PRINT) "$(GREEN)Linking ELF file:  $(BLUE)$@ $(NO_COL)\n"
-	$(V)$(LD) -L $(BUILD_DIR) -T $(BUILD_DIR)/$(LD_SCRIPT) -Map $(BUILD_DIR)/$(TARGET).map --no-check-sections -o $@ $(O_FILES) -L/usr/lib/n64/nusys $(NUAUDIOLIB) -lnusys -L/usr/lib/n64 -lultra_rom -L$(N64_LIBGCCDIR) -lgcc
+	$(V)$(LD) -L $(BUILD_DIR) -T $(BUILD_DIR)/$(LD_SCRIPT) -Map $(BUILD_DIR)/$(TARGET).map --no-check-sections -o $@ $(O_FILES) -Llib $(NUAUDIOLIB) -lnusys_d -L/usr/lib/n64 -lultra_d -L$(N64_LIBGCCDIR) -lgcc
 
 # Build ROM
 $(ROM): $(ELF)

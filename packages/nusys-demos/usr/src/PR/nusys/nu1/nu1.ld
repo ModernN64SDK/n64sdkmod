@@ -24,9 +24,10 @@ OUTPUT_ARCH (mips)
 
 /* Ends a segment */
 #define END_SEG(name) \
-    _##name##SegmentEnd = ADDR(.name) + SIZEOF(.name); \
-    _##name##SegmentRomEnd = __romPos + SIZEOF(.name); \
-    __romPos += SIZEOF(.name);
+    _##name##SegmentEnd = ALIGN(ADDR(.name) + SIZEOF(.name),0x10); \
+    _##name##SegmentRomEnd = _##name##SegmentEnd - _##name##SegmentStart + _##name##SegmentRomStart; \
+    __romPos = _##name##SegmentRomEnd; \
+    . = _##name##SegmentEnd;
 
 /* Starts a noload segment which is intended to contain variables which do not have data yet. */
 #define BEGIN_NOLOAD(name) \
@@ -35,8 +36,9 @@ OUTPUT_ARCH (mips)
 
 /* Ends a noload segment */
 #define END_NOLOAD(name) \
-    _##name##SegmentBssEnd = ADDR(.name.noload) + SIZEOF(.name.noload); \
-    _##name##SegmentBssSize = SIZEOF(.name.noload);
+    _##name##SegmentBssEnd = ALIGN(ADDR(.name.noload) + SIZEOF(.name.noload),0x10); \
+    _##name##SegmentBssSize = _##name##SegmentBssEnd - _##name##SegmentBssStart; \
+    . = _##name##SegmentBssEnd;
 
 SECTIONS
 {
@@ -57,7 +59,7 @@ SECTIONS
       BUILD_DIR/src/main*.o(.text);
 
       */libultra_rom.a:*.o(.text);
-      */libnusys.a:*.o(.text);
+      */libnusys_d.a:*.o(.text);
       */libgcc.a:*.o(.text);
       /usr/lib/n64/PR/rspboot.o(.text);
       /usr/lib/n64/PR/gspF3DEX2.fifo.o(.text);
@@ -72,7 +74,7 @@ SECTIONS
       BUILD_DIR/src/main*.o(.data*);
 
       */libultra_rom.a:*.o(.data*);
-      */libnusys.a:*.o(.data*);
+      */libnusys_d.a:*.o(.data*);
       /usr/lib/n64/PR/rspboot.o(.data*);
       /usr/lib/n64/PR/gspF3DEX2.fifo.o(.data*);
       /usr/lib/n64/PR/gspL3DEX2.fifo.o(.data*);
@@ -86,7 +88,7 @@ SECTIONS
       BUILD_DIR/src/main*.o(.*rodata*);
 
       */libultra_rom.a:*.o(.*rodata*);
-      */libnusys.a:*.o(.*rodata*);
+      */libnusys_d.a:*.o(.*rodata*);
       */libgcc.a:*.o(.*rodata*);
    }
    END_SEG(code)
@@ -100,9 +102,9 @@ SECTIONS
       */libultra_rom.a:*.o(COMMON);
       */libultra_rom.a:*.o(.scommon);
       */libultra_rom.a:*.o(.*bss*);
-      */libnusys.a:*.o(COMMON);
-      */libnusys.a:*.o(.scommon);
-      */libnusys.a:*.o(.*bss*);
+      */libnusys_d.a:*.o(COMMON);
+      */libnusys_d.a:*.o(.scommon);
+      */libnusys_d.a:*.o(.*bss*);
    }
    END_NOLOAD(code)
    /* Discard everything not specifically mentioned above. */

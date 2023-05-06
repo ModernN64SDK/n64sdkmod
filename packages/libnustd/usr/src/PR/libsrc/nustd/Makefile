@@ -23,9 +23,9 @@ VERSION ?= libnustd
 $(eval $(call validate-option,VERSION,libnustd libnustd_d))
 
 ifeq      ($(VERSION),libnustd)
-	OPT_FLAGS := -O
+	OPT_FLAGS := -Os -g -ggdb
 else ifeq ($(VERSION),libnustd_d)
-	OPT_FLAGS := -O -g
+	OPT_FLAGS := -O0 -g -ggdb
 	DEFINES += _DEBUG_LIB=1
 endif
 
@@ -73,7 +73,7 @@ INCLUDE_DIRS += /usr/include/n64 /usr/include/n64/PR include $(BUILD_DIR) $(BUIL
 C_DEFINES := $(foreach d,$(DEFINES),-D$(d))
 DEF_INC_CFLAGS := $(foreach i,$(INCLUDE_DIRS),-I$(i)) $(C_DEFINES)
 
-CFLAGS = -G 0 $(OPT_FLAGS) -mabi=32 -ffreestanding -mfix4300 $(DEF_INC_CFLAGS) -Wimplicit -Wreturn-type -Wunused -Wcomment
+CFLAGS = -G 0 $(OPT_FLAGS) -mabi=32 -ffreestanding -mfix4300 $(DEF_INC_CFLAGS) -Wimplicit -Wreturn-type -Wunused -Wcomment -fwrapv
 ASFLAGS     := -march=vr4300 -mabi=32 $(foreach i,$(INCLUDE_DIRS),-I$(i)) $(foreach d,$(DEFINES),--defsym $(d))
 
 # C preprocessor flags
@@ -136,6 +136,8 @@ $(LIB): $(O_FILES)
 all:
 	$(MAKE) VERSION=libnustd
 	$(MAKE) VERSION=libnustd_d
+
+include install.mk
 
 .PHONY: clean default
 # with no prerequisites, .SECONDARY causes no intermediate target to be removed

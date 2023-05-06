@@ -10,7 +10,7 @@
 #include <nusys.h>
 #include "graphic.h"
 
-Gfx          gfx_glist[2][GFX_GLIST_LEN];
+Gfx          gfx_glist[2][GFX_GLIST_LEN] __attribute__((aligned (16)));
 Dynamic      gfx_dynamic[2];
 Gfx*         glistp;
 u32          gfx_gtask_no = 0;

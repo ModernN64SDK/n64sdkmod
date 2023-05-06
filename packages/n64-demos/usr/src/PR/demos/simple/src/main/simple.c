@@ -50,7 +50,6 @@
 
 #include <ultra64.h>
 #include <sched.h>
-#include "misc.h"
 #include "simple.h"
 #include "audio.h"
 #include "gfx.h"
@@ -93,17 +92,8 @@ OSScClient      gfxClient;
 /**** Controller globals ****/
 extern u8       validcontrollers;
 
-
 #ifndef _FINALROM
-u8      rdbSendBuf[2048];
 OSTime  lastTime;
-
-/**** logging stuff, used for debugging only. ****/
-#include <ultralog.h>
-#define LOG_LEN 0x8000
-OSLog logger;
-OSLog *log = &logger;
-u32 logData[LOG_LEN];
 #endif
 
 
@@ -122,26 +112,10 @@ OSPiHandle	*handler;
 
 void boot(void *arg)
 {
+    __osInitialize_common();
 
-#ifndef _FINALROM
-    u32    i;
-    u32    *argp;
-    u32    argbuf[16];
-#endif
-    
-    osInitialize();
 
     handler = osCartRomInit();
-
-#ifndef _FINALROM
-    argp = (u32 *)RAMROM_APP_WRITE_ADDR;
-    for (i=0; i < sizeof(argbuf)/4; i++, argp++) 
-        osEPiReadIo(handler, (u32)argp, &argbuf[i]);   /* Assume no DMA */
-
-    parse_args((char *)argbuf);
-
-#endif
-    
     
     osCreateThread(&initThread, 1, (void(*)(void *))initproc, arg,
                   (void *)(initThreadStack+(STACKSIZEBYTES/sizeof(u64))), 
@@ -167,8 +141,7 @@ static void initproc(char *argv)
     osCreateThread(&gameThread, 6, gameproc, argv, gameThreadStack + 
 		   (STACKSIZEBYTES/sizeof(u64)), (OSPri)GAME_PRIORITY);
 
-    if (!debugger) /* set by command line to gload, when you want to use gvd. */
-        osStartThread(&gameThread);
+    osStartThread(&gameThread);
 
     /**** Set the thread to be the idle thread ****/
     osSetThreadPri(0, 0);
@@ -212,10 +185,6 @@ static void gameproc(void *argv)
         switch (msg->gen.type) 
         {
             case (OS_SC_RETRACE_MSG):
-#ifndef _FINALROM
-                if (logging)
-                    osLogEvent(log, LOG_RETRACE, 1, pendingGFX);
-#endif
 
                 /**** Create a new gfx task unless we already have 2  ****/                 
                 if (pendingGFX < 2) 
@@ -293,12 +262,7 @@ void romCopy(const char *src, const char *dest, const int len)
  *
  *********************************************************************/
 static void initGame(void)
-{    
-#ifndef _FINALROM
-    if (logging)
-        osCreateLog(log, logData, LOG_LEN);
-#endif
-
+{
     /**** set up a needed message q's ****/
     osCreateMesgQueue(&dmaMessageQ, &dmaMessageBuf, 1);
     osCreateMesgQueue(&gfxFrameMsgQ, gfxFrameMsgBuf, MAX_MESGS);

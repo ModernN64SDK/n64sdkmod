@@ -13,26 +13,47 @@ default:
 
 install: default
 #	Install nusys binaries and headers
-	mkdir -p build/inc
-	$(CP) nusys/include/nusys.h build/inc
-	$(CP) nusys/build/libnusys/*.o build
-	$(CP) nusys/build/libnusys/*.a build
-	$(CP) nusys/build/libnusys_d/*.o build
-	$(CP) nusys/build/libnusys_d/*.a build
+	$(CP) nusys/include/nusys.h 	 /usr/include/n64/nusys
+	$(CP) nusys/build/libnusys/*.o 	 /usr/lib/n64/nusys/
+	$(CP) nusys/build/libnusys/*.a 	 /usr/lib/n64/nusys/
+	$(CP) nusys/build/libnusys_d/*.o /usr/lib/n64/nusys/
+	$(CP) nusys/build/libnusys_d/*.a /usr/lib/n64/nusys/
 #	Install nualsgi binaries and headers
-	$(CP) nualsgi/include/nualsgi.h build/inc
-	$(CP) nualsgi/include/nualsgi_n.h build/inc
-	$(CP) nualsgi/build/libnualsgi/*.a build
-	$(CP) nualsgi/build/libnualsgi_d/*.a build
-	$(CP) nualsgi/build/libnualsgi_n/*.a build
-	$(CP) nualsgi/build/libnualsgi_n_d/*.a build
+	$(CP) nualsgi/include/nualsgi.h /usr/include/n64/nusys
+	$(CP) nualsgi/include/nualsgi_n.h /usr/include/n64/nusys
+	$(CP) nualsgi/build/libnualsgi/*.a /usr/lib/n64/nusys/
+	$(CP) nualsgi/build/libnualsgi_d/*.a /usr/lib/n64/nusys/
+	$(CP) nualsgi/build/libnualsgi_n/*.a /usr/lib/n64/nusys/
+	$(CP) nualsgi/build/libnualsgi_n_d/*.a /usr/lib/n64/nusys/
 #	Install nualstl3 binaries and headers
-	$(CP) nualstl3/include/nualstl.h build/inc
-	$(CP) nualstl3/include/nualstl_n.h build/inc
-	$(CP) nualstl3/build/libnualstl/*.a build
-	$(CP) nualstl3/build/libnualstl_d/*.a build
-	$(CP) nualstl3/build/libnualstl_n/*.a build
-	$(CP) nualstl3/build/libnualstl_n_d/*.a build
+	$(CP) nualstl3/include/nualstl.h /usr/include/n64/nusys
+	$(CP) nualstl3/include/nualstl_n.h /usr/include/n64/nusys
+	$(CP) nualstl3/build/libnualstl/*.a /usr/lib/n64/nusys/
+	$(CP) nualstl3/build/libnualstl_d/*.a /usr/lib/n64/nusys/
+	$(CP) nualstl3/build/libnualstl_n/*.a /usr/lib/n64/nusys/
+	$(CP) nualstl3/build/libnualstl_n_d/*.a /usr/lib/n64/nusys/
+
+pkginstall: default
+#	Install nusys binaries and headers
+	$(CP) nusys/include/nusys.h 	 /home/crash/n64dev/n64sdkmod/packages/libnusys/usr/include/n64/nusys
+	$(CP) nusys/build/libnusys/*.o 	 /home/crash/n64dev/n64sdkmod/packages/libnusys/usr/lib/n64/nusys/
+	$(CP) nusys/build/libnusys/*.a 	 /home/crash/n64dev/n64sdkmod/packages/libnusys/usr/lib/n64/nusys/
+	$(CP) nusys/build/libnusys_d/*.o /home/crash/n64dev/n64sdkmod/packages/libnusys/usr/lib/n64/nusys/
+	$(CP) nusys/build/libnusys_d/*.a /home/crash/n64dev/n64sdkmod/packages/libnusys/usr/lib/n64/nusys/
+#	Install nualsgi binaries and headers
+	$(CP) nualsgi/include/nualsgi.h /home/crash/n64dev/n64sdkmod/packages/libnusys/usr/include/n64/nusys
+	$(CP) nualsgi/include/nualsgi_n.h /home/crash/n64dev/n64sdkmod/packages/libnusys/usr/include/n64/nusys
+	$(CP) nualsgi/build/libnualsgi/*.a /home/crash/n64dev/n64sdkmod/packages/libnusys/usr/lib/n64/nusys/
+	$(CP) nualsgi/build/libnualsgi_d/*.a /home/crash/n64dev/n64sdkmod/packages/libnusys/usr/lib/n64/nusys/
+	$(CP) nualsgi/build/libnualsgi_n/*.a /home/crash/n64dev/n64sdkmod/packages/libnusys/usr/lib/n64/nusys/
+	$(CP) nualsgi/build/libnualsgi_n_d/*.a /home/crash/n64dev/n64sdkmod/packages/libnusys/usr/lib/n64/nusys/
+#	Install nualstl3 binaries and headers
+	$(CP) nualstl3/include/nualstl.h /home/crash/n64dev/n64sdkmod/packages/libnusys/usr/include/n64/nusys
+	$(CP) nualstl3/include/nualstl_n.h /home/crash/n64dev/n64sdkmod/packages/libnusys/usr/include/n64/nusys
+	$(CP) nualstl3/build/libnualstl/*.a /home/crash/n64dev/n64sdkmod/packages/libnusys/usr/lib/n64/nusys/
+	$(CP) nualstl3/build/libnualstl_d/*.a /home/crash/n64dev/n64sdkmod/packages/libnusys/usr/lib/n64/nusys/
+	$(CP) nualstl3/build/libnualstl_n/*.a /home/crash/n64dev/n64sdkmod/packages/libnusys/usr/lib/n64/nusys/
+	$(CP) nualstl3/build/libnualstl_n_d/*.a /home/crash/n64dev/n64sdkmod/packages/libnusys/usr/lib/n64/nusys/
 
 clean:
 	rm -rf build

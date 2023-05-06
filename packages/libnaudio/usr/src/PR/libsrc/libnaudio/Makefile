@@ -23,10 +23,10 @@ VERSION ?= libn_audio
 $(eval $(call validate-option,VERSION,libn_audio libn_audio_d))
 
 ifeq      ($(VERSION),libn_audio)
-	OPT_FLAGS	:= -O3
+	OPT_FLAGS	:= -Os -g -ggdb
 	DEFINES		+= NDEBUG=1 _FINALROM=1
 else ifeq ($(VERSION),libn_audio_d)
-	OPT_FLAGS	:= -O0 -g
+	OPT_FLAGS	:= -O0 -g -ggdb
 	DEFINES		+= _DEBUG=1
 endif
 
@@ -69,14 +69,14 @@ CPP       := cpp
 LD        := mips-n64-ld
 AR        := mips-n64-ar
 
-AUDIOSRC = ../libultra/audio
+AUDIOSRC = include/ultrainc
 
 INCLUDE_DIRS += /usr/include/n64 /usr/include/n64/PR $(AUDIOSRC) include $(BUILD_DIR) $(BUILD_DIR)/include src .
 
 C_DEFINES := $(foreach d,$(DEFINES),-D$(d))
 DEF_INC_CFLAGS := $(foreach i,$(INCLUDE_DIRS),-I$(i)) $(C_DEFINES)
 
-CFLAGS = -G 0 $(OPT_FLAGS) -mabi=32 -ffreestanding -mfix4300 $(DEF_INC_CFLAGS) -Wall
+CFLAGS = -G 0 $(OPT_FLAGS) -mabi=32 -ffreestanding -mfix4300 $(DEF_INC_CFLAGS) -Wall -fwrapv
 ASFLAGS     := -march=vr4300 -mabi=32 $(foreach i,$(INCLUDE_DIRS),-I$(i)) $(foreach d,$(DEFINES),--defsym $(d))
 
 # C preprocessor flags
@@ -136,7 +136,35 @@ $(LIB): $(O_FILES)
 	@$(PRINT) "$(GREEN)Linking $(VERSION):  $(BLUE)$@ $(NO_COL)\n"
 	$(V)$(AR) rcs -o $@ $(O_FILES)
 
-.PHONY: clean default
+all:
+	$(MAKE) VERSION=libn_audio
+	$(V)cp $(BUILD_DIR_BASE)/libn_audio/libn_audio.a $(BUILD_DIR_BASE)
+	$(MAKE) VERSION=libn_audio_d
+	$(V)cp $(BUILD_DIR_BASE)/libn_audio_d/libn_audio_d.a $(BUILD_DIR_BASE)
+
+install: all
+	$(V)mkdir -p /usr/lib/n64/ /usr/include/n64/ /usr/include/n64/PR
+	@$(PRINT) "$(GREEN)Copying libn_audio.a$(NO_COL)\n"
+	$(V)cp $(BUILD_DIR_BASE)/libn_audio.a /usr/lib/n64/libn_audio.a
+	@$(PRINT) "$(GREEN)Copying libn_audio_d.a$(NO_COL)\n"
+	$(V)cp $(BUILD_DIR_BASE)/libn_audio_d.a /usr/lib/n64/libn_audio_d.a
+	@$(PRINT) "$(GREEN)Copying n_libaudio.h$(NO_COL)\n"
+	$(V)cp include/n_libaudio.h /usr/include/n64/PR/n_libaudio.h
+	@$(PRINT) "$(GREEN)Copying n_libaudio_s_to_n.h$(NO_COL)\n"
+	$(V)cp include/n_libaudio_s_to_n.h /usr/include/n64/PR/n_libaudio_s_to_n.h
+
+pkginstall: all
+	$(V)mkdir -p /home/crash/n64dev/n64sdkmod/packages/libnaudio/usr/lib/n64/ /home/crash/n64dev/n64sdkmod/packages/libnaudio/usr/include/n64/ /home/crash/n64dev/n64sdkmod/packages/libnaudio/usr/include/n64/PR
+	@$(PRINT) "$(GREEN)Copying libn_audio.a$(NO_COL)\n"
+	$(V)cp $(BUILD_DIR_BASE)/libn_audio.a /home/crash/n64dev/n64sdkmod/packages/libnaudio/usr/lib/n64/libn_audio.a
+	@$(PRINT) "$(GREEN)Copying libn_audio_d.a$(NO_COL)\n"
+	$(V)cp $(BUILD_DIR_BASE)/libn_audio_d.a /home/crash/n64dev/n64sdkmod/packages/libnaudio/usr/lib/n64/libn_audio_d.a
+	@$(PRINT) "$(GREEN)Copying n_libaudio.h$(NO_COL)\n"
+	$(V)cp include/n_libaudio.h /home/crash/n64dev/n64sdkmod/packages/libnaudio/usr/include/n64/PR/n_libaudio.h
+	@$(PRINT) "$(GREEN)Copying n_libaudio_s_to_n.h$(NO_COL)\n"
+	$(V)cp include/n_libaudio_s_to_n.h /home/crash/n64dev/n64sdkmod/packages/libnaudio/usr/include/n64/PR/n_libaudio_s_to_n.h
+
+.PHONY: clean default all install pkginstall
 # with no prerequisites, .SECONDARY causes no intermediate target to be removed
 .SECONDARY:
 
