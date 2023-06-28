@@ -30,7 +30,7 @@ void
 boot(void)
 {
     /* Initialize software and hardware */
-    __osInitialize_common();
+    osInitialize();
 
     /* Create idle thread */
     osCreateThread(&idleThread,IDLE_THREAD_ID, idle, (void *)0,

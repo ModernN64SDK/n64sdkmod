@@ -100,13 +100,9 @@ OSPiHandle	*handler;
 void
 boot(void)
 {
-
-	/*
-	 * notice that you can't call osSyncPrintf() until you set
-	 * up an idle thread.
-	 */
-
 	osInitialize();
+
+	osInitialize_isv();
 
 	handler = osCartRomInit();
 
@@ -163,34 +159,6 @@ idle(void *arg)
 static void
 mainproc(void *arg)
 {
-#ifdef DEBUG
-	int             i;
-	char           *ap;
-	u32            *argp;
-	u32             argbuf[16];
-
-	/*
-	 * get arguments (options)
-	 */
-	argp = (u32 *) RAMROM_APP_WRITE_ADDR;
-	for (i = 0; i < sizeof(argbuf) / 4; i++, argp++) {
-	    osEPiReadIo(handler, (u32) argp, &argbuf[i]); /* Assume no DMA */
-	}
-
-	/*
-	 * Parse the options 
-	 */
-	ap = (char *) argbuf;
-	while (*ap != '\0') {
-		while (*ap == ' ')
-			ap++;
-		if (*ap == '-' && *(ap + 1) == 'r') {
-			rdp_flag = 1;
-			ap += 2;
-		} else ap++; 
-	}
-#endif
-
 	/*
 	 * Setup the message queues
 	 */

@@ -94,6 +94,7 @@ void
 boot()
 {
   osInitialize();
+  osInitialize_isv();
   osCreateThread( &idleThread, IDLE_THREAD_ID, idle, NULL, 
 		 idleThreadStack + STACKSIZE/8, IDLE_PRIORITY );
   osStartThread( &idleThread );

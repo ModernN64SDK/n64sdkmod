@@ -29,10 +29,16 @@ BOOT		:= /usr/lib/n64/PR/bootcode/boot.6102
 BOOT_OBJ	:= $(BUILD_DIR)/boot.6102.o
 
 # Directories containing source files
-SRC_DIRS += src src/main asm
+SRC_DIRS += src src/main sound asm
 
 C_FILES           := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.c))
 S_FILES           := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.s))
+
+# Instrument banks
+INST_FILES	:= $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.inst))
+
+CTL_FILES	:= $(foreach file,$(INST_FILES),$(BUILD_DIR)/$(file:.inst=.ctl))
+TBL_FILES	:= $(foreach file,$(INST_FILES),$(BUILD_DIR)/$(file:.inst=.tbl))
 
 # Object files
 O_FILES := $(foreach file,$(C_FILES),$(BUILD_DIR)/$(file:.c=.o)) \
@@ -53,6 +59,7 @@ LD        := mips-n64-ld
 AR        := mips-n64-ar
 OBJDUMP   := mips-n64-objdump
 OBJCOPY   := mips-n64-objcopy
+IC		  := ic
 
 INCLUDE_DIRS += /usr/include/n64 /usr/n64/include/PR include $(BUILD_DIR) $(BUILD_DIR)/include src .
 
@@ -97,9 +104,18 @@ ALL_DIRS := $(BUILD_DIR) $(addprefix $(BUILD_DIR)/,$(SRC_DIRS))
 # Make sure build directory exists before compiling anything
 DUMMY != mkdir -p $(ALL_DIRS)
 
+$(BUILD_DIR)/sound/sound_data.o: $(BUILD_DIR)/sound/sampleBank.ctl $(BUILD_DIR)/sound/sampleBank.tbl
+
 #==============================================================================#
 # Compilation Recipes                                                          #
 #==============================================================================#
+
+$(BUILD_DIR)/%.ctl: %.inst
+	$(call print,Building soundbank:,$<,$@)
+	$(V)$(IC) -o $(basename $@) $<
+
+$(BUILD_DIR)/%.tbl: $(BUILD_DIR)/%.ctl
+	@true
 
 # Compile C code
 $(BUILD_DIR)/%.o: %.c

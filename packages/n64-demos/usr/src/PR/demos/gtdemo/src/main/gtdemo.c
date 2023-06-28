@@ -105,7 +105,7 @@ Dynamic dynamic;
 /*
  * necessary for RSP tasks:
  */
-u64 dram_stack[SP_DRAM_STACK_SIZE64];
+u64 dram_stack[SP_DRAM_STACK_SIZE64] __attribute__((aligned (16)));
 
 /*
  * must be in BSS, not on the stack for this to work:
@@ -136,7 +136,6 @@ Gfx		*glistp;	/* global for test case procs */
 /*
  * global variables for arguments, to control test cases
  */
-static int	debugflag = 0;
 static int      draw_buffer = 0;
 static void	*cfb_ptrs[2];
 static u64	ramrombuf[RAMROM_MSG_SIZE/sizeof(u64)];
@@ -153,39 +152,11 @@ OSPiHandle	*handler;
 void
 boot(void)
 {
-
-#ifdef DEBUG
-    int i, *pr;
-    char *ap;
-    u32 *argp;
-    u32 argbuf[16];
-#endif
-
-    /* notice that you can't call osSyncPrintf() until you set
-     * up an idle thread.
-     */
-    
     osInitialize();
+    osInitialize_isv();
 
     handler = osCartRomInit();
 
-#ifdef DEBUG
-    argp = (u32 *)RAMROM_APP_WRITE_ADDR;
-    for (i=0; i<sizeof(argbuf)/4; i++, argp++) {
-	osEPiReadIo(handler, (u32)argp, &argbuf[i]); /* Assume no DMA */
-    }
-    /* Parse the options */
-    ap = (char *)argbuf;
-    while (*ap != '\0') {
-	while (*ap == ' ')
-	    ap++;
-	if ( *ap == '-' && *(ap+1) == 'd') {
-	    debugflag = 1;
-	    ap += 2;
-	}
-    }
-#endif
-    
     osCreateThread(&idleThread, 1, idle, (void *)0,
 		   idleThreadStack+STACKSIZE/sizeof(u64), 10);
     osStartThread(&idleThread);
@@ -206,19 +177,12 @@ idle(void *arg)
      */
     osCreatePiManager((OSPri)OS_PRIORITY_PIMGR, &PiMessageQ, PiMessages, 
 		      NUM_PI_MSGS);
-    
-    /*
-     * at this point, AND NOT BEFORE, we can now do an
-     * osSyncPrintf()
-     */
-    
+
     /*
      * Create main thread
      */
     osCreateThread(&mainThread, 3, mainproc, arg,
 		   mainThreadStack+STACKSIZE/sizeof(u64), 10);
-    
-    if (!debugflag)
 	osStartThread(&mainThread);
 
     /*

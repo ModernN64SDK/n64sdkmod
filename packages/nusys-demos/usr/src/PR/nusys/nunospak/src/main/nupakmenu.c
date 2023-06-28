@@ -9,6 +9,7 @@
 /*======================================================================*/
 
 #include <nusys.h>
+#include <string.h>
 #include "nupakmenu.h"
 #include "pakmenu.h"
 

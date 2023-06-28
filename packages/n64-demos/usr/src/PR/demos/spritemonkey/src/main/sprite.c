@@ -160,36 +160,16 @@ static int      FrameRate   = 1;
 
 void    *cfb_ptrs[2];
 
-#ifdef DEBUG
-void parse_args(char *);
-#endif
-
 OSPiHandle	*handler;
 
 void
 boot(void)
-{
-
-#ifdef DEBUG
-    int i;
-    u32 *argp;
-    u32 argbuf[16];
-#endif
-    
+{   
     osInitialize();
+    osInitialize_isv();
 
     handler = osCartRomInit();
 
-#ifdef DEBUG
-    argp = (u32 *)RAMROM_APP_WRITE_ADDR;
-    for (i=0; i<sizeof(argbuf)/4; i++, argp++) 
-      {
-	osEPiReadIo(handler, (u32)argp, &argbuf[i]); /* Assume no DMA */
-      }
-
-    parse_args((char *) argbuf);
-#endif
-    
     osCreateThread(&idleThread, 1, idle, (void *)0,
 		   idleThreadStack+STACKSIZE/sizeof(u64), 10);
     osStartThread(&idleThread);
@@ -240,54 +220,6 @@ static int myatoi(char *str)
     return (val);
 }
 
-
-#ifdef DEBUG
-void parse_args(char *argstring)
-{
-  int		argc = 1;
-  char	*arglist[32], **argv = arglist;	/* max 32 args */
-  char	*ptr;
-
-  if (argstring == NULL || argstring[0] == '\0')
-    return;
-
-  /* re-organize argstring to be like main(argv,argc) */
-
-  ptr = argstring;
-  while (*ptr != '\0') {
-    while (*ptr != '\0' && (*ptr == ' ')) 
-      {
-	*ptr = '\0';
-	ptr++;
-      }
-    if (*ptr != '\0')
-      arglist[argc++] = ptr;
-    while (*ptr != '\0' && (*ptr != ' ')) 
-      {
-	ptr++;
-      }
-  }
-
-  /* process the arguments: */
-  while ((argc > 1) && (argv[1][0] == '-')) 
-    {
-      switch(argv[1][1]) 
-	{
-	case 'i':
-	  PrintInstructions = 0;
-	  break;
-
-	default:
-	  break;
-	}
-      
-      argc--;
-      argv++;
-    }
-}
-#endif
-
-
 static void
 idle(void *arg)
 {
@@ -302,12 +234,7 @@ idle(void *arg)
      */
     osCreatePiManager((OSPri)OS_PRIORITY_PIMGR, &PiMessageQ, PiMessages, 
 		      NUM_PI_MSGS);
-    
-    /*
-     * at this point, AND NOT BEFORE, we can now do an
-     * PRINTF()
-     */
-    
+
     /*
      * Create main thread
      */

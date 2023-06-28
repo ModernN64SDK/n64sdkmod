@@ -91,6 +91,7 @@ void
 boot()
 {
   osInitialize();
+  osInitialize_isv();
   osCreateThread(&idleThread, 1, idle, NULL, idleThreadStack + STACKSIZE/8, 10);
   osStartThread(&idleThread);
   /* NOT REACHED */

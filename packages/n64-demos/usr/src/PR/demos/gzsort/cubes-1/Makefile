@@ -4,7 +4,7 @@ TARGET_STRING := cube
 TARGET := $(TARGET_STRING)
 
 # Preprocessor definitions
-DEFINES := _FINALROM=1 NDEBUG=1 F3DEX_GBI_2=1 FOG=1
+DEFINES := DEBUG=1 F3DEX_GBI_2=1 FOG=1
 
 SRC_DIRS :=
 
@@ -136,7 +136,7 @@ $(BUILD_DIR)/libzsort.a: $(LIBZSORT_O_FILES)
 # Link final ELF file
 $(ELF): $(BUILD_DIR)/libzsort.a $(O_FILES) $(BUILD_DIR)/$(LD_SCRIPT)
 	@$(PRINT) "$(GREEN)Linking ELF file:  $(BLUE)$@ $(NO_COL)\n"
-	$(V)$(LD) -L $(BUILD_DIR) -T $(BUILD_DIR)/$(LD_SCRIPT) -Map $(BUILD_DIR)/$(TARGET).map --no-check-sections -o $@ $(O_FILES) -L/usr/lib/n64 -lultra_rom -L$(N64_LIBGCCDIR) -lgcc -lzsort
+	$(V)$(LD) -L $(BUILD_DIR) -T $(BUILD_DIR)/$(LD_SCRIPT) -Map $(BUILD_DIR)/$(TARGET).map --no-check-sections -o $@ $(O_FILES) -L/usr/lib/n64 -lultra_d -L$(N64_LIBGCCDIR) -lgcc -lzsort
 
 # Build ROM
 $(ROM): $(ELF)

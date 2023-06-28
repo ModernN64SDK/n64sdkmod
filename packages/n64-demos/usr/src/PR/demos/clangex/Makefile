@@ -59,7 +59,7 @@ DEP_FILES := $(O_FILES:.o=.d) $(ASM_O_FILES:.o=.d)  $(BUILD_DIR)/$(LD_SCRIPT).d
 #==============================================================================#
 
 AS        := mips-n64-as
-CC        := clang-12
+CC        := clang
 CPP       := cpp
 LD        := mips-n64-ld
 AR        := mips-n64-ar

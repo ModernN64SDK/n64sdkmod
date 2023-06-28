@@ -23,5 +23,5 @@
 #include <ultra64.h>
 #include "gtdemo.h"
 
-u64 rdp_output[0x400];	/* RSP writes back RDP data */
+u64 rdp_output[0x400] __attribute__((aligned (16)));	/* RSP writes back RDP data */
 

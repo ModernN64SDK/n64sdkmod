@@ -30,17 +30,17 @@ SECTIONS
 
    BEGIN_SEG(boot, 0x04000000)
    {
-      BUILD_DIR/asm/rom_header.o(.text); /* ROM Header */
-      BUILD_DIR/boot.6102.o(.data); /* CIC 6102 bootcode */
+      KEEP(BUILD_DIR/asm/rom_header.o(.text)); /* ROM Header */
+      KEEP(BUILD_DIR/boot.6102.o(.data)); /* CIC 6102 bootcode */
    }
    END_SEG(boot)
 
-   BEGIN_SEG(code, 0x80000400) SUBALIGN(16)
+   BEGIN_SEG(code, 0x80200000) SUBALIGN(16)
    {
 		BUILD_DIR/asm/entry.o(.start);
       BUILD_DIR/src/main*.o(.text);
 
-      */libultra_rom.a:*.o(.text);
+      */libultra_d.a:*.o(.text);
       */libgcc.a:*.o(.text);
 
       /usr/lib/n64/PR/rspboot.o(.text);
@@ -49,14 +49,14 @@ SECTIONS
       /* data */
       BUILD_DIR/src/main*.o(.data*);
 
-      */libultra_rom.a:*.o(.data*);
+      */libultra_d.a:*.o(.data*);
       /usr/lib/n64/PR/rspboot.o(.data*);
       /usr/lib/n64/PR/gspTurbo3D.o(.data*);
 
       /* rodata */
       BUILD_DIR/src/main*.o(.*rodata*);
 
-      */libultra_rom.a:*.o(.*rodata*);
+      */libultra_d.a:*.o(.*rodata*);
       */libgcc.a:*.o(.*rodata*);
    }
    END_SEG(code)
@@ -64,13 +64,13 @@ SECTIONS
    {
       BUILD_DIR/src/main*.o(.*bss*);
 
-      */libultra_rom.a:*.o(COMMON);
-      */libultra_rom.a:*.o(.scommon);
-      */libultra_rom.a:*.o(.*bss*);
+      */libultra_d.a:*.o(COMMON);
+      */libultra_d.a:*.o(.scommon);
+      */libultra_d.a:*.o(.*bss*);
    }
    END_NOLOAD(code)
 
-   . = 0x801c0000;
+   . = 0x8014f800;
    
    BEGIN_NOLOAD(cfb)
    {

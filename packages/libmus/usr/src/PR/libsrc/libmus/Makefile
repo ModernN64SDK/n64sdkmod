@@ -38,6 +38,9 @@ else ifeq ($(VERSION),libn_mus_d)
 	DEFINES += SUPPORT_NAUDIO=1
 endif
 
+# If you want to use full release mode in FX, uncomment next line.
+#DEFINES += _FX_FULL_RELEASE_MODE=1
+
 TARGET := $(VERSION)
 
 ifeq ($(filter clean,$(MAKECMDGOALS)),)

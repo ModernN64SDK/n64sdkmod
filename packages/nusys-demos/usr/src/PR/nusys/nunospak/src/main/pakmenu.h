@@ -11,7 +11,6 @@
 #define	nPrintf		osSyncPrintf
 
 #define	NUM_SI_MSGS	1
-#define	DEBUG		0
 #define	DEBUG_FONT	0
 
 #define	PORT_ID		0
@@ -268,13 +267,13 @@
 
 #if	LANG_JAPANESE
 # define FONT_CODE_BTM	0x94
-# define FONT_CODE_KA	0x55		// code "ÉJ"(KA)
-# define FONT_CODE_NA	0x64		// code "Éi"(NA)
-# define FONT_CODE_HA	0x69		// code "Én"(HA)
-# define FONT_CODE_MA	0x6e		// code "É}"(HA)
-# define FONT_CODE_GA	0x7c		// code "ÉK"(GA)
-# define FONT_CODE_BA	0x8b		// code "Éo"(BA)
-# define FONT_CODE_PA	0x90		// code "Ép"(PA)
+# define FONT_CODE_KA	0x55		// code "„Ç´"(KA)
+# define FONT_CODE_NA	0x64		// code "„Éä"(NA)
+# define FONT_CODE_HA	0x69		// code "„Éè"(HA)
+# define FONT_CODE_MA	0x6e		// code "„Éû"(HA)
+# define FONT_CODE_GA	0x7c		// code "„Ç¨"(GA)
+# define FONT_CODE_BA	0x8b		// code "„Éê"(BA)
+# define FONT_CODE_PA	0x90		// code "„Éë"(PA)
 #else
 # define FONT_CODE_BTM	0x41
 #endif

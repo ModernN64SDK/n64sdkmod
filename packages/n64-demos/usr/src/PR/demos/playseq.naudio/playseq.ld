@@ -75,7 +75,7 @@ SECTIONS
 
    BEGIN_SEG(sound_data, __romPos)
    {
-      BUILD_DIR/asm/sound_data.o(.data);
+      BUILD_DIR/sound/sound_data.o(.data);
    }
    END_SEG(sound_data)
 

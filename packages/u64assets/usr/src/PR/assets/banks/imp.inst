@@ -1,0 +1,61 @@
+keymap allkeys
+{
+    velocityMin = 0;
+    velocityMax = 127;
+    keyMin      = 0;
+    keyMax      = 127;
+    keyBase     = 60;
+    detune      = 0;
+}
+
+envelope slowdecay
+{
+    attackTime		= 5000;
+    attackVolume	= 63;
+    decayTime		= 20000;
+    decayVolume		= 60;
+    releaseTime		= 32000;
+}
+
+envelope env1
+{
+    attackTime		= 0;
+    attackVolume	= 127;
+    decayTime		= 0;
+    decayVolume		= 127;
+    releaseTime		= 5000;
+}
+
+envelope env0
+{
+    attackTime		= 0;
+    attackVolume	= 127;
+    decayTime		= 0;
+    decayVolume		= 127;
+    releaseTime		= 0;
+}
+
+sound sound1
+{
+    use ("build/sounds/imp.aifc");
+    
+    pan    = 127;
+    volume = 127;
+    keymap = allkeys;
+    envelope = env0;
+}
+
+instrument inst1
+{
+    volume = 127;
+    pan    = 127;
+
+    sound  = sound1;
+}
+
+/* comments */
+bank Wave1
+{
+    instrument [0] = inst1;
+}
+

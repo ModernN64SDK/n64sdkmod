@@ -50,7 +50,8 @@ u32 rand (void)
 
 void boot(void)
 {
-  __osInitialize_common();
+  osInitialize();
+  osInitialize_isv();
   osCreateThread(&idleThread, TID_IDLE, idle, (void*)0,
                  idleThreadStack+STACKSIZE/8, 10);
   osStartThread(&idleThread);

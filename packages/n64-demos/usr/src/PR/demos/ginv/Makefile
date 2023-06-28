@@ -4,7 +4,7 @@ TARGET_STRING := ginv
 TARGET := $(TARGET_STRING)
 
 # Preprocessor definitions
-DEFINES := _FINALROM=1 NDEBUG=1 F3DEX_GBI_2=1
+DEFINES := DEBUG=1 F3DEX_GBI_2=1
 
 SRC_DIRS :=
 
@@ -125,7 +125,7 @@ $(BOOT_OBJ): $(BOOT)
 # Link final ELF file
 $(ELF): $(O_FILES) $(BUILD_DIR)/$(LD_SCRIPT)
 	@$(PRINT) "$(GREEN)Linking ELF file:  $(BLUE)$@ $(NO_COL)\n"
-	$(V)$(LD) -L $(BUILD_DIR) -T $(BUILD_DIR)/$(LD_SCRIPT) -Map $(BUILD_DIR)/$(TARGET).map --no-check-sections -o $@ $(O_FILES) -L/usr/lib/n64 -lultra_rom -L$(N64_LIBGCCDIR) -lgcc
+	$(V)$(LD) -L $(BUILD_DIR) -T $(BUILD_DIR)/$(LD_SCRIPT) -Map $(BUILD_DIR)/$(TARGET).map --no-check-sections -o $@ $(O_FILES) -L/usr/lib/n64 -lultra_d -L$(N64_LIBGCCDIR) -lgcc
 
 # Build ROM
 $(ROM): SHELL := /bin/bash
@@ -133,10 +133,9 @@ $(ROM): $(ELF)
 	$(call print,Building ROM:,$<,$@)
 	$(V)$(OBJCOPY) --pad-to=0x100000 --gap-fill=0xFF $< $@ -O binary
 	$(V)makemask $@
-	@printf "Warning!\nThis demo requires a printf implementation. UNFLoader is recommended.\n"
-	@printf "Therefore, NOTHING is displayed to the TV.\nThe demo prints its results to PC.\n"
+	@printf "Warning!\nThis demo requires a printf implementation. By default, IS-Viewer is used.\n"
+	@printf "The demo's output can be read on emulators which support IS-Viewer printing.\n"
 	@echo; read -rsn1 -p "Press any key to continue . . ."; echo
-
 
 .PHONY: clean default
 # with no prerequisites, .SECONDARY causes no intermediate target to be removed

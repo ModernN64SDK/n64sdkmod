@@ -23,7 +23,7 @@ TARGET_STRING := sample
 TARGET := $(TARGET_STRING)
 
 # Preprocessor definitions
-DEFINES := _FINALROM=1 NDEBUG=1 F3DEX_GBI_2=1 MAXWIDTH=$(MAXWIDTH) MAXHEIGHT=$(MAXHEIGHT) CFB_FORMAT=$(CFB_FORMAT) USE_RSP=$(USE_RSP) SYNC_VIDEO=$(SYNC_VIDEO)
+DEFINES := DEBUG=1 F3DEX_GBI_2=1 MAXWIDTH=$(MAXWIDTH) MAXHEIGHT=$(MAXHEIGHT) CFB_FORMAT=$(CFB_FORMAT) USE_RSP=$(USE_RSP) SYNC_VIDEO=$(SYNC_VIDEO)
 
 SRC_DIRS :=
 
@@ -152,7 +152,7 @@ $(BUILD_DIR)/assets/%.hvqm.o: assets/%.hvqm
 # Link final ELF file
 $(ELF): $(O_FILES) $(HVQM_OBJ_FILES) $(BUILD_DIR)/$(LD_SCRIPT)
 	@$(PRINT) "$(GREEN)Linking ELF file:  $(BLUE)$@ $(NO_COL)\n"
-	$(V)$(LD) -L $(BUILD_DIR) -T $(BUILD_DIR)/$(LD_SCRIPT) -Map $(BUILD_DIR)/$(TARGET).map --no-check-sections -o $@ $(O_FILES) -L/usr/lib/n64 -lultra_rom -L$(N64_LIBGCCDIR) -lgcc -L/usr/lib/n64/hvqm -lhvqm2
+	$(V)$(LD) -L $(BUILD_DIR) -T $(BUILD_DIR)/$(LD_SCRIPT) -Map $(BUILD_DIR)/$(TARGET).map --no-check-sections -o $@ $(O_FILES) -L/usr/lib/n64 -lultra_d -L$(N64_LIBGCCDIR) -lgcc -L/usr/lib/n64/hvqm -lhvqm2
 
 # Build ROM
 $(ROM): $(ELF)

@@ -39,7 +39,7 @@
 /* internal macros */
 #define AUDIO_STACKSIZE    0x2000     /* size of stack for thread (in bytes) */
 #define EXTRA_SAMPLES      30         /* ratio[%] of extra samples per frame */
-#define EXTRA_SAMPLES_N    15         /* ratio[%] of extra eamples (if n_audio) */
+#define EXTRA_SAMPLES_N    20         /* ratio[%] of extra eamples (if n_audio) */
 #define NUM_OUTPUT_BUFFERS 3          /* number of output buffers */
 
 #ifndef SUPPORT_NAUDIO

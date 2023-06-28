@@ -43,7 +43,7 @@ SECTIONS
       BUILD_DIR/src/main*.o(.text);
       */libzsort.a:*.o(.text);
 
-      */libultra_rom.a:*.o(.text);
+      */libultra_d.a:*.o(.text);
       */libgcc.a:*.o(.text);
 
       /usr/lib/n64/PR/rspboot.o(.text);
@@ -53,7 +53,7 @@ SECTIONS
       BUILD_DIR/src/main*.o(.data*);
       */libzsort.a:*.o(.data*);
 
-      */libultra_rom.a:*.o(.data*);
+      */libultra_d.a:*.o(.data*);
 
       /usr/lib/n64/PR/rspboot.o(.data*);
       /usr/lib/n64/PR/gspZSort.fifo.o(.data*);
@@ -61,7 +61,7 @@ SECTIONS
       BUILD_DIR/src/main*.o(.*rodata*);
       */libzsort.a:*.o(.rodata*);
 
-      */libultra_rom.a:*.o(.*rodata*);
+      */libultra_d.a:*.o(.*rodata*);
       */libgcc.a:*.o(.*rodata*);
    }
    END_SEG(code)
@@ -70,9 +70,9 @@ SECTIONS
       BUILD_DIR/src/main*.o(.*bss*);
       */libzsort.a:*.o(.bss*);
 
-      */libultra_rom.a:*.o(COMMON);
-      */libultra_rom.a:*.o(.scommon);
-      */libultra_rom.a:*.o(.*bss*);
+      */libultra_d.a:*.o(COMMON);
+      */libultra_d.a:*.o(.scommon);
+      */libultra_d.a:*.o(.*bss*);
    }
    END_NOLOAD(code)
 

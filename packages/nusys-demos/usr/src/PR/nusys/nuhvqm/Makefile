@@ -4,7 +4,7 @@ TARGET_STRING := nuhvqm
 TARGET := $(TARGET_STRING)
 
 # Preprocessor definitions
-DEFINES := _FINALROM=1 NDEBUG=1 F3DEX_GBI_2=1
+DEFINES := DEBUG=1 F3DEX_GBI_2=1 NU_DEBUG=1
 
 SRC_DIRS :=
 
@@ -35,7 +35,7 @@ C_FILES           := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.c))
 S_FILES           := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.s))
 
 # Object files
-O_FILES := /usr/lib/n64/nusys/nusys_rom.o \
+O_FILES := /usr/lib/n64/nusys/nusys_isv.o \
            $(foreach file,$(C_FILES),$(BUILD_DIR)/$(file:.c=.o)) \
            $(foreach file,$(S_FILES),$(BUILD_DIR)/$(file:.s=.o)) \
 		   $(BOOT_OBJ)
@@ -131,7 +131,7 @@ $(BOOT_OBJ): $(BOOT)
 # Link final ELF file
 $(ELF): $(O_FILES) $(BUILD_DIR)/$(LD_SCRIPT)
 	@$(PRINT) "$(GREEN)Linking ELF file:  $(BLUE)$@ $(NO_COL)\n"
-	$(V)$(LD) -L $(BUILD_DIR) -T $(BUILD_DIR)/$(LD_SCRIPT) -Map $(BUILD_DIR)/$(TARGET).map --no-check-sections -o $@ $(O_FILES) -L/usr/lib/n64/nusys -lnusys -L/usr/lib/n64 -lultra_rom -L$(N64_LIBGCCDIR) -lgcc -L$(HVQMLIBDIR) -lhvqm2
+	$(V)$(LD) -L $(BUILD_DIR) -T $(BUILD_DIR)/$(LD_SCRIPT) -Map $(BUILD_DIR)/$(TARGET).map --no-check-sections -o $@ $(O_FILES) -L/usr/lib/n64/nusys -lnusys -L/usr/lib/n64 -lultra_d -L$(N64_LIBGCCDIR) -lgcc -L$(HVQMLIBDIR) -lhvqm2
 
 # Build ROM
 $(ROM): $(ELF)

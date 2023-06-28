@@ -4,7 +4,7 @@
   player.c : Nintendo 64 Music Tools Programmers Library
   (c) Copyright 1997/1998, Software Creations (Holdings) Ltd.
 
-  Version 3.14
+  Version 3.141
 
   Music player source file.
 
@@ -604,6 +604,10 @@ static void __MusIntInitEnvelope(channel_t *cp)
       cp->release_frame = cp->note_start_frame + (cp->cutoff<<8);
     else		/* release time is from end of note */
       cp->release_frame = cp->note_end_frame - (cp->endit<<8);
+#ifdef _FX_FULL_RELEASE_MODE
+    if(cp->fx_addr)
+	cp->note_end_frame += (((cp->env_release_speed<<10)/cp->env_speed_calc)<<8);
+#endif
   }
   else
   {
@@ -643,7 +647,7 @@ static void __MusIntProcessEnvelope(channel_t *cp)
   /* 99.01.29 - Removed this decrement and check of env_count - TW */
   /* It looks like this should have been remived at the time env_speed_calc was introduced */
   /* assuming it works ok, env_count can be removed from the channel structure */
-  // cp->env_count--; *.
+  /* cp->env_count--; */
   /* if(!cp->env_count) */
   {
     cp->env_count = cp->env_speed;
@@ -669,7 +673,7 @@ static void __MusIntProcessEnvelope(channel_t *cp)
 	case 2:
 	  {
 	    /* Decay */
-	    env_phase_count = ((((cp->channel_frame - cp->note_start_frame)>>8) - cp->env_attack_speed)*cp->env_speed_calc)>>10;
+	    env_phase_count = ((((cp->channel_frame - cp->note_start_frame)>>8)*cp->env_speed_calc)>>10) - cp->env_attack_speed;
 	    if (env_phase_count<cp->env_decay_speed)
 	    {
 	      cp->env_current = (int)cp->env_max_vol+(int)((float)(cp->env_decay_calc*(float)env_phase_count));

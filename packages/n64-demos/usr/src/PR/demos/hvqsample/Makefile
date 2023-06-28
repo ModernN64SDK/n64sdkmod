@@ -18,7 +18,7 @@ TARGET_STRING := sample
 TARGET := $(TARGET_STRING)
 
 # Preprocessor definitions
-DEFINES := _FINALROM=1 NDEBUG=1 F3DEX_GBI_2=1 MAXWIDTH=$(MAXWIDTH) MAXHEIGHT=$(MAXHEIGHT) CFB_FORMAT=$(CFB_FORMAT) USE_RSP=$(USE_RSP)
+DEFINES := DEBUG=1 F3DEX_GBI_2=1 MAXWIDTH=$(MAXWIDTH) MAXHEIGHT=$(MAXHEIGHT) CFB_FORMAT=$(CFB_FORMAT) USE_RSP=$(USE_RSP)
 
 SRC_DIRS :=
 
@@ -147,7 +147,7 @@ $(BUILD_DIR)/assets/%.hvq.o: assets/%.hvq
 # Link final ELF file
 $(ELF): $(O_FILES) $(HVQ_OBJ_FILES) $(BUILD_DIR)/$(LD_SCRIPT)
 	@$(PRINT) "$(GREEN)Linking ELF file:  $(BLUE)$@ $(NO_COL)\n"
-	$(V)$(LD) -L $(BUILD_DIR) -T $(BUILD_DIR)/$(LD_SCRIPT) -Map $(BUILD_DIR)/$(TARGET).map --no-check-sections -o $@ $(O_FILES) -L/usr/lib/n64 -lultra_rom -L$(N64_LIBGCCDIR) -lgcc -L/usr/lib/n64/hvq -lhvq2
+	$(V)$(LD) -L $(BUILD_DIR) -T $(BUILD_DIR)/$(LD_SCRIPT) -Map $(BUILD_DIR)/$(TARGET).map --no-check-sections -o $@ $(O_FILES) -L/usr/lib/n64 -lultra_d -L$(N64_LIBGCCDIR) -lgcc -L/usr/lib/n64/hvq -lhvq2
 
 # Build ROM
 $(ROM): $(ELF)

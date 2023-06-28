@@ -50,7 +50,7 @@ LIBRESCHAR_C_FILES     := $(wildcard src/reschar/*.c)
 C_FILES           := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.c))
 S_FILES           := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.s))
 
-CODE_O_FILES := /usr/lib/n64/nusys/nusys_rom.o $(foreach file,$(CODE_C_FILES),$(BUILD_DIR)/$(file:.c=.o))
+CODE_O_FILES := /usr/lib/n64/nusys/nusys_isv.o $(foreach file,$(CODE_C_FILES),$(BUILD_DIR)/$(file:.c=.o))
 LIBND_O_FILES := $(foreach file,$(LIBND_C_FILES),$(BUILD_DIR)/$(file:.c=.o))
 LIBRESBG_O_FILES := $(foreach file,$(LIBRESBG_C_FILES),$(BUILD_DIR)/$(file:.c=.o))
 LIBRESCHAR_O_FILES := $(foreach file,$(LIBRESCHAR_C_FILES),$(BUILD_DIR)/$(file:.c=.o))
@@ -167,7 +167,7 @@ $(BUILD_DIR)/libnd.a: $(LIBND_O_FILES)
 # Link codesegment
 $(CODESEGMENT):	$(BUILD_DIR)/libresbg.a	$(BUILD_DIR)/libreschar.a $(BUILD_DIR)/libnd.a $(CODE_O_FILES)
 	@$(PRINT) "$(GREEN)Linking codesegment:  $(BLUE)$@ $(NO_COL)\n"
-	$(V)$(LD) -o $(CODESEGMENT) -r $(CODE_O_FILES) -L$(BUILD_DIR) -lreschar -lresbg -lnd -L/usr/lib/n64/nusys -L/usr/lib/n64 $(NUAUDIOLIB) -lnusys -lultra_rom -lnustd -L$(N64_LIBGCCDIR) -lgcc
+	$(V)$(LD) -o $(CODESEGMENT) -r $(CODE_O_FILES) -L$(BUILD_DIR) -lreschar -lresbg -lnd -L/usr/lib/n64/nusys -L/usr/lib/n64 $(NUAUDIOLIB) -lnusys -lultra_d -lnustd -L$(N64_LIBGCCDIR) -lgcc
 
 # Link final ELF file
 $(ELF): $(O_FILES) $(BUILD_DIR)/$(LD_SCRIPT)

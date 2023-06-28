@@ -96,6 +96,7 @@ static	void	idle(void *arg)
 void	boot(void)
 {
     osInitialize();
+    osInitialize_isv();
     osCreateThread(&idleThread, 1, idle, (void *)0,
 		   idleThreadStack+STACKSIZE/sizeof(u64), 10);
     osStartThread(&idleThread);

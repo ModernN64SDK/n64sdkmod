@@ -145,7 +145,7 @@ zColor	cube_color[] = {	//=== ALIGN 8
 { 255, 255,   0, 255 },		/* Vtx 5 */
 { 255, 255, 255, 255 },		/* Vtx 6 */
 {   0,   0,   0, 255 },		/* Vtx 7 */
-};
+}; __attribute__((aligned (8)))
 
 zColor	cube_color_reflect[] = {//=== ALIGN 8
 { 255, 128, 128, 255 },		/* Vtx 0 */
@@ -154,7 +154,7 @@ zColor	cube_color_reflect[] = {//=== ALIGN 8
 { 128, 255, 255, 255 },		/* Vtx 3 */
 { 255, 128, 255, 255 },		/* Vtx 4 */
 { 255, 255, 128, 255 },		/* Vtx 5 */
-};
+}; __attribute__((aligned (8)))
 
 /*--- Cube vertices normals ---*/
 zNorm	cube_norm_flat[] = {	//=== ALIGN 8
@@ -164,7 +164,7 @@ zNorm	cube_norm_flat[] = {	//=== ALIGN 8
 {    0,-120,   0  },		/* Face 3 */
 {  120,   0,   0  },		/* Face 4 */
 {    0,   0,-120  },		/* Face 5 */
-};
+}; __attribute__((aligned (8)))
 
 u8	cube_norm_padding[4] = {0};
 zNorm	cube_norm_smooth[] = {	//=== ALIGN 8
@@ -176,7 +176,7 @@ zNorm	cube_norm_smooth[] = {	//=== ALIGN 8
 {  -70,  70, -70  },		/* Vtx 5 */
 {  -70, -70, -70  },		/* Vtx 6 */
 {   70, -70, -70  },		/* Vtx 7 */
-};
+}; __attribute__((aligned (8)))
 
 zNorm	cube_norm_reflect[] = {	//=== ALIGN 8
 #define	A	16
@@ -207,7 +207,7 @@ zNorm	cube_norm_reflect[] = {	//=== ALIGN 8
 {   B, -A, -A  },		/* Vtx 2-7 */
 #undef	A
 #undef	B
-};
+}; __attribute__((aligned (8)))
 
 /*--- Cube vertices texture coordinates ---*/
 zTxtr   cube_txtr[] = {

@@ -112,8 +112,8 @@ OSPiHandle	*handler;
 
 void boot(void *arg)
 {
-    __osInitialize_common();
-
+    osInitialize();
+    osInitialize_isv();
 
     handler = osCartRomInit();
     

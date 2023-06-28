@@ -11,7 +11,6 @@
 
 #include <ultra64.h>
 #include <hvqm2dec.h>
-#include "defines.h"
 #include "system.h"
 
 /*

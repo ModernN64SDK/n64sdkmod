@@ -52,6 +52,7 @@ void
 boot(void)
 {
     osInitialize();
+    osInitialize_isv();
 
     handler = osCartRomInit();
 
@@ -199,13 +200,17 @@ static void mainproc(void *arg)
   /*
    *  Set by Boot procedure
    */
-  if (osTvType == 0)
+  if (osTvType == OS_TV_PAL)
     {
       GINVPRINTF("Video Mode is PAL \n");
     }
-  else if (osTvType == 1)
+  else if (osTvType == OS_TV_NTSC)
     {
       GINVPRINTF("Video Mode is NTSC \n");
+    }
+  else if (osTvType == OS_TV_MPAL)
+    {
+      GINVPRINTF("Video Mode is MPAL \n");
     }
   else
     {

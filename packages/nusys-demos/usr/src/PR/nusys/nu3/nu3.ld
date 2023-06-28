@@ -54,8 +54,8 @@ SECTIONS
    BEGIN_SEG(code, NU_SPEC_BOOT_ADDR) SUBALIGN(16)
    {
       /* text */
-		BUILD_DIR/asm/entry.o(.start);
-      /usr/lib/n64/nusys/nusys_rom.o(.text);
+	BUILD_DIR/asm/entry.o(.start);
+      /usr/lib/n64/nusys/nusys_isv.o(.text);
       BUILD_DIR/src/main*.o(.text);
 
       */libultra_d.a:*.o(.text);
@@ -78,7 +78,7 @@ SECTIONS
       /usr/lib/n64/PR/gspS2DEX2.fifo.o(.text);
 
       /* data */
-      /usr/lib/n64/nusys/nusys_rom.o(.data*);
+      /usr/lib/n64/nusys/nusys_isv.o(.data*);
       BUILD_DIR/src/main*.o(.data*);
 
       */libultra_d.a:*.o(.data*);
@@ -101,7 +101,7 @@ SECTIONS
       /usr/lib/n64/PR/gspS2DEX2.fifo.o(.data*);
 
       /* rodata */
-      /usr/lib/n64/nusys/nusys_rom.o(.*rodata*);
+      /usr/lib/n64/nusys/nusys_isv.o(.*rodata*);
       BUILD_DIR/src/main*.o(.*rodata*);
 
       */libultra_d.a:*.o(.*rodata*);
@@ -117,9 +117,9 @@ SECTIONS
    END_SEG(code)
    BEGIN_NOLOAD(code)
    {
-      /usr/lib/n64/nusys/nusys_rom.o(COMMON);
-      /usr/lib/n64/nusys/nusys_rom.o(.scommon);
-      /usr/lib/n64/nusys/nusys_rom.o(.*bss*);
+      /usr/lib/n64/nusys/nusys_isv.o(COMMON);
+      /usr/lib/n64/nusys/nusys_isv.o(.scommon);
+      /usr/lib/n64/nusys/nusys_isv.o(.*bss*);
       BUILD_DIR/src/main*.o(.*bss*);
 
       */libultra_d.a:*.o(COMMON);

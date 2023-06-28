@@ -26,6 +26,7 @@
  */
 
 #include <ultra64.h>
+#include <assert.h>
 
 #include "controller.h"
 #include "block.h"
@@ -141,10 +142,6 @@ int      draw_buffer        = 0;
 
 void    *cfb_ptrs[2];
 
-#ifdef DEBUG
-void parse_args(char *);
-#endif
-
 OSViMode viModeXpn1;	/* Structure for test Vi mode Xpn1
 			   which is based on Lpn1 */
 
@@ -153,67 +150,11 @@ OSViMode OriginalVideoMode;
 
 OSPiHandle	*handler;
 
-#ifdef DEBUG
-void parse_args(char *argstring)
-{
-    int		argc = 1;
-    char	*arglist[32], **argv = arglist;	/* max 32 args */
-    char	*ptr;
-
-    if (argstring == NULL || argstring[0] == '\0')
-      return;
-
-    /* re-organize argstring to be like main(argv,argc) */
-
-    ptr = argstring;
-    while (*ptr != '\0') {
-	while (*ptr != '\0' && (*ptr == ' ')) 
-	  {
-	      *ptr = '\0';
-	      ptr++;
-	  }
-	if (*ptr != '\0')
-	  arglist[argc++] = ptr;
-	while (*ptr != '\0' && (*ptr != ' ')) 
-	  {
-	      ptr++;
-	  }
-    }
-
-    /* process the arguments: */
-    while ((argc > 1) && (argv[1][0] == '-')) 
-      {
-	  switch(argv[1][1]) 
-	    {
-	      case 's':
-		SelfScaleTimer = 0;
-		break;
-
-	      case 'q':
-		Quiet = 1;
-		break;
-
-	      case 'r':
-		rdp_flag = 1;
-		break;
-
-	      default:
-		break;
-	    }
-      
-	  argc--;
-	  argv++;
-      }
-}
-#endif
-
 void boot(void)
 {
-    /* notice that you can't call osSyncPrintf() until you set
-     * up an idle thread.
-     */
-    
     osInitialize();
+
+    osInitialize_isv();
 
     handler = osCartRomInit();
 
@@ -1163,19 +1104,6 @@ static void ComputeClockSpeed(void)
 static void mainproc(void *arg)
 {
     int i;
-
-#ifdef DEBUG
-    u32 *argp;
-    u32 argbuf[16];
-
-    argp = (u32 *)RAMROM_APP_WRITE_ADDR;
-    for (i=0; i<sizeof(argbuf)/4; i++, argp++) 
-      {
-	  osEPiReadIo(handler, (u32)argp, &argbuf[i]); /* Assume no DMA */
-      }
-
-    parse_args((char *) argbuf);
-#endif
 
     for (i=0; i<MAXTASKS; i++) {
 	tlistp[i] = &tlist[i];
