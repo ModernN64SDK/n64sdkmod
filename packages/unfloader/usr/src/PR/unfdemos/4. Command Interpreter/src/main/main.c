@@ -5,11 +5,11 @@ Program entrypoint.
 ***************************************************************/
 
 #include <nusys.h>
-#include <stdlib.h>
+#include <stdlib.h> // For atoi()
 #include "config.h"
 #include "texture.h"
 #include "stages.h"
-#include "src/unf/debug.h"
+#include "debug.h"
 
 
 /*********************************

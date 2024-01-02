@@ -64,7 +64,7 @@ INCLUDE_DIRS += /usr/include/n64 /usr/include/n64/nusys include $(BUILD_DIR) $(B
 C_DEFINES := $(foreach d,$(DEFINES),-D$(d))
 DEF_INC_CFLAGS := $(foreach i,$(INCLUDE_DIRS),-I$(i)) $(C_DEFINES)
 
-CFLAGS = -G 0 -g -mabi=32 -ffreestanding -mfix4300 $(DEF_INC_CFLAGS)
+CFLAGS = -G 0 -g -O0 -mabi=32 -ffreestanding -mfix4300 $(DEF_INC_CFLAGS)
 ASFLAGS     := -march=vr4300 -mabi=32 $(foreach i,$(INCLUDE_DIRS),-I$(i)) $(foreach d,$(DEFINES),--defsym $(d))
 
 # C preprocessor flags
@@ -137,7 +137,7 @@ $(BOOT_OBJ): $(BOOT)
 # Link codesegment
 $(CODESEGMENT):	$(CODE_O_FILES)
 	@$(PRINT) "$(GREEN)Linking codesegment:  $(BLUE)$@ $(NO_COL)\n"
-	$(V)$(LD) -o $(CODESEGMENT) -r $(CODE_O_FILES) -L/usr/lib/n64/nusys -lnusys_d -L/usr/lib/n64 -lultra_d -lnustd -L$(N64_LIBGCCDIR) -lgcc
+	$(V)$(LD) -g -o $(CODESEGMENT) -r $(CODE_O_FILES) -L/usr/lib/n64/nusys -lnusys_d -L/usr/lib/n64 -lultra_d -lnustd -L$(N64_LIBGCCDIR) -lgcc
 
 # Link final ELF file
 $(ELF): $(O_FILES) $(BUILD_DIR)/$(LD_SCRIPT)

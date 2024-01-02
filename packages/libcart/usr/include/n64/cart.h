@@ -21,25 +21,22 @@ typedef uint32_t u32;
 extern "C" {
 #endif
 
-/* PI BSD configuration */
-extern u32 cart_dom1;
-extern u32 cart_dom2;
+/* Size of cartridge SDRAM */
+extern u32 cart_size;
 
 /* Cartridge type */
 extern int cart_type;
-
-/* Size of cartridge SDRAM */
-extern u32 cart_size;
 
 /* Detect cartridge and initialize it */
 extern int cart_init(void);
 /* Close the cartridge interface */
 extern int cart_exit(void);
 
+/* Swap high and low bytes per 16-bit word when reading into SDRAM */
+extern char cart_card_byteswap;
+
 /* Initialize card */
 extern int cart_card_init(void);
-/* Swap high and low bytes per 16-bit word when reading into SDRAM */
-extern int cart_card_byteswap(int flag);
 /* Read sectors from card to system RDRAM */
 extern int cart_card_rd_dram(void *dram, u32 lba, u32 count);
 /* Read sectors from card to cartridge SDRAM */
