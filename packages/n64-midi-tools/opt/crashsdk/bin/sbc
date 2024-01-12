@@ -1,0 +1,59 @@
+#!/usr/bin/env python3
+# sbc
+# by someone2639
+#     Concatenates sequence files together,
+#     and links them with a header
+#
+#     I sure wonder what this would be used for...
+#
+
+import sys, os, struct
+
+class ALSeqData():
+	def __init__(self, off, ln):
+		self.off = off
+		self.len = ln
+
+class ALSeqFile():
+	def __init__(self, rv, ct):
+		self.revision = rv
+		self.count = ct
+		self.seqs = []
+	def pushSeq(self, off, ln):
+		self.seqs.append(ALSeqData(off, ln))
+
+
+if len(sys.argv) < 2:
+	print("Usage: %s -o outfile file1 file2 ..." % sys.argv[0])
+	exit()
+
+outfile = sys.argv[2]
+infiles = sys.argv[3:]
+
+header = ALSeqFile(0x5331, len(infiles));
+
+with open(outfile, "wb+") as of:
+	headerlen = 8 + (len(infiles) * 8) - 4
+	of.seek(headerlen)
+
+	seqTracker = headerlen
+	of.seek(seqTracker)
+
+	for ifl in infiles:
+		seqlen = 0
+		with open(ifl, "rb") as i:
+			of.write(i.read())
+
+			seqlen += os.stat(ifl).st_size
+
+			header.pushSeq(seqTracker, seqlen)
+			seqTracker += os.stat(ifl).st_size
+
+			if seqTracker & (0b11):
+				seqTracker = (seqTracker + 4) & ~3
+			of.seek(seqTracker)
+
+	of.seek(0)
+	of.write(struct.pack(">hh", header.revision, header.count))
+	for i in range(len(header.seqs)):
+		of.write(struct.pack(">LL", header.seqs[i].off, header.seqs[i].len))

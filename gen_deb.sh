@@ -23,7 +23,7 @@ mkdir -p debs
 sudo chown -R root:root ./packages
 
 case $choice in
-   "all") dew_it ;;
+   "all") dew_it root-compatibility-environment n64sdk-common n64sdk n64-irix-env n64-midi-tools vadpcm-tools ;;
    *) echo "Sorry nothing";;
 esac
 
